@@ -93,10 +93,11 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   RefineMesh/EdgePairHash.h
   StreamLines/StreamLineIntegrators.h
   StreamLines/GenerateStreamLines.h
+  RegisterWithCorrespondences.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
-  #RegisterWithCorrespondences.cc
+  RegisterWithCorrespondences.cc
   MeshData/FlipSurfaceNormals.cc
   #Cleanup/CleanupTetMesh.cc
   #Cleanup/RemoveUnusedNodes.cc

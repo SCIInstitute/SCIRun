@@ -26,368 +26,436 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/RegisterWithCorrespondences.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
+
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Exceptions/Exception.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Eigen/SVD>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 #include <sstream>
 
-namespace SCIRunAlgo {
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
 
-bool
-RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output)
+RegisterWithCorrespondencesAlgo::RegisterWithCorrespondencesAlgo() {
+	addParameter(Variables::Operator, 0);
+}
+
+AlgorithmOutput RegisterWithCorrespondencesAlgo::run_generic(const AlgorithmInput& input) const {
+	
+	auto input_field = input.get<Field>(Variables::InputField);
+	auto corres1 = input.get<Field>(Correspondences1);
+	auto corres2 = input.get<Field>(Correspondences2);
+	
+	FieldHandle return_field;
+
+	if(get(Variables::Operator).toInt() == 0)
+		runM(input_field, corres1, corres2, return_field);
+	else if(get(Variables::Operator).toInt() == 1)
+		runA(input_field, corres1, corres2, return_field);
+	else if(get(Variables::Operator).toInt() == 2)
+		runN(input_field, corres1, corres2, return_field);
+	
+	AlgorithmOutput output;
+	output[Variables::OutputField] = return_field;
+	return output;
+}
+
+bool RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output)  const
 {
-  algo_start("RegisterWithCorrespondences");
-  if (input.get_rep() == 0)
-  {
-    error("No input field");
-    algo_end(); return (false);
-  }
-  if (Cors1.get_rep() == 0)
-  {
-    error("No Correspondence1 input field");
-    algo_end(); return (false);
-  }
-  if (Cors2.get_rep() == 0)
-  {
-    error("No Correspndence2 input field");
-    algo_end(); return (false);
-  }
+	
+	double sumx2;
+	double sumy2;
+	double sumz2;
+	double sumx;
+	double sumy;
+	double sumz;
+	
+	if(!input) {
+		error("No input field");
+		return false;
+	}
+	if(!Cors1) {
+		error("No Correspondence1 input field");
+		return false;
+	}
+	if(!Cors2) {
+		error("No Correspondence2 input field");
+		return false;
+	}
+	
+	FieldInformation fi(input); 
+	
+	// Seems that the detach functions are currently unavailable. They are still in the code for Fields, but it is under "ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER".
+	output = input;
+	//output.detach();
+	//output->mesh_detach();
+	
+	FieldHandle input_cp, Cors1_cp, Cors2_cp;
   
-  FieldInformation fi(input);
+	input_cp = input;
+	//input_cp.detach();
+	//input_cp->mesh_detach();
+  
+	Cors1_cp = Cors1;
+	//Cors1_cp.detach();
+	//Cors1_cp->mesh_detach();
+  
+	Cors2_cp = Cors2;
+	//Cors2_cp.detach();
+	//Cors2_cp->mesh_detach();
 
-  output = input;
-  output.detach();
-  output->mesh_detach();
   
-  FieldHandle input_cp, Cors1_cp, Cors2_cp;
+	if (!output)
+	{
+		error("Could not allocate output field");
+		return (false);      
+	}
   
-  input_cp = input;
-  input_cp.detach();
-  input_cp->mesh_detach();
+	VMesh* imesh = input_cp->vmesh();
+	VMesh* omesh = output->vmesh();
+	VMesh* icors1 = Cors1_cp->vmesh();
+	VMesh* icors2 = Cors2_cp->vmesh();
   
-  Cors1_cp = Cors1;
-  Cors1_cp.detach();
-  Cors1_cp->mesh_detach();
+    //get the number of nodes in input field  
+    //VMesh::size_type num_nodes = imesh->num_nodes();
   
-  Cors2_cp = Cors2;
-  Cors2_cp.detach();
-  Cors2_cp->mesh_detach();
-
+	VMesh::Node::size_type num_cors1, num_cors2, num_pts; 
+	icors1->size(num_cors1);
+	icors2->size(num_cors2);
+	imesh->size(num_pts);
   
-  if (output.get_rep() == 0)
-  {
-    error("Could not allocate output field");
-    algo_end(); return (false);      
-  }
+	std::vector<double> coefs;//(3*num_cors1+9);
+	std::vector<double> rside;//(3*num_cors1+9);
+	if (num_cors1 != num_cors2)
+	{
+		error("Number of correspondence points does not match");
+		return (false);
+	}
   
-  VMesh* imesh = input_cp->vmesh();
-  VMesh* omesh = output->vmesh();
-  VMesh* icors1 = Cors1_cp->vmesh();
-  VMesh* icors2 = Cors2_cp->vmesh();
+	// Request that it generates the node matrix
+	imesh->synchronize(SCIRun::Mesh::NODES_E);
   
-  //get the number of nodes in input field  
-  //VMesh::size_type num_nodes = imesh->num_nodes();
-  
-  VMesh::Node::size_type num_cors1, num_cors2, num_pts; 
-  icors1->size(num_cors1);
-  icors2->size(num_cors2);
-  imesh->size(num_pts);
-  
-  std::vector<double> coefs;//(3*num_cors1+9);
-  std::vector<double> rside;//(3*num_cors1+9);
-
-  if (num_cors1 != num_cors2)
-  {
-    error("Number of correspondence points does not match");
-    algo_end(); return (false);
-  }
-  
-  // Request that it generates the node matrix
-  imesh->synchronize(SCIRun::Mesh::NODES_E);
-  
-  //get centroids of both point clouds
-      sumx = 0.0;
-      sumy = 0.0;
-      sumz = 0.0;
-      Point mp;
+	//get centroids of both point clouds
+	sumx = 0.0;
+    sumy = 0.0;
+    sumz = 0.0;
+    SCIRun::Core::Geometry::Point mp;
      
-      VMesh::size_type num_nodes = icors1->num_nodes();
-      
-      for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
-      {
-         icors1->get_center(mp,idx);
-         sumx = mp.x()+sumx;
-         sumy = mp.y()+sumy;
-         sumz = mp.z()+sumz;
-      }
-      sumx = sumx/(double)num_nodes;
-      sumy = sumy/(double)num_nodes;
-      sumz = sumz/(double)num_nodes;
-      
-      sumx2 = 0.0;
-      sumy2 = 0.0;
-      sumz2 = 0.0;
-      Point np;
+    VMesh::size_type num_nodes = icors1->num_nodes();
+    
+    for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
+    {
+		icors1->get_center(mp,idx);
+        sumx = mp.x()+sumx;
+        sumy = mp.y()+sumy;
+        sumz = mp.z()+sumz;
+    }
+    sumx = sumx/(double)num_nodes;
+    sumy = sumy/(double)num_nodes;
+    sumz = sumz/(double)num_nodes;
+    
+    sumx2 = 0.0;
+    sumy2 = 0.0;
+    sumz2 = 0.0;
+    Point np;
      
-      VMesh::size_type num_nodes2 = icors2->num_nodes();
-      
-      for(VMesh::Node::index_type idx=0; idx<num_nodes2; idx++)
-      {
-         icors2->get_center(np,idx);
-         sumx2 = np.x()+sumx2;
-         sumy2 = np.y()+sumy2;
-         sumz2 = np.z()+sumz2;
-      }
-      sumx2 = sumx2/(double)num_nodes2;
-      sumy2 = sumy2/(double)num_nodes2;
-      sumz2 = sumz2/(double)num_nodes2;
+    VMesh::size_type num_nodes2 = icors2->num_nodes();
+    
+    for(VMesh::Node::index_type idx=0; idx<num_nodes2; idx++)
+    {
+        icors2->get_center(np,idx);
+        sumx2 = np.x()+sumx2;
+        sumy2 = np.y()+sumy2;
+		sumz2 = np.z()+sumz2;
+    }
+    sumx2 = sumx2/(double)num_nodes2;
+    sumy2 = sumy2/(double)num_nodes2;
+    sumz2 = sumz2/(double)num_nodes2;
 
      //center fields
-     SCIRun::Point mypoint;
+    SCIRun::Core::Geometry::Point mypoint;
      
-     for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
-     {
-        icors1->get_center(mp,idx);
+    for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
+    {
+		icors1->get_center(mp,idx);
         mypoint.x(mp.x()-sumx);
         mypoint.y(mp.y()-sumy);
         mypoint.z(mp.z()-sumz);
         icors1->set_point(mypoint,idx);
-     }
+    }
      
-     for(VMesh::Node::index_type idx=0; idx<num_nodes2; idx++)
-     {
-        icors2->get_center(mp,idx);
+    for(VMesh::Node::index_type idx=0; idx<num_nodes2; idx++)
+    {
+		icors2->get_center(mp,idx);
         mypoint.x(mp.x()-sumx2);
         mypoint.y(mp.y()-sumy2);
         mypoint.z(mp.z()-sumz2);
         icors2->set_point(mypoint,idx);
-     }
-     VMesh::size_type num_nodes_mesh = imesh->num_nodes();
-     for(VMesh::Node::index_type idx=0; idx<num_nodes_mesh; idx++)
-     {
+    }
+    VMesh::size_type num_nodes_mesh = imesh->num_nodes();
+    for(VMesh::Node::index_type idx=0; idx<num_nodes_mesh; idx++)
+    {
         imesh->get_center(mp,idx);
         mypoint.x(mp.x()-sumx2);
         mypoint.y(mp.y()-sumy2);
         mypoint.z(mp.z()-sumz2);
         imesh->set_point(mypoint,idx);
-     }
+    }
 
 
-  //create B for big matrix//
-  MatrixHandle BMat;
-  BMat=new DenseMatrix(num_cors1+4,num_cors1+4);
-  DenseMatrix *Bm = dynamic_cast<DenseMatrix*>(BMat->dense());
-  VMesh::Node::iterator it;
-  SCIRun::Point P;
-
+	//create B for big matrix//
+	MatrixHandle BMat(new DenseMatrix(num_cors1+4, num_cors1+4));
+	//DenseMatrix *BMat = new DenseMatrix(num_cors1, num_cors2);
+	DenseMatrixHandle Bm = matrix_convert::to_dense(BMat);;
+	VMesh::Node::iterator it;
+	SCIRun::Core::Geometry::Point P;
   
-  for(int L1=0;L1<num_cors1;++L1)
-  {
-    it=L1;
-    icors2->get_point(P,*(it));
-    //horizontal x,y,z
-    Bm->put(0,L1,P.x());
-    Bm->put(1,L1,P.y());
-    Bm->put(2,L1,P.z());
-    Bm->put(3,L1,1);
+	for(int L1=0;L1<num_cors1;++L1)
+	{
+		it=L1;
+		icors2->get_point(P,*(it));
+		//horizontal x,y,z
+		Bm->put(0,L1,P.x());
+		Bm->put(1,L1,P.y());
+		Bm->put(2,L1,P.z());
+		Bm->put(3,L1,1);
     
-    //vertical x,y,z
-    Bm->put(L1+4,num_cors1,P.x());
-    Bm->put(L1+4,num_cors1+1,P.y());
-    Bm->put(L1+4,num_cors1+2,P.z());
-    Bm->put(L1+4,num_cors1+3,1);
-  }
-   for(int L1=num_cors1;L1<num_cors1+4;++L1)
-  {
-    Bm->put(0,L1,0);
-    Bm->put(1,L1,0);
-    Bm->put(2,L1,0);
-    Bm->put(3,L1,0);
-  }
+		//vertical x,y,z
+		Bm->put(L1+4,num_cors1,P.x());
+		Bm->put(L1+4,num_cors1+1,P.y());
+		Bm->put(L1+4,num_cors1+2,P.z());
+		Bm->put(L1+4,num_cors1+3,1);
+	}
+
+	for(int L1=num_cors1;L1<num_cors1+4;++L1)
+	{
+		Bm->put(0,L1,0);
+		Bm->put(1,L1,0);
+		Bm->put(2,L1,0);
+		Bm->put(3,L1,0);
+	}
   
-  //put in sigmas
-  MatrixHandle SMat;
-  radial_basis_func(icors2, icors2, SMat);
-  SMat->get_data_pointer();
-  double temp = 0; 
+	//put in sigmas
+	MatrixHandle SMat;
+	radial_basis_func(icors2, icors2, SMat);
+	//SMat->get_data_pointer();
+	double temp = 0; 
+	
+	for(int i=0;i<num_cors1;++i)
+	{
+		for(int j=0;j<num_cors1;++j)
+		{
+			temp=SMat->get(i,j);
+			Bm->put(4+i,j,temp);    }
+	}
   
-  for(int i=0;i<num_cors1;++i)
-  {
-    for(int j=0;j<num_cors1;++j)
-    {
-      temp=SMat->get(i,j);
-      Bm->put(4+i,j,temp);    }
-  }
+	//Create big matrix //
+	DenseMatrixHandle BigMat(new DenseMatrix(3*num_cors1+12 ,3*num_cors1+12));
   
-  //Create big matrix //
-  DenseMatrixHandle BigMat = new DenseMatrix(3*num_cors1+12,3*num_cors1+12);
+	for(int i=0;i<(3*num_cors1+12);++i)
+	{
+		for(int j=0;j<(3*num_cors1+12);++j)
+		{
+			BigMat->put(i,j,0);
+		}
+	}
+	for(int i=0;i<(num_cors1+4);++i)
+	{
+		for(int j=0;j<(num_cors1+4);++j)
+		{
+			temp=Bm->get(i,j);
+			BigMat->put(i,j,temp);
+		}
+	}
+	for(int i=0;i<(num_cors1+4);++i)
+	{
+		for(int j=0;j<(num_cors1+4);++j)
+		{
+			temp=Bm->get(i,j);
+			BigMat->put(num_cors1+4+i,num_cors1+4+j,temp);
+				
+		}
+	}
+	for(int i=0;i<(num_cors1+4);++i)
+	{
+		for(int j=0;j<(num_cors1+4);++j)
+		{
+			temp=Bm->get(i,j);
+			BigMat->put(2*num_cors1+8+i,2*num_cors1+8+j,temp);
+		}
+	}
   
-  for(int i=0;i<(3*num_cors1+12);++i)
-  {
-    for(int j=0;j<(3*num_cors1+12);++j)
-    {
-      BigMat->put(i,j,0);
-    }
-  }
-  for(int i=0;i<(num_cors1+4);++i)
-  {
-    for(int j=0;j<(num_cors1+4);++j)
-    {
-       temp=Bm->get(i,j);
-       BigMat->put(i,j,temp);
-    }
-  }
-  for(int i=0;i<(num_cors1+4);++i)
-  {
-    for(int j=0;j<(num_cors1+4);++j)
-    {
-       temp=Bm->get(i,j);
-       BigMat->put(num_cors1+4+i,num_cors1+4+j,temp);
-       
-    }
-  }
-   for(int i=0;i<(num_cors1+4);++i)
-  {
-    for(int j=0;j<(num_cors1+4);++j)
-    {
-       temp=Bm->get(i,j);
-       BigMat->put(2*num_cors1+8+i,2*num_cors1+8+j,temp);
-    }
-  }
-  
-  //create right side of equation//
-  for(int i=0;i<4;++i){rside.push_back(0);}
-  for(int i=0;i<num_cors1;++i)
-  {
-    it=i;
-    icors1->get_point(P,*(it));
-    rside.push_back(P.x());
-  }
-  for(int i=0;i<4;++i){rside.push_back(0);}
-  for(int i=0;i<num_cors1;++i)
-  {
-    it=i;
-    icors1->get_point(P,*(it));
-    rside.push_back(P.y());
-  }
-  for(int i=0;i<4;++i){rside.push_back(0);}
-  for(int i=0;i<num_cors1;++i)
-  {
-    it=i;
-    icors1->get_point(P,*(it));
-    rside.push_back(P.z());
-  }
-  
-  //Solve system of equations//
-  // Bigm->solve(rside,coefs,0);
-  //Use svd linear least squares
-  
-  //Create sparse matrix for sigmas of svd
+	//create right side of equation//
+	for(int i=0;i<4;++i){rside.push_back(0);}
+	for(int i=0;i<num_cors1;++i)
+	{
+		it=i;
+		icors1->get_point(P,*(it));
+		rside.push_back(P.x());
+	}
+	for(int i=0;i<4;++i){rside.push_back(0);}
+	for(int i=0;i<num_cors1;++i)
+	{
+		it=i;
+		icors1->get_point(P,*(it));
+		rside.push_back(P.y());
+	}
+	for(int i=0;i<4;++i){rside.push_back(0);}
+	for(int i=0;i<num_cors1;++i)
+	{
+		it=i;
+		icors1->get_point(P,*(it));
+		rside.push_back(P.z());
+	}
+ 
+	//Solve system of equations//
+	// Bigm->solve(rside,coefs,0);
+	//Use svd linear least squares
+	
+	//Create sparse matrix for sigmas of svd
    
-  int m = 3*num_cors1+12;
-  int n = 3*num_cors1+12;
+	int m = 3*num_cors1+12;
+	int n = 3*num_cors1+12;
+	
+	SparseRowMatrixHandle matS;
+	
+	//create the U and V matrix
+	DenseMatrixHandle UMat(new DenseMatrix(m,m));
+	DenseMatrixHandle VMat(new DenseMatrix(n,n));
+	
+	//run SVD
+	try
+	{
+		Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(*BigMat, Eigen::ComputeFullU | Eigen::ComputeFullV);
+		UMat = boost::make_shared<DenseMatrix>(svd_mat.matrixU());
+		VMat = boost::make_shared<DenseMatrix>(svd_mat.matrixV());
+		matS = matrix_convert::to_sparse(boost::make_shared<DenseColumnMatrix>(svd_mat.singularValues()));
+	}
+	catch (const SCIRun::Exception& exception)
+	{
+		std::ostringstream oss;
+		oss << "Caught exception: " << exception.type() << " " << exception.message();
+		error(oss.str());
+		return (false);
+	}
   
-  SparseRowMatrixHandle matS;
+	//Make more storage for the solving the linear least squares
+	DenseMatrixHandle RsideMat(new DenseMatrix(m,1)); 
+	DenseMatrixHandle CMat(new DenseMatrix(n,1));
+	DenseMatrixHandle YMat(new DenseMatrix(n,1));
+	DenseMatrixHandle CoefMat(new DenseMatrix(n,1));
+
+	for(int loop = 0; loop < n; ++loop)
+	{
+		RsideMat->put(loop,0,rside[loop]);
+	}
   
-  //create the U and V matrix
-  DenseMatrixHandle UMat = new DenseMatrix(m,n);
-  DenseMatrixHandle VMat = new DenseMatrix(n,n);
+    // Original function for Mult_trans_X is no longer in the code, as far as I can see. This should do the same.
+	//c=trans(Um)*rside;
+	DenseMatrix trans_mat = UMat->transpose();
+	size_t out_col = 0; size_t out_row = 0;
+	for(size_t r = 0; r < trans_mat.nrows(); r++) {
+		double total = 0; 
+		for(size_t rside_cols = 0; rside_cols < RsideMat->ncols(); rside_cols++) {
+			for(size_t c = 0; c < trans_mat.ncols(); c++) {
+				total += trans_mat.get(r,c) * RsideMat->get(c,rside_cols);
+			}
+			CMat->put(out_col,out_row,total);
+			out_col++;
+		}
+		out_row++;
+	}
+	
+
+	for(int k=0;k<n;k++)
+	{
+		YMat->put(k,0,CMat->get(k,0)/matS->get(k,k));
+	}
   
-  //run SVD
-  try
+	trans_mat = VMat->transpose();
+	out_col = 0; out_row = 0;
+	for(size_t r = 0; r < trans_mat.nrows(); r++) {
+		double total = 0; 
+		for(size_t YMat_cols = 0; YMat_cols < YMat->ncols(); YMat_cols++) {
+			for(size_t c = 0; c < trans_mat.ncols(); c++) {
+				total += trans_mat.get(r,c) * YMat->get(c,YMat_cols);
+			}
+			CoefMat->put(out_col,out_row,total);
+			out_col++;
+		}
+		out_row++;
+	}
+ 
+	for(int p=0;p<n;p++)
+	{
+		coefs.push_back(CoefMat->get(p,0));
+	}
+  
+	//done with solve, make the new field
+  
+	make_new_points(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
+  
+	return true;
+}
+
+bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
+{
+  double sumx2;
+  double sumy2;
+  double sumz2;
+  double sumx;
+  double sumy;
+  double sumz;
+  if (!input == 0)
   {
-    LinearAlgebra::svd(*BigMat, *UMat, matS, *VMat);
+    error("No input field");
+    return (false);
   }
-  catch (const SCIRun::Exception& exception)
+  if (!Cors1 == 0)
   {
-    std::ostringstream oss;
-    oss << "Caught exception: " << exception.type() << " " << exception.message();
-    error(oss.str());
+    error("No Correspondence1 input field");
+    return (false);
+  }
+  if (!Cors2 == 0)
+  {
+    error("No Correspndence2 input field");
     return (false);
   }
   
-  //Make more storage for the solving the linear least squares
-  DenseMatrixHandle RsideMat = new DenseMatrix(m,1);
-  DenseMatrixHandle CMat = new DenseMatrix(n,1);
-  DenseMatrixHandle YMat = new DenseMatrix(n,1);
-  DenseMatrixHandle CoefMat = new DenseMatrix(n,1);
-  
-  for(int loop = 0; loop < n; ++loop)
-  {
-    RsideMat->put(loop,0,rside[loop]);
-  }
-  
-  //c=trans(Um)*rside;
-  Mult_trans_X(*CMat, *UMat, *RsideMat);
-  
-
-  for(int k=0;k<n;k++)
-  {
-     YMat->put(k,0,CMat->get(k,0)/matS->get(k,k));
-  }
-  
-  Mult_trans_X(*CoefMat, *VMat, *YMat);
-   
-  for(int p=0;p<n;p++)
-  {
-    coefs.push_back(CoefMat->get(p,0));
-  }
-  
-//done with solve, make the new field
-  
-  make_new_points(imesh, icors2, coefs, *omesh);
-  
-  algo_end(); return (true);
-}
-
-
-bool
-RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output)
-{
-  algo_start("RegisterWithCorrespondences");
-  if (input.get_rep() == 0)
-  {
-    error("No input field");
-    algo_end(); return (false);
-  }
-  if (Cors1.get_rep() == 0)
-  {
-    error("No Correspondence1 input field");
-    algo_end(); return (false);
-  }
-  if (Cors2.get_rep() == 0)
-  {
-    error("No Correspndence2 input field");
-    algo_end(); return (false);
-  }
-  
   FieldInformation fi(input);
-  //output = CreateField(fi,input->mesh());
   output = input;
-  output.detach();
-  output->mesh_detach();
+  //output.detach();
+  //output->mesh_detach();
   
   FieldHandle input_cp, Cors1_cp, Cors2_cp;
   
   input_cp = input;
-  input_cp.detach();
-  input_cp->mesh_detach();
+  //input_cp.detach();
+  //input_cp->mesh_detach();
   
   Cors1_cp = Cors1;
-  Cors1_cp.detach();
-  Cors1_cp->mesh_detach();
+  //Cors1_cp.detach();
+  //Cors1_cp->mesh_detach();
   
   Cors2_cp = Cors2;
-  Cors2_cp.detach();
-  Cors2_cp->mesh_detach();
+  //Cors2_cp.detach();
+  //Cors2_cp->mesh_detach();
   
-  if (output.get_rep() == 0)
+  if (!output == 0)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);      
+    return (false);      
   }
   
   VMesh* imesh = input_cp->vmesh();
@@ -409,7 +477,7 @@ RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, Fiel
   if (num_cors1 != num_cors2)
   {
     error("Number of correspondence points does not match");
-    algo_end(); return (false);
+    return (false);
   }
   
   // Request that it generates the node matrix
@@ -453,7 +521,7 @@ RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, Fiel
       sumz2 = sumz2/(double)num_nodes;
       
       //center fields
-     SCIRun::Point mypoint;
+     Point mypoint;
      
      for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
      {
@@ -484,9 +552,9 @@ RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, Fiel
      }
 
    //create B for big matrix//
-  DenseMatrixHandle BMat = new DenseMatrix(num_cors1,4);
+  DenseMatrixHandle BMat(new DenseMatrix(num_cors1, 4));
   VMesh::Node::iterator it;
-  SCIRun::Point P;
+  Point P;
 
   
   for(int L1=0;L1<num_cors1;++L1)
@@ -502,7 +570,7 @@ RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, Fiel
   }
  
   //Create big matrix //
-  DenseMatrixHandle BigMat = new DenseMatrix(3*num_cors1,12);
+  DenseMatrixHandle BigMat(new DenseMatrix(3*num_cors1, 12));
   double temp = 0;
   
   for(int i=0;i<(3*num_cors1);++i)
@@ -558,26 +626,23 @@ RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, Fiel
     rside.push_back(P.z());
   }
   
- 
-  //Solve system of equations//
-  //Bigm->solve(rside,coefs,0);
-  //Use svd linear least squares
-  
   //Create sparse matrix for sigmas of svd
-   
   int m=num_cors1;
   int n=4;
   
   SparseRowMatrixHandle matS;
   
   //create the U and V matrix
-  DenseMatrixHandle UMat = new DenseMatrix(m,m);
-  DenseMatrixHandle VMat = new DenseMatrix(n,n);
+  DenseMatrixHandle UMat(new DenseMatrix(m,m));
+  DenseMatrixHandle VMat(new DenseMatrix(n,n));
             
   //run SVD
   try
   {
-    LinearAlgebra::svd(*BMat, *UMat, matS, *VMat);
+    Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(*BigMat, Eigen::ComputeFullU | Eigen::ComputeFullV);
+	UMat = boost::make_shared<DenseMatrix>(svd_mat.matrixU());
+	VMat = boost::make_shared<DenseMatrix>(svd_mat.matrixV());
+	matS = matrix_convert::to_sparse(boost::make_shared<DenseColumnMatrix>(svd_mat.singularValues()));
   }
   catch (const SCIRun::Exception& exception)
   {
@@ -588,10 +653,10 @@ RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, Fiel
   }
   
   //Make more storage for the solving the linear least squares
-  DenseMatrixHandle RsideMat = new DenseMatrix(m,1);
-  DenseMatrixHandle CMat = new DenseMatrix(m,1);
-  DenseMatrixHandle YMat = new DenseMatrix(n,1);
-  DenseMatrixHandle CoefMat = new DenseMatrix(n,1);
+  DenseMatrixHandle RsideMat(new DenseMatrix(m,1));
+  DenseMatrixHandle CMat(new DenseMatrix(m,1));
+  DenseMatrixHandle YMat(new DenseMatrix(n,1));
+  DenseMatrixHandle CoefMat(new DenseMatrix(n,1));
   
   for(int xyz=0;xyz<3;xyz++)
   {
@@ -602,14 +667,33 @@ RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, Fiel
     }
   
     //c=trans(Um)*rside;
-    Mult_trans_X(*CMat, *UMat,*RsideMat);
-  
-    for(int k=0;k<n;k++)
-    {
-      YMat->put(k,0,CMat->get(k,0)/matS->get(k,k));
-    }
-      
-    Mult_trans_X(*CoefMat, *VMat,  *YMat);
+    DenseMatrix trans_mat = UMat->transpose();
+	size_t out_col = 0; size_t out_row = 0;
+	for(size_t r = 0; r < trans_mat.nrows(); r++) {
+		double total = 0; 
+		for(size_t rside_cols = 0; rside_cols < RsideMat->ncols(); rside_cols++) {
+			for(size_t c = 0; c < trans_mat.ncols(); c++) {
+				total += trans_mat.get(r,c) * RsideMat->get(c,rside_cols);
+			}
+			CMat->put(out_col,out_row,total);
+			out_col++;
+		}
+		out_row++;
+	}
+	      
+   trans_mat = VMat->transpose();
+	out_col = 0; out_row = 0;
+	for(size_t r = 0; r < trans_mat.nrows(); r++) {
+		double total = 0; 
+		for(size_t YMat_cols = 0; YMat_cols < YMat->ncols(); YMat_cols++) {
+			for(size_t c = 0; c < trans_mat.ncols(); c++) {
+				total += trans_mat.get(r,c) * YMat->get(c,YMat_cols);
+			}
+			CoefMat->put(out_col,out_row,total);
+			out_col++;
+		}
+		out_row++;
+	}
  
     for(int p=0;p<n;p++)
     {
@@ -617,44 +701,39 @@ RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, Fiel
     }
   }
     //done with solve, make the new field
-
-
-  make_new_pointsA(imesh, icors2, coefs, *omesh);
+  make_new_pointsA(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
   
-  algo_end(); return (true);
+  return (true);
 }
 
-
-bool
-RegisterWithCorrespondencesAlgo::runN(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output)
+bool RegisterWithCorrespondencesAlgo::runN(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
 {
-  algo_start("RegisterWithCorrespondences");
-  if (input.get_rep() == 0)
+  if (!input == 0)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
-  if (Cors1.get_rep() == 0)
+  if (!Cors1 == 0)
   {
     error("No Correspondence1 input field");
-    algo_end(); return (false);
+    return (false);
   }
-  if (Cors2.get_rep() == 0)
+  if (!Cors2 == 0)
   {
     error("No Correspndence2 input field");
-    algo_end(); return (false);
+    return (false);
   }
   
   FieldInformation fi(input);
   //output = CreateField(fi,input->mesh());
   output = input;
-  output.detach();
-  output->mesh_detach();
+  //output.detach();
+  //output->mesh_detach();
   
-  if (output.get_rep() == 0)
+  if (!output == 0)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);      
+    return (false);      
   }
   
   VMesh* imesh = input->vmesh();
@@ -662,26 +741,24 @@ RegisterWithCorrespondencesAlgo::runN(FieldHandle input, FieldHandle Cors1, Fiel
  
   omesh=imesh;
   
-  algo_end(); return (true);
+  return (true);
 }
 
-
-bool
-RegisterWithCorrespondencesAlgo::radial_basis_func(VMesh* Cors, VMesh* points, MatrixHandle& Smat)
+bool RegisterWithCorrespondencesAlgo::radial_basis_func(VMesh* Cors, VMesh* points, MatrixHandle& Smat) const
 {
     VMesh::Node::size_type num_cors, num_pts;
     VMesh::Node::iterator iti,itj;
-    SCIRun::Point Pc,Pp;
+    Point Pc,Pp;
   
     
     Cors->size(num_cors);
     points->size(num_pts);
     
     double xcomp=0.0,ycomp=0.0,zcomp=0.0,mag=0.0;
-    //MatrixHandle SMat;
-    Smat=new DenseMatrix(num_pts,num_cors);
-    DenseMatrix *Sigma = dynamic_cast<DenseMatrix*>(Smat->dense());
-
+    
+	Smat.reset(new DenseMatrix(num_pts, num_cors));
+	auto Sigma = Smat;
+	
     for(int i=0;i<num_pts;++i)
     {
       for(int j=0;j<num_cors;++j)
@@ -703,24 +780,20 @@ RegisterWithCorrespondencesAlgo::radial_basis_func(VMesh* Cors, VMesh* points, M
         }
         else
         {
-          
           double temp=pow(mag,2.0)*log(mag);
-          //printf("%lf :",mag);
-
           Sigma->put(i,j,temp);
           }    
       }
-      //cout<<endl;
      }
     return true;
 }
 
-bool
-RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh)
+bool RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const
 {
+
   VMesh::Node::size_type num_cors, num_pts;
   VMesh::Node::iterator it,itp;
-  SCIRun::Point P,Pp;
+  Point P,Pp;
     
   Cors->size(num_cors);
   points->size(num_pts);
@@ -731,7 +804,7 @@ RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors, std
   double sigma=0.0;
   MatrixHandle SMat;
   radial_basis_func(Cors, points, SMat);
-  SMat->get_data_pointer();
+  //SMat->get_data_pointer();
   
   for(int i=0; i< num_pts;++i)
   {
@@ -758,12 +831,12 @@ RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors, std
   return true;
 }
 
-bool
-RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh)
+bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const
 {
+  
   VMesh::Node::size_type num_cors, num_pts;
   VMesh::Node::iterator it,itp;
-  SCIRun::Point P,Pp;
+  Point P,Pp;
    
   points->size(num_pts);
   int msz=coefs.size();
@@ -782,4 +855,6 @@ RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cors, st
   return true;
 }
 
-} // end namespace SCIRun
+
+AlgorithmInputName RegisterWithCorrespondencesAlgo::Correspondences1("Correspondences1");
+AlgorithmInputName RegisterWithCorrespondencesAlgo::Correspondences2("Correspondences2");
