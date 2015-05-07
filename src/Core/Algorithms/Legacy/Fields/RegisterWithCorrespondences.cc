@@ -211,11 +211,8 @@ bool RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1,
     imesh->set_point(mypoint, idx);
   }
 
-
   //create B for big matrix//
-  MatrixHandle BMat(new DenseMatrix(num_cors1 + 4, num_cors1 + 4));
-  //DenseMatrix *BMat = new DenseMatrix(num_cors1, num_cors2);
-  DenseMatrixHandle Bm = matrix_convert::to_dense(BMat);;
+  DenseMatrix Bm(num_cors1 + 4, num_cors1 + 4);
   VMesh::Node::iterator it;
   SCIRun::Core::Geometry::Point P;
 
@@ -224,74 +221,68 @@ bool RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1,
     it = L1;
     icors2->get_point(P, *(it));
     //horizontal x,y,z
-    Bm->put(0, L1, P.x());
-    Bm->put(1, L1, P.y());
-    Bm->put(2, L1, P.z());
-    Bm->put(3, L1, 1);
+    Bm(0, L1) = P.x();
+    Bm(1, L1) = P.y();
+    Bm(2, L1) = P.z();
+    Bm(3, L1) = 1;
 
     //vertical x,y,z
-    Bm->put(L1 + 4, num_cors1, P.x());
-    Bm->put(L1 + 4, num_cors1 + 1, P.y());
-    Bm->put(L1 + 4, num_cors1 + 2, P.z());
-    Bm->put(L1 + 4, num_cors1 + 3, 1);
+    Bm(L1 + 4) = num_cors1, P.x();
+    Bm(L1 + 4) = num_cors1 + 1, P.y();
+    Bm(L1 + 4) = num_cors1 + 2, P.z();
+    Bm(L1 + 4) = num_cors1 + 3, 1;
   }
 
   for (int L1 = num_cors1; L1 < num_cors1 + 4; ++L1)
   {
-    Bm->put(0, L1, 0);
-    Bm->put(1, L1, 0);
-    Bm->put(2, L1, 0);
-    Bm->put(3, L1, 0);
+    Bm(0, L1) = 0;
+    Bm(1, L1) = 0;
+    Bm(2, L1) = 0;
+    Bm(3, L1) = 0;
   }
 
   //put in sigmas
-  MatrixHandle SMat;
+  DenseMatrixHandle SMat;
   radial_basis_func(icors2, icors2, SMat);
-  //SMat->get_data_pointer();
   double temp = 0;
 
   for (int i = 0; i < num_cors1; ++i)
   {
     for (int j = 0; j < num_cors1; ++j)
     {
-      temp = SMat->get(i, j);
-      Bm->put(4 + i, j, temp);
+      Bm(4 + i, j) = SMat->get(i, j);
     }
   }
 
   //Create big matrix //
-  DenseMatrixHandle BigMat(new DenseMatrix(3 * num_cors1 + 12, 3 * num_cors1 + 12));
+  DenseMatrix BigMat(3 * num_cors1 + 12, 3 * num_cors1 + 12);
 
   for (int i = 0; i < (3 * num_cors1 + 12); ++i)
   {
     for (int j = 0; j < (3 * num_cors1 + 12); ++j)
     {
-      BigMat->put(i, j, 0);
+      BigMat(i, j) = 0;
     }
   }
   for (int i = 0; i < (num_cors1 + 4); ++i)
   {
     for (int j = 0; j < (num_cors1 + 4); ++j)
     {
-      temp = Bm->get(i, j);
-      BigMat->put(i, j, temp);
+      BigMat(i, j) = Bm(i, j);
     }
   }
   for (int i = 0; i < (num_cors1 + 4); ++i)
   {
     for (int j = 0; j < (num_cors1 + 4); ++j)
     {
-      temp = Bm->get(i, j);
-      BigMat->put(num_cors1 + 4 + i, num_cors1 + 4 + j, temp);
-
+      BigMat(num_cors1 + 4 + i, num_cors1 + 4 + j) = Bm(i, j);
     }
   }
   for (int i = 0; i < (num_cors1 + 4); ++i)
   {
     for (int j = 0; j < (num_cors1 + 4); ++j)
     {
-      temp = Bm->get(i, j);
-      BigMat->put(2 * num_cors1 + 8 + i, 2 * num_cors1 + 8 + j, temp);
+      BigMat(2 * num_cors1 + 8 + i, 2 * num_cors1 + 8 + j) = Bm(i, j); 
     }
   }
 
@@ -327,78 +318,36 @@ bool RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1,
   int m = 3 * num_cors1 + 12;
   int n = 3 * num_cors1 + 12;
 
-  SparseRowMatrixHandle matS;
-
   //create the U and V matrix
-  DenseMatrixHandle UMat(new DenseMatrix(m, m));
-  DenseMatrixHandle VMat(new DenseMatrix(n, n));
-
-  //run SVD
-  try
-  {
-    Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(*BigMat, Eigen::ComputeFullU | Eigen::ComputeFullV);
-    UMat = boost::make_shared<DenseMatrix>(svd_mat.matrixU());
-    VMat = boost::make_shared<DenseMatrix>(svd_mat.matrixV());
-    matS = matrix_convert::to_sparse(boost::make_shared<DenseColumnMatrix>(svd_mat.singularValues()));
-  }
-  catch (const SCIRun::Exception& exception)
-  {
-    std::ostringstream oss;
-    oss << "Caught exception: " << exception.type() << " " << exception.message();
-    error(oss.str());
-    return (false);
-  }
+  Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(BigMat, Eigen::ComputeFullU | Eigen::ComputeFullV);
+  DenseMatrix UMat = svd_mat.matrixU();
+  DenseMatrix VMat = svd_mat.matrixV();
+  auto matSingularValues = svd_mat.singularValues();
 
   //Make more storage for the solving the linear least squares
-  DenseMatrixHandle RsideMat(new DenseMatrix(m, 1));
-  DenseMatrixHandle CMat(new DenseMatrix(n, 1));
-  DenseMatrixHandle YMat(new DenseMatrix(n, 1));
-  DenseMatrixHandle CoefMat(new DenseMatrix(n, 1));
+  DenseMatrix RsideMat(m, 1);
+  DenseMatrix CMat(n, 1);
+  DenseMatrix YMat(n, 1);
+  DenseMatrix CoefMat(n, 1);
 
   for (int loop = 0; loop < n; ++loop)
   {
-    RsideMat->put(loop, 0, rside[loop]);
+    RsideMat(loop, 0) = rside[loop];
   }
 
-  // Original function for Mult_trans_X is no longer in the code, as far as I can see. This should do the same.
   //c=trans(Um)*rside;
-  DenseMatrix trans_mat = UMat->transpose();
-  size_t out_col = 0; size_t out_row = 0;
-  for (size_t r = 0; r < trans_mat.nrows(); r++) {
-    double total = 0;
-    for (size_t rside_cols = 0; rside_cols < RsideMat->ncols(); rside_cols++) {
-      for (size_t c = 0; c < trans_mat.ncols(); c++) {
-        total += trans_mat.get(r, c) * RsideMat->get(c, rside_cols);
-      }
-      CMat->put(out_col, out_row, total);
-      out_col++;
-    }
-    out_row++;
-  }
+  CMat = UMat.transpose() * RsideMat;
 
-
-  for (int k = 0; k < n; k++)
+  for (int k = 0; k<n; k++)
   {
-    YMat->put(k, 0, CMat->get(k, 0) / matS->get(k, k));
+    YMat(k, 0) = CMat(k, 0) / matSingularValues(k, k);
   }
 
-  trans_mat = VMat->transpose();
-  out_col = 0; out_row = 0;
-  for (size_t r = 0; r < trans_mat.nrows(); r++) {
-    double total = 0;
-    for (size_t YMat_cols = 0; YMat_cols < YMat->ncols(); YMat_cols++) {
-      for (size_t c = 0; c < trans_mat.ncols(); c++) {
-        total += trans_mat.get(r, c) * YMat->get(c, YMat_cols);
-      }
-      CoefMat->put(out_col, out_row, total);
-      out_col++;
-    }
-    out_row++;
-  }
+  CoefMat = VMat.transpose() * YMat;
 
   for (int p = 0; p < n; p++)
   {
-    coefs.push_back(CoefMat->get(p, 0));
+    coefs.push_back(CoefMat(p, 0));
   }
 
   //done with solve, make the new field
@@ -557,7 +506,6 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   VMesh::Node::iterator it;
   Point P;
 
-
   for (int L1 = 0; L1 < num_cors1; ++L1)
   {
     it = L1;
@@ -628,23 +576,10 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   int n = 4;
 
   //create the U and V matrix
-  DenseMatrix UMat;
-  DenseMatrix VMat;
 
-  //run SVD
-  try
-  {
-    Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(BigMat, Eigen::ComputeFullU | Eigen::ComputeFullV);
-    UMat = svd_mat.matrixU();
-    VMat = svd_mat.matrixV();
-  }
-  catch (const SCIRun::Exception& exception)
-  {
-    std::ostringstream oss;
-    oss << "Caught exception: " << exception.type() << " " << exception.message();
-    error(oss.str());
-    return (false);
-  }
+  Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(BMat, Eigen::ComputeFullU | Eigen::ComputeFullV);
+  DenseMatrix UMat = svd_mat.matrixU();
+  DenseMatrix VMat = svd_mat.matrixV();
 
   //Make more storage for the solving the linear least squares
   DenseMatrix RsideMat(m, 1);
@@ -661,33 +596,13 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
     }
 
     //c=trans(Um)*rside;
-    DenseMatrix trans_mat = UMat.transpose();
-    size_t out_col = 0; size_t out_row = 0;
-    for (size_t r = 0; r < trans_mat.nrows(); r++) {
-      double total = 0;
-      for (size_t rside_cols = 0; rside_cols < RsideMat.ncols(); rside_cols++) {
-        for (size_t c = 0; c < trans_mat.ncols(); c++) {
-          total += trans_mat.get(r, c) * RsideMat(c, rside_cols);
-        }
-        CMat(out_col, out_row) = total;
-        out_col++;
-      }
-      out_row++;
+    CMat = UMat.transpose() * RsideMat;
+
+    for (int k = 0; k<n; k++)
+    {
     }
 
-    trans_mat = VMat.transpose();
-    out_col = 0; out_row = 0;
-    for (size_t r = 0; r < trans_mat.nrows(); r++) {
-      double total = 0;
-      for (size_t YMat_cols = 0; YMat_cols < YMat.ncols(); YMat_cols++) {
-        for (size_t c = 0; c < trans_mat.ncols(); c++) {
-          total += trans_mat.get(r, c) * YMat(c, YMat_cols);
-        }
-        CoefMat(out_col, out_row) = total;
-        out_col++;
-      }
-      out_row++;
-    }
+    CoefMat = VMat.transpose() * YMat;
 
     for (int p = 0; p < n; p++)
     {
@@ -696,7 +611,6 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   }
   //done with solve, make the new field
   make_new_pointsA(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
-
 
   {
     const BBox bbox = omesh->get_bounding_box();
@@ -749,20 +663,18 @@ bool RegisterWithCorrespondencesAlgo::runN(FieldHandle input, FieldHandle Cors1,
   return (true);
 }
 
-bool RegisterWithCorrespondencesAlgo::radial_basis_func(VMesh* Cors, VMesh* points, MatrixHandle& Smat) const
+bool RegisterWithCorrespondencesAlgo::radial_basis_func(VMesh* Cors, VMesh* points, DenseMatrixHandle& Sigma) const
 {
   VMesh::Node::size_type num_cors, num_pts;
   VMesh::Node::iterator iti, itj;
   Point Pc, Pp;
-
 
   Cors->size(num_cors);
   points->size(num_pts);
 
   double xcomp = 0.0, ycomp = 0.0, zcomp = 0.0, mag = 0.0;
 
-  Smat.reset(new DenseMatrix(num_pts, num_cors));
-  auto Sigma = Smat;
+  Sigma.reset(new DenseMatrix(num_pts, num_cors));
 
   for (int i = 0; i < num_pts; ++i)
   {
@@ -781,12 +693,12 @@ bool RegisterWithCorrespondencesAlgo::radial_basis_func(VMesh* Cors, VMesh* poin
       mag = sqrt(pow(xcomp, 2.0) + pow(ycomp, 2.0) + pow(zcomp, 2.0));
       if (mag == 0)
       {
-        Sigma->put(i, j, 0);
+        (*Sigma)(i, j) = 0;
       }
       else
       {
         double temp = pow(mag, 2.0)*log(mag);
-        Sigma->put(i, j, temp);
+        (*Sigma)(i, j) = temp;
       }
     }
   }
@@ -802,11 +714,10 @@ bool RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors
   Cors->size(num_cors);
   points->size(num_pts);
 
-
   int sz = 0;
   double sumerx = 0, sumery = 0, sumerz = 0;
   double sigma = 0.0;
-  MatrixHandle SMat;
+  DenseMatrixHandle SMat;
   radial_basis_func(Cors, points, SMat);
 
   for (int i = 0; i < num_pts; ++i)
@@ -836,7 +747,6 @@ bool RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors
 
 bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const
 {
-
   VMesh::Node::size_type num_cors, num_pts;
   VMesh::Node::iterator it, itp;
   Point P, Pp;
