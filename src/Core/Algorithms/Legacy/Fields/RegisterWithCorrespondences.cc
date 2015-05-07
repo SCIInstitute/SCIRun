@@ -322,7 +322,7 @@ bool RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1,
   Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(BigMat, Eigen::ComputeFullU | Eigen::ComputeFullV);
   DenseMatrix UMat = svd_mat.matrixU();
   DenseMatrix VMat = svd_mat.matrixV();
-  auto matSingularValues = svd_mat.singularValues();
+  DenseMatrix matSingularValues = svd_mat.singularValues();
 
   //Make more storage for the solving the linear least squares
   DenseMatrix RsideMat(m, 1);
@@ -340,7 +340,7 @@ bool RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1,
 
   for (int k = 0; k<n; k++)
   {
-    YMat(k, 0) = CMat(k, 0) / matSingularValues(k, k);
+    YMat(k, 0) = CMat(k, 0) / matSingularValues(k, 0);
   }
 
   CoefMat = VMat.transpose() * YMat;

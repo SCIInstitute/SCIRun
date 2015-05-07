@@ -1980,7 +1980,7 @@
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>6</count>
+		<count>5</count>
 		<item_version>0</item_version>
 		<item class_id="19" tracking_level="0" version="0">
 			<first>ShowField:0</first>
@@ -2043,19 +2043,6 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; color:#ffffff;&quot;&gt;ID: 4&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 4</noteText>
-				<position>0</position>
-				<fontSize>8</fontSize>
-			</second>
-		</item>
-		<item>
-			<first>ViewScene:0</first>
-			<second>
-				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. Delete and re-add to network for proper execution.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
-				<noteText>MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. Delete and re-add to network for proper execution.</noteText>
 				<position>0</position>
 				<fontSize>8</fontSize>
 			</second>
