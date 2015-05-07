@@ -53,7 +53,7 @@ namespace SCIRun {
       void getBufferInfo(int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points,
                          std::vector<Core::Geometry::Vector>& normals, std::vector<Core::Datatypes::ColorRGB>& colors, std::vector<uint32_t>& indices);
 
-      void GlyphGeom::addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution);
+      void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution);
       void addArrow(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius, double length, int nu = 20, int nv = 0);
       void addBox(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double x_side, double y_side, double z_side);
       void addCylinder(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius1, double length, int nu = 20, int nv = 2);
@@ -68,7 +68,7 @@ namespace SCIRun {
       int64_t numVBOElements_;
       
       void generateBox(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double x_side, double y_side, double z_side, std::vector<QuadStrip>& quadstrips);
-      void GlyphGeom::generateCylinder(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius1, double radius2, double resolution,
+      void generateCylinder(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius1, double radius2, double resolution,
                                        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices);
       void generateCylinder(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius1, double radius2, double length, int nu, int nv, std::vector<QuadStrip>& quadstrips);
       void generateEllipsoid(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double scales, int nu, int nv, int half, std::vector<QuadStrip>& quadstrips);
