@@ -121,7 +121,9 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
   std::vector<ColorRGB> colors;
   std::vector<uint32_t> indices;
 
-  //glyphs->getBufferInfo(numVBOElements, points, normals, colors, indices);
+  glyphs->getBufferInfo(numVBOElements, points, normals, colors, indices);
+
+  std::cout << "numElements: " << numVBOElements << std::endl;
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
   vboSize += (uint32_t)normals.size() * 3 * sizeof(float);
