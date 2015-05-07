@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -29,57 +29,63 @@
 #ifndef CORE_ALGORITHMS_VISUALIZATION_MARCHINGCUBES_H
 #define CORE_ALGORITHMS_VISUALIZATION_MARCHINGCUBES_H 1
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+//#include <Core/Datatypes/Matrix.h>
 
-#include <Core/Thread/Thread.h>
-#include <Core/Geom/GeomGroup.h>
+//#include <Core/Thread/Thread.h>
+//#include <Core/Geom/GeomGroup.h>
 
 #include <string>
 #include <vector>
 
-#include <Core/Algorithms/Util/AlgoBase.h>
-#include <Core/Algorithms/Fields/share.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Algorithms/Util/AlgoBase.h>
+#endif
 
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-using namespace SCIRun;
+namespace SCIRun {
+ namespace Core {
+  namespace Algorithms {
+  
+   class SCISHARE MarchingCubesAlgo : public AlgorithmBase 
+   {
 
-class SCISHARE MarchingCubesAlgo : public AlgoBase {
+    public:
 
-  public:
-
-    MarchingCubesAlgo()
-    {
-      add_bool("transparency",false);
-      add_bool("build_geometry", false);
-      add_bool("build_field", false);
-      add_bool("build_node_interpolant", false);
-      add_bool("build_elem_interpolant", false);
-      
-      add_int("num_threads",-1);
-      
+    MarchingCubesAlgo();
+    
+    static AlgorithmParameterName transparency;
+    static AlgorithmParameterName build_geometry;
+    static AlgorithmParameterName build_field;
+    static AlgorithmParameterName build_node_interpolant;
+    static AlgorithmParameterName build_elem_interpolant;
+    static AlgorithmParameterName num_threads;
+   
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+   {  
       add_color("color",Color(0.5,0.5,0.5));
       add_colormap("colormap",0);
     };
+    #endif
+    
+    bool run(FieldHandle input, std::vector<double>& isovalues);
+   
+    bool run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& field);
+     
+    bool run(FieldHandle input, std::vector<double>& isovalues, 
+             FieldHandle& field, Datatypes::MatrixHandle& interpolant );
+	     
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
     
     bool run(FieldHandle input, std::vector<double>& isovalues, 
-             GeomHandle& geometry,
              FieldHandle& field,
-             MatrixHandle& node_interpolant,
-             MatrixHandle& elem_interpolant );
-
-    bool run(FieldHandle input, std::vector<double>& isovalues, 
-             GeomHandle& geometry );
-
-    bool run(FieldHandle input, std::vector<double>& isovalues, 
-             FieldHandle& field );
-
-    bool run(FieldHandle input, std::vector<double>& isovalues, 
-             FieldHandle& field, MatrixHandle& interpolant );
-
-};
+             Datatypes::MatrixHandle& node_interpolant,
+             Datatypes::MatrixHandle& elem_interpolant ) const;
+   };
   
-} // End namespace AlgoSCIRun
-
+  }
+ } // End namespace SCIRun
+}
 #endif

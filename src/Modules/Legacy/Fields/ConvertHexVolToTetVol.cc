@@ -26,59 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Include the algorithm
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
+#include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-// Base class for the module
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
 
-// Ports included in the module
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-// For Windows support
-#include <Dataflow/Modules/Fields/share.h>
-
-namespace SCIRun {
-
-/// @class ConvertHexVolToTetVol
-/// @brief Convert a HexVolField into a TetVolField.
-
-class SCISHARE ConvertHexVolToTetVol : public Module {
-  public:
-    ConvertHexVolToTetVol(GuiContext*);
-    virtual ~ConvertHexVolToTetVol() {}
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::ConvertMeshToTetVolMeshAlgo algo_;     
-};
-
-
-DECLARE_MAKER(ConvertHexVolToTetVol)
-ConvertHexVolToTetVol::ConvertHexVolToTetVol(GuiContext* ctx)
-  : Module("ConvertHexVolToTetVol", ctx, Source, "ChangeMesh", "SCIRun")
+ConvertHexVolToTetVol::ConvertHexVolToTetVol()
+  : Module(ModuleLookupInfo("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun"), false)
 {
-  /// Forward errors to the module
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(HexOrLatVol);
+  INITIALIZE_PORT(TetVol);
 }
 
 void ConvertHexVolToTetVol::execute()
 {
-  // Define fieldhandles
-  FieldHandle ifield, ofield;
-
-  // Get data from input port
-  get_input_handle("HexVol",ifield,true);
+  FieldHandle ifield = getRequiredInput(HexOrLatVol);
   
-  // We only execute if something changed
-  if (inputs_changed_ || !oport_cached("TetVol"))
+  // inputs_changed_ || !oport_cached("HexOrLatVol")
+  if (needToExecute())
   {
     update_state(Executing);
-    // Run the algorithm
-    if (!(algo_.run(ifield,ofield))) return;
-    // Send to output to the output port
-    send_output_handle("TetVol", ofield);
+    
+    auto output = algo().run_generic(withInputData((HexOrLatVol, ifield)));
+
+    sendOutputFromAlgorithm(TetVol, output);
   }
 }
-
-} // End namespace SCIRun

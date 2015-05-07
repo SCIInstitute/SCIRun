@@ -50,6 +50,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
 #include <Modules/Legacy/Visualization/GenerateStreamLines.h>
 #include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
+#include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
+#include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -88,5 +90,7 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<SplitFieldByConnectedRegion>("SplitFieldByConnectedRegion", "NewField", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildFEVolRHS>("BuildFEVolRHS", "FiniteElements", "SCIRun", "Real ported module", "...");
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
-  addModuleDesc<BuildSurfaceLaplacianMatrix>("...","...");
+  addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
+  addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
+  addModuleDesc<ExtractSimpleIsosurfaceModule>("ExtractSimpleIsosurface","NewField","SCIRun","...","...");
 }

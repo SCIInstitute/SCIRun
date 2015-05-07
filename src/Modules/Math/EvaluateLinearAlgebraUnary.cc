@@ -56,7 +56,7 @@ void EvaluateLinearAlgebraUnaryModule::setStateDefaults()
 
 void EvaluateLinearAlgebraUnaryModule::execute()
 {
-  auto denseInput = getRequiredInput(InputMatrix);
+  auto input = getRequiredInput(InputMatrix);
 
   if (needToExecute())
   {
@@ -69,7 +69,7 @@ void EvaluateLinearAlgebraUnaryModule::execute()
     algo().set(Variables::Operator, oper);
     algo().set(Variables::ScalarValue, scalar);
 	  algo().set(Variables::FunctionString, func);
-    auto output = algo().run_generic(withInputData((InputMatrix, denseInput)));
+    auto output = algo().run_generic(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(Result, output);
   }
 }

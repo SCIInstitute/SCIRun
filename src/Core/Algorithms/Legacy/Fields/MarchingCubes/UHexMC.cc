@@ -30,17 +30,17 @@
 //    Author : Martin Cole
 //    Date   : Fri Jun 15 21:33:04 2001
 
-#include <Core/Algorithms/Fields/MarchingCubes/UHexMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/UHexMC.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Algorithms/Fields/MarchingCubes/mcube2.h>
-#include <sci_hash_map.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <sci_hash_map.h>
+#endif
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
 
-
-void 
-UHexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
+void UHexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
 {
   build_field_ = build_field;
   build_geom_  = build_geom;
@@ -55,7 +55,8 @@ UHexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
   VMesh::Elem::size_type csize;
   mesh_->size(csize);
   ncells_ = csize;
-
+ 
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (basis_order_ == 0)
   {
     mesh_->synchronize(Mesh::FACES_E|Mesh::ELEM_NEIGHBORS_E);
@@ -74,7 +75,8 @@ UHexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
       triangles_ = new GeomFastTriangles;
   }
   geomHandle_ = triangles_;
-
+ #endif
+  
   trisurf_ = 0;
   quadsurf_ = 0;
   if (build_field_)
@@ -94,33 +96,7 @@ UHexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
   }
 }
 
-VMesh::Node::index_type
-UHexMC::find_or_add_edgepoint(index_type u0, index_type u1,
-                              double d0, const Point &p) 
-{
-  if (d0 < 0.0) { u1 = -1; }
-  if (d0 > 1.0) { u0 = -1; }
-  edgepair_t np;
-  
-  if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
-  else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
-  const edge_hash_type::iterator loc = edge_map_.find(np);
-  
-  if (loc == edge_map_.end())
-  {
-    const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);
-    edge_map_[np] = nodeindex;
-    return (nodeindex);
-  }
-  else
-  {
-    return ((*loc).second);
-  }
-}
-
-
-VMesh::Node::index_type
-UHexMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx) 
+VMesh::Node::index_type UHexMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx) 
 {
   VMesh::Node::index_type surf_node_idx;
   index_type i = node_map_[tet_node_idx];
@@ -135,10 +111,7 @@ UHexMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx)
   return (surf_node_idx);
 }
 
-
-
-void
-UHexMC::find_or_add_parent(index_type u0, index_type u1,
+void UHexMC::find_or_add_parent(index_type u0, index_type u1,
                            double d0, index_type face) 
 {
   if (d0 < 0.0) { u1 = -1; }
@@ -160,8 +133,7 @@ UHexMC::find_or_add_parent(index_type u0, index_type u1,
 }
 
 
-void 
-UHexMC::extract( VMesh::Elem::index_type cell, double iso )
+void UHexMC::extract( VMesh::Elem::index_type cell, double iso )
 {
   if (basis_order_ == 0)
     extract_c(cell, iso);
@@ -170,8 +142,7 @@ UHexMC::extract( VMesh::Elem::index_type cell, double iso )
 }
 
 
-void 
-UHexMC::extract_c( VMesh::Elem::index_type cell, double iso )
+void UHexMC::extract_c( VMesh::Elem::index_type cell, double iso )
 {
   double selfvalue, nbrvalue;
   field_->get_value( selfvalue, cell );
@@ -192,13 +163,15 @@ UHexMC::extract_c( VMesh::Elem::index_type cell, double iso )
      {
       mesh_->get_nodes(face_nodes, faces[i]);
       mesh_->get_centers(p,face_nodes);
-
+      
+     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
         triangles_->add(p[0], p[1], p[2]);
         triangles_->add(p[2], p[3], p[0]);
       }
-
+     #endif
+     
       if (build_field_)
       {
         for (int j=0; j<4; j++)
@@ -215,7 +188,6 @@ UHexMC::extract_c( VMesh::Elem::index_type cell, double iso )
     }
   }
 }
-
 
 void UHexMC::extract_n( VMesh::Elem::index_type cell, double iso )
 {
@@ -268,10 +240,14 @@ void UHexMC::extract_n( VMesh::Elem::index_type cell, double iso )
     index_type v0 = vertex[v++];
     index_type v1 = vertex[v++];
     index_type v2 = vertex[v++];
+   
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (build_geom_)
     {
       triangles_->add(q[v0], q[v1], q[v2]);
     }
+   #endif
+    
     if (build_field_)
     {
       if (surf_node[v0] != surf_node[v1] &&
@@ -290,8 +266,7 @@ void UHexMC::extract_n( VMesh::Elem::index_type cell, double iso )
 }
 
 
-FieldHandle
-UHexMC::get_field(double value)
+FieldHandle UHexMC::get_field(double value)
 {
   if (basis_order_ == 0)
   {
@@ -307,5 +282,24 @@ UHexMC::get_field(double value)
   }
 }
 
-
+VMesh::Node::index_type UHexMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p) 
+{
+  if (d0 < 0.0) { u1 = -1; }
+  if (d0 > 1.0) { u0 = -1; }
+  edgepair_t np;
+  
+  if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
+  else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
+  const edge_hash_type::iterator loc = edge_map_.find(np);
+  
+  if (loc == edge_map_.end())
+  {
+    const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);
+    edge_map_[np] = nodeindex;
+    return (nodeindex);
+  }
+  else
+  {
+    return ((*loc).second);
+  }
 }

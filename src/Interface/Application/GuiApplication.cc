@@ -45,9 +45,7 @@ int GuiApplication::run(int argc, const char* argv[])
     mainWin->setController(Core::Application::Instance().controller());
     mainWin->initialize();
 
-    auto ret = app.exec();
-    //std::cout << "return code from app: " << ret << std::endl;
-    //std::cout << "return code from mainWin: " << mainWin->returnCode() << std::endl;
+    app.exec();
     return mainWin->returnCode();
   }
   catch (std::exception& e)
