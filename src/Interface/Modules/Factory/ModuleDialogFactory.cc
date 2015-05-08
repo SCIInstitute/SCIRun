@@ -95,6 +95,7 @@
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
 #include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
+#include <Interface/Modules/Fields/ClipVolumeByIsovalueDialog.h>
 #include <boost/assign.hpp>
 #include <boost/functional/factory.hpp>
 #include <boost/foreach.hpp>
@@ -186,6 +187,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 	ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog) 
 	ADD_MODULE_DIALOG(RescaleColorMap, RescaleColorMapDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog) 
+    ADD_MODULE_DIALOG(ClipVolumeByIsovalue, ClipVolumeByIsovalueDialog) 
   ;
 }
 
