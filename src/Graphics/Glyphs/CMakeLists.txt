@@ -26,47 +26,30 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_Visualization_SRCS
-  CreateStandardColorMap.cc
-  MatrixAsVectorField.cc
-  ShowField.cc
-  ShowFieldGlyphs.cc
-  ShowString.cc
-  ShowColorMapModule.cc
-  RescaleColorMap.cc
-  TextBuilder.cc
+SET(Graphics_Glyphs_SRCS
+  GlyphGeom.cc
 )
 
-SET(Modules_Visualization_HEADERS
-  CreateStandardColorMap.h
-  MatrixAsVectorField.h
-  ShowField.h
-  ShowFieldGlyphs.h
-  ShowString.h
-  ShowColorMapModule.h
-  RescaleColorMap.h
-  TextBuilder.h
+SET(Graphics_Glyphs_HEADERS
+  GlyphGeom.h
   share.h
 )
 
-SCIRUN_ADD_LIBRARY(Modules_Visualization 
-  ${Modules_Visualization_HEADERS}
-  ${Modules_Visualization_SRCS}
+SCIRUN_ADD_LIBRARY(Graphics_Glyphs 
+  ${Graphics_Glyphs_HEADERS}
+  ${Graphics_Glyphs_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Modules_Visualization
-  Dataflow_Network
+TARGET_LINK_LIBRARIES(Graphics_Glyphs
+  Core_Math
   Core_Datatypes
-  Core_Datatypes_Mesh
-  Core_Datatypes_Legacy_Field
-  Core_Algorithms_Visualization
-  Graphics_Glyphs
+  Core_Geometry_Primitives
   ${OPENGL_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_Visualization)
+  ADD_DEFINITIONS(-DBUILD_Graphics_Glyphs)
 ENDIF(BUILD_SHARED_LIBS)
 
-SCIRUN_ADD_TEST_DIR(Tests)
-
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

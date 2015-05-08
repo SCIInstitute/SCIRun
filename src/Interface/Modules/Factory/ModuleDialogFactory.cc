@@ -88,6 +88,7 @@
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
+#include <Interface/Modules/Visualization/ShowFieldGlyphsDialog.h>
 #include <Interface/Modules/Visualization/CreateStandardColorMapDialog.h>
 #include <Interface/Modules/Visualization/ShowColorMapDialog.h> 
 #include <Interface/Modules/Visualization/RescaleColorMapDialog.h>
@@ -130,6 +131,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryDialog)
     ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
     ADD_MODULE_DIALOG(ShowField, ShowFieldDialog)
+    ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
     ADD_MODULE_DIALOG(AppendMatrix, AppendMatrixDialog)
     ADD_MODULE_DIALOG(CreateMatrix, CreateMatrixDialog)
     ADD_MODULE_DIALOG(CreateString, CreateStringDialog)

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,41 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gl-platform/GLPlatform.hpp>
-#include "Registration.h"
-#include "CoreBootstrap.h"
-#include "AssetBootstrap.h"
-#include "comp/StaticSRInterface.h"
-#include "comp/RenderBasicGeom.h"
-#include "comp/SRRenderState.h"
-#include "comp/RenderList.h"
-#include "comp/StaticWorldLight.h"
-#include "comp/LightingUniforms.h"
-#include "systems/RenderBasicSys.h"
-#include "systems/RenderTransBasicSys.h"
-#include "Core/Datatypes/Geometry.h"
+#undef SCISHARE
 
-namespace SCIRun {
-namespace Render {
-
-void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
-{
-  // Register systems
-  registerSystem_CoreBootstrap(core);
-  registerSystem_AssetBootstrap(core);
-  registerSystem_RenderBasicGeom(core);
-  registerSystem_RenderBasicTransGeom(core);
-
-  // Register components
-  core.registerComponent<StaticSRInterface>();
-  core.registerComponent<StaticWorldLight>();
-  core.registerComponent<LightingUniforms>();
-	core.registerComponent<RenderBasicGeom>();
-  core.registerComponent<SRRenderState>();
-  core.registerComponent<RenderList>();
-  core.registerComponent<Core::Datatypes::GeometryObject::SpireSubPass>();
-}
-
-} // namespace Render
-} // namespace SCIRun
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Graphics_Glyphs
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif

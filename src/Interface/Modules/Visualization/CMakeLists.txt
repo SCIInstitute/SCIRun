@@ -32,6 +32,7 @@ SET(Interface_Modules_Visualization_FORMS
   GenerateStreamLines.ui
   MatrixAsVectorField.ui
   ShowField.ui
+  ShowFieldGlyphs.ui
   ShowString.ui
   ShowColorMap.ui
   RescaleColorMap.ui
@@ -42,7 +43,8 @@ SET(Interface_Modules_Visualization_HEADERS
   GenerateStreamLinesDialog.h
   MatrixAsVectorFieldDialog.h
   share.h
-  ShowFieldDialog.h
+  ShowFieldDialog.h  
+  ShowFieldGlyphsDialog.h
   ShowStringDialog.h
   ShowColorMapDialog.h
   RescaleColorMapDialog.h
@@ -53,6 +55,7 @@ SET(Interface_Modules_Visualization_SOURCES
   GenerateStreamLinesDialog.cc
   MatrixAsVectorFieldDialog.cc
   ShowFieldDialog.cc
+  ShowFieldGlyphsDialog.cc
   ShowStringDialog.cc
   ShowColorMapDialog.cc
   RescaleColorMapDialog.cc

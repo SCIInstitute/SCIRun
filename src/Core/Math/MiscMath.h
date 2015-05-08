@@ -196,6 +196,23 @@ inline long long Max(long long  d1, long long  d2, long long d3)
 
 //-----------------------------------------
 // Sign function
+inline double Abs(double d)
+{
+  return d < 0 ? -d : d;
+}
+
+inline float Abs(float f)
+{
+  return f < 0 ? -f : f;
+}
+
+inline int Abs(int i)
+{
+  return i < 0 ? -i : i;
+}
+
+//-----------------------------------------
+// Sign function
 inline int Sign(double d)
 {
   return d<0.0?-1:1;
