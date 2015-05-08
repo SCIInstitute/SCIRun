@@ -58,6 +58,7 @@ SET(Interface_Modules_Fields_FORMS
   swapfielddatawithmatrixentries.ui
   EditMeshBoundingBox.ui
   ExtractSimpleIsosurface.ui
+  registerwithcorrespondences.ui
   ClipVolumeByIsovalue.ui
 )
 
@@ -92,6 +93,7 @@ SET(Interface_Modules_Fields_HEADERS
   EditMeshBoundingBoxDialog.h
   ConvertIndicesToFieldDataDialog.h
   ExtractSimpleIsosurfaceDialog.h
+  RegisterWithCorrespondencesDialog.h
   ClipVolumeByIsovalueDialog.h
 )
 
@@ -125,6 +127,7 @@ SET(Interface_Modules_Fields_SOURCES
   EditMeshBoundingBoxDialog.cc
   ConvertIndicesToFieldDataDialog.cc
   ExtractSimpleIsosurfaceDialog.cc
+  RegisterWithCorrespondencesDialog.cc
   ClipVolumeByIsovalueDialog.cc
 )
 

@@ -8,7 +8,7 @@
 
    
    Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
+   copy of this software and associated documentation files (the "Software"),a
    to deal in the Software without restriction, including without limitation
    the rights to use, copy, modify, merge, publish, distribute, sublicense,
    and/or sell copies of the Software, and to permit persons to whom the
@@ -29,47 +29,42 @@
 #ifndef CORE_ALGORITHMS_FIELDS_REGISTERWITHCORRESPONDENCES_H
 #define CORE_ALGORITHMS_FIELDS_REGISTERWITHCORRESPONDENCES_H 1
 
-// Datatypes that the algorithm uses
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <vector>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+			namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE RegisterWithCorrespondencesAlgo : public AlgoBase
+class SCISHARE RegisterWithCorrespondencesAlgo : public AlgorithmBase
 {
   public:
     /// Set defaults
-    RegisterWithCorrespondencesAlgo()
-    {
-    }
+    RegisterWithCorrespondencesAlgo();
+	static AlgorithmInputName Correspondences1;
+	static AlgorithmInputName Correspondences2;
+	AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   
     /// run the algorithm
-    bool runM(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output);
-    bool runA(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output);
-    bool runN(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output);
-    bool radial_basis_func(VMesh* Cors, VMesh* points, MatrixHandle& Smat);
-    bool make_new_points(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh);
-    bool make_new_pointsA(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh);
-    double sumx2;
-    double sumy2;
-    double sumz2;
-    double sumx;
-    double sumy;
-    double sumz;
+    bool runM(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
+    bool runA(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
+    bool runN(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
+    bool radial_basis_func(VMesh* Cors, VMesh* points, Datatypes::DenseMatrixHandle& Smat)  const;
+    bool make_new_points(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const;
+    bool make_new_pointsA(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const;
+	
+ 
 };
 
-} // end namespace SCIRun
+}}}}
+
 
 #endif

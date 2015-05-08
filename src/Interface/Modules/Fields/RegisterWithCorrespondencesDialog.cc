@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,35 +24,28 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
-#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H
-#define CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H 1
+#include <Interface/Modules/Fields/RegisterWithCorrespondencesDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <QtGui>
 
-#include <boost/unordered_map.hpp>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun{
-  namespace Core{
-    namespace Algorithms{
-      namespace Fields{
-
-        typedef std::pair<VMesh::index_type, VMesh::index_type> edgepair_t;
-
-        struct SCISHARE edgepairhash
-        {
-          size_t operator()(const edgepair_t &a) const
-          {
-            boost::hash<size_t> h;
-            return h((a.first << 3) ^ a.second);
-          }
-        };
-
-        typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
-
-      }
-    }
-  }
+RegisterWithCorrespondencesDialog::RegisterWithCorrespondencesDialog(const std::string& name, ModuleStateHandle state,
+	QWidget* parent/* = 0*/)
+	: ModuleDialogGeneric(state, parent)
+{
+	setupUi(this);
+	setWindowTitle(QString::fromStdString(name));
+	fixSize();
+	
+  addRadioButtonGroupManager({ morphRadioButton_, affineRadioButton_, noneRadioButton_ }, Variables::Operator);
+	
 }
 
-#endif
+void RegisterWithCorrespondencesDialog::pull() {
+	pull_newVersionToReplaceOld();
+}

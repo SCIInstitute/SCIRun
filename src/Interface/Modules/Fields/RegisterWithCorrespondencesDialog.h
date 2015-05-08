@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,35 +24,33 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
-#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H
-#define CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H 1
+#ifndef INTERFACE_MODULES_FIELDS_REGISTERWITHCORRESPONDENCES_H
+#define INTERFACE_MODULES_FIELDS_REGISTERWITHCORRESPONDENCES_H 1
 
-#include <boost/unordered_map.hpp>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include "Interface/Modules/Fields/ui_registerwithcorrespondences.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-namespace SCIRun{
-  namespace Core{
-    namespace Algorithms{
-      namespace Fields{
-
-        typedef std::pair<VMesh::index_type, VMesh::index_type> edgepair_t;
-
-        struct SCISHARE edgepairhash
-        {
-          size_t operator()(const edgepair_t &a) const
-          {
-            boost::hash<size_t> h;
-            return h((a.first << 3) ^ a.second);
-          }
-        };
-
-        typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
-
-      }
-    }
-  }
+namespace SCIRun {
+	namespace Gui {
+		class SCISHARE RegisterWithCorrespondencesDialog : public ModuleDialogGeneric,
+			public Ui::RegisterWithCorrespondences
+			{
+				Q_OBJECT
+				
+				public:
+					RegisterWithCorrespondencesDialog(const std::string& name,
+						SCIRun::Dataflow::Networks::ModuleStateHandle state,
+						QWidget* parent = 0);
+					virtual void pull();
+					
+				//private Q_SLOTS:
+					//void setState();
+					
+			};
+	}
 }
 
 #endif

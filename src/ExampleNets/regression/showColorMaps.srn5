@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -62,7 +62,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -126,7 +126,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -190,7 +190,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -254,7 +254,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -330,7 +330,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -354,7 +354,7 @@
 									<name>TextBlue</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -366,7 +366,7 @@
 									<name>TextGreen</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -378,7 +378,7 @@
 									<name>TextRed</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -502,7 +502,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -526,7 +526,7 @@
 									<name>TextBlue</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -538,7 +538,7 @@
 									<name>TextGreen</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -550,7 +550,7 @@
 									<name>TextRed</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -674,7 +674,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -698,7 +698,7 @@
 									<name>TextBlue</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -710,7 +710,7 @@
 									<name>TextGreen</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -722,7 +722,7 @@
 									<name>TextRed</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -846,7 +846,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -870,7 +870,7 @@
 									<name>TextBlue</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -882,7 +882,7 @@
 									<name>TextGreen</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -894,7 +894,7 @@
 									<name>TextRed</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1086,64 +1086,64 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateStandardColorMap:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1.74800000000000000e+003</first>
-				<second>-7.60000000000000000e+002</second>
+				<first>-1748</first>
+				<second>-760</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:1</first>
 			<second>
-				<first>-1.36800000000000000e+003</first>
-				<second>-7.60000000000000000e+002</second>
+				<first>-1368</first>
+				<second>-760</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:2</first>
 			<second>
-				<first>-9.12000000000000000e+002</first>
-				<second>-7.60000000000000000e+002</second>
+				<first>-912</first>
+				<second>-760</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:3</first>
 			<second>
-				<first>-1.14000000000000000e+003</first>
-				<second>-4.56000000000000000e+002</second>
+				<first>-1140</first>
+				<second>-456</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowColorMap:0</first>
 			<second>
-				<first>-1.74800000000000000e+003</first>
-				<second>-6.08000000000000000e+002</second>
+				<first>-1748</first>
+				<second>-608</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowColorMap:1</first>
 			<second>
-				<first>-1.36800000000000000e+003</first>
-				<second>-6.08000000000000000e+002</second>
+				<first>-1368</first>
+				<second>-608</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowColorMap:2</first>
 			<second>
-				<first>-9.12000000000000000e+002</first>
-				<second>-6.08000000000000000e+002</second>
+				<first>-912</first>
+				<second>-608</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowColorMap:3</first>
 			<second>
-				<first>-1.14000000000000000e+003</first>
-				<second>-3.04000000000000000e+002</second>
+				<first>-1140</first>
+				<second>-304</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-1.29200000000000000e+003</first>
-				<second>7.60000000000000000e+001</second>
+				<first>-1292</first>
+				<second>76</second>
 			</second>
 		</item>
 	</modulePositions>
