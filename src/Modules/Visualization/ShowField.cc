@@ -42,6 +42,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Math/MiscMath.h>
 #include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 
 #include <boost/foreach.hpp>
 
@@ -53,6 +54,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Graphics;
 using namespace SCIRun;
 
 ALGORITHM_PARAMETER_DEF(Visualization, CylinderRadius);
@@ -1196,6 +1198,8 @@ void ShowFieldModule::renderNodes(
   std::vector<uint32_t> indices;
   uint32_t index = 0;
   int64_t numVBOElements = 0;
+  
+  GlyphGeom* glyphs = new GlyphGeom();
   while (eiter != eiter_end) 
   {
     Core::Geometry::Point p;
@@ -1223,36 +1227,7 @@ void ShowFieldModule::renderNodes(
     //accumulate VBO or IBO data
     if (state.get(RenderState::USE_SPHERE)) 
     {
-        //generate triangles for the spheres
-        Vector pp1, pp2;
-        double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
-        for (double phi = 0.; phi < M_PI; phi += phi_inc) {
-          for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) 
-          {
-            uint32_t offset = (uint32_t)numVBOElements;
-            pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-            pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
-            points.push_back(radius * pp1 + Vector(p));
-            if (colorScheme == GeometryObject::COLOR_MAP ||
-                colorScheme == GeometryObject::COLOR_IN_SITU)
-                    colors.push_back(node_color);
-            numVBOElements++;
-            points.push_back(radius * pp2 + Vector(p));
-            if (colorScheme == GeometryObject::COLOR_MAP ||
-                colorScheme == GeometryObject::COLOR_IN_SITU)
-                    colors.push_back(node_color);
-            numVBOElements++;
-            normals.push_back(pp1);
-            normals.push_back(pp2);
-            indices.push_back(0 + offset);
-            indices.push_back(1 + offset);
-            indices.push_back(2 + offset);
-            indices.push_back(2 + offset);
-            indices.push_back(1 + offset);
-            indices.push_back(3 + offset);
-          }
-          for (int jj = 0; jj < 6; jj++) indices.pop_back();
-        }
+      glyphs->addSphere(p, radius, num_strips, node_color);      
     }
     else 
     {
@@ -1266,6 +1241,10 @@ void ShowFieldModule::renderNodes(
     }
 
     ++eiter;
+  }
+  if (state.get(RenderState::USE_SPHERE))
+  {
+    glyphs->getBufferInfo(numVBOElements, points, normals, colors, indices);
   }
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
@@ -1476,7 +1455,10 @@ void ShowFieldModule::renderEdges(
   std::vector<uint32_t> indices;
   uint32_t index = 0;
   int64_t numVBOElements = 0;
-  while (eiter != eiter_end) {
+
+  GlyphGeom* glyphs = new GlyphGeom();
+  while (eiter != eiter_end) 
+  {
     VMesh::Node::array_type nodes;
     mesh->get_nodes(nodes, *eiter);
 
@@ -1539,73 +1521,9 @@ void ShowFieldModule::renderEdges(
     //accumulate VBO or IBO data
     if (state.get(RenderState::USE_CYLINDER) && p0 != p1) 
     {
-      //generate triangles for the cylinders.
-      Vector n((p0 - p1).normal()), u = (10 * n + Vector(10, 10, 10)).normal();
-      Vector crx = Cross(u, n).normal();
-      u = Cross(crx, n).normal();
-      Vector p;
-      for (double strips = 0.; strips <= num_strips; strips += 1.) 
-      {
-        uint32_t offset = (uint32_t)numVBOElements;
-        p = std::cos(2. * M_PI * strips / num_strips) * u +
-          std::sin(2. * M_PI * strips / num_strips) * crx;
-        p.normalize();
-        points.push_back(radius * p + Vector(p0));
-        if (colorScheme == GeometryObject::COLOR_MAP ||
-            colorScheme == GeometryObject::COLOR_IN_SITU)
-          colors.push_back(edge_colors[0]);
-        numVBOElements++;
-        points.push_back(radius * p + Vector(p1));
-        if (colorScheme == GeometryObject::COLOR_MAP ||
-            colorScheme == GeometryObject::COLOR_IN_SITU)
-          colors.push_back(edge_colors[1]);
-        numVBOElements++;
-        normals.push_back(p);
-        normals.push_back(p);
-        indices.push_back(0 + offset);
-        indices.push_back(1 + offset);
-        indices.push_back(2 + offset);
-        indices.push_back(2 + offset);
-        indices.push_back(1 + offset);
-        indices.push_back(3 + offset);
-      }
-      for (int jj = 0; jj < 6; jj++) indices.pop_back();
-      //generate triangles for the spheres
-      Vector pp1, pp2;
-      double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
-      std::vector<Point> epts = { { p0, p1 } };
-      for (const auto &a : epts) 
-      {
-        ColorRGB col = (a == p0) ? edge_colors[0] : edge_colors[1];
-        for (double phi = 0.; phi <= M_PI; phi += phi_inc) 
-        {
-          for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) 
-          {
-            uint32_t offset = (uint32_t)numVBOElements;
-            pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-            pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
-            points.push_back(radius * pp1 + Vector(a));
-            if (colorScheme == GeometryObject::COLOR_MAP ||
-                colorScheme == GeometryObject::COLOR_IN_SITU)
-              colors.push_back(col);
-            numVBOElements++;
-            points.push_back(radius * pp2 + Vector(a));
-            if (colorScheme == GeometryObject::COLOR_MAP ||
-                colorScheme == GeometryObject::COLOR_IN_SITU)
-              colors.push_back(col);
-            numVBOElements++;
-            normals.push_back(pp1);
-            normals.push_back(pp2);
-            indices.push_back(0 + offset);
-            indices.push_back(1 + offset);
-            indices.push_back(2 + offset);
-            indices.push_back(2 + offset);
-            indices.push_back(1 + offset);
-            indices.push_back(3 + offset);
-          }
-          for (int jj = 0; jj < 6; jj++) indices.pop_back();
-        }
-      }
+      glyphs->addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
+      glyphs->addSphere(p0, radius, num_strips, edge_colors[0]);
+      glyphs->addSphere(p1, radius, num_strips, edge_colors[1]);     
     } 
     else 
     {
@@ -1625,6 +1543,10 @@ void ShowFieldModule::renderEdges(
     }
 
     ++eiter;
+  }
+  if (state.get(RenderState::USE_CYLINDER))
+  {
+    glyphs->getBufferInfo(numVBOElements, points, normals, colors, indices);
   }
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
@@ -1672,10 +1594,10 @@ void ShowFieldModule::renderEdges(
     if (colorScheme == GeometryObject::COLOR_MAP ||
         colorScheme == GeometryObject::COLOR_IN_SITU) 
     {
-        vboBuffer->write(static_cast<float>(colors.at(i).r()));
-        vboBuffer->write(static_cast<float>(colors.at(i).g()));
-        vboBuffer->write(static_cast<float>(colors.at(i).b()));
-        vboBuffer->write(static_cast<float>(1.f));
+      vboBuffer->write(static_cast<float>(colors.at(i).r()));
+      vboBuffer->write(static_cast<float>(colors.at(i).g()));
+      vboBuffer->write(static_cast<float>(colors.at(i).b()));
+      vboBuffer->write(static_cast<float>(1.f));
     } // no color writing otherwise
   }
   state.set(RenderState::IS_ON, true);

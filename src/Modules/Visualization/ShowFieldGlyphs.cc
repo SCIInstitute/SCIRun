@@ -82,7 +82,6 @@ void ShowFieldGlyphs::execute()
   boost::shared_ptr<SCIRun::Field> field = getRequiredInput(PrimaryData);
   //boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(PrimaryColorMap);
   
-  //std::cout << "enter execute" << std::endl;
   //if (needToExecute())
   {
     GeometryHandle geom = buildGeometryObject(field, nullptr, getRenderState(get_state(), nullptr));
@@ -100,16 +99,13 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
   VMesh*  mesh = field->vmesh();
   FieldInformation finfo(field);
 
-  //std::cout << "enter buildgeometry" << std::endl;
-
   if (!finfo.is_vector())
   {
     THROW_ALGORITHM_INPUT_ERROR("Field is not a vector field");
   }
 
-  //std::cout << "is vector" << std::endl;
-
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  ColorRGB edge_colors[2];
   //GeometryHandle geom(new GeometryObject(field, *this, "EntireGlyphField"));
 
   /*
@@ -124,16 +120,14 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
   auto facade(field->mesh()->getFacade());
   std::ostringstream ostr;
   
-  //for (const auto& node : facade->nodes())
   if (!finfo.is_linear())
   {
     THROW_ALGORITHM_INPUT_ERROR("only able to handle data on nodes at this point");
   }
 
-  //std::cout << "is linear" << std::endl;
-
   GlyphGeom* glyphs = new GlyphGeom();
 
+  //for (const auto& node : facade->nodes())
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     Vector v;
@@ -141,11 +135,9 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
     Point p1 = node.point();
     Point p2 = p1 + v;
 
-    glyphs->addArrow(p1, p2, 0.2, 10);
+    glyphs->addArrow(p1, p2, 0.2, 5, edge_colors[0], edge_colors[1]);
 
   }
-  
-  //std::cout << "out of loop" << std::endl;
 
   uint32_t iboSize = 0;
   uint32_t vboSize = 0;
@@ -156,7 +148,7 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
   std::vector<ColorRGB> colors;
   std::vector<uint32_t> indices;
 
-  glyphs->getBufferInfo(numVBOElements, points, normals, colors, indices);;
+  glyphs->getBufferInfo(numVBOElements, points, normals, colors, indices);
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
   vboSize += (uint32_t)normals.size() * 3 * sizeof(float);
@@ -205,8 +197,6 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
       vboBuffer->write(static_cast<float>(1.f));
     } // no color writing otherwise
   }
-
-  //std::cout << "vboBuffer written" << std::endl;
 
   GeometryHandle geom(new GeometryObject(field, *this, "EntireGlyphField"));
 

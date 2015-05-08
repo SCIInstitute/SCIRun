@@ -34,14 +34,9 @@ using namespace SCIRun::Graphics;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 
-GlyphGeom::GlyphGeom() //: numVBOElements_(0)
+GlyphGeom::GlyphGeom() : numVBOElements_(0)
 {
 
-}
-
-void GlyphGeom::addGlyphsToGeom(Core::Datatypes::GeometryHandle geom)
-{
- 
 }
 
 void GlyphGeom::getBufferInfo(int64_t& numVBOElements, std::vector<Vector>& points, std::vector<Vector>& normals,
@@ -54,15 +49,107 @@ void GlyphGeom::getBufferInfo(int64_t& numVBOElements, std::vector<Vector>& poin
   indices = indices_;
 }
 
-void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double resolution)
+void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double resolution,
+                         const ColorRGB& color1, const ColorRGB& color2)
 {
-  double ratio = 0.75;
+  double ratio = 0.5;
 
   Point mid(ratio * (p1.x() + p2.x()), ratio * (p1.y() + p2.y()), ratio * (p1.z() + p2.z()));
 
-  generateCylinder(p1, mid, radius / 10.0, radius / 10.0, resolution, numVBOElements_, points_, normals_, indices_);
-  generateCylinder(mid, p2, radius, 0.0, resolution, numVBOElements_, points_, normals_, indices_);
+  generateCylinder(p1, mid, radius / 3.0, radius / 3.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
+  generateCylinder(mid, p2, radius, 0.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
 }
+
+void GlyphGeom::addSphere(const Point& p, double radius, double resolution, const ColorRGB& color)
+{
+  generateEllipsoid(p, radius, radius, resolution, color, numVBOElements_, points_, normals_, indices_, colors_);
+}
+
+void GlyphGeom::addCylinder(const Point p1, const Point& p2, double radius, double resolution,
+                            const ColorRGB& color1, const ColorRGB& color2)
+{
+  generateCylinder(p1, p2, radius, radius, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
+}
+
+void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius1,
+                                 double radius2, double resolution, const ColorRGB& color1, const ColorRGB& color2,
+                                 int64_t& numVBOElements, std::vector<Vector>& points, std::vector<Vector>& normals,
+                                 std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+{
+  double num_strips = resolution;
+  if (num_strips < 0) num_strips = 20.0;
+  double r1 = radius1 < 0 ? 1.0 : radius1;
+  double r2 = radius2 < 0 ? 1.0 : radius2;
+
+  //generate triangles for the cylinders.
+  Vector n((p1 - p2).normal()), u = (10 * n + Vector(10, 10, 10)).normal();
+  Vector crx = Cross(u, n).normal();
+  u = Cross(crx, n).normal();
+  Vector p;
+  for (double strips = 0.; strips <= num_strips; strips += 1.)
+  {
+    uint32_t offset = (uint32_t)numVBOElements;
+    p = std::cos(2. * M_PI * strips / num_strips) * u +
+      std::sin(2. * M_PI * strips / num_strips) * crx;
+    p.normalize();
+    points.push_back(r1 * p + Vector(p1));
+    colors.push_back(color1);
+    numVBOElements++;
+    points.push_back(r2 * p + Vector(p2));
+    colors.push_back(color2);
+    numVBOElements++;
+    normals.push_back(p);
+    normals.push_back(p);
+    indices.push_back(0 + offset);
+    indices.push_back(1 + offset);
+    indices.push_back(2 + offset);
+    indices.push_back(2 + offset);
+    indices.push_back(1 + offset);
+    indices.push_back(3 + offset);
+  }
+  for (int jj = 0; jj < 6; jj++) indices.pop_back();
+}
+
+void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double radius2,
+                                  double resolution, const ColorRGB& color,
+                                  int64_t& numVBOElements, std::vector<Vector>& points, 
+                                  std::vector<Vector>& normals, std::vector<uint32_t>& indices, 
+                                  std::vector<ColorRGB>& colors)
+{
+  double num_strips = resolution;
+  if (num_strips < 0) num_strips = 20.0;
+  double r1 = radius1 < 0 ? 1.0 : radius1;
+  double r2 = radius2 < 0 ? 1.0 : radius2;
+  Vector pp1, pp2;
+  double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
+
+  //generate triangles for the spheres
+  for (double phi = 0.; phi <= M_PI; phi += phi_inc)
+  {
+    for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc)
+    {
+      uint32_t offset = (uint32_t)numVBOElements;
+      pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+      pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
+      points.push_back(r1 * pp1 + Vector(center));
+      colors.push_back(color);
+      numVBOElements++;
+      points.push_back(r2 * pp2 + Vector(center));
+      colors.push_back(color);
+      numVBOElements++;
+      normals.push_back(pp1);
+      normals.push_back(pp2);
+      indices.push_back(0 + offset);
+      indices.push_back(1 + offset);
+      indices.push_back(2 + offset);
+      indices.push_back(2 + offset);
+      indices.push_back(1 + offset);
+      indices.push_back(3 + offset);
+    }
+    for (int jj = 0; jj < 6; jj++) indices.pop_back();
+  }
+}
+
 
 // Addarrow from SCIRun 4
 void GlyphGeom::addArrow(const Point& center, const Vector& t,
@@ -94,6 +181,7 @@ void GlyphGeom::addBox(const Point& center, const Vector& t,
   // add strips to object
 }
 
+// from SCIRun 4
 void GlyphGeom::addCylinder(const Point& center, const Vector& t,
                             double radius1, double length, int nu, int nv)
 {
@@ -112,47 +200,6 @@ void GlyphGeom::addSphere(const Point& center, double radius,
   
   // add strips to the object
 
-}
-
-void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius1,
-                                 double radius2, double resolution, int64_t& numVBOElements,
-                                 std::vector<Vector>& points, std::vector<Vector>& normals,
-                                 std::vector<uint32_t>& indices)
-{
-  double num_strips = resolution;
-  if (num_strips < 0) num_strips = 20.0;
-  double r1 = radius1 < 0 ? 1.0 : radius1; 
-  double r2 = radius2 < 0 ? 1.0 : radius2;
-
-  //generate triangles for the cylinders.
-  Vector n((p1 - p2).normal()), u = (10 * n + Vector(10, 10, 10)).normal();
-  Vector crx = Cross(u, n).normal();
-  u = Cross(crx, n).normal();
-  Vector p;
-  for (double strips = 0.; strips <= num_strips; strips += 1.)
-  {
-    uint32_t offset = (uint32_t)numVBOElements;
-    p = std::cos(2. * M_PI * strips / num_strips) * u +
-      std::sin(2. * M_PI * strips / num_strips) * crx;
-    p.normalize();
-    points.push_back(r1 * p + Vector(p1));
-    /*if (colorScheme == GeometryObject::COLOR_MAP || colorScheme == GeometryObject::COLOR_IN_SITU)
-      colors.push_back(edge_colors[0]);*/
-    numVBOElements++;
-    points.push_back(r2 * p + Vector(p2));
-    /*if (colorScheme == GeometryObject::COLOR_MAP || colorScheme == GeometryObject::COLOR_IN_SITU)
-      colors.push_back(edge_colors[1]);*/
-    numVBOElements++;
-    normals.push_back(p);
-    normals.push_back(p);
-    indices.push_back(0 + offset);
-    indices.push_back(1 + offset);
-    indices.push_back(2 + offset);
-    indices.push_back(2 + offset);
-    indices.push_back(1 + offset);
-    indices.push_back(3 + offset);
-  }
-  for (int jj = 0; jj < 6; jj++) indices.pop_back();
 }
 
 // Generate cylinder from SCIRun 4
