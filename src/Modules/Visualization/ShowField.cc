@@ -1199,7 +1199,7 @@ void ShowFieldModule::renderNodes(
   uint32_t index = 0;
   int64_t numVBOElements = 0;
   
-  GlyphGeom* glyphs = new GlyphGeom();
+  GlyphGeom glyphs;
   while (eiter != eiter_end) 
   {
     Core::Geometry::Point p;
@@ -1207,7 +1207,7 @@ void ShowFieldModule::renderNodes(
     //coloring options
     if (colorScheme != GeometryObject::COLOR_UNIFORM)
     {
-      ColorMap * map = colorMap.get().get();
+      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
@@ -1227,7 +1227,7 @@ void ShowFieldModule::renderNodes(
     //accumulate VBO or IBO data
     if (state.get(RenderState::USE_SPHERE)) 
     {
-      glyphs->addSphere(p, radius, num_strips, node_color);      
+      glyphs.addSphere(p, radius, num_strips, node_color);      
     }
     else 
     {
@@ -1244,7 +1244,7 @@ void ShowFieldModule::renderNodes(
   }
   if (state.get(RenderState::USE_SPHERE))
   {
-    glyphs->getBufferInfo(numVBOElements, points, normals, colors, indices);
+    glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);
   }
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
@@ -1456,7 +1456,7 @@ void ShowFieldModule::renderEdges(
   uint32_t index = 0;
   int64_t numVBOElements = 0;
 
-  GlyphGeom* glyphs = new GlyphGeom();
+  GlyphGeom glyphs;
   while (eiter != eiter_end) 
   {
     VMesh::Node::array_type nodes;
@@ -1468,7 +1468,7 @@ void ShowFieldModule::renderEdges(
     //coloring options
     if (colorScheme != GeometryObject::COLOR_UNIFORM)
     {
-      ColorMap * map = colorMap.get().get();
+      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         if (fld->basis_order() == 1)
@@ -1521,9 +1521,9 @@ void ShowFieldModule::renderEdges(
     //accumulate VBO or IBO data
     if (state.get(RenderState::USE_CYLINDER) && p0 != p1) 
     {
-      glyphs->addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
-      glyphs->addSphere(p0, radius, num_strips, edge_colors[0]);
-      glyphs->addSphere(p1, radius, num_strips, edge_colors[1]);     
+      glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
+      glyphs.addSphere(p0, radius, num_strips, edge_colors[0]);
+      glyphs.addSphere(p1, radius, num_strips, edge_colors[1]);     
     } 
     else 
     {
@@ -1546,7 +1546,7 @@ void ShowFieldModule::renderEdges(
   }
   if (state.get(RenderState::USE_CYLINDER))
   {
-    glyphs->getBufferInfo(numVBOElements, points, normals, colors, indices);
+    glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);
   }
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);

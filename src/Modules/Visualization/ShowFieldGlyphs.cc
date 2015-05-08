@@ -125,7 +125,7 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
     THROW_ALGORITHM_INPUT_ERROR("only able to handle data on nodes at this point");
   }
 
-  GlyphGeom* glyphs = new GlyphGeom();
+  GlyphGeom glyphs;
 
   //for (const auto& node : facade->nodes())
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
@@ -135,7 +135,7 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
     Point p1 = node.point();
     Point p2 = p1 + v;
 
-    glyphs->addArrow(p1, p2, 0.2, 5, edge_colors[0], edge_colors[1]);
+    glyphs.addArrow(p1, p2, 0.2, 5, edge_colors[0], edge_colors[1]);
 
   }
 
@@ -148,7 +148,7 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
   std::vector<ColorRGB> colors;
   std::vector<uint32_t> indices;
 
-  glyphs->getBufferInfo(numVBOElements, points, normals, colors, indices);
+  glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
   vboSize += (uint32_t)normals.size() * 3 * sizeof(float);
