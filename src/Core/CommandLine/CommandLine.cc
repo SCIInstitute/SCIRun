@@ -63,6 +63,7 @@ public:
       ("verbose", "Turn on debug log information")
       ("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
       ("reexecuteMode", po::value<std::string>(), "network reexecution mode--DEVELOPER USE ONLY")
+      ("list-modules", "print list of available modules")
       ;
 
       positional_.add("input-file", -1);
@@ -114,11 +115,13 @@ public:
       bool disableGui,
       bool disableSplash,
       bool isRegressionMode,
-      bool isVerboseMode) : help_(help), version_(version), executeNetwork_(executeNetwork),
+      bool isVerboseMode,
+      bool printModules) : help_(help), version_(version), executeNetwork_(executeNetwork),
       executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
-      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode), isVerboseMode_(isVerboseMode)
+      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode), isVerboseMode_(isVerboseMode),
+      printModules_(printModules)
     {}
-    bool help_, version_, executeNetwork_, executeNetworkAndQuit_, disableGui_, disableSplash_, isRegressionMode_, isVerboseMode_;
+    bool help_, version_, executeNetwork_, executeNetworkAndQuit_, disableGui_, disableSplash_, isRegressionMode_, isVerboseMode_, printModules_;
   };
   ApplicationParametersImpl(
     const std::string& entireCommandLine,
@@ -134,72 +137,77 @@ public:
     flags_(flags)
   {}
 
-  virtual const std::vector<std::string>& inputFiles() const
+  virtual const std::vector<std::string>& inputFiles() const override
   {
     return inputFiles_;
   }
 
-  virtual boost::optional<boost::filesystem::path> pythonScriptFile() const
+  virtual boost::optional<boost::filesystem::path> pythonScriptFile() const override
   {
     return pythonScriptFile_;
   }
 
-  virtual boost::optional<boost::filesystem::path> dataDirectory() const
+  virtual boost::optional<boost::filesystem::path> dataDirectory() const override
   {
     return dataDirectory_;
   }
 
-  virtual bool help() const
+  virtual bool help() const override
   {
     return flags_.help_;
   }
 
-  virtual bool version() const
+  virtual bool version() const override
   {
     return flags_.version_;
   }
 
-  virtual bool executeNetwork() const
+  virtual bool executeNetwork() const override
   {
     return flags_.executeNetwork_;
   }
 
-  virtual bool executeNetworkAndQuit() const
+  virtual bool executeNetworkAndQuit() const override
   {
     return flags_.executeNetworkAndQuit_;
   }
 
-  virtual bool disableGui() const
+  virtual bool disableGui() const override
   {
     return flags_.disableGui_;
   }
 
-  virtual bool disableSplash() const
+  virtual bool disableSplash() const override
   {
     return flags_.disableSplash_;
   }
 
-  virtual bool isRegressionMode() const
+  virtual bool isRegressionMode() const override
   {
     return flags_.isRegressionMode_;
   }
 
-  virtual bool verboseMode() const
+  virtual bool verboseMode() const override
   {
     return flags_.isVerboseMode_;
   }
 
-  virtual boost::optional<std::string> threadMode() const
+  virtual boost::optional<std::string> threadMode() const override
   {
     return threadMode_;
   }
 
-  virtual boost::optional<std::string> reexecuteMode() const
+  virtual boost::optional<std::string> reexecuteMode() const override
   {
     return reexecuteMode_;
   }
 
-  virtual const std::string& entireCommandLine() const
+  virtual bool printModuleList() const override
+  {
+    return flags_.printModules_;
+  }
+
+  virtual const std::string& entireCommandLine() const override
   {
     return entireCommandLine_;
   }
@@ -258,7 +266,8 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
         parsed.count("headless") != 0,
         parsed.count("no_splash") != 0,
         parsed.count("regression") != 0,
-        parsed.count("verbose") != 0)
+        parsed.count("verbose") != 0,
+        parsed.count("list-modules") != 0)
       );
   }
   catch (std::exception& e)

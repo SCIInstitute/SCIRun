@@ -35,7 +35,7 @@
 #ifndef MCUBE2_H
 #define MCUBE2_H
 
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
 

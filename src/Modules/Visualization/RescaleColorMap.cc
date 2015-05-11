@@ -65,7 +65,7 @@ void RescaleColorMap::setStateDefaults()
  */
 void RescaleColorMap::execute()
 {
-  auto field = getRequiredInput(Field);
+  auto fields = getRequiredDynamicInputs(Field);
   auto colorMap = getRequiredInput(ColorMapObject);
 
   if (needToExecute())
@@ -80,26 +80,31 @@ void RescaleColorMap::execute()
     double cm_shift = 0.;
 
     //set the min/max values to the actual min/max if we choose auto
-    VField* fld = field->vfield();
     double actual_min = std::numeric_limits<double>::max();
     double actual_max = std::numeric_limits<double>::min();
+    double min,max;
 
-    if (!fld->minmax(actual_min, actual_max))
+    for (const auto& field : fields)
     {
-      error("An input field is not a scalar or vector field.");
-      return;
+      if (!field->vfield()->minmax(min, max))
+      {
+        error("An input field is not a scalar or vector field.");
+        return;
+      }
+      actual_min = std::min(actual_min, min);
+      actual_max = std::max(actual_max, max);
     }
 
-    if (autoscale) 
+    if (autoscale)
     {
       //center around zero
-      if (symmetric) 
+      if (symmetric)
       {
         double mx = std::max(std::abs(actual_min), std::abs(actual_max));
         fixed_min = -mx;
         fixed_max = mx;
       }
-      else 
+      else
       {
         fixed_min = actual_min;
         fixed_max = actual_max;

@@ -29,8 +29,7 @@
 #ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H
 #define CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H 1
 
-// Datatypes that the algorithm uses
-#include <boost/unordered_map.hpp> 
+#include <boost/unordered_map.hpp>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun{

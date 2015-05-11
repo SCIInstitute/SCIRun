@@ -62,15 +62,12 @@
 #include "CoreBootstrap.h"
 #include "comp/StaticSRInterface.h"
 #include "comp/RenderBasicGeom.h"
-#include "comp/RenderColorMapGeom.h"
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
 #include "systems/RenderBasicSys.h"
-#include "systems/RenderColorMapSys.h"
 #include "systems/RenderTransBasicSys.h"
-#include "systems/RenderTransColorMapSys.h"
 #include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Core::Datatypes;
@@ -921,30 +918,9 @@ namespace SCIRun {
             
             mArrowAttribs.bind();
             
-            // X Axis
-            {
-                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
-                glm::mat4 finalTrafo = axesTransform * xform;
-                
-                GL(glUniform4f(locAmbientColor, 0.5f, 0.01f, 0.01f, 1.0f));
-                GL(glUniform4f(locDiffuseColor, 1.0f, 0.0f, 0.0f, 1.0f));
-                GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-                GL(glUniform1f(locSpecularPower, 16.0f));
-                
-                glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                const GLfloat* ptr = glm::value_ptr(worldToProj);
-                GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
-                
-                glm::mat4 objectSpace = finalTrafo;
-                ptr = glm::value_ptr(objectSpace);
-                GL(glUniformMatrix4fv(locObject, 1, false, ptr));
-                
-                GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-            }
-            
             // X Axis (dark)
             {
-                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
                 glm::mat4 finalTrafo = axesTransform * xform;
                 
                 GL(glUniform4f(locAmbientColor, 0.1f, 0.01f, 0.01f, 1.0f));
@@ -963,13 +939,13 @@ namespace SCIRun {
                 GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
             }
             
-            // Y Axis
+            // X Axis
             {
-                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
                 glm::mat4 finalTrafo = axesTransform * xform;
-                
-                GL(glUniform4f(locAmbientColor, 0.01f, 0.5f, 0.01f, 1.0f));
-                GL(glUniform4f(locDiffuseColor, 0.0f, 1.0f, 0.0f, 1.0f));
+
+                GL(glUniform4f(locAmbientColor, 0.5f, 0.01f, 0.01f, 1.0f));
+                GL(glUniform4f(locDiffuseColor, 1.0f, 0.0f, 0.0f, 1.0f));
                 GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
                 GL(glUniform1f(locSpecularPower, 16.0f));
                 
@@ -986,9 +962,9 @@ namespace SCIRun {
             
             // Y Axis (dark)
             {
-                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
                 glm::mat4 finalTrafo = axesTransform * xform;
-                
+
                 GL(glUniform4f(locAmbientColor, 0.01f, 0.1f, 0.01f, 1.0f));
                 GL(glUniform4f(locDiffuseColor, 0.0f, 0.25f, 0.0f, 1.0f));
                 GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
@@ -1005,13 +981,13 @@ namespace SCIRun {
                 GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
             }
             
-            // Z Axis
+            // Y Axis
             {
-                // No rotation at all
-                glm::mat4 finalTrafo = axesTransform;
-                
-                GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.5f, 1.0f));
-                GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 1.0f, 1.0f));
+                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+                glm::mat4 finalTrafo = axesTransform * xform;
+
+                GL(glUniform4f(locAmbientColor, 0.01f, 0.5f, 0.01f, 1.0f));
+                GL(glUniform4f(locDiffuseColor, 0.0f, 1.0f, 0.0f, 1.0f));
                 GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
                 GL(glUniform1f(locSpecularPower, 16.0f));
                 
@@ -1029,12 +1005,33 @@ namespace SCIRun {
             // Z Axis (dark)
             {
                 // No rotation at all
-                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
-                glm::mat4 finalTrafo = axesTransform * xform;
-                
+                glm::mat4 finalTrafo = axesTransform;
+
                 GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.1f, 1.0f));
                 GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 0.25f, 1.0f));
                 GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
+                GL(glUniform1f(locSpecularPower, 16.0f));
+                
+                glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+                const GLfloat* ptr = glm::value_ptr(worldToProj);
+                GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+                
+                glm::mat4 objectSpace = finalTrafo;
+                ptr = glm::value_ptr(objectSpace);
+                GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+                
+                GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+            }
+            
+            // Z Axis
+            {
+                // No rotation at all
+                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
+                glm::mat4 finalTrafo = axesTransform * xform;
+
+                GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.5f, 1.0f));
+                GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 1.0f, 1.0f));
+                GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
                 GL(glUniform1f(locSpecularPower, 16.0f));
                 
                 glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;

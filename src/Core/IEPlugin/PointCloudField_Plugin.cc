@@ -26,28 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Basis/Constant.h>
-#include <Core/Datatypes/PointCloudMesh.h>
-#include <Core/Datatypes/FieldInformation.h> 
+#include <Core/IEPlugin/PointCloudField_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/IEPlugin/IEPluginInit.h>
 
-#include <sci_debug.h>
+#include <Core/Logging/LoggerInterface.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/PointCloudMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h> 
+#include <Core/Utils/Legacy/StringUtil.h>
 
-#include <boost/lexical_cast.hpp>
+using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Geometry;
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-namespace SCIRun {
-
-FieldHandle TextToPointCloudField_reader(ProgressReporter *pr, const char *filename);
-
-bool PointCloudFieldToText_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
-
-FieldHandle TextToPointCloudField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::TextToPointCloudField_reader(LoggerHandle pr, const char *filename)
 {
   FieldHandle result = 0;
   std::string pts_fn(filename);
@@ -219,7 +213,7 @@ FieldHandle TextToPointCloudField_reader(ProgressReporter *pr, const char *filen
   return (result);
 }
 
-bool PointCloudFieldToText_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::PointCloudFieldToText_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
 
@@ -262,10 +256,6 @@ bool PointCloudFieldToText_writer(ProgressReporter *pr, FieldHandle fh, const ch
     mesh->end(nodeIterEnd);
     mesh->size(nodeSize);
     
-#if DEBUG
-    std::cerr << "Number of points = " << nodeSize << "\n";
-#endif
-
     // N.B: not writing header
 
     while (nodeIter != nodeIterEnd)
@@ -285,5 +275,5 @@ bool PointCloudFieldToText_writer(ProgressReporter *pr, FieldHandle fh, const ch
   return (true);
 }
 
-static FieldIEPlugin PointCloudField_plugin("PointCloudField","{.pts} {.pos} {.txt}", "", TextToPointCloudField_reader, PointCloudFieldToText_writer);
-} // end namespace
+
+

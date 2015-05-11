@@ -352,7 +352,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -363,6 +363,30 @@
 									<value>
 										<which>2</which>
 										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapResolution</name>
+								</first>
+								<second>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -751,8 +775,21 @@
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>0</count>
+		<count>1</count>
 		<item_version>0</item_version>
+		<item class_id="19" tracking_level="0" version="0">
+			<first>ShowField:4</first>
+			<second class_id="20" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 4&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>ID: 4</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>

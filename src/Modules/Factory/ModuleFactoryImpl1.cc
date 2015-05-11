@@ -84,6 +84,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h>
 #include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h> 
+#include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
@@ -100,6 +101,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/String/NetworkNotes.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
+#include <Modules/Visualization/ShowFieldGlyphs.h>
 #include <Modules/Visualization/CreateStandardColorMap.h>
 #include <Modules/Visualization/ShowColorMapModule.h> 
 #include <Modules/Visualization/RescaleColorMap.h>
@@ -146,6 +148,7 @@ void ModuleDescriptionLookup::addEssentialModules()
 	addModuleDesc<NetworkNotesModule>("NetworkNotes", "String", "SCIRun", "Functional, needs GUI work.", "...");
   //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
   addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
+  addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
   addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
@@ -198,6 +201,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
   addModuleDesc<RescaleColorMap>("Real ported module", "...");
   addModuleDesc<ConvertMatrixToString>("ConvertMatrixToString","Converters","SCIRun","...","...");
+  addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences","ChangeFieldData","SCIRun","...","...");
 
   // insert module desc here
 }

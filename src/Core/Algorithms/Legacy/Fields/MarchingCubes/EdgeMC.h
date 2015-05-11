@@ -27,61 +27,65 @@
 */
 
 
-#ifndef CORE_ALGORITHMS_VISUALIZATION_EDGEMC_H
-#define CORE_ALGORITHMS_VISUALIZATION_EDGEMC_H 1
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBE_EDGEMC_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBE_EDGEMC_H 1
 
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/Point.h>
 
-#include <Core/Geom/GeomPoint.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+ #include <Core/Geom/GeomPoint.h>
+#endif
 
-#include <Core/Algorithms/Fields/MarchingCubes/BaseMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
 namespace SCIRun {
 
 /// A Marching Square tesselator for a curve line
-
 class EdgeMC :  public BaseMC
 {
   public:
 
-    EdgeMC( Field *field ) : field_handle_(field), 
+   EdgeMC( FieldHandle field ) : field_handle_(field), 
                              field_(field->vfield()),
                              mesh_(field->vmesh()),
-                             points_(0), 
+                            #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+			     points_(0), 
+			    #endif
                              pointcloud_handle_(0),
                              pointcloud_(0) {}
 
     virtual ~EdgeMC() {}
-    
+ 
     void extract( VMesh::Elem::index_type, double );
     virtual void reset( int, bool build_field, bool build_geom, bool transparency );
     virtual FieldHandle get_field(double val);
 
   private:
+    
     void extract_n( VMesh::Elem::index_type, double );
     void extract_e( VMesh::Elem::index_type, double );
 
-    VMesh::Node::index_type find_or_add_edgepoint(index_type u0,
-                                                  index_type u1,
-                                                  double d0,
-                                                  const Point &p) ;
+    VMesh::Node::index_type find_or_add_edgepoint(index_type u0, index_type u1, double d0, const SCIRun::Core::Geometry::Point &p);
 
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type &idx);
 
-    void find_or_add_parent(index_type u0, index_type u1,
-                            double d0, index_type edge);
+    void find_or_add_parent(index_type u0, index_type u1, double d0, index_type edge);
 
     FieldHandle field_handle_;
     VField*     field_;
     VMesh*      mesh_;
-    
+   
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     GeomPoints *points_;
-  
+   #endif
+   
     FieldHandle pointcloud_handle_;
     VMesh*      pointcloud_;
 };
-  
-} // End namespace SCIRun
 
+} // namespace SCIRun 
 #endif

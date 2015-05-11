@@ -42,6 +42,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Math/MiscMath.h>
 #include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 
 #include <boost/foreach.hpp>
 
@@ -53,6 +54,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Graphics;
 using namespace SCIRun;
 
 ALGORITHM_PARAMETER_DEF(Visualization, CylinderRadius);
@@ -1131,34 +1133,46 @@ void ShowFieldModule::renderNodes(
   else
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", 1.f));
   //coloring
-  if (colorScheme == GeometryObject::COLOR_MAP) {
+  if (colorScheme == GeometryObject::COLOR_MAP) 
+  {
     //4 floats/color (RGBA)
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-    if (state.get(RenderState::USE_SPHERE)) {
+    if (state.get(RenderState::USE_SPHERE))
+    {
         shader = "Shaders/DirPhongCMap" ;
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } else {
+    } 
+    else
+    {
         shader = "Shaders/ColorMap";
     }
-  } else if (colorScheme == GeometryObject::COLOR_IN_SITU) {
+  } 
+  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+  {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
-    if (state.get(RenderState::USE_SPHERE)) {
+    if (state.get(RenderState::USE_SPHERE)) 
+    {
       shader = "Shaders/DirPhongInSitu";
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } else {
+    } 
+    else 
+    {
       shader = "Shaders/InSituColor";
     }
-  } else if (colorScheme == GeometryObject::COLOR_UNIFORM) {
+  } 
+  else if (colorScheme == GeometryObject::COLOR_UNIFORM) 
+  {
     ColorRGB dft = state.defaultColor;
-    if (state.get(RenderState::USE_SPHERE)) {
+    if (state.get(RenderState::USE_SPHERE)) 
+    {
         shader = "Shaders/DirPhong";
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
             glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
@@ -1167,7 +1181,9 @@ void ShowFieldModule::renderNodes(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
             glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } else {
+    } 
+    else 
+    {
         shader = "Shaders/UniformColor";
         uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), 1.f));
     }
@@ -1182,56 +1198,39 @@ void ShowFieldModule::renderNodes(
   std::vector<uint32_t> indices;
   uint32_t index = 0;
   int64_t numVBOElements = 0;
-  while (eiter != eiter_end) {
+  
+  GlyphGeom glyphs;
+  while (eiter != eiter_end) 
+  {
     Core::Geometry::Point p;
     mesh->get_point(p, *eiter);
     //coloring options
-    if (colorScheme != GeometryObject::COLOR_UNIFORM) {
-      ColorMap * map = colorMap.get().get();
+    if (colorScheme != GeometryObject::COLOR_UNIFORM)
+    {
+      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
         node_color = map->valueToColor(sval);
-      } else if (fld->is_vector()) {
+      }
+      else if (fld->is_vector()) 
+      {
         fld->get_value(vval, *eiter);
         node_color = map->valueToColor(vval);
-      } else if (fld->is_tensor()) {
+      } 
+      else if (fld->is_tensor()) 
+      {
         fld->get_value(tval, *eiter);
         node_color = map->valueToColor(tval);
       }
     }
     //accumulate VBO or IBO data
-    if (state.get(RenderState::USE_SPHERE)) {
-        //generate triangles for the spheres
-        Vector pp1, pp2;
-        double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
-        for (double phi = 0.; phi < M_PI; phi += phi_inc) {
-          for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) {
-            uint32_t offset = (uint32_t)numVBOElements;
-            pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-            pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
-            points.push_back(radius * pp1 + Vector(p));
-            if (colorScheme == GeometryObject::COLOR_MAP ||
-                colorScheme == GeometryObject::COLOR_IN_SITU)
-                    colors.push_back(node_color);
-            numVBOElements++;
-            points.push_back(radius * pp2 + Vector(p));
-            if (colorScheme == GeometryObject::COLOR_MAP ||
-                colorScheme == GeometryObject::COLOR_IN_SITU)
-                    colors.push_back(node_color);
-            numVBOElements++;
-            normals.push_back(pp1);
-            normals.push_back(pp2);
-            indices.push_back(0 + offset);
-            indices.push_back(1 + offset);
-            indices.push_back(2 + offset);
-            indices.push_back(2 + offset);
-            indices.push_back(1 + offset);
-            indices.push_back(3 + offset);
-          }
-          for (int jj = 0; jj < 6; jj++) indices.pop_back();
-        }
-    } else {
+    if (state.get(RenderState::USE_SPHERE)) 
+    {
+      glyphs.addSphere(p, radius, num_strips, node_color);      
+    }
+    else 
+    {
       points.push_back(Vector(p));
       if (colorScheme == GeometryObject::COLOR_MAP ||
           colorScheme == GeometryObject::COLOR_IN_SITU)
@@ -1242,6 +1241,10 @@ void ShowFieldModule::renderNodes(
     }
 
     ++eiter;
+  }
+  if (state.get(RenderState::USE_SPHERE))
+  {
+    glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);
   }
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
@@ -1272,19 +1275,22 @@ void ShowFieldModule::renderNodes(
   for (auto a : indices)
     iboBuffer->write(a);
 
-  for (size_t i = 0; i < points.size(); i++) {
+  for (size_t i = 0; i < points.size(); i++) 
+  {
     // Write first point on line
     vboBuffer->write(static_cast<float>(points.at(i).x()));
     vboBuffer->write(static_cast<float>(points.at(i).y()));
     vboBuffer->write(static_cast<float>(points.at(i).z()));
     // Write normal
-    if (normals.size() == points.size()) {
+    if (normals.size() == points.size()) 
+    {
       vboBuffer->write(static_cast<float>(normals.at(i).x()));
       vboBuffer->write(static_cast<float>(normals.at(i).y()));
       vboBuffer->write(static_cast<float>(normals.at(i).z()));
     }
     if (colorScheme == GeometryObject::COLOR_MAP ||
-        colorScheme == GeometryObject::COLOR_IN_SITU) {
+        colorScheme == GeometryObject::COLOR_IN_SITU) 
+    {
       vboBuffer->write(static_cast<float>(colors.at(i).r()));
       vboBuffer->write(static_cast<float>(colors.at(i).g()));
       vboBuffer->write(static_cast<float>(colors.at(i).b()));
@@ -1321,8 +1327,8 @@ void ShowFieldModule::renderEdges(
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
-  const std::string& id) {
-
+  const std::string& id) 
+{
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
@@ -1386,33 +1392,45 @@ void ShowFieldModule::renderEdges(
   if (state.get(RenderState::USE_TRANSPARENT_EDGES))
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(edgeTransparencyValue_)));
   //coloring
-  if (colorScheme == GeometryObject::COLOR_MAP) {
+  if (colorScheme == GeometryObject::COLOR_MAP) 
+  {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-    if (state.get(RenderState::USE_CYLINDER)) {
+    if (state.get(RenderState::USE_CYLINDER)) 
+    {
         shader = "Shaders/DirPhongCMap" ;
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } else {
+    }
+    else 
+    {
         shader = "Shaders/ColorMap";
     }
-  } else if (colorScheme == GeometryObject::COLOR_IN_SITU) {
+  } 
+  else if (colorScheme == GeometryObject::COLOR_IN_SITU) 
+  {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
-    if (state.get(RenderState::USE_CYLINDER)) {
+    if (state.get(RenderState::USE_CYLINDER)) 
+    {
       shader = "Shaders/DirPhongInSitu";
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } else {
+    } 
+    else 
+    {
       shader = "Shaders/InSituColor";
     }
-  } else if (colorScheme == GeometryObject::COLOR_UNIFORM) {
+  } 
+  else if (colorScheme == GeometryObject::COLOR_UNIFORM) 
+  {
     ColorRGB dft = state.defaultColor;
-    if (state.get(RenderState::USE_CYLINDER)) {
+    if (state.get(RenderState::USE_CYLINDER)) 
+    {
         shader = "Shaders/DirPhong";
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
             glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
@@ -1421,7 +1439,9 @@ void ShowFieldModule::renderEdges(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
             glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } else {
+    } 
+    else 
+    {
         uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), (float)edgeTransparencyValue_));
     }
   }
@@ -1435,7 +1455,10 @@ void ShowFieldModule::renderEdges(
   std::vector<uint32_t> indices;
   uint32_t index = 0;
   int64_t numVBOElements = 0;
-  while (eiter != eiter_end) {
+
+  GlyphGeom glyphs;
+  while (eiter != eiter_end) 
+  {
     VMesh::Node::array_type nodes;
     mesh->get_nodes(nodes, *eiter);
 
@@ -1445,7 +1468,7 @@ void ShowFieldModule::renderEdges(
     //coloring options
     if (colorScheme != GeometryObject::COLOR_UNIFORM)
     {
-      ColorMap * map = colorMap.get().get();
+      ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
       {
         if (fld->basis_order() == 1)
@@ -1496,71 +1519,14 @@ void ShowFieldModule::renderEdges(
       }
     }
     //accumulate VBO or IBO data
-    if (state.get(RenderState::USE_CYLINDER) && p0 != p1) {
-      //generate triangles for the cylinders.
-      Vector n((p0 - p1).normal()), u = (10 * n + Vector(10, 10, 10)).normal();
-      Vector crx = Cross(u, n).normal();
-      u = Cross(crx, n).normal();
-      Vector p;
-      for (double strips = 0.; strips <= num_strips; strips += 1.) {
-        uint32_t offset = (uint32_t)numVBOElements;
-        p = std::cos(2. * M_PI * strips / num_strips) * u +
-          std::sin(2. * M_PI * strips / num_strips) * crx;
-        p.normalize();
-        points.push_back(radius * p + Vector(p0));
-        if (colorScheme == GeometryObject::COLOR_MAP ||
-            colorScheme == GeometryObject::COLOR_IN_SITU)
-          colors.push_back(edge_colors[0]);
-        numVBOElements++;
-        points.push_back(radius * p + Vector(p1));
-        if (colorScheme == GeometryObject::COLOR_MAP ||
-            colorScheme == GeometryObject::COLOR_IN_SITU)
-          colors.push_back(edge_colors[1]);
-        numVBOElements++;
-        normals.push_back(p);
-        normals.push_back(p);
-        indices.push_back(0 + offset);
-        indices.push_back(1 + offset);
-        indices.push_back(2 + offset);
-        indices.push_back(2 + offset);
-        indices.push_back(1 + offset);
-        indices.push_back(3 + offset);
-      }
-      for (int jj = 0; jj < 6; jj++) indices.pop_back();
-      //generate triangles for the spheres
-      Vector pp1, pp2;
-      double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
-      std::vector<Point> epts = { { p0, p1 } };
-      for (const auto &a : epts) {
-        ColorRGB col = (a == p0) ? edge_colors[0] : edge_colors[1];
-        for (double phi = 0.; phi <= M_PI; phi += phi_inc) {
-          for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) {
-            uint32_t offset = (uint32_t)numVBOElements;
-            pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-            pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
-            points.push_back(radius * pp1 + Vector(a));
-            if (colorScheme == GeometryObject::COLOR_MAP ||
-                colorScheme == GeometryObject::COLOR_IN_SITU)
-              colors.push_back(col);
-            numVBOElements++;
-            points.push_back(radius * pp2 + Vector(a));
-            if (colorScheme == GeometryObject::COLOR_MAP ||
-                colorScheme == GeometryObject::COLOR_IN_SITU)
-              colors.push_back(col);
-            numVBOElements++;
-            normals.push_back(pp1);
-            normals.push_back(pp2);
-            indices.push_back(0 + offset);
-            indices.push_back(1 + offset);
-            indices.push_back(2 + offset);
-            indices.push_back(2 + offset);
-            indices.push_back(1 + offset);
-            indices.push_back(3 + offset);
-          }
-          for (int jj = 0; jj < 6; jj++) indices.pop_back();
-        }
-      }
-    } else {
+    if (state.get(RenderState::USE_CYLINDER) && p0 != p1) 
+    {
+      glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
+      glyphs.addSphere(p0, radius, num_strips, edge_colors[0]);
+      glyphs.addSphere(p1, radius, num_strips, edge_colors[1]);     
+    } 
+    else 
+    {
       points.push_back(Vector(p0));
       if (colorScheme == GeometryObject::COLOR_MAP ||
           colorScheme == GeometryObject::COLOR_IN_SITU)
@@ -1577,6 +1543,10 @@ void ShowFieldModule::renderEdges(
     }
 
     ++eiter;
+  }
+  if (state.get(RenderState::USE_CYLINDER))
+  {
+    glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);
   }
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
@@ -1608,23 +1578,26 @@ void ShowFieldModule::renderEdges(
   for (auto a : indices)
     iboBuffer->write(a);
 
-  for (size_t i = 0; i < points.size(); i++) {
+  for (size_t i = 0; i < points.size(); i++) 
+  {
     // Write first point on line
     vboBuffer->write(static_cast<float>(points.at(i).x()));
     vboBuffer->write(static_cast<float>(points.at(i).y()));
     vboBuffer->write(static_cast<float>(points.at(i).z()));
     // Write normal
-    if (normals.size() == points.size()) {
+    if (normals.size() == points.size()) 
+    {
       vboBuffer->write(static_cast<float>(normals.at(i).x()));
       vboBuffer->write(static_cast<float>(normals.at(i).y()));
       vboBuffer->write(static_cast<float>(normals.at(i).z()));
     }
     if (colorScheme == GeometryObject::COLOR_MAP ||
-        colorScheme == GeometryObject::COLOR_IN_SITU) {
-        vboBuffer->write(static_cast<float>(colors.at(i).r()));
-        vboBuffer->write(static_cast<float>(colors.at(i).g()));
-        vboBuffer->write(static_cast<float>(colors.at(i).b()));
-        vboBuffer->write(static_cast<float>(1.f));
+        colorScheme == GeometryObject::COLOR_IN_SITU) 
+    {
+      vboBuffer->write(static_cast<float>(colors.at(i).r()));
+      vboBuffer->write(static_cast<float>(colors.at(i).g()));
+      vboBuffer->write(static_cast<float>(colors.at(i).b()));
+      vboBuffer->write(static_cast<float>(1.f));
     } // no color writing otherwise
   }
   state.set(RenderState::IS_ON, true);

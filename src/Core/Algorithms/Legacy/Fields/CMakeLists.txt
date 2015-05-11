@@ -50,6 +50,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   DomainFields/GetDomainBoundaryAlgo.h
   MeshDerivatives/GetFieldBoundaryAlgo.h
   MeshDerivatives/SplitByConnectedRegion.h
+  MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
   ConvertMeshType/ConvertMeshToIrregularMesh.h
   ConvertMeshType/ConvertMeshToTetVolMesh.h
@@ -57,6 +58,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/SetMeshNodes.h
   MeshData/GetMeshNodes.h
   MergeFields/JoinFieldsAlgo.h
+  MergeFields/AppendFieldsAlgo.h
   DomainFields/SplitFieldByDomainAlgo.h
   #MeshData/GetMeshData.h
   FieldData/GetFieldData.h
@@ -73,7 +75,16 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   TransformMesh/ProjectPointsOntoMesh.h
   MeshData/FlipSurfaceNormals.h
   RefineMesh/RefineMesh.h
-
+  MarchingCubes/BaseMC.h
+  MarchingCubes/HexMC.h
+  MarchingCubes/UHexMC.h
+  MarchingCubes/TetMC.h
+  MarchingCubes/TriMC.h
+  MarchingCubes/MarchingCubes.h
+  MarchingCubes/QuadMC.h
+  MarchingCubes/EdgeMC.h
+  MarchingCubes/PrismMC.h
+  MarchingCubes/mcube2.h
   RefineMesh/RefineMeshCurveAlgoV.h
   RefineMesh/RefineMeshHexVolAlgoV.h
   RefineMesh/RefineMeshQuadSurfAlgoV.h
@@ -82,10 +93,11 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   RefineMesh/EdgePairHash.h
   StreamLines/StreamLineIntegrators.h
   StreamLines/GenerateStreamLines.h
+  RegisterWithCorrespondences.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
-  #RegisterWithCorrespondences.cc
+  RegisterWithCorrespondences.cc
   MeshData/FlipSurfaceNormals.cc
   #Cleanup/CleanupTetMesh.cc
   #Cleanup/RemoveUnusedNodes.cc
@@ -140,19 +152,20 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   Mapping/MapFieldDataOntoElems.cc
   #Mapping/MapFromPointField.cc
   #Mapping/FindClosestNodesFromPointField.cc
-  #MarchingCubes/BaseMC.cc
-  #MarchingCubes/EdgeMC.cc
-  #MarchingCubes/HexMC.cc
-  #MarchingCubes/MarchingCubes.cc
-  #MarchingCubes/mcube2.cc
-  #MarchingCubes/PrismMC.cc
-  #MarchingCubes/QuadMC.cc
-  #MarchingCubes/TetMC.cc
-  #MarchingCubes/TriMC.cc
-  #MarchingCubes/UHexMC.cc
+  MarchingCubes/BaseMC.cc
+  MarchingCubes/TetMC.h
+  MarchingCubes/EdgeMC.cc
+  MarchingCubes/HexMC.cc
+  MarchingCubes/MarchingCubes.cc
+  MarchingCubes/mcube2.cc
+  MarchingCubes/PrismMC.cc
+  MarchingCubes/QuadMC.cc
+  MarchingCubes/TetMC.cc
+  MarchingCubes/TriMC.cc
+  MarchingCubes/UHexMC.cc
   #MedialAxis/MedialAxis.cc
   #MedialAxis/MedialAxis2.cc
-  #MergeFields/AppendFields.cc
+  MergeFields/AppendFieldsAlgo.cc
   MergeFields/JoinFieldsAlgo.cc
   MeshData/GetMeshNodes.cc
   MeshData/SetMeshNodes.cc
@@ -168,6 +181,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   MeshDerivatives/GetFieldBoundaryAlgo.cc
   #MeshDerivatives/GetBoundingBox.cc
   MeshDerivatives/SplitByConnectedRegion.cc
+  MeshDerivatives/ExtractSimpleIsosurfaceAlgo.cc
   RefineMesh/RefineMesh.cc
   RefineMesh/RefineMeshCurveAlgoV.cc
   RefineMesh/RefineMeshHexVolAlgoV.cc
@@ -205,6 +219,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
   Core_Thread
   Core_Geometry_Primitives
   Core_Basis
+  Algorithms_Math
   #${SCI_TEEM_LIBRARY}
 )
 

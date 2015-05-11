@@ -37,6 +37,7 @@
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::Math::detail;
 using namespace SCIRun::Core::Algorithms;
 
 EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
@@ -46,10 +47,63 @@ EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
 	addParameter(Variables::FunctionString, std::string("x+10"));
 }
 
+void NegateMatrix::visit(DenseMatrixGeneric<double>& dense)
+{
+  dense *= -1;
+}
+void NegateMatrix::visit(SparseRowMatrixGeneric<double>& sparse)
+{
+  sparse *= -1;
+}
+void NegateMatrix::visit(DenseColumnMatrixGeneric<double>& column)
+{
+  column *= -1;
+}
+
+namespace impl
+{
+  class TransposeMatrix : public MatrixVisitor
+  {
+  public:
+    virtual void visit(DenseMatrixGeneric<double>& dense) override
+    {
+      dense.transposeInPlace();
+    }
+    virtual void visit(SparseRowMatrixGeneric<double>& sparse) override
+    {
+      sparse = sparse.transpose();
+    }
+    virtual void visit(DenseColumnMatrixGeneric<double>& column) override
+    {
+      column.transposeInPlace();
+    }
+  };
+
+  class ScalarMultiplyMatrix : public MatrixVisitor
+  {
+  public:
+    explicit ScalarMultiplyMatrix(double scalar) : scalar_(scalar) {}
+    virtual void visit(DenseMatrixGeneric<double>& dense) override
+    {
+      dense *= scalar_;
+    }
+    virtual void visit(SparseRowMatrixGeneric<double>& sparse) override
+    {
+      sparse *= scalar_;
+    }
+    virtual void visit(DenseColumnMatrixGeneric<double>& column) override
+    {
+      column *= scalar_;
+    }
+  private:
+    double scalar_;
+  };
+}
+
 EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(matrix, "matrix");
-  DenseMatrixHandle result;
+  MatrixHandle result;
 
   Operator oper = params.get<0>();
 
@@ -57,48 +111,53 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   switch (oper)
   {
   case NEGATE:
+  {
     result.reset(matrix->clone());
-    (*result) *= -1;
+    NegateMatrix negate;
+    result->accept(negate);
     break;
+  }
   case TRANSPOSE:
+  {
     result.reset(matrix->clone());
-    result->transposeInPlace();
+    impl::TransposeMatrix tr;
+    result->accept(tr);
     break;
+  }
   case SCALAR_MULTIPLY:
-    {
-      boost::optional<double> scalarOption = params.get<1>();
-      if (!scalarOption)
-        THROW_ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
-      double scalar = scalarOption.get();
-      result.reset(matrix->clone());
-      (*result) *= scalar;
-    }
-    break;
-	case FUNCTION:
-		{
-				NewArrayMathEngine engine;
-				MatrixHandle matrixInput;
-				matrixInput.reset(matrix->clone());
+  {
+    boost::optional<double> scalarOption = params.get<1>();
+    if (!scalarOption)
+      THROW_ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
+    double scalar = scalarOption.get();
+    result.reset(matrix->clone());
+    impl::ScalarMultiplyMatrix mult(scalar);
+    result->accept(mult);
+  }
+  break;
+  case FUNCTION:
+  {
+    NewArrayMathEngine engine;
+    result.reset(matrix->clone());
 
-				if (!(engine.add_input_fullmatrix("x", matrixInput ) ))
-          THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
+    if (!(engine.add_input_fullmatrix("x", matrix)))
+      THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
 
-				boost::optional<std::string> func = params.get<2>();
-				std::string function_string = func.get();
+    boost::optional<std::string> func = params.get<2>();
+    std::string function_string = func.get();
 
-				function_string = "RESULT="+function_string;
-				engine.add_expressions(function_string);
+    function_string = "RESULT=" + function_string;
+    engine.add_expressions(function_string);
 
-				if(!(engine.add_output_fullmatrix("RESULT",matrixInput)))
-          THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
-				// Actual engine call, which does the dynamic compilation, the creation of the
-				// code for all the objects, as well as inserting the function and looping
-				// over every data point
-				if (!(engine.run()))
-          THROW_ALGORITHM_INPUT_ERROR("Error running math engine");
-				result = matrix_cast::as_dense(matrixInput);
-		}
-		break;
+    if (!(engine.add_output_fullmatrix("RESULT", result)))
+      THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
+    // Actual engine call, which does the dynamic compilation, the creation of the
+    // code for all the objects, as well as inserting the function and looping
+    // over every data point
+    if (!engine.run())
+      THROW_ALGORITHM_INPUT_ERROR("Error running math engine");
+  }
+  break;
   default:
     THROW_ALGORITHM_INPUT_ERROR("Unknown operand");
   }
@@ -108,7 +167,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
 
 AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto matrix = input.get<DenseMatrix>(Variables::InputMatrix);
+  auto matrix = input.get<Matrix>(Variables::InputMatrix);
 
   auto scalar = boost::make_optional(get(Variables::ScalarValue).toDouble());
 	auto function = boost::make_optional(get(Variables::FunctionString).toString());
