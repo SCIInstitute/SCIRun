@@ -116,13 +116,17 @@ ModuleHandle ModuleTestBase::makeModule(const std::string& name)
 
 void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, DatatypeHandle data)
 {
-  //TODO: this doesn't work with dynamic ports beyond 1
   if (portNum < module->num_input_ports())
   {
     auto iport = module->inputPorts()[portNum];
     if (iport->nconnections() > 0)
       iport->detach(0);
     iport->attach(0);
+    if (iport->isDynamic())
+    {
+      Module::Builder builder;
+      auto newPortId = builder.cloneInputPort(module, iport->id());
+    }
     DatatypeHandleOption o = data;
     dynamic_cast<StubbedDatatypeSink*>(iport->sink().get())->setData(o);
   }
