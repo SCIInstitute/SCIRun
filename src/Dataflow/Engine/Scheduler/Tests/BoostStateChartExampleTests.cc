@@ -206,6 +206,13 @@ struct ModuleQueued : sc::event< ModuleQueued > {};
 struct ModuleError : sc::event< ModuleError > {};
 struct ModuleReset : sc::event< ModuleReset > {};
 
+struct ModuleColorProvider
+{
+public:
+  virtual std::string color() const = 0;
+  virtual ~ModuleColorProvider() {}
+};
+
 struct ModuleDone;
 struct ModuleState : sc::state_machine< ModuleState, ModuleDone >
 {
@@ -218,13 +225,17 @@ public:
   {
     std::cout << "~ModuleState()" << std::endl;
   }
+  std::string currentColor() const
+  {
+    return state_cast<const ModuleColorProvider&>().color();
+  }
 };
 
 struct ModuleWaiting;
 struct ModuleRunning;
 struct ModuleErrored;
 
-struct ModuleDone : sc::simple_state< ModuleDone, ModuleState >
+struct ModuleDone : ModuleColorProvider, sc::simple_state< ModuleDone, ModuleState >
 {
 public:
   typedef sc::transition< ModuleQueued, ModuleWaiting > reactions;
@@ -236,9 +247,10 @@ public:
   {
     std::cout << "~ModuleDone" << std::endl;
   }
+  virtual std::string color() const override { return "gray"; }
 };
 
-struct ModuleWaiting : sc::simple_state< ModuleWaiting, ModuleState >
+struct ModuleWaiting : ModuleColorProvider, sc::simple_state< ModuleWaiting, ModuleState >
 {
 public:
   typedef sc::transition< ModuleStart, ModuleRunning > reactions;
@@ -250,9 +262,10 @@ public:
   {
     std::cout << "~ModuleWaiting" << std::endl;
   }
+  virtual std::string color() const override { return "yellow"; }
 };
 
-struct ModuleRunning : sc::simple_state< ModuleRunning, ModuleState >
+struct ModuleRunning : ModuleColorProvider, sc::simple_state< ModuleRunning, ModuleState >
 {
 public:
   typedef mpl::list<
@@ -267,9 +280,10 @@ public:
   {
     std::cout << "~ModuleRunning" << std::endl;
   }
+  virtual std::string color() const override { return "green"; }
 };
 
-struct ModuleErrored : sc::simple_state< ModuleErrored, ModuleState >
+struct ModuleErrored : ModuleColorProvider, sc::simple_state< ModuleErrored, ModuleState >
 {
 public:
   typedef sc::transition< ModuleReset, ModuleDone > reactions;
@@ -281,6 +295,7 @@ public:
   {
     std::cout << "~ModuleErrored" << std::endl;
   }
+  virtual std::string color() const override { return "red"; }
 };
 
 TEST(ModuleStateChart, RunNormalTransitions)
