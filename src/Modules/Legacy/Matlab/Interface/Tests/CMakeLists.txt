@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software.
+#  in all copies or substantial portions of the Software. 
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,7 +26,28 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# CMakeLists.txt for Packages/MatlabInterface/Dataflow/Modules
+SET(Modules_Legacy_Matlab_DataIO_Tests_SRCS
+  ImportDatatypesFromMatlabTests.cc
+  #ExportDatatypesFromMatlabTests.cc
+)
 
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Interface)
+#SET(Engine_Network_Tests_HEADERS
+#  NetworkEditorControllerTests_.h
+#)
+
+SCIRUN_ADD_UNIT_TEST(Modules_Legacy_Matlab_DataIO_Tests
+  ${Modules_Legacy_Matlab_DataIO_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_Legacy_Matlab_DataIO_Tests
+  Modules_Legacy_Matlab_DataIO
+  Modules_Factory
+  Dataflow_State
+  Testing_Utils
+  Testing_ModuleTestBase
+  Algorithms_Factory
+  gtest_main
+  gtest
+  gmock
+  ${SCI_BOOST_LIBRARY}
+)

@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -26,7 +26,47 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# CMakeLists.txt for Packages/MatlabInterface/Dataflow/Modules
+# CMakeLists.txt for Packages/MatlabInterface/Dataflow/Modules/Interface
 
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Interface)
+SET(Modules_Legacy_MatlabInterface_SRCS
+  InterfaceWithMatlab.cc
+  #InterfaceWithMatlabViaBundles.cc
+)
+
+SET(Modules_Legacy_MatlabInterface_HEADERS
+  InterfaceWithMatlab.h
+  #InterfaceWithMatlabViaBundles.h
+)
+
+SCIRUN_ADD_LIBRARY(Modules_Legacy_MatlabInterface 
+  ${Modules_Legacy_MatlabInterface_SRCS}
+  ${Modules_Legacy_MatlabInterface_HEADERS}
+  )
+
+TARGET_LINK_LIBRARIES(Modules_Legacy_MatlabInterface
+  Core_Persistent
+  #Core_Util
+  #Core_Exceptions
+  #Core_Thread
+  #Dataflow_GuiInterface
+  #Core_Geom
+  Core_Datatypes
+  #Core_Geometry
+  #Core_GeomInterface
+  #Dataflow_TkExtensions
+  Dataflow_Network
+  #Core_XMLUtil
+  #Core_Matlab
+  #Core_Services
+  #Core_ICom
+  #Core_SystemCall
+  ${SCI_TEEM_LIBRARY}
+  ${SCI_ZLIB_LIBRARY}
+  #${M_LIBRARY}
+  #${TK_LIBRARY}
+  #${GL_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_MatlabInterface)
+ENDIF(BUILD_SHARED_LIBS)
