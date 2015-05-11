@@ -34,16 +34,15 @@
  *
  */
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/NrrdPort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
-#include <Core/SystemCall/TempFileManager.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Modules/Legacy/Matlab/Interface/InterfaceWithMatlab.h>
+
 #include <Core/Matlab/matlabconverter.h>
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
+
+#if 0
+#include <Core/SystemCall/TempFileManager.h>
+#include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Packages/MatlabInterface/Services/MatlabEngine.h>
 #include <Core/Thread/Runnable.h>
 #include <Core/Thread/Thread.h>
@@ -55,11 +54,19 @@
 #include <Core/Services/FileTransferClient.h>
 #include <Core/ICom/IComSocket.h>
 #include <Core/Thread/CleanupManager.h>
-
+#endif
 
 #include <iostream>
 #include <fstream>
+
+using namespace SCIRun;
+using namespace SCIRun::Modules::Matlab::Interface;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::MatlabIO;
+using namespace SCIRun::Core::Logging;
  
+#if 0
 #ifdef _WIN32
 #define USE_MATLAB_ENGINE_LIBRARY
 #endif
@@ -104,7 +111,7 @@ class InterfaceWithMatlabEngineThread : public Runnable, public ServiceBase
 	InterfaceWithMatlabEngineThreadInfoHandle info_handle_;
 };
 
-class InterfaceWithMatlabEngineThreadInfo : public UsedWithLockingHandle<Mutex>
+class InterfaceWithMatlabEngineThreadInfo 
 {
 public:
 	InterfaceWithMatlabEngineThreadInfo();
@@ -125,9 +132,10 @@ public:
 	bool                passed_test_;
 
 };
+#endif
 
-
-class InterfaceWithMatlab : public Module, public ServiceBase 
+#if 0
+class InterfaceWithMatlabImpl : public ServiceBase 
 {
   
   public:
@@ -283,8 +291,9 @@ class InterfaceWithMatlab : public Module, public ServiceBase
   public:
     static void cleanup_callback(void *data);
 };
+#endif
 
-
+#if 0
 InterfaceWithMatlabEngineThreadInfo::InterfaceWithMatlabEngineThreadInfo() :
 	UsedWithLockingHandle<Mutex>("InterfaceWithMatlabEngineInfo lock"),
 	wait_code_done_("InterfaceWithMatlabEngineInfo condition variable code"),
@@ -293,10 +302,6 @@ InterfaceWithMatlabEngineThreadInfo::InterfaceWithMatlabEngineThreadInfo() :
 	wait_exit_("InterfaceWithMatlabEngineInfo condition variable exit"),
 	exit_(false),
 	passed_test_(false)
-{
-}
-
-InterfaceWithMatlabEngineThreadInfo::~InterfaceWithMatlabEngineThreadInfo()
 {
 }
 
@@ -585,10 +590,33 @@ bool InterfaceWithMatlab::synchronise_input()
 	
 	return(true);
 }
+#endif
 
+const ModuleLookupInfo InterfaceWithMatlab::staticInfo_("InterfaceWithMatlab", "Interface", "Matlab");
+
+InterfaceWithMatlab::InterfaceWithMatlab() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(i1);
+  INITIALIZE_PORT(i2);
+  INITIALIZE_PORT(i3);
+  INITIALIZE_PORT(i4);
+  INITIALIZE_PORT(i5);
+  INITIALIZE_PORT(field1);
+  INITIALIZE_PORT(field2);
+  //INITIALIZE_PORT(field3);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(OutputMatrix);
+  INITIALIZE_PORT(FilenameOut);
+}
+
+void InterfaceWithMatlab::setStateDefaults()
+{
+
+}
 
 void InterfaceWithMatlab::execute()
 {
+#if 0
 	// Synchronise input: translate TCL lists into C++ STL lists
 	if (!(synchronise_input()))
 	{
@@ -635,8 +663,10 @@ void InterfaceWithMatlab::execute()
 		error("InterfaceWithMatlab: Could not load matrices that matlab generated");
 		return;
 	}
+#endif
 }
 
+#if 0
 void InterfaceWithMatlab::presave()
 {
   TCLInterface::execute(get_id() + " update_text");  // update matlab-code before saving.
@@ -1636,7 +1666,6 @@ bool InterfaceWithMatlab::save_input_matrices()
 	return(true);
 }
 
-
 bool InterfaceWithMatlab::create_temp_directory()
 {
 	if (temp_directory_ == "")
@@ -1807,5 +1836,4 @@ void InterfaceWithMatlab::tcl_command(GuiArgs& args, void* userdata)
 
   Module::tcl_command(args, userdata);
 }
-
-} // End namespace InterfaceWithMatlabInterface
+#endif

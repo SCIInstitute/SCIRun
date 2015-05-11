@@ -38,14 +38,21 @@ namespace Matlab {
 namespace Interface {
   
   class SCISHARE InterfaceWithMatlab : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<StringPortTag>,
+    public Has7InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, FieldPortTag, FieldPortTag>,
     public Has3OutputPorts<FieldPortTag, MatrixPortTag, StringPortTag>
   {
   public:
     InterfaceWithMatlab();
     virtual void execute();
     virtual void setStateDefaults();
-    INPUT_PORT(0, Filename, String);
+    INPUT_PORT(0, i1, Matrix);
+    INPUT_PORT(1, i2, Matrix);
+    INPUT_PORT(2, i3, Matrix);
+    INPUT_PORT(3, i4, Matrix);
+    INPUT_PORT(4, i5, Matrix);
+    INPUT_PORT(5, field1, LegacyField);
+    INPUT_PORT(6, field2, LegacyField);
+    //INPUT_PORT(7, field3, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
     OUTPUT_PORT(1, OutputMatrix, Matrix);
     OUTPUT_PORT(2, FilenameOut, String);
