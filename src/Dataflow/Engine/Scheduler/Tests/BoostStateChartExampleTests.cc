@@ -38,10 +38,12 @@ using ::testing::Return;
 #include <boost/statechart/state_machine.hpp>
 #include <boost/statechart/simple_state.hpp>
 #include <boost/statechart/transition.hpp>
+#include <boost/mpl/list.hpp>
 #include <ctime>
 #include <iostream>
 
 namespace sc = boost::statechart;
+namespace mpl = boost::mpl;
 
 // We are declaring all types as structs only to avoid having to
 // type public. If you don't mind doing so, you can just as well
@@ -96,8 +98,20 @@ TEST(StateChartHelloWorld, Run)
 struct EvStartStop : sc::event< EvStartStop > {};
 struct EvReset : sc::event< EvReset > {};
 
+struct IElapsedTime
+{
+  virtual double ElapsedTime() const = 0;
+  virtual ~IElapsedTime() {}
+};
+
 struct Active;
-struct StopWatch : sc::state_machine< StopWatch, Active > {};
+struct StopWatch : sc::state_machine< StopWatch, Active >
+{
+  double ElapsedTime() const
+  {
+    return state_cast< const IElapsedTime & >().ElapsedTime();
+  }
+};
 
 struct Stopped;
 
@@ -171,3 +185,116 @@ TEST(StateChartStopwatch, Run)
   myWatch.process_event( EvStartStop() );
   myWatch.process_event( EvReset() );
 }
+
+struct ModuleStart : sc::event< ModuleStart > {};
+struct ModuleEnd : sc::event< ModuleEnd > {};
+struct ModuleQueued : sc::event< ModuleQueued > {};
+struct ModuleError : sc::event< ModuleError > {};
+struct ModuleReset : sc::event< ModuleReset > {};
+
+struct ModuleDone;
+struct ModuleState : sc::state_machine< ModuleState, ModuleDone >
+{
+public:
+  ModuleState()
+  {
+    std::cout << "ModuleState()" << std::endl;
+  }
+  ~ModuleState()
+  {
+    std::cout << "~ModuleState()" << std::endl;
+  }
+};
+
+struct ModuleWaiting;
+struct ModuleRunning;
+struct ModuleErrored;
+
+struct ModuleDone : sc::simple_state< ModuleDone, ModuleState >
+{
+public:
+  typedef sc::transition< ModuleQueued, ModuleWaiting > reactions;
+  ModuleDone()
+  {
+    std::cout << "ModuleDone" << std::endl;
+  }
+  ~ModuleDone()
+  {
+    std::cout << "~ModuleDone" << std::endl;
+  }
+};
+
+struct ModuleWaiting : sc::simple_state< ModuleWaiting, ModuleState >
+{
+public:
+  typedef sc::transition< ModuleStart, ModuleRunning > reactions;
+  ModuleWaiting()
+  {
+    std::cout << "ModuleWaiting" << std::endl;
+  }
+  ~ModuleWaiting()
+  {
+    std::cout << "~ModuleWaiting" << std::endl;
+  }
+};
+
+struct ModuleRunning : sc::simple_state< ModuleRunning, ModuleState >
+{
+public:
+  typedef mpl::list<
+    sc::transition< ModuleError, ModuleErrored >,
+    sc::transition< ModuleEnd, ModuleDone >>
+    reactions;
+  ModuleRunning()
+  {
+    std::cout << "ModuleRunning" << std::endl;
+  }
+  ~ModuleRunning()
+  {
+    std::cout << "~ModuleRunning" << std::endl;
+  }
+};
+
+struct ModuleErrored : sc::simple_state< ModuleErrored, ModuleState >
+{
+public:
+  typedef sc::transition< ModuleReset, ModuleDone > reactions;
+  ModuleErrored()
+  {
+    std::cout << "ModuleErrored" << std::endl;
+  }
+  ~ModuleErrored()
+  {
+    std::cout << "~ModuleErrored" << std::endl;
+  }
+};
+
+TEST(ModuleStateChart, RunNormalTransitions)
+{
+  ModuleState moduleState;
+  moduleState.initiate();
+  moduleState.process_event( ModuleQueued() );
+  moduleState.process_event( ModuleStart() );
+  moduleState.process_event( ModuleEnd() );
+}
+
+TEST(ModuleStateChart, RunErrorTransitions)
+{
+  ModuleState moduleState;
+  moduleState.initiate();
+  moduleState.process_event( ModuleQueued() );
+  moduleState.process_event( ModuleStart() );
+  moduleState.process_event( ModuleError() );
+  moduleState.process_event( ModuleReset() );
+}
+
+class ModuleStateManager
+{
+public:
+  ModuleStateManager()
+  {
+    moduleState_.initiate();
+  }
+private:
+  ModuleState moduleState_;
+};
