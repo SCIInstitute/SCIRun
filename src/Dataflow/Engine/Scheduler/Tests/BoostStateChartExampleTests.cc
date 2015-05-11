@@ -139,7 +139,7 @@ struct Active : sc::simple_state<
 
 // Stopped and Running both specify Active as their Context,
 // which makes them nested inside Active
-struct Running : sc::simple_state< Running, Active >
+struct Running : IElapsedTime, sc::simple_state< Running, Active >
 {
 public:
   typedef sc::transition< EvStartStop, Stopped > reactions;
@@ -152,20 +152,29 @@ public:
     // This can either be a direct or indirect outer state
     // or the state machine itself
     // (e.g. here: context< StopWatch >()).
-    context< Active >().ElapsedTime() +=
+    //context< Active >().ElapsedTime() +=  std::difftime( std::time( 0 ), startTime_ );
+    context< Active >().ElapsedTime() = ElapsedTime();
+  }
+  virtual double ElapsedTime() const override
+  {
+    return context< Active >().ElapsedTime() +
       std::difftime( std::time( 0 ), startTime_ );
   }
 private:
   std::time_t startTime_;
 };
 
-struct Stopped : sc::simple_state< Stopped, Active >
+struct Stopped : IElapsedTime, sc::simple_state< Stopped, Active >
 {
   typedef sc::transition< EvStartStop, Running > reactions;
   // A state can define an arbitrary number of reactions. That's
 // why we have to put them into an mpl::list<> as soon as there
 // is more than one of them
 // (see Specifying multiple reactions for a state).
+  virtual double ElapsedTime() const override
+  {
+    return context< Active >().ElapsedTime();
+  }
 };
 
 // Because the context of a state must be a complete type (i.e.
@@ -180,10 +189,15 @@ TEST(StateChartStopwatch, Run)
 {
   StopWatch myWatch;
   myWatch.initiate();
+  std::cout << myWatch.ElapsedTime() << "\n";
   myWatch.process_event( EvStartStop() );
+  std::cout << myWatch.ElapsedTime() << "\n";
   myWatch.process_event( EvStartStop() );
+  std::cout << myWatch.ElapsedTime() << "\n";
   myWatch.process_event( EvStartStop() );
+  std::cout << myWatch.ElapsedTime() << "\n";
   myWatch.process_event( EvReset() );
+  std::cout << myWatch.ElapsedTime() << "\n";
 }
 
 struct ModuleStart : sc::event< ModuleStart > {};
