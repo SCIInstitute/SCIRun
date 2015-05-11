@@ -46,11 +46,6 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
-
-private Q_SLOTS:
-  void push();
-private:
-  std::string getDataAtLocation() const;
 };
 
 }
