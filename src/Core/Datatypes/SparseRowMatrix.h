@@ -166,6 +166,8 @@ namespace Datatypes {
     virtual void put(int i, int j, const T& val) override
     {
       this->coeffRef(i,j) = val;
+      //TODO: not sure this is best place for this call: it's the slowest but also the safest since this is a virtual Matrix function. Users should know to avoid calling this with known sparse matrices.
+      this->makeCompressed();
     }
 
     // legacy support

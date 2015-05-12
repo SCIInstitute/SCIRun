@@ -160,9 +160,7 @@ CreateLatVol::execute()
     }
 
     double padPercent = get_state()->getValue(PadPercent).toDouble();
-    std::cout << get_id() << " padPercent: " << padPercent << std::endl;
     Vector diag((maxb - minb) * (padPercent/100.0));
-    std::cout << get_id() << " diag: " << diag << std::endl;
     minb -= diag;
     maxb += diag;
 
