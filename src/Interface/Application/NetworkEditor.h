@@ -155,6 +155,10 @@ Q_SIGNALS:
 
     void setVisibility(bool visible);
 
+    void metadataLayer(bool active);
+    void tagLayer(bool active, int tag);
+    bool tagLayerActive() const { return tagLayerActive_; }
+
   protected:
     virtual void dropEvent(QDropEvent* event) override;
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
@@ -238,6 +242,7 @@ Q_SIGNALS:
     //QAction* executeAction_;
 		bool modulesSelectedByCL_;
     double currentScale_;
+    bool tagLayerActive_;
 
     QGraphicsScene* scene_;
 

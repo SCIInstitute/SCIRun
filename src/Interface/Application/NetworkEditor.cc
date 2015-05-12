@@ -66,6 +66,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   propertiesAction_(0),
   modulesSelectedByCL_(false),
   currentScale_(1),
+  tagLayerActive_(false),
   scene_(new QGraphicsScene(parent)),
   visibleItems_(true),
   lastModulePosition_(0,0),
@@ -1072,6 +1073,52 @@ void NetworkEditor::setModuleMini(bool mini)
     auto module = getModule(item);
     if (module)
       module->setMiniMode(mini);
+  }
+}
+
+void NetworkEditor::metadataLayer(bool active)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    item->setOpacity(active ? 0.4 : 1);
+  }
+}
+
+static const int TagDataKey = 123;
+
+static QColor tagColor(int tag)
+{
+  switch (tag)
+  {
+  case 0:
+    return Qt::blue;
+  case 1:
+    return Qt::green;
+  case 2:
+    return Qt::darkYellow;
+  default:
+    return Qt::darkGray;
+  }
+}
+
+void NetworkEditor::tagLayer(bool active, int tag)
+{
+  tagLayerActive_ = active;
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (active)
+    {
+      if (tag == item->data(TagDataKey).toInt())
+      {
+        auto colorize = new QGraphicsColorizeEffect;
+        colorize->setColor(tagColor(tag));
+        item->setGraphicsEffect(colorize);
+      }
+      else
+        item->setGraphicsEffect(new QGraphicsBlurEffect);
+    }
+    else
+      item->setGraphicsEffect(0);
   }
 }
 

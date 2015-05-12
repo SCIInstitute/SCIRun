@@ -1383,6 +1383,32 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
 	{
 		statusBar()->showMessage("Network zoom active");
 	}
+  else if (event->key() == Qt::Key_Control)
+  {
+    networkEditor_->metadataLayer(true);
+    statusBar()->showMessage("Metadata layer active");
+  }
+  else if (event->key() == Qt::Key_Alt)
+  {
+    networkEditor_->tagLayer(true, -1);
+    statusBar()->showMessage("Tag layer active: none");
+  }
+  else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
+  {
+    if (networkEditor_->tagLayerActive())
+    {
+      auto key = event->key() - Qt::Key_0;
+      networkEditor_->tagLayer(true, key);
+      statusBar()->showMessage("Tag layer active: " + QString::number(key));
+    }
+    else
+    {
+      auto key = event->key() - Qt::Key_0;
+      statusBar()->showMessage("Key pressed, tag layer inactive: " + QString::number(key), 1000);
+    }
+
+  }
+
   QMainWindow::keyPressEvent(event);
 }
 
@@ -1392,6 +1418,31 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
 	{
     statusBar()->showMessage("Network zoom inactive", 1000);
 	}
+  else if (event->key() == Qt::Key_Control)
+  {
+    networkEditor_->metadataLayer(false);
+    statusBar()->showMessage("Metadata layer inactive", 1000);
+  }
+  else if (event->key() == Qt::Key_Alt)
+  {
+    networkEditor_->tagLayer(false, -1);
+    statusBar()->showMessage("Tag layer inactive", 1000);
+  }
+  else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
+  {
+    if (networkEditor_->tagLayerActive())
+    {
+      auto key = event->key() - Qt::Key_0;
+      networkEditor_->tagLayer(false, key);
+      statusBar()->showMessage("Tag layer inactive: " + QString::number(key), 1000);
+    }
+    else
+    {
+      auto key = event->key() - Qt::Key_0;
+      statusBar()->showMessage("Key released, tag layer inactive: " + QString::number(key), 1000);
+    }
+  }
+
   QMainWindow::keyPressEvent(event);
 }
 
