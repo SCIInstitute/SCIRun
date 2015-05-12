@@ -134,164 +134,171 @@ namespace MatlabIO {
   };
 #endif
 
+
+  namespace SCIRun {
+    namespace Modules {
+      namespace Matlab {
+        namespace Interface {
+
+          class InterfaceWithMatlabImpl //: public ServiceBase 
+          {
+          public:
 #if 0
-  class InterfaceWithMatlabImpl : public ServiceBase 
-  {
 
-  public:
-    // Constructor
-    InterfaceWithMatlab(GuiContext* ctx);
+            // Constructor
+            InterfaceWithMatlab(GuiContext* ctx);
 
-    // Destructor
-    virtual ~InterfaceWithMatlab();
+            // Destructor
+            virtual ~InterfaceWithMatlab();
 
-    // Std functions for each module
-    // execute():
-    //   Execute the module and put data on the output port
+            // Std functions for each module
+            // execute():
+            //   Execute the module and put data on the output port
 
-    virtual void execute();
-    virtual void presave();
-    virtual void tcl_command(GuiArgs& args, void* userdata);
+            virtual void execute();
+            virtual void presave();
+            virtual void tcl_command(GuiArgs& args, void* userdata);
 
 
-    static matlabarray::mitype	convertdataformat(std::string dataformat);
-    static std::string totclstring(std::string &instring);
-    std::vector<std::string>	converttcllist(std::string str);
+            static matlabarray::mitype	convertdataformat(const std::string& dataformat);
+            static std::string totclstring(const std::string& instring);
+            std::vector<std::string>	converttcllist(const std::string& str);
 
-    void	update_status(std::string text);
-  private:
+            void	update_status(const std::string& text);
+#endif
 
-    bool	open_matlab_engine();
-    bool	close_matlab_engine();
+            bool	open_matlab_engine();
+            bool	close_matlab_engine();
 
-    bool	create_temp_directory();
-    bool	delete_temp_directory();
+            bool	create_temp_directory();
+            bool	delete_temp_directory();
 
-    bool	save_input_matrices();
-    bool	load_output_matrices();
+            bool	save_input_matrices();
+            bool	load_output_matrices();
 
-    bool	generate_matlab_code();
-    bool	send_matlab_job();
-    bool  send_input(std::string str);
+            bool	generate_matlab_code();
+            bool	send_matlab_job();
+            bool  send_input(const std::string& str);
+
+            bool	synchronise_input();
+#if 0
+          private:
+            enum { NUM_MATRIX_PORTS = 5 };
+            enum { NUM_FIELD_PORTS = 3 };
+            enum { NUM_NRRD_PORTS = 3 };
+            enum { NUM_STRING_PORTS = 3 };
+
+            // Temp directory for writing files coming from the 
+            // the matlab engine
+
+            std::string temp_directory_;
+
+            // GUI variables
+
+            // Names of matrices
+            GuiString   input_matrix_name_;
+            GuiString   input_field_name_;
+            GuiString   input_nrrd_name_;
+            GuiString   input_string_name_;
+            GuiString   input_matrix_type_;
+            GuiString   input_nrrd_type_;
+            GuiString   input_matrix_array_;
+            GuiString   input_field_array_;
+            GuiString   input_nrrd_array_;
+            GuiString   output_matrix_name_;
+            GuiString   output_field_name_;
+            GuiString   output_nrrd_name_;
+            GuiString   output_string_name_;
+            GuiString   configfile_;
 
 
-    bool	synchronise_input();
+            // Fields per port
+            std::vector<std::string>   input_matrix_name_list_;
+            std::vector<std::string>   input_matrix_name_list_old_;
+            std::vector<std::string>   input_field_name_list_;
+            std::vector<std::string>   input_field_name_list_old_;
+            std::vector<std::string>   input_nrrd_name_list_;
+            std::vector<std::string>   input_string_name_list_old_;
+            std::vector<std::string>   input_string_name_list_;
+            std::vector<std::string>   input_nrrd_name_list_old_;
+            std::vector<std::string>   input_matrix_type_list_;
+            std::vector<std::string>   input_nrrd_type_list_;
+            std::vector<std::string>   input_matrix_array_list_;
+            std::vector<std::string>   input_field_array_list_;
+            std::vector<std::string>   input_nrrd_array_list_;
+            std::vector<std::string>   input_string_array_list_;
+            std::vector<std::string>   input_matrix_type_list_old_;
+            std::vector<std::string>   input_nrrd_type_list_old_;
+            std::vector<std::string>   input_matrix_array_list_old_;
+            std::vector<std::string>   input_field_array_list_old_;
+            std::vector<std::string>   input_nrrd_array_list_old_;
+            std::vector<std::string>   output_matrix_name_list_;
+            std::vector<std::string>   output_field_name_list_;
+            std::vector<std::string>   output_nrrd_name_list_;
+            std::vector<std::string>   output_string_name_list_;
 
-    enum { NUM_MATRIX_PORTS = 5 };
-    enum { NUM_FIELD_PORTS = 3 };
-    enum { NUM_NRRD_PORTS = 3 };
-    enum { NUM_STRING_PORTS = 3 };
+            std::vector<int> input_matrix_generation_old_;
+            std::vector<int> input_field_generation_old_;
+            std::vector<int> input_nrrd_generation_old_;
+            std::vector<int> input_string_generation_old_;
 
-    // Temp directory for writing files coming from the 
-    // the matlab engine
+            std::string	matlab_code_list_;
 
-    std::string temp_directory_;
+            // Ports for input and output
+            std::string		input_matrix_matfile_[NUM_MATRIX_PORTS];
+            std::string		input_field_matfile_[NUM_FIELD_PORTS];
+            std::string		input_nrrd_matfile_[NUM_NRRD_PORTS];
+            std::string		input_string_matfile_[NUM_STRING_PORTS];
 
-    // GUI variables
+            std::string		output_matrix_matfile_[NUM_MATRIX_PORTS];
+            std::string		output_field_matfile_[NUM_FIELD_PORTS];
+            std::string		output_nrrd_matfile_[NUM_NRRD_PORTS];
+            std::string		output_string_matfile_[NUM_STRING_PORTS];
 
-    // Names of matrices
-    GuiString   input_matrix_name_;
-    GuiString   input_field_name_;
-    GuiString   input_nrrd_name_;
-    GuiString   input_string_name_;
-    GuiString   input_matrix_type_;
-    GuiString   input_nrrd_type_;
-    GuiString   input_matrix_array_;
-    GuiString   input_field_array_;
-    GuiString   input_nrrd_array_;
-    GuiString   output_matrix_name_;
-    GuiString   output_field_name_;
-    GuiString   output_nrrd_name_;
-    GuiString   output_string_name_;
-    GuiString   configfile_;
+            // Internet connectivity stuff
+            GuiString   inet_address_;
+            GuiString   inet_port_;
+            GuiString   inet_passwd_;
+            GuiString   inet_session_;
 
+            std::string inet_address_old_;
+            std::string inet_port_old_;
+            std::string inet_passwd_old_;
+            std::string inet_session_old_;
 
-    // Fields per port
-    std::vector<std::string>   input_matrix_name_list_;
-    std::vector<std::string>   input_matrix_name_list_old_;
-    std::vector<std::string>   input_field_name_list_;
-    std::vector<std::string>   input_field_name_list_old_;
-    std::vector<std::string>   input_nrrd_name_list_;
-    std::vector<std::string>   input_string_name_list_old_;
-    std::vector<std::string>   input_string_name_list_;
-    std::vector<std::string>   input_nrrd_name_list_old_;
-    std::vector<std::string>   input_matrix_type_list_;
-    std::vector<std::string>   input_nrrd_type_list_;
-    std::vector<std::string>   input_matrix_array_list_;
-    std::vector<std::string>   input_field_array_list_;
-    std::vector<std::string>   input_nrrd_array_list_;
-    std::vector<std::string>   input_string_array_list_;
-    std::vector<std::string>   input_matrix_type_list_old_;
-    std::vector<std::string>   input_nrrd_type_list_old_;
-    std::vector<std::string>   input_matrix_array_list_old_;
-    std::vector<std::string>   input_field_array_list_old_;
-    std::vector<std::string>   input_nrrd_array_list_old_;
-    std::vector<std::string>   output_matrix_name_list_;
-    std::vector<std::string>   output_field_name_list_;
-    std::vector<std::string>   output_nrrd_name_list_;
-    std::vector<std::string>   output_string_name_list_;
+            // The tempfilemanager
+            TempFileManager tfmanager_;
+            std::string		mfile_;
 
-    std::vector<int> input_matrix_generation_old_;
-    std::vector<int> input_field_generation_old_;
-    std::vector<int> input_nrrd_generation_old_;
-    std::vector<int> input_string_generation_old_;
+            GuiString		matlab_code_;
+            GuiString   matlab_code_file_;
+            GuiString		matlab_var_;
 
-    std::string	matlab_code_list_;
+            GuiString   start_matlab_;
+            GuiInt      matlab_timeout_;
 
-    // Ports for input and output
-    std::string		input_matrix_matfile_[NUM_MATRIX_PORTS];
-    std::string		input_field_matfile_[NUM_FIELD_PORTS];
-    std::string		input_nrrd_matfile_[NUM_NRRD_PORTS];
-    std::string		input_string_matfile_[NUM_STRING_PORTS];
-
-    std::string		output_matrix_matfile_[NUM_MATRIX_PORTS];
-    std::string		output_field_matfile_[NUM_FIELD_PORTS];
-    std::string		output_nrrd_matfile_[NUM_NRRD_PORTS];
-    std::string		output_string_matfile_[NUM_STRING_PORTS];
-
-    // Internet connectivity stuff
-    GuiString   inet_address_;
-    GuiString   inet_port_;
-    GuiString   inet_passwd_;
-    GuiString   inet_session_;
-
-    std::string inet_address_old_;
-    std::string inet_port_old_;
-    std::string inet_passwd_old_;
-    std::string inet_session_old_;
-
-    // The tempfilemanager
-    TempFileManager tfmanager_;
-    std::string		mfile_;
-
-    GuiString		matlab_code_;
-    GuiString   matlab_code_file_;
-    GuiString		matlab_var_;
-
-    GuiString   start_matlab_;
-    GuiInt      matlab_timeout_;
-
-    std::string start_matlab_old_;
-    int         matlab_timeout_old_;  
+            std::string start_matlab_old_;
+            int         matlab_timeout_old_;  
 
 #ifndef USE_MATLAB_ENGINE_LIBRARY
-    ServiceClientHandle           matlab_engine_;
-    InterfaceWithMatlabEngineThreadInfoHandle	thread_info_;
+            ServiceClientHandle           matlab_engine_;
+            InterfaceWithMatlabEngineThreadInfoHandle	thread_info_;
 #else
-    Engine* engine_;
-    char output_buffer_[51200];
+            Engine* engine_;
+            char output_buffer_[51200];
 #endif
-    FileTransferClientHandle      file_transfer_;
+            FileTransferClientHandle      file_transfer_;
 
-    bool            need_file_transfer_;
-    std::string     remote_tempdir_;
+            bool            need_file_transfer_;
+            std::string     remote_tempdir_;
 
-    std::string     inputstring_;
+            std::string     inputstring_;
 
-  public:
-    static void cleanup_callback(void *data);
-  };
+          public:
+            static void cleanup_callback(void *data);
 #endif
+          };
+        }}}}
 
 #if 0
   InterfaceWithMatlabEngineThreadInfo::InterfaceWithMatlabEngineThreadInfo() :
@@ -508,13 +515,13 @@ namespace MatlabIO {
   }
 
 
-  void	InterfaceWithMatlab::update_status(std::string text)
+  void	InterfaceWithMatlab::update_status(const std::string& text)
   {
     std::string cmd = get_id() + " UpdateStatus \"" + totclstring(text) + "\"";
     TCLInterface::execute(cmd);
   }
 
-  matlabarray::mitype InterfaceWithMatlab::convertdataformat(std::string dataformat)
+  matlabarray::mitype InterfaceWithMatlab::convertdataformat(const std::string& dataformat)
   {
     matlabarray::mitype type = matlabarray::miUNKNOWN;
     if (dataformat == "same as data")  { type = matlabarray::miSAMEASDATA; }
@@ -535,7 +542,7 @@ namespace MatlabIO {
   // converts a TCL formatted list into a STL array
   // of strings
 
-  std::vector<std::string> InterfaceWithMatlab::converttcllist(std::string str)
+  std::vector<std::string> InterfaceWithMatlab::converttcllist(const std::string& str)
   {
     std::string result;
     std::vector<std::string> list(0);
@@ -560,111 +567,111 @@ namespace MatlabIO {
     }
     return(list);
   }
-
-  bool InterfaceWithMatlab::synchronise_input()
-  {
-
-    TCLInterface::execute(get_id()+" Synchronise");
-    get_ctx()->reset();
-
-    std::string str;
-    str = input_matrix_name_.get(); input_matrix_name_list_ = converttcllist(str);
-    str = input_matrix_type_.get(); input_matrix_type_list_ = converttcllist(str);
-    str = input_matrix_array_.get(); input_matrix_array_list_ = converttcllist(str);
-    str = output_matrix_name_.get(); output_matrix_name_list_ = converttcllist(str);
-
-    str = input_field_name_.get(); input_field_name_list_ = converttcllist(str);
-    str = input_field_array_.get(); input_field_array_list_ = converttcllist(str);
-    str = output_field_name_.get(); output_field_name_list_ = converttcllist(str);
-
-    str = input_nrrd_name_.get(); input_nrrd_name_list_ = converttcllist(str);
-    str = input_nrrd_type_.get(); input_nrrd_type_list_ = converttcllist(str);
-    str = input_nrrd_array_.get(); input_nrrd_array_list_ = converttcllist(str);
-    str = output_nrrd_name_.get(); output_nrrd_name_list_ = converttcllist(str);
-
-    str = input_string_name_.get(); input_string_name_list_ = converttcllist(str);
-    str = output_string_name_.get(); output_string_name_list_ = converttcllist(str);
-
-    TCLInterface::execute(get_id() + " update_text"); // update matlab_code_ before use.
-    matlab_code_list_ = matlab_code_.get(); 
-
-    return(true);
-  }
 #endif
 
-  const ModuleLookupInfo InterfaceWithMatlab::staticInfo_("InterfaceWithMatlab", "Interface", "Matlab");
-
-  InterfaceWithMatlab::InterfaceWithMatlab() : Module(staticInfo_)
-  {
-    INITIALIZE_PORT(i1);
-    INITIALIZE_PORT(i2);
-    INITIALIZE_PORT(i3);
-    INITIALIZE_PORT(i4);
-    INITIALIZE_PORT(i5);
-    INITIALIZE_PORT(field1);
-    INITIALIZE_PORT(field2);
-    //INITIALIZE_PORT(field3);
-    INITIALIZE_PORT(OutputField);
-    INITIALIZE_PORT(OutputMatrix);
-    INITIALIZE_PORT(FilenameOut);
-  }
-
-  void InterfaceWithMatlab::setStateDefaults()
-  {
-
-  }
-
-  void InterfaceWithMatlab::execute()
-  {
+bool InterfaceWithMatlabImpl::synchronise_input()
+{
 #if 0
-    // Synchronise input: translate TCL lists into C++ STL lists
-    if (!(synchronise_input()))
-    {
-      error("InterfaceWithMatlab: Could not retreive GUI input");
-      return;
-    }
+  TCLInterface::execute(get_id()+" Synchronise");
+  get_ctx()->reset();
 
-    // If we haven't created a temporary directory yet
-    // we open one to store all temp files in
-    if (!(create_temp_directory()))
-    {
-      error("InterfaceWithMatlab: Could not create temporary directory");
-      return;
-    }
+  std::string str;
+  str = input_matrix_name_.get(); input_matrix_name_list_ = converttcllist(str);
+  str = input_matrix_type_.get(); input_matrix_type_list_ = converttcllist(str);
+  str = input_matrix_array_.get(); input_matrix_array_list_ = converttcllist(str);
+  str = output_matrix_name_.get(); output_matrix_name_list_ = converttcllist(str);
 
-    if (!(open_matlab_engine()))
-    {
-      error("InterfaceWithMatlab: Could not open matlab engine");
-      return;
-    }
+  str = input_field_name_.get(); input_field_name_list_ = converttcllist(str);
+  str = input_field_array_.get(); input_field_array_list_ = converttcllist(str);
+  str = output_field_name_.get(); output_field_name_list_ = converttcllist(str);
 
-    if (!(save_input_matrices()))
-    {
-      error("InterfaceWithMatlab: Could not create the input matrices");
-      return;
-    }
+  str = input_nrrd_name_.get(); input_nrrd_name_list_ = converttcllist(str);
+  str = input_nrrd_type_.get(); input_nrrd_type_list_ = converttcllist(str);
+  str = input_nrrd_array_.get(); input_nrrd_array_list_ = converttcllist(str);
+  str = output_nrrd_name_.get(); output_nrrd_name_list_ = converttcllist(str);
 
-    update_state(Executing);
+  str = input_string_name_.get(); input_string_name_list_ = converttcllist(str);
+  str = output_string_name_.get(); output_string_name_list_ = converttcllist(str);
 
-    if (!(generate_matlab_code()))
-    {
-      error("InterfaceWithMatlab: Could not create m-file code for matlabengine");
-      return;
-    }	
-
-    if (!send_matlab_job())
-    {
-      error("InterfaceWithMatlab: Matlab returned an error or Matlab could not be launched");
-      return;
-    }
-
-    if (!load_output_matrices())
-    {
-      error("InterfaceWithMatlab: Could not load matrices that matlab generated");
-      return;
-    }
+  TCLInterface::execute(get_id() + " update_text"); // update matlab_code_ before use.
+  matlab_code_list_ = matlab_code_.get(); 
 #endif
+  return(true);
+}
+
+
+const ModuleLookupInfo InterfaceWithMatlab::staticInfo_("InterfaceWithMatlab", "Interface", "Matlab");
+
+InterfaceWithMatlab::InterfaceWithMatlab() : Module(staticInfo_), impl_(new InterfaceWithMatlabImpl)
+{
+  INITIALIZE_PORT(i1);
+  INITIALIZE_PORT(i2);
+  INITIALIZE_PORT(i3);
+  INITIALIZE_PORT(i4);
+  INITIALIZE_PORT(i5);
+  INITIALIZE_PORT(field1);
+  INITIALIZE_PORT(field2);
+  //INITIALIZE_PORT(field3);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(OutputMatrix);
+  INITIALIZE_PORT(FilenameOut);
+}
+
+void InterfaceWithMatlab::setStateDefaults()
+{
+
+}
+
+void InterfaceWithMatlab::execute()
+{
+  // Synchronise input: translate TCL lists into C++ STL lists
+  if (!impl_->synchronise_input())
+  {
+    error("InterfaceWithMatlab: Could not retreive GUI input");
+    return;
   }
+
+  // If we haven't created a temporary directory yet
+  // we open one to store all temp files in
+  if (!impl_->create_temp_directory())
+  {
+    error("InterfaceWithMatlab: Could not create temporary directory");
+    return;
+  }
+
+  if (!impl_->open_matlab_engine())
+  {
+    error("InterfaceWithMatlab: Could not open matlab engine");
+    return;
+  }
+#if 0
+  if (!(save_input_matrices()))
+  {
+    error("InterfaceWithMatlab: Could not create the input matrices");
+    return;
+  }
+
+  update_state(Executing);
+
+  if (!(generate_matlab_code()))
+  {
+    error("InterfaceWithMatlab: Could not create m-file code for matlabengine");
+    return;
+  }	
+
+  if (!send_matlab_job())
+  {
+    error("InterfaceWithMatlab: Matlab returned an error or Matlab could not be launched");
+    return;
+  }
+
+  if (!load_output_matrices())
+  {
+    error("InterfaceWithMatlab: Could not load matrices that matlab generated");
+    return;
+  }
+#endif
+}
 
 #if 0
   void InterfaceWithMatlab::presave()

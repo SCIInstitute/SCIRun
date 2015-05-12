@@ -58,6 +58,8 @@ namespace Interface {
     OUTPUT_PORT(2, FilenameOut, String);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  private:
+    boost::shared_ptr<class InterfaceWithMatlabImpl> impl_;
   };
 
 }}}}
