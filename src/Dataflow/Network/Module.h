@@ -93,9 +93,7 @@ namespace Networks {
     virtual const ModuleStateHandle get_state() const;
     virtual void set_state(ModuleStateHandle state);
 
-    virtual ExecutionState executionState() const;
-    virtual void setExecutionState(ExecutionState state);
-    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber);
+    virtual ModuleExecutionState& executionState();
 
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber);
 
@@ -280,12 +278,14 @@ namespace Networks {
     ExecuteBeginsSignalType executeBegins_;
     ExecuteEndsSignalType executeEnds_;
     ErrorSignalType errorSignal_;
-    boost::atomic<ExecutionState> executionState_;
-    ExecutionStateChangedSignalType executionStateChanged_;
+    //boost::atomic<ExecutionState> executionState_;
+    //ExecutionStateChangedSignalType executionStateChanged_;
     std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
     ExecutionSelfRequestSignalType executionSelfRequested_;
 
     ModuleReexecutionStrategyHandle reexecute_;
+
+    ModuleExecutionStateHandle executionState_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;

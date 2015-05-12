@@ -123,6 +123,8 @@ namespace Networks {
     virutal ~ModuleExecutionState() {}
   };
 
+  typedef boost::shared_ptr<ModuleExecutionState> ModuleExecutionStateHandle;
+
   /// @todo: interface is getting bloated, segregate it.
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface,
     public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
