@@ -116,7 +116,7 @@ namespace Networks {
     //virtual void setExecutionState(ExecutionState state) = 0;
 
     typedef boost::signals2::signal<void(int)> ExecutionStateChangedSignalType;
-    
+
     virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) = 0;
     virtual bool transitionTo(ExecutionState state) = 0;
     virtual std::string currentColor() const = 0;
@@ -125,8 +125,7 @@ namespace Networks {
 
   /// @todo: interface is getting bloated, segregate it.
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface,
-    public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator,
-    public ModuleExecutionState
+    public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
   {
   public:
     virtual ~ModuleInterface();
@@ -138,6 +137,8 @@ namespace Networks {
 
     typedef boost::signals2::signal<void()> ExecutionSelfRequestSignalType;
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;
+
+    virtual ModuleExecutionState& executionState() = 0;
 
     /// @todo for deserialization
     virtual void set_id(const std::string& id) = 0;
