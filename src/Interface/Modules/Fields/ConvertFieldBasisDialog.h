@@ -35,22 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ConvertFieldBasisDialog : public ModuleDialogGeneric, 
+
+class SCISHARE ConvertFieldBasisDialog : public ModuleDialogGeneric,
   public Ui::ConvertFieldBasis
 {
 	Q_OBJECT
-	
+
 public:
-  ConvertFieldBasisDialog(const std::string& name, 
+  ConvertFieldBasisDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
-
-private Q_SLOTS:
-//  void push();
-private:
-  std::string getDataAtLocation() const;
 };
 
 }
