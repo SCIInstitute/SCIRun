@@ -213,8 +213,8 @@ public:
   virtual ~ModuleColorProvider() {}
 };
 
-struct ModuleDone;
-struct ModuleState : sc::state_machine< ModuleState, ModuleDone >
+struct ModuleNotExecuted;
+struct ModuleState : sc::state_machine< ModuleState, ModuleNotExecuted >
 {
 public:
   ModuleState()
@@ -234,18 +234,19 @@ public:
 struct ModuleWaiting;
 struct ModuleRunning;
 struct ModuleErrored;
+struct ModuleCompleted;
 
-struct ModuleDone : ModuleColorProvider, sc::simple_state< ModuleDone, ModuleState >
+struct ModuleNotExecuted : ModuleColorProvider, sc::simple_state< ModuleNotExecuted, ModuleState >
 {
 public:
   typedef sc::transition< ModuleQueued, ModuleWaiting > reactions;
-  ModuleDone()
+  ModuleNotExecuted()
   {
-    std::cout << "ModuleDone" << std::endl;
+    std::cout << "ModuleNotExecuted" << std::endl;
   }
-  ~ModuleDone()
+  ~ModuleNotExecuted()
   {
-    std::cout << "~ModuleDone" << std::endl;
+    std::cout << "~ModuleNotExecuted" << std::endl;
   }
   virtual std::string color() const override { return "gray"; }
 };
@@ -270,7 +271,7 @@ struct ModuleRunning : ModuleColorProvider, sc::simple_state< ModuleRunning, Mod
 public:
   typedef mpl::list<
     sc::transition< ModuleError, ModuleErrored >,
-    sc::transition< ModuleEnd, ModuleDone >>
+    sc::transition< ModuleEnd, ModuleCompleted >>
     reactions;
   ModuleRunning()
   {
@@ -286,7 +287,7 @@ public:
 struct ModuleErrored : ModuleColorProvider, sc::simple_state< ModuleErrored, ModuleState >
 {
 public:
-  typedef sc::transition< ModuleReset, ModuleDone > reactions;
+  typedef sc::transition< ModuleReset, ModuleNotExecuted > reactions;
   ModuleErrored()
   {
     std::cout << "ModuleErrored" << std::endl;
@@ -296,6 +297,21 @@ public:
     std::cout << "~ModuleErrored" << std::endl;
   }
   virtual std::string color() const override { return "red"; }
+};
+
+struct ModuleCompleted : ModuleColorProvider, sc::simple_state< ModuleCompleted, ModuleState >
+{
+public:
+  typedef sc::transition< ModuleReset, ModuleNotExecuted > reactions;
+  ModuleCompleted()
+  {
+    std::cout << "ModuleCompleted" << std::endl;
+  }
+  ~ModuleCompleted()
+  {
+    std::cout << "~ModuleCompleted" << std::endl;
+  }
+  virtual std::string color() const override { return "darkGray"; }
 };
 
 TEST(ModuleStateChart, RunNormalTransitions)
@@ -317,6 +333,36 @@ TEST(ModuleStateChart, RunErrorTransitions)
   moduleState.process_event( ModuleReset() );
 }
 
+TEST(ModuleStateChart, RunNormalTransitionsWithColor)
+{
+  ModuleState moduleState;
+  moduleState.initiate();
+  EXPECT_EQ("gray", moduleState.currentColor());
+  moduleState.process_event( ModuleQueued() );
+  EXPECT_EQ("yellow", moduleState.currentColor());
+  moduleState.process_event( ModuleStart() );
+  EXPECT_EQ("green", moduleState.currentColor());
+  moduleState.process_event( ModuleEnd() );
+  EXPECT_EQ("darkGray", moduleState.currentColor());
+}
+
+TEST(ModuleStateChart, RunErrorTransitionsWithColor)
+{
+  ModuleState moduleState;
+  moduleState.initiate();
+  EXPECT_EQ("gray", moduleState.currentColor());
+  moduleState.process_event( ModuleQueued() );
+  EXPECT_EQ("yellow", moduleState.currentColor());
+  moduleState.process_event( ModuleStart() );
+  EXPECT_EQ("green", moduleState.currentColor());
+  moduleState.process_event( ModuleError() );
+  EXPECT_EQ("red", moduleState.currentColor());
+  moduleState.process_event( ModuleStart() );
+  EXPECT_EQ("red", moduleState.currentColor());
+  moduleState.process_event( ModuleReset() );
+  EXPECT_EQ("gray", moduleState.currentColor());
+}
+
 class ModuleStateManager
 {
 public:
@@ -324,6 +370,7 @@ public:
   {
     moduleState_.initiate();
   }
+
 private:
   ModuleState moduleState_;
 };
