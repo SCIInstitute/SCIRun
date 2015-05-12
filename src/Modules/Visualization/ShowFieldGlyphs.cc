@@ -88,6 +88,7 @@ void ShowFieldGlyphs::execute()
 
   if (needToExecute())
   {
+    configureInputs(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap);
     GeometryHandle geom = buildGeometryObject(pfield, pcolorMap, getRenderState(get_state(), pcolorMap));
     sendOutput(SceneGraph, geom);
   }
@@ -95,8 +96,8 @@ void ShowFieldGlyphs::execute()
 
 void ShowFieldGlyphs::configureInputs(
   boost::shared_ptr<SCIRun::Field> pfield,
-  boost::shared_ptr<SCIRun::Field> sfield,
-  boost::shared_ptr<SCIRun::Field> tfield,
+  boost::optional<boost::shared_ptr<SCIRun::Field>> sfield,
+  boost::optional<boost::shared_ptr<SCIRun::Field>> tfield,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> pcolormap,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> scolormap,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> tcolormap)
@@ -105,22 +106,35 @@ void ShowFieldGlyphs::configureInputs(
 
   if (!pfinfo.is_svt())
   {
-    THROW_ALGORITHM_INPUT_ERROR("No Scalar, Vector, or Tensor data found in the data field.");
+    THROW_ALGORITHM_INPUT_ERROR("No Scalar, Vector, or Tensor data found in the primary data field.");
   }
 
   if (!sfield)
   {
-    sfield = pfield;
+    *sfield = pfield;
   }
 
   if (!tfield)
   {
-    tfield = pfield;
+    *tfield = pfield;
   }
 
-  if (sfield != pfield || tfield != pfield)
+  if (*sfield != pfield || *tfield != pfield)
   {
-    FieldInformation sfinfo(sfield);
+    FieldInformation sfinfo(*sfield);
+    FieldInformation tfinfo(*tfield);
+
+    if (!sfinfo.is_svt())
+    {
+      THROW_ALGORITHM_INPUT_ERROR("No Scalar, Vector, or Tensor data found in the secondary data field.");
+    }
+
+    if (!tfinfo.is_svt())
+    {
+      THROW_ALGORITHM_INPUT_ERROR("No Scalar, Vector, or Tensor data found in the tertiary data field.");
+    }
+
+
   }
 }
 

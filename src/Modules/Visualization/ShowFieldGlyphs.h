@@ -63,8 +63,8 @@ namespace SCIRun {
       private:
         void configureInputs(
           boost::shared_ptr<SCIRun::Field> pfield,
-          boost::shared_ptr<SCIRun::Field> sfield,
-          boost::shared_ptr<SCIRun::Field> tfield,
+          boost::optional<boost::shared_ptr<SCIRun::Field>> sfield,
+          boost::optional<boost::shared_ptr<SCIRun::Field>> tfield,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> pcolormap,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> scolormap,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> tcolormap);

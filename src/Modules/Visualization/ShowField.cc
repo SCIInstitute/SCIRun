@@ -1527,27 +1527,13 @@ void ShowFieldModule::renderEdges(
     } 
     else 
     {
-      points.push_back(Vector(p0));
-      if (colorScheme == GeometryObject::COLOR_MAP ||
-          colorScheme == GeometryObject::COLOR_IN_SITU)
-        colors.push_back(edge_colors[0]);
-      indices.push_back(index);
-      ++index;
-      points.push_back(Vector(p1));
-      if (colorScheme == GeometryObject::COLOR_MAP ||
-          colorScheme == GeometryObject::COLOR_IN_SITU)
-        colors.push_back(edge_colors[1]);
-      indices.push_back(index);
-      ++index;
-      ++numVBOElements;
+      glyphs.addNeedle(p0, p1, edge_colors[0], edge_colors[1]);      
     }
 
     ++eiter;
   }
-  if (state.get(RenderState::USE_CYLINDER))
-  {
-    glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);
-  }
+
+  glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
   vboSize += (uint32_t)normals.size() * 3 * sizeof(float);

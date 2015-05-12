@@ -34,7 +34,7 @@ using namespace SCIRun::Graphics;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 
-GlyphGeom::GlyphGeom() : numVBOElements_(0)
+GlyphGeom::GlyphGeom() : numVBOElements_(0), lineIndex_(0)
 {
 
 }
@@ -69,6 +69,11 @@ void GlyphGeom::addCylinder(const Point p1, const Point& p2, double radius, doub
                             const ColorRGB& color1, const ColorRGB& color2)
 {
   generateCylinder(p1, p2, radius, radius, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
+}
+
+void GlyphGeom::addNeedle(Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
+{
+  generateLine(p1, p2, color1, color2, numVBOElements_, points_, indices_, colors_);
 }
 
 void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius1,
@@ -149,6 +154,23 @@ void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double ra
     for (int jj = 0; jj < 6; jj++) indices.pop_back();
   }
 }
+
+void GlyphGeom::generateLine(const Point p1,
+  const Point& p2, const ColorRGB& color1, const ColorRGB& color2,
+  int64_t& numVBOElements, std::vector<Vector>& points,
+  std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+{
+  points.push_back(Vector(p1));
+  colors.push_back(color1);
+  indices.push_back(lineIndex_);
+  ++lineIndex_;
+  points.push_back(Vector(p2));
+  colors.push_back(color2);
+  indices.push_back(lineIndex_);
+  ++lineIndex_;
+  ++numVBOElements;
+}
+
 
 
 // Addarrow from SCIRun 4
