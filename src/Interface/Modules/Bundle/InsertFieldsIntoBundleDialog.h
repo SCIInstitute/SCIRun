@@ -39,14 +39,13 @@ namespace Gui {
 class SCISHARE InsertFieldsIntoBundleDialog : public ModuleDialogGeneric, public Ui::InsertFieldsIntoBundle
 {
 	Q_OBJECT
-	
+
 public:
-  InsertFieldsIntoBundleDialog(const std::string& name, 
+  InsertFieldsIntoBundleDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
-
-private Q_SLOTS:
+protected:
+  virtual void pullSpecial() override;
 };
 
 }

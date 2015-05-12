@@ -106,10 +106,8 @@ void SetupRHSforTDCSandTMSDialog::push()
   }
 }
 
-void SetupRHSforTDCSandTMSDialog::pull()
+void SetupRHSforTDCSandTMSDialog::pullSpecial()
 {
-  Pulling p(this); // prevents from re-entering if statement when next line executes
-
   int nr_elc=(state_->getValue(Parameters::number_of_electrodes)).toInt();
   int rows=-1;
   if (nr_elc!=-1)
@@ -149,5 +147,4 @@ void SetupRHSforTDCSandTMSDialog::pull()
   }
   state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
   state_->setValue(Parameters::ImpedanceTableValues, imp_elc_vals_in_table);
-  pull_newVersionToReplaceOld();
 }

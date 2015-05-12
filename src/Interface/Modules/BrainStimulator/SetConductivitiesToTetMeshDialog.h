@@ -36,19 +36,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE SetConductivitiesToTetMeshDialog : public ModuleDialogGeneric, 
+
+class SCISHARE SetConductivitiesToTetMeshDialog : public ModuleDialogGeneric,
   public Ui::SetConductivitiesToTetMeshDialog
 {
 	Q_OBJECT
-	
+
 public:
-  SetConductivitiesToTetMeshDialog(const std::string& name, 
+  SetConductivitiesToTetMeshDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  
-  private Q_SLOTS:
-  void pull();  
 };
 
 }

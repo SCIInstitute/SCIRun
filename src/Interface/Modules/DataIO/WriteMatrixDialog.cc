@@ -44,19 +44,19 @@ WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle 
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
   buttonBox->setVisible(false);
 }
 
-void WriteMatrixDialog::pull()
+void WriteMatrixDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
-void WriteMatrixDialog::pushFileNameToState() 
+void WriteMatrixDialog::pushFileNameToState()
 {
   state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }

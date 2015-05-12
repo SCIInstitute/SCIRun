@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE BuildFEVolRHSDialog : public ModuleDialogGeneric, 
+
+class SCISHARE BuildFEVolRHSDialog : public ModuleDialogGeneric,
   public Ui::BuildFEVolRHS
 {
 	Q_OBJECT
-	
+
 public:
-  BuildFEVolRHSDialog(const std::string& name, 
+  BuildFEVolRHSDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }
