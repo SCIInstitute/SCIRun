@@ -79,14 +79,48 @@ void ShowFieldGlyphs::setStateDefaults()
 
 void ShowFieldGlyphs::execute()
 {
-  boost::shared_ptr<SCIRun::Field> field = getRequiredInput(PrimaryData);
-  //boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(PrimaryColorMap);
-  
-  //if (needToExecute())
+  boost::shared_ptr<SCIRun::Field> pfield = getRequiredInput(PrimaryData);
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> pcolorMap = getOptionalInput(PrimaryColorMap);
+  boost::optional<boost::shared_ptr<SCIRun::Field>> sfield = getOptionalInput(SecondaryData);
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> scolorMap = getOptionalInput(SecondaryColorMap);
+  boost::optional<boost::shared_ptr<SCIRun::Field>> tfield = getOptionalInput(TertiaryData);
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> tcolorMap = getOptionalInput(TertiaryColorMap);
+
+  if (needToExecute())
   {
-    GeometryHandle geom = buildGeometryObject(field, nullptr, getRenderState(get_state(), nullptr));
-    //GeometryHandle geom = buildGeometryObject(field, colorMap, getRenderState(get_state(), colorMap));
+    GeometryHandle geom = buildGeometryObject(pfield, pcolorMap, getRenderState(get_state(), pcolorMap));
     sendOutput(SceneGraph, geom);
+  }
+}
+
+void ShowFieldGlyphs::configureInputs(
+  boost::shared_ptr<SCIRun::Field> pfield,
+  boost::shared_ptr<SCIRun::Field> sfield,
+  boost::shared_ptr<SCIRun::Field> tfield,
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> pcolormap,
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> scolormap,
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> tcolormap)
+{
+  FieldInformation pfinfo(pfield);
+
+  if (!pfinfo.is_svt())
+  {
+    THROW_ALGORITHM_INPUT_ERROR("No Scalar, Vector, or Tensor data found in the data field.");
+  }
+
+  if (!sfield)
+  {
+    sfield = pfield;
+  }
+
+  if (!tfield)
+  {
+    tfield = pfield;
+  }
+
+  if (sfield != pfield || tfield != pfield)
+  {
+    FieldInformation sfinfo(sfield);
   }
 }
 
@@ -106,7 +140,6 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
 
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   ColorRGB edge_colors[2];
-  //GeometryHandle geom(new GeometryObject(field, *this, "EntireGlyphField"));
 
   /*
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))

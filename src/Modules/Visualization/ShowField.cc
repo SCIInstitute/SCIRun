@@ -1357,16 +1357,16 @@ void ShowFieldModule::renderEdges(
   // Attempt some form of precalculation of iboBuffer and vboBuffer size.
   uint32_t iboSize = 0;
   uint32_t vboSize = 0;
-  
+
   auto my_state = this->get_state();
   double num_strips = double(my_state->getValue(CylinderResolution).toInt());
   double radius = my_state->getValue(CylinderRadius).toDouble();
   if (num_strips < 0) num_strips = 50.;
   if (radius < 0) radius = 1.;
-  
+
   std::stringstream ss;
   ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius << colorScheme;
-  
+
   std::string uniqueNodeID = id + "edge" + ss.str();
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
@@ -1392,27 +1392,27 @@ void ShowFieldModule::renderEdges(
   if (state.get(RenderState::USE_TRANSPARENT_EDGES))
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(edgeTransparencyValue_)));
   //coloring
-  if (colorScheme == GeometryObject::COLOR_MAP) 
+  if (colorScheme == GeometryObject::COLOR_MAP)
   {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-    if (state.get(RenderState::USE_CYLINDER)) 
+    if (state.get(RenderState::USE_CYLINDER))
     {
-        shader = "Shaders/DirPhongCMap" ;
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+      shader = "Shaders/DirPhongCMap";
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     }
-    else 
+    else
     {
-        shader = "Shaders/ColorMap";
+      shader = "Shaders/ColorMap";
     }
-  } 
-  else if (colorScheme == GeometryObject::COLOR_IN_SITU) 
+  }
+  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
   {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
-    if (state.get(RenderState::USE_CYLINDER)) 
+    if (state.get(RenderState::USE_CYLINDER))
     {
       shader = "Shaders/DirPhongInSitu";
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
@@ -1420,29 +1420,29 @@ void ShowFieldModule::renderEdges(
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } 
-    else 
+    }
+    else
     {
       shader = "Shaders/InSituColor";
     }
-  } 
-  else if (colorScheme == GeometryObject::COLOR_UNIFORM) 
+  }
+  else if (colorScheme == GeometryObject::COLOR_UNIFORM)
   {
     ColorRGB dft = state.defaultColor;
-    if (state.get(RenderState::USE_CYLINDER)) 
+    if (state.get(RenderState::USE_CYLINDER))
     {
-        shader = "Shaders/DirPhong";
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-            glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-            glm::vec4(dft.r(), dft.g(), dft.b(), (float)edgeTransparencyValue_)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-            glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } 
-    else 
+      shader = "Shaders/DirPhong";
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
+        glm::vec4(dft.r(), dft.g(), dft.b(), (float)edgeTransparencyValue_)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+    }
+    else
     {
-        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), (float)edgeTransparencyValue_));
+      uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), (float)edgeTransparencyValue_));
     }
   }
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;

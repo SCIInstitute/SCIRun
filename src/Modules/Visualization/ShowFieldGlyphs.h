@@ -61,6 +61,14 @@ namespace SCIRun {
 
         virtual void setStateDefaults();
       private:
+        void configureInputs(
+          boost::shared_ptr<SCIRun::Field> pfield,
+          boost::shared_ptr<SCIRun::Field> sfield,
+          boost::shared_ptr<SCIRun::Field> tfield,
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> pcolormap,
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> scolormap,
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> tcolormap);
+
         /// Constructs a geometry object (essentially a spire object) from the given
         /// field data.
         /// \param field    Field from which to construct geometry.
