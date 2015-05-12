@@ -30,27 +30,21 @@
 #define INTERFACE_MODULES_SHOW_STRING_H
 
 #include "Interface/Modules/Visualization/ui_ShowString.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ShowStringDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
+
+class SCISHARE ShowStringDialog : public ModuleDialogGeneric,
   public Ui::ShowString
 {
 	Q_OBJECT
-	
+
 public:
-  ShowStringDialog(const std::string& name, 
+  ShowStringDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull() {}
-
-private Q_SLOTS:
 };
 
 }

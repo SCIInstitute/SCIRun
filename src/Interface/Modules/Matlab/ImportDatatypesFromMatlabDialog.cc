@@ -46,35 +46,4 @@ ImportDatatypesFromMatlabDialog::ImportDatatypesFromMatlabDialog(const std::stri
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
-  //connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
-  //connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  //connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
-  //buttonBox->setVisible(false);
 }
-
-void ImportDatatypesFromMatlabDialog::pull()
-{
-  //fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
-}
-
-//void ReadFieldDialog::pushFileNameToState()
-//{
-//  auto file = fileNameLineEdit_->text().trimmed().toStdString();
-//  state_->setValue(Variables::Filename, file);
-//}
-//
-//void ReadFieldDialog::openFile()
-//{
-//  auto types = Modules::DataIO::ReadFieldModule::fileTypeList();
-//  QString selectedFilter;
-//  auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), QString::fromStdString(types), &selectedFilter);
-//  if (file.length() > 0)
-//  {
-//    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter.toStdString());
-//    state_->setValue(Variables::FileTypeName, typeName);
-//    fileNameLineEdit_->setText(file);
-//    updateRecentFile(file);
-//    pushFileNameToState();
-//  }
-//}

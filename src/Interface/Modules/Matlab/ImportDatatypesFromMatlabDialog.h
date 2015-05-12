@@ -37,20 +37,15 @@
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE ImportDatatypesFromMatlabDialog : public ModuleDialogGeneric, 
+class SCISHARE ImportDatatypesFromMatlabDialog : public ModuleDialogGeneric,
   public Ui::ImportDatatypesFromMatlab, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
-	
+
 public:
-  ImportDatatypesFromMatlabDialog(const std::string& name, 
+  ImportDatatypesFromMatlabDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
-
-//private Q_SLOTS:
-//  void pushFileNameToState();
-//  void openFile();
 };
 
 }

@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE SelectSubMatrixDialog : public ModuleDialogGeneric, 
+
+class SCISHARE SelectSubMatrixDialog : public ModuleDialogGeneric,
   public Ui::SelectSubMatrix
 {
 	Q_OBJECT
-	
+
 public:
-  SelectSubMatrixDialog(const std::string& name, 
+  SelectSubMatrixDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }
