@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE SwapFieldDataWithMatrixEntriesDialog : public ModuleDialogGeneric, 
+
+class SCISHARE SwapFieldDataWithMatrixEntriesDialog : public ModuleDialogGeneric,
   public Ui::SwapFieldDataWithMatrixEntries
 {
 	Q_OBJECT
-	
+
 public:
-  SwapFieldDataWithMatrixEntriesDialog(const std::string& name, 
+  SwapFieldDataWithMatrixEntriesDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

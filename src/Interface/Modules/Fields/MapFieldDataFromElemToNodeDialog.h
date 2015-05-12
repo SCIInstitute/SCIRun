@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE MapFieldDataFromElemToNodeDialog : public ModuleDialogGeneric, 
+
+class SCISHARE MapFieldDataFromElemToNodeDialog : public ModuleDialogGeneric,
   public Ui::MapFieldDataFromElemToNodeDialog
 {
 	Q_OBJECT
-	
+
 public:
-  MapFieldDataFromElemToNodeDialog(const std::string& name, 
+  MapFieldDataFromElemToNodeDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }
