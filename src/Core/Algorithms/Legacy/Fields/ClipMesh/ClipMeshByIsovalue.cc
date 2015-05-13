@@ -248,7 +248,8 @@ VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::edge_lookup(VField::index_typ
   edgepair_t np;
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
-/* const edge_hash_type::iterator loc = edgemap.find(np);
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  const edge_hash_type::iterator loc = edgemap.find(np);
   if (loc == edgemap.end())
   {
     const VMesh::Node::index_type nodeindex = clipped->add_point(p);
@@ -258,7 +259,8 @@ VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::edge_lookup(VField::index_typ
   else
   {
     return (*loc).second;
-  }*/
+  }
+  #endif
 }
 
 VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::face_lookup(VField::index_type u0, VField::index_type u1, VField::index_type u2, double d1, double d2, const Point &p, face_hash_type &facemap, VMesh *clipped) const
@@ -832,7 +834,8 @@ VMesh::Node::index_type ClipMeshByIsovalueAlgoTri::edge_lookup(VField::index_typ
   edgepair_t np;
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
-/*  const edge_hash_type::iterator loc = edgemap.find(np);
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  const edge_hash_type::iterator loc = edgemap.find(np);
   if (loc == edgemap.end())
   {
     const VMesh::Node::index_type nodeindex = clipped->add_point(p);
@@ -842,7 +845,8 @@ VMesh::Node::index_type ClipMeshByIsovalueAlgoTri::edge_lookup(VField::index_typ
   else
   {
     return (*loc).second;
-  }*/
+  }
+  #endif
 }
 
 bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &mapping) const
