@@ -1401,11 +1401,11 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
       networkEditor_->tagLayer(true, key);
       statusBar()->showMessage("Tag layer active: " + QString::number(key));
     }
-    else
-    {
-      auto key = event->key() - Qt::Key_0;
-      statusBar()->showMessage("Key pressed, tag layer inactive: " + QString::number(key), 1000);
-    }
+    //else
+    //{
+    //  auto key = event->key() - Qt::Key_0;
+    //  statusBar()->showMessage("Key pressed, tag layer inactive: " + QString::number(key), 1000);
+    //}
 
   }
 
@@ -1428,20 +1428,20 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
     networkEditor_->tagLayer(false, -1);
     statusBar()->showMessage("Tag layer inactive", 1000);
   }
-  else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
-  {
-    if (networkEditor_->tagLayerActive())
-    {
-      auto key = event->key() - Qt::Key_0;
-      networkEditor_->tagLayer(false, key);
-      statusBar()->showMessage("Tag layer inactive: " + QString::number(key), 1000);
-    }
-    else
-    {
-      auto key = event->key() - Qt::Key_0;
-      statusBar()->showMessage("Key released, tag layer inactive: " + QString::number(key), 1000);
-    }
-  }
+  //else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
+  //{
+  //  if (networkEditor_->tagLayerActive())
+  //  {
+  //    auto key = event->key() - Qt::Key_0;
+  //    networkEditor_->tagLayer(false, key);
+  //    statusBar()->showMessage("Tag layer inactive: " + QString::number(key), 1000);
+  //  }
+  //  else
+  //  {
+  //    auto key = event->key() - Qt::Key_0;
+  //    statusBar()->showMessage("Key released, tag layer inactive: " + QString::number(key), 1000);
+  //  }
+  //}
 
   QMainWindow::keyPressEvent(event);
 }
