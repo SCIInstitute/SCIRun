@@ -33,6 +33,10 @@ SET(Interface_Modules_Visualization_FORMS
   MatrixAsVectorField.ui
   ShowField.ui
   ShowFieldGlyphs.ui
+  ShowFieldGlyphsScalarTab.ui
+  ShowFieldGlyphsVectorTab.ui
+  ShowFieldGlyphsTensorTab.ui
+  ShowFieldGlyphsSecondaryTab.ui
   ShowString.ui
   ShowColorMap.ui
   RescaleColorMap.ui
@@ -45,6 +49,8 @@ SET(Interface_Modules_Visualization_HEADERS
   share.h
   ShowFieldDialog.h  
   ShowFieldGlyphsDialog.h
+  ShowFieldGlyphsScalarTabDialog.h
+  ShowFieldGlyphsVectorTabDialog.h
   ShowStringDialog.h
   ShowColorMapDialog.h
   RescaleColorMapDialog.h
@@ -56,6 +62,8 @@ SET(Interface_Modules_Visualization_SOURCES
   MatrixAsVectorFieldDialog.cc
   ShowFieldDialog.cc
   ShowFieldGlyphsDialog.cc
+  ShowFieldGlyphsScalarTabDialog.cc
+  ShowFieldGlyphsVectorTabDialog.cc
   ShowStringDialog.cc
   ShowColorMapDialog.cc
   RescaleColorMapDialog.cc

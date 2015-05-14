@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Interface/Modules/Visualization/ShowFieldGlyphsDialog.h>
-#include <Modules/Visualization/ShowField.h>
+#include <Modules/Visualization/ShowFieldGlyphs.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/Datatypes/Color.h>
 #include <QColorDialog>
@@ -36,7 +36,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::Visualization;
+//using namespace SCIRun::Core::Algorithms::Visualization;
 
 ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -46,14 +46,54 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
+  
+  connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 }
 
-void ShowFieldGlyphsDialog::pull()
+void ShowFieldGlyphsDialog::push()
 {
+  if (!pulling_)
+  {
+    pushColor();
+  }
 }
 
 void ShowFieldGlyphsDialog::createStartupNote()
 {
   auto showFieldGlyphId = windowTitle().split(':')[1];
   setStartupNote("ID: " + showFieldGlyphId);
+}
+
+void ShowFieldGlyphsDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+  Pulling p(this);
+  ColorRGB color(state_->getValue(ShowFieldGlyphs::DefaultMeshColor).toString());
+  //std::cout << "pull color: " << color.r() << " " << color.g() << " " << color.b() << std::endl;
+  // check for old saved color format: integers 0-255.
+  defaultMeshColor_ = QColor(
+    static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+    static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+    static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+}
+
+
+void ShowFieldGlyphsDialog::assignDefaultMeshColor()
+{
+  auto newColor = QColorDialog::getColor(defaultMeshColor_, this, "Choose default mesh color");
+  if (newColor.isValid())
+  {
+    defaultMeshColor_ = newColor;
+    //TODO: set color of button to this color
+    //defaultMeshColorButton_->set
+    pushColor();
+  }
+}
+
+void ShowFieldGlyphsDialog::pushColor()
+{
+  //std::cout << "push color: " << defaultMeshColor_.redF() << " " << defaultMeshColor_.greenF() << " " << defaultMeshColor_.blueF() << std::endl;
+  state_->setValue(ShowFieldGlyphs::DefaultMeshColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+  Q_EMIT executeActionTriggered();
 }

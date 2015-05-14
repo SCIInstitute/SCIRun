@@ -330,3 +330,5 @@ RenderState ShowFieldGlyphs::getRenderState(
 
   return renState;
 }
+
+AlgorithmParameterName ShowFieldGlyphs::DefaultMeshColor("DefaultMeshColor");

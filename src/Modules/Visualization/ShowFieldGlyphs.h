@@ -48,6 +48,8 @@ namespace SCIRun {
       public:
         ShowFieldGlyphs();
         virtual void execute();
+        
+        static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
 
         INPUT_PORT(0, PrimaryData, LegacyField);
         INPUT_PORT(1, PrimaryColorMap, ColorMap);
@@ -60,6 +62,7 @@ namespace SCIRun {
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
         virtual void setStateDefaults();
+
       private:
         void configureInputs(
           boost::shared_ptr<SCIRun::Field> pfield,

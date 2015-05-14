@@ -29,32 +29,26 @@ DEALINGS IN THE SOFTWARE.
 #ifndef INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
 #define INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
 
-#include "Interface/Modules/Visualization/ui_ShowFieldGlyphs.h"
+#include "Interface/Modules/Visualization/ui_ShowFieldGlyphsVectorTab.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
   namespace Gui {
 
-    class SCISHARE ShowFieldGlyphsDialog : public ModuleDialogGeneric,
-      public Ui::ShowFieldGlyphsDialog
+    class SCISHARE ShowFieldGlyphsVectorTabDialog : public QWidget,
+      public Ui::ShowFieldGlyphsVectorTabDialog
     {
       Q_OBJECT
 
     public:
-      ShowFieldGlyphsDialog(const std::string& name,
+      ShowFieldGlyphsVectorTabDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = 0);
-      virtual void pull();
-      virtual void createStartupNote() override;
 
       private Q_SLOTS:
-      void push();
-      void pushColor();
-      void assignDefaultMeshColor();
 
     private:
-      QColor defaultMeshColor_;
     };
 
   }
