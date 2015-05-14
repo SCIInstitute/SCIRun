@@ -1084,7 +1084,7 @@ void NetworkEditor::metadataLayer(bool active)
   }
 }
 
-static const int TagDataKey = 123;
+
 
 static QColor tagColor(int tag)
 {
@@ -1106,13 +1106,13 @@ void NetworkEditor::tagLayer(bool active, int tag)
   tagLayerActive_ = active;
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
+    item->setData(TagLayerKey, active);
+    item->setData(CurrentTagKey, tag);
     if (active)
     {
-      if (tag == item->data(TagDataKey).toInt())
+      if (tag != NoTag && tag == item->data(TagDataKey).toInt())
       {
-        auto colorize = new QGraphicsColorizeEffect;
-        colorize->setColor(tagColor(tag));
-        item->setGraphicsEffect(colorize);
+        highlightTaggedItem(item, tag);
       }
       else
         item->setGraphicsEffect(new QGraphicsBlurEffect);
@@ -1120,6 +1120,18 @@ void NetworkEditor::tagLayer(bool active, int tag)
     else
       item->setGraphicsEffect(0);
   }
+}
+
+void NetworkEditor::highlightTaggedItem(int tagValue)
+{
+  highlightTaggedItem(qobject_cast<QGraphicsItem*>(sender()), tagValue);
+}
+
+void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
+{
+  auto colorize = new QGraphicsColorizeEffect;
+  colorize->setColor(tagColor(tagValue));
+  item->setGraphicsEffect(colorize);
 }
 
 NetworkEditor::~NetworkEditor()

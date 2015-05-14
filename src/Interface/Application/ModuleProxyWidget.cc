@@ -157,6 +157,11 @@ ModuleWidget* ModuleProxyWidget::getModuleWidget()
 
 void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+  auto taggingOn = data(TagLayerKey).toBool();
+  auto currentTag = data(CurrentTagKey).toInt();
+  if (taggingOn && currentTag > NoTag)
+    setData(TagDataKey, currentTag);
+
   updatePressedSubWidget(event);
 
   if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))

@@ -193,6 +193,7 @@ Q_SIGNALS:
     void zoomReset();
     void centerView();
     void setModuleMini(bool mini);
+    void highlightTaggedItem(int tagValue);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -232,6 +233,7 @@ Q_SIGNALS:
     ConnectionLine* getSingleConnectionSelected();
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions) const;
+    void highlightTaggedItem(QGraphicsItem* item, int tagValue);
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;

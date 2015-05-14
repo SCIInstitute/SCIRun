@@ -83,6 +83,11 @@ namespace SCIRun
       bool doHighlight_;
     };
 
+    // arbitrary values
+    static const int TagDataKey = 123;
+    static const int TagLayerKey = 100;
+    static const int CurrentTagKey = 101;
+    static const int NoTag = -1;
   }
 }
 
