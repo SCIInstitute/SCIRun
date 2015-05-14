@@ -1139,12 +1139,17 @@ void NetworkEditor::tagLayer(bool active, int tag)
     item->setData(CurrentTagKey, tag);
     if (active)
     {
-      if (tag != NoTag && tag == item->data(TagDataKey).toInt())
+      if (tag != NoTag)
       {
-        highlightTaggedItem(item, tag);
+        if (tag == item->data(TagDataKey).toInt())
+        {
+          highlightTaggedItem(item, tag);
+        }
+        else
+          item->setGraphicsEffect(new QGraphicsBlurEffect);
       }
-      else
-        item->setGraphicsEffect(new QGraphicsBlurEffect);
+//      else
+//        item->setGrap
     }
     else
       item->setGraphicsEffect(0);

@@ -46,6 +46,7 @@
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommandFactory.h>
 #include <Interface/Application/GuiCommands.h>
+#include <Interface/Application/ModuleProxyWidget.h>
 #include <Core/Logging/LoggerInterface.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
@@ -1396,7 +1397,7 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
   }
   else if (event->key() == Qt::Key_Alt)
   {
-    networkEditor_->tagLayer(true, -1);
+    networkEditor_->tagLayer(true, NoTag);
     statusBar()->showMessage("Tag layer active: none");
   }
   else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)

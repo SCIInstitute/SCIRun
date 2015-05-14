@@ -161,8 +161,10 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
   auto currentTag = data(CurrentTagKey).toInt();
   if (taggingOn && currentTag > NoTag)
   {
+    
     setData(TagDataKey, currentTag);
     Q_EMIT tagChanged(currentTag);
+    return;
   }
 
   updatePressedSubWidget(event);
