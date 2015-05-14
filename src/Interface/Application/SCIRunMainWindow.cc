@@ -1377,13 +1377,19 @@ void SCIRunMainWindow::adjustModuleDock(int state)
   Preferences::Instance().modulesAreDockable.setValue(dockable);
 }
 
+#ifdef __APPLE__
+static const Qt::Key MetadataShiftKey = Qt::Key_Meta;
+#else
+static const Qt::Key MetadataShiftKey = Qt::Key_Control;
+#endif
+
 void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Shift)
 	{
 		statusBar()->showMessage("Network zoom active");
 	}
-  else if (event->key() == Qt::Key_Control)
+  else if (event->key() == MetadataShiftKey)
   {
     networkEditor_->metadataLayer(true);
     statusBar()->showMessage("Metadata layer active");
@@ -1412,7 +1418,7 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
 	{
     statusBar()->showMessage("Network zoom inactive", 1000);
 	}
-  else if (event->key() == Qt::Key_Control)
+  else if (event->key() == MetadataShiftKey)
   {
     networkEditor_->metadataLayer(false);
     statusBar()->showMessage("Metadata layer inactive", 1000);
