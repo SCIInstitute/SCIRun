@@ -26,8 +26,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
-#define INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
+#ifndef INTERFACE_MODULES_SHOW_FIELD_GLYPHS_SCALAR_TAB_DIALOG_H
+#define INTERFACE_MODULES_SHOW_FIELD_GLYPHS_SCALAR_TAB_DIALOG_H
 
 #include "Interface/Modules/Visualization/ui_ShowFieldGlyphsScalarTab.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -48,15 +48,13 @@ namespace SCIRun {
         QWidget* parent = 0);
      
       private Q_SLOTS:
-      //void push();
-      //void pushColor();
-      //void assignDefaultMeshColor();
 
     private:
-      //QColor defaultMeshColor_;
+
+      friend class ShowFieldGlyphsDialog;
     };
 
   }
 }
 
-#endif //INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
+#endif //INTERFACE_MODULES_SHOW_FIELD_GLYPHS_SCALAR_TAB_DIALOG_H

@@ -75,6 +75,18 @@ ShowFieldGlyphs::ShowFieldGlyphs() : GeometryGeneratingModule(staticInfo_)
 void ShowFieldGlyphs::setStateDefaults()
 {
   auto state = get_state(); 
+
+  // Vectors
+  state->setValue(ShowVectors, true);
+  state->setValue(VectorsTransparency, false);
+  state->setValue(VectorsTransparencyValue, 0.65);
+  state->setValue(VectorsScale, 0.1);
+  state->setValue(VectorsResolution, 3);
+  state->setValue(VectorsColoring, 0);
+  state->setValue(VectorsDisplayType, 0);
+
+
+  state->setValue(DefaultMeshColor, ColorRGB(0.5, 0.5, 0.5).toString());
 }
 
 void ShowFieldGlyphs::execute()
@@ -88,8 +100,8 @@ void ShowFieldGlyphs::execute()
 
   if (needToExecute())
   {
-    configureInputs(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap);
-    GeometryHandle geom = buildGeometryObject(pfield, pcolorMap, getRenderState(get_state(), pcolorMap));
+    //configureInputs(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap);
+    GeometryHandle geom = buildGeometryObject(pfield, pcolorMap, get_state());
     sendOutput(SceneGraph, geom);
   }
 }
@@ -141,7 +153,29 @@ void ShowFieldGlyphs::configureInputs(
 GeometryHandle ShowFieldGlyphs::buildGeometryObject(
   boost::shared_ptr<SCIRun::Field> field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  RenderState state)
+  ModuleStateHandle state)
+{
+  // Function for reporting progress.
+  //SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc = getUpdaterFunc();
+
+  bool showVectors = state->getValue(ShowFieldGlyphs::ShowVectors).toBool();
+
+  GeometryHandle geom(new GeometryObject(field, *this, "EntireGlyphField"));
+
+  if (showVectors)
+  {
+    renderVectors(field, colorMap, getVectorsRenderState(state, colorMap), geom, geom->uniqueID());
+  }
+
+  return geom;
+}
+
+void ShowFieldGlyphs::renderVectors(
+  boost::shared_ptr<SCIRun::Field> field,
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+  RenderState state,
+  Core::Datatypes::GeometryHandle geom,
+  const std::string& id)
 {
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
@@ -157,23 +191,28 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
 
   /*
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
-    colorScheme = GeometryObject::COLOR_UNIFORM;
+  colorScheme = GeometryObject::COLOR_UNIFORM;
   else if (state.get(RenderState::USE_COLORMAP))
-    colorScheme = GeometryObject::COLOR_MAP;
+  colorScheme = GeometryObject::COLOR_MAP;
   else
-    colorScheme = GeometryObject::COLOR_IN_SITU;
+  colorScheme = GeometryObject::COLOR_IN_SITU;
   */
 
   auto facade(field->mesh()->getFacade());
   std::ostringstream ostr;
-  
+
   if (!finfo.is_linear())
   {
     THROW_ALGORITHM_INPUT_ERROR("only able to handle data on nodes at this point");
   }
 
-  GlyphGeom glyphs;
+  auto my_state = get_state();
+  double radius = my_state->getValue(VectorsScale).toDouble();
+  double resolution = static_cast<double>(my_state->getValue(VectorsResolution).toInt());
+  if (radius < 0) radius = 0.1;
+  if (resolution < 3) resolution = 5;
 
+  GlyphGeom glyphs;
   //for (const auto& node : facade->nodes())
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
@@ -182,7 +221,7 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
     Point p1 = node.point();
     Point p2 = p1 + v;
 
-    glyphs.addArrow(p1, p2, 0.2, 5, edge_colors[0], edge_colors[1]);
+    glyphs.addArrow(p1, p2, radius, resolution, edge_colors[0], edge_colors[1]);
 
   }
 
@@ -245,12 +284,10 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
     } // no color writing otherwise
   }
 
-  GeometryHandle geom(new GeometryObject(field, *this, "EntireGlyphField"));
-
   std::stringstream ss;
   for (auto a : points) ss << a.x() << a.y() << a.z();
 
-  std::string uniqueNodeID = geom->uniqueID() + "glyph_arrow_cylinders" + std::string(ss.str().c_str());
+  std::string uniqueNodeID = id + "glyph_arrow_cylinders" + std::string(ss.str().c_str());
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
   std::string passName = uniqueNodeID + "Pass";
@@ -268,10 +305,10 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
 
   // Construct IBO.
   GeometryObject::SpireIBO geomIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
-  
+
   state.set(RenderState::IS_ON, true);
   state.set(RenderState::HAS_DATA, true);
-  
+
   // Construct Pass.
   GeometryObject::SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO);
 
@@ -282,32 +319,58 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-    
+
   geom->mVBOs.push_back(geomVBO);
   geom->mIBOs.push_back(geomIBO);
   geom->mPasses.push_back(pass);
-
-  return geom;
 }
 
-RenderState ShowFieldGlyphs::getRenderState(
+
+
+RenderState ShowFieldGlyphs::getVectorsRenderState(
   ModuleStateHandle state,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
 {
   RenderState renState;
 
-  renState.set(RenderState::USE_TRANSPARENCY, false);
-
-  renState.defaultColor = ColorRGB(1, 1, 1);
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  bool useColorMap = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 1;
   renState.set(RenderState::USE_NORMALS, true);
+  
+  renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowVectors).toBool());
+  renState.set(RenderState::USE_TRANSPARENT_VECTOR_GLYPHS, state->getValue(ShowFieldGlyphs::VectorsTransparency).toBool());
 
-  /*
-  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).toBool());
-  renState.set(RenderState::USE_TRANSPARENT_EDGES, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
-  renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toInt() == 1);
+  switch (state->getValue(ShowFieldGlyphs::VectorsDisplayType).toInt())
+  {
+  case 0:
+    renState.mGlyphType = RenderState::GlyphType::LINE_GLYPH;
+    break;
+  case 1:
+    renState.mGlyphType = RenderState::GlyphType::NEEDLE_GLYPH;
+    break;
+  case 2:
+    renState.mGlyphType = RenderState::GlyphType::COMET_GLYPH;
+    break;
+  case 3:
+    renState.mGlyphType = RenderState::GlyphType::CONE_GLYPH;
+    break;
+  case 4:
+    renState.mGlyphType = RenderState::GlyphType::ARROW_GLYPH;
+    break;
+  case 5:
+    renState.mGlyphType = RenderState::GlyphType::DISK_GLYPH;
+    break;
+  case 6:
+    renState.mGlyphType = RenderState::GlyphType::RING_GLYPH;
+    break;
+  case 7:
+    renState.mGlyphType = RenderState::GlyphType::SPRING_GLYPH;
+    break;
+  default:
+    renState.mGlyphType = RenderState::GlyphType::LINE_GLYPH;
+    break;
+  }
 
-  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  renState.defaultColor = ColorRGB(state->getValue(ShowFieldGlyphs::DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
     renState.defaultColor.g() > 1.0 ||
     renState.defaultColor.b() > 1.0) ?
@@ -316,10 +379,8 @@ RenderState ShowFieldGlyphs::getRenderState(
     renState.defaultColor.g() / 255.,
     renState.defaultColor.b() / 255.)
     : renState.defaultColor;
-
-  edgeTransparencyValue_ = (float)(state->getValue(ShowFieldModule::EdgeTransparencyValue).toDouble());
-  */
-  if (colorMap)
+  
+  if (colorMap && useColorMap)
   {
     renState.set(RenderState::USE_COLORMAP, true);
   }
@@ -331,4 +392,11 @@ RenderState ShowFieldGlyphs::getRenderState(
   return renState;
 }
 
+AlgorithmParameterName ShowFieldGlyphs::ShowVectors("ShowVectors");
+AlgorithmParameterName ShowFieldGlyphs::VectorsTransparency("VectorsTransparency");
+AlgorithmParameterName ShowFieldGlyphs::VectorsTransparencyValue("VectorsTransparencyValue");
+AlgorithmParameterName ShowFieldGlyphs::VectorsScale("VectorsScale");
+AlgorithmParameterName ShowFieldGlyphs::VectorsResolution("VectorsResolution");
+AlgorithmParameterName ShowFieldGlyphs::VectorsColoring("VectorsColoring");
+AlgorithmParameterName ShowFieldGlyphs::VectorsDisplayType("VectorsDisplayType");
 AlgorithmParameterName ShowFieldGlyphs::DefaultMeshColor("DefaultMeshColor");

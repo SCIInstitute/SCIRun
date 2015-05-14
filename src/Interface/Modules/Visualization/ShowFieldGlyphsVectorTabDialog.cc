@@ -38,10 +38,9 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 //using namespace SCIRun::Core::Algorithms::Visualization;
 
-ShowFieldGlyphsVectorTabDialog::ShowFieldGlyphsVectorTabDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */) : QWidget(parent)
+ShowFieldGlyphsVectorTabDialog::ShowFieldGlyphsVectorTabDialog(QWidget* parent /* = 0 */) : QWidget(parent)
 {
   setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
 }
+
 

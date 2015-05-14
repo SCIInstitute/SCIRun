@@ -48,7 +48,14 @@ namespace SCIRun {
       public:
         ShowFieldGlyphs();
         virtual void execute();
-        
+
+        static Core::Algorithms::AlgorithmParameterName ShowVectors;
+        static Core::Algorithms::AlgorithmParameterName VectorsTransparency;
+        static Core::Algorithms::AlgorithmParameterName VectorsTransparencyValue;
+        static Core::Algorithms::AlgorithmParameterName VectorsScale;
+        static Core::Algorithms::AlgorithmParameterName VectorsResolution;
+        static Core::Algorithms::AlgorithmParameterName VectorsColoring;
+        static Core::Algorithms::AlgorithmParameterName VectorsDisplayType;
         static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
 
         INPUT_PORT(0, PrimaryData, LegacyField);
@@ -80,11 +87,18 @@ namespace SCIRun {
         Core::Datatypes::GeometryHandle buildGeometryObject(
           boost::shared_ptr<SCIRun::Field> field,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-          RenderState state);
+          Dataflow::Networks::ModuleStateHandle state);
 
-        RenderState getRenderState(
+        void renderVectors(
+          boost::shared_ptr<SCIRun::Field> field,
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+          RenderState state,
+          Core::Datatypes::GeometryHandle geom,
+          const std::string& id);
+
+        RenderState getVectorsRenderState(
           Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);        
       };
     } // Visualization
   } // Modules

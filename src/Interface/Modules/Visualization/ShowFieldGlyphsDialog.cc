@@ -44,9 +44,14 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  fixSize();
+  fixSize();  
+  
+  setupVectorsTab();
 
-  WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
+  WidgetStyleMixin::tabStyle(this->displayOptionsTabs_); 
+
+
+  createExecuteInteractivelyToggleAction();
   
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 }
@@ -86,7 +91,6 @@ void ShowFieldGlyphsDialog::assignDefaultMeshColor()
   {
     defaultMeshColor_ = newColor;
     //TODO: set color of button to this color
-    //defaultMeshColorButton_->set
     pushColor();
   }
 }
@@ -96,4 +100,22 @@ void ShowFieldGlyphsDialog::pushColor()
   //std::cout << "push color: " << defaultMeshColor_.redF() << " " << defaultMeshColor_.greenF() << " " << defaultMeshColor_.blueF() << std::endl;
   state_->setValue(ShowFieldGlyphs::DefaultMeshColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
   Q_EMIT executeActionTriggered();
+}
+
+void ShowFieldGlyphsDialog::setupVectorsTab()
+{
+  vectorTab_ = new ShowFieldGlyphsVectorTabDialog(this);
+  displayOptionsTabs_->addTab(vectorTab_, tr("Vectors"));
+  //displayOptionsTabs_->removeTab(1);
+  addCheckableButtonManager(vectorTab_->showVectorsCheckBox_, ShowFieldGlyphs::ShowVectors);
+  addCheckableButtonManager(vectorTab_->enableTransparencyVectorsCheckBox_, ShowFieldGlyphs::VectorsTransparency);
+  addDoubleSpinBoxManager(vectorTab_->vectorsTransparencyDoubleSpinBox_, ShowFieldGlyphs::VectorsTransparencyValue);
+  addDoubleSpinBoxManager(vectorTab_->scaleVectorsDoubleSpinBox_, ShowFieldGlyphs::VectorsScale);
+  addSpinBoxManager(vectorTab_->vectorsResolutionSpinBox_, ShowFieldGlyphs::VectorsResolution);
+  addRadioButtonGroupManager({ vectorTab_->defaultVectorsColoringRButton_, vectorTab_->colormapLookupVectorsColoringRButton_,
+    vectorTab_->conversionRGBVectorsColoringRButton_ }, ShowFieldGlyphs::VectorsColoring);
+  addRadioButtonGroupManager({ vectorTab_->vectorsAsLinesRButton_, vectorTab_->vectorsAsNeedlesRButton_,
+    vectorTab_->vectorsAsCometsRButton_, vectorTab_->vectorsAsConesRButton_, vectorTab_->vectorsAsArrowsRButton_,
+    vectorTab_->vectorsAsDisksRButton_, vectorTab_->vectorsAsRingsRButton_, vectorTab_->vectorsAsSpringsRButton_ },
+    ShowFieldGlyphs::VectorsDisplayType);
 }

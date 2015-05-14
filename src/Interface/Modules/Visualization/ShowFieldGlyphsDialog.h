@@ -26,15 +26,20 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
-#define INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
+#ifndef INTERFACE_MODULES_SHOW_FIELD_GLYPHS_DIALOG_H
+#define INTERFACE_MODULES_SHOW_FIELD_GLYPHS_DIALOG_H
 
 #include "Interface/Modules/Visualization/ui_ShowFieldGlyphs.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Visualization/share.h>
+#include <Interface/Modules/Visualization/ShowFieldGlyphsVectorTabDialog.h>
+#include <Interface/Modules/Visualization/ShowFieldGlyphsVectorTabDialog.h>
 
 namespace SCIRun {
   namespace Gui {
+
+    class ShowFieldGlyphsScalarTabDialog;
+    class ShowFieldGlyphsVectorTabDialog;
 
     class SCISHARE ShowFieldGlyphsDialog : public ModuleDialogGeneric,
       public Ui::ShowFieldGlyphsDialog
@@ -55,9 +60,13 @@ namespace SCIRun {
 
     private:
       QColor defaultMeshColor_;
+      ShowFieldGlyphsScalarTabDialog* scalarTab_;
+      ShowFieldGlyphsVectorTabDialog* vectorTab_;
+
+      void setupVectorsTab();
     };
 
   }
 }
 
-#endif //INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
+#endif //INTERFACE_MODULES_SHOW_FIELD_GLYPHS_DIALOG_H

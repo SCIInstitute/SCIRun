@@ -26,8 +26,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
-#define INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
+#ifndef INTERFACE_MODULES_SHOW_FIELD_GLYPHS_VECTOR_TAB_DIALOG_H
+#define INTERFACE_MODULES_SHOW_FIELD_GLYPHS_VECTOR_TAB_DIALOG_H
 
 #include "Interface/Modules/Visualization/ui_ShowFieldGlyphsVectorTab.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -42,16 +42,15 @@ namespace SCIRun {
       Q_OBJECT
 
     public:
-      ShowFieldGlyphsVectorTabDialog(const std::string& name,
-        SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = 0);
+      ShowFieldGlyphsVectorTabDialog(QWidget* parent = 0);
 
       private Q_SLOTS:
 
     private:
-    };
 
+      friend class ShowFieldGlyphsDialog;
+    };
   }
 }
 
-#endif //INTERFACE_MODULES_SHOW_FIELD_GLYPHS_H
+#endif //INTERFACE_MODULES_SHOW_FIELD_GLYPHS_VECTOR_TAB_DIALOG_H
