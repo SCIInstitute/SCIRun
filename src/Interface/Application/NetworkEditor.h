@@ -131,6 +131,9 @@ Q_SIGNALS:
     virtual SCIRun::Dataflow::Networks::ConnectionNotesHandle dumpConnectionNotes() const;
     virtual void updateConnectionNotes(const SCIRun::Dataflow::Networks::ConnectionNotes& notes);
 
+    virtual SCIRun::Dataflow::Networks::ModuleTagsHandle dumpModuleTags() const override;
+    virtual void updateModuleTags(const SCIRun::Dataflow::Networks::ModuleTags& notes) override;
+
     size_t numModules() const;
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
