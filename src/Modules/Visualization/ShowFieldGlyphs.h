@@ -56,6 +56,13 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName VectorsResolution;
         static Core::Algorithms::AlgorithmParameterName VectorsColoring;
         static Core::Algorithms::AlgorithmParameterName VectorsDisplayType;
+        static Core::Algorithms::AlgorithmParameterName ShowScalars;
+        static Core::Algorithms::AlgorithmParameterName ScalarsTransparency;
+        static Core::Algorithms::AlgorithmParameterName ScalarsTransparencyValue;
+        static Core::Algorithms::AlgorithmParameterName ScalarsScale;
+        static Core::Algorithms::AlgorithmParameterName ScalarsResolution;
+        static Core::Algorithms::AlgorithmParameterName ScalarsColoring;
+        static Core::Algorithms::AlgorithmParameterName ScalarsDisplayType;
         static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
 
         INPUT_PORT(0, PrimaryData, LegacyField);
@@ -96,9 +103,20 @@ namespace SCIRun {
           Core::Datatypes::GeometryHandle geom,
           const std::string& id);
 
+        void renderScalars(
+          boost::shared_ptr<SCIRun::Field> field,
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+          RenderState state,
+          Core::Datatypes::GeometryHandle geom,
+          const std::string& id);
+
         RenderState getVectorsRenderState(
           Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);        
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);   
+
+        RenderState getScalarsRenderState(
+          Dataflow::Networks::ModuleStateHandle state,
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
       };
     } // Visualization
   } // Modules

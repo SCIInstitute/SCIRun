@@ -50,7 +50,7 @@ void GlyphGeom::getBufferInfo(int64_t& numVBOElements, std::vector<Vector>& poin
 }
 
 void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double resolution,
-                         const ColorRGB& color1, const ColorRGB& color2)
+  const ColorRGB& color1, const ColorRGB& color2)
 {
   double ratio = 0.5;
 
@@ -71,15 +71,26 @@ void GlyphGeom::addCylinder(const Point p1, const Point& p2, double radius, doub
   generateCylinder(p1, p2, radius, radius, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
 }
 
+void GlyphGeom::addCone(const Point p1, const Point& p2, double radius, double resolution,
+  const ColorRGB& color1, const ColorRGB& color2)
+{
+  generateCylinder(p1, p2, radius, 0.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
+}
+
 void GlyphGeom::addNeedle(Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {
   generateLine(p1, p2, color1, color2, numVBOElements_, points_, indices_, colors_);
 }
 
+void GlyphGeom::addPoint(const Point& p, const ColorRGB& color)
+{
+  generatePoint(p, color, numVBOElements_, points_, indices_, colors_);
+}
+
 void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius1,
-                                 double radius2, double resolution, const ColorRGB& color1, const ColorRGB& color2,
-                                 int64_t& numVBOElements, std::vector<Vector>& points, std::vector<Vector>& normals,
-                                 std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+  double radius2, double resolution, const ColorRGB& color1, const ColorRGB& color2,
+  int64_t& numVBOElements, std::vector<Vector>& points, std::vector<Vector>& normals,
+  std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
 {
   double num_strips = resolution;
   if (num_strips < 0) num_strips = 20.0;
@@ -116,10 +127,8 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
 }
 
 void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double radius2,
-                                  double resolution, const ColorRGB& color,
-                                  int64_t& numVBOElements, std::vector<Vector>& points, 
-                                  std::vector<Vector>& normals, std::vector<uint32_t>& indices, 
-                                  std::vector<ColorRGB>& colors)
+  double resolution, const ColorRGB& color, int64_t& numVBOElements, std::vector<Vector>& points, 
+  std::vector<Vector>& normals, std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
 {
   double num_strips = resolution;
   if (num_strips < 0) num_strips = 20.0;
@@ -155,10 +164,8 @@ void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double ra
   }
 }
 
-void GlyphGeom::generateLine(const Point p1,
-  const Point& p2, const ColorRGB& color1, const ColorRGB& color2,
-  int64_t& numVBOElements, std::vector<Vector>& points,
-  std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+void GlyphGeom::generateLine(const Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2,
+  int64_t& numVBOElements, std::vector<Vector>& points, std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
 {
   points.push_back(Vector(p1));
   colors.push_back(color1);
@@ -166,6 +173,16 @@ void GlyphGeom::generateLine(const Point p1,
   ++lineIndex_;
   points.push_back(Vector(p2));
   colors.push_back(color2);
+  indices.push_back(lineIndex_);
+  ++lineIndex_;
+  ++numVBOElements;
+}
+
+void GlyphGeom::generatePoint(const Point p, const ColorRGB& color,
+  int64_t& numVBOElements, std::vector<Vector>& points, std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+{
+  points.push_back(Vector(p));
+  colors.push_back(color);
   indices.push_back(lineIndex_);
   ++lineIndex_;
   ++numVBOElements;

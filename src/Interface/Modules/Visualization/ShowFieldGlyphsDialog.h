@@ -33,7 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Visualization/share.h>
 #include <Interface/Modules/Visualization/ShowFieldGlyphsVectorTabDialog.h>
-#include <Interface/Modules/Visualization/ShowFieldGlyphsVectorTabDialog.h>
+#include <Interface/Modules/Visualization/ShowFieldGlyphsScalarTabDialog.h>
 
 namespace SCIRun {
   namespace Gui {
@@ -63,6 +63,7 @@ namespace SCIRun {
       ShowFieldGlyphsScalarTabDialog* scalarTab_;
       ShowFieldGlyphsVectorTabDialog* vectorTab_;
 
+      void setupScalarsTab();
       void setupVectorsTab();
     };
 

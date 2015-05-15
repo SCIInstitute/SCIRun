@@ -47,6 +47,7 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
   fixSize();  
   
   setupVectorsTab();
+  setupScalarsTab();
 
   WidgetStyleMixin::tabStyle(this->displayOptionsTabs_); 
 
@@ -118,4 +119,38 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
     vectorTab_->vectorsAsCometsRButton_, vectorTab_->vectorsAsConesRButton_, vectorTab_->vectorsAsArrowsRButton_,
     vectorTab_->vectorsAsDisksRButton_, vectorTab_->vectorsAsRingsRButton_, vectorTab_->vectorsAsSpringsRButton_ },
     ShowFieldGlyphs::VectorsDisplayType);
+
+  connectButtonToExecuteSignal(vectorTab_->showVectorsCheckBox_);
+  connectButtonToExecuteSignal(vectorTab_->enableTransparencyVectorsCheckBox_);
+  connectButtonToExecuteSignal(vectorTab_->vectorsAsLinesRButton_);
+  connectButtonToExecuteSignal(vectorTab_->vectorsAsNeedlesRButton_);
+  //connectButtonToExecuteSignal(vectorTab_->vectorsAsCometsRButton_);
+  connectButtonToExecuteSignal(vectorTab_->vectorsAsConesRButton_);
+  connectButtonToExecuteSignal(vectorTab_->vectorsAsArrowsRButton_);
+  //connectButtonToExecuteSignal(vectorTab_->vectorsAsDisksRButton_);
+  //connectButtonToExecuteSignal(vectorTab_->vectorsAsRingsRButton_);
+  //connectButtonToExecuteSignal(vectorTab_->vectorsAsSpringsRButton_);
+}
+
+void ShowFieldGlyphsDialog::setupScalarsTab()
+{
+  scalarTab_ = new ShowFieldGlyphsScalarTabDialog(this);
+  displayOptionsTabs_->addTab(scalarTab_, tr("Scalars"));
+  //displayOptionsTabs_->removeTab(1);
+  addCheckableButtonManager(scalarTab_->showScalarsCheckBox_, ShowFieldGlyphs::ShowScalars);
+  addCheckableButtonManager(scalarTab_->enableTransparencyScalarsCheckBox_, ShowFieldGlyphs::ScalarsTransparency);
+  addDoubleSpinBoxManager(scalarTab_->scalarsTransparencyDoubleSpinBox_, ShowFieldGlyphs::ScalarsTransparencyValue);
+  addDoubleSpinBoxManager(scalarTab_->scaleScalarsDoubleSpinBox_, ShowFieldGlyphs::ScalarsScale);
+  addSpinBoxManager(scalarTab_->scalarsResolutionSpinBox_, ShowFieldGlyphs::ScalarsResolution);
+  addRadioButtonGroupManager({ scalarTab_->defaultScalarsColoringRButton_, scalarTab_->colormapLookupScalarsColoringRButton_,
+    scalarTab_->conversionRGBScalarsColoringRButton_}, ShowFieldGlyphs::ScalarsColoring);
+  addRadioButtonGroupManager({ scalarTab_->scalarsAsPointsRButton_, scalarTab_->scalarsAsSpheresRButton_,
+    scalarTab_->scalarsAsBoxesRButton_, scalarTab_->scalarsAsAxisRButton_}, ShowFieldGlyphs::ScalarsDisplayType);
+
+  connectButtonToExecuteSignal(scalarTab_->showScalarsCheckBox_);
+  connectButtonToExecuteSignal(scalarTab_->enableTransparencyScalarsCheckBox_);
+  connectButtonToExecuteSignal(scalarTab_->scalarsAsPointsRButton_);
+  connectButtonToExecuteSignal(scalarTab_->scalarsAsSpheresRButton_);
+  //connectButtonToExecuteSignal(scalarTab_->scalarsAsBoxesRButton_);
+  //connectButtonToExecuteSignal(scalarTab_->scalarsAsAxisRButton_);
 }

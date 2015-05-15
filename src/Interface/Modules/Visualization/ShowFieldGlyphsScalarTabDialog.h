@@ -35,7 +35,6 @@ DEALINGS IN THE SOFTWARE.
 
 namespace SCIRun {
   namespace Gui {
-    class ShowFieldGlyphsDialog;
 
     class SCISHARE ShowFieldGlyphsScalarTabDialog : public QWidget,
       public Ui::ShowFieldGlyphsScalarTabDialog
@@ -43,9 +42,7 @@ namespace SCIRun {
       Q_OBJECT
 
     public:
-      ShowFieldGlyphsScalarTabDialog(const std::string& name,
-        SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = 0);
+      ShowFieldGlyphsScalarTabDialog(QWidget* parent = 0);
      
       private Q_SLOTS:
 
@@ -53,7 +50,6 @@ namespace SCIRun {
 
       friend class ShowFieldGlyphsDialog;
     };
-
   }
 }
 

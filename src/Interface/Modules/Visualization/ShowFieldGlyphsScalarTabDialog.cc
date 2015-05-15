@@ -38,11 +38,7 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 //using namespace SCIRun::Core::Algorithms::Visualization;
 
-ShowFieldGlyphsScalarTabDialog::ShowFieldGlyphsScalarTabDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */) : QWidget(parent)
+ShowFieldGlyphsScalarTabDialog::ShowFieldGlyphsScalarTabDialog(QWidget* parent /* = 0 */) : QWidget(parent)
 {
   setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-
- 
 }

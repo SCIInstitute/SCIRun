@@ -1231,21 +1231,12 @@ void ShowFieldModule::renderNodes(
     }
     else 
     {
-      points.push_back(Vector(p));
-      if (colorScheme == GeometryObject::COLOR_MAP ||
-          colorScheme == GeometryObject::COLOR_IN_SITU)
-              colors.push_back(node_color);
-      indices.push_back(index);
-      ++index;
-      ++numVBOElements;
+      glyphs.addPoint(p, node_color);
     }
 
     ++eiter;
-  }
-  if (state.get(RenderState::USE_SPHERE))
-  {
-    glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);
-  }
+  }  
+  glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);  
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
   vboSize += (uint32_t)normals.size() * 3 * sizeof(float);
