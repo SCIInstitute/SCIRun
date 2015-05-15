@@ -161,9 +161,10 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
   auto currentTag = data(CurrentTagKey).toInt();
   if (taggingOn && currentTag > NoTag)
   {
-    
-    setData(TagDataKey, currentTag);
-    Q_EMIT tagChanged(currentTag);
+    auto thisTag = data(TagDataKey).toInt();
+    auto newTag = currentTag == thisTag ? NoTag : currentTag;
+    setData(TagDataKey, newTag);
+    Q_EMIT tagChanged(newTag);
     return;
   }
 
@@ -202,6 +203,10 @@ static int snapTo(int oldPos)
 
 void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+  auto taggingOn = data(TagLayerKey).toBool();
+  if (taggingOn)
+    return;
+
   if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     p->doMouseRelease(event->button(), mapToScene(event->pos()), event->modifiers());

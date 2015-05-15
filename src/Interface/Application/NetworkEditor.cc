@@ -1113,8 +1113,6 @@ void NetworkEditor::metadataLayer(bool active)
   }
 }
 
-
-
 static QColor tagColor(int tag)
 {
   switch (tag)
@@ -1125,9 +1123,30 @@ static QColor tagColor(int tag)
     return Qt::green;
   case 2:
     return Qt::darkYellow;
-  default:
+  case 3:
+    return Qt::darkMagenta;
+  case 4:
+    return Qt::darkCyan;
+  case 5:
+    return Qt::darkRed;
+  case 6:
     return Qt::darkGray;
+  case 7:
+    return Qt::darkGreen;
+  case 8:
+    return Qt::darkBlue;
+  case 9:
+    return Qt::black;
+  default:
+    return Qt::white;
   }
+}
+
+static QGraphicsEffect* blurEffect()
+{
+  auto blur = new QGraphicsBlurEffect;
+  blur->setBlurRadius(2);
+  return blur;
 }
 
 void NetworkEditor::tagLayer(bool active, int tag)
@@ -1146,10 +1165,8 @@ void NetworkEditor::tagLayer(bool active, int tag)
           highlightTaggedItem(item, tag);
         }
         else
-          item->setGraphicsEffect(new QGraphicsBlurEffect);
+          item->setGraphicsEffect(blurEffect());
       }
-//      else
-//        item->setGrap
     }
     else
       item->setGraphicsEffect(0);
@@ -1164,9 +1181,16 @@ void NetworkEditor::highlightTaggedItem(int tagValue)
 
 void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
 {
-  auto colorize = new QGraphicsColorizeEffect;
-  colorize->setColor(tagColor(tagValue));
-  item->setGraphicsEffect(colorize);
+  if (tagValue == NoTag)
+  {
+    item->setGraphicsEffect(blurEffect());
+  }
+  else
+  {
+    auto colorize = new QGraphicsColorizeEffect;
+    colorize->setColor(tagColor(tagValue));
+    item->setGraphicsEffect(colorize);
+  }
 }
 
 NetworkEditor::~NetworkEditor()
