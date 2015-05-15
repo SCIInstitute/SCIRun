@@ -31,6 +31,8 @@
 #include <numeric>
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/timer.hpp>
 #include <atomic>
 
 #include <Dataflow/Network/PortManager.h>
@@ -119,6 +121,7 @@ Module::Module(const ModuleLookupInfo& info,
   inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
+  metadata_(*state_),
   executionState_(ModuleInterface::NotExecuted)
 {
   iports_.set_module(this);
@@ -186,6 +189,13 @@ bool Module::do_execute() throw()
   //Log::get() << INFO << "executing module: " << id_ << std::endl;
   //std::cout << "executing module: " << id_ << std::endl;
   executeBegins_(id_);
+  boost::timer executionTimer;
+  {
+    std::string isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
+    std::string date = isoString.substr(0,8);
+    std::string time = isoString.substr(9,20);
+    metadata_.setMetadata("last execution timestamp", isoString);
+  }
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
   /// @todo: need separate logger per module
@@ -232,6 +242,11 @@ bool Module::do_execute() throw()
   // Call finish on all ports.
   //iports_.apply(boost::bind(&PortInterface::finish, _1));
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
+
+  {
+    double executionTime = executionTimer.elapsed();
+    metadata_.setMetadata("last execution duration (seconds)", boost::lexical_cast<std::string>(executionTime));
+  }
 
   status("MODULE FINISHED: " + id_.id_);
   /// @todo: need separate logger per module
@@ -333,9 +348,6 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   }
 
   std::vector<DatatypeHandleOption> options;
-
-
-
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
 

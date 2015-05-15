@@ -120,6 +120,20 @@ namespace Networks {
     boost::signals2::connection conn_;
   };
 
+  typedef std::map<std::string, std::string> StringMap;
+
+  // Keep it simple
+  class SCISHARE MetadataMap
+  {
+  public:
+    explicit MetadataMap(ModuleStateInterface& state);
+    std::string getMetadata(const std::string& key) const;
+    void setMetadata(const std::string& key, const std::string& value);
+    StringMap getFullMap() const;
+  private:
+    ModuleStateInterface& state_;
+  };
+
 }}}
 
 #endif

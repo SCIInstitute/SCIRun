@@ -274,6 +274,7 @@ namespace Networks {
     Core::Algorithms::AlgorithmHandle algo_;
 
     ModuleStateHandle state_;
+    MetadataMap metadata_;
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;
 
