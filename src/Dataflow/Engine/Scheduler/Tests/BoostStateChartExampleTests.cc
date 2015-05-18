@@ -41,7 +41,9 @@ using ::testing::Return;
 #include <boost/mpl/list.hpp>
 #include <ctime>
 #include <iostream>
+#include <Dataflow/Network/ModuleInterface.h>
 
+using namespace SCIRun::Dataflow::Networks;
 namespace sc = boost::statechart;
 namespace mpl = boost::mpl;
 
@@ -209,6 +211,7 @@ struct ModuleReset : sc::event< ModuleReset > {};
 struct ModuleColorProvider
 {
 public:
+  virtual ModuleExecutionState::Value stateValue() const = 0;
   virtual std::string color() const = 0;
   virtual ~ModuleColorProvider() {}
 };
@@ -224,6 +227,10 @@ public:
   ~ModuleState()
   {
     std::cout << "~ModuleState()" << std::endl;
+  }
+  ModuleExecutionState::Value currentStateValue() const
+  {
+    return state_cast<const ModuleColorProvider&>().stateValue();
   }
   std::string currentColor() const
   {
@@ -248,6 +255,10 @@ public:
   {
     std::cout << "~ModuleNotExecuted" << std::endl;
   }
+  virtual ModuleExecutionState::Value stateValue() const override
+  {
+    return ModuleExecutionState::NotExecuted;
+  }
   virtual std::string color() const override { return "gray"; }
 };
 
@@ -262,6 +273,10 @@ public:
   ~ModuleWaiting()
   {
     std::cout << "~ModuleWaiting" << std::endl;
+  }
+  virtual ModuleExecutionState::Value stateValue() const override
+  {
+    return ModuleExecutionState::Waiting;
   }
   virtual std::string color() const override { return "yellow"; }
 };
@@ -281,6 +296,10 @@ public:
   {
     std::cout << "~ModuleRunning" << std::endl;
   }
+  virtual ModuleExecutionState::Value stateValue() const override
+  {
+    return ModuleExecutionState::Executing;
+  }
   virtual std::string color() const override { return "green"; }
 };
 
@@ -296,6 +315,10 @@ public:
   {
     std::cout << "~ModuleErrored" << std::endl;
   }
+  virtual ModuleExecutionState::Value stateValue() const override
+  {
+    return ModuleExecutionState::Errored;
+  }
   virtual std::string color() const override { return "red"; }
 };
 
@@ -310,6 +333,10 @@ public:
   ~ModuleCompleted()
   {
     std::cout << "~ModuleCompleted" << std::endl;
+  }
+  virtual ModuleExecutionState::Value stateValue() const override
+  {
+    return ModuleExecutionState::Completed;
   }
   virtual std::string color() const override { return "darkGray"; }
 };
@@ -363,14 +390,104 @@ TEST(ModuleStateChart, RunErrorTransitionsWithColor)
   EXPECT_EQ("gray", moduleState.currentColor());
 }
 
-class ModuleStateManager
+class ModuleStateMachine : public ModuleExecutionState
 {
 public:
-  ModuleStateManager()
+  ModuleStateMachine()
   {
     moduleState_.initiate();
   }
 
+  virtual Value currentState() const override
+  {
+    return moduleState_.currentStateValue();
+  }
+
+  virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber)
+  {
+    return signal_.connect(subscriber);
+  }
+
+  virtual bool transitionTo(Value state) override
+  {
+    //Guard g(mutex_.get());
+    auto current = currentState();
+    switch (state)
+    {
+      case NotExecuted:
+        moduleState_.process_event( ModuleReset() );
+        break;
+      case Waiting:
+        moduleState_.process_event( ModuleQueued() );
+        break;
+      case Executing:
+        moduleState_.process_event( ModuleStart() );
+        break;
+      case Completed:
+        moduleState_.process_event( ModuleEnd() );
+        break;
+      case Errored:
+        moduleState_.process_event( ModuleError() );
+        break;
+    }
+    auto changed = current != currentState();
+    if (changed)
+      signal_(currentState());
+    return changed;
+  }
+
+  virtual std::string currentColor() const override
+  {
+    return moduleState_.currentColor();
+  }
+
 private:
   ModuleState moduleState_;
+  ExecutionStateChangedSignalType signal_;
 };
+
+TEST(ModuleStateMachineTest, NormalSequence)
+{
+  ModuleStateMachine msm;
+  msm.transitionTo(ModuleExecutionState::Waiting);
+  msm.transitionTo(ModuleExecutionState::Executing);
+  msm.transitionTo(ModuleExecutionState::Completed);
+  EXPECT_EQ("darkGray", msm.currentColor());
+}
+
+TEST(ModuleStateMachineTest, ErrorSequence)
+{
+  ModuleStateMachine msm;
+  msm.transitionTo(ModuleExecutionState::Waiting);
+  msm.transitionTo(ModuleExecutionState::Executing);
+  msm.transitionTo(ModuleExecutionState::Errored);
+  EXPECT_EQ("red", msm.currentColor());
+}
+
+TEST(ModuleStateMachineTest, ErrorSequenceWithComplete)
+{
+  ModuleStateMachine msm;
+  msm.transitionTo(ModuleExecutionState::Waiting);
+  msm.transitionTo(ModuleExecutionState::Executing);
+  msm.transitionTo(ModuleExecutionState::Errored);
+  msm.transitionTo(ModuleExecutionState::Completed);
+  EXPECT_EQ("red", msm.currentColor());
+}
+
+TEST(ModuleStateMachineTest, OutOfOrderSequence)
+{
+  ModuleStateMachine msm;
+  msm.transitionTo(ModuleExecutionState::Executing);
+  msm.transitionTo(ModuleExecutionState::Waiting);
+  EXPECT_EQ("yellow", msm.currentColor());
+}
+
+TEST(ModuleStateMachineTest, ErrorSequenceWithReset)
+{
+  ModuleStateMachine msm;
+  msm.transitionTo(ModuleExecutionState::Waiting);
+  msm.transitionTo(ModuleExecutionState::Executing);
+  msm.transitionTo(ModuleExecutionState::Errored);
+  msm.transitionTo(ModuleExecutionState::NotExecuted);
+  EXPECT_EQ("gray", msm.currentColor());
+}

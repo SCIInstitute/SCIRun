@@ -119,7 +119,7 @@ namespace detail
       if (current_ != state)
       {
         signal_(static_cast<int>(current_));
-        std::cout << "Transitioning to " << state << std::endl;
+        //std::cout << "Transitioning to " << state << std::endl;
       }
       current_ = state;
       return true;
