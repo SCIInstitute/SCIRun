@@ -106,7 +106,7 @@ namespace detail
   class ModuleExecutionStateImpl : public ModuleExecutionState
   {
   public:
-    virtual Value currentState() const override 
+    virtual Value currentState() const override
     {
       return current_;
     }
@@ -150,7 +150,7 @@ Module::Module(const ModuleLookupInfo& info,
   inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
-  executionState_(new detail::ModuleExecutionStateImpl) 
+  executionState_(new detail::ModuleExecutionStateImpl)
 {
   iports_.set_module(this);
   oports_.set_module(this);
@@ -265,7 +265,10 @@ bool Module::do_execute() throw()
   status("MODULE FINISHED: " + id_.id_);
   /// @todo: need separate logger per module
   //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
-  executionState_->transitionTo(returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored);
+  //TODO: brittle dependency on Completed
+  //auto endState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
+  auto endState = ModuleExecutionState::Completed;
+  executionState_->transitionTo(endState);
   resetStateChanged();
   inputsChanged_ = false;
   executeEnds_(id_);
