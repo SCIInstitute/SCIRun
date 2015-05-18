@@ -55,12 +55,7 @@ ResampleRegularMeshDialog::ResampleRegularMeshDialog(const std::string& name, Mo
   connect(kernelComboBox_, SIGNAL(activated(const QString&)), this, SLOT(setGuassianWidgetsEnabled(const QString&)));
 }
 
-void ResampleRegularMeshDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}
-
-void ResampleRegularMeshDialog::setGuassianWidgetsEnabled(const QString& label)
+void ResampleRegularMeshDialog::setGaussianWidgetsEnabled(const QString& label)
 {
   bool enable = "Gaussian" == label;
   gaussianSigmaDoubleSpinBox_->setEnabled(enable);

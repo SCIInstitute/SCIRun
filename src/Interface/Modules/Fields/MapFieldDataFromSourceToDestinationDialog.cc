@@ -67,10 +67,8 @@ MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDi
   connect(useNanForUnassignedValuesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setUseNanForUnassignedValues(int)));
 }
 
-void MapFieldDataFromSourceToDestinationDialog::pull()
+void MapFieldDataFromSourceToDestinationDialog::pullSpecial()
 {
-  pull_newVersionToReplaceOld();
-  Pulling p(this);
   if (IsNan(state_->getValue(Parameters::DefaultValue).toDouble()))
   {
     useNanForUnassignedValuesCheckBox_->setChecked(true);

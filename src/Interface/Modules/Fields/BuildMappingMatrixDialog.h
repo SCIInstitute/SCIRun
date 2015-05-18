@@ -35,17 +35,18 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE BuildMappingMatrixDialog : public ModuleDialogGeneric, 
+
+class SCISHARE BuildMappingMatrixDialog : public ModuleDialogGeneric,
   public Ui::BuildMappingMatrix
 {
 	Q_OBJECT
-	
+
 public:
-  BuildMappingMatrixDialog(const std::string& name, 
+  BuildMappingMatrixDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+protected:
+  virtual void pullSpecial() override;
 private Q_SLOTS:
   void setNoMaximumValue(int state);
 private:

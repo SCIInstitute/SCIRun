@@ -27,7 +27,7 @@
 */
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
-#include <Modules/Visualization/ShowField.h>
+#include <Modules/Visualization/RescaleColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Utils/Exception.h>
@@ -93,11 +93,11 @@ protected:
     Log::get().setVerbose(false);
     rescaleColorMap = makeModule("RescaleColorMap");
     rescaleColorMap->setStateDefaults();
+    colorMap.reset(new ColorMap());
+    stubPortNWithThisData(rescaleColorMap, 0, colorMap);
     auto size = 2;
     latVol = CreateEmptyLatVol(size, size, size);
-    stubPortNWithThisData(rescaleColorMap, 0, latVol);
-    colorMap.reset(new ColorMap());
-    stubPortNWithThisData(rescaleColorMap, 1, colorMap);
+    stubPortNWithThisData(rescaleColorMap, 1, latVol);
   }
 
   UseRealModuleStateFactory f;

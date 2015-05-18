@@ -98,8 +98,6 @@ namespace
 /// the run function can deal with multiple inputs and performs the analysis for all ROIs in the atlas mesh and for the user specified ROI
 boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace, const std::string& AtlasMeshLabels, const DenseMatrixHandle specROI) const
 {
-  DenseMatrixHandle output;
-
   VField* vfield1 = mesh->vfield();
   VField* vfield2 = AtlasMesh->vfield();  
 
@@ -196,7 +194,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
     }
   }
 
-  output = DenseMatrixHandle(new DenseMatrix(number_of_atlas_materials, 5)); /// instantiate output
+  DenseMatrixHandle output(new DenseMatrix(number_of_atlas_materials, 5));
   const double invalidDouble = std::numeric_limits<double>::quiet_NaN();
 
   /// efficient way to compute std dev. in just one loop over all mesh elements: sqrt ( 1/(n-1) (Sx^2 - avr Sx + n avr^2 )

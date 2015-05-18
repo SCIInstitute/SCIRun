@@ -39,11 +39,6 @@ SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle st
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  
-  addDoubleSpinBoxManager(scalarValueToSend_, SendScalarModule::ValueToSend());
-}
 
-void SendScalarDialog::pull()
-{
-  pull_newVersionToReplaceOld();
+  addDoubleSpinBoxManager(scalarValueToSend_, SendScalarModule::ValueToSend());
 }

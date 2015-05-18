@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/Visualization/RescaleColorMapDialog.h>
 #include <Modules/Visualization/RescaleColorMap.h>
-#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -48,9 +48,4 @@ RescaleColorMapDialog::RescaleColorMapDialog(const std::string& name, ModuleStat
   addDoubleSpinBoxManager(maxSpinBox_, Parameters::FixedMax);
   addRadioButtonGroupManager({ autoScaleButton_, fixedScaleButton_ }, Parameters::AutoScale);
   addCheckBoxManager(symmetricCheckBox_, Parameters::Symmetric);
-}
-
-void RescaleColorMapDialog::pull()
-{
-  pull_newVersionToReplaceOld();
 }

@@ -42,13 +42,8 @@ ConvertFieldBasisDialog::ConvertFieldBasisDialog(const std::string& name, Module
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
 	addLineEditManager(nameLineEdit_, Parameters::InputFieldName);
 	addLineEditManager(basisLineEdit_,  Parameters::InputType);
-	addComboBoxManager(basisComboBox_, Parameters::OutputType); 
-}
-
-void ConvertFieldBasisDialog::pull()
-{
-  pull_newVersionToReplaceOld();
+	addComboBoxManager(basisComboBox_, Parameters::OutputType);
 }

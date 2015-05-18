@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ConvertIndicesToFieldDataDialog : public ModuleDialogGeneric, 
+
+class SCISHARE ConvertIndicesToFieldDataDialog : public ModuleDialogGeneric,
 	public Ui::ConvertIndicesToFieldData
 {
 	Q_OBJECT
-	
+
 public:
-  ConvertIndicesToFieldDataDialog(const std::string& name, 
+  ConvertIndicesToFieldDataDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

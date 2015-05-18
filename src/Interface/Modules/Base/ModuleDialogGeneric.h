@@ -74,8 +74,7 @@ namespace Gui {
   public Q_SLOTS:
     virtual void moduleExecuted() {}
     //need a better name: read/updateUI
-    virtual void pull() = 0;
-    void pull_newVersionToReplaceOld();
+    virtual void pull() final;
     void moduleSelected(bool selected);
     void toggleCollapse();
     virtual void updateFromPortChange(int numPorts) {}
@@ -94,6 +93,11 @@ namespace Gui {
     void fixSize();
     void connectButtonToExecuteSignal(QAbstractButton* button);
     void connectComboToExecuteSignal(QComboBox* box);
+
+    void pullManagedWidgets();
+    // Dialog classes should override this method to provide pull behavior not available from the widget managers.
+    virtual void pullSpecial() {}
+
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
 
     //TODO: need a better push/pull model

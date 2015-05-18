@@ -42,12 +42,7 @@ ClipFieldByFunctionDialog::ClipFieldByFunctionDialog(const std::string& name, Mo
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   addTextEditManager(expressionTextEdit_, ClipFieldDataModule::FunctionString);
   addComboBoxManager(clippingLocationComboBox_, Parameters::ClipMethod);
-}
-
-void ClipFieldByFunctionDialog::pull()
-{
-  pull_newVersionToReplaceOld();
 }

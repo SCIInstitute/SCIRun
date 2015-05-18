@@ -35,21 +35,20 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE FairMeshDialog : public ModuleDialogGeneric, 
+
+class SCISHARE FairMeshDialog : public ModuleDialogGeneric,
   public Ui::FairMesh
 {
 	Q_OBJECT
-	
+
 public:
-  FairMeshDialog(const std::string& name, 
+  FairMeshDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
-
+protected:
+  virtual void pullSpecial() override;
 private Q_SLOTS:
   void push();
-private:
 };
 
 }
