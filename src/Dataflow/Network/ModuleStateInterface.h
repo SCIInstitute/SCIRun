@@ -126,12 +126,15 @@ namespace Networks {
   class SCISHARE MetadataMap
   {
   public:
-    explicit MetadataMap(ModuleStateInterface& state);
+    explicit MetadataMap(ModuleStateHandle& state);
+    MetadataMap(const MetadataMap&) = delete;
+    MetadataMap& operator=(const MetadataMap&) = delete;
+
     std::string getMetadata(const std::string& key) const;
     void setMetadata(const std::string& key, const std::string& value);
     StringMap getFullMap() const;
   private:
-    ModuleStateInterface& state_;
+    ModuleStateHandle& state_;
   };
 
 }}}

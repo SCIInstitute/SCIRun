@@ -121,7 +121,7 @@ Module::Module(const ModuleLookupInfo& info,
   inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
-  metadata_(*state_),
+  metadata_(state_),
   executionState_(ModuleInterface::NotExecuted)
 {
   iports_.set_module(this);
