@@ -618,6 +618,11 @@ bool Module::needToExecute() const
   return true;
 }
 
+const MetadataMap& Module::metadata() const
+{
+  return metadata_;
+}
+
 ModuleReexecutionStrategyHandle Module::getReexecutionStrategy() const
 {
   return reexecute_;

@@ -101,6 +101,8 @@ namespace Networks {
 
     virtual void enqueueExecuteAgain();
 
+    virtual const MetadataMap& metadata() const override;
+
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
     virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id);
