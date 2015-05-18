@@ -67,7 +67,7 @@ namespace Networks {
     virtual bool containsViewScene() const;
     virtual NetworkGlobalSettings& settings();
     virtual std::string toString() const;
-    virtual void setModuleExecutionState(ModuleInterface::ExecutionState state, ModuleFilter filter);
+    virtual void setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter);
     virtual void clear();
   private:
     ModuleFactoryHandle moduleFactory_;

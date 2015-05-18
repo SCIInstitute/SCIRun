@@ -449,7 +449,7 @@ void ModuleWidgetDisplayMini::adjustLayout(QLayout* layout)
 
 static const int UNSET = -1;
 static const int SELECTED = -50;
-static const int ERRORED = -100;
+//static const int ERRORED = -100;
 static bool isUnsetOrSelected(int state)
 {
   return UNSET == state || SELECTED == state;
@@ -505,7 +505,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   resize(currentWidget()->size());
 
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
-  theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
+  theModule_->executionState().connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
   theModule_->connectExecuteSelfRequest([this]() { executeAgain(); });
   connect(this, SIGNAL(executeAgain()), this, SLOT(executeButtonPushed()));
@@ -1000,11 +1000,11 @@ void fillColorStateLookup(const QString& background)
 {
   if (colorStateLookup.empty())
   {
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(205,190,112), (int)ModuleInterface::Waiting));
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(170,204,170), (int)ModuleInterface::Executing));
-    colorStateLookup.insert(ColorStatePair(background, (int)ModuleInterface::Completed));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(205,190,112), (int)ModuleExecutionState::Waiting));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(170, 204, 170), (int)ModuleExecutionState::Executing));
+    colorStateLookup.insert(ColorStatePair(background, (int)ModuleExecutionState::Completed));
     colorStateLookup.insert(ColorStatePair(moduleRGBA(0,255,255), SELECTED));
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(176, 23, 31), ERRORED));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(176, 23, 31), (int)ModuleExecutionState::Errored));
   }
 }
 
@@ -1014,19 +1014,19 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
   switch (moduleState)
   {
-  case (int)ModuleInterface::Waiting:
-    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Completed)
+  case (int)ModuleExecutionState::Waiting:
+    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleExecutionState::Completed)
     {
       Q_EMIT backgroundColorUpdated(moduleRGBA(205,190,112));
     }
     break;
-  case (int)ModuleInterface::Executing:
-    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Waiting)
+  case (int)ModuleExecutionState::Executing:
+    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleExecutionState::Waiting)
     {
       Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
     }
     break;
-  case (int)ModuleInterface::Completed:
+  case (int)ModuleExecutionState::Completed:
     {
       if (!errored_)
         Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);

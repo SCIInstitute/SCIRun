@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Modules/Base/ModuleDialogBasic.h>
@@ -121,7 +121,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
   insert(dialogMakerMap_)
     ADD_MODULE_DIALOG(SendScalar, SendScalarDialog)
     ADD_MODULE_DIALOG(ReceiveScalar, ReceiveScalarDialog)
-    //ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixDialog)
     ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixClassicDialog)
     ADD_MODULE_DIALOG(WriteMatrix, WriteMatrixDialog)
     ADD_MODULE_DIALOG(ReadMesh, ReadMeshDialog)
@@ -135,7 +134,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(AppendMatrix, AppendMatrixDialog)
     ADD_MODULE_DIALOG(CreateMatrix, CreateMatrixDialog)
     ADD_MODULE_DIALOG(CreateString, CreateStringDialog)
-		ADD_MODULE_DIALOG(NetworkNotes, NetworkNotesDialog)
+    ADD_MODULE_DIALOG(NetworkNotes, NetworkNotesDialog)
     ADD_MODULE_DIALOG(PrintDatatype, PrintDatatypeDialog)
     ADD_MODULE_DIALOG(ReportMatrixInfo, ReportMatrixInfoDialog)
     ADD_MODULE_DIALOG(ReportFieldInfo, ReportFieldInfoDialog)
@@ -168,29 +167,29 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
-    #if WITH_TETGEN
+#if WITH_TETGEN
     ADD_MODULE_DIALOG(InterfaceWithTetGen, InterfaceWithTetGenDialog)
-    #endif
+#endif
     ADD_MODULE_DIALOG(MapFieldDataOntoElements, MapFieldDataOntoElemsDialog)
     ADD_MODULE_DIALOG(MapFieldDataOntoNodes, MapFieldDataOntoNodesDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
     ADD_MODULE_DIALOG(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionDialog)
     ADD_MODULE_DIALOG(ClipFieldByFunction, ClipFieldByFunctionDialog)
     ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
-	ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
+    ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
-	ADD_MODULE_DIALOG(ConvertFieldBasis, ConvertFieldBasisDialog)
-	ADD_MODULE_DIALOG(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixDialog)
-	ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
-	ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
-	ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
-	ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
+    ADD_MODULE_DIALOG(ConvertFieldBasis, ConvertFieldBasisDialog)
+    ADD_MODULE_DIALOG(BuildNoiseColumnMatrix, BuildNoiseColumnMatrixDialog)
+    ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
+    ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
+    ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
+    ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
     ADD_MODULE_DIALOG(SolveInverseProblemWithTikhonov, SolveInverseProblemWithTikhonovDialog)
-	ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog) 
-	ADD_MODULE_DIALOG(RescaleColorMap, RescaleColorMapDialog)
-    ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog) 
-	ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
-  ;
+    ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)
+    ADD_MODULE_DIALOG(RescaleColorMap, RescaleColorMapDialog)
+    ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
+    ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
+    ;
 }
 
 ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId, ModuleStateHandle state)

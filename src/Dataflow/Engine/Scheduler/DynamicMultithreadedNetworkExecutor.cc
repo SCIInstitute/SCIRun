@@ -103,7 +103,7 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
 
 bool ModuleWaitingFilter::operator()(SCIRun::Dataflow::Networks::ModuleHandle mh) const
 {
-  return mh->executionState() != Networks::ModuleInterface::Completed;
+  return mh->executionState().currentState() != Networks::ModuleExecutionState::Completed;
 }
 
 const ModuleWaitingFilter& ModuleWaitingFilter::Instance()

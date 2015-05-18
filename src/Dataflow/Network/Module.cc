@@ -101,6 +101,37 @@ namespace detail
     Mutex mapLock_;
     std::map<std::string, int> instanceCounts_;
   };
+
+  // basic int version to start. next hookup state machine
+  class ModuleExecutionStateImpl : public ModuleExecutionState
+  {
+  public:
+    virtual Value currentState() const override 
+    {
+      return current_;
+    }
+    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) override
+    {
+      return signal_.connect(subscriber);
+    }
+    virtual bool transitionTo(Value state) override
+    {
+      if (current_ != state)
+      {
+        signal_(static_cast<int>(current_));
+        std::cout << "Transitioning to " << state << std::endl;
+      }
+      current_ = state;
+      return true;
+    }
+    virtual std::string currentColor() const override
+    {
+      return "dunno";
+    }
+  private:
+    Value current_;
+    ExecutionStateChangedSignalType signal_;
+  };
 }
 
 /*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
@@ -119,7 +150,7 @@ Module::Module(const ModuleLookupInfo& info,
   inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
-  executionState_(ModuleInterface::NotExecuted)
+  executionState_(new detail::ModuleExecutionStateImpl) 
 {
   iports_.set_module(this);
   oports_.set_module(this);
@@ -141,6 +172,8 @@ Module::Module(const ModuleLookupInfo& info,
 
   if (reexFactory)
     setReexecutionStrategy(reexFactory->create(*this));
+
+  executionState_->transitionTo(ModuleExecutionState::NotExecuted);
 }
 
 void Module::set_id(const std::string& id)
@@ -190,7 +223,7 @@ bool Module::do_execute() throw()
   status("STARTING MODULE: " + id_.id_);
   /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
-  setExecutionState(ModuleInterface::Executing);
+  executionState_->transitionTo(ModuleExecutionState::Executing);
   bool returnCode = false;
 
   try
@@ -229,16 +262,11 @@ bool Module::do_execute() throw()
     error("MODULE ERROR: unhandled exception caught");
   }
 
-  // Call finish on all ports.
-  //iports_.apply(boost::bind(&PortInterface::finish, _1));
-  //oports_.apply(boost::bind(&PortInterface::finish, _1));
-
   status("MODULE FINISHED: " + id_.id_);
   /// @todo: need separate logger per module
   //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
-  setExecutionState(ModuleInterface::Completed);
+  executionState_->transitionTo(returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored);
   resetStateChanged();
-  //std::cout << id_ << " inputsChanged set to false post-execute" << std::endl;
   inputsChanged_ = false;
   executeEnds_(id_);
   return returnCode;
@@ -489,11 +517,6 @@ boost::signals2::connection Module::connectErrorListener(const ErrorSignalType::
   return errorSignal_.connect(subscriber);
 }
 
-boost::signals2::connection Module::connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber)
-{
-  return executionStateChanged_.connect(subscriber);
-}
-
 void Module::setUiVisible(bool visible)
 {
   if (uiToggleFunc_)
@@ -578,18 +601,23 @@ void Module::setAlgoListFromState(const AlgorithmParameterName& name)
   algo().set(name, get_state()->getValue(name).toVector());
 }
 
-ModuleInterface::ExecutionState Module::executionState() const
+ModuleExecutionState& Module::executionState()
 {
-  return executionState_;
+  return *executionState_;
 }
 
-void Module::setExecutionState(ModuleInterface::ExecutionState state)
-{
-  //std::cout << get_id() << " setExecutionState old " << executionState_ << " new " << state << std::endl;
-  if (state != executionState_)
-    executionStateChanged_(state);
-  executionState_ = state;
-}
+//ModuleInterface::ExecutionState Module::executionState() const
+//{
+//  return executionState_;
+//}
+
+//void Module::setExecutionState(ModuleInterface::ExecutionState state)
+//{
+//  //std::cout << get_id() << " setExecutionState old " << executionState_ << " new " << state << std::endl;
+//  if (state != executionState_)
+//    executionStateChanged_(state);
+//  executionState_ = state;
+//}
 
 bool Module::needToExecute() const
 {

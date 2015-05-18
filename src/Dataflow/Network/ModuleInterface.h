@@ -104,7 +104,7 @@ namespace Networks {
   class SCISHARE ModuleExecutionState
   {
   public:
-    enum ExecutionState
+    enum Value
     {
       NotExecuted,
       Waiting,
@@ -112,13 +112,12 @@ namespace Networks {
       Completed,
       Errored
     };
-    virtual ExecutionState executionState() const = 0;
-    //virtual void setExecutionState(ExecutionState state) = 0;
+    virtual Value currentState() const = 0;
 
     typedef boost::signals2::signal<void(int)> ExecutionStateChangedSignalType;
 
     virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) = 0;
-    virtual bool transitionTo(ExecutionState state) = 0;
+    virtual bool transitionTo(Value state) = 0;
     virtual std::string currentColor() const = 0;
     virtual ~ModuleExecutionState() {}
   };
