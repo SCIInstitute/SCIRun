@@ -62,6 +62,9 @@ namespace SCIRun {
           network_(network),
           executionLock_(executionLock)
         {
+          if (network)
+            interrupter.reset(new boost::signals2::scoped_connection(
+              network->connectModuleInterrupted([this](const std::string& id) { interruptModule(id); })));
         }
         void operator()() const
         {
@@ -76,6 +79,11 @@ namespace SCIRun {
           produce.join();
           executeThreads_->join_all();
         }
+
+        void interruptModule(const std::string& id)
+        {
+          std::cout << "INTERRUPT ATTEMPT: MODULE ID " << id << std::endl;
+        }
       private:
         mutable boost::shared_ptr<boost::thread_group> executeThreads_;
         const Networks::ExecutableLookup* lookup_;
@@ -85,6 +93,7 @@ namespace SCIRun {
         DynamicExecutor::ModuleConsumerPtr consumer_;
         const NetworkInterface* network_;
         Mutex* executionLock_;
+        boost::shared_ptr<boost::signals2::scoped_connection> interrupter;
       };
 }}}
 
