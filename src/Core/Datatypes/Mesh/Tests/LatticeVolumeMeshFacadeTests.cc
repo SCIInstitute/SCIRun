@@ -29,8 +29,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <boost/assign.hpp>
-#include <boost/foreach.hpp>
-//#include <Core/Datatypes/Mesh/MeshFactory.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
@@ -96,7 +94,7 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeEdgeIterationTest)
   auto facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const EdgeInfo<VMesh>& edge, facade->edges())
+  for (const auto& edge : facade->edges())
   {
     auto nodesFromEdge = edge.nodeIndices();
     auto nodePoints = edge.nodePoints();
@@ -125,7 +123,7 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeFaceIterationTest)
   auto facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const FaceInfo<VMesh>& face, facade->faces())
+  for (const auto& face : facade->faces())
   {
     auto faceID = face.index();
     auto edges = face.edgeIndices();
@@ -154,9 +152,30 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeNodeIterationTest)
   auto facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
+  for (const auto& node : facade->nodes())
   {
     ostr << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << join(node.edgeIndices()) << "]" << std::endl;
+  }
+
+  EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[0, 4, 8]\n"
+    "Node 1 point=[1, 0, 0] edges=[0, 6, 9]\n"
+    "Node 2 point=[0, 1, 0] edges=[1, 6, 10]\n"
+    "Node 3 point=[1, 1, 0] edges=[1, 8, 11]\n"
+    "Node 4 point=[0, 0, 1] edges=[2, 5, 9]\n"
+    "Node 5 point=[1, 0, 1] edges=[2, 7, 10]\n"
+    "Node 6 point=[0, 1, 1] edges=[3, 7, 11]\n"
+    "Node 7 point=[1, 1, 1] edges=[3, 9, 12]\n",
+    ostr.str());
+}
+
+TEST_F(LatticeVolumeMeshFacadeTests, CubeCellIterationTest)
+{
+  auto facade(mesh_->getFacade());
+
+  std::ostringstream ostr;
+  for (const auto& cell : facade->cells())
+  {
+    ostr << "Cell " << cell.index() << " center=" << cell.center().get_string() << " edges=[" << join(cell.edgeIndices()) << "]" << std::endl;
   }
 
   EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[0, 4, 8]\n"

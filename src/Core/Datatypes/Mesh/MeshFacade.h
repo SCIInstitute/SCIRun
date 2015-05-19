@@ -59,6 +59,11 @@ namespace Datatypes {
     virtual size_t numElements() const = 0;
   };
 
+  template <class A, class B>
+  const A& begin(const std::pair<A,B>& nodes) { return nodes.first; }
+  template <class A, class B>
+  const B& end(const std::pair<A, B>& nodes) { return nodes.second; }
+
 }}}
 
 #endif
