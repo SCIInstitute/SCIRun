@@ -181,7 +181,7 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
 
   if (finfo.is_scalar() && showScalars)
   {
-    renderScalars(field, colorMap, getVectorsRenderState(state, colorMap), geom, geom->uniqueID());
+    renderScalars(field, colorMap, getScalarsRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   return geom;
@@ -289,7 +289,7 @@ void ShowFieldGlyphs::renderVectors(
   ss << state.mGlyphType << resolution << radius << colorScheme;
 
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
-;
+
   glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), 
     my_state->getValue(VectorsTransparencyValue).toDouble(), colorScheme, state, primIn, mesh->get_bounding_box());
 }
@@ -365,11 +365,9 @@ void ShowFieldGlyphs::renderScalars(
     {
     case RenderState::GlyphType::POINT_GLYPH:
       glyphs.addPoint(p, node_color);
-      std::cout << "addPoint" << std::endl;
       break;
     case RenderState::GlyphType::SPHERE_GLYPH:
       glyphs.addSphere(p, radius, resolution, node_color);
-      std::cout << "addSphere" << std::endl;
       break;
     case RenderState::GlyphType::BOX_GLYPH:
       THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
