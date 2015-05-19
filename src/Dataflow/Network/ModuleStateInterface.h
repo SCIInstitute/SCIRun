@@ -50,10 +50,10 @@ namespace Networks {
   {
   public:
     virtual ~ModuleStateInterface();
-
-    typedef std::vector<SCIRun::Core::Algorithms::AlgorithmParameterName> Keys;
+    
     typedef SCIRun::Core::Algorithms::AlgorithmParameterName Name;
     typedef SCIRun::Core::Algorithms::AlgorithmParameter Value;
+    typedef std::vector<Name> Keys;
 
     //serialized state
     virtual const Value getValue(const Name& name) const = 0;

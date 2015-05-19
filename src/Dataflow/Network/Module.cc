@@ -184,6 +184,24 @@ size_t Module::num_output_ports() const
   return oports_.size();
 }
 
+namespace //TODO requirements for state metadata reporting
+{
+  std::string stateMetaInfo(ModuleStateHandle state)
+  {
+    if (!state)
+      return "Null state map.";
+    auto keys = state->getKeys();
+    std::ostringstream ostr;
+    ostr << "{";
+    for (const auto& key : keys)
+    {
+      ostr << "\n\t[" << key.name() << ", " << state->getValue(key).value() << "]";
+    }
+    ostr << "}";
+    return ostr.str();
+  }
+}
+
 bool Module::do_execute() throw()
 {
   //Log::get() << INFO << "executing module: " << id_ << std::endl;
@@ -191,10 +209,9 @@ bool Module::do_execute() throw()
   executeBegins_(id_);
   boost::timer executionTimer;
   {
-    std::string isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
-    std::string date = isoString.substr(0,8);
-    std::string time = isoString.substr(9,20);
-    metadata_.setMetadata("last execution timestamp", isoString);
+    std::string isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
+    metadata_.setMetadata("Last execution timestamp", isoString);
+    metadata_.setMetadata("Module state", stateMetaInfo(get_state()));
   }
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
@@ -245,7 +262,9 @@ bool Module::do_execute() throw()
 
   {
     double executionTime = executionTimer.elapsed();
-    metadata_.setMetadata("last execution duration (seconds)", boost::lexical_cast<std::string>(executionTime));
+    std::ostringstream ostr;
+    ostr << executionTime;
+    metadata_.setMetadata("last execution duration (seconds)", ostr.str());
   }
 
   status("MODULE FINISHED: " + id_.id_);
@@ -304,6 +323,18 @@ bool Module::hasOutputPort(const PortId& id) const
   return oports_.hasPort(id);
 }
 
+namespace //TODO: flesh out requirements for metadata on input handles.
+{
+  std::string metaInfo(DatatypeHandleOption data)
+  {
+    if (!data)
+      return "Not connected";
+    if (!*data)
+      return "Null data handle";
+    return "Datatype id# " + boost::lexical_cast<std::string>((*data)->id());
+  }
+}
+
 DatatypeHandleOption Module::get_input_handle(const PortId& id)
 {
   /// @todo test...
@@ -326,6 +357,8 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
   }
 
   auto data = port->getData();
+
+  metadata_.setMetadata("Input " + id.toString(), metaInfo(data));
 
   return data;
 }
