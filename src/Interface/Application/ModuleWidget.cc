@@ -1325,7 +1325,15 @@ void ModuleWidget::unhighlightPorts()
 void ModuleWidget::updateMetadata(bool active)
 {
   if (active)
-    setToolTip("Metadata!");
+  {
+    auto metadata = theModule_->metadata().getFullMap();
+    QStringList display;
+    for (const auto& metaPair : metadata)
+    {
+      display.append(QString::fromStdString(metaPair.first) + " : " + QString::fromStdString(metaPair.second));
+    }
+    setToolTip("Metadata:\n" + display.join("\n"));
+  }
   else
     setToolTip("");
 }
