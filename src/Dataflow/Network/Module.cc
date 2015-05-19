@@ -32,6 +32,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/algorithm/string/join.hpp>
 #include <boost/timer.hpp>
 #include <atomic>
 
@@ -191,11 +192,15 @@ namespace //TODO requirements for state metadata reporting
     if (!state)
       return "Null state map.";
     auto keys = state->getKeys();
+    size_t i = 0;
     std::ostringstream ostr;
-    ostr << "{";
+    ostr << "\n\t{";
     for (const auto& key : keys)
     {
-      ostr << "\n\t[" << key.name() << ", " << state->getValue(key).value() << "]";
+      ostr << "[" << key.name() << ", " << state->getValue(key).value() << "]";
+      i++;
+      if (i < keys.size())
+        ostr << ",\n\t";
     }
     ostr << "}";
     return ostr.str();
@@ -383,6 +388,8 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   std::vector<DatatypeHandleOption> options;
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
+
+  metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? nullptr : options[0]));
 
   return options;
 }
