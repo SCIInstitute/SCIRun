@@ -45,11 +45,6 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
-}
-
-void ShowFieldGlyphsDialog::pull()
-{
 }
 
 void ShowFieldGlyphsDialog::createStartupNote()

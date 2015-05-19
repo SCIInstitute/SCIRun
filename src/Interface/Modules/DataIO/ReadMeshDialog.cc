@@ -48,19 +48,19 @@ ReadMeshDialog::ReadMeshDialog(const std::string& name, ModuleStateHandle state,
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
   buttonBox->setVisible(false);
 }
 
-void ReadMeshDialog::pull()
+void ReadMeshDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
-void ReadMeshDialog::pushFileNameToState() 
+void ReadMeshDialog::pushFileNameToState()
 {
   state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }

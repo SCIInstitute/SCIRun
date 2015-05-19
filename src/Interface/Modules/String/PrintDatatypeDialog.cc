@@ -46,13 +46,12 @@ PrintDatatypeDialog::PrintDatatypeDialog(const std::string& name, ModuleStateHan
   buttonBox->setVisible(false);
 }
 
-void PrintDatatypeDialog::pullAndDisplayInfo() 
+void PrintDatatypeDialog::pullAndDisplayInfo()
 {
   auto data = state_->getValue(PrintDatatypeModule::ReceivedValue);
 
   std::ostringstream ostr;
   ostr << "Value: " << data.value() << std::endl;
  
-
   datatypeTextEdit_->setPlainText(QString::fromStdString(ostr.str()));
 }

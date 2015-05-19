@@ -50,9 +50,4 @@ InterfaceWithCleaverDialog::InterfaceWithCleaverDialog(const std::string& name, 
   addCheckBoxManager(PaddingCheckBox_, InterfaceWithCleaverAlgorithm::Padding);
 
   addComboBoxManager(scalingComboBox_, InterfaceWithCleaverAlgorithm::VolumeScalingOption);
-}                         
-                          
-void InterfaceWithCleaverDialog::pull()
-{
- pull_newVersionToReplaceOld();   
-}
+}               

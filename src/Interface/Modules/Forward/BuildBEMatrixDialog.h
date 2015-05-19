@@ -48,7 +48,8 @@ public:
     QWidget* parent = 0);
 public Q_SLOTS:
   virtual void updateFromPortChange(int numPorts) override;
-  virtual void pull() override;
+protected:
+  virtual void pullSpecial() override;
 private Q_SLOTS:
   void pullNames();
   void pullFieldTypes();

@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ClipFieldByFunctionDialog : public ModuleDialogGeneric, 
+
+class SCISHARE ClipFieldByFunctionDialog : public ModuleDialogGeneric,
   public Ui::ClipFieldByFunction
 {
 	Q_OBJECT
-	
+
 public:
-  ClipFieldByFunctionDialog(const std::string& name, 
+  ClipFieldByFunctionDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

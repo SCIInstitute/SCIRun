@@ -35,18 +35,17 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE EditMeshBoundingBoxDialog : public ModuleDialogGeneric, 
+
+class SCISHARE EditMeshBoundingBoxDialog : public ModuleDialogGeneric,
   public Ui::EditMeshBoundingBox
 {
 	Q_OBJECT
-	
+
 public:
-  EditMeshBoundingBoxDialog(const std::string& name, 
+  EditMeshBoundingBoxDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
-    
+private:
     QDoubleSpinBox spinner_scale_;
     double scale_;
 private Q_SLOTS:

@@ -52,7 +52,7 @@ ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle stat
   buttonBox->setVisible(false);
 }
 
-void ReadFieldDialog::pull()
+void ReadFieldDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }

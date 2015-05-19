@@ -37,24 +37,19 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-  //TODO DAN
 
-class SCISHARE MatrixAsVectorFieldDialog : public ModuleDialogGeneric, 
+  //TODO: DELETE
+
+class SCISHARE MatrixAsVectorFieldDialog : public ModuleDialogGeneric,
   //public SCIRun::State::SendScalarState, 
   public Ui::MatrixAsVectorField
 {
 	Q_OBJECT
-	
+
 public:
-  MatrixAsVectorFieldDialog(const std::string& name, 
+  MatrixAsVectorFieldDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull() {}
-
-private Q_SLOTS:
-  //void pushFileNameToState(const QString& str);
-  //void saveFile();
 };
 
 }

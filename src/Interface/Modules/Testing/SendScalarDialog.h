@@ -36,17 +36,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE SendScalarDialog : public ModuleDialogGeneric, 
+
+class SCISHARE SendScalarDialog : public ModuleDialogGeneric,
   public Ui::SendScalar
 {
 	Q_OBJECT
-	
+
 public:
-  SendScalarDialog(const std::string& name, 
+  SendScalarDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

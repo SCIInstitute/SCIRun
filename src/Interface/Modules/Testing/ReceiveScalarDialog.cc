@@ -35,17 +35,12 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Basic;
 
-ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHandle state, 
+ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name) + " --Receive");
-  
-  addDoubleSpinBoxManager(scalarValueReceived_, ReceiveScalarModule::ReceivedValue);
-}
 
-void ReceiveScalarDialog::pull() 
-{
-  pull_newVersionToReplaceOld();
+  addDoubleSpinBoxManager(scalarValueReceived_, ReceiveScalarModule::ReceivedValue);
 }

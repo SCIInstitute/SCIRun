@@ -40,18 +40,19 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ReadMeshDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
+
+class SCISHARE ReadMeshDialog : public ModuleDialogGeneric,
+  //public SCIRun::State::SendScalarState,
   public Ui::ReadMesh
 {
 	Q_OBJECT
-	
+
 public:
-  ReadMeshDialog(const std::string& name, 
+  ReadMeshDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+protected:
+  virtual void pullSpecial() override;
 
 private Q_SLOTS:
   void pushFileNameToState();

@@ -60,8 +60,3 @@ InterfaceWithTetGenDialog::InterfaceWithTetGenDialog(const std::string& name, Mo
 
   addLineEditManager(addTetGenCommandLineEdit_, Parameters::MoreSwitches);
 }
-
-void InterfaceWithTetGenDialog::pull()
-{
- pull_newVersionToReplaceOld();
-}
