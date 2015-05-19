@@ -48,14 +48,17 @@ namespace Datatypes {
     typedef std::pair<typename SmartNodeIterator<VirtualMeshType>::Type, typename SmartNodeIterator<VirtualMeshType>::Type> Nodes;
     typedef std::pair<typename SmartEdgeIterator<VirtualMeshType>::Type, typename SmartEdgeIterator<VirtualMeshType>::Type> Edges;
     typedef std::pair<typename SmartFaceIterator<VirtualMeshType>::Type, typename SmartFaceIterator<VirtualMeshType>::Type> Faces;
+    typedef std::pair<typename SmartCellIterator<VirtualMeshType>::Type, typename SmartCellIterator<VirtualMeshType>::Type> Cells;
 
     virtual Nodes nodes() const = 0;
     virtual Edges edges() const = 0;
     virtual Faces faces() const = 0;
+    virtual Cells cells() const = 0;
 
     virtual size_t numNodes() const = 0;
     virtual size_t numEdges() const = 0;
     virtual size_t numFaces() const = 0;
+    virtual size_t numCells() const = 0;
     virtual size_t numElements() const = 0;
   };
 

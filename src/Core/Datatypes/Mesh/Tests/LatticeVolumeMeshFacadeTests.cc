@@ -178,13 +178,8 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeCellIterationTest)
     ostr << "Cell " << cell.index() << " center=" << cell.center().get_string() << " edges=[" << join(cell.edgeIndices()) << "]" << std::endl;
   }
 
-  EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[0, 4, 8]\n"
-    "Node 1 point=[1, 0, 0] edges=[0, 6, 9]\n"
-    "Node 2 point=[0, 1, 0] edges=[1, 6, 10]\n"
-    "Node 3 point=[1, 1, 0] edges=[1, 8, 11]\n"
-    "Node 4 point=[0, 0, 1] edges=[2, 5, 9]\n"
-    "Node 5 point=[1, 0, 1] edges=[2, 7, 10]\n"
-    "Node 6 point=[0, 1, 1] edges=[3, 7, 11]\n"
-    "Node 7 point=[1, 1, 1] edges=[3, 9, 12]\n",
+  EXPECT_EQ("Cell 0 center=[0.5, 0.5, 0.5] edges=[0, 1, 2, 3, 4, 6, 5, 7, 8, 9, 10, 11]\n",
     ostr.str());
+
+  EXPECT_EQ(1, facade->numCells());
 }
