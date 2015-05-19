@@ -517,8 +517,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
-
-  setToolTip("Metadata!!!");
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -1322,4 +1320,12 @@ void ModuleWidget::unhighlightPorts()
   inputPortLayout_->setSpacing(PORT_SPACING);
   outputPortLayout_->setSpacing(PORT_SPACING);
   Q_EMIT displayChanged();
+}
+
+void ModuleWidget::updateMetadata(bool active)
+{
+  if (active)
+    setToolTip("Metadata!");
+  else
+    setToolTip("");
 }

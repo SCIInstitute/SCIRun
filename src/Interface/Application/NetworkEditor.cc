@@ -1110,6 +1110,9 @@ void NetworkEditor::metadataLayer(bool active)
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     item->setOpacity(active ? 0.4 : 1);
+    auto module = getModule(item);
+    if (module)
+      module->updateMetadata(active);
   }
 }
 
