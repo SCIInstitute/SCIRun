@@ -63,7 +63,13 @@ GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
   auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
   shaderSearchDirs.push_back(shadersInBinDirectory.string());
 
-  const int frameInitLimit = 50;
+  auto frameInitLimitFromCommandLine = Core::Application::Instance().parameters()->frameInitLimit();
+  if (frameInitLimitFromCommandLine)
+  {
+    std::cout << "Renderer frame init limit changed to " << *frameInitLimitFromCommandLine << std::endl;
+  }
+  const int frameInitLimit = frameInitLimitFromCommandLine.get_value_or(100);
+
   mGraphics.reset(new Render::SRInterface(mContext, shaderSearchDirs, frameInitLimit));
 
   mTimer = new QTimer(this);
