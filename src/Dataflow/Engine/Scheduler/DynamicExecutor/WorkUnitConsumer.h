@@ -47,12 +47,16 @@ namespace DynamicExecutor {
   class SCISHARE ExecutionThreadGroup : boost::noncopyable
   {
   public:
-    ExecutionThreadGroup() : executeThreads_(new boost::thread_group), mapLock_(new Core::Thread::Mutex("threadMap")) {}
+    ExecutionThreadGroup() : executeThreads_(new boost::thread_group), mapLock_(new Core::Thread::Mutex("threadMap")) 
+    {
+      std::cout << "ExecutionThreadGroup()" << std::endl;
+    }
     void startExecution(const ModuleExecutor& executor)
     {
       auto thread = executeThreads_->create_thread(boost::bind(&ModuleExecutor::run, executor));
       Core::Thread::Guard g(mapLock_->get());
       threadsByModuleId_[executor.module_->get_id().id_] = thread;
+      std::cout << this << " inserted thread into map: " << executor.module_->get_id().id_ << " : " << thread << std::endl;
     }
     void joinAll()
     {
@@ -60,22 +64,23 @@ namespace DynamicExecutor {
     }
     boost::thread* getThreadForModule(const std::string& moduleId) const
     {
-      std::cout << "getThreadForModule " << moduleId << std::endl;
+      std::cout << this << " getThreadForModule " << moduleId << std::endl;
       if (!mapLock_)
       {
         std::cout << "mapLock is null" << std::endl;
         return nullptr;
       }
       Core::Thread::Guard g(mapLock_->get());
-      std::cout << "getThreadForModule " << moduleId << " locked " << std::endl;
+
+      std::cout << this << " getThreadForModule " << moduleId << " locked, size is " << threadsByModuleId_.size() << std::endl;
       auto it = threadsByModuleId_.find(moduleId);
-      std::cout << "getThreadForModule " << moduleId << " iterator obtained " << std::endl;
+      std::cout << this << " getThreadForModule " << moduleId << " iterator obtained " << std::endl;
       if (it == threadsByModuleId_.end())
         return nullptr;
-      std::cout << "getThreadForModule " << moduleId << " iterator is not end " << std::endl;
+      std::cout << this << " getThreadForModule " << moduleId << " iterator is not end " << std::endl;
       if (!executeThreads_->is_thread_in(it->second))
         return nullptr;
-      std::cout << "getThreadForModule is in group, returning" << moduleId << std::endl;
+      std::cout << this << " getThreadForModule is in group, returning" << moduleId << std::endl;
       return it->second;
     }
   private:
@@ -84,11 +89,13 @@ namespace DynamicExecutor {
     mutable boost::shared_ptr<Core::Thread::Mutex> mapLock_;
   };
 
+  typedef boost::shared_ptr<ExecutionThreadGroup> ExecutionThreadGroupPtr;
+
   class SCISHARE ModuleConsumer : boost::noncopyable
   {
   public:
     explicit ModuleConsumer(ModuleWorkQueuePtr workQueue, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer,
-      ExecutionThreadGroup& executeThreadGroup) :
+      ExecutionThreadGroupPtr executeThreadGroup) :
     work_(workQueue), producer_(producer), lookup_(lookup),
     executeThreadGroup_(executeThreadGroup),
     shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
@@ -128,7 +135,7 @@ namespace DynamicExecutor {
               log_ << Core::Logging::DEBUG_LOG << "~~~Processing " << unit->get_id();
 
             ModuleExecutor executor(unit, lookup_, producer_);
-            executeThreadGroup_.startExecution(executor);
+            executeThreadGroup_->startExecution(executor);
           }
           else
           {
@@ -149,7 +156,7 @@ namespace DynamicExecutor {
     ModuleWorkQueuePtr work_;
     ProducerInterfacePtr producer_;
     const Networks::ExecutableLookup* lookup_;
-    ExecutionThreadGroup& executeThreadGroup_;
+    ExecutionThreadGroupPtr executeThreadGroup_;
 
     static Core::Logging::Log& log_;
     bool shouldLog_;
