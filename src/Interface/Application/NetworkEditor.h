@@ -232,7 +232,7 @@ Q_SIGNALS:
     ModuleWidget* selectedModule() const;
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
-    void addNewModuleAtPosition(const QPoint& position);
+    void addNewModuleAtPosition(const QPointF& position);
     ConnectionLine* getSingleConnectionSelected();
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions) const;
@@ -253,7 +253,6 @@ Q_SIGNALS:
 
     bool visibleItems_;
     QPointF lastModulePosition_;
-    QPoint defaultModulePosition_;
 		boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;

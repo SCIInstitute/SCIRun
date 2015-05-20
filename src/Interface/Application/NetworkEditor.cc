@@ -70,7 +70,6 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   scene_(new QGraphicsScene(parent)),
   visibleItems_(true),
   lastModulePosition_(0,0),
-  defaultModulePosition_(0,0),
   dialogErrorControl_(dialogErrorControl),
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
@@ -327,8 +326,12 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
   proxy->setZValue(zLevelManager_->get_max());
+  while (!scene_->items(lastModulePosition_.x() - 20, lastModulePosition_.y() - 20, 40, 40).isEmpty())
+  {
+    lastModulePosition_ += QPointF(20, -20);
+  }
   proxy->setPos(lastModulePosition_);
-  lastModulePosition_ += moduleAddIncrement;
+
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
@@ -344,10 +347,9 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
-
+  
   scene_->addItem(proxy);
   proxy->createStartupNote();
-  proxy->snapToGrid();
 
   scene_->clearSelection();
   proxy->setSelected(true);
@@ -612,13 +614,13 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   //TODO: mime check here to ensure this only gets called for drags from treewidget
   if (moduleSelectionGetter_->isModule())
   {
-    addNewModuleAtPosition(event->pos());
+    addNewModuleAtPosition(mapToScene(event->pos()));
   }
 }
 
-void NetworkEditor::addNewModuleAtPosition(const QPoint& position)
+void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
 {
-  lastModulePosition_ = mapToScene(position);
+  lastModulePosition_ = position;
   controller_->addModule(moduleSelectionGetter_->text().toStdString());
   Q_EMIT modified();
 }
@@ -627,8 +629,8 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 {
   if (moduleSelectionGetter_->isModule())
   {
-    defaultModulePosition_ += moduleAddIncrement.toPoint();
-    addNewModuleAtPosition(defaultModulePosition_);
+    auto upperLeft = mapToScene(viewport()->geometry()).boundingRect().center();
+    addNewModuleAtPosition(upperLeft);
   }
 }
 
