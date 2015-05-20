@@ -80,6 +80,7 @@ namespace SCIRun {
           MOCK_METHOD1(connectErrorListener, boost::signals2::connection(const ErrorSignalType::slot_type&));
           MOCK_METHOD1(connectExecutionStateChanged, boost::signals2::connection(const ExecutionStateChangedSignalType::slot_type&));
           MOCK_CONST_METHOD0(needToExecute, bool());
+          MOCK_CONST_METHOD0(isStoppable, bool());
           MOCK_METHOD0(setStateDefaults, void());
           MOCK_CONST_METHOD0(getAlgorithm, SCIRun::Core::Algorithms::AlgorithmHandle());
           MOCK_CONST_METHOD0(executionState, SCIRun::Dataflow::Networks::ModuleInterface::ExecutionState());

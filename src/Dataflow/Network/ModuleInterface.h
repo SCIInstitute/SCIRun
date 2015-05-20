@@ -168,6 +168,8 @@ namespace Networks {
     virtual void enqueueExecuteAgain() = 0;
 
     virtual const MetadataMap& metadata() const = 0;
+
+    virtual bool isStoppable() const = 0;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

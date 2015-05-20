@@ -593,7 +593,10 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
 void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
 {
   connect(display->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
-  //addWidgetToExecutionDisableList(display->getExecuteButton());
+  if (!theModule_->isStoppable())
+  {
+    addWidgetToExecutionDisableList(display->getExecuteButton());
+  }
   connect(display->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
   connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(show()));
@@ -916,8 +919,11 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
-  //removeWidgetFromExecutionDisableList(miniWidgetDisplay_->getExecuteButton());
-  //removeWidgetFromExecutionDisableList(fullWidgetDisplay_->getExecuteButton());
+  if (!theModule_->isStoppable())
+  {
+    removeWidgetFromExecutionDisableList(miniWidgetDisplay_->getExecuteButton());
+    removeWidgetFromExecutionDisableList(fullWidgetDisplay_->getExecuteButton());
+  }
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
   if (dialog_)
     removeWidgetFromExecutionDisableList(dialog_->getExecuteAction());

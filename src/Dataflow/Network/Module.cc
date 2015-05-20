@@ -231,7 +231,7 @@ bool Module::do_execute() throw()
     execute();
     returnCode = true;
   }
-  catch(const std::bad_alloc&)
+  catch (const std::bad_alloc&)
   {
     error("MODULE ERROR: bad_alloc caught");
   }
