@@ -63,7 +63,8 @@ GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
   auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
   shaderSearchDirs.push_back(shadersInBinDirectory.string());
 
-  mGraphics.reset(new Render::SRInterface(mContext, shaderSearchDirs));
+  const int frameInitLimit = 50;
+  mGraphics.reset(new Render::SRInterface(mContext, shaderSearchDirs, frameInitLimit));
 
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));

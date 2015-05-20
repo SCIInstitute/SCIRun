@@ -81,12 +81,14 @@ namespace SCIRun {
         
         //------------------------------------------------------------------------------
         SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
-                                 const std::vector<std::string>& shaderDirs) :
+                                 const std::vector<std::string>& shaderDirs, 
+                                 int frameInitLimit) :
         mMouseMode(MOUSE_OLDSCIRUN),
         mScreenWidth(640),
         mScreenHeight(480),
         axesFailCount_(0),
         mContext(context),
+        frameInitLimit_(frameInitLimit),
         mCamera(new SRCamera(*this))  // Should come after all vars have been initialized.
         {
             // Create default colormaps.
@@ -849,7 +851,7 @@ namespace SCIRun {
             if (arrowVBO == 0 || arrowIBO == 0 || shader == 0)
             {
                 axesFailCount_++;
-                if (axesFailCount_ > 50)
+                if (axesFailCount_ > frameInitLimit_)
                     throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
                 return;
             }
