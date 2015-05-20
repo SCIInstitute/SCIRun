@@ -294,6 +294,7 @@ namespace Networks {
     ExecutionSelfRequestSignalType executionSelfRequested_;
 
     ModuleReexecutionStrategyHandle reexecute_;
+    std::atomic<bool> threadStopped_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;

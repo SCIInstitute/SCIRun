@@ -62,6 +62,7 @@ namespace SCIRun {
       public:
         ShowFieldModule();
         virtual void execute();
+        virtual bool isStoppable() const override { return true; }
 
         static Core::Algorithms::AlgorithmParameterName ShowNodes;
         static Core::Algorithms::AlgorithmParameterName ShowEdges;
@@ -157,7 +158,7 @@ namespace SCIRun {
           Dataflow::Networks::ModuleStateHandle state,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
         /// @}
-        
+
         float faceTransparencyValue_;
         float edgeTransparencyValue_;
         float nodeTransparencyValue_;
