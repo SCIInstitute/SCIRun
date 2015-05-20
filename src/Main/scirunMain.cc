@@ -80,6 +80,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
   // The GetCommandLine() function returns argv as a single string. The split function splits it up into
   // the individual arguments.
+  
+  // TODO: another edge case is the Windows package. Full path of SCIRun.exe is passed with no quotes, so if the path
+  // has spaces this function does not work--we need the entire exe path to be in argv[0]. Unit test coming soon.
   std::vector<std::string> getArgv;
   boost::algorithm::split(getArgv, tempArgv[0], boost::is_any_of(" \0"), boost::algorithm::token_compress_on);
   
