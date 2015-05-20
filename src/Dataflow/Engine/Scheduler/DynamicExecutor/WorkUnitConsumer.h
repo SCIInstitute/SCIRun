@@ -43,12 +43,28 @@ namespace Dataflow {
 namespace Engine {
 namespace DynamicExecutor {
 
+  class SCISHARE ExecutionThreadGroup : boost::noncopyable
+  {
+  public:
+    ExecutionThreadGroup() : executeThreads_(new boost::thread_group) {}
+    void startExecution(const ModuleExecutor& executor)
+    {
+      executeThreads_->create_thread(boost::bind(&ModuleExecutor::run, executor));
+    }
+    void joinAll()
+    {
+      executeThreads_->join_all();
+    }
+  private:
+    mutable boost::shared_ptr<boost::thread_group> executeThreads_;
+    //std::map<std::string, boost::thread*> threadsByModuleId_;
+  };
 
   class SCISHARE ModuleConsumer : boost::noncopyable
   {
   public:
     explicit ModuleConsumer(ModuleWorkQueuePtr workQueue, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer,
-      boost::thread_group& executeThreadGroup) :
+      ExecutionThreadGroup& executeThreadGroup) :
     work_(workQueue), producer_(producer), lookup_(lookup),
     executeThreadGroup_(executeThreadGroup),
     shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
@@ -88,8 +104,7 @@ namespace DynamicExecutor {
               log_ << Core::Logging::DEBUG_LOG << "~~~Processing " << unit->get_id();
 
             ModuleExecutor executor(unit, lookup_, producer_);
-            /// @todo: thread pool
-            executeThreadGroup_.create_thread(boost::bind(&ModuleExecutor::run, executor));
+            executeThreadGroup_.startExecution(executor);
           }
           else
           {
@@ -110,7 +125,7 @@ namespace DynamicExecutor {
     ModuleWorkQueuePtr work_;
     ProducerInterfacePtr producer_;
     const Networks::ExecutableLookup* lookup_;
-    boost::thread_group& executeThreadGroup_;
+    ExecutionThreadGroup& executeThreadGroup_;
 
     static Core::Logging::Log& log_;
     bool shouldLog_;

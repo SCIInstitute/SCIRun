@@ -52,7 +52,7 @@ namespace SCIRun {
       {
       public:
         DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkInterface* network, Mutex* lock, size_t numModules, Mutex* executionLock) :
-          executeThreads_(new boost::thread_group),
+          executeThreads_(new DynamicExecutor::ExecutionThreadGroup),
           lookup_(&context.lookup),
           bounds_(&context.bounds()),
           work_(new DynamicExecutor::ModuleWorkQueue(numModules)),
@@ -77,7 +77,7 @@ namespace SCIRun {
           boost::thread produce(boost::ref(*producer_));
           consume.join();
           produce.join();
-          executeThreads_->join_all();
+          executeThreads_->joinAll();
         }
 
         void interruptModule(const std::string& id)
@@ -85,7 +85,7 @@ namespace SCIRun {
           std::cout << "INTERRUPT ATTEMPT: MODULE ID " << id << std::endl;
         }
       private:
-        mutable boost::shared_ptr<boost::thread_group> executeThreads_;
+        mutable boost::shared_ptr<DynamicExecutor::ExecutionThreadGroup> executeThreads_;
         const Networks::ExecutableLookup* lookup_;
         const ExecutionBounds* bounds_;
         DynamicExecutor::ModuleWorkQueuePtr work_;
