@@ -97,6 +97,13 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(ShowScalarTab, false);
 
   // Tensors
+  state->setValue(ShowTensors, false);
+  state->setValue(TensorsTransparency, false);
+  state->setValue(TensorsTransparencyValue, 0.65);
+  state->setValue(TensorsScale, 0.1);
+  state->setValue(TensorsResolution, 10);
+  state->setValue(TensorsColoring, 0);
+  state->setValue(TensorsDisplayType, 2);
   state->setValue(ShowTensorTab, false);
 
   // Secondary Tab
@@ -180,6 +187,7 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
 
   bool showVectors = state->getValue(ShowFieldGlyphs::ShowVectors).toBool();
   bool showScalars = state->getValue(ShowFieldGlyphs::ShowScalars).toBool();
+  bool showTensors = state->getValue(ShowFieldGlyphs::ShowTensors).toBool();
 
   GeometryHandle geom(new GeometryObject(field, *this, "EntireGlyphField"));
 
@@ -209,6 +217,19 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
   else
   {
     state->setValue(ShowFieldGlyphs::ShowScalarTab, false);
+  }
+
+  if (finfo.is_tensor())
+  {
+    state->setValue(ShowFieldGlyphs::ShowTensorTab, true);
+    if (showTensors)
+    {
+      renderTensors(field, colorMap, getTensorsRenderState(state, colorMap), geom, geom->uniqueID());
+    }
+  }
+  else
+  {
+    state->setValue(ShowFieldGlyphs::ShowTensorTab, false);
   }
 
   return geom;
@@ -488,6 +509,107 @@ void ShowFieldGlyphs::renderScalars(
     my_state->getValue(ScalarsTransparencyValue).toDouble(), colorScheme, state, primIn, mesh->get_bounding_box());
 }
 
+void ShowFieldGlyphs::renderTensors(
+  boost::shared_ptr<SCIRun::Field> field,
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+  RenderState state,
+  Core::Datatypes::GeometryHandle geom,
+  const std::string& id)
+{
+  FieldInformation finfo(field);
+
+  VField* fld = field->vfield();
+  VMesh*  mesh = field->vmesh();
+
+  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  ColorRGB node_color;
+
+  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
+    colorScheme = GeometryObject::COLOR_UNIFORM;
+  else if (state.get(RenderState::USE_COLORMAP))
+    colorScheme = GeometryObject::COLOR_MAP;
+  else
+    colorScheme = GeometryObject::COLOR_IN_SITU;
+
+  mesh->synchronize(Mesh::NODES_E);
+
+  auto my_state = get_state();
+  double radius = my_state->getValue(TensorsScale).toDouble();
+  double resolution = static_cast<double>(my_state->getValue(TensorsResolution).toInt());
+  if (radius < 0) radius = 0.1;
+  if (resolution < 3) resolution = 5;
+
+  double radius2 = radius * 1.5;
+
+  std::stringstream ss;
+  ss << state.mGlyphType << resolution << radius << colorScheme;
+
+  std::string uniqueNodeID = id + "tensor_glyphs" + ss.str();
+  
+  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;;
+ 
+  GlyphGeom glyphs;
+  auto facade(field->mesh()->getFacade());
+  // Render linear data
+  if (finfo.is_linear())
+  {
+    for (const auto& node : facade->nodes())
+    {
+      Vector v;
+      fld->get_value(v, node.index());
+      Point p = node.point();
+
+      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      {
+        ColorMapHandle map = colorMap.get();
+        node_color = map->valueToColor(v);
+      }
+      switch (state.mGlyphType)
+      {
+      case RenderState::GlyphType::BOX_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::SPHERE_GLYPH:
+        glyphs.addSphere(p, radius, resolution, node_color);
+        break;
+      default:
+        
+        break;
+      }
+    }
+  }
+  // Render cell data
+  else
+  {
+    for (const auto& cell : facade->cells())
+    {
+      Vector v;
+      fld->get_value(v, cell.index());
+      Point p = cell.center();
+
+      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      {
+        ColorMapHandle map = colorMap.get();
+        node_color = map->valueToColor(v);
+      }
+      switch (state.mGlyphType)
+      {
+      case RenderState::GlyphType::BOX_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::SPHERE_GLYPH:
+        glyphs.addSphere(p, radius, resolution, node_color);
+        break;
+      default:
+        
+        break;
+      }
+    }
+  }
+
+  glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENCY),
+    my_state->getValue(TensorsTransparencyValue).toDouble(), colorScheme, state, primIn, mesh->get_bounding_box());
+}
 
 RenderState ShowFieldGlyphs::getVectorsRenderState(
   ModuleStateHandle state,
@@ -607,6 +729,60 @@ RenderState ShowFieldGlyphs::getScalarsRenderState(
   return renState;
 }
 
+RenderState ShowFieldGlyphs::getTensorsRenderState(
+  ModuleStateHandle state,
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
+{
+  RenderState renState;
+
+  bool useColorMap = state->getValue(ShowFieldGlyphs::TensorsColoring).toInt() == 1;
+  renState.set(RenderState::USE_NORMALS, true);
+
+  renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowTensors).toBool());
+  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldGlyphs::TensorsTransparency).toBool());
+
+  switch (state->getValue(ShowFieldGlyphs::TensorsDisplayType).toInt())
+  {
+  case 0:
+    renState.mGlyphType = RenderState::GlyphType::BOX_GLYPH;
+    break;
+  case 1:
+    renState.mGlyphType = RenderState::GlyphType::BOX_GLYPH;
+    break;
+  case 2:
+    renState.mGlyphType = RenderState::GlyphType::SPHERE_GLYPH;
+    break;
+  case 3:
+    renState.mGlyphType = RenderState::GlyphType::SPHERE_GLYPH;
+    break;
+  default:
+    renState.mGlyphType = RenderState::GlyphType::BOX_GLYPH;
+    break;
+  }
+
+  renState.defaultColor = ColorRGB(state->getValue(ShowFieldGlyphs::DefaultMeshColor).toString());
+  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
+    renState.defaultColor.g() > 1.0 ||
+    renState.defaultColor.b() > 1.0) ?
+    ColorRGB(
+    renState.defaultColor.r() / 255.,
+    renState.defaultColor.g() / 255.,
+    renState.defaultColor.b() / 255.)
+    : renState.defaultColor;
+
+  if (colorMap && useColorMap)
+  {
+    renState.set(RenderState::USE_COLORMAP, true);
+  }
+  else
+  {
+    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  }
+
+  return renState;
+}
+
+// Vector Controls
 AlgorithmParameterName ShowFieldGlyphs::ShowVectors("ShowVectors");
 AlgorithmParameterName ShowFieldGlyphs::VectorsTransparency("VectorsTransparency");
 AlgorithmParameterName ShowFieldGlyphs::VectorsTransparencyValue("VectorsTransparencyValue");
@@ -614,6 +790,7 @@ AlgorithmParameterName ShowFieldGlyphs::VectorsScale("VectorsScale");
 AlgorithmParameterName ShowFieldGlyphs::VectorsResolution("VectorsResolution");
 AlgorithmParameterName ShowFieldGlyphs::VectorsColoring("VectorsColoring");
 AlgorithmParameterName ShowFieldGlyphs::VectorsDisplayType("VectorsDisplayType");
+// Scalar Controls
 AlgorithmParameterName ShowFieldGlyphs::ShowScalars("ShowScalars");
 AlgorithmParameterName ShowFieldGlyphs::ScalarsTransparency("ScalarsTransparency");
 AlgorithmParameterName ShowFieldGlyphs::ScalarsTransparencyValue("ScalarsTransparencyValue");
@@ -621,7 +798,17 @@ AlgorithmParameterName ShowFieldGlyphs::ScalarsScale("ScalarsScale");
 AlgorithmParameterName ShowFieldGlyphs::ScalarsResolution("ScalarsResolution");
 AlgorithmParameterName ShowFieldGlyphs::ScalarsColoring("ScalarsColoring");
 AlgorithmParameterName ShowFieldGlyphs::ScalarsDisplayType("ScalarsDisplayType");
+// Tensor Controls
+AlgorithmParameterName ShowFieldGlyphs::ShowTensors("ShowTensors");
+AlgorithmParameterName ShowFieldGlyphs::TensorsTransparency("TensorsTransparency");
+AlgorithmParameterName ShowFieldGlyphs::TensorsTransparencyValue("TensorsTransparencyValue");
+AlgorithmParameterName ShowFieldGlyphs::TensorsScale("TensorsScale");
+AlgorithmParameterName ShowFieldGlyphs::TensorsResolution("TensorsResolution");
+AlgorithmParameterName ShowFieldGlyphs::TensorsColoring("TensorsColoring");
+AlgorithmParameterName ShowFieldGlyphs::TensorsDisplayType("TensorsDisplayType");
+// Mesh Color
 AlgorithmParameterName ShowFieldGlyphs::DefaultMeshColor("DefaultMeshColor");
+// Tab Controls
 AlgorithmParameterName ShowFieldGlyphs::ShowVectorTab("ShowVectorTab");
 AlgorithmParameterName ShowFieldGlyphs::ShowScalarTab("ShowScalarTab");
 AlgorithmParameterName ShowFieldGlyphs::ShowTensorTab("ShowTensorTab");

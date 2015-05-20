@@ -213,7 +213,12 @@ void GlyphGeom::addSphere(const Point& p, double radius, double resolution, cons
 {
   generateEllipsoid(p, radius, radius, resolution, color, numVBOElements_, points_, normals_, indices_, colors_);
 }
-
+/*
+void GlyphGeom::addEllipsoid(const Point& p, double radius1, double radius2, double resolution, const ColorRGB& color)
+{
+  generateEllipsoid(p, radius1, radius2, resolution, color, numVBOElements_, points_, normals_, indices_, colors_);
+}
+*/
 void GlyphGeom::addCylinder(const Point p1, const Point& p2, double radius, double resolution,
                             const ColorRGB& color1, const ColorRGB& color2)
 {

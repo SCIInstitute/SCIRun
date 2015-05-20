@@ -50,6 +50,7 @@ namespace SCIRun {
         ShowFieldGlyphs();
         virtual void execute();
 
+        // Vector Tab
         static Core::Algorithms::AlgorithmParameterName ShowVectors;
         static Core::Algorithms::AlgorithmParameterName VectorsTransparency;
         static Core::Algorithms::AlgorithmParameterName VectorsTransparencyValue;
@@ -57,6 +58,8 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName VectorsResolution;
         static Core::Algorithms::AlgorithmParameterName VectorsColoring;
         static Core::Algorithms::AlgorithmParameterName VectorsDisplayType;
+
+        // Scalar Tab
         static Core::Algorithms::AlgorithmParameterName ShowScalars;
         static Core::Algorithms::AlgorithmParameterName ScalarsTransparency;
         static Core::Algorithms::AlgorithmParameterName ScalarsTransparencyValue;
@@ -64,7 +67,20 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName ScalarsResolution;
         static Core::Algorithms::AlgorithmParameterName ScalarsColoring;
         static Core::Algorithms::AlgorithmParameterName ScalarsDisplayType;
+
+        // Tensor Tab
+        static Core::Algorithms::AlgorithmParameterName ShowTensors;
+        static Core::Algorithms::AlgorithmParameterName TensorsTransparency;
+        static Core::Algorithms::AlgorithmParameterName TensorsTransparencyValue;
+        static Core::Algorithms::AlgorithmParameterName TensorsScale;
+        static Core::Algorithms::AlgorithmParameterName TensorsResolution;
+        static Core::Algorithms::AlgorithmParameterName TensorsColoring;
+        static Core::Algorithms::AlgorithmParameterName TensorsDisplayType;
+
+        // Mesh Color
         static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
+
+        // Tab Control
         static Core::Algorithms::AlgorithmParameterName ShowVectorTab;
         static Core::Algorithms::AlgorithmParameterName ShowScalarTab;
         static Core::Algorithms::AlgorithmParameterName ShowTensorTab;
@@ -116,11 +132,22 @@ namespace SCIRun {
           Core::Datatypes::GeometryHandle geom,
           const std::string& id);
 
+        void renderTensors(
+          boost::shared_ptr<SCIRun::Field> field,
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+          RenderState state,
+          Core::Datatypes::GeometryHandle geom,
+          const std::string& id);
+
         RenderState getVectorsRenderState(
           Dataflow::Networks::ModuleStateHandle state,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);   
 
         RenderState getScalarsRenderState(
+          Dataflow::Networks::ModuleStateHandle state,
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+
+        RenderState getTensorsRenderState(
           Dataflow::Networks::ModuleStateHandle state,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
       };

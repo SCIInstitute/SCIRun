@@ -80,6 +80,7 @@ namespace SCIRun {
       void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution, 
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addSphere(const Core::Geometry::Point& p, double radius, double resolution, const Core::Datatypes::ColorRGB& color);
+      //void addEllipsoid(const Core::Geometry::Point& p, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color);
       void addCylinder(const Core::Geometry::Point p1, const Core::Geometry::Point& p2, double radius, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addCone(const Core::Geometry::Point p1, const Core::Geometry::Point& p2, double radius, double resolution,
