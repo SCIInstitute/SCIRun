@@ -101,7 +101,8 @@ namespace SCIRun {
             if (thread)
             {
               std::cout << "found thread for module, next step is to call interrupt." << std::endl;
-              //thread->interrupt();
+              thread->interrupt();
+              std::cout << "interrupt called on thread " << thread->get_id() << std::endl;
             }
             else
             {

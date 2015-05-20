@@ -214,6 +214,9 @@ GenerateStreamLinesAlgoP::runImpl()
     {
       //TODO: provide algo API for this.
       boost::this_thread::interruption_point();
+      std::cout << "trying to interrupt_point in thread " << boost::this_thread::get_id() << std::endl;
+      std::cout << "interruption enabled? " << boost::this_thread::interruption_enabled() << std::endl;
+      std::cout << "interruption requested? " << boost::this_thread::interruption_requested() << std::endl;
       seed_mesh_->get_point(BI.seed_, idx);
 
        // Is the seed point inside the field?
