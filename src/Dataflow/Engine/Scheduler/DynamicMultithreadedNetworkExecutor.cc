@@ -83,6 +83,19 @@ namespace SCIRun {
         void interruptModule(const std::string& id)
         {
           std::cout << "INTERRUPT ATTEMPT: MODULE ID " << id << std::endl;
+          if (executeThreads_)
+          {
+            auto thread = executeThreads_->getThreadForModule(id);
+            if (thread)
+            {
+              std::cout << "found thread for module, next step is to call interrupt." << std::endl;
+              //  thread->interrupt();
+            }
+          }
+          else
+          {
+            std::cout << "executeThreads_ is null" << std::endl;
+          }
         }
       private:
         mutable boost::shared_ptr<DynamicExecutor::ExecutionThreadGroup> executeThreads_;

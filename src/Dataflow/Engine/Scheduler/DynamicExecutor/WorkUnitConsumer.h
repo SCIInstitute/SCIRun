@@ -34,6 +34,7 @@
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkUnitExecutor.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Logging/Log.h>
+#include <Core/Thread/Mutex.h>
 #include <boost/thread/thread.hpp>
 
 #include <Dataflow/Engine/Scheduler/share.h>
@@ -46,18 +47,41 @@ namespace DynamicExecutor {
   class SCISHARE ExecutionThreadGroup : boost::noncopyable
   {
   public:
-    ExecutionThreadGroup() : executeThreads_(new boost::thread_group) {}
+    ExecutionThreadGroup() : executeThreads_(new boost::thread_group), mapLock_(new Core::Thread::Mutex("threadMap")) {}
     void startExecution(const ModuleExecutor& executor)
     {
-      executeThreads_->create_thread(boost::bind(&ModuleExecutor::run, executor));
+      auto thread = executeThreads_->create_thread(boost::bind(&ModuleExecutor::run, executor));
+      Core::Thread::Guard g(mapLock_->get());
+      threadsByModuleId_[executor.module_->get_id().id_] = thread;
     }
     void joinAll()
     {
       executeThreads_->join_all();
     }
+    boost::thread* getThreadForModule(const std::string& moduleId) const
+    {
+      std::cout << "getThreadForModule " << moduleId << std::endl;
+      if (!mapLock_)
+      {
+        std::cout << "mapLock is null" << std::endl;
+        return nullptr;
+      }
+      Core::Thread::Guard g(mapLock_->get());
+      std::cout << "getThreadForModule " << moduleId << " locked " << std::endl;
+      auto it = threadsByModuleId_.find(moduleId);
+      std::cout << "getThreadForModule " << moduleId << " iterator obtained " << std::endl;
+      if (it == threadsByModuleId_.end())
+        return nullptr;
+      std::cout << "getThreadForModule " << moduleId << " iterator is not end " << std::endl;
+      if (!executeThreads_->is_thread_in(it->second))
+        return nullptr;
+      std::cout << "getThreadForModule is in group, returning" << moduleId << std::endl;
+      return it->second;
+    }
   private:
     mutable boost::shared_ptr<boost::thread_group> executeThreads_;
-    //std::map<std::string, boost::thread*> threadsByModuleId_;
+    std::map<std::string, boost::thread*> threadsByModuleId_;
+    mutable boost::shared_ptr<Core::Thread::Mutex> mapLock_;
   };
 
   class SCISHARE ModuleConsumer : boost::noncopyable
