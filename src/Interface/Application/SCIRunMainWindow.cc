@@ -1469,6 +1469,12 @@ void SCIRunMainWindow::adjustExecuteButtonAppearance()
   }
 }
 
+namespace
+{
+  const char* tagIndexProperty = "tagIndex";
+  const int NUMBER_OF_TAGS = 10;
+}
+
 void SCIRunMainWindow::setupTagManagerWindow()
 {
   tagManagerWindow_ = new TagManagerWindow(this);
@@ -1478,10 +1484,33 @@ void SCIRunMainWindow::setupTagManagerWindow()
   QLabel* tagLabels[] = { tagManagerWindow_->tagLabel_0, tagManagerWindow_->tagLabel_1, tagManagerWindow_->tagLabel_2,
     tagManagerWindow_->tagLabel_3, tagManagerWindow_->tagLabel_4, tagManagerWindow_->tagLabel_5,
     tagManagerWindow_->tagLabel_6, tagManagerWindow_->tagLabel_7, tagManagerWindow_->tagLabel_8, tagManagerWindow_->tagLabel_9 };
+  QLineEdit* tagLineEdits[] = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
+    tagManagerWindow_->taglineEdit_3, tagManagerWindow_->taglineEdit_4, tagManagerWindow_->taglineEdit_5,
+    tagManagerWindow_->taglineEdit_6, tagManagerWindow_->taglineEdit_7, tagManagerWindow_->taglineEdit_8, tagManagerWindow_->taglineEdit_9 };
 
-  for (int i = 0; i < 10; ++i)
+  for (int i = 0; i < NUMBER_OF_TAGS; ++i)
   {
     auto colorStr = colorToString(tagColor(i));
     tagLabels[i]->setStyleSheet("QLabel { background-color : " + colorStr + "; }");
+    tagLineEdits[i]->setProperty(tagIndexProperty, i);
+    connect(tagLineEdits[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
+  }
+  tagNames_.resize(NUMBER_OF_TAGS);
+}
+
+void SCIRunMainWindow::updateTagName(const QString& name)
+{
+  tagNames_[sender()->property(tagIndexProperty).toInt()] = name;
+}
+
+void SCIRunMainWindow::setTagNames(const QStringList& names)
+{
+  tagNames_ = names.toVector();
+  QLineEdit* tagLineEdits[] = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
+    tagManagerWindow_->taglineEdit_3, tagManagerWindow_->taglineEdit_4, tagManagerWindow_->taglineEdit_5,
+    tagManagerWindow_->taglineEdit_6, tagManagerWindow_->taglineEdit_7, tagManagerWindow_->taglineEdit_8, tagManagerWindow_->taglineEdit_9 };
+  for (int i = 0; i < NUMBER_OF_TAGS; ++i)
+  {
+    tagLineEdits[i]->setText(tagNames_[i]);
   }
 }
