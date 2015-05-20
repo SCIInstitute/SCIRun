@@ -48,7 +48,6 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
   
   setupVectorsTab();
   setupScalarsTab();
-
   WidgetStyleMixin::tabStyle(this->displayOptionsTabs_); 
 
 
@@ -71,10 +70,8 @@ void ShowFieldGlyphsDialog::createStartupNote()
   setStartupNote("ID: " + showFieldGlyphId);
 }
 
-void ShowFieldGlyphsDialog::pull()
+void ShowFieldGlyphsDialog::pullSpecial()
 {
-  pull_newVersionToReplaceOld();
-  Pulling p(this);
   ColorRGB color(state_->getValue(ShowFieldGlyphs::DefaultMeshColor).toString());
   //std::cout << "pull color: " << color.r() << " " << color.g() << " " << color.b() << std::endl;
   // check for old saved color format: integers 0-255.
@@ -107,7 +104,6 @@ void ShowFieldGlyphsDialog::pushColor()
 
 void ShowFieldGlyphsDialog::checkTabs()
 {
-  std::cout << "in checktabs." << std::endl;
   if (state_->getValue(ShowFieldGlyphs::ShowVectorTab).toBool())
   {
     if (vectorTabIndex_ < 0)
@@ -139,7 +135,7 @@ void ShowFieldGlyphsDialog::checkTabs()
   {
     if (scalarTabIndex_ > 0)
     {
-      displayOptionsTabs_->removeTab(vectorTabIndex_);
+      displayOptionsTabs_->removeTab(scalarTabIndex_);
       if (vectorTabIndex_ > scalarTabIndex_)
         --vectorTabIndex_;
       scalarTabIndex_ = -1;

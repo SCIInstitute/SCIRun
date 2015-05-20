@@ -68,6 +68,11 @@ namespace Datatypes {
       return typename my_base::Nodes(typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
+    virtual typename my_base::Cells cells() const
+    {
+      return typename my_base::Cells(typename SmartCellIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartCellIterator<VirtualMeshType>::Type(vmesh_.get(), true));
+    }
+
     virtual size_t numNodes() const
     {
       return vmesh_->num_nodes();
@@ -83,6 +88,13 @@ namespace Datatypes {
     virtual size_t numFaces() const 
     {
       return vmesh_->num_faces();
+    }
+    
+    virtual size_t numCells() const
+    {
+      /// @todo: need to split out that Synchronize enum
+      vmesh_->synchronize(/* CELLS_E */ 1 << 3);
+      return vmesh_->num_cells();
     }
 
     virtual size_t numElements() const 

@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE InterfaceWithCleaverDialog : public ModuleDialogGeneric, 
+
+class SCISHARE InterfaceWithCleaverDialog : public ModuleDialogGeneric,
   public Ui::InterfaceWithCleaverDialog
 {
 	Q_OBJECT
-	
+
 public:
-  InterfaceWithCleaverDialog(const std::string& name, 
+  InterfaceWithCleaverDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

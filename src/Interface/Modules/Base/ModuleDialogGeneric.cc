@@ -54,7 +54,6 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
 
   if (state_)
   {
-    //TODO: replace with pull_newVersion
     LOG_DEBUG("ModuleDialogGeneric connecting to state" << std::endl);
     stateConnection_ = state_->connect_state_changed([this]() { pullSignal(); });
   }
@@ -203,11 +202,18 @@ void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr)
   slotManagers_.push_back(ptr);
 }
 
-void ModuleDialogGeneric::pull_newVersionToReplaceOld()
+void ModuleDialogGeneric::pullManagedWidgets()
 {
   Pulling p(this);
   BOOST_FOREACH(WidgetSlotManagerPtr wsm, slotManagers_)
     wsm->pull();
+}
+
+void ModuleDialogGeneric::pull()
+{
+  pullManagedWidgets();
+  Pulling p(this);
+  pullSpecial();
 }
 
 void ModuleDialogGeneric::moduleSelected(bool selected)

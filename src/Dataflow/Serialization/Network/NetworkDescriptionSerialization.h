@@ -30,7 +30,7 @@
 
 
 #ifndef CORE_SERIALIZATION_NETWORK_NETWORK_DESCRIPTION_SERIALIZATION_H
-#define CORE_SERIALIZATION_NETWORK_NETWORK_DESCRIPTION_SERIALIZATION_H 
+#define CORE_SERIALIZATION_NETWORK_NETWORK_DESCRIPTION_SERIALIZATION_H
 
 #include <Dataflow/Serialization/Network/ModuleDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/StateSerialization.h>
@@ -46,7 +46,7 @@ namespace Networks {
 
   typedef std::vector<ConnectionDescriptionXML> ConnectionsXML;
 
-  struct SCISHARE ModuleWithState 
+  struct SCISHARE ModuleWithState
   {
     ModuleLookupInfoXML module;
     State::SimpleMapModuleStateXML state;
@@ -58,7 +58,7 @@ namespace Networks {
     {
       ar & BOOST_SERIALIZATION_NVP(module);
       ar & BOOST_SERIALIZATION_NVP(state);
-    } 
+    }
   };
 
   struct SCISHARE NoteXML
@@ -76,11 +76,12 @@ namespace Networks {
       ar & BOOST_SERIALIZATION_NVP(noteText);
       ar & BOOST_SERIALIZATION_NVP(position);
       ar & BOOST_SERIALIZATION_NVP(fontSize);
-    } 
+    }
   };
 
   typedef std::map<std::string, ModuleWithState> ModuleMapXML;
   typedef std::map<std::string, NoteXML> NotesMapXML;
+  typedef std::map<std::string, int> ModuleTagsMapXML;
 
   struct SCISHARE ModuleNotes
   {
@@ -90,6 +91,11 @@ namespace Networks {
   struct SCISHARE ConnectionNotes
   {
     NotesMapXML notes;
+  };
+
+  struct SCISHARE ModuleTags
+  {
+    ModuleTagsMapXML tags;
   };
 
   class SCISHARE NetworkXML
@@ -104,15 +110,16 @@ namespace Networks {
     {
       ar & BOOST_SERIALIZATION_NVP(modules);
       ar & BOOST_SERIALIZATION_NVP(connections);
-    } 
+    }
   };
 
-  struct SCISHARE NetworkFile 
+  struct SCISHARE NetworkFile
   {
     NetworkXML network;
     ModulePositions modulePositions;
     ModuleNotes moduleNotes;
     ConnectionNotes connectionNotes;
+    ModuleTags moduleTags;
   private:
     friend class boost::serialization::access;
     template <class Archive>
@@ -124,11 +131,13 @@ namespace Networks {
         ar & boost::serialization::make_nvp("moduleNotes", moduleNotes.notes);
       if (version > 1)
         ar & boost::serialization::make_nvp("connectionNotes", connectionNotes.notes);
+      if (version > 2)
+        ar & boost::serialization::make_nvp("moduleTags", moduleTags.tags);
     }
   };
 
 }}}
 
-BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 2)
+BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 3)
 
 #endif

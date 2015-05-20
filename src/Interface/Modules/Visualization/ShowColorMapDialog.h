@@ -35,22 +35,23 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ShowColorMapDialog : public ModuleDialogGeneric, 
+
+class SCISHARE ShowColorMapDialog : public ModuleDialogGeneric,
 	public Ui::ShowColorMap
 {
 	Q_OBJECT
-	
+
 public:
-  ShowColorMapDialog(const std::string& name, 
+  ShowColorMapDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+protected:
+  virtual void pullSpecial() override;
   QColor text_color_;
   QDoubleSpinBox r_,g_,b_;
 private Q_SLOTS:
   void getColor();
-  
+
 };
 
 }

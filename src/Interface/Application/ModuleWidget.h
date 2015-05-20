@@ -150,6 +150,7 @@ public Q_SLOTS:
   void setMiniMode(bool mini);
   void collapseToMiniMode();
   void expandToFullMode();
+  void updateMetadata(bool active);
   static void setGlobalMiniMode(bool mini);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);

@@ -35,21 +35,20 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE GetDomainBoundaryDialog : public ModuleDialogGeneric, 
+
+class SCISHARE GetDomainBoundaryDialog : public ModuleDialogGeneric,
   public Ui::GetDomainBoundary
 {
 	Q_OBJECT
-	
+
 public:
-  GetDomainBoundaryDialog(const std::string& name, 
+  GetDomainBoundaryDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
-
+protected:
+  virtual void pullSpecial() override;
 private Q_SLOTS:
   void push();
-private:
 };
 
 }

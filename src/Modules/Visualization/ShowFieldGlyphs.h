@@ -42,7 +42,8 @@ namespace SCIRun {
     namespace Visualization {
 
       class SCISHARE ShowFieldGlyphs : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
-        public Has6InputPorts<FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag>,
+        //public Has6InputPorts<FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag>,
+        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort < GeometryPortTag >
       {
       public:
@@ -72,10 +73,10 @@ namespace SCIRun {
 
         INPUT_PORT(0, PrimaryData, LegacyField);
         INPUT_PORT(1, PrimaryColorMap, ColorMap);
-        INPUT_PORT(2, SecondaryData, LegacyField);
-        INPUT_PORT(3, SecondaryColorMap, ColorMap);
-        INPUT_PORT(4, TertiaryData, LegacyField);
-        INPUT_PORT(5, TertiaryColorMap, ColorMap);
+        //INPUT_PORT(2, SecondaryData, LegacyField);
+        //INPUT_PORT(3, SecondaryColorMap, ColorMap);
+        //INPUT_PORT(4, TertiaryData, LegacyField);
+        //INPUT_PORT(5, TertiaryColorMap, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;

@@ -131,6 +131,9 @@ Q_SIGNALS:
     virtual SCIRun::Dataflow::Networks::ConnectionNotesHandle dumpConnectionNotes() const;
     virtual void updateConnectionNotes(const SCIRun::Dataflow::Networks::ConnectionNotes& notes);
 
+    virtual SCIRun::Dataflow::Networks::ModuleTagsHandle dumpModuleTags() const override;
+    virtual void updateModuleTags(const SCIRun::Dataflow::Networks::ModuleTags& notes) override;
+
     size_t numModules() const;
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
@@ -154,6 +157,10 @@ Q_SIGNALS:
     int currentZoomPercentage() const;
 
     void setVisibility(bool visible);
+
+    void metadataLayer(bool active);
+    void tagLayer(bool active, int tag);
+    bool tagLayerActive() const { return tagLayerActive_; }
 
   protected:
     virtual void dropEvent(QDropEvent* event) override;
@@ -189,6 +196,7 @@ Q_SIGNALS:
     void zoomReset();
     void centerView();
     void setModuleMini(bool mini);
+    void highlightTaggedItem(int tagValue);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -228,6 +236,7 @@ Q_SIGNALS:
     ConnectionLine* getSingleConnectionSelected();
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions) const;
+    void highlightTaggedItem(QGraphicsItem* item, int tagValue);
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;
@@ -238,6 +247,7 @@ Q_SIGNALS:
     //QAction* executeAction_;
 		bool modulesSelectedByCL_;
     double currentScale_;
+    bool tagLayerActive_;
 
     QGraphicsScene* scene_;
 

@@ -45,7 +45,7 @@ GetFieldsFromBundleDialog::GetFieldsFromBundleDialog(const std::string& name, Mo
   fixSize();
 }
 
-void GetFieldsFromBundleDialog::pull()
+void GetFieldsFromBundleDialog::pullSpecial()
 {
   auto names = optional_any_cast_or_default<std::string>(state_->getTransientValue(GetFieldsFromBundle::FieldNameList.name()));
   fieldNameListTextEdit_->setText(QString::fromStdString(names));

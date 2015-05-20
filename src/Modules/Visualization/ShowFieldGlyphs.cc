@@ -65,10 +65,10 @@ ShowFieldGlyphs::ShowFieldGlyphs() : GeometryGeneratingModule(staticInfo_)
 {
   INITIALIZE_PORT(PrimaryData);
   INITIALIZE_PORT(PrimaryColorMap);
-  INITIALIZE_PORT(SecondaryData);
-  INITIALIZE_PORT(SecondaryColorMap);
-  INITIALIZE_PORT(TertiaryData);
-  INITIALIZE_PORT(TertiaryColorMap);
+  //INITIALIZE_PORT(SecondaryData);
+  //INITIALIZE_PORT(SecondaryColorMap);
+  //INITIALIZE_PORT(TertiaryData);
+  //INITIALIZE_PORT(TertiaryColorMap);
   INITIALIZE_PORT(SceneGraph);
 }
 
@@ -91,7 +91,7 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(ScalarsTransparency, false);
   state->setValue(ScalarsTransparencyValue, 0.65);
   state->setValue(ScalarsScale, 0.1);
-  state->setValue(ScalarsResolution, 3);
+  state->setValue(ScalarsResolution, 10);
   state->setValue(ScalarsColoring, 0);
   state->setValue(ScalarsDisplayType, 0);
   state->setValue(ShowScalarTab, false);
@@ -113,10 +113,10 @@ void ShowFieldGlyphs::execute()
 {
   boost::shared_ptr<SCIRun::Field> pfield = getRequiredInput(PrimaryData);
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> pcolorMap = getOptionalInput(PrimaryColorMap);
-  boost::optional<boost::shared_ptr<SCIRun::Field>> sfield = getOptionalInput(SecondaryData);
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> scolorMap = getOptionalInput(SecondaryColorMap);
-  boost::optional<boost::shared_ptr<SCIRun::Field>> tfield = getOptionalInput(TertiaryData);
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> tcolorMap = getOptionalInput(TertiaryColorMap);
+  //boost::optional<boost::shared_ptr<SCIRun::Field>> sfield = getOptionalInput(SecondaryData);
+  //boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> scolorMap = getOptionalInput(SecondaryColorMap);
+  //boost::optional<boost::shared_ptr<SCIRun::Field>> tfield = getOptionalInput(TertiaryData);
+  //boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> tcolorMap = getOptionalInput(TertiaryColorMap);
 
   if (needToExecute())
   {
@@ -206,6 +206,10 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
       renderScalars(field, colorMap, getScalarsRenderState(state, colorMap), geom, geom->uniqueID());
     }
   }
+  else
+  {
+    state->setValue(ShowFieldGlyphs::ShowScalarTab, false);
+  }
 
   return geom;
 }
@@ -219,15 +223,6 @@ void ShowFieldGlyphs::renderVectors(
 {
   FieldInformation finfo(field);
 
-  if (!finfo.is_vector())
-  {
-    THROW_ALGORITHM_INPUT_ERROR("Field is not a vector field");
-  }  
-
-  if (!finfo.is_linear())
-  {
-    THROW_ALGORITHM_INPUT_ERROR("only able to handle data on nodes at this point");
-  }
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
@@ -260,52 +255,103 @@ void ShowFieldGlyphs::renderVectors(
 
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
-  //for (const auto& node : facade->nodes())
-  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
+  // Render linear data
+  if (finfo.is_linear())
   {
-    Vector v;
-    fld->get_value(v, node.index());
-    Point p1 = node.point();
-    Point p2 = p1 + v;
-    if (colorScheme != GeometryObject::COLOR_UNIFORM)
+    for (const auto& node : facade->nodes())
     {
-      ColorMapHandle map = colorMap.get();
-      node_color = map->valueToColor(v);
-    }
-    switch (state.mGlyphType)
-    {
-    case RenderState::GlyphType::LINE_GLYPH:
-      glyphs.addNeedle(p1, p2, node_color, node_color);
-      break;
-    case RenderState::GlyphType::NEEDLE_GLYPH:
-      glyphs.addNeedle(p1, p2, node_color, node_color);
-      break;
-    case RenderState::GlyphType::COMET_GLYPH:
-      THROW_ALGORITHM_INPUT_ERROR("Comet Geom is not supported yet.");
-      break;
-    case RenderState::GlyphType::CONE_GLYPH:
-      glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
-      break;
-    case RenderState::GlyphType::ARROW_GLYPH:
-      glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
-      break;
-    case RenderState::GlyphType::DISK_GLYPH:
-      glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
-      break;
-    case RenderState::GlyphType::RING_GLYPH:
-      THROW_ALGORITHM_INPUT_ERROR("Ring Geom is not supported yet.");
-      break;
-    case RenderState::GlyphType::SPRING_GLYPH:
-      THROW_ALGORITHM_INPUT_ERROR("Spring Geom is not supported yet.");
-      break;
-    default:
-      if (useLines)
+      Vector v;
+      fld->get_value(v, node.index());
+      Point p1 = node.point();
+      Point p2 = p1 + v;
+      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      {
+        ColorMapHandle map = colorMap.get();
+        node_color = map->valueToColor(v);
+      }
+      switch (state.mGlyphType)
+      {
+      case RenderState::GlyphType::LINE_GLYPH:
         glyphs.addNeedle(p1, p2, node_color, node_color);
-      else
+        break;
+      case RenderState::GlyphType::NEEDLE_GLYPH:
+        glyphs.addNeedle(p1, p2, node_color, node_color);
+        break;
+      case RenderState::GlyphType::COMET_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Comet Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::CONE_GLYPH:
+        glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      case RenderState::GlyphType::ARROW_GLYPH:
         glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
-      break;
+        break;
+      case RenderState::GlyphType::DISK_GLYPH:
+        glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      case RenderState::GlyphType::RING_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Ring Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::SPRING_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Spring Geom is not supported yet.");
+        break;
+      default:
+        if (useLines)
+          glyphs.addNeedle(p1, p2, node_color, node_color);
+        else
+          glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      }
     }
-
+  }
+  // Render cell data
+  else
+  {
+    for (const auto& cell : facade->cells())
+    {
+      Vector v;
+      fld->get_value(v, cell.index());
+      Point p1 = cell.center();
+      Point p2 = p1 + v;
+      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      {
+        ColorMapHandle map = colorMap.get();
+        node_color = map->valueToColor(v);
+      }
+      switch (state.mGlyphType)
+      {
+      case RenderState::GlyphType::LINE_GLYPH:
+        glyphs.addNeedle(p1, p2, node_color, node_color);
+        break;
+      case RenderState::GlyphType::NEEDLE_GLYPH:
+        glyphs.addNeedle(p1, p2, node_color, node_color);
+        break;
+      case RenderState::GlyphType::COMET_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Comet Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::CONE_GLYPH:
+        glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      case RenderState::GlyphType::ARROW_GLYPH:
+        glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      case RenderState::GlyphType::DISK_GLYPH:
+        glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      case RenderState::GlyphType::RING_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Ring Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::SPRING_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Spring Geom is not supported yet.");
+        break;
+      default:
+        if (useLines)
+          glyphs.addNeedle(p1, p2, node_color, node_color);
+        else
+          glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      }
+    }
   }
 
   std::stringstream ss;
@@ -326,15 +372,6 @@ void ShowFieldGlyphs::renderScalars(
 {
   FieldInformation finfo(field);
 
-  if (!finfo.is_scalar())
-  {
-    THROW_ALGORITHM_INPUT_ERROR("Field is not a scalar field");
-  }
-
-  if (!finfo.is_linear())
-  {
-    THROW_ALGORITHM_INPUT_ERROR("only able to handle data on nodes at this point");
-  }
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
@@ -372,38 +409,78 @@ void ShowFieldGlyphs::renderScalars(
 
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
-  //for (const auto& node : facade->nodes())
-  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
+  // Render linear data
+  if (finfo.is_linear())
   {
-    Vector v;
-    fld->get_value(v, node.index());
-    Point p = node.point();
+    for (const auto& node : facade->nodes())
+    {
+      Vector v;
+      fld->get_value(v, node.index());
+      Point p = node.point();
 
-    if (colorScheme != GeometryObject::COLOR_UNIFORM)
-    {
-      ColorMapHandle map = colorMap.get();
-      node_color = map->valueToColor(v);
-    }
-    switch (state.mGlyphType)
-    {
-    case RenderState::GlyphType::POINT_GLYPH:
-      glyphs.addPoint(p, node_color);
-      break;
-    case RenderState::GlyphType::SPHERE_GLYPH:
-      glyphs.addSphere(p, radius, resolution, node_color);
-      break;
-    case RenderState::GlyphType::BOX_GLYPH:
-      THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
-      break;
-    case RenderState::GlyphType::AXIS_GLYPH:
-      THROW_ALGORITHM_INPUT_ERROR("Axis Geom is not supported yet.");
-      break;
-    default:
-      if (usePoints)
+      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      {
+        ColorMapHandle map = colorMap.get();
+        node_color = map->valueToColor(v);
+      }
+      switch (state.mGlyphType)
+      {
+      case RenderState::GlyphType::POINT_GLYPH:
         glyphs.addPoint(p, node_color);
-      else
+        break;
+      case RenderState::GlyphType::SPHERE_GLYPH:
         glyphs.addSphere(p, radius, resolution, node_color);
-      break;
+        break;
+      case RenderState::GlyphType::BOX_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::AXIS_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Axis Geom is not supported yet.");
+        break;
+      default:
+        if (usePoints)
+          glyphs.addPoint(p, node_color);
+        else
+          glyphs.addSphere(p, radius, resolution, node_color);
+        break;
+      }
+    }
+  }
+  // Render cell data
+  else 
+  {
+    for (const auto& cell : facade->cells())
+    {
+      Vector v;
+      fld->get_value(v, cell.index());
+      Point p = cell.center();
+
+      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      {
+        ColorMapHandle map = colorMap.get();
+        node_color = map->valueToColor(v);
+      }
+      switch (state.mGlyphType)
+      {
+      case RenderState::GlyphType::POINT_GLYPH:
+        glyphs.addPoint(p, node_color);
+        break;
+      case RenderState::GlyphType::SPHERE_GLYPH:
+        glyphs.addSphere(p, radius, resolution, node_color);
+        break;
+      case RenderState::GlyphType::BOX_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::AXIS_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Axis Geom is not supported yet.");
+        break;
+      default:
+        if (usePoints)
+          glyphs.addPoint(p, node_color);
+        else
+          glyphs.addSphere(p, radius, resolution, node_color);
+        break;
+      }
     }
   }
 

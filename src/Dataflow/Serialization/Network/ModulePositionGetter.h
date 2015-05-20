@@ -27,7 +27,7 @@
 */
 
 #ifndef CORE_SERIALIZATION_NETWORK_MODULE_POSITION_GETTER_H
-#define CORE_SERIALIZATION_NETWORK_MODULE_POSITION_GETTER_H 
+#define CORE_SERIALIZATION_NETWORK_MODULE_POSITION_GETTER_H
 
 #include <map>
 #include <Dataflow/Network/NetworkFwd.h>
@@ -50,11 +50,14 @@ namespace Networks {
     virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions() const = 0;
     virtual void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions) = 0;
 
-    //TODO: refactor into dump/updateNotes, shouldn't need to distinguish parent. 
+    //TODO: refactor into dump/updateNotes, shouldn't need to distinguish parent.
     virtual SCIRun::Dataflow::Networks::ModuleNotesHandle dumpModuleNotes() const = 0;
     virtual void updateModuleNotes(const SCIRun::Dataflow::Networks::ModuleNotes& notes) = 0;
     virtual SCIRun::Dataflow::Networks::ConnectionNotesHandle dumpConnectionNotes() const = 0;
     virtual void updateConnectionNotes(const SCIRun::Dataflow::Networks::ConnectionNotes& notes) = 0;
+
+    virtual SCIRun::Dataflow::Networks::ModuleTagsHandle dumpModuleTags() const = 0;
+    virtual void updateModuleTags(const SCIRun::Dataflow::Networks::ModuleTags& notes) = 0;
   };
 
 }}}

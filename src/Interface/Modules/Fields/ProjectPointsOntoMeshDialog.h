@@ -35,17 +35,18 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ProjectPointsOntoMeshDialog : public ModuleDialogGeneric, 
+
+class SCISHARE ProjectPointsOntoMeshDialog : public ModuleDialogGeneric,
   public Ui::ProjectPointsOntoMesh
 {
 	Q_OBJECT
-	
+
 public:
-  ProjectPointsOntoMeshDialog(const std::string& name, 
+  ProjectPointsOntoMeshDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+protected:
+  virtual void pullSpecial() override;
 private Q_SLOTS:
     void push();
 };

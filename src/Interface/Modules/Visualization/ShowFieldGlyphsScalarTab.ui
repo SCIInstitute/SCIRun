@@ -247,6 +247,9 @@
     </item>
     <item>
      <widget class="QRadioButton" name="conversionRGBScalarsColoringRButton_">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>Conversion to RGB</string>
       </property>

@@ -44,8 +44,6 @@ namespace SCIRun {
     public:
       ShowFieldGlyphsVectorTabDialog(QWidget* parent = 0);
 
-      private Q_SLOTS:
-
     private:
 
       friend class ShowFieldGlyphsDialog;

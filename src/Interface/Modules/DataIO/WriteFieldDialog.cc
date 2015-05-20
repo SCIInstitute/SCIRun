@@ -46,19 +46,19 @@ WriteFieldDialog::WriteFieldDialog(const std::string& name, ModuleStateHandle st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
   buttonBox->setVisible(false);
 }
 
-void WriteFieldDialog::pull()
+void WriteFieldDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
-void WriteFieldDialog::pushFileNameToState() 
+void WriteFieldDialog::pushFileNameToState()
 {
   state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }

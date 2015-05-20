@@ -118,10 +118,8 @@ void ShowFieldDialog::createStartupNote()
   setStartupNote("ID: " + showFieldId);
 }
 
-void ShowFieldDialog::pull()
+void ShowFieldDialog::pullSpecial()
 {
-  pull_newVersionToReplaceOld();
-  Pulling p(this);
   ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).toString());
   //std::cout << "pull color: " << color.r() << " " << color.g() << " " << color.b() << std::endl;
   // check for old saved color format: integers 0-255.

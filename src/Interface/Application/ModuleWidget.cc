@@ -1321,3 +1321,19 @@ void ModuleWidget::unhighlightPorts()
   outputPortLayout_->setSpacing(PORT_SPACING);
   Q_EMIT displayChanged();
 }
+
+void ModuleWidget::updateMetadata(bool active)
+{
+  if (active)
+  {
+    auto metadata = theModule_->metadata().getFullMap();
+    QStringList display;
+    for (const auto& metaPair : metadata)
+    {
+      display.append(QString::fromStdString(metaPair.first) + " : " + QString::fromStdString(metaPair.second));
+    }
+    setToolTip("Metadata:\n" + display.join("\n"));
+  }
+  else
+    setToolTip("");
+}

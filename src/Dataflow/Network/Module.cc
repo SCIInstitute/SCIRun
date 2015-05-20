@@ -31,6 +31,9 @@
 #include <numeric>
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/timer.hpp>
 #include <atomic>
 
 #include <Dataflow/Network/PortManager.h>
@@ -119,6 +122,7 @@ Module::Module(const ModuleLookupInfo& info,
   inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
+  metadata_(state_),
   executionState_(ModuleInterface::NotExecuted)
 {
   iports_.set_module(this);
@@ -181,11 +185,39 @@ size_t Module::num_output_ports() const
   return oports_.size();
 }
 
+namespace //TODO requirements for state metadata reporting
+{
+  std::string stateMetaInfo(ModuleStateHandle state)
+  {
+    if (!state)
+      return "Null state map.";
+    auto keys = state->getKeys();
+    size_t i = 0;
+    std::ostringstream ostr;
+    ostr << "\n\t{";
+    for (const auto& key : keys)
+    {
+      ostr << "[" << key.name() << ", " << state->getValue(key).value() << "]";
+      i++;
+      if (i < keys.size())
+        ostr << ",\n\t";
+    }
+    ostr << "}";
+    return ostr.str();
+  }
+}
+
 bool Module::do_execute() throw()
 {
   //Log::get() << INFO << "executing module: " << id_ << std::endl;
   //std::cout << "executing module: " << id_ << std::endl;
   executeBegins_(id_);
+  boost::timer executionTimer;
+  {
+    std::string isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
+    metadata_.setMetadata("Last execution timestamp", isoString);
+    metadata_.setMetadata("Module state", stateMetaInfo(get_state()));
+  }
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
   /// @todo: need separate logger per module
@@ -232,6 +264,13 @@ bool Module::do_execute() throw()
   // Call finish on all ports.
   //iports_.apply(boost::bind(&PortInterface::finish, _1));
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
+
+  {
+    double executionTime = executionTimer.elapsed();
+    std::ostringstream ostr;
+    ostr << executionTime;
+    metadata_.setMetadata("last execution duration (seconds)", ostr.str());
+  }
 
   status("MODULE FINISHED: " + id_.id_);
   /// @todo: need separate logger per module
@@ -289,6 +328,18 @@ bool Module::hasOutputPort(const PortId& id) const
   return oports_.hasPort(id);
 }
 
+namespace //TODO: flesh out requirements for metadata on input handles.
+{
+  std::string metaInfo(DatatypeHandleOption data)
+  {
+    if (!data)
+      return "Not connected";
+    if (!*data)
+      return "Null data handle";
+    return "Datatype id# " + boost::lexical_cast<std::string>((*data)->id());
+  }
+}
+
 DatatypeHandleOption Module::get_input_handle(const PortId& id)
 {
   /// @todo test...
@@ -312,6 +363,8 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
 
   auto data = port->getData();
 
+  metadata_.setMetadata("Input " + id.toString(), metaInfo(data));
+
   return data;
 }
 
@@ -333,11 +386,10 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   }
 
   std::vector<DatatypeHandleOption> options;
-
-
-
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
+
+  metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? nullptr : options[0]));
 
   return options;
 }
@@ -604,6 +656,11 @@ bool Module::needToExecute() const
   }
 
   return true;
+}
+
+const MetadataMap& Module::metadata() const
+{
+  return metadata_;
 }
 
 ModuleReexecutionStrategyHandle Module::getReexecutionStrategy() const

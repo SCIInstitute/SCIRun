@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
+
 class SCISHARE RescaleColorMapDialog : public ModuleDialogGeneric,
 	public Ui::RescaleColorMap
 {
 	Q_OBJECT
-	
+
 public:
     RescaleColorMapDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

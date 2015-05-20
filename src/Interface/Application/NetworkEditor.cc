@@ -66,6 +66,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   propertiesAction_(0),
   modulesSelectedByCL_(false),
   currentScale_(1),
+  tagLayerActive_(false),
   scene_(new QGraphicsScene(parent)),
   visibleItems_(true),
   lastModulePosition_(0,0),
@@ -338,6 +339,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
   connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
   connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
+  connect(proxy, SIGNAL(tagChanged(int)), this, SLOT(highlightTaggedItem(int)));
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
@@ -786,6 +788,19 @@ ConnectionNotesHandle NetworkEditor::dumpConnectionNotes() const
   return notes;
 }
 
+ModuleTagsHandle NetworkEditor::dumpModuleTags() const
+{
+  ModuleTagsHandle tags(boost::make_shared<ModuleTags>());
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto mod = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      tags->tags[mod->getModuleWidget()->getModuleId()] = mod->data(TagDataKey).toInt();
+    }
+  }
+  return tags;
+}
+
 void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
@@ -811,6 +826,21 @@ void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
         auto noteXML = noteIter->second;
         Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
         w->getModuleWidget()->updateNoteFromFile(note);
+      }
+    }
+  }
+}
+
+void NetworkEditor::updateModuleTags(const ModuleTags& moduleTags)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      auto tagIter = moduleTags.tags.find(w->getModuleWidget()->getModuleId());
+      if (tagIter != moduleTags.tags.end())
+      {
+        w->setData(TagDataKey, tagIter->second);
       }
     }
   }
@@ -1072,6 +1102,102 @@ void NetworkEditor::setModuleMini(bool mini)
     auto module = getModule(item);
     if (module)
       module->setMiniMode(mini);
+  }
+}
+
+void NetworkEditor::metadataLayer(bool active)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    item->setOpacity(active ? 0.4 : 1);
+    auto module = getModule(item);
+    if (module)
+      module->updateMetadata(active);
+  }
+}
+
+QColor SCIRun::Gui::tagColor(int tag)
+{
+  switch (tag)
+  {
+  case 0:
+    return Qt::blue;
+  case 1:
+    return Qt::green;
+  case 2:
+    return Qt::darkYellow;
+  case 3:
+    return Qt::darkMagenta;
+  case 4:
+    return Qt::darkCyan;
+  case 5:
+    return Qt::darkRed;
+  case 6:
+    return Qt::darkGray;
+  case 7:
+    return Qt::darkGreen;
+  case 8:
+    return Qt::darkBlue;
+  case 9:
+    return Qt::black;
+  default:
+    return Qt::white;
+  }
+}
+
+QString SCIRun::Gui::colorToString(const QColor& color)
+{
+  return QString("rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
+}
+
+static QGraphicsEffect* blurEffect()
+{
+  auto blur = new QGraphicsBlurEffect;
+  blur->setBlurRadius(2);
+  return blur;
+}
+
+void NetworkEditor::tagLayer(bool active, int tag)
+{
+  tagLayerActive_ = active;
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    item->setData(TagLayerKey, active);
+    item->setData(CurrentTagKey, tag);
+    if (active)
+    {
+      if (tag != NoTag)
+      {
+        if (tag == item->data(TagDataKey).toInt())
+        {
+          highlightTaggedItem(item, tag);
+        }
+        else
+          item->setGraphicsEffect(blurEffect());
+      }
+    }
+    else
+      item->setGraphicsEffect(0);
+  }
+}
+
+void NetworkEditor::highlightTaggedItem(int tagValue)
+{
+  highlightTaggedItem(qobject_cast<QGraphicsItem*>(sender()), tagValue);
+  Q_EMIT modified();
+}
+
+void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
+{
+  if (tagValue == NoTag)
+  {
+    item->setGraphicsEffect(blurEffect());
+  }
+  else
+  {
+    auto colorize = new QGraphicsColorizeEffect;
+    colorize->setColor(tagColor(tagValue));
+    item->setGraphicsEffect(colorize);
   }
 }
 

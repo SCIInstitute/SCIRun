@@ -47,8 +47,3 @@ MapFieldDataOntoNodesDialog::MapFieldDataOntoNodesDialog(const std::string& name
   addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
   addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
 }
-
-void MapFieldDataOntoNodesDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}

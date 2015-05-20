@@ -36,17 +36,18 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ReadMatrixClassicDialog : public ModuleDialogGeneric, 
+
+class SCISHARE ReadMatrixClassicDialog : public ModuleDialogGeneric,
   public Ui::ReadMatrixClassic, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
-	
+
 public:
-  ReadMatrixClassicDialog(const std::string& name, 
+  ReadMatrixClassicDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+protected:
+  virtual void pullSpecial();
 
 private Q_SLOTS:
   void pushFileNameToState();
