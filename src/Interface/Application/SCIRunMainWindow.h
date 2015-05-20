@@ -49,6 +49,7 @@ class NetworkEditor;
 class ProvenanceWindow;
 class DeveloperConsole;
 class PreferencesWindow;
+class TagManagerWindow;
 class PythonConsoleWidget;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
@@ -87,6 +88,7 @@ private:
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
   ProvenanceWindow* provenanceWindow_;
+  TagManagerWindow* tagManagerWindow_;
   DeveloperConsole* devConsole_;
   PreferencesWindow* prefs_;
   PythonConsoleWidget* pythonConsole_;
@@ -111,6 +113,7 @@ private:
   void setupProvenanceWindow();
   void setupDevConsole();
   void setupPreferencesWindow();
+  void setupTagManagerWindow();
   void setupPythonConsole();
   void fillModuleSelector();
   void setupInputWidgets();

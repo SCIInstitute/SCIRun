@@ -54,6 +54,7 @@ SET(Interface_Application_SOURCES
   PreferencesWindow.cc
   PythonConsoleWidget.cc
   Settings.cc
+  TagManagerWindow.cc
   Connection.cc
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc
@@ -84,6 +85,7 @@ SET(Interface_Application_HEADERS
   Port.h
   PreferencesWindow.h
   PythonConsoleWidget.h
+  TagManagerWindow.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
   TreeViewCollaborators.h
@@ -100,6 +102,7 @@ SET(Interface_Application_FORMS
   ProvenanceWindow.ui
   SCIRunMainWindow.ui
   RenderWindow.ui
+  TagManager.ui
 )
 
 SET(Interface_Application_RESOURCES

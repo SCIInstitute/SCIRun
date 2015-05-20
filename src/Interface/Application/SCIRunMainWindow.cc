@@ -41,6 +41,7 @@
 #include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PreferencesWindow.h>
+#include <Interface/Application/TagManagerWindow.h>
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
@@ -250,6 +251,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   setupProvenanceWindow();
   setupDevConsole();
   setupPythonConsole();
+  setupTagManagerWindow();
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
@@ -308,6 +310,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   actionConfiguration_->setChecked(!configurationDockWidget_->isHidden());
   actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
+  actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
 
 	moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
 		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
@@ -315,6 +318,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 		);
 
   provenanceWindow_->hide();
+  tagManagerWindow_->hide();
 
   hideNonfunctioningWidgets();
 
@@ -1462,4 +1466,11 @@ void SCIRunMainWindow::adjustExecuteButtonAppearance()
 		executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     break;
   }
+}
+
+void SCIRunMainWindow::setupTagManagerWindow()
+{
+  tagManagerWindow_ = new TagManagerWindow(this);
+  connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
+  connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
 }
