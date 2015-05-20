@@ -35,7 +35,7 @@ using namespace SCIRun::Modules::DataIO;
 /// @class ReadBundle
 /// @brief This module reads a bundle from file (a SCIRun .bdl file).
 
-  ReadBundle::ReadBundle()
+ReadBundleModule::ReadBundleModule()
     : GenericReader<BundleHandle>("ReadBundle", ctx, "DataIO", "SCIRun"),
   guiTypes_(get_ctx()->subVar("types")),
   guiFileType_(get_ctx()->subVar("filetype"))
@@ -48,7 +48,7 @@ using namespace SCIRun::Modules::DataIO;
 }
 
 void
-ReadBundle::execute()
+ReadBundleModule::execute()
 {
   const std::string ftpre = guiFileType_.get();
   const std::string::size_type loc = ftpre.find(" (");

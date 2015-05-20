@@ -44,8 +44,6 @@ namespace DataIO {
     ReadBundleModule();
     virtual void execute();
     virtual void setStateDefaults() {}
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, FieldHandle& handle) override;
 
     OUTPUT_PORT(0, Bundle, Bundle);
 
