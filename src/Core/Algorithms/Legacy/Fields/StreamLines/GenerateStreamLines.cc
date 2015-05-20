@@ -214,9 +214,11 @@ GenerateStreamLinesAlgoP::runImpl()
     {
       //TODO: provide algo API for this.
       boost::this_thread::interruption_point();
+#ifdef WIN32 // this is working on Mac, but not Windows.
       std::cout << "trying to interrupt_point in thread " << boost::this_thread::get_id() << std::endl;
       std::cout << "interruption enabled? " << boost::this_thread::interruption_enabled() << std::endl;
       std::cout << "interruption requested? " << boost::this_thread::interruption_requested() << std::endl;
+#endif
       seed_mesh_->get_point(BI.seed_, idx);
 
        // Is the seed point inside the field?
@@ -353,6 +355,11 @@ GenerateStreamLinesAlgoP::runImpl()
   catch (const char *a)
   {
     algo_->error(a);
+    success_ = false;
+  }
+  catch (boost::thread_interrupted&)
+  {
+    algo_->error("Algorithm thread interrupted by user.");
     success_ = false;
   }
   catch (...)
@@ -597,12 +604,17 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
   }
   catch (const char *a)
   {
-    algo->error(std::string(a));
+    algo->error(a);
+    success_ = false;
+  }
+  catch (boost::thread_interrupted&)
+  {
+    algo->error("Algorithm thread interrupted by user.");
     success_ = false;
   }
   catch (...)
   {
-    algo->error(std::string("Crashed for unknown reason."));
+    algo->error("Crashed for unknown reason.");
     success_ = false;
   }
 

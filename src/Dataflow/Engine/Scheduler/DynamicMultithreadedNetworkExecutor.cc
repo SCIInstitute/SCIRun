@@ -51,7 +51,7 @@ namespace SCIRun {
       class DynamicMultithreadedNetworkExecutorImpl : public WaitsForStartupInitialization//, boost::noncopyable
       {
       public:
-        DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkInterface* network, 
+        DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkInterface* network,
           Mutex* lock, size_t numModules, Mutex* executionLock, DynamicExecutor::ExecutionThreadGroupPtr threadGroup) :
           executeThreads_(threadGroup),
           lookup_(&context.lookup),
@@ -63,21 +63,21 @@ namespace SCIRun {
           network_(network),
           executionLock_(executionLock)
         {
-          std::cout << this << "DMNEI()" << std::endl;
+          //std::cout << this << "DMNEI()" << std::endl;
         }
         ~DynamicMultithreadedNetworkExecutorImpl()
         {
-          std::cout << this << "~DMNEI()" << std::endl;
+          //std::cout << this << "~DMNEI()" << std::endl;
         }
         void operator()() const
         {
-          std::cout << this << "DMNEI start" << std::endl;
+          //std::cout << this << "DMNEI start" << std::endl;
           Guard g(executionLock_->get());
 
           if (network_)
           {
             network_->connectModuleInterrupted([&](const std::string& id) { interruptModule(id); });
-            std::cout << this << " DMNEI connected" << std::endl;
+            //std::cout << this << " DMNEI connected" << std::endl;
           }
 
           ScopedExecutionBoundsSignaller signaller(bounds_, [=]() { return lookup_->errorCode(); });
@@ -89,29 +89,29 @@ namespace SCIRun {
           consume.join();
           produce.join();
           executeThreads_->joinAll();
-          std::cout << this << "DMNEI end" << std::endl;
+          //std::cout << this << "DMNEI end" << std::endl;
         }
 
         void interruptModule(const std::string& id) const
         {
-          std::cout << this << " INTERRUPT ATTEMPT: MODULE ID " << id << std::endl;
+          //std::cout << this << " INTERRUPT ATTEMPT: MODULE ID " << id << std::endl;
           if (executeThreads_)
           {
             auto thread = executeThreads_->getThreadForModule(id);
             if (thread)
             {
-              std::cout << "found thread for module, next step is to call interrupt." << std::endl;
+              //std::cout << "found thread for module, next step is to call interrupt." << std::endl;
               thread->interrupt();
-              std::cout << "interrupt called on thread " << thread->get_id() << std::endl;
+              //std::cout << "interrupt called on thread " << thread->get_id() << std::endl;
             }
             else
             {
-              std::cout << "didn't find thread for module, umok..." << std::endl;
+              //std::cout << "didn't find thread for module, umok..." << std::endl;
             }
           }
           else
           {
-            std::cout << "executeThreads_ is null" << std::endl;
+            //std::cout << "executeThreads_ is null" << std::endl;
           }
         }
       private:
@@ -123,11 +123,10 @@ namespace SCIRun {
         DynamicExecutor::ModuleConsumerPtr consumer_;
         const NetworkInterface* network_;
         Mutex* executionLock_;
-        //boost::shared_ptr<boost::signals2::scoped_connection> interrupter;
       };
 }}}
 
-DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkInterface& network) : 
+DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkInterface& network) :
   network_(network),
   threadGroup_(new DynamicExecutor::ExecutionThreadGroup)
 {}
