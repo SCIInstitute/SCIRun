@@ -118,12 +118,14 @@ private:
   void fillModuleSelector();
   void setupInputWidgets();
   void parseStyleXML();
+  void setTagNames(const QStringList& tagNames);
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
+  QVector<QString> tagNames_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
@@ -168,6 +170,7 @@ private Q_SLOTS:
   void modulesSnapToChanged();
   void highlightPortsChanged();
   void resetWindowLayout();
+  void updateTagName(const QString& name);
   void zoomNetwork();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
