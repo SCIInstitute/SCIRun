@@ -67,6 +67,7 @@ namespace SCIRun {
         }
         ~DynamicMultithreadedNetworkExecutorImpl()
         {
+          interruptCxn_.disconnect();
           //std::cout << this << "~DMNEI()" << std::endl;
         }
         void operator()() const
@@ -76,7 +77,7 @@ namespace SCIRun {
 
           if (network_)
           {
-            network_->connectModuleInterrupted([&](const std::string& id) { interruptModule(id); });
+            interruptCxn_ = network_->connectModuleInterrupted([&](const std::string& id) { interruptModule(id); });
             //std::cout << this << " DMNEI connected" << std::endl;
           }
 
@@ -123,13 +124,16 @@ namespace SCIRun {
         DynamicExecutor::ModuleConsumerPtr consumer_;
         const NetworkInterface* network_;
         Mutex* executionLock_;
+        mutable boost::signals2::connection interruptCxn_;
       };
 }}}
 
 DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkInterface& network) :
   network_(network),
   threadGroup_(new DynamicExecutor::ExecutionThreadGroup)
-{}
+{
+  //std::cout << "DMNE()" << std::endl;
+}
 
 void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
 {
@@ -138,6 +142,8 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
   if (Log::get().verbose())
     LOG_DEBUG("DMTNE::executeAll order received: " << order << std::endl);
 
+  threadGroup_->clear();
+  //std::cout << "address of threadGroup: " << threadGroup_.get() << std::endl;
   DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
   boost::thread execution(runner);
 }
