@@ -47,6 +47,7 @@
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommandFactory.h>
 #include <Interface/Application/GuiCommands.h>
+#include <Interface/Application/Utility.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Core/Logging/LoggerInterface.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
@@ -1473,4 +1474,14 @@ void SCIRunMainWindow::setupTagManagerWindow()
   tagManagerWindow_ = new TagManagerWindow(this);
   connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
   connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
+
+  QLabel* tagLabels[] = { tagManagerWindow_->tagLabel_0, tagManagerWindow_->tagLabel_1, tagManagerWindow_->tagLabel_2,
+    tagManagerWindow_->tagLabel_3, tagManagerWindow_->tagLabel_4, tagManagerWindow_->tagLabel_5,
+    tagManagerWindow_->tagLabel_6, tagManagerWindow_->tagLabel_7, tagManagerWindow_->tagLabel_8, tagManagerWindow_->tagLabel_9 };
+
+  for (int i = 0; i < 10; ++i)
+  {
+    auto colorStr = colorToString(tagColor(i));
+    tagLabels[i]->setStyleSheet("QLabel { background-color : " + colorStr + "; }");
+  }
 }

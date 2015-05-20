@@ -1116,7 +1116,7 @@ void NetworkEditor::metadataLayer(bool active)
   }
 }
 
-static QColor tagColor(int tag)
+QColor SCIRun::Gui::tagColor(int tag)
 {
   switch (tag)
   {
@@ -1143,6 +1143,11 @@ static QColor tagColor(int tag)
   default:
     return Qt::white;
   }
+}
+
+QString SCIRun::Gui::colorToString(const QColor& color)
+{
+  return QString("rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
 }
 
 static QGraphicsEffect* blurEffect()
