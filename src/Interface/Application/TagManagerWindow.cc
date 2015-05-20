@@ -26,53 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef UTILITY_H
-#define UTILITY_H
+#include <QtGui>
+#include <iostream>
+#include <Interface/Application/TagManagerWindow.h>
+#include <Interface/Application/NetworkEditor.h>
 
-#include <sstream>
+using namespace SCIRun::Gui;
 
-namespace SCIRun {
-
-template <class Point>
-std::string to_string(const Point& p)
+TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {
-  std::ostringstream ostr;
-  ostr << "QPoint(" << p.x() << "," << p.y() << ")";
-  return ostr.str();
+  setupUi(this);
 }
-
-namespace Gui
-{
-  QColor to_color(const std::string& str, int alpha = 255);
-
-  QColor tagColor(int tag);
-
-  QString colorToString(const QColor& color);
-
-  inline QAction* separatorAction(QWidget* parent)
-  {
-    auto sep = new QAction(parent);
-    sep->setSeparator(true);
-    return sep;
-  }
-
-  inline QAction* disabled(QAction* action)
-  {
-    action->setEnabled(false);
-    return action;
-  }
-
-  inline std::ostream& operator<<(std::ostream& o, const QPointF& p)
-  {
-    return o << "[" << p.x() << "," << p.y() << "]";
-  }
-
-  typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
-  typedef boost::function<void(QAction*)> QActionHookup;
-  QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
-  QPointF findCenterOfNetwork(const Dataflow::Networks::ModulePositions& positions);
-}
-
-}
-
-#endif

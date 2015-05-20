@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1081</width>
-         <height>467</height>
+         <width>1093</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -109,6 +109,7 @@
      <addaction name="actionSelectModule_"/>
     </widget>
     <addaction name="menuActions"/>
+    <addaction name="actionTagManager_"/>
    </widget>
    <widget class="QMenu" name="menuSubnets_">
     <property name="enabled">
@@ -1274,6 +1275,14 @@
   <action name="actionZoomBestFit_">
    <property name="text">
     <string>Zoom Best Fit</string>
+   </property>
+  </action>
+  <action name="actionTagManager_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tag Manager</string>
    </property>
   </action>
  </widget>
