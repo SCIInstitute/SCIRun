@@ -1271,7 +1271,7 @@ void ModuleWidget::changeExecuteButtonToPlay()
 
 void ModuleWidget::stopButtonPushed()
 {
-  qDebug() << "stop pressed for " << QString::fromStdString(theModule_->get_id().id_);
+  //qDebug() << "stop pressed for " << QString::fromStdString(theModule_->get_id().id_);
   Q_EMIT interrupt(theModule_->get_id());
 }
 
