@@ -34,6 +34,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/atomic.hpp>
+#include <atomic>
 #include <vector>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/DatatypeFwd.h>
