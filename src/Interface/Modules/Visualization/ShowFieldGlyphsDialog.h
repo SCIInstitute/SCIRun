@@ -63,6 +63,10 @@ namespace SCIRun {
       ShowFieldGlyphsScalarTabDialog* scalarTab_;
       ShowFieldGlyphsVectorTabDialog* vectorTab_;
 
+      int vectorTabIndex_;
+      int scalarTabIndex_;
+
+      void checkTabs();
       void setupScalarsTab();
       void setupVectorsTab();
     };

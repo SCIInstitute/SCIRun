@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Datatypes;
 
 ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogGeneric(state, parent), vectorTabIndex_(-1), scalarTabIndex_(-1)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -82,6 +82,8 @@ void ShowFieldGlyphsDialog::pull()
     static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+
+  checkTabs();
 }
 
 
@@ -103,11 +105,53 @@ void ShowFieldGlyphsDialog::pushColor()
   Q_EMIT executeActionTriggered();
 }
 
+void ShowFieldGlyphsDialog::checkTabs()
+{
+  std::cout << "in checktabs." << std::endl;
+  if (state_->getValue(ShowFieldGlyphs::ShowVectorTab).toBool())
+  {
+    if (vectorTabIndex_ < 0)
+    {
+      displayOptionsTabs_->addTab(vectorTab_, tr("Vectors"));
+      vectorTabIndex_ = displayOptionsTabs_->count() - 1;
+    }
+  }
+  else
+  {
+    if (vectorTabIndex_ > 0)
+    {
+      displayOptionsTabs_->removeTab(vectorTabIndex_);
+      if (scalarTabIndex_ > vectorTabIndex_)
+        --scalarTabIndex_;
+      vectorTabIndex_ = -1;
+    }
+  }
+
+  if (state_->getValue(ShowFieldGlyphs::ShowScalarTab).toBool())
+  {
+    if (scalarTabIndex_ < 0)
+    {
+      displayOptionsTabs_->addTab(scalarTab_, tr("Scalars"));
+      scalarTabIndex_ = displayOptionsTabs_->count() - 1;
+    }
+  }
+  else
+  {
+    if (scalarTabIndex_ > 0)
+    {
+      displayOptionsTabs_->removeTab(vectorTabIndex_);
+      if (vectorTabIndex_ > scalarTabIndex_)
+        --vectorTabIndex_;
+      scalarTabIndex_ = -1;
+    }
+  }
+}
+
 void ShowFieldGlyphsDialog::setupVectorsTab()
 {
   vectorTab_ = new ShowFieldGlyphsVectorTabDialog(this);
   displayOptionsTabs_->addTab(vectorTab_, tr("Vectors"));
-  //displayOptionsTabs_->removeTab(1);
+  displayOptionsTabs_->removeTab(1);
   addCheckableButtonManager(vectorTab_->showVectorsCheckBox_, ShowFieldGlyphs::ShowVectors);
   addCheckableButtonManager(vectorTab_->enableTransparencyVectorsCheckBox_, ShowFieldGlyphs::VectorsTransparency);
   addDoubleSpinBoxManager(vectorTab_->vectorsTransparencyDoubleSpinBox_, ShowFieldGlyphs::VectorsTransparencyValue);
@@ -136,7 +180,7 @@ void ShowFieldGlyphsDialog::setupScalarsTab()
 {
   scalarTab_ = new ShowFieldGlyphsScalarTabDialog(this);
   displayOptionsTabs_->addTab(scalarTab_, tr("Scalars"));
-  //displayOptionsTabs_->removeTab(1);
+  displayOptionsTabs_->removeTab(1);
   addCheckableButtonManager(scalarTab_->showScalarsCheckBox_, ShowFieldGlyphs::ShowScalars);
   addCheckableButtonManager(scalarTab_->enableTransparencyScalarsCheckBox_, ShowFieldGlyphs::ScalarsTransparency);
   addDoubleSpinBoxManager(scalarTab_->scalarsTransparencyDoubleSpinBox_, ShowFieldGlyphs::ScalarsTransparencyValue);

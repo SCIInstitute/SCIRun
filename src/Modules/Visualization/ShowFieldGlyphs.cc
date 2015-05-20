@@ -84,6 +84,7 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(VectorsResolution, 3);
   state->setValue(VectorsColoring, 0);
   state->setValue(VectorsDisplayType, 0);
+  state->setValue(ShowVectorTab, false);
 
   // Scalars
   state->setValue(ShowScalars, false);
@@ -93,6 +94,16 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(ScalarsResolution, 3);
   state->setValue(ScalarsColoring, 0);
   state->setValue(ScalarsDisplayType, 0);
+  state->setValue(ShowScalarTab, false);
+
+  // Tensors
+  state->setValue(ShowTensorTab, false);
+
+  // Secondary Tab
+  state->setValue(ShowSecondaryTab, false);
+
+  // Tertiary Tab
+  state->setValue(ShowTertiaryTab, false);
 
 
   state->setValue(DefaultMeshColor, ColorRGB(0.5, 0.5, 0.5).toString());
@@ -174,14 +185,26 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
 
   FieldInformation finfo(field);
 
-  if (finfo.is_vector() && showVectors)
+  if (finfo.is_vector())
   {
-    renderVectors(field, colorMap, getVectorsRenderState(state, colorMap), geom, geom->uniqueID());
+    state->setValue(ShowFieldGlyphs::ShowVectorTab, true);
+    if (showVectors)
+    {
+      renderVectors(field, colorMap, getVectorsRenderState(state, colorMap), geom, geom->uniqueID());
+    }
+  }
+  else
+  {
+    state->setValue(ShowFieldGlyphs::ShowVectorTab, false);
   }
 
-  if (finfo.is_scalar() && showScalars)
+  if (finfo.is_scalar())
   {
-    renderScalars(field, colorMap, getScalarsRenderState(state, colorMap), geom, geom->uniqueID());
+    state->setValue(ShowFieldGlyphs::ShowScalarTab, true);
+    if (showScalars)
+    {
+      renderScalars(field, colorMap, getScalarsRenderState(state, colorMap), geom, geom->uniqueID());
+    }
   }
 
   return geom;
@@ -522,3 +545,8 @@ AlgorithmParameterName ShowFieldGlyphs::ScalarsResolution("ScalarsResolution");
 AlgorithmParameterName ShowFieldGlyphs::ScalarsColoring("ScalarsColoring");
 AlgorithmParameterName ShowFieldGlyphs::ScalarsDisplayType("ScalarsDisplayType");
 AlgorithmParameterName ShowFieldGlyphs::DefaultMeshColor("DefaultMeshColor");
+AlgorithmParameterName ShowFieldGlyphs::ShowVectorTab("ShowVectorTab");
+AlgorithmParameterName ShowFieldGlyphs::ShowScalarTab("ShowScalarTab");
+AlgorithmParameterName ShowFieldGlyphs::ShowTensorTab("ShowTensorTab");
+AlgorithmParameterName ShowFieldGlyphs::ShowSecondaryTab("ShowSecondaryTab");
+AlgorithmParameterName ShowFieldGlyphs::ShowTertiaryTab("ShowTertiaryTab");

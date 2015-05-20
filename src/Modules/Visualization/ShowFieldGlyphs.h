@@ -64,6 +64,11 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName ScalarsColoring;
         static Core::Algorithms::AlgorithmParameterName ScalarsDisplayType;
         static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
+        static Core::Algorithms::AlgorithmParameterName ShowVectorTab;
+        static Core::Algorithms::AlgorithmParameterName ShowScalarTab;
+        static Core::Algorithms::AlgorithmParameterName ShowTensorTab;
+        static Core::Algorithms::AlgorithmParameterName ShowSecondaryTab;
+        static Core::Algorithms::AlgorithmParameterName ShowTertiaryTab;
 
         INPUT_PORT(0, PrimaryData, LegacyField);
         INPUT_PORT(1, PrimaryColorMap, ColorMap);
