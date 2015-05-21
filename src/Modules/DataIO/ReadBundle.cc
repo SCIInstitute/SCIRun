@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -31,34 +31,28 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::DataIO;
+using namespace SCIRun::Core::Datatypes;
 
 /// @class ReadBundle
 /// @brief This module reads a bundle from file (a SCIRun .bdl file).
 
 ReadBundleModule::ReadBundleModule()
-    : GenericReader<BundleHandle>("ReadBundle", ctx, "DataIO", "SCIRun"),
-  guiTypes_(get_ctx()->subVar("types")),
-  guiFileType_(get_ctx()->subVar("filetype"))
+    : my_base("ReadBundle", "DataIO", "SCIRun", "Bundle")
 {
-  std::string importtypes = "{";
-  importtypes += "{{SCIRun Bundle File} {.bdl} } ";
-  importtypes += "}";
-
-  guiTypes_.set(importtypes);
+  INITIALIZE_PORT(Bundle);
 }
 
-void
-ReadBundleModule::execute()
+void ReadBundleModule::execute()
 {
+  /*
   const std::string ftpre = guiFileType_.get();
   const std::string::size_type loc = ftpre.find(" (");
   const std::string ft = ftpre.substr(0, loc);
-
-  importing_ = false;
-  GenericReader<BundleHandle>::execute();
+*/
+  my_base::execute();
 }
 
-
-
-
-
+std::string ReadBundleModule::fileTypeList()
+{
+  return "{{{SCIRun Bundle File} {.bdl} } }";
+}
