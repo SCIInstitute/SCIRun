@@ -44,6 +44,7 @@ namespace SCIRun {
         GenerateStreamLines();
         virtual void setStateDefaults() override;
         virtual void execute() override;
+        virtual bool isStoppable() const override { return true; }
 
         INPUT_PORT(0, Vector_Field, LegacyField);
         INPUT_PORT(1, Seed_Points, LegacyField);

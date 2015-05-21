@@ -118,6 +118,12 @@ void NetworkEditorController::removeModule(const ModuleId& id)
   printNetwork();
 }
 
+void NetworkEditorController::interruptModule(const ModuleId& id)
+{
+  theNetwork_->interruptModuleRequest(id);
+  ///*emit*/ networkInterrupted_();
+}
+
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");

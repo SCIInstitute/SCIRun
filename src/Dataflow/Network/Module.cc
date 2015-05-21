@@ -123,7 +123,8 @@ Module::Module(const ModuleLookupInfo& info,
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
   metadata_(state_),
-  executionState_(ModuleInterface::NotExecuted)
+  executionState_(ModuleInterface::NotExecuted),
+  threadStopped_(false)
 {
   iports_.set_module(this);
   oports_.set_module(this);
@@ -220,6 +221,7 @@ bool Module::do_execute() throw()
   }
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
+  threadStopped_ = true;
   /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
   setExecutionState(ModuleInterface::Executing);
@@ -231,7 +233,7 @@ bool Module::do_execute() throw()
     execute();
     returnCode = true;
   }
-  catch(const std::bad_alloc&)
+  catch (const std::bad_alloc&)
   {
     error("MODULE ERROR: bad_alloc caught");
   }
@@ -255,6 +257,11 @@ bool Module::do_execute() throw()
   catch (const std::exception& e)
   {
     error(std::string("MODULE ERROR: std::exception caught: ") + e.what());
+  }
+  catch (const boost::thread_interrupted& e)
+  {
+    error("MODULE ERROR: execution thread interrupted by user.");
+    threadStopped_ = true;
   }
   catch (...)
   {
@@ -650,6 +657,8 @@ bool Module::needToExecute() const
   {
     //Test fix for reexecute problem. Seems like it could be a race condition, but not sure.
     Guard g(needToExecuteLock.get());
+    if (threadStopped_)
+      return true;
     auto val = reexecute_->needToExecute();
     //Log::get() << DEBUG_LOG << id_ << " Using real needToExecute strategy object, value is: " << val << std::endl;
     return val;

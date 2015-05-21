@@ -34,6 +34,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/atomic.hpp>
+#include <atomic>
 #include <vector>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -136,6 +137,11 @@ namespace Networks {
     virtual bool hasDynamicPorts() const
     {
       return false; /// @todo: need to examine HasPorts base classes
+    }
+
+    virtual bool isStoppable() const
+    {
+      return false;
     }
 
     bool oport_connected(const PortId& id) const;
@@ -289,6 +295,7 @@ namespace Networks {
     ExecutionSelfRequestSignalType executionSelfRequested_;
 
     ModuleReexecutionStrategyHandle reexecute_;
+    std::atomic<bool> threadStopped_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;

@@ -593,7 +593,10 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
 void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
 {
   connect(display->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
-  addWidgetToExecutionDisableList(display->getExecuteButton());
+  if (!theModule_->isStoppable())
+  {
+    addWidgetToExecutionDisableList(display->getExecuteButton());
+  }
   connect(display->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
   connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(show()));
@@ -916,8 +919,11 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
-  removeWidgetFromExecutionDisableList(miniWidgetDisplay_->getExecuteButton());
-  removeWidgetFromExecutionDisableList(fullWidgetDisplay_->getExecuteButton());
+  if (!theModule_->isStoppable())
+  {
+    removeWidgetFromExecutionDisableList(miniWidgetDisplay_->getExecuteButton());
+    removeWidgetFromExecutionDisableList(fullWidgetDisplay_->getExecuteButton());
+  }
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
   if (dialog_)
     removeWidgetFromExecutionDisableList(dialog_->getExecuteAction());
@@ -974,11 +980,6 @@ void ModuleWidget::execute()
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
-}
-
-void ModuleWidget::changeExecuteButtonToStop()
-{
-  currentDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
 }
 
 boost::signals2::connection ModuleWidget::connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber)
@@ -1254,9 +1255,24 @@ void ModuleWidget::executeButtonPushed()
   changeExecuteButtonToStop();
 }
 
+void ModuleWidget::changeExecuteButtonToStop()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
+  disconnect(currentDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  connect(currentDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
+}
+
 void ModuleWidget::changeExecuteButtonToPlay()
 {
   currentDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
+  disconnect(currentDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
+  connect(currentDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+}
+
+void ModuleWidget::stopButtonPushed()
+{
+  //qDebug() << "stop pressed for " << QString::fromStdString(theModule_->get_id().id_);
+  Q_EMIT interrupt(theModule_->get_id());
 }
 
 bool ModuleWidget::globalMiniMode_(false);
