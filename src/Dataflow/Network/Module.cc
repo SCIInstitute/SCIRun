@@ -221,11 +221,11 @@ bool Module::do_execute() throw()
   }
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
-  threadStopped_ = true;
   /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
   setExecutionState(ModuleInterface::Executing);
   bool returnCode = false;
+  bool threadStopValue = false;
 
   try
   {
@@ -261,12 +261,13 @@ bool Module::do_execute() throw()
   catch (const boost::thread_interrupted& e)
   {
     error("MODULE ERROR: execution thread interrupted by user.");
-    threadStopped_ = true;
+    threadStopValue = true;
   }
   catch (...)
   {
     error("MODULE ERROR: unhandled exception caught");
   }
+  threadStopped_ = threadStopValue;
 
   // Call finish on all ports.
   //iports_.apply(boost::bind(&PortInterface::finish, _1));
