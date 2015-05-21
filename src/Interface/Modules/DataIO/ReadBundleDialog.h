@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
-#include <Modules/DataIO/ReadBundle.h>
+#ifndef INTERFACE_MODULES_READ_BUNDLE_H
+#define INTERFACE_MODULES_READ_BUNDLE_H
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Datatypes;
+#include "Interface/Modules/DataIO/ui_ReadBundleDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/DataIO/share.h>
 
-/// @class ReadBundle
-/// @brief This module reads a bundle from file (a SCIRun .bdl file).
+namespace SCIRun {
+namespace Gui {
 
-const Dataflow::Networks::ModuleLookupInfo ReadBundleModule::staticInfo_("ReadBundle", "DataIO", "SCIRun");
-
-ReadBundleModule::ReadBundleModule()
-    : my_base(staticInfo_.module_name_, staticInfo_.category_name_, staticInfo_.package_name_, "Bundle")
+class SCISHARE ReadBundleDialog : public ModuleDialogGeneric,
+  public Ui::ReadBundleDialog, public RemembersFileDialogDirectory
 {
-  INITIALIZE_PORT(Bundle);
+	Q_OBJECT
+
+public:
+  ReadBundleDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+protected:
+  virtual void pullSpecial() override;
+
+private Q_SLOTS:
+  void pushFileNameToState();
+  void openFile();
+};
+
+}
 }
 
-void ReadBundleModule::execute()
-{
-  /*
-  const std::string ftpre = guiFileType_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-*/
-  my_base::execute();
-}
-
-std::string ReadBundleModule::fileTypeList()
-{
-  return "SCIRun Bundle File (*.bdl)";
-}
+#endif

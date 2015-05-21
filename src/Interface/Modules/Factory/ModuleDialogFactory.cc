@@ -30,10 +30,9 @@
 #include <Interface/Modules/Base/ModuleDialogBasic.h>
 #include <Interface/Modules/Testing/SendScalarDialog.h>
 #include <Interface/Modules/Testing/ReceiveScalarDialog.h>
-#include <Interface/Modules/DataIO/ReadMatrixDialog.h>
 #include <Interface/Modules/DataIO/ReadMatrixClassicDialog.h>
+#include <Interface/Modules/DataIO/ReadBundleDialog.h>
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
-#include <Interface/Modules/DataIO/ReadMeshDialog.h>
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
 #include <Interface/Modules/DataIO/WriteFieldDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
@@ -90,7 +89,7 @@
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldGlyphsDialog.h>
 #include <Interface/Modules/Visualization/CreateStandardColorMapDialog.h>
-#include <Interface/Modules/Visualization/ShowColorMapDialog.h> 
+#include <Interface/Modules/Visualization/ShowColorMapDialog.h>
 #include <Interface/Modules/Visualization/RescaleColorMapDialog.h>
 #include <Interface/Modules/Matlab/ImportDatatypesFromMatlabDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
@@ -121,12 +120,11 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
   insert(dialogMakerMap_)
     ADD_MODULE_DIALOG(SendScalar, SendScalarDialog)
     ADD_MODULE_DIALOG(ReceiveScalar, ReceiveScalarDialog)
-    //ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixDialog)
     ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixClassicDialog)
     ADD_MODULE_DIALOG(WriteMatrix, WriteMatrixDialog)
-    ADD_MODULE_DIALOG(ReadMesh, ReadMeshDialog)
     ADD_MODULE_DIALOG(ReadField, ReadFieldDialog)
     ADD_MODULE_DIALOG(WriteField, WriteFieldDialog)
+    ADD_MODULE_DIALOG(ReadBundle, ReadBundleDialog)
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryDialog)
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryDialog)
     ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
@@ -186,9 +184,9 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 	ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
 	ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
     ADD_MODULE_DIALOG(SolveInverseProblemWithTikhonov, SolveInverseProblemWithTikhonovDialog)
-	ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog) 
+	ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)
 	ADD_MODULE_DIALOG(RescaleColorMap, RescaleColorMapDialog)
-    ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog) 
+    ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
 	ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
   ;
 }
