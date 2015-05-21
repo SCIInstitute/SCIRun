@@ -45,6 +45,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Glyphs/GlyphGeom.h>
 
 #include <boost/foreach.hpp>
+#include <boost/thread.hpp> //TODO interrupt API coming
 
 #include <glm/glm.hpp>
 
@@ -100,8 +101,8 @@ void ShowFieldModule::setStateDefaults()
 
 void ShowFieldModule::execute()
 {
-  boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(ColorMapObject);
+  auto field = getRequiredInput(Field);
+  auto colorMap = getOptionalInput(ColorMapObject);
 
   if (needToExecute())
   {
@@ -305,7 +306,7 @@ void ShowFieldModule::renderFacesLinear(
 {
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
-  
+
   mesh->synchronize(Mesh::FACES_E);
 
   VMesh::Face::size_type numFaces;
@@ -360,7 +361,7 @@ void ShowFieldModule::renderFacesLinear(
 
   uint32_t iboIndex = 0;
   int64_t numVBOElements = 0;
-  
+
   VMesh::Face::iterator fiter, fiterEnd;
   VMesh::Node::array_type nodes;
 
@@ -373,6 +374,7 @@ void ShowFieldModule::renderFacesLinear(
 
   while (fiter != fiterEnd)
   {
+    boost::this_thread::interruption_point();
     mesh->get_nodes(nodes, *fiter);
 
     std::vector<Core::Geometry::Point> points(nodes.size());
@@ -443,7 +445,7 @@ void ShowFieldModule::renderFacesLinear(
       vvals.resize(2);
       tvals.resize(2);
       face_colors = {{ColorRGB(1.,1.,1.),ColorRGB(1.,1.,1.)}};
-      
+
       VMesh::Elem::array_type cells;
       mesh->get_elems(cells, *fiter);
 
@@ -719,7 +721,7 @@ void ShowFieldModule::renderFacesLinear(
                 GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   geom->mIBOs.push_back(geomIBO);
-  
+
   GeometryObject::SpireSubPass pass =
     GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
     colorScheme, state, GeometryObject::RENDER_VBO_IBO, geomVBO, geomIBO);
@@ -762,7 +764,7 @@ void ShowFieldModule::addFaceGeom(
     vboBuffer->write(static_cast<float>(normal.y()));
     vboBuffer->write(static_cast<float>(normal.z()));
   };
-  
+
   auto writeVBOColorValue = [&vboBuffer](ColorRGB value)
   {
     vboBuffer->write(static_cast<float>(value.r()));
@@ -1090,9 +1092,6 @@ void ShowFieldModule::renderNodes(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  // Attempt some form of precalculation of iboBuffer and vboBuffer size.
-  uint32_t iboSize = 0;
-  uint32_t vboSize = 0;
   auto my_state = this->get_state();
   double radius = my_state->getValue(SphereScaleValue).toDouble();
   double num_strips = static_cast<double>(my_state->getValue(SphereResolution).toInt());
@@ -1102,105 +1101,17 @@ void ShowFieldModule::renderNodes(
   ss << state.get(RenderState::USE_SPHERE) << radius << num_strips << colorScheme;
 
   std::string uniqueNodeID = id + "node" + ss.str();
-  std::string vboName = uniqueNodeID + "VBO";
-  std::string iboName = uniqueNodeID + "IBO";
-  std::string passName = uniqueNodeID + "Pass";
-
-  // NOTE: Attributes will depend on the color scheme. We will want to
-  // normalize the colors if the color scheme is COLOR_IN_SITU.
-
-  // Construct VBO.
-  std::string shader = "Shaders/UniformColor";
-  std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
-  //3 floats/point (XYZ)
-  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  if (state.get(RenderState::USE_SPHERE))
-    //3 floats/vector (XYZ)
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
-  GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
-
-  // If true, then the VBO will be placed on the GPU. We don't want to place
-  // VBOs on the GPU when we are generating rendering lists.
-  bool vboOnGPU = true;
+  
   auto st = get_state();
   nodeTransparencyValue_ = static_cast<float>(st->getValue(NodeTransparencyValue).toDouble());
-  
-  std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
-  
-  //transparency
-  if (state.get(RenderState::USE_TRANSPARENT_NODES))
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency",nodeTransparencyValue_));
-  else
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", 1.f));
-  //coloring
-  if (colorScheme == GeometryObject::COLOR_MAP) 
-  {
-    //4 floats/color (RGBA)
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-    if (state.get(RenderState::USE_SPHERE))
-    {
-        shader = "Shaders/DirPhongCMap" ;
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } 
-    else
-    {
-        shader = "Shaders/ColorMap";
-    }
-  } 
-  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-  {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
-    if (state.get(RenderState::USE_SPHERE)) 
-    {
-      shader = "Shaders/DirPhongInSitu";
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } 
-    else 
-    {
-      shader = "Shaders/InSituColor";
-    }
-  } 
-  else if (colorScheme == GeometryObject::COLOR_UNIFORM) 
-  {
-    ColorRGB dft = state.defaultColor;
-    if (state.get(RenderState::USE_SPHERE)) 
-    {
-        shader = "Shaders/DirPhong";
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-            glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-            glm::vec4(dft.r(), dft.g(), dft.b(), nodeTransparencyValue_)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-            glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } 
-    else 
-    {
-        shader = "Shaders/UniformColor";
-        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), 1.f));
-    }
-  }
+
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::POINTS;
   // Use spheres...
   if (state.get(RenderState::USE_SPHERE))
     primIn = GeometryObject::SpireIBO::TRIANGLES;
-  std::vector<Vector> points;
-  std::vector<Vector> normals;
-  std::vector<ColorRGB> colors;
-  std::vector<uint32_t> indices;
-  uint32_t index = 0;
-  int64_t numVBOElements = 0;
-  
+
   GlyphGeom glyphs;
-  while (eiter != eiter_end) 
+  while (eiter != eiter_end)
   {
     Core::Geometry::Point p;
     mesh->get_point(p, *eiter);
@@ -1213,112 +1124,32 @@ void ShowFieldModule::renderNodes(
         fld->get_value(sval, *eiter);
         node_color = map->valueToColor(sval);
       }
-      else if (fld->is_vector()) 
+      else if (fld->is_vector())
       {
         fld->get_value(vval, *eiter);
         node_color = map->valueToColor(vval);
-      } 
-      else if (fld->is_tensor()) 
+      }
+      else if (fld->is_tensor())
       {
         fld->get_value(tval, *eiter);
         node_color = map->valueToColor(tval);
       }
     }
     //accumulate VBO or IBO data
-    if (state.get(RenderState::USE_SPHERE)) 
+    if (state.get(RenderState::USE_SPHERE))
     {
-      glyphs.addSphere(p, radius, num_strips, node_color);      
+      glyphs.addSphere(p, radius, num_strips, node_color);
     }
-    else 
+    else
     {
-      points.push_back(Vector(p));
-      if (colorScheme == GeometryObject::COLOR_MAP ||
-          colorScheme == GeometryObject::COLOR_IN_SITU)
-              colors.push_back(node_color);
-      indices.push_back(index);
-      ++index;
-      ++numVBOElements;
+      glyphs.addPoint(p, node_color);
     }
 
     ++eiter;
-  }
-  if (state.get(RenderState::USE_SPHERE))
-  {
-    glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);
-  }
-
-  vboSize = (uint32_t)points.size() * 3 * sizeof(float);
-  vboSize += (uint32_t)normals.size() * 3 * sizeof(float);
-  if (colorScheme == GeometryObject::COLOR_IN_SITU || colorScheme == GeometryObject::COLOR_MAP)
-    vboSize += (uint32_t)colors.size() * 4 * sizeof(float); //RGBA
-  iboSize = (uint32_t)indices.size() * sizeof(uint32_t);
-
-  /// \todo To reduce memory requirements, we can use a 16bit index buffer.
-
-  /// \todo To further reduce a large amount of memory, get rid of the index
-  ///       buffer and use glDrawArrays to render without an IBO. An IBO is
-  ///       a waste of space.
-  ///       http://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml
-
-  /// \todo Switch to unique_ptrs and move semantics.
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-
-  // Accessing the pointers like this is contrived. We only do this for
-  // speed since we will be using the pointers in a tight inner loop.
-  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
-  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
-
-  //write to the IBO/VBOs
-  for (auto a : indices)
-    iboBuffer->write(a);
-
-  for (size_t i = 0; i < points.size(); i++) 
-  {
-    // Write first point on line
-    vboBuffer->write(static_cast<float>(points.at(i).x()));
-    vboBuffer->write(static_cast<float>(points.at(i).y()));
-    vboBuffer->write(static_cast<float>(points.at(i).z()));
-    // Write normal
-    if (normals.size() == points.size()) 
-    {
-      vboBuffer->write(static_cast<float>(normals.at(i).x()));
-      vboBuffer->write(static_cast<float>(normals.at(i).y()));
-      vboBuffer->write(static_cast<float>(normals.at(i).z()));
-    }
-    if (colorScheme == GeometryObject::COLOR_MAP ||
-        colorScheme == GeometryObject::COLOR_IN_SITU) 
-    {
-      vboBuffer->write(static_cast<float>(colors.at(i).r()));
-      vboBuffer->write(static_cast<float>(colors.at(i).g()));
-      vboBuffer->write(static_cast<float>(colors.at(i).b()));
-      vboBuffer->write(static_cast<float>(1.f));
-    } // no color writing otherwise
-  }
-  state.set(RenderState::IS_ON, true);
-  state.set(RenderState::HAS_DATA, true);
-
-  GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-    numVBOElements, mesh->get_bounding_box(), vboOnGPU);
-
-  geom->mVBOs.push_back(geomVBO);
-
-  // Construct IBO.
-
-  GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
-
-  geom->mIBOs.push_back(geomIBO);
-  
-  GeometryObject::SpireSubPass pass =
-    GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
-                colorScheme, state, renderType, geomVBO, geomIBO);
-
-  // Add all uniforms generated above to the pass.
-  for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
-  geom->mPasses.push_back(pass);
+  }  
+ 
+  glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
+    colorScheme, state, primIn, mesh->get_bounding_box());
 }
 
 
@@ -1327,7 +1158,7 @@ void ShowFieldModule::renderEdges(
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
-  const std::string& id) 
+  const std::string& id)
 {
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
@@ -1349,115 +1180,29 @@ void ShowFieldModule::renderEdges(
     colorScheme = GeometryObject::COLOR_IN_SITU;
 
   mesh->synchronize(Mesh::EDGES_E);
-
+  
   VMesh::Edge::iterator eiter, eiter_end;
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  // Attempt some form of precalculation of iboBuffer and vboBuffer size.
-  uint32_t iboSize = 0;
-  uint32_t vboSize = 0;
-  
   auto my_state = this->get_state();
   double num_strips = double(my_state->getValue(CylinderResolution).toInt());
   double radius = my_state->getValue(CylinderRadius).toDouble();
   if (num_strips < 0) num_strips = 50.;
   if (radius < 0) radius = 1.;
-  
+
   std::stringstream ss;
   ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius << colorScheme;
-  
+
   std::string uniqueNodeID = id + "edge" + ss.str();
-  std::string vboName = uniqueNodeID + "VBO";
-  std::string iboName = uniqueNodeID + "IBO";
-  std::string passName = uniqueNodeID + "Pass";
-
-  // NOTE: Attributes will depend on the color scheme. We will want to
-  // normalize the colors if the color scheme is COLOR_IN_SITU.
-
-  // Construct VBO.
-  std::string shader = "Shaders/UniformColor";
-  std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
-  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  if (state.get(RenderState::USE_CYLINDER))
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
-  GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
-
-  // If true, then the VBO will be placed on the GPU. We don't want to place
-  // VBOs on the GPU when we are generating rendering lists.
-  bool vboOnGPU = true;
-
-  std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
-  //transparency
-  if (state.get(RenderState::USE_TRANSPARENT_EDGES))
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(edgeTransparencyValue_)));
-  //coloring
-  if (colorScheme == GeometryObject::COLOR_MAP) 
-  {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-    if (state.get(RenderState::USE_CYLINDER)) 
-    {
-        shader = "Shaders/DirPhongCMap" ;
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    }
-    else 
-    {
-        shader = "Shaders/ColorMap";
-    }
-  } 
-  else if (colorScheme == GeometryObject::COLOR_IN_SITU) 
-  {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
-    if (state.get(RenderState::USE_CYLINDER)) 
-    {
-      shader = "Shaders/DirPhongInSitu";
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } 
-    else 
-    {
-      shader = "Shaders/InSituColor";
-    }
-  } 
-  else if (colorScheme == GeometryObject::COLOR_UNIFORM) 
-  {
-    ColorRGB dft = state.defaultColor;
-    if (state.get(RenderState::USE_CYLINDER)) 
-    {
-        shader = "Shaders/DirPhong";
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-            glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-            glm::vec4(dft.r(), dft.g(), dft.b(), (float)edgeTransparencyValue_)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-            glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    } 
-    else 
-    {
-        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), (float)edgeTransparencyValue_));
-    }
-  }
+  
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;
   // Use cylinders...
   if (state.get(RenderState::USE_CYLINDER))
     primIn = GeometryObject::SpireIBO::TRIANGLES;
-  std::vector<Vector> points;
-  std::vector<Vector> normals;
-  std::vector<ColorRGB> colors;
-  std::vector<uint32_t> indices;
-  uint32_t index = 0;
-  int64_t numVBOElements = 0;
 
   GlyphGeom glyphs;
-  while (eiter != eiter_end) 
+  while (eiter != eiter_end)
   {
     VMesh::Node::array_type nodes;
     mesh->get_nodes(nodes, *eiter);
@@ -1519,113 +1264,22 @@ void ShowFieldModule::renderEdges(
       }
     }
     //accumulate VBO or IBO data
-    if (state.get(RenderState::USE_CYLINDER) && p0 != p1) 
+    if (state.get(RenderState::USE_CYLINDER) && p0 != p1)
     {
       glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
       glyphs.addSphere(p0, radius, num_strips, edge_colors[0]);
-      glyphs.addSphere(p1, radius, num_strips, edge_colors[1]);     
-    } 
-    else 
+      glyphs.addSphere(p1, radius, num_strips, edge_colors[1]);
+    }
+    else
     {
-      points.push_back(Vector(p0));
-      if (colorScheme == GeometryObject::COLOR_MAP ||
-          colorScheme == GeometryObject::COLOR_IN_SITU)
-        colors.push_back(edge_colors[0]);
-      indices.push_back(index);
-      ++index;
-      points.push_back(Vector(p1));
-      if (colorScheme == GeometryObject::COLOR_MAP ||
-          colorScheme == GeometryObject::COLOR_IN_SITU)
-        colors.push_back(edge_colors[1]);
-      indices.push_back(index);
-      ++index;
-      ++numVBOElements;
+      glyphs.addNeedle(p0, p1, edge_colors[0], edge_colors[1]);      
     }
 
     ++eiter;
   }
-  if (state.get(RenderState::USE_CYLINDER))
-  {
-    glyphs.getBufferInfo(numVBOElements, points, normals, colors, indices);
-  }
-
-  vboSize = (uint32_t)points.size() * 3 * sizeof(float);
-  vboSize += (uint32_t)normals.size() * 3 * sizeof(float);
-  if (colorScheme == GeometryObject::COLOR_IN_SITU ||
-      colorScheme == GeometryObject::COLOR_MAP)
-    vboSize += (uint32_t)colors.size() * 4 * sizeof(float); //RGBA
-  iboSize = (uint32_t)indices.size() * sizeof(uint32_t);
-
-  /// \todo To reduce memory requirements, we can use a 16bit index buffer.
-
-  /// \todo To further reduce a large amount of memory, get rid of the index
-  ///       buffer and use glDrawArrays to render without an IBO. An IBO is
-  ///       a waste of space.
-  ///       http://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml
-
-  /// \todo Switch to unique_ptrs and move semantics.
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-
-  // Accessing the pointers like this is contrived. We only do this for
-  // speed since we will be using the pointers in a tight inner loop.
-  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
-  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
-
-  //write to the IBO/VBOs
-  for (auto a : indices)
-    iboBuffer->write(a);
-
-  for (size_t i = 0; i < points.size(); i++) 
-  {
-    // Write first point on line
-    vboBuffer->write(static_cast<float>(points.at(i).x()));
-    vboBuffer->write(static_cast<float>(points.at(i).y()));
-    vboBuffer->write(static_cast<float>(points.at(i).z()));
-    // Write normal
-    if (normals.size() == points.size()) 
-    {
-      vboBuffer->write(static_cast<float>(normals.at(i).x()));
-      vboBuffer->write(static_cast<float>(normals.at(i).y()));
-      vboBuffer->write(static_cast<float>(normals.at(i).z()));
-    }
-    if (colorScheme == GeometryObject::COLOR_MAP ||
-        colorScheme == GeometryObject::COLOR_IN_SITU) 
-    {
-      vboBuffer->write(static_cast<float>(colors.at(i).r()));
-      vboBuffer->write(static_cast<float>(colors.at(i).g()));
-      vboBuffer->write(static_cast<float>(colors.at(i).b()));
-      vboBuffer->write(static_cast<float>(1.f));
-    } // no color writing otherwise
-  }
-  state.set(RenderState::IS_ON, true);
-  state.set(RenderState::HAS_DATA, true);
-
-  GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-    numVBOElements, mesh->get_bounding_box(), vboOnGPU);
-
-  geom->mVBOs.push_back(geomVBO);
-
-  // Construct IBO.
-
-  GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
-
-  geom->mIBOs.push_back(geomIBO);
-
-  // Construct Pass.
-  // Build pass for the edges.
-  /// \todo Find an appropriate place to put program names like UniformColor.
-  
-  GeometryObject::SpireSubPass pass =
-    GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme,
-                        state, renderType, geomVBO, geomIBO);
-
-  // Add all uniforms generated above to the pass.
-  for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
-  geom->mPasses.push_back(pass);
+    
+  glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), edgeTransparencyValue_, 
+    colorScheme, state, primIn, mesh->get_bounding_box());
 }
 
 AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");

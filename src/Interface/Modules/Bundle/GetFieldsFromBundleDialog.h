@@ -46,6 +46,8 @@ public:
     QWidget* parent = 0);
 protected:
   virtual void pullSpecial() override;
+private:
+  std::vector<std::string> fieldNames_;
 };
 
 }

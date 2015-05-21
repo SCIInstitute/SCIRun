@@ -53,6 +53,7 @@ TARGET_LINK_LIBRARIES(Modules_Fields
   Core_Datatypes_Mesh
   Algorithms_Field
   Core_Datatypes_Legacy_Field
+  Graphics_Glyphs
   ${OPENGL_LIBRARIES}
   ${CPM_LIBRARIES}
 )
