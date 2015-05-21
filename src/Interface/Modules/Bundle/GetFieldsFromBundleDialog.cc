@@ -47,8 +47,9 @@ GetFieldsFromBundleDialog::GetFieldsFromBundleDialog(const std::string& name, Mo
 
 void GetFieldsFromBundleDialog::pullSpecial()
 {
-  auto names = optional_any_cast_or_default<std::string>(state_->getTransientValue(GetFieldsFromBundle::FieldNameList.name()));
-  fieldNameListTextEdit_->setText(QString::fromStdString(names));
+  auto names = optional_any_cast_or_default<std::vector<std::string>>(state_->getTransientValue(GetFieldsFromBundle::FieldNameList.name()));
+  for (const auto& name : names)
+    fieldObjectListWidget_->addItem(QString::fromStdString(name));
 
   field1NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[0]).toString()));
   field2NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[1]).toString()));

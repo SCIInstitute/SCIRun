@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>3</count>
+			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>GetFieldsFromBundle:0</first>
@@ -150,13 +150,41 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>ReportFieldInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>2</count>
+			<count>3</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ReadBundle:0</moduleId1_>
+				<moduleId1_>GetFieldsFromBundle:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>field1</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadBundle:0</moduleId1_>
+				<port1_>
 					<name>Bundle</name>
 					<id>0</id>
 				</port1_>
@@ -181,7 +209,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>3</count>
+		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>GetFieldsFromBundle:0</first>
@@ -204,6 +232,13 @@
 				<second>152</second>
 			</second>
 		</item>
+		<item>
+			<first>ReportFieldInfo:0</first>
+			<second>
+				<first>72</first>
+				<second>272</second>
+			</second>
+		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
 		<count>0</count>
@@ -214,7 +249,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>3</count>
+		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>GetFieldsFromBundle:0</first>
@@ -226,6 +261,10 @@
 		</item>
 		<item>
 			<first>ReportBundleInfo:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:0</first>
 			<second>0</second>
 		</item>
 	</moduleTags>
