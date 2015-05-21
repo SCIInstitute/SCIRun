@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>4</count>
+			<count>9</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>GetFieldsFromBundle:0</first>
@@ -26,7 +26,7 @@
 									<name>field1-name</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>field0</value>
+										<value>RED_WIRE_ELECTRODE</value>
 									</value>
 								</second>
 							</item>
@@ -38,7 +38,7 @@
 									<name>field2-name</name>
 									<value>
 										<which>2</which>
-										<value>field1</value>
+										<value>BLUE_WIRE_ELECTRODE</value>
 									</value>
 								</second>
 							</item>
@@ -50,7 +50,7 @@
 									<name>field3-name</name>
 									<value>
 										<which>2</which>
-										<value>field2</value>
+										<value>GREEN_WIRE_ELECTRODE</value>
 									</value>
 								</second>
 							</item>
@@ -62,7 +62,7 @@
 									<name>field4-name</name>
 									<value>
 										<which>2</which>
-										<value>field3</value>
+										<value>YELLOW_WIRE_ELECTRODE</value>
 									</value>
 								</second>
 							</item>
@@ -74,7 +74,7 @@
 									<name>field5-name</name>
 									<value>
 										<which>2</which>
-										<value>field4</value>
+										<value>CAN_ELECTRODE</value>
 									</value>
 								</second>
 							</item>
@@ -86,7 +86,7 @@
 									<name>field6-name</name>
 									<value>
 										<which>2</which>
-										<value>field5</value>
+										<value>CAN_ELECTRODE</value>
 									</value>
 								</second>
 							</item>
@@ -126,7 +126,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/dan/Desktop/Dev/27y-left-subclav-can+red5cm-transvenous-rv.bdl</value>
+										<value>L:/Dev/SCIRunSimulationContracts/BostonScientificLCP/Run_simulations/Dataset_Dan/Electrodes_Plus_Torso/29ybdls/One/JessPlacement_29y_1.bdl</value>
 									</value>
 								</second>
 							</item>
@@ -166,9 +166,89 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>ReportFieldInfo:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:4</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:5</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>3</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>GetFieldsFromBundle:0</moduleId1_>
@@ -177,6 +257,66 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportFieldInfo:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldsFromBundle:0</moduleId1_>
+				<port1_>
+					<name>field2</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:3</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldsFromBundle:0</moduleId1_>
+				<port1_>
+					<name>field3</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:1</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldsFromBundle:0</moduleId1_>
+				<port1_>
+					<name>field4</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:4</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldsFromBundle:0</moduleId1_>
+				<port1_>
+					<name>field5</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:5</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldsFromBundle:0</moduleId1_>
+				<port1_>
+					<name>field6</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:2</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -209,34 +349,69 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>4</count>
+		<count>9</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>GetFieldsFromBundle:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>72</first>
-				<second>162</second>
+				<first>7.60000000000000000e+001</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadBundle:0</first>
 			<second>
-				<first>1.5</first>
-				<second>1.5</second>
+				<first>1.50000000000000000e+000</first>
+				<second>1.50000000000000000e+000</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportBundleInfo:1</first>
 			<second>
-				<first>-304</first>
-				<second>152</second>
+				<first>-3.04000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:0</first>
 			<second>
-				<first>72</first>
-				<second>272</second>
+				<first>7.20000000000000000e+001</first>
+				<second>2.72000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:1</first>
+			<second>
+				<first>1.52000000000000000e+002</first>
+				<second>3.04000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:2</first>
+			<second>
+				<first>2.28000000000000000e+002</first>
+				<second>3.80000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:3</first>
+			<second>
+				<first>7.60000000000000000e+001</first>
+				<second>3.04000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:4</first>
+			<second>
+				<first>7.60000000000000000e+001</first>
+				<second>3.80000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:5</first>
+			<second>
+				<first>1.52000000000000000e+002</first>
+				<second>3.80000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -249,7 +424,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>4</count>
+		<count>9</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>GetFieldsFromBundle:0</first>
@@ -265,6 +440,26 @@
 		</item>
 		<item>
 			<first>ReportFieldInfo:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:3</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:4</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:5</first>
 			<second>0</second>
 		</item>
 	</moduleTags>

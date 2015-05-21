@@ -84,7 +84,14 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QComboBox" name="fieldComboBox1_"/>
+       <widget class="QComboBox" name="fieldComboBox1_">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item row="1" column="1">
        <widget class="QComboBox" name="fieldComboBox2_"/>

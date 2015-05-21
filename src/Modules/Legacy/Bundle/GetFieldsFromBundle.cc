@@ -63,7 +63,6 @@ GetFieldsFromBundle::GetFieldsFromBundle() : Module(staticInfo_)
 void GetFieldsFromBundle::setStateDefaults()
 {
   auto state = get_state();
-  //state->setValue(FieldNameList, std::string());
 
   for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
   {
@@ -75,15 +74,6 @@ void GetFieldsFromBundle::execute()
 {
   auto bundle = getRequiredInput(InputBundle);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (inputs_changed_ || guifield1name_.changed() ||
-      guifield2name_.changed() || guifield3name_.changed() ||
-      guifield4name_.changed() || guifield5name_.changed() ||
-      guifield6name_.changed() || !oport_cached("bundle") ||
-      !oport_cached("field1")  || !oport_cached("field2") ||
-      !oport_cached("field3")  || !oport_cached("field4") ||
-      !oport_cached("field5")  || !oport_cached("field6"))
-#endif
   if (needToExecute())
   {
     update_state(Executing);
