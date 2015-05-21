@@ -95,6 +95,7 @@
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
 #include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
+#include <Interface/Modules/Bundle/ReportBundleInfoDialog.h>
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
 #include <boost/assign.hpp>
 #include <boost/functional/factory.hpp>
@@ -137,6 +138,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(PrintDatatype, PrintDatatypeDialog)
     ADD_MODULE_DIALOG(ReportMatrixInfo, ReportMatrixInfoDialog)
     ADD_MODULE_DIALOG(ReportFieldInfo, ReportFieldInfoDialog)
+    ADD_MODULE_DIALOG(ReportBundleInfo, ReportBundleInfoDialog)
     ADD_MODULE_DIALOG(MatrixAsVectorField, MatrixAsVectorFieldDialog)
     ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)

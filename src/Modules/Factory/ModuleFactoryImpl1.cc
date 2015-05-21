@@ -85,6 +85,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h>
 #include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h>
 #include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
+#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
@@ -214,6 +215,7 @@ void ModuleDescriptionLookup::addBundleModules()
   //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
   //TODO: incomplete impl
   addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+  addModuleDesc<ReportBundleInfo>("Real ported module", "...");
   //addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
   addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
 }

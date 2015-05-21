@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Interface/Modules/Bundle/ReportBundleInfoDialog.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
-/// @class ReportBundleInfo
-/// @brief This module lists all the objects stored in a bundle.
-
-const Dataflow::Networks::ModuleLookupInfo ReportBundleInfo::staticInfo_("ReportBundleInfo", "Bundle", "SCIRun");
-
-ReportBundleInfo::ReportBundleInfo() : Module(staticInfo_)
+ReportBundleInfoDialog::ReportBundleInfoDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  INITIALIZE_PORT(InputBundle);
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
 }
 
-void ReportBundleInfo::execute()
+void ReportBundleInfoDialog::pullAndDisplayInfo()
 {
-  auto bundle = getRequiredInput(InputBundle);
-
-  if (needToExecute())
-  {
-    update_state(Executing);
-    std::ostringstream infostring;
-
-    for (const auto& nameHandlePair : *bundle)
-    {
-      std::string name = nameHandlePair.first;
-      std::string type = typeid(*nameHandlePair.second).name(); //nameHandlePair.second->dynamic_type_name();
-      infostring << " {" << name << " (" << type << ") }\n";
-    }
-
-    get_state()->setTransientValue("ReportedInfo", infostring.str());
-  }
+  auto info = optional_any_cast_or_default<std::string>(state_->getTransientValue("ReportedInfo"));
+  bundleInfoTextEdit_->setPlainText(QString::fromStdString(info));
 }

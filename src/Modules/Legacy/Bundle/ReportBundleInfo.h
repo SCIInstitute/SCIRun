@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#ifndef MODULES_LEGACY_BUNDLES_REPORTBUNDLEINFO_H
+#define MODULES_LEGACY_BUNDLES_REPORTBUNDLEINFO_H
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Bundles;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Bundle/share.h>
 
-/// @class ReportBundleInfo
-/// @brief This module lists all the objects stored in a bundle.
+namespace SCIRun {
+namespace Modules {
+namespace Bundles {
 
-const Dataflow::Networks::ModuleLookupInfo ReportBundleInfo::staticInfo_("ReportBundleInfo", "Bundle", "SCIRun");
-
-ReportBundleInfo::ReportBundleInfo() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputBundle);
-}
-
-void ReportBundleInfo::execute()
-{
-  auto bundle = getRequiredInput(InputBundle);
-
-  if (needToExecute())
+  class SCISHARE ReportBundleInfo : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<BundlePortTag>,
+    public HasNoOutputPorts
   {
-    update_state(Executing);
-    std::ostringstream infostring;
+  public:
+    ReportBundleInfo();
+    virtual void execute();
+    virtual void setStateDefaults() {}
+    INPUT_PORT(0, InputBundle, Bundle);
 
-    for (const auto& nameHandlePair : *bundle)
-    {
-      std::string name = nameHandlePair.first;
-      std::string type = typeid(*nameHandlePair.second).name(); //nameHandlePair.second->dynamic_type_name();
-      infostring << " {" << name << " (" << type << ") }\n";
-    }
+    const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
+}}}
 
-    get_state()->setTransientValue("ReportedInfo", infostring.str());
-  }
-}
+#endif

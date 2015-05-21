@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#ifndef INTERFACE_MODULES_REPORTBundleINFO_H
+#define INTERFACE_MODULES_REPORTBundleINFO_H
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Bundles;
+#include "Interface/Modules/Bundle/ui_ReportBundleInfoDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Bundle/share.h>
 
-/// @class ReportBundleInfo
-/// @brief This module lists all the objects stored in a bundle.
+namespace SCIRun {
+namespace Gui {
 
-const Dataflow::Networks::ModuleLookupInfo ReportBundleInfo::staticInfo_("ReportBundleInfo", "Bundle", "SCIRun");
-
-ReportBundleInfo::ReportBundleInfo() : Module(staticInfo_)
+class SCISHARE ReportBundleInfoDialog : public ModuleDialogGeneric,
+  public Ui::ReportBundleInfoDialog
 {
-  INITIALIZE_PORT(InputBundle);
+	Q_OBJECT
+
+public:
+  ReportBundleInfoDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void moduleExecuted() { pullAndDisplayInfo(); }
+private Q_SLOTS:
+    void pullAndDisplayInfo();
+};
+
+}
 }
 
-void ReportBundleInfo::execute()
-{
-  auto bundle = getRequiredInput(InputBundle);
-
-  if (needToExecute())
-  {
-    update_state(Executing);
-    std::ostringstream infostring;
-
-    for (const auto& nameHandlePair : *bundle)
-    {
-      std::string name = nameHandlePair.first;
-      std::string type = typeid(*nameHandlePair.second).name(); //nameHandlePair.second->dynamic_type_name();
-      infostring << " {" << name << " (" << type << ") }\n";
-    }
-
-    get_state()->setTransientValue("ReportedInfo", infostring.str());
-  }
-}
+#endif

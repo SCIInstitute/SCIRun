@@ -74,6 +74,11 @@ class SCISHARE Bundle : public Datatype
 
     bool remove(const std::string& name);
 
+    typedef std::map<std::string, Core::Datatypes::DatatypeHandle> UnderlyingMapType;
+
+    UnderlyingMapType::const_iterator begin() const { return bundle_.begin(); }
+    UnderlyingMapType::const_iterator end() const { return bundle_.end(); }
+
     /// For writing bundles to file
     virtual void io(Piostream&);
     static PersistentTypeID type_id;
@@ -199,7 +204,7 @@ class SCISHARE Bundle : public Datatype
     virtual std::string dynamic_type_name() const { return type_id.type; }
 
 private:
-  
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 
@@ -215,7 +220,7 @@ private:
     /// Setting for the conversion between NRRD/MATRIX
     bool transposeNrrd_;
 #endif
-  std::map<std::string, Core::Datatypes::DatatypeHandle> bundle_;
+  UnderlyingMapType bundle_;
 };
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
