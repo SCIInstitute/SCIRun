@@ -97,6 +97,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/WriteField.h>
+#include <Modules/DataIO/ReadBundle.h>
 #include <Modules/String/CreateString.h>
 #include <Modules/String/NetworkNotes.h>
 #include <Modules/Visualization/ShowString.h>
@@ -208,6 +209,7 @@ void ModuleDescriptionLookup::addEssentialModules()
 
 void ModuleDescriptionLookup::addBundleModules()
 {
+  addModuleDesc<ReadBundleModule>("Ported module", "...");
   //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
   //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
   //TODO: incomplete impl

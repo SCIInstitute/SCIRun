@@ -49,6 +49,8 @@ namespace DataIO {
     OUTPUT_PORT(0, Bundle, Bundle);
 
     static std::string fileTypeList();
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 
 }}}

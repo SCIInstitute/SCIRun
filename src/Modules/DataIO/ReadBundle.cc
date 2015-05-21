@@ -36,8 +36,10 @@ using namespace SCIRun::Core::Datatypes;
 /// @class ReadBundle
 /// @brief This module reads a bundle from file (a SCIRun .bdl file).
 
+const Dataflow::Networks::ModuleLookupInfo ReadBundleModule::staticInfo_("ReadBundle", "DataIO", "SCIRun");
+
 ReadBundleModule::ReadBundleModule()
-    : my_base("ReadBundle", "DataIO", "SCIRun", "Bundle")
+    : my_base(staticInfo_.module_name_, staticInfo_.category_name_, staticInfo_.package_name_, "Bundle")
 {
   INITIALIZE_PORT(Bundle);
 }
