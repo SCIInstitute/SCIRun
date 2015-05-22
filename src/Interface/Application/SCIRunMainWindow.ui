@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>scirun-icon-small.ico</normaloff>scirun-icon-small.ico</iconset>
+    <normaloff>../../Resources/Icons/scirun5_32.ico</normaloff>../../Resources/Icons/scirun5_32.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget_">
    <property name="acceptDrops">
@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1093</width>
-         <height>482</height>
+         <width>1112</width>
+         <height>481</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
