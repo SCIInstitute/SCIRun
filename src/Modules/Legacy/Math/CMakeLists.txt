@@ -45,7 +45,7 @@ SET(Modules_Legacy_Math_SRCS
   #ReportColumnMatrixMisfit.cc
   #EvaluateLinAlgBinary.cc
   #EvaluateLinAlgUnary.cc
-  #EvaluateLinAlgGeneral.cc
+  EvaluateLinAlgGeneral.cc
   #ReportRootMeanSquareError.cc
   #GetColumnOrRowFromMatrix.cc
   SolveMinNormLeastSqSystem.cc
@@ -81,7 +81,7 @@ SET(Modules_Legacy_Math_HEADERS
   #ReportColumnMatrixMisfit.h
   #EvaluateLinAlgBinary.h
   #EvaluateLinAlgUnary.h
-  #EvaluateLinAlgGeneral.h
+  EvaluateLinAlgGeneral.h
   #ReportRootMeanSquareError.h
   #GetColumnOrRowFromMatrix.h
   SolveMinNormLeastSqSystem.h
@@ -107,7 +107,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Math
   Core_Datatypes
   Core_Math
   Algorithms_Math
-  #Core_Parser
+  Core_Parser
   #Core_Persistent
   #Core_Thread
   #Core_Utils
