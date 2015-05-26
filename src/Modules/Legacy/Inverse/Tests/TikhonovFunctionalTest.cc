@@ -138,11 +138,9 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquareFwdMatrixANDRandData)
   stubPortNWithThisData(tikAlgImp, 2, measuredData);
   // check result
   EXPECT_NO_THROW(tikAlgImp->execute());
-
 }
 
 // ID non-square fwd matrix + RAND measured data  (overdetermined)
-// TODO: FAILS TEST: fails test when it shouldn't. The sizes of forward matrix and data are the same
 TEST_F(TikhonovFunctionalTest, loadIDNonSquareFwdMatrixANDRandData2)
 {
   // create inputs
@@ -155,11 +153,9 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquareFwdMatrixANDRandData2)
   stubPortNWithThisData(tikAlgImp, 2, measuredData);
   // check result
   EXPECT_NO_THROW(tikAlgImp->execute());
-
 }
 
 // ID square fwd matrix + RAND measured data  - different sizes
-// TODO: FAILS TEST: does not fail test when it shouldn't. The sizes of forward matrix and data are the different (note that this is only for size(fwd,2) < size(data,1) )!
 TEST_F(TikhonovFunctionalTest, loadIDSquareFwdMatrixANDRandDataDiffSizes)
 {
   // create inputs
@@ -172,10 +168,10 @@ TEST_F(TikhonovFunctionalTest, loadIDSquareFwdMatrixANDRandDataDiffSizes)
   stubPortNWithThisData(tikAlgImp, 2, measuredData);
   // check result
   EXPECT_THROW(tikAlgImp->execute(), SCIRun::Core::DimensionMismatch);
-
 }
 
 // ID non-square fwd matrix + RAND measured data  - different sizes
+// TODO: FAILS TEST: does not fail test when it shouldn't. The sizes of forward matrix and data are the different (note that this is only for size(fwd,2) < size(data,1) )!
 TEST_F(TikhonovFunctionalTest, loadIDNonSquareFwdMatrixANDRandDataDiffSizes)
 {
   // create inputs
@@ -188,5 +184,4 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquareFwdMatrixANDRandDataDiffSizes)
   stubPortNWithThisData(tikAlgImp, 2, measuredData);
   // check result
   EXPECT_THROW(tikAlgImp->execute(), SCIRun::Core::DimensionMismatch);
-
 }
