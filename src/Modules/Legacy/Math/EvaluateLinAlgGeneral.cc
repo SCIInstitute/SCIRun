@@ -26,17 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Math/EvaluateLinAlgGeneral.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Parser/LinAlgEngine.h>
+//#include <Core/Parser/LinAlgEngine.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Core/Util/StringUtil.h>
+//#include <Core/Util/StringUtil.h>
 
-#include <sci_hash_map.h>
-#include <iostream>
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
+const ModuleLookupInfo EvaluateLinearAlgebraGeneral::staticInfo_("EvaluateLinearAlgebraGeneral", "Math", "SCIRun");
+
+#if 0
 namespace SCIRun {
 
 /// @class EvaluateLinAlgGeneral
@@ -58,31 +61,33 @@ private:
 
 
 DECLARE_MAKER(EvaluateLinAlgGeneral)
+#endif
 
+EvaluateLinearAlgebraGeneral::EvaluateLinearAlgebraGeneral() : Module(staticInfo_)
+    //guifunction_(get_ctx()->subVar("function"), "o1 = i1 * i2;")
+{
+  INITIALIZE_PORT(i1);
+  INITIALIZE_PORT(i2);
+  INITIALIZE_PORT(i3);
+  INITIALIZE_PORT(i4);
+  INITIALIZE_PORT(i5);
+  INITIALIZE_PORT(o1);
+  INITIALIZE_PORT(o2);
+  INITIALIZE_PORT(o3);
+  INITIALIZE_PORT(o4);
+  INITIALIZE_PORT(o5);
+}
 
-EvaluateLinAlgGeneral::EvaluateLinAlgGeneral(GuiContext* ctx)
-  : Module("EvaluateLinAlgGeneral", ctx, Filter,"Math", "SCIRun"),
-    guifunction_(get_ctx()->subVar("function"), "o1 = i1 * i2;")
+void EvaluateLinearAlgebraGeneral::setStateDefaults()
 {
 }
 
 void
-EvaluateLinAlgGeneral::execute()
+EvaluateLinearAlgebraGeneral::execute()
 {
+#if 0
   std::vector<MatrixHandle> imatrix(5);
   std::vector<MatrixHandle> omatrix(5);
-
-/*
-  StringHandle func;
-  if (get_input_handle("Function",func,false))
-  {
-    if (func.get_rep())
-    {
-      guifunction_.set(func->get());
-      get_ctx()->reset();  
-    }
-  }  
-*/
   
   for (int i=0; i<5; i++)
   {
@@ -151,13 +156,5 @@ EvaluateLinAlgGeneral::execute()
     send_output_handle("o4", omatrix[3]);
     send_output_handle("o5", omatrix[4]);
   }
+#endif
 }
-
-
-void
-EvaluateLinAlgGeneral::presave()
-{
-  TCLInterface::execute(get_id() + " update_text"); // update gFunction_ before saving.
-}
-
-} // End namespace SCIRun

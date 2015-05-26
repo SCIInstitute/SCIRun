@@ -54,6 +54,8 @@ namespace SCIRun {
         OUTPUT_PORT(2, o3, DenseMatrix);
         OUTPUT_PORT(3, o4, DenseMatrix);
         OUTPUT_PORT(4, o5, DenseMatrix);
+
+        const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 }}}
 
