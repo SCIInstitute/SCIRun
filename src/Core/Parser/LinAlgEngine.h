@@ -48,7 +48,7 @@ class SCISHARE NewLinAlgEngine : public Parser, public LinAlgInterpreter
       public:
         std::string  array_name_;
         std::string  matrix_name_;
-        MatrixHandle matrix_;
+        Core::Datatypes::MatrixHandle matrix_;
     };
 
   public:
@@ -59,10 +59,10 @@ class SCISHARE NewLinAlgEngine : public Parser, public LinAlgInterpreter
     NewLinAlgEngine();// { pr_ = &(def_pr_); clear(); }
 
     // Setup a progress reporter
-    void setLogger(LegacyLoggerInterface* pr) { pr_ = pr; }
+    void setLogger(Core::Logging::LoggerHandle pr) { pr_ = pr; }
 
     // Generate input matrices
-    bool add_input_matrix(const std::string& name, MatrixHandle matrix);
+    bool add_input_matrix(const std::string& name, Core::Datatypes::MatrixHandle matrix);
 
     // Setup a matrix for output
     bool add_output_matrix(const std::string& name);
@@ -74,15 +74,15 @@ class SCISHARE NewLinAlgEngine : public Parser, public LinAlgInterpreter
     bool run();
 
     // Extract handles to the results
-    bool get_matrix(const std::string& name, MatrixHandle& matrix);
+    bool get_matrix(const std::string& name, Core::Datatypes::MatrixHandle& matrix);
 
     // Clean up the engine
     void clear();
 
   private:
-    LoggerHandle  def_pr_;
+    Core::Logging::LoggerHandle  def_pr_;
     // Progress reporter for reporting error
-    LegacyLoggerInterface* pr_;
+    Core::Logging::LoggerHandle pr_;
 
     // Parser program : the structure of the expressions and simple reduction
     // of the expressions to simple function calls

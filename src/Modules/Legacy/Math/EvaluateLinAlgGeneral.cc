@@ -97,7 +97,7 @@ EvaluateLinearAlgebraGeneral::execute()
     update_state(Executing);
 
     NewLinAlgEngine engine;
-    engine.set_progress_reporter(this);
+    engine.setLogger(getLogger());
 
     for (size_t p = 0; p < NUM_PORTS; p++)
     {

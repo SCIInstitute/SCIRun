@@ -168,7 +168,7 @@ class SCISHARE LinAlgProgramVariable {
 
 
     LinAlgProgramVariable(const std::string& name, Core::Datatypes::MatrixHandle handle) :
-      ref_cnt(0), name_(name), handle_(handle) {}
+      name_(name), handle_(handle) {}
 
     // Retrieve the data pointer from the central temporal
     // storage
@@ -187,7 +187,7 @@ class SCISHARE LinAlgProgramSource {
   public:
     LinAlgProgramSource() {}
 
-    void          set_matrix(MatrixHandle matrix) { matrix_ = matrix; }
+    void          set_matrix(Core::Datatypes::MatrixHandle matrix) { matrix_ = matrix; }
     Core::Datatypes::MatrixHandle  get_matrix()                    { return (matrix_); }
 //    Core::Datatypes::MatrixHandle* get_handle()                    { return (&matrix_); }
     bool          is_matrix()                     { return (true); }
