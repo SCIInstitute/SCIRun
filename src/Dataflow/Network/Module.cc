@@ -397,7 +397,7 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
 
-  metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? nullptr : options[0]));
+  metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? boost::none : options[0]));
 
   return options;
 }
