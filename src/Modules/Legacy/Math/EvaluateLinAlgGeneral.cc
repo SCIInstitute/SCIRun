@@ -30,10 +30,9 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Core/Parser/LinAlgEngine.h>
+#include <Core/Parser/LinAlgEngine.h>
 
-//#include <Core/Util/StringUtil.h>
-
+using namespace SCIRun;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
