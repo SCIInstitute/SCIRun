@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -44,16 +44,16 @@ namespace SCIRun {
         EvaluateLinearAlgebraGeneral();
         virtual void execute() override;
         virtual void setStateDefaults() override;
-        INPUT_PORT(0, i1, DenseMatrix);
-        INPUT_PORT(1, i2, DenseMatrix);
-        INPUT_PORT(2, i3, DenseMatrix);
-        INPUT_PORT(3, i4, DenseMatrix);
-        INPUT_PORT(4, i5, DenseMatrix);
-        OUTPUT_PORT(0, o1, DenseMatrix);
-        OUTPUT_PORT(1, o2, DenseMatrix);
-        OUTPUT_PORT(2, o3, DenseMatrix);
-        OUTPUT_PORT(3, o4, DenseMatrix);
-        OUTPUT_PORT(4, o5, DenseMatrix);
+        INPUT_PORT(0, i1, Matrix);
+        INPUT_PORT(1, i2, Matrix);
+        INPUT_PORT(2, i3, Matrix);
+        INPUT_PORT(3, i4, Matrix);
+        INPUT_PORT(4, i5, Matrix);
+        OUTPUT_PORT(0, o1, Matrix);
+        OUTPUT_PORT(1, o2, Matrix);
+        OUTPUT_PORT(2, o3, Matrix);
+        OUTPUT_PORT(3, o4, Matrix);
+        OUTPUT_PORT(4, o5, Matrix);
 
         const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
