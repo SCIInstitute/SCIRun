@@ -357,17 +357,6 @@ GenerateStreamLinesAlgoP::runImpl()
     algo_->error(a);
     success_ = false;
   }
-  catch (boost::thread_interrupted&)
-  {
-    algo_->error("Algorithm thread interrupted by user.");
-    success_ = false;
-  }
-  catch (...)
-  {
-    algo_->error("Crashed for unknown reason.");
-    success_ = false;
-  }
-
 }
 
 
@@ -605,16 +594,6 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
   catch (const char *a)
   {
     algo->error(a);
-    success_ = false;
-  }
-  catch (boost::thread_interrupted&)
-  {
-    algo->error("Algorithm thread interrupted by user.");
-    success_ = false;
-  }
-  catch (...)
-  {
-    algo->error("Crashed for unknown reason.");
     success_ = false;
   }
 
