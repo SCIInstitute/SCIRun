@@ -60,6 +60,19 @@ void NegateMatrix::visit(DenseColumnMatrixGeneric<double>& column)
   column *= -1;
 }
 
+void ScalarMultiplyMatrix::visit(DenseMatrixGeneric<double>& dense)
+{
+  dense *= scalar_;
+}
+void ScalarMultiplyMatrix::visit(SparseRowMatrixGeneric<double>& sparse)
+{
+  sparse *= scalar_;
+}
+void ScalarMultiplyMatrix::visit(DenseColumnMatrixGeneric<double>& column)
+{
+  column *= scalar_;
+}
+
 namespace impl
 {
   class TransposeMatrix : public MatrixVisitor
@@ -77,26 +90,6 @@ namespace impl
     {
       column.transposeInPlace();
     }
-  };
-
-  class ScalarMultiplyMatrix : public MatrixVisitor
-  {
-  public:
-    explicit ScalarMultiplyMatrix(double scalar) : scalar_(scalar) {}
-    virtual void visit(DenseMatrixGeneric<double>& dense) override
-    {
-      dense *= scalar_;
-    }
-    virtual void visit(SparseRowMatrixGeneric<double>& sparse) override
-    {
-      sparse *= scalar_;
-    }
-    virtual void visit(DenseColumnMatrixGeneric<double>& column) override
-    {
-      column *= scalar_;
-    }
-  private:
-    double scalar_;
   };
 }
 
@@ -131,7 +124,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
       THROW_ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
     double scalar = scalarOption.get();
     result.reset(matrix->clone());
-    impl::ScalarMultiplyMatrix mult(scalar);
+    ScalarMultiplyMatrix mult(scalar);
     result->accept(mult);
   }
   break;
