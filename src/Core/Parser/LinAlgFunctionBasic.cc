@@ -121,14 +121,10 @@ bool sub_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   // Scalar - Matrix
   if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_dense_size() == 1))
   {
-    // scalar addition
     double val = (*data1)->get(0,0);
 
-    data0->reset((*data2)->clone());
-    double* data = (*data0)->get_data_pointer();
-    size_type size = (*data0)->get_dense_size();
-
-    for (index_type idx=0; idx<size; idx++) data[idx] = val - data[idx];
+    auto valMinusData2 = val - matrix_convert::to_dense(*data2)->array();
+    data0->reset(new DenseMatrix(valMinusData2.matrix()));
 
     return (true);
   }
@@ -137,14 +133,10 @@ bool sub_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   // Matrix - Scalar
   if (((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_dense_size() == 1))
   {
-    // scalar addition
-    double val = (*data2)->get(0,0);
+    double val = (*data2)->get(0, 0);
 
-    data0->reset((*data1)->clone());
-    double* data = (*data0)->get_data_pointer();
-    size_type size = (*data0)->get_dense_size();
-
-    for (index_type idx=0; idx<size; idx++) data[idx] = data[idx] - val;
+    auto data1MinusVal = matrix_convert::to_dense(*data1)->array() - val;
+    data0->reset(new DenseMatrix(data1MinusVal.matrix()));
 
     return (true);
   }
@@ -211,14 +203,10 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   // Scalar * Matrix
   if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_dense_size() == 1))
   {
-    // scalar addition
-    double val = (*data1)->get(0,0);
+    double val = (*data1)->get(0, 0);
 
-    data0->reset((*data2)->clone());
-    double* data = (*data0)->get_data_pointer();
-    size_type size = (*data0)->get_dense_size();
-
-    for (index_type idx=0; idx<size; idx++) data[idx] *= val;
+    auto data2TimesVal = matrix_convert::to_dense(*data2)->array() * val;
+    data0->reset(new DenseMatrix(data2TimesVal.matrix()));
 
     return (true);
   }
@@ -227,14 +215,10 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   // Matrix * Scalar
   if (((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_dense_size() == 1))
   {
-    // scalar addition
-    double val = (*data2)->get(0,0);
+    double val = (*data2)->get(0, 0);
 
-    data0->reset((*data1)->clone());
-    double* data = (*data0)->get_data_pointer();
-    size_type size = (*data0)->get_dense_size();
-
-    for (index_type idx=0; idx<size; idx++) data[idx] *= val;
+    auto data1TimesVal = matrix_convert::to_dense(*data1)->array() * val;
+    data0->reset(new DenseMatrix(data1TimesVal.matrix()));
 
     return (true);
   }
