@@ -242,7 +242,7 @@ class SCISHARE LinAlgProgram {
 
     // Code to find the pointers that are given for sources and sinks
     bool find_source(std::string& name,  LinAlgProgramSource& ps) const;
-    bool find_sink(std::string& name,  LinAlgProgramSource& ps) cosnt;
+    bool find_sink(std::string& name,  LinAlgProgramSource& ps) const;
 
     bool run_const(size_t& error_line, std::string& err);
     bool run_single(size_t& error_line, std::string& err);
