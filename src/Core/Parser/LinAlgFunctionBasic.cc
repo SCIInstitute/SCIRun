@@ -27,6 +27,8 @@
 //
 
 #include <Core/Algorithms/Math/SelectSubMatrix.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 //#include <Core/Algorithms/Legacy/Math/SetSubMatrix/SetSubMatrix.h>
 
 #include <Core/Datatypes/Matrix.h>
@@ -89,15 +91,10 @@ bool add_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   if ((*data1)->nrows() != (*data2)->nrows())
     { err = "Number of rows is not equal."; return (false); }
 
-  try
-  {
-    *data0 = (*data1) + (*data2);
-  }
-  // Catch asserts in code
-  catch (...)
-  {
-    return  (false);
-  }
+  data0->reset((*data2)->clone());
+  detail::AddMatrices add(*data1);
+  (*data0)->accept(add);
+  *data0 = add.sum_;
 
   return *data0 != nullptr;
 }
@@ -147,15 +144,12 @@ bool sub_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   if ((*data1)->nrows() != (*data2)->nrows())
     { err = "Number of rows is not equal."; return (false); }
 
-  try
-  {
-    *data0 = (*data1) - (*data2);
-  }
-  // Catch asserts in code
-  catch (...)
-  {
-    return  (false);
-  }
+  data0->reset((*data2)->clone());
+  detail::NegateMatrix neg;
+  (*data0)->accept(neg);
+  detail::AddMatrices add(*data1);
+  (*data0)->accept(add);
+  *data0 = add.sum_;
 
   return *data0 != nullptr;
 }
@@ -174,10 +168,8 @@ bool neg_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
   if ((*data1)->empty()) return (false);
 
   data0->reset((*data1)->clone());
-  double* data = (*data0)->get_data_pointer();
-  size_t size = (*data0)->get_dense_size();
-
-  for (size_t j=0; j < size; j++) data[j] = -data[j];
+  detail::NegateMatrix neg;
+  (*data0)->accept(neg);
 
   return *data0 != nullptr;
 }
@@ -230,15 +222,10 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  try
-  {
-    *data0 = (*data1) * (*data2);
-  }
-  // Catch asserts in code
-  catch (...)
-  {
-    return  (false);
-  }
+  data0->reset((*data2)->clone());
+  detail::MultiplyMatrices mult(*data1);
+  (*data0)->accept(mult);
+  *data0 = mult.product_;
 
   return *data0 != nullptr;
 }
@@ -263,23 +250,11 @@ bool mmult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  data0->reset((*data1)->clone());
-  if (!(*data0)) return (false);
-
   if ((matrix_is::dense(*data1)||matrix_is::column(*data1)) &&
       (matrix_is::dense(*data2)||matrix_is::column(*data2)))
   {
-    double* data = (*data0)->get_data_pointer();
-    double* ptr1 = (*data1)->get_data_pointer();
-    double* ptr2 = (*data2)->get_data_pointer();
-    size_type size = (*data0)->get_dense_size();
-    double* data_end = data+size;
-
-    while (data != data_end)
-    {
-      *data = (*ptr1) * (*ptr2);
-      data++; ptr1++; ptr2++;
-    }
+    auto cwiseMult = matrix_convert::to_dense(*data1)->cwiseProduct(*matrix_convert::to_dense(*data2));
+    data0->reset(new DenseMatrix(cwiseMult.matrix()));
   }
   else
   {
@@ -306,19 +281,12 @@ bool div_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   if (!(*data1)) return (false);
   if (!(*data2)) return (false);
 
-  // Special cases
-
-  // Matrix * Scalar
   if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_dense_size() == 1)&&
       ((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_dense_size() == 1))
   {
-    // scalar addition
-    double val = (*data1)->get(0,0);
+    double val1 = (*data1)->get(0,0);
     double val2 = (*data2)->get(0,0);
-    data0->reset((*data2)->clone());
-    double* data = (*data0)->get_data_pointer();
-
-    *data = val/val2;
+    data0->reset(new DenseMatrix(1, 1, val1/val2));
     return (true);
   }
 
@@ -351,17 +319,8 @@ bool mdiv_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   if ((matrix_is::dense(*data1)||matrix_is::column(*data1)) &&
       (matrix_is::dense(*data2)||matrix_is::column(*data2)))
   {
-    double* data = (*data0)->get_data_pointer();
-    double* ptr1 = (*data1)->get_data_pointer();
-    double* ptr2 = (*data2)->get_data_pointer();
-    size_type size = (*data0)->get_dense_size();
-    double* data_end = data+size;
-
-    while (data != data_end)
-    {
-      *data = *ptr1 / *ptr2;
-      data++; ptr1++; ptr2++;
-    }
+    auto cwiseDiv = matrix_convert::to_dense(*data1)->cwiseQuotient(*matrix_convert::to_dense(*data2));
+    data0->reset(new DenseMatrix(cwiseDiv.matrix()));
   }
   else
   {
@@ -395,12 +354,9 @@ bool rem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
       ((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_dense_size() == 1))
   {
     // scalar addition
-    double val = (*data1)->get(0,0);
+    double val1 = (*data1)->get(0,0);
     double val2 = (*data2)->get(0,0);
-    data0->reset((*data2)->clone());
-    double* data = (*data0)->get_data_pointer();
-
-    *data = fmod(val,val2);
+    data0->reset(new DenseMatrix(1, 1, fmod(val1,val2)));
     return (true);
   }
 
@@ -408,6 +364,7 @@ bool rem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   return (false);
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool mrem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
 {
   err = "";
@@ -444,6 +401,9 @@ bool mrem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
       *data = fmod(*ptr1,*ptr2);
       data++; ptr1++; ptr2++;
     }
+
+    auto cwiseMod = matrix_convert::to_dense(*data1)->array() % matrix_convert::to_dense(*data2)->array();
+    data0->reset(new DenseMatrix(cwiseMod.matrix()));
   }
   else
   {
@@ -453,8 +413,7 @@ bool mrem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   return *data0 != nullptr;
 }
-
-
+#endif
 
 bool densematrix_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
 {
@@ -472,16 +431,16 @@ bool densematrix_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     err = "Create Dense matrix: number of rows needs to be a scalar.";
     return (false);
   }
-  double *d1 = (*data1)->get_data_pointer();
+  double d1 = (*data1)->get(0, 0);
 
   if ((*data2)->get_dense_size() != 1)
   {
     err = "Create Dense matrix: number of columns needs to be a scalar.";
     return (false);
   }
-  double *d2 = (*data1)->get_data_pointer();
+  double d2 = (*data1)->get(0, 0);
 
-  data0->reset(new DenseMatrix(static_cast<size_type>(*d1),static_cast<size_type>(*d2)));
+  data0->reset(new DenseMatrix(static_cast<size_type>(d1),static_cast<size_type>(d2)));
 
   return (true);
 }
@@ -502,19 +461,16 @@ bool ones_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     err = "Create matrix: number of rows needs to be a scalar.";
     return (false);
   }
-  double *d1 = (*data1)->get_data_pointer();
+  double d1 = (*data1)->get(0, 0);
 
   if ((*data2)->get_dense_size() != 1)
   {
     err = "Create matrix: number of columns needs to be a scalar.";
     return (false);
   }
-  double *d2 = (*data1)->get_data_pointer();
+  double d2 = (*data1)->get(0, 0);
 
-  data0->reset(new DenseMatrix(static_cast<size_type>(*d1),static_cast<size_type>(*d2)));
-  size_type s = (*data0)->get_dense_size();
-  double* d = (*data0)->get_data_pointer();
-  for (index_type j=0;j<s;j++) d[j] = 1.0;
+  data0->reset(new DenseMatrix(static_cast<size_type>(d1),static_cast<size_type>(d2), 1.0));
 
   return (true);
 }
@@ -535,19 +491,16 @@ bool zeros_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     err = "Create matrix: number of rows needs to be a scalar.";
     return (false);
   }
-  double *d1 = (*data1)->get_data_pointer();
+  double d1 = (*data1)->get(0, 0);
 
   if ((*data2)->get_dense_size() != 1)
   {
     err = "Create matrix: number of columns needs to be a scalar.";
     return (false);
   }
-  double *d2 = (*data1)->get_data_pointer();
+  double d2 = (*data1)->get(0, 0);
 
-  *data0 = new DenseMatrix(static_cast<size_type>(*d1),static_cast<size_type>(*d2));
-  size_type s = (*data0)->get_dense_size();
-  double* d = (*data0)->get_data_pointer();
-  for (index_type j=0;j<s;j++) d[j] = 0.0;
+  data0->reset(new DenseMatrix(static_cast<size_type>(d1),static_cast<size_type>(d2), 0.0));
 
   return (true);
 }
@@ -583,6 +536,7 @@ bool select_sss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   return *data0 != nullptr;
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 //--------------------------------------------------------------------------
 // Sub functions
@@ -692,7 +646,6 @@ bool subs_range_sssss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   return *data0 != nullptr;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 //--------------------------------------------------------------------------
 // Sub functions
 bool assign_ssss(SCIRun::LinAlgProgramCode& pc, std::string& err)
@@ -838,16 +791,19 @@ InsertBasicLinAlgFunctionCatalog(LinAlgFunctionCatalogHandle& catalog)
 
   // Add rem functions to database
   catalog->add_function(LinAlgFunctions::rem_ss,"rem$S:S","S");
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   catalog->add_function(LinAlgFunctions::mrem_ss,"mrem$S:S","S");
+#endif
 
   catalog->add_function(LinAlgFunctions::select_sss,"select$S:S:S","S");
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Get sub matrix
   catalog->add_function(LinAlgFunctions::subs_sss,"subs$S:S:S","S");
   catalog->add_function(LinAlgFunctions::subs_range_sssss,"subs_range$S:S:S:S:S","S");
   catalog->add_function(LinAlgFunctions::assign_ssss,"assign$S:S:S:S","S");
   catalog->add_function(LinAlgFunctions::assign_range_ssssss,"assign_range$S:S:S:S:S:S","S");
-
+#endif
 
   // For creating empty matrices
   catalog->add_function(LinAlgFunctions::densematrix_ss,"matrix$S:S","S");
