@@ -1,22 +1,22 @@
-//  
+//
 //  For more information, please see: http://software.sci.utah.edu
-//  
+//
 //  The MIT License
-//  
+//
 //  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 //  University of Utah.
-//  
-//  
+//
+//
 //  Permission is hereby granted, free of charge, to any person obtaining a
 //  copy of this software and associated documentation files (the "Software"),
 //  to deal in the Software without restriction, including without limitation
 //  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 //  and/or sell copies of the Software, and to permit persons to whom the
 //  Software is furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included
 //  in all copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 //  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -24,7 +24,7 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
-//  
+//
 
 
 // For memory management
@@ -32,8 +32,10 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-#include <Core/Parser/LinAlgInterpreter.h> 
+#include <Core/Parser/LinAlgInterpreter.h>
 #include <Core/Parser/LinAlgFunctionCatalog.h>
+
+using namespace SCIRun::Core::Datatypes;
 
 namespace SCIRun {
 
@@ -43,7 +45,7 @@ LinAlgFunction::LinAlgFunction(
       bool (*function)(LinAlgProgramCode& pc, std::string& err),
       std::string function_id,
       std::string function_type,
-      int function_flags  
+      int function_flags
     ) : ParserFunction(function_id,function_type,function_flags)
 {
   function_ = function;
@@ -56,11 +58,11 @@ LinAlgFunction::LinAlgFunction(
 bool
 LinAlgInterpreter::create_program(LinAlgProgramHandle& mprogram, std::string& error)
 {
-  if (mprogram.get_rep() == 0)
+  if (!mprogram)
   {
-    mprogram = new LinAlgProgram();
-    
-    if (mprogram.get_rep() == 0)
+    mprogram.reset(new LinAlgProgram());
+
+    if (!mprogram)
     {
       error = "INTERNAL ERROR - Could not allocate LinAlgProgram.";
       return (false);
@@ -83,15 +85,15 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
 
   // -------------------------------------------------------------------------
   // Process const part of the program
-  
+
   // Determine the buffer sizes that need to be allocated
 
-  // Get the number of variables/function calls involved  
+  // Get the number of variables/function calls involved
   size_t num_const_variables = pprogram->num_const_variables();
   size_t num_const_functions = pprogram->num_const_functions();
   size_t num_single_variables = pprogram->num_single_variables();
   size_t num_single_functions = pprogram->num_single_functions();
-    
+
   // Reserve space for const part of the program
   mprogram->resize_const_variables(num_const_variables);
   mprogram->resize_const_functions(num_const_functions);
@@ -103,39 +105,39 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
   ParserScriptVariableHandle vhandle;
   ParserScriptVariableHandle phandle;
   ParserScriptFunctionHandle fhandle;
-  
+
   int onum, inum, kind;
   std::string type, name;
   int flags;
-  
+
   // Now assign buffers to variables
 
   for (size_t j=0; j<num_const_variables; j++)
   {
     // Get the next constant variable
     pprogram->get_const_variable(j,vhandle);
-    
+
     // Determine the name of the variable
     name = vhandle->get_name();
-    
+
     // Determine the type to see what we need to do
     // Rhis helps with determining the types of input and
     // output variables
     type = vhandle->get_type();
-    
+
     // Determine the kind of the variable
     kind = vhandle->get_kind();
-    
+
     LinAlgProgramVariableHandle pvhandle;
-    
+
     // S = a Scalar variable. Basically a number, we translate this into
     // 1x1 matrix so all functions can be run on matrices
-    if (type == "S") 
-    { 
+    if (type == "S")
+    {
       // Insert constant variables directly into the buffer
       // This variable should be read only, hence we should be
       // able to store it right away
-      
+
       MatrixHandle Scalar;
       if (kind == SCRIPT_CONSTANT_SCALAR_E)
       {
@@ -161,8 +163,8 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       // allocated.
       pvhandle = new LinAlgProgramVariable(name);
     }
-        
-    // Add this variable to the code 
+
+    // Add this variable to the code
     mprogram->set_const_variable(j,pvhandle);
   }
 
@@ -172,23 +174,23 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
   {
     // Get the next constant variable
     pprogram->get_single_variable(j,vhandle);
-    
+
     // Determine the name of the variable
     name = vhandle->get_name();
-    
+
     // Determine the type to see what we need to do
     type = vhandle->get_type();
-    
+
     // Determine the kind of the variable
     kind = vhandle->get_kind();
-    
+
     LinAlgProgramVariableHandle pvhandle;
-    if (type == "S") 
-    { 
+    if (type == "S")
+    {
       // Insert constant variables directly into the buffer
       // This variable should be read only, hence we should be
       // able to store it right away
-      
+
       MatrixHandle Scalar;
       if (kind == SCRIPT_CONSTANT_SCALAR_E)
       {
@@ -214,28 +216,28 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       // allocated.
       pvhandle = new LinAlgProgramVariable(name);
     }
-    
-    // Add this variable to the code 
+
+    // Add this variable to the code
     mprogram->set_single_variable(j,pvhandle);
   }
 
   // Function part
   LinAlgProgramSource ps;
-  
+
   for (size_t j=0; j<num_const_functions; j++)
   {
     // Get the function of that was defined in the parser
     pprogram->get_const_function(j,fhandle);
-    
+
     // Set the function pointer, we up cast it to the real type as the parser
     // does not know anything about this interpreter and the argument the
     // function will take in.
-    LinAlgFunction* func = 
+    LinAlgFunction* func =
       dynamic_cast<LinAlgFunction*>(fhandle->get_function());
-    
-    //Each function is a line in the parsed/interpreted code 
+
+    //Each function is a line in the parsed/interpreted code
     LinAlgProgramCode pc(func->get_function());
-    
+
     // Get the pointer to the output variable
     ParserScriptVariableHandle ohandle = fhandle->get_output_var();
 
@@ -267,7 +269,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       {
         error = "INTERNAL ERROR - Variable is of Matrix type, but given sink is not a matrix.";
         return (false);
-      }    
+      }
     }
     else
     {
@@ -295,7 +297,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
         }
         else if (flags & SCRIPT_CONST_VAR_E)
         {
-          pc.set_handle(i+1,mprogram->get_const_variable(inum)->get_handle());      
+          pc.set_handle(i+1,mprogram->get_const_variable(inum)->get_handle());
         }
       }
       else if (type == "MI")
@@ -309,7 +311,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
         {
           error = "INTERNAL ERROR - Variable is of Matrix type, but given source is not a matrix.";
           return (false);
-        }          
+        }
       }
       else
       {
@@ -326,16 +328,16 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
     pprogram->get_single_function(j,fhandle);
 
     // Set the function pointer
-    LinAlgFunction* func = 
+    LinAlgFunction* func =
       dynamic_cast<LinAlgFunction*>(fhandle->get_function());
     LinAlgProgramCode pc(func->get_function());
-    
+
     ParserScriptVariableHandle ohandle = fhandle->get_output_var();
     onum = ohandle->get_var_number();
     type = ohandle->get_type();
     name = ohandle->get_name();
     flags = ohandle->get_flags();
-  
+
     if ((type == "S"))
     {
       if (flags & SCRIPT_SINGLE_VAR_E)
@@ -358,7 +360,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       {
         error = "INTERNAL ERROR - Variable is of Matrix type, but given source is not a matrix.";
         return (false);
-      }    
+      }
     }
     else
     {
@@ -366,7 +368,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       return (false);
     }
 
-   
+
     size_t num_input_vars = fhandle->num_input_vars();
     for (size_t i=0; i < num_input_vars; i++)
     {
@@ -376,16 +378,16 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       inum = ihandle->get_var_number();
       type = ihandle->get_type();
       flags = ihandle->get_flags();
-      
+
       if ((type == "S"))
-      {        
+      {
         if(flags & SCRIPT_SINGLE_VAR_E)
         {
           pc.set_handle(i+1,mprogram->get_single_variable(inum)->get_handle ());
         }
         else if (flags & SCRIPT_CONST_VAR_E)
         {
-          pc.set_handle(i+1,mprogram->get_const_variable(inum)->get_handle());      
+          pc.set_handle(i+1,mprogram->get_const_variable(inum)->get_handle());
         }
       }
       else if (type == "MI")
@@ -399,7 +401,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
         {
           error = "INTERNAL ERROR - Variable is of Matrix type, but given source is not a matrix.";
           return (false);
-        }          
+        }
       }
       else
       {
@@ -422,19 +424,19 @@ LinAlgInterpreter::run(LinAlgProgramHandle& mprogram,
   // const part does not need to be generated after it is done once
   // Like wise the single part. For now we rerun everything every time
   ParserProgramHandle pprogram = mprogram->get_parser_program();
-  ParserScriptFunctionHandle fhandle; 
+  ParserScriptFunctionHandle fhandle;
 
   // First: run the const ones
   size_t error_line;
   std::string err;
-  
+
   if(!(mprogram->run_const(error_line,err)))
   {
     if (err == "")
     {
       pprogram->get_const_function(error_line,fhandle);
       error = " RUNTIME ERROR - Function '"+fhandle->get_name()+"' crashed for unknown reason.";
-      return (false);    
+      return (false);
     }
     else
     {
@@ -443,7 +445,7 @@ LinAlgInterpreter::run(LinAlgProgramHandle& mprogram,
       return (false);
     }
   }
-  
+
   // Second: run the single ones
   if(!(mprogram->run_single(error_line,err)))
   {
@@ -451,7 +453,7 @@ LinAlgInterpreter::run(LinAlgProgramHandle& mprogram,
     {
       pprogram->get_single_function(error_line,fhandle);
       error = " RUNTIME ERROR - Function '"+fhandle->get_name()+"' crashed for unknown reason.";
-      return (false);    
+      return (false);
     }
     else
     {
@@ -460,14 +462,14 @@ LinAlgInterpreter::run(LinAlgProgramHandle& mprogram,
       return (false);
     }
   }
-  
+
   return (true);
 }
 
-              
+
 bool
 LinAlgInterpreter::add_matrix_source(LinAlgProgramHandle& pprogram,
-                                        std::string& name, 
+                                        std::string& name,
                                         MatrixHandle& matrix,
                                         std::string& error)
 {
@@ -475,9 +477,9 @@ LinAlgInterpreter::add_matrix_source(LinAlgProgramHandle& pprogram,
   return(pprogram->add_source(name,matrix));
 }
 
-bool 
+bool
 LinAlgInterpreter::add_matrix_sink(LinAlgProgramHandle& pprogram,
-                                      std::string& name,
+                                      const std::string& name,
                                       std::string& error)
 {
   if(!(create_program(pprogram,error))) return (false);
@@ -485,8 +487,8 @@ LinAlgInterpreter::add_matrix_sink(LinAlgProgramHandle& pprogram,
 }
 
 
-bool 
-LinAlgProgram::add_source(std::string& name, MatrixHandle& matrix)
+bool
+LinAlgProgram::add_source(std::string& name, MatrixHandle matrix)
 {
   LinAlgProgramSource ps; ps.set_matrix(matrix);
   input_sources_[name] = ps;
@@ -494,8 +496,8 @@ LinAlgProgram::add_source(std::string& name, MatrixHandle& matrix)
 }
 
 
-bool 
-LinAlgProgram::add_sink(std::string& name)
+bool
+LinAlgProgram::add_sink(const std::string& name)
 {
   LinAlgProgramSource ps; ps.set_matrix(0);
   output_sinks_[name] = ps;
@@ -503,22 +505,22 @@ LinAlgProgram::add_sink(std::string& name)
 }
 
 
-bool 
-LinAlgProgram::find_source(std::string& name,  LinAlgProgramSource& ps)
+bool
+LinAlgProgram::find_source(const std::string& name, LinAlgProgramSource& ps) const
 {
- std::map<std::string,LinAlgProgramSource>::iterator it = input_sources_.find(name);
+ auto it = input_sources_.find(name);
  if (it == input_sources_.end()) return (false);
  ps = (*it).second; return (true);
-} 
+}
 
 
-bool 
-LinAlgProgram::find_sink(std::string& name,  LinAlgProgramSource& ps)
+bool
+LinAlgProgram::find_sink(const std::string& name, LinAlgProgramSource& ps) const
 {
- std::map<std::string,LinAlgProgramSource>::iterator it = output_sinks_.find(name);
+ auto it = output_sinks_.find(name);
  if (it == output_sinks_.end()) return (false);
  ps = (*it).second; return (true);
-} 
+}
 
 
 bool

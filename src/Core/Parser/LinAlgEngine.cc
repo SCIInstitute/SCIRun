@@ -66,7 +66,7 @@ NewLinAlgEngine::add_input_matrix(const std::string& name, MatrixHandle matrix)
 
 
 bool
-NewLinAlgEngine::add_output_matrix(std::string name)
+NewLinAlgEngine::add_output_matrix(const std::string& name)
 {
   std::string error_str;
   std::string tname =  "__"+name;
@@ -98,7 +98,7 @@ NewLinAlgEngine::add_output_matrix(std::string name)
 
 
 bool
-NewLinAlgEngine::add_expressions(std::string& expressions)
+NewLinAlgEngine::add_expressions(const std::string& expressions)
 {
   expression_ += expressions;
   return (true);
@@ -106,7 +106,7 @@ NewLinAlgEngine::add_expressions(std::string& expressions)
 
 
 bool
-NewLinAlgEngine::get_matrix(std::string name, MatrixHandle& matrix)
+NewLinAlgEngine::get_matrix(const std::string& name, MatrixHandle& matrix)
 {
   std::string tname =  "__"+name;
 
@@ -183,8 +183,8 @@ void
 NewLinAlgEngine::clear()
 {
   // Reset all values
-  pprogram_ = 0;
-  mprogram_ = 0;
+  pprogram_.reset();
+  mprogram_.reset();
 
   pre_expression_.clear();
   expression_.clear();

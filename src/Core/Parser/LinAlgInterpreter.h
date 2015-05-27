@@ -189,7 +189,7 @@ class SCISHARE LinAlgProgramSource {
 
     void          set_matrix(Core::Datatypes::MatrixHandle matrix) { matrix_ = matrix; }
     Core::Datatypes::MatrixHandle  get_matrix()                    { return (matrix_); }
-//    Core::Datatypes::MatrixHandle* get_handle()                    { return (&matrix_); }
+    Core::Datatypes::MatrixHandle* get_handle()                    { return (&matrix_); }
     bool          is_matrix()                     { return (true); }
 
   private:
@@ -241,14 +241,14 @@ class SCISHARE LinAlgProgram {
       { single_functions_[j] = pc; }
 
     // Code to find the pointers that are given for sources and sinks
-    bool find_source(std::string& name,  LinAlgProgramSource& ps);
-    bool find_sink(std::string& name,  LinAlgProgramSource& ps);
+    bool find_source(std::string& name,  LinAlgProgramSource& ps) const;
+    bool find_sink(std::string& name,  LinAlgProgramSource& ps) cosnt;
 
     bool run_const(size_t& error_line, std::string& err);
     bool run_single(size_t& error_line, std::string& err);
 
     void set_parser_program(ParserProgramHandle handle) { pprogram_ = handle; }
-    ParserProgramHandle get_parser_program() { return (pprogram_); }
+    ParserProgramHandle get_parser_program() const { return (pprogram_); }
 
   private:
 
