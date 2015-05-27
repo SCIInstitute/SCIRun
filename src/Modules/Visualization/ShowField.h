@@ -64,7 +64,6 @@ namespace SCIRun {
       public:
         ShowFieldModule();
         virtual void execute();
-        virtual bool isStoppable() const override { return true; }
 
         static Core::Algorithms::AlgorithmParameterName ShowNodes;
         static Core::Algorithms::AlgorithmParameterName ShowEdges;

@@ -139,10 +139,7 @@ namespace Networks {
       return false; /// @todo: need to examine HasPorts base classes
     }
 
-    virtual bool isStoppable() const
-    {
-      return false;
-    }
+    virtual bool isStoppable() const final;
 
     bool oport_connected(const PortId& id) const;
     bool inputsChanged() const;
