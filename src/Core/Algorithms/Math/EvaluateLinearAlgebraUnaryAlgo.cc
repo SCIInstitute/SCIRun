@@ -50,7 +50,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
 
 namespace impl
 {
-  class TransposeMatrix : public MatrixVisitor
+  class TransposeMatrix : public Matrix::Visitor
   {
   public:
     virtual void visit(DenseMatrixGeneric<double>& dense) override

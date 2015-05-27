@@ -427,13 +427,13 @@ namespace SCIRun {
       if (err == "")
       {
         pprogram->get_const_function(error_line, fhandle);
-        error = " RUNTIME ERROR - Function '" + fhandle->get_name() + "' crashed for unknown reason.";
+        error = " RUNTIME ERROR - const Function '" + fhandle->get_name() + "' crashed for unknown reason.";
         return (false);
       }
       else
       {
         pprogram->get_const_function(error_line, fhandle);
-        error = " RUNTIME ERROR - Function '" + fhandle->get_name() + "' failed: " + err;
+        error = " RUNTIME ERROR - const Function '" + fhandle->get_name() + "' failed: " + err;
         return (false);
       }
     }
@@ -444,13 +444,13 @@ namespace SCIRun {
       if (err == "")
       {
         pprogram->get_single_function(error_line, fhandle);
-        error = " RUNTIME ERROR - Function '" + fhandle->get_name() + "' crashed for unknown reason.";
+        error = " RUNTIME ERROR - single Function '" + fhandle->get_name() + "' crashed for unknown reason.";
         return (false);
       }
       else
       {
         pprogram->get_single_function(error_line, fhandle);
-        error = " RUNTIME ERROR - Function '" + fhandle->get_name() + "' failed: " + err;
+        error = " RUNTIME ERROR - single Function '" + fhandle->get_name() + "' failed: " + err;
         return (false);
       }
     }

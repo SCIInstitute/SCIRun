@@ -38,7 +38,7 @@ namespace SCIRun {
 
       namespace MatrixMath
       {
-        class SCISHARE BinaryVisitor : public MatrixVisitor
+        class SCISHARE BinaryVisitor : public Matrix::Visitor
         {
         protected:
           explicit BinaryVisitor(MatrixHandle operand);
@@ -70,7 +70,7 @@ namespace SCIRun {
           MatrixHandle product_;
         };
 
-        class SCISHARE NegateMatrix : public MatrixVisitor
+        class SCISHARE NegateMatrix : public Matrix::Visitor
         {
         public:
           virtual void visit(DenseMatrixGeneric<double>& dense) override;
@@ -78,7 +78,7 @@ namespace SCIRun {
           virtual void visit(DenseColumnMatrixGeneric<double>& column) override;
         };
 
-        class SCISHARE ScalarMultiplyMatrix : public MatrixVisitor
+        class SCISHARE ScalarMultiplyMatrix : public Matrix::Visitor
         {
         public:
           ScalarMultiplyMatrix::ScalarMultiplyMatrix(double scalar) : scalar_(scalar) {}

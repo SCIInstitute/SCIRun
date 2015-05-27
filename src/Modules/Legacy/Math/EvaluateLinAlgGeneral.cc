@@ -130,9 +130,9 @@ EvaluateLinearAlgebraGeneral::execute()
       // Backwards compatibility with version 3.0.2
       std::ostringstream ostr;
       ostr << "\n"
-        << ("This module does not fully support backwards compatibility:")
-        << ("C++/C functions are not supported in by this module anymore.")
-        << ("Please review documentation to explore available functionality and grammar of this module.")
+        << ("This module does not fully support backwards compatibility: ")
+        << ("C++/C functions are not supported in by this module anymore. ")
+        << ("Please review documentation to explore available functionality and grammar of this module. ")
         << ("We are sorry for this inconvenience, but we do not longer support dynamically compiling in SCIRun.");
       error(ostr.str());
       ///-----------------------
