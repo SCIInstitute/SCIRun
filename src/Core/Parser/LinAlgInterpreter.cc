@@ -142,7 +142,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       if (kind == SCRIPT_CONSTANT_SCALAR_E)
       {
         double val =  vhandle->get_scalar_value();
-        MatrixHandle scalar(new DenseMatrix(val));
+        MatrixHandle scalar(new DenseMatrix(1, 1, val));
         // Generate a new program variable with a preset value
         pvhandle.reset(new LinAlgProgramVariable(name,scalar));
       }
@@ -195,9 +195,9 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       if (kind == SCRIPT_CONSTANT_SCALAR_E)
       {
         double val =  vhandle->get_scalar_value();
-        MatrixHandle Scalar = new DenseMatrix(val);
+        MatrixHandle scalar(new DenseMatrix(1, 1, val));
         // Generate a new program variable with a preset value
-        pvhandle = new LinAlgProgramVariable(name,Scalar);
+        pvhandle.reset(new LinAlgProgramVariable(name,scalar));
       }
       else
       {
@@ -205,7 +205,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
         // In this interpreter all variables are computed on the fly
         // and do not need memory, one a handle to tell where it is
         // allocated.
-        pvhandle = new LinAlgProgramVariable(name);
+        pvhandle.reset(new LinAlgProgramVariable(name));
       }
     }
     else
@@ -214,7 +214,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       // In this interpreter all variables are computed on the fly
       // and do not need memory, one a handle to tell where it is
       // allocated.
-      pvhandle = new LinAlgProgramVariable(name);
+      pvhandle.reset(new LinAlgProgramVariable(name));
     }
 
     // Add this variable to the code
@@ -232,8 +232,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
     // Set the function pointer, we up cast it to the real type as the parser
     // does not know anything about this interpreter and the argument the
     // function will take in.
-    LinAlgFunction* func =
-      dynamic_cast<LinAlgFunction*>(fhandle->get_function());
+    auto func = boost::dynamic_pointer_cast<LinAlgFunction>(fhandle->get_function());
 
     //Each function is a line in the parsed/interpreted code
     LinAlgProgramCode pc(func->get_function());
@@ -328,8 +327,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
     pprogram->get_single_function(j,fhandle);
 
     // Set the function pointer
-    LinAlgFunction* func =
-      dynamic_cast<LinAlgFunction*>(fhandle->get_function());
+    auto func = boost::dynamic_pointer_cast<LinAlgFunction>(fhandle->get_function());
     LinAlgProgramCode pc(func->get_function());
 
     ParserScriptVariableHandle ohandle = fhandle->get_output_var();
@@ -469,8 +467,8 @@ LinAlgInterpreter::run(LinAlgProgramHandle& mprogram,
 
 bool
 LinAlgInterpreter::add_matrix_source(LinAlgProgramHandle& pprogram,
-                                        std::string& name,
-                                        MatrixHandle& matrix,
+                                        const std::string& name,
+                                        MatrixHandle matrix,
                                         std::string& error)
 {
   if(!(create_program(pprogram,error))) return (false);
@@ -488,7 +486,7 @@ LinAlgInterpreter::add_matrix_sink(LinAlgProgramHandle& pprogram,
 
 
 bool
-LinAlgProgram::add_source(std::string& name, MatrixHandle matrix)
+LinAlgProgram::add_source(const std::string& name, MatrixHandle matrix)
 {
   LinAlgProgramSource ps; ps.set_matrix(matrix);
   input_sources_[name] = ps;

@@ -241,8 +241,8 @@ class SCISHARE LinAlgProgram {
       { single_functions_[j] = pc; }
 
     // Code to find the pointers that are given for sources and sinks
-    bool find_source(std::string& name,  LinAlgProgramSource& ps) const;
-    bool find_sink(std::string& name,  LinAlgProgramSource& ps) const;
+    bool find_source(const std::string& name,  LinAlgProgramSource& ps) const;
+    bool find_sink(const std::string& name,  LinAlgProgramSource& ps) const;
 
     bool run_const(size_t& error_line, std::string& err);
     bool run_single(size_t& error_line, std::string& err);
@@ -285,13 +285,13 @@ class SCISHARE LinAlgInterpreter {
 
     // Matrix sources
     bool add_matrix_source(LinAlgProgramHandle& pprogram,
-                           std::string& name,
+                           const std::string& name,
                            Core::Datatypes::MatrixHandle matrix,
                            std::string& error);
 
     // Matrix sinks
     bool add_matrix_sink(LinAlgProgramHandle& pprogram,
-                         std::string& name,
+                         const std::string& name,
                          std::string& error);
 
     //------------------------------------------------------------------------

@@ -32,6 +32,8 @@
 
 namespace SCIRun {
 
+  using namespace SCIRun::Core::Datatypes;
+
 bool
 NewLinAlgEngine::add_input_matrix(const std::string& name, MatrixHandle matrix)
 {
