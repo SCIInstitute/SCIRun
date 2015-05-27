@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,7 +29,7 @@
 #include <Core/Datatypes/ColumnMatrix.h>
 #include <Core/Algorithms/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
 
-using namespace SCIRun; 
+using namespace SCIRun;
 
 ColumnMatrixMisfitCalculator::ColumnMatrixMisfitCalculator(const ColumnMatrix& x, const ColumnMatrix& y, double pp)
 : rmsRel_(0), rms_(0), cc_(0), ccInv_(0), pp_(pp)
@@ -42,7 +42,7 @@ ColumnMatrixMisfitCalculator::ColumnMatrixMisfitCalculator(const ColumnMatrix& x
   // compute CC
 
   double avg1 = 0, avg2 = 0;
-  for (int i = 0; i < ne; ++i) 
+  for (int i = 0; i < ne; ++i)
   {
     avg1 += x[i];
     avg2 += y[i];
@@ -50,12 +50,12 @@ ColumnMatrixMisfitCalculator::ColumnMatrixMisfitCalculator(const ColumnMatrix& x
   avg1 /= ne;
   avg2 /= ne;
 
-  double Norm1 = 0; 
+  double Norm1 = 0;
   double ccNum = 0;
   double ccDenom1 = 0;
   double ccDenom2 = 0;
   double rms = 0;
-  for (int i = 0; i < ne; ++i) 
+  for (int i = 0; i < ne; ++i)
   {
     double shift1 = (x[i]-avg1);
     double shift2 = (y[i]-avg2);
@@ -64,17 +64,17 @@ ColumnMatrixMisfitCalculator::ColumnMatrixMisfitCalculator(const ColumnMatrix& x
     ccDenom1 += shift1 * shift1;
     ccDenom2 += shift2 * shift2;
     double tmp = fabs(x[i]-y[i]);
-    if (pp == 1) 
+    if (pp == 1)
     {
       rms += tmp;
       Norm1 += fabs(x[i]);
     }
-    else if (pp == 2) 
+    else if (pp == 2)
     {
       rms += tmp * tmp;
       Norm1 += (x[i])*(y[i]);
-    }         
-    else 
+    }
+    else
     {
       rms += pow(tmp,pp);
       Norm1 += pow(fabs(x[i]),pp);
