@@ -34,6 +34,11 @@ namespace SCIRun {
 
   using namespace SCIRun::Core::Datatypes;
 
+  NewLinAlgEngine::NewLinAlgEngine() : def_pr_(new Core::Logging::ConsoleLogger), pr_(def_pr_)
+  { 
+    clear(); 
+  }
+
 bool
 NewLinAlgEngine::add_input_matrix(const std::string& name, MatrixHandle matrix)
 {
