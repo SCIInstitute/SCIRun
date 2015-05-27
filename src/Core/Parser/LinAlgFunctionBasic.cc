@@ -40,6 +40,7 @@ namespace LinAlgFunctions {
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
 
 //--------------------------------------------------------------------------
 // Add functions
@@ -58,32 +59,26 @@ bool add_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   // Special cases
 
   // Scalar + Matrix
-  if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_data_size() == 1))
+  if (((*data1)->nrows() == 1) && ((*data1)->ncols() == 1) && ((*data1)->get_dense_size() == 1))
   {
     // scalar addition
     double val = (*data1)->get(0,0);
 
-    *data0 = (*data2)->clone();
-    double* data = (*data0)->get_data_pointer();
-    size_type size = (*data0)->get_data_size();
-
-    for (index_type idx=0; idx<size; idx++) data[idx] += val;
+    auto data2PlusVal = matrix_convert::to_dense(*data2)->array() + val;
+    data0->reset(new DenseMatrix(data2PlusVal.matrix()));
 
     return (true);
   }
 
 
   // Matrix + Scalar
-  if (((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_data_size() == 1))
+  if (((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_dense_size() == 1))
   {
     // scalar addition
     double val = (*data2)->get(0,0);
 
-    *data0 = (*data1)->clone();
-    double* data = (*data0)->get_data_pointer();
-    size_type size = (*data0)->get_data_size();
-
-    for (index_type idx=0; idx<size; idx++) data[idx] += val;
+    auto data1PlusVal = matrix_convert::to_dense(*data1)->array() + val;
+    data0->reset(new DenseMatrix(data1PlusVal.matrix()));
 
     return (true);
   }
@@ -104,7 +99,7 @@ bool add_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return  (false);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
 //--------------------------------------------------------------------------
@@ -124,14 +119,14 @@ bool sub_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   // Special cases
 
   // Scalar - Matrix
-  if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_data_size() == 1))
+  if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_dense_size() == 1))
   {
     // scalar addition
     double val = (*data1)->get(0,0);
 
-    *data0 = (*data2)->clone();
+    data0->reset((*data2)->clone());
     double* data = (*data0)->get_data_pointer();
-    size_type size = (*data0)->get_data_size();
+    size_type size = (*data0)->get_dense_size();
 
     for (index_type idx=0; idx<size; idx++) data[idx] = val - data[idx];
 
@@ -140,14 +135,14 @@ bool sub_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
 
   // Matrix - Scalar
-  if (((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_data_size() == 1))
+  if (((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_dense_size() == 1))
   {
     // scalar addition
     double val = (*data2)->get(0,0);
 
-    *data0 = (*data1)->clone();
+    data0->reset((*data1)->clone());
     double* data = (*data0)->get_data_pointer();
-    size_type size = (*data0)->get_data_size();
+    size_type size = (*data0)->get_dense_size();
 
     for (index_type idx=0; idx<size; idx++) data[idx] = data[idx] - val;
 
@@ -170,7 +165,7 @@ bool sub_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return  (false);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
 //--------------------------------------------------------------------------
@@ -184,15 +179,15 @@ bool neg_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
 
   if (!(*data1)) return (false);
-  if ((*data1)->get_data_size() == 0) return (false);
+  if ((*data1)->empty()) return (false);
 
-  *data0 = (*data1)->clone();
+  data0->reset((*data1)->clone());
   double* data = (*data0)->get_data_pointer();
-  size_t size = (*data0)->get_data_size();
+  size_t size = (*data0)->get_dense_size();
 
   for (size_t j=0; j < size; j++) data[j] = -data[j];
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
 
@@ -214,14 +209,14 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   // Special cases
 
   // Scalar * Matrix
-  if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_data_size() == 1))
+  if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_dense_size() == 1))
   {
     // scalar addition
     double val = (*data1)->get(0,0);
 
-    *data0 = (*data2)->clone();
+    data0->reset((*data2)->clone());
     double* data = (*data0)->get_data_pointer();
-    size_type size = (*data0)->get_data_size();
+    size_type size = (*data0)->get_dense_size();
 
     for (index_type idx=0; idx<size; idx++) data[idx] *= val;
 
@@ -230,14 +225,14 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
 
   // Matrix * Scalar
-  if (((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_data_size() == 1))
+  if (((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_dense_size() == 1))
   {
     // scalar addition
     double val = (*data2)->get(0,0);
 
-    *data0 = (*data1)->clone();
+    data0->reset((*data1)->clone());
     double* data = (*data0)->get_data_pointer();
-    size_type size = (*data0)->get_data_size();
+    size_type size = (*data0)->get_dense_size();
 
     for (index_type idx=0; idx<size; idx++) data[idx] *= val;
 
@@ -261,7 +256,7 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return  (false);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
 
@@ -273,8 +268,8 @@ bool mmult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   // Special cases
 
@@ -284,8 +279,8 @@ bool mmult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  *data0 = (*data1)->clone();
-  if ((*data0).get_rep() == 0) return (false);
+  data0->reset((*data1)->clone());
+  if (!(*data0)) return (false);
 
   if ((matrix_is::dense(*data1)||matrix_is::column(*data1)) &&
       (matrix_is::dense(*data2)||matrix_is::column(*data2)))
@@ -293,7 +288,7 @@ bool mmult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     double* data = (*data0)->get_data_pointer();
     double* ptr1 = (*data1)->get_data_pointer();
     double* ptr2 = (*data2)->get_data_pointer();
-    size_type size = (*data0)->get_data_size();
+    size_type size = (*data0)->get_dense_size();
     double* data_end = data+size;
 
     while (data != data_end)
@@ -308,7 +303,7 @@ bool mmult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
 
@@ -330,13 +325,13 @@ bool div_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   // Special cases
 
   // Matrix * Scalar
-  if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_data_size() == 1)&&
-      ((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_data_size() == 1))
+  if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_dense_size() == 1)&&
+      ((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_dense_size() == 1))
   {
     // scalar addition
     double val = (*data1)->get(0,0);
     double val2 = (*data2)->get(0,0);
-    *data0 = (*data2)->clone();
+    data0->reset((*data2)->clone());
     double* data = (*data0)->get_data_pointer();
 
     *data = val/val2;
@@ -366,7 +361,7 @@ bool mdiv_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  *data0 = (*data1)->clone();
+  data0->reset((*data1)->clone());
   if (!(*data0)) return (false);
 
   if ((matrix_is::dense(*data1)||matrix_is::column(*data1)) &&
@@ -375,7 +370,7 @@ bool mdiv_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     double* data = (*data0)->get_data_pointer();
     double* ptr1 = (*data1)->get_data_pointer();
     double* ptr2 = (*data2)->get_data_pointer();
-    size_type size = (*data0)->get_data_size();
+    size_type size = (*data0)->get_dense_size();
     double* data_end = data+size;
 
     while (data != data_end)
@@ -390,7 +385,7 @@ bool mdiv_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
 
@@ -406,19 +401,19 @@ bool rem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   // Special cases
 
   // Matrix * Scalar
-  if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_data_size() == 1)&&
-      ((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_data_size() == 1))
+  if (((*data1)->nrows() == 1)&&((*data1)->ncols() == 1)&&((*data1)->get_dense_size() == 1)&&
+      ((*data2)->nrows() == 1)&&((*data2)->ncols() == 1)&&((*data2)->get_dense_size() == 1))
   {
     // scalar addition
     double val = (*data1)->get(0,0);
     double val2 = (*data2)->get(0,0);
-    *data0 = (*data2)->clone();
+    data0->reset((*data2)->clone());
     double* data = (*data0)->get_data_pointer();
 
     *data = fmod(val,val2);
@@ -437,8 +432,8 @@ bool mrem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   // Special cases
 
@@ -448,8 +443,8 @@ bool mrem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  *data0 = (*data1)->clone();
-  if ((*data0).get_rep() == 0) return (false);
+  data0->reset((*data1)->clone());
+  if (!(*data0)) return (false);
 
   if ((matrix_is::dense(*data1)||matrix_is::column(*data1)) &&
       (matrix_is::dense(*data2)||matrix_is::column(*data2)))
@@ -457,7 +452,7 @@ bool mrem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     double* data = (*data0)->get_data_pointer();
     double* ptr1 = (*data1)->get_data_pointer();
     double* ptr2 = (*data2)->get_data_pointer();
-    size_type size = (*data0)->get_data_size();
+    size_type size = (*data0)->get_dense_size();
     double* data_end = data+size;
 
     while (data != data_end)
@@ -472,7 +467,7 @@ bool mrem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
 
@@ -485,24 +480,24 @@ bool densematrix_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
-  if ((*data1)->get_data_size() != 1)
+  if ((*data1)->get_dense_size() != 1)
   {
     err = "Create Dense matrix: number of rows needs to be a scalar.";
     return (false);
   }
   double *d1 = (*data1)->get_data_pointer();
 
-  if ((*data2)->get_data_size() != 1)
+  if ((*data2)->get_dense_size() != 1)
   {
     err = "Create Dense matrix: number of columns needs to be a scalar.";
     return (false);
   }
   double *d2 = (*data1)->get_data_pointer();
 
-  (*data0) = new DenseMatrix(static_cast<size_type>(*d1),static_cast<size_type>(*d2));
+  data0->reset(new DenseMatrix(static_cast<size_type>(*d1),static_cast<size_type>(*d2)));
 
   return (true);
 }
@@ -515,25 +510,25 @@ bool ones_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
-  if ((*data1)->get_data_size() != 1)
+  if ((*data1)->get_dense_size() != 1)
   {
     err = "Create matrix: number of rows needs to be a scalar.";
     return (false);
   }
   double *d1 = (*data1)->get_data_pointer();
 
-  if ((*data2)->get_data_size() != 1)
+  if ((*data2)->get_dense_size() != 1)
   {
     err = "Create matrix: number of columns needs to be a scalar.";
     return (false);
   }
   double *d2 = (*data1)->get_data_pointer();
 
-  *data0 = new DenseMatrix(static_cast<size_type>(*d1),static_cast<size_type>(*d2));
-  size_type s = (*data0)->get_data_size();
+  data0->reset(new DenseMatrix(static_cast<size_type>(*d1),static_cast<size_type>(*d2)));
+  size_type s = (*data0)->get_dense_size();
   double* d = (*data0)->get_data_pointer();
   for (index_type j=0;j<s;j++) d[j] = 1.0;
 
@@ -548,17 +543,17 @@ bool zeros_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
-  if ((*data1)->get_data_size() != 1)
+  if ((*data1)->get_dense_size() != 1)
   {
     err = "Create matrix: number of rows needs to be a scalar.";
     return (false);
   }
   double *d1 = (*data1)->get_data_pointer();
 
-  if ((*data2)->get_data_size() != 1)
+  if ((*data2)->get_dense_size() != 1)
   {
     err = "Create matrix: number of columns needs to be a scalar.";
     return (false);
@@ -566,7 +561,7 @@ bool zeros_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   double *d2 = (*data1)->get_data_pointer();
 
   *data0 = new DenseMatrix(static_cast<size_type>(*d1),static_cast<size_type>(*d2));
-  size_type s = (*data0)->get_data_size();
+  size_type s = (*data0)->get_dense_size();
   double* d = (*data0)->get_data_pointer();
   for (index_type j=0;j<s;j++) d[j] = 0.0;
 
@@ -586,14 +581,13 @@ bool select_sss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data2 = pc.get_handle(2);
   MatrixHandle* data3 = pc.get_handle(3);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
-  if ((*data3).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
+  if (!(*data3)) return (false);
 
-  if ((*data1)->get_data_size() == 0) return (false);
-  double *data = (*data1)->get_data_pointer();
+  if ((*data1)->empty()) return (false);
 
-  if (data[0])
+  if ((*data1)->get(0,0))
   {
     *data0 = (*data2);
   }
@@ -602,7 +596,7 @@ bool select_sss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     *data0 = (*data3);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
 
@@ -617,18 +611,18 @@ bool subs_sss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data2 = pc.get_handle(2);
   MatrixHandle* data3 = pc.get_handle(3);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
-  if ((*data3).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
+  if (!(*data3)) return (false);
 
-  SCIRunAlgo::SelectSubMatrixAlgo algo;
+  SelectSubMatrixAlgorithm algo;
   if(!(algo.run(*data1,*data0,*data2,*data3)))
   {
     err = "Invalid matrix indices for selecting submatrix.";
     return (false);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
 
@@ -643,31 +637,31 @@ bool subs_range_sssss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data4 = pc.get_handle(4);
   MatrixHandle* data5 = pc.get_handle(5);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
-  if ((*data3).get_rep() == 0) return (false);
-  if ((*data4).get_rep() == 0) return (false);
-  if ((*data5).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
+  if (!(*data3)) return (false);
+  if (!(*data4)) return (false);
+  if (!(*data5)) return (false);
 
-  if ((*data2)->get_data_size() != 1)
+  if ((*data2)->get_dense_size() != 1)
   {
     err = "Row index needs to be a scalar.";
     return (false);
   }
 
-  if ((*data3)->get_data_size() != 1)
+  if ((*data3)->get_dense_size() != 1)
   {
     err = "Row index needs to be a scalar.";
     return (false);
   }
 
-  if ((*data4)->get_data_size() != 1)
+  if ((*data4)->get_dense_size() != 1)
   {
     err = "Column index needs to be a scalar.";
     return (false);
   }
 
-  if ((*data5)->get_data_size() != 1)
+  if ((*data5)->get_dense_size() != 1)
   {
     err = "Column index needs to be a scalar.";
     return (false);
@@ -704,17 +698,17 @@ bool subs_range_sssss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     for (size_t j=0;j<columns.size();j++) columns[j] = cstart-j;
   }
 
-  SCIRunAlgo::SelectSubMatrixAlgo algo;
+  SelectSubMatrixAlgorithm algo;
   if(!(algo.run(*data1,*data0,rows,columns)))
   {
     err = "Invalid matrix indices for selecting submatrix.";
     return (false);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 //--------------------------------------------------------------------------
 // Sub functions
 bool assign_ssss(SCIRun::LinAlgProgramCode& pc, std::string& err)
@@ -727,10 +721,10 @@ bool assign_ssss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data3 = pc.get_handle(3);
   MatrixHandle* data4 = pc.get_handle(4);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
-  if ((*data3).get_rep() == 0) return (false);
-  if ((*data4).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
+  if (!(*data3)) return (false);
+  if (!(*data4)) return (false);
 
   SCIRunAlgo::SetSubMatrixAlgo algo;
   if(!(algo.run(*data1,*data2,*data0,*data3,*data4)))
@@ -739,7 +733,7 @@ bool assign_ssss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
 
 
@@ -755,32 +749,32 @@ bool assign_range_ssssss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data5 = pc.get_handle(5);
   MatrixHandle* data6 = pc.get_handle(6);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
-  if ((*data3).get_rep() == 0) return (false);
-  if ((*data4).get_rep() == 0) return (false);
-  if ((*data5).get_rep() == 0) return (false);
-  if ((*data6).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
+  if (!(*data3)) return (false);
+  if (!(*data4)) return (false);
+  if (!(*data5)) return (false);
+  if (!(*data6)) return (false);
 
-  if ((*data3)->get_data_size() != 1)
+  if ((*data3)->get_dense_size() != 1)
   {
     err = "Row index needs to be a scalar.";
     return (false);
   }
 
-  if ((*data4)->get_data_size() != 1)
+  if ((*data4)->get_dense_size() != 1)
   {
     err = "Row index needs to be a scalar.";
     return (false);
   }
 
-  if ((*data5)->get_data_size() != 1)
+  if ((*data5)->get_dense_size() != 1)
   {
     err = "Column index needs to be a scalar.";
     return (false);
   }
 
-  if ((*data6)->get_data_size() != 1)
+  if ((*data6)->get_dense_size() != 1)
   {
     err = "Column index needs to be a scalar.";
     return (false);
@@ -824,8 +818,9 @@ bool assign_range_ssssss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  return ((*data0).get_rep());
+  return *data0 != nullptr;
 }
+#endif
 
 
 

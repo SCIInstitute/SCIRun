@@ -71,6 +71,7 @@ namespace Datatypes {
   public:
     virtual size_t nrows() const = 0;
     virtual size_t ncols() const = 0;
+    size_t get_dense_size() const { return nrows() * ncols(); }
 
     virtual void accept(MatrixVisitorGeneric<T>& visitor) = 0;
 
