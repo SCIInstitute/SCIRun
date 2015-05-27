@@ -81,7 +81,7 @@ namespace SCIRun {
         class SCISHARE ScalarMultiplyMatrix : public Matrix::Visitor
         {
         public:
-          ScalarMultiplyMatrix::ScalarMultiplyMatrix(double scalar) : scalar_(scalar) {}
+          explicit ScalarMultiplyMatrix(double scalar) : scalar_(scalar) {}
           virtual void visit(DenseMatrixGeneric<double>& dense) override;
           virtual void visit(SparseRowMatrixGeneric<double>& sparse) override;
           virtual void visit(DenseColumnMatrixGeneric<double>& column) override;
