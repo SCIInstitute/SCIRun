@@ -33,8 +33,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-
-#include <boost/thread.hpp>
+#include <Core/Thread/Interruptible.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -152,7 +151,8 @@ StreamlineValue convertValue(const std::string& option)
 }
 
 
-class GenerateStreamLinesAlgoP {
+class GenerateStreamLinesAlgoP : public Core::Thread::Interruptible
+{
 
   public:
     GenerateStreamLinesAlgoP() :
@@ -212,13 +212,8 @@ GenerateStreamLinesAlgoP::runImpl()
 
     for (VMesh::Node::index_type idx=1; idx<num_seeds; ++idx)
     {
-      //TODO: provide algo API for this.
-      boost::this_thread::interruption_point();
-#ifdef WIN32 // this is working on Mac, but not Windows.
-      std::cout << "trying to interrupt_point in thread " << boost::this_thread::get_id() << std::endl;
-      std::cout << "interruption enabled? " << boost::this_thread::interruption_enabled() << std::endl;
-      std::cout << "interruption requested? " << boost::this_thread::interruption_requested() << std::endl;
-#endif
+      checkForInterruption();
+
       seed_mesh_->get_point(BI.seed_, idx);
 
        // Is the seed point inside the field?

@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -57,7 +58,8 @@ namespace SCIRun {
 
       class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
-        public Has1OutputPort<GeometryPortTag>
+        public Has1OutputPort<GeometryPortTag>,
+        public Core::Thread::Interruptible
       {
       public:
         ShowFieldModule();
