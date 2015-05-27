@@ -142,9 +142,9 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       if (kind == SCRIPT_CONSTANT_SCALAR_E)
       {
         double val =  vhandle->get_scalar_value();
-        MatrixHandle Scalar = new DenseMatrix(val);
+        MatrixHandle scalar(new DenseMatrix(val));
         // Generate a new program variable with a preset value
-        pvhandle = new LinAlgProgramVariable(name,Scalar);
+        pvhandle.reset(new LinAlgProgramVariable(name,scalar));
       }
       else
       {
@@ -152,7 +152,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
         // In this interpreter all variables are computed on the fly
         // and do not need memory, one a handle to tell where it is
         // allocated.
-        pvhandle = new LinAlgProgramVariable(name);
+        pvhandle.reset(new LinAlgProgramVariable(name));
       }
     }
     else
@@ -161,7 +161,7 @@ LinAlgInterpreter::translate(ParserProgramHandle& pprogram,
       // In this interpreter all variables are computed on the fly
       // and do not need memory, one a handle to tell where it is
       // allocated.
-      pvhandle = new LinAlgProgramVariable(name);
+      pvhandle.reset(new LinAlgProgramVariable(name));
     }
 
     // Add this variable to the code

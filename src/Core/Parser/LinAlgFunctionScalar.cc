@@ -397,7 +397,7 @@ bool log10_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
   size_type size = (*data0)->get_data_size();
   double* data_end = data+size;
 
-  double s = 1.0/log(10.0);
+  const double s = 1.0/log(10.0);
   while (data != data_end)
   {
     *data = ::log(*data)*s; data++;
@@ -1097,115 +1097,6 @@ bool not_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   return (true);
 }
-
-
-
-/*
-bool max_ss(SCIRun::LinAlgProgramCode& pc)
-{
-  double* data0 = pc.get_variable(0);
-  double* data1 = pc.get_variable(1);
-  double* data2 = pc.get_variable(2);
-  double* data0_end = data0 + pc.get_size();
-
-  while (data0 != data0_end)
-  {
-    if (*data1 > *data2) *data0 = *data1; else *data0 = *data2;
-    data0++; data1++; data2++;
-  }
-
-  return (true);
-}
-
-bool median_sss(SCIRun::LinAlgProgramCode& pc)
-{
-  double* data0 = pc.get_variable(0);
-  double* data1 = pc.get_variable(1);
-  double* data2 = pc.get_variable(2);
-  double* data3 = pc.get_variable(3);
-  double* data0_end = data0 + pc.get_size();
-
-  while (data0 != data0_end)
-  {
-    if (*data1 > *data2)
-    {
-      if (*data3 < *data2)
-      {
-        *data0 = *data2;
-      }
-      else
-      {
-        if (*data1 < *data3)
-          *data0 = *data1;
-        else
-          *data0 = *data3;
-      }
-    }
-    else
-    {
-      if (*data3 < *data1)
-      {
-        *data0 = *data1;
-      }
-      else
-      {
-        if (*data2 > *data3)
-          *data0 = *data3;
-        else
-          *data0 = *data2;
-      }
-    }
-    data0++; data1++; data2++; data3++;
-  }
-
-  return (true);
-}
-
-
-
-bool min_ss(SCIRun::LinAlgProgramCode& pc)
-{
-  double* data0 = pc.get_variable(0);
-  double* data1 = pc.get_variable(1);
-  double* data2 = pc.get_variable(2);
-  double* data0_end = data0 + pc.get_size();
-
-  while (data0 != data0_end)
-  {
-    if (*data1 < *data2) *data0 = *data1; else *data0 = *data2;
-    data0++; data1++; data2++;
-  }
-
-  return (true);
-}
-
-
-SCIRun::Mutex RandomMutex("Mutex for rand() and random() functions");
-
-bool random_value_(SCIRun::LinAlgProgramCode& pc)
-{
-  double* data0 = pc.get_variable(0);
-  double* data0_end = data0 + pc.get_size();
-
-  // Random is not thread safe
-  RandomMutex.lock();
-  while (data0 != data0_end)
-  {
-// Note: _WIN32 is always defined for applications for Win32 and Win64 (see http://msdn.microsoft.com/en-us/library/b0084kay.aspx).
-#ifdef _WIN32
-    // random() not available in Windows stdlib
-    *data0 = static_cast<double>(rand())/static_cast<double>(RAND_MAX + 1);
-#else
-    *data0 = static_cast<double>(random())/static_cast<double>(0x7FFFFFFF);
-#endif
-    data0++;
-  }
-  RandomMutex.unlock();
-
-  return (true);
-}
-
-*/
 
 } // end namsespace
 

@@ -26,8 +26,8 @@
 //  DEALINGS IN THE SOFTWARE.
 //
 
-#include <Core/Algorithms/Legacy/Math/SelectMatrix/SelectSubMatrix.h>
-#include <Core/Algorithms/Legacy/Math/SetSubMatrix/SetSubMatrix.h>
+#include <Core/Algorithms/Math/SelectSubMatrix.h>
+//#include <Core/Algorithms/Legacy/Math/SetSubMatrix/SetSubMatrix.h>
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -52,8 +52,8 @@ bool add_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   // Special cases
 
@@ -118,8 +118,8 @@ bool sub_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   // Special cases
 
@@ -183,7 +183,7 @@ bool neg_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data0 = pc.get_handle(0);
   MatrixHandle* data1 = pc.get_handle(1);
 
-  if ((*data1).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
   if ((*data1)->get_data_size() == 0) return (false);
 
   *data0 = (*data1)->clone();
@@ -208,8 +208,8 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   // Special cases
 
@@ -324,8 +324,8 @@ bool div_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   // Special cases
 
@@ -355,8 +355,8 @@ bool mdiv_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   MatrixHandle* data1 = pc.get_handle(1);
   MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   // Special cases
 
@@ -367,7 +367,7 @@ bool mdiv_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   }
 
   *data0 = (*data1)->clone();
-  if ((*data0).get_rep() == 0) return (false);
+  if (!(*data0)) return (false);
 
   if ((matrix_is::dense(*data1)||matrix_is::column(*data1)) &&
       (matrix_is::dense(*data2)||matrix_is::column(*data2)))
