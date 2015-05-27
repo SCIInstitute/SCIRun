@@ -63,40 +63,6 @@ namespace Math {
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };
 
-  namespace detail
-  {
-    class SCISHARE BinaryVisitor : public Datatypes::MatrixVisitor
-    {
-    protected:
-      explicit BinaryVisitor(Datatypes::MatrixHandle operand);
-      static Datatypes::Matrix* cloneIfNotNull(Datatypes::MatrixHandle m);
-      Datatypes::MatrixTypeCode typeCode_;
-    };
-
-    class SCISHARE AddMatrices : public BinaryVisitor
-    {
-    public:
-      explicit AddMatrices(Datatypes::MatrixHandle addend);
-
-      virtual void visit(Datatypes::DenseMatrixGeneric<double>& dense) override;
-      virtual void visit(Datatypes::SparseRowMatrixGeneric<double>& sparse) override;
-      virtual void visit(Datatypes::DenseColumnMatrixGeneric<double>& column) override;
-
-      Datatypes::MatrixHandle sum_;
-    };
-
-    class SCISHARE MultiplyMatrices : public BinaryVisitor
-    {
-    public:
-      explicit MultiplyMatrices(Datatypes::MatrixHandle factor);
-
-      virtual void visit(Datatypes::DenseMatrixGeneric<double>& dense) override;
-      virtual void visit(Datatypes::SparseRowMatrixGeneric<double>& sparse) override;
-      virtual void visit(Datatypes::DenseColumnMatrixGeneric<double>& column) override;
-
-      Datatypes::MatrixHandle product_;
-    };
-  }
 }}}}
 
 #endif

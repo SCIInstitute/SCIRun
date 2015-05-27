@@ -98,27 +98,6 @@ namespace Math {
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };
 
-  namespace detail
-  {
-    class SCISHARE NegateMatrix : public Datatypes::MatrixVisitor
-    {
-    public:
-      virtual void visit(Datatypes::DenseMatrixGeneric<double>& dense) override;
-      virtual void visit(Datatypes::SparseRowMatrixGeneric<double>& sparse) override;
-      virtual void visit(Datatypes::DenseColumnMatrixGeneric<double>& column) override;
-    };
-
-    class SCISHARE ScalarMultiplyMatrix : public Datatypes::MatrixVisitor
-    {
-    public:
-      ScalarMultiplyMatrix::ScalarMultiplyMatrix(double scalar) : scalar_(scalar) {}
-      virtual void visit(Datatypes::DenseMatrixGeneric<double>& dense) override;
-      virtual void visit(Datatypes::SparseRowMatrixGeneric<double>& sparse) override;
-      virtual void visit(Datatypes::DenseColumnMatrixGeneric<double>& column) override;
-    private:
-      double scalar_;
-    };
-  }
 }}}}
 
 

@@ -98,6 +98,15 @@ namespace Datatypes {
   template <typename T>
   PersistentTypeID MatrixBase<T>::type_id("MatrixBase", "MatrixIOBase", 0);
 
+  enum SCISHARE MatrixTypeCode
+  {
+    NULL_MATRIX = -1,
+    DENSE = 0,
+    SPARSE_ROW,
+    COLUMN,
+    UNKNOWN
+  };
+
 }}}
 
 

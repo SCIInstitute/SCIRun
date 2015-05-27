@@ -26,14 +26,13 @@
 //  DEALINGS IN THE SOFTWARE.
 //
 
-#include <Core/Algorithms/Math/SelectSubMatrix.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
+//#include <Core/Algorithms/Math/SelectSubMatrix.h>
 //#include <Core/Algorithms/Legacy/Math/SetSubMatrix/SetSubMatrix.h>
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/MatrixMathVisitors.h>
 #include <Core/Parser/LinAlgInterpreter.h>
 
 #include <Core/Parser/LinAlgFunctionCatalog.h>
@@ -42,7 +41,7 @@ namespace LinAlgFunctions {
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Datatypes::MatrixMath;
 
 //--------------------------------------------------------------------------
 // Add functions
@@ -92,7 +91,7 @@ bool add_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     { err = "Number of rows is not equal."; return (false); }
 
   data0->reset((*data2)->clone());
-  detail::AddMatrices add(*data1);
+  AddMatrices add(*data1);
   (*data0)->accept(add);
   *data0 = add.sum_;
 
@@ -145,9 +144,9 @@ bool sub_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     { err = "Number of rows is not equal."; return (false); }
 
   data0->reset((*data2)->clone());
-  detail::NegateMatrix neg;
+  NegateMatrix neg;
   (*data0)->accept(neg);
-  detail::AddMatrices add(*data1);
+  AddMatrices add(*data1);
   (*data0)->accept(add);
   *data0 = add.sum_;
 
@@ -168,7 +167,7 @@ bool neg_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
   if ((*data1)->empty()) return (false);
 
   data0->reset((*data1)->clone());
-  detail::NegateMatrix neg;
+  NegateMatrix neg;
   (*data0)->accept(neg);
 
   return *data0 != nullptr;
@@ -223,7 +222,7 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   }
 
   data0->reset((*data2)->clone());
-  detail::MultiplyMatrices mult(*data1);
+  MultiplyMatrices mult(*data1);
   (*data0)->accept(mult);
   *data0 = mult.product_;
 

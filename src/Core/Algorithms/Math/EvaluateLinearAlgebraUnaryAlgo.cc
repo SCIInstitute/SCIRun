@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixMathVisitors.h>
 #include <stdexcept>
 
 #include <Core/Parser/ArrayMathEngine.h>
@@ -37,7 +38,7 @@
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Core::Algorithms::Math::detail;
+using namespace SCIRun::Core::Datatypes::MatrixMath;
 using namespace SCIRun::Core::Algorithms;
 
 EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
@@ -45,32 +46,6 @@ EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
   addParameter(Variables::Operator, 0);
   addParameter(Variables::ScalarValue, 0);
 	addParameter(Variables::FunctionString, std::string("x+10"));
-}
-
-void NegateMatrix::visit(DenseMatrixGeneric<double>& dense)
-{
-  dense *= -1;
-}
-void NegateMatrix::visit(SparseRowMatrixGeneric<double>& sparse)
-{
-  sparse *= -1;
-}
-void NegateMatrix::visit(DenseColumnMatrixGeneric<double>& column)
-{
-  column *= -1;
-}
-
-void ScalarMultiplyMatrix::visit(DenseMatrixGeneric<double>& dense)
-{
-  dense *= scalar_;
-}
-void ScalarMultiplyMatrix::visit(SparseRowMatrixGeneric<double>& sparse)
-{
-  sparse *= scalar_;
-}
-void ScalarMultiplyMatrix::visit(DenseColumnMatrixGeneric<double>& column)
-{
-  column *= scalar_;
 }
 
 namespace impl
