@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,29 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_MATH_ReportColumnMatrixMisfit_H
-#define MODULES_LEGACY_MATH_ReportColumnMatrixMisfit_H
+#ifndef CORE_ALGORITHMS_MATH_COLUMNMATRIXMISFITCALCULATOR_H
+#define CORE_ALGORITHMS_MATH_COLUMNMATRIXMISFITCALCULATOR_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Math/share.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <boost/noncopyable.hpp>
+#include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Math {
 
-      class SCISHARE ReportColumnMatrixMisfit : public SCIRun::Dataflow::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
-        public Has1OutputPort<MatrixPortTag>
-      {
-      public:
-        ReportColumnMatrixMisfit();
-        virtual void execute();
-        virtual void setStateDefaults();
-        INPUT_PORT(0, Vec1, DenseColumnMatrix);
-        INPUT_PORT(1, Vec2, DenseColumnMatrix);
-        OUTPUT_PORT(0, Error_Out, DenseColumnMatrix);
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
-}}}
+  class SCISHARE ColumnMatrixMisfitCalculator : boost::noncopyable
+  {
+  public:
+    ColumnMatrixMisfitCalculator(const ColumnMatrix& x, const ColumnMatrix& y, double pp);
+    double getPValue() const;
+    double getCorrelationCoefficient() const;
+    double getInverseCorrelationCoefficient() const;
+    double getRelativeRMS() const;
+    double getRMS() const;
+  private:
+    double rmsRel_, rms_, cc_, ccInv_, pp_;
+  };
+}
 
 #endif

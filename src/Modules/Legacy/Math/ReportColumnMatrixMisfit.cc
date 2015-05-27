@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -34,19 +34,28 @@
 ///   University of Utah
 ///@date  June 1999
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/ColumnMatrix.h>
-#include <Core/Algorithms/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
+#include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Algorithms/Legacy/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
 
 #include <Core/Math/MiscMath.h>
 #include <sstream>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Math;
+
+const ModuleLookupInfo ReportColumnMatrixMisfit::staticInfo_("ReportColumnMatrixMisfit", "Math", "SCIRun");
+
+#if 0
 namespace SCIRun {
 
 /// @class ReportColumnMatrixMisfit
-/// @brief This module computes and visualizes the error between two vectors. 
+/// @brief This module computes and visualizes the error between two vectors.
 
-class ReportColumnMatrixMisfit : public Module 
+class ReportColumnMatrixMisfit : public Module
 {
 public:
   explicit ReportColumnMatrixMisfit(GuiContext* ctx);
@@ -58,7 +67,7 @@ private:
 
   void showGraph(const ColumnMatrix& v1, const ColumnMatrix& v2, double ccInv, double rmsRel);
   bool containsInfiniteComponent(const ColumnMatrix& v);
-}; 
+};
 
 DECLARE_MAKER(ReportColumnMatrixMisfit)
 
@@ -81,7 +90,7 @@ ReportColumnMatrixMisfit::execute()
   get_input_handle("Vec2", ivec2H);
   ColumnMatrixHandle ivec2 = ivec2H->column();
 
-  if (ivec1->nrows() != ivec2->nrows()) 
+  if (ivec1->nrows() != ivec2->nrows())
   {
      error("Can't compute error on vectors of different lengths!");
      error("vec1 length = " + to_string(ivec1->nrows()));
@@ -91,7 +100,7 @@ ReportColumnMatrixMisfit::execute()
 
   double pp;
   string_to_double(pTCL_.get(), pp);
-  
+
   ColumnMatrixMisfitCalculator calc(*ivec1, *ivec2, pp);
 
   const double cc = calc.getCorrelationCoefficient();
@@ -99,30 +108,30 @@ ReportColumnMatrixMisfit::execute()
   const double rms = calc.getRMS();
   const double rmsRel = calc.getRelativeRMS();
 
-  if (have_ui_.get()) 
+  if (have_ui_.get())
   {
     showGraph(*ivec1, *ivec2, ccInv, rmsRel);
   }
 
   const std::string meth = methodTCL_.get();
   double val;
-  if (meth == "CC") 
+  if (meth == "CC")
   {
     val = cc;
-  } 
-  else if (meth == "CCinv") 
+  }
+  else if (meth == "CCinv")
   {
     val = ccInv;
-  } 
-  else if (meth == "RMS") 
+  }
+  else if (meth == "RMS")
   {
     val = rms;
-  } 
-  else if (meth == "RMSrel") 
+  }
+  else if (meth == "RMSrel")
   {
     val = rmsRel;
-  } 
-  else 
+  }
+  else
   {
     error("Unknown ReportColumnMatrixMisfit::methodTCL_ - " + meth);
     val = 0;
@@ -133,7 +142,7 @@ ReportColumnMatrixMisfit::execute()
   send_output_handle("Error Out", error);
 }
 
-void ReportColumnMatrixMisfit::showGraph(const ColumnMatrix& v1, const ColumnMatrix& v2, double ccInv, double rmsRel) 
+void ReportColumnMatrixMisfit::showGraph(const ColumnMatrix& v1, const ColumnMatrix& v2, double ccInv, double rmsRel)
 {
   if (containsInfiniteComponent(v1) || containsInfiniteComponent(v2))
     return;
@@ -164,3 +173,4 @@ bool ReportColumnMatrixMisfit::containsInfiniteComponent(const ColumnMatrix& v)
 
 } // End namespace SCIRun
 
+#endif

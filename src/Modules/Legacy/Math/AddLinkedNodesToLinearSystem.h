@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,10 +25,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Math/AddKnownsToLinearSystem.h
 
-#ifndef MODULES_LEGACY_Math_AddKnownsToLinearSystem_H__
-#define MODULES_LEGACY_Math_AddKnownsToLinearSystem_H__
+#ifndef MODULES_LEGACY_Math_AddLinkedNodesToLinearSystem_H__
+#define MODULES_LEGACY_Math_AddLinkedNodesToLinearSystem_H__
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Math/share.h>
@@ -37,21 +36,22 @@ namespace SCIRun {
   namespace Modules {
     namespace Math {
 
-      class SCISHARE AddKnownsToLinearSystem : public Dataflow::Networks::Module,
+      class SCISHARE AddLinkedNodesToLinearSystem : public Dataflow::Networks::Module,
         public Has3InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>,
-        public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
+        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
       {
       public:
-        AddKnownsToLinearSystem();
-        virtual void setStateDefaults() {}
-        virtual void execute();
+        AddLinkedNodesToLinearSystem();
+        virtual void setStateDefaults() override {}
+        virtual void execute() override;
 
-        INPUT_PORT(0, LHS_Matrix, SparseRowMatrix);
-        INPUT_PORT(1, RHS_Vector, DenseMatrix);
-	      INPUT_PORT(2, X_Vector, DenseMatrix);
-        OUTPUT_PORT(0, OutPutLHSMatrix, SparseRowMatrix);
-	      OUTPUT_PORT(1, OutPutRHSVector, DenseColumnMatrix);
-	
+        INPUT_PORT(0, LHS, Matrix);
+        INPUT_PORT(1, RHS, Matrix);
+	      INPUT_PORT(2, LinkedNodes, Matrix);
+        OUTPUT_PORT(0, OutputLHS, Matrix);
+	      OUTPUT_PORT(1, OutputRHS, Matrix);
+        OUTPUT_PORT(2, Mapping, Matrix);
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }
