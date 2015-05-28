@@ -98,7 +98,7 @@ namespace SCIRun
       private:
         const Rows rows_;
         const Columns columns_;
-        const Storage data_;
+        Storage data_;
       };
     }
   }

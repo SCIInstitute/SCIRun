@@ -30,6 +30,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 
 #include <Core/Math/MiscMath.h>
@@ -66,13 +67,12 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
 
   double min2 = -std::numeric_limits<double>::max();
   double min = std::numeric_limits<double>::max();
-  //double* data = dmat->get_data_pointer();
 
   bool found_domain = false;
 
   LegacySparseDataContainer<double> sparseData(num_values+1, num_values, 0);
   auto rr = sparseData.rows();
-  auto cc = sparseData.cols();
+  auto cc = sparseData.columns();
   size_type nnz = 0;
 
   if (!rr || !cc)
@@ -141,7 +141,7 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
   }
 
   SparseRowMatrix nodeLinkHalf(num_values, num_values, rr.get(), cc.get(), aa.get(), nnz);
-  SparseRowMatrix noseLinkHalfT(nodeLinkTemp.transpose());
+  SparseRowMatrix nodeLinkHalfT(nodeLinkHalf.transpose());
   nodeLink.reset(new SparseRowMatrix(nodeLinkHalf + nodeLinkHalfT));
   return (true);
 }

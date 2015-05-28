@@ -29,7 +29,9 @@
 #include <Core/Algorithms/Legacy/FiniteElements/Mapping/BuildFEGridMapping.h>
 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun;
@@ -87,16 +89,10 @@ BuildFEGridMappingAlgo::run(
   const index_type *rows = spr->get_rows();
   const index_type *cols = spr->get_cols();
 
-  SparseRowMatrix::Data matData(m+1, m);
-
-  if (!matData.allocated())
-  {
-    error("Could not allocate memory for sparse matrix");
-    return (false);
-  }
-  const SparseRowMatrix::Rows& rr = matData.rows();
-  const SparseRowMatrix::Columns& cc = matData.columns();
-  const SparseRowMatrix::Storage& vv = matData.data();
+  LegacySparseDataContainer<double> matData(m+1, m);
+  auto rr = matData.rows();
+  auto cc = matData.columns();
+  auto vv = matData.data();
 
   for (index_type r=0; r<m; r++) rr[r] = r;
 
@@ -144,7 +140,7 @@ BuildFEGridMappingAlgo::run(
   }
   rr[m] = m; // An extra entry goes on the end of rr.
 
-  SparseRowMatrixHandle mat(new SparseRowMatrix(m, k, matData, m));
+  SparseRowMatrixHandle mat(new SparseRowMatrix(m, k, rr.get(), cc.get(), vv.get(), m));
 
   if (!mat)
   {
@@ -169,7 +165,7 @@ BuildFEGridMappingAlgo::run(
 
   if (cur_geomtogrid)
   {
-    CurrentGeomToGrid = mat->sparse()->make_transpose();
+    CurrentGeomToGrid.reset(new SparseRowMatrix(mat->transpose()));
     if (!CurrentGeomToGrid)
     {
       error("Could not build CurrentGeomToGrid mapping matrix");
@@ -179,12 +175,10 @@ BuildFEGridMappingAlgo::run(
 
   if (cur_gridtogeom || pot_geomtogrid)
   {
-    MatrixHandle mat2 = mat->make_transpose();
-    mat2.detach();
+    SparseRowMatrixHandle mat2(new SparseRowMatrix(mat->transpose()));
 
-    const index_type* cc = mat2->sparse()->get_cols();
-    const index_type* rr = mat2->sparse()->get_rows();
-    double* vv = mat2->sparse()->get_vals();
+    const index_type* rr = mat2->get_rows();
+    double* vv = mat2->valuePtr();
 
     for (index_type r=0; r<k; r++)
     {
@@ -196,7 +190,7 @@ BuildFEGridMappingAlgo::run(
 
     if (cur_gridtogeom)
     {
-      CurrentGridToGeom = mat2->sparse()->make_transpose();
+      CurrentGridToGeom.reset(new SparseRowMatrix(mat2->transpose()));
       if (!CurrentGridToGeom)
       {
         error("Could not build CurrentGridToGeom mapping matrix");
@@ -228,7 +222,7 @@ run(FieldHandle domainField,
 {
   ScopedAlgorithmStatusReporter asr(this, "BuildFEGridMapping");
 
-  if (!DomainField)
+  if (!domainField)
   {
     error("CreateLinkBetweenMeshAndGridGridByDomain: No input field");
     return (false);
@@ -302,9 +296,9 @@ run(FieldHandle domainField,
 
   LegacySparseDataContainer<double> sparseData(m+1, m);
 
-  const SparseRowMatrix::Rows& rr = matData.rows();
-  const SparseRowMatrix::Columns& cc = matData.columns();
-  const SparseRowMatrix::Storage& vv = matData.data();
+  auto rr = sparseData.rows();
+  auto cc = sparseData.columns();
+  auto vv = sparseData.data();
 
   imesh->synchronize(Mesh::NODE_NEIGHBORS_E);
 
@@ -360,7 +354,7 @@ run(FieldHandle domainField,
   }
   rr[m] = m; // An extra entry goes on the end of rr.
 
-  SparseRowMatrixHandle mat(new SparseRowMatrix(m, k, matData, m));
+  SparseRowMatrixHandle mat(new SparseRowMatrix(m, k, rr.get(), cc.get(), vv.get(), m));
 
   if (!mat)
   {
@@ -385,7 +379,7 @@ run(FieldHandle domainField,
 
   if (cur_geomtogrid)
   {
-    CurrentGeomToGrid = mat->sparse()->make_transpose();
+    CurrentGeomToGrid.reset(new SparseRowMatrix(mat->transpose()));
     if (!CurrentGeomToGrid)
     {
       error("Could not build mapping matrix");
@@ -395,11 +389,10 @@ run(FieldHandle domainField,
 
   if (cur_gridtogeom || pot_geomtogrid)
   {
-    SparseRowMatrixHandle mat2 = mat->sparse()->make_transpose();
+    SparseRowMatrixHandle mat2(new SparseRowMatrix(mat->transpose()));
 
-    index_type* cc = mat2->get_cols();
     index_type* rr = mat2->get_rows();
-    double* const vv = mat2->get_vals();
+    double* const vv = mat2->valuePtr();
 
     for (index_type r=0; r<k; r++)
     {
@@ -411,7 +404,7 @@ run(FieldHandle domainField,
 
     if (cur_gridtogeom)
     {
-      CurrentGridToGeom = mat2->make_transpose();
+      CurrentGridToGeom.reset(new SparseRowMatrix(mat2->transpose()));
       if (!CurrentGridToGeom)
       {
         error("Could not build mapping matrix");
