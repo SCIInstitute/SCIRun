@@ -194,7 +194,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
 	addModuleDesc<BuildMatrixOfSurfaceNormals>("Real ported module", "...");
   addModuleDesc<AddLinkedNodesToLinearSystem>("Real ported module", "...");
-  addModuleDesc<ReportColumnMatrixMisfit>("Real ported module", "...");
+  addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");

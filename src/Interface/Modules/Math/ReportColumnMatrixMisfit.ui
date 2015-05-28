@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>341</width>
-    <height>213</height>
+    <height>254</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>341</width>
-    <height>213</height>
+    <height>254</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -81,6 +81,43 @@
         </property>
         <property name="text">
          <string>Clear Graphs</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string/>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Rel RMS:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="rmsRelLineEdit_">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>1-CC:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="ccInvLineEdit_">
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

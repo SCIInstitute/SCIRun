@@ -35,6 +35,8 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 ALGORITHM_PARAMETER_DEF(Math, MisfitMethod);
 ALGORITHM_PARAMETER_DEF(Math, PValue);
+ALGORITHM_PARAMETER_DEF(Math, ccInv);
+ALGORITHM_PARAMETER_DEF(Math, rmsRel);
 
 ColumnMatrixMisfitCalculator::ColumnMatrixMisfitCalculator(const DenseColumnMatrix& x, const DenseColumnMatrix& y, double pp)
 : rmsRel_(0), rms_(0), cc_(0), ccInv_(0), pp_(pp)

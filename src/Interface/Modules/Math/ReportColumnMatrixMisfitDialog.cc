@@ -48,4 +48,6 @@ ReportColumnMatrixMisfitDialog::ReportColumnMatrixMisfitDialog(const std::string
 
   addComboBoxManager(methodComboBox_, Parameters::MisfitMethod, methodMap_);
   addDoubleSpinBoxManager(pValueDoubleSpinBox_, Parameters::PValue);
+  addDoubleLineEditManager(ccInvLineEdit_, Parameters::ccInv);
+  addDoubleLineEditManager(rmsRelLineEdit_, Parameters::rmsRel);
 }

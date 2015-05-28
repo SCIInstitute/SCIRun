@@ -41,6 +41,8 @@ namespace SCIRun {
 
         ALGORITHM_PARAMETER_DECL(MisfitMethod);
         ALGORITHM_PARAMETER_DECL(PValue);
+        ALGORITHM_PARAMETER_DECL(ccInv);
+        ALGORITHM_PARAMETER_DECL(rmsRel);
 
         //TODO: change to proper algo class
         class SCISHARE ColumnMatrixMisfitCalculator : boost::noncopyable

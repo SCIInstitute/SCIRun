@@ -44,10 +44,13 @@ namespace SCIRun {
         ReportColumnMatrixMisfit();
         virtual void execute();
         virtual void setStateDefaults();
-        INPUT_PORT(0, Vec1, DenseColumnMatrix);
-        INPUT_PORT(1, Vec2, DenseColumnMatrix);
+        INPUT_PORT(0, Vec1, DenseMatrix);
+        INPUT_PORT(1, Vec2, DenseMatrix);
         OUTPUT_PORT(0, Error_Out, Double);
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        void showGraph(const Core::Datatypes::DenseColumnMatrix& v1, const Core::Datatypes::DenseColumnMatrix& v2, double ccInv, double rmsRel) const;
+        bool containsInfiniteComponent(const Core::Datatypes::DenseColumnMatrix& v) const;
       };
 }}}
 

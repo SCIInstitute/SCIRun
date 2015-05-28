@@ -36,6 +36,7 @@
 
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
 
@@ -65,6 +66,8 @@ void ReportColumnMatrixMisfit::setStateDefaults()
   auto state = get_state();
   state->setValue(Parameters::PValue, 2.0);
   state->setValue(Parameters::MisfitMethod, std::string("CCinv"));
+  state->setValue(Parameters::ccInv, 0.0);
+  state->setValue(Parameters::rmsRel, 0.0);
 }
 
 void ReportColumnMatrixMisfit::execute()
@@ -91,12 +94,7 @@ void ReportColumnMatrixMisfit::execute()
   const double rms = calc.getRMS();
   const double rmsRel = calc.getRelativeRMS();
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (have_ui_.get())
-  {
-    showGraph(*ivec1, *ivec2, ccInv, rmsRel);
-  }
-  #endif
+  showGraph(*ivec1, *ivec2, ccInv, rmsRel);
 
   const std::string meth = state->getValue(Parameters::MisfitMethod).toString();
   double val;
@@ -122,15 +120,20 @@ void ReportColumnMatrixMisfit::execute()
     val = 0;
   }
 
-  sendOutput(Error_Out, boost::make_shared<Double>(val));
+  //sendOutput(Error_Out, boost::make_shared<Double>(val));
 }
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
-void ReportColumnMatrixMisfit::showGraph(const ColumnMatrix& v1, const ColumnMatrix& v2, double ccInv, double rmsRel)
+
+void ReportColumnMatrixMisfit::showGraph(const DenseColumnMatrix& v1, const DenseColumnMatrix& v2, double ccInv, double rmsRel) const
 {
   if (containsInfiniteComponent(v1) || containsInfiniteComponent(v2))
     return;
 
+  auto state = get_state();
+  state->setValue(Parameters::ccInv, ccInv);
+  state->setValue(Parameters::rmsRel, rmsRel);
+
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
   std::ostringstream str;
   str << get_id() << " append_graph " << ccInv << " " << rmsRel << " \"";
 
@@ -143,18 +146,18 @@ void ReportColumnMatrixMisfit::showGraph(const ColumnMatrix& v1, const ColumnMat
   str << "\" ; update idletasks";
 
   TCLInterface::execute(str.str());
+#endif
 }
 
-bool ReportColumnMatrixMisfit::containsInfiniteComponent(const ColumnMatrix& v)
+bool ReportColumnMatrixMisfit::containsInfiniteComponent(const DenseColumnMatrix& v) const
 {
-  if (std::find_if(v.begin(), v.end(), IsInfinite) != v.end())
+  for (int i = 0; i < v.size(); i++)
   {
-    remark("Input vector contains infinite values, graph not updated.");
-    return true;
+    if (IsInfinite(v[i]))
+    {
+      remark("Input vector contains infinite values, graph not updated.");
+      return true;
+    }
   }
   return false;
 }
-
-} // End namespace SCIRun
-
-#endif
