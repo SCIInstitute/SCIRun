@@ -45,6 +45,28 @@
 /// @class GetSliceFromStructuredFieldByIndices
 /// @brief This module reduces the dimension of a topologically regular field by 1 dimension. 
 
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+
+const ModuleLookupInfo GetSliceFromStructuredFieldByIndices::staticInfo_("GetSliceFromStructuredFieldByIndices", "NewField", "SCIRun");
+
+GetSliceFromStructuredFieldByIndices::GetSliceFromStructuredFieldByIndices() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(OutputMatrix);
+}
+
+void GetSliceFromStructuredFieldByIndices::setStateDefaults()
+{
+  auto state = get_state();
+  //state->setValue(FunctionString, std::string("RESULT = 1;"));
+  //state->setValue(FormatString, std::string("Scalar"));
+  //state->setValue(BasisString, std::string("Linear"));
+}
+
 #if 0
 namespace SCIRun {
 
@@ -68,18 +90,8 @@ class GetSliceFromStructuredFieldByIndices : public Module {
     GuiInt               gui_index_i_;
     GuiInt               gui_index_j_;
     GuiInt               gui_index_k_;
-
-    /// gui_update_type_ must be declared after all gui vars because !
-    /// some are traced in the tcl code. If gui_update_type_ is set to
-    /// Auto having it last will prevent the net from executing when it
-    /// is instantiated.
-
-    GuiString            gui_update_type_;
-    GuiInt               gui_continuous_;
 };
 
-
-DECLARE_MAKER(GetSliceFromStructuredFieldByIndices)
 
 GetSliceFromStructuredFieldByIndices::GetSliceFromStructuredFieldByIndices(GuiContext *context)
   : Module("GetSliceFromStructuredFieldByIndices", context, Filter, "NewField", "SCIRun"),

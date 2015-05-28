@@ -55,7 +55,7 @@ namespace SCIRun {
         INPUT_PORT(3, ElemLink, SparseRowMatrix);
         OUTPUT_PORT(0, BoundaryField, LegacyField);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }
