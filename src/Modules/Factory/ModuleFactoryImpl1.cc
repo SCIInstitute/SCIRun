@@ -90,6 +90,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
 #include <Modules/Legacy/Math/AddLinkedNodesToLinearSystem.h>
+#include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
@@ -193,6 +194,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
 	addModuleDesc<BuildMatrixOfSurfaceNormals>("Real ported module", "...");
   addModuleDesc<AddLinkedNodesToLinearSystem>("Real ported module", "...");
+  addModuleDesc<ReportColumnMatrixMisfit>("Real ported module", "...");
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");

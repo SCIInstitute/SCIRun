@@ -38,7 +38,7 @@ namespace SCIRun {
 
       class SCISHARE ReportColumnMatrixMisfit : public SCIRun::Dataflow::Networks::Module,
         public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
-        public Has1OutputPort<MatrixPortTag>
+        public Has1OutputPort<ScalarPortTag>
       {
       public:
         ReportColumnMatrixMisfit();
@@ -46,7 +46,7 @@ namespace SCIRun {
         virtual void setStateDefaults();
         INPUT_PORT(0, Vec1, DenseColumnMatrix);
         INPUT_PORT(1, Vec2, DenseColumnMatrix);
-        OUTPUT_PORT(0, Error_Out, DenseColumnMatrix);
+        OUTPUT_PORT(0, Error_Out, Double);
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 }}}

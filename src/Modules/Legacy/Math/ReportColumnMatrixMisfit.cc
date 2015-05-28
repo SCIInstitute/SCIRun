@@ -36,6 +36,7 @@
 
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Legacy/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
 
 #include <Core/Math/MiscMath.h>
@@ -48,6 +49,20 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Math;
 
 const ModuleLookupInfo ReportColumnMatrixMisfit::staticInfo_("ReportColumnMatrixMisfit", "Math", "SCIRun");
+
+ReportColumnMatrixMisfit::ReportColumnMatrixMisfit() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(Vec1);
+  INITIALIZE_PORT(Vec2);
+  INITIALIZE_PORT(Error_Out);
+}
+
+void ReportColumnMatrixMisfit::setStateDefaults()
+{
+  //todo
+
+}
+
 
 #if 0
 namespace SCIRun {
@@ -78,28 +93,24 @@ ReportColumnMatrixMisfit::ReportColumnMatrixMisfit(GuiContext* ctx)
     pTCL_(get_ctx()->subVar("pTCL"))
 {
 }
+#endif
 
-void
-ReportColumnMatrixMisfit::execute()
+void ReportColumnMatrixMisfit::execute()
 {
-  MatrixHandle ivec1H;
-  get_input_handle("Vec1", ivec1H);
-  ColumnMatrixHandle ivec1 = ivec1H->column();
-
-  MatrixHandle ivec2H;
-  get_input_handle("Vec2", ivec2H);
-  ColumnMatrixHandle ivec2 = ivec2H->column();
+  auto ivec1 = getRequiredInput(Vec1);
+  auto ivec2 = getRequiredInput(Vec2);
 
   if (ivec1->nrows() != ivec2->nrows())
   {
-     error("Can't compute error on vectors of different lengths!");
-     error("vec1 length = " + to_string(ivec1->nrows()));
-     error("vec2 length = " + to_string(ivec2->nrows()));
-     return;
+    std::ostringstream ostr;
+    ostr << "Can't compute error on vectors of different lengths!" <<
+      "vec1 length = " << ivec1->nrows() << "vec2 length = " << ivec2->nrows();
+    error(ostr.str());
+    return;
   }
 
-  double pp;
-  string_to_double(pTCL_.get(), pp);
+  auto state = get_state();
+  const double pp = 2;//state->getValue(...).toDouble();
 
   ColumnMatrixMisfitCalculator calc(*ivec1, *ivec2, pp);
 
@@ -108,12 +119,14 @@ ReportColumnMatrixMisfit::execute()
   const double rms = calc.getRMS();
   const double rmsRel = calc.getRelativeRMS();
 
+  #if 0
   if (have_ui_.get())
   {
     showGraph(*ivec1, *ivec2, ccInv, rmsRel);
   }
+  #endif
 
-  const std::string meth = methodTCL_.get();
+  const std::string meth = "CC";//state->getValue(...).toString();
   double val;
   if (meth == "CC")
   {
@@ -133,15 +146,14 @@ ReportColumnMatrixMisfit::execute()
   }
   else
   {
-    error("Unknown ReportColumnMatrixMisfit::methodTCL_ - " + meth);
+    error("Unknown ReportColumnMatrixMisfit method - " + meth);
     val = 0;
   }
 
-  ColumnMatrixHandle error = new ColumnMatrix(1);
-  (*error)[0] = val;
-  send_output_handle("Error Out", error);
+  sendOutput(Error_Out, boost::make_shared<Double>(val));
 }
 
+#if 0
 void ReportColumnMatrixMisfit::showGraph(const ColumnMatrix& v1, const ColumnMatrix& v2, double ccInv, double rmsRel)
 {
   if (containsInfiniteComponent(v1) || containsInfiniteComponent(v2))
