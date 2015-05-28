@@ -37,7 +37,13 @@ namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Fields {
-        //ALGORITHM_PARAMETER_DECL(MoreSwitches);
+        ALGORITHM_PARAMETER_DECL(Dim_i);
+        ALGORITHM_PARAMETER_DECL(Dim_j);
+        ALGORITHM_PARAMETER_DECL(Dim_k);
+        ALGORITHM_PARAMETER_DECL(Index_i);
+        ALGORITHM_PARAMETER_DECL(Index_j);
+        ALGORITHM_PARAMETER_DECL(Index_k);
+        ALGORITHM_PARAMETER_DECL(Axis_ijk);
       }}}
 
   namespace Modules {

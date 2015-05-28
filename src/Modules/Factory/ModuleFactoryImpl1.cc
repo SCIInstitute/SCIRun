@@ -56,6 +56,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/GetDomainBoundary.h>
+#include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Legacy/Fields/CreateFieldData.h>
@@ -168,6 +169,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CreateStandardColorMap>("In progress: four color maps available", "...");
   addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
+  addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
 	addModuleDesc<SwapFieldDataWithMatrixEntries>("SwapFieldDataWithMatrixEntires","...");
