@@ -36,21 +36,19 @@
 ///     @date    March 2006
 /// 
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseMatrix.h>
-
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-
-
-namespace SCIRun {
 
 /// @class GetSliceFromStructuredFieldByIndices
 /// @brief This module reduces the dimension of a topologically regular field by 1 dimension. 
+
+#if 0
+namespace SCIRun {
+
+
 
 class GetSliceFromStructuredFieldByIndices : public Module {
   public:
@@ -868,3 +866,4 @@ GetSliceFromStructuredFieldByIndices::execute()
 }
 
 } // End namespace SCIRun
+#endif

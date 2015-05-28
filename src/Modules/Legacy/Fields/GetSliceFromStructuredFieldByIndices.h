@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_INTERFACEWITHTETGEN_H__
-#define MODULES_LEGACY_FIELDS_INTERFACEWITHTETGEN_H__
+#ifndef MODULES_LEGACY_FIELDS_GetSliceFromStructuredFieldByIndices_H__
+#define MODULES_LEGACY_FIELDS_GetSliceFromStructuredFieldByIndices_H__
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
@@ -37,39 +37,26 @@ namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Fields {
-        ALGORITHM_PARAMETER_DECL(PiecewiseFlag);
-        ALGORITHM_PARAMETER_DECL(AssignFlag);
-        ALGORITHM_PARAMETER_DECL(SetNonzeroAttributeFlag);
-        ALGORITHM_PARAMETER_DECL(SuppressSplitFlag);
-        ALGORITHM_PARAMETER_DECL(SetSplitFlag);
-        ALGORITHM_PARAMETER_DECL(QualityFlag);
-        ALGORITHM_PARAMETER_DECL(SetRatioFlag);
-        ALGORITHM_PARAMETER_DECL(VolConstraintFlag);
-        ALGORITHM_PARAMETER_DECL(SetMaxVolConstraintFlag);
-        ALGORITHM_PARAMETER_DECL(MinRadius);
-        ALGORITHM_PARAMETER_DECL(MaxVolConstraint);
-        ALGORITHM_PARAMETER_DECL(DetectIntersectionsFlag);
-        ALGORITHM_PARAMETER_DECL(MoreSwitches);
+        //ALGORITHM_PARAMETER_DECL(MoreSwitches);
       }}}
 
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE InterfaceWithTetGen : public Dataflow::Networks::Module,
-        public Has4InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, DynamicPortTag<FieldPortTag>>,
-        public Has1OutputPort<FieldPortTag>
+      class SCISHARE GetSliceFromStructuredFieldByIndices : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, MatrixPortTag>,
+        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
       {
       public:
-        InterfaceWithTetGen();
+        GetSliceFromStructuredFieldByIndices();
 
         virtual void execute();
         virtual void setStateDefaults();
 
-        INPUT_PORT(0, Main, LegacyField);
-        INPUT_PORT(1, Points, LegacyField);
-        INPUT_PORT(2, Region_Attribs, LegacyField);
-        INPUT_PORT_DYNAMIC(3, Regions, LegacyField);
-        OUTPUT_PORT(0, TetVol, LegacyField);
+        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(1, InputMatrix, Matrix);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+        OUTPUT_PORT(1, OutputMatrix, Matrix);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
