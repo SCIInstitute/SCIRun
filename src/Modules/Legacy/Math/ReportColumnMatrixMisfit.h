@@ -44,8 +44,8 @@ namespace SCIRun {
         ReportColumnMatrixMisfit();
         virtual void execute();
         virtual void setStateDefaults();
-        INPUT_PORT(0, Vec1, DenseMatrix);
-        INPUT_PORT(1, Vec2, DenseMatrix);
+        INPUT_PORT(0, Vec1, Matrix);
+        INPUT_PORT(1, Vec2, Matrix);
         OUTPUT_PORT(0, Error_Out, Double);
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:

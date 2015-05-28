@@ -39,6 +39,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 #include <Core/Math/MiscMath.h>
 #include <sstream>
@@ -75,52 +76,67 @@ void ReportColumnMatrixMisfit::execute()
   auto ivec1 = getRequiredInput(Vec1);
   auto ivec2 = getRequiredInput(Vec2);
 
-  if (ivec1->nrows() != ivec2->nrows())
+  if (needToExecute())
   {
-    std::ostringstream ostr;
-    ostr << "Can't compute error on vectors of different lengths!" <<
-      "vec1 length = " << ivec1->nrows() << "vec2 length = " << ivec2->nrows();
-    error(ostr.str());
-    return;
-  }
+    if (ivec1->nrows() != ivec2->nrows())
+    {
+      std::ostringstream ostr;
+      ostr << "Can't compute error on vectors of different lengths!" <<
+        "vec1 length = " << ivec1->nrows() << "vec2 length = " << ivec2->nrows();
+      error(ostr.str());
+      return;
+    }
 
-  auto state = get_state();
-  const double pp = state->getValue(Parameters::PValue).toDouble();
+    if (ivec1->ncols() != 1 || ivec2->ncols() != 1)
+    {
+      std::ostringstream ostr;
+      ostr << "Can't compute error on vectors of different lengths!" <<
+        "vec1 length = " << ivec1->nrows() << "vec2 length = " << ivec2->nrows();
+      error(ostr.str());
+      return;
+    }
 
-  ColumnMatrixMisfitCalculator calc(*ivec1, *ivec2, pp);
+    auto state = get_state();
+    const double pp = state->getValue(Parameters::PValue).toDouble();
 
-  const double cc = calc.getCorrelationCoefficient();
-  const double ccInv = calc.getInverseCorrelationCoefficient();
-  const double rms = calc.getRMS();
-  const double rmsRel = calc.getRelativeRMS();
+    auto ivec1Col = matrix_convert::to_column(ivec1);
+    auto ivec2Col = matrix_convert::to_column(ivec2);
 
-  showGraph(*ivec1, *ivec2, ccInv, rmsRel);
+    ColumnMatrixMisfitCalculator calc(*ivec1Col, *ivec2Col, pp);
 
-  const std::string meth = state->getValue(Parameters::MisfitMethod).toString();
-  double val;
-  if (meth == "CC")
-  {
-    val = cc;
-  }
-  else if (meth == "CCinv")
-  {
-    val = ccInv;
-  }
-  else if (meth == "RMS")
-  {
-    val = rms;
-  }
-  else if (meth == "RMSrel")
-  {
-    val = rmsRel;
-  }
-  else
-  {
-    error("Unknown ReportColumnMatrixMisfit method - " + meth);
-    val = 0;
-  }
+    const double cc = calc.getCorrelationCoefficient();
+    const double ccInv = calc.getInverseCorrelationCoefficient();
+    const double rms = calc.getRMS();
+    const double rmsRel = calc.getRelativeRMS();
 
-  //sendOutput(Error_Out, boost::make_shared<Double>(val));
+    showGraph(*ivec1Col, *ivec2Col, ccInv, rmsRel);
+
+    const std::string meth = state->getValue(Parameters::MisfitMethod).toString();
+    double val;
+    if (meth == "CC")
+    {
+      val = cc;
+    }
+    else if (meth == "CCinv")
+    {
+      val = ccInv;
+    }
+    else if (meth == "RMS")
+    {
+      val = rms;
+    }
+    else if (meth == "RMSrel")
+    {
+      val = rmsRel;
+    }
+    else
+    {
+      error("Unknown ReportColumnMatrixMisfit method - " + meth);
+      val = 0;
+    }
+
+    //sendOutput(Error_Out, boost::make_shared<Double>(val));
+  }
 }
 
 
