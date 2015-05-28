@@ -33,23 +33,23 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Math;
 
 const ModuleLookupInfo AddLinkedNodesToLinearSystem::staticInfo_("AddLinkedNodesToLinearSystem", "Math", "SCIRun");
 
+AddLinkedNodesToLinearSystem::AddLinkedNodesToLinearSystem() : Module(staticInfo_, false)
+{
+  INITIALIZE_PORT(LHS);
+  INITIALIZE_PORT(RHS);
+  INITIALIZE_PORT(LinkedNodes);
+  INITIALIZE_PORT(OutputLHS);
+  INITIALIZE_PORT(OutputRHS);
+  INITIALIZE_PORT(Mapping);
+}
+
 #if 0
-namespace SCIRun {
-
-using namespace SCIRun;
-
-class AddLinkedNodesToLinearSystem : public Module {
-public:
-  AddLinkedNodesToLinearSystem(GuiContext*);
-
-  virtual ~AddLinkedNodesToLinearSystem() {}
-
-  virtual void execute();
 
 private:
   SCIRunAlgo::BuildNodeLinkAlgo bnl_algo_;
@@ -65,65 +65,71 @@ AddLinkedNodesToLinearSystem::AddLinkedNodesToLinearSystem(GuiContext* ctx) :
   bnl_algo_.set_progress_reporter(this);
   grid_algo_.set_progress_reporter(this);
 }
+#endif
 
 void
 AddLinkedNodesToLinearSystem::execute()
 {
-  MatrixHandle A, RHS, LinkedNodes, Mapping;
+  auto A = getRequiredInput(LHS);
+  auto RHSoption = getOptionalInput(RHS);
+  auto linkedNodes = getRequiredInput(LinkedNodes);
 
-  get_input_handle("Matrix",A,true);
-  get_input_handle("RHS",RHS,false);
-  get_input_handle("LinkedNodes",LinkedNodes,true);
-
-  if (inputs_changed_ || !oport_cached("Matrix") || !oport_cached("RHS") ||
-      !oport_cached("Mapping"))
+  if (needToExecute())
   {
-    MatrixHandle NodeLink;
-
     if (A->nrows() != A->ncols())
     {
       error("Stiffness matrix needs to be square");
       return;
     }
 
-    if (RHS.get_rep() == 0)
+    DenseColumnMatrixHandle rhs;
+    if (RHSoption && *RHSoption)
     {
-      RHS = new ColumnMatrix(A->nrows());
-      RHS->zero();
+      rhs = *RHSoption;
+    }
+    else
+    {
+      rhs.reset(new DenseColumnMatrix(A->nrows(), 0);
     }
 
-    if (RHS->nrows() != LinkedNodes->nrows())
+    if (rhs->nrows() != linkedNodes->nrows())
     {
       error("Linked nodes has the wrong number of rows");
       return;
     }
 
+    MatrixHandle nodeLink;
+
+    //TODO: double-algo module
+    BuildNodeLinkAlgo bnl_algo;
+    BuildFEGridMappingAlgo grid_algo;
+
     // Build Linking matrix
-    if(!(bnl_algo_.run(LinkedNodes,NodeLink))) return;
+    if (!bnl_algo.run(linkedNodes, nodeLink))
+    {
+      error("BuildNodeLinkAlgo returned false");
+      return;
+    }
 
-    MatrixHandle PotentialGeomToGrid, PotentialGridToGeom;
-    MatrixHandle CurrentGeomToGrid, CurrentGridToGeom;
+    MatrixHandle potentialGeomToGrid, potentialGridToGeom;
+    MatrixHandle currentGeomToGrid, currentGridToGeom;
 
-    grid_algo_.set_bool("build_current_gridtogeom",false);
-    grid_algo_.set_bool("build_potential_geomtogrid",false);
+    grid_algo.set(Parameters::build_current_gridtogeom, false);
+    grid_algo.set(Parameters::build_potential_geomtogrid, false);
 
-    if(!(grid_algo_.run(NodeLink,PotentialGeomToGrid,PotentialGridToGeom,
-                        CurrentGeomToGrid,CurrentGridToGeom))) return;
+    if (!grid_algo.run(nodeLink, potentialGeomToGrid, potentialGridToGeom, currentGeomToGrid, currentGridToGeom))
+    {
+      error("BuildFEGridMappingAlgo returned false");
+      return;
+    }
 
-    // Remove the linked nodes from the system and make sure they are the
-    // same node
+    // Remove the linked nodes from the system and make sure they are the same node
 
-    A = CurrentGeomToGrid*A*PotentialGridToGeom;
-    RHS = CurrentGeomToGrid*RHS;
-    Mapping = PotentialGridToGeom;
+    A = currentGeomToGrid * A * potentialGridToGeom;
+    rhs = currentGeomToGrid * rhs;
 
-    send_output_handle("Matrix",A);
-    send_output_handle("RHS",RHS);
-    send_output_handle("Mapping",Mapping);
+    sendOutput(OutputLHS, A);
+    sendOutput(OutputRHS, rhs);
+    sendOutput(Mapping, potentialGridToGeom);
   }
-
-
 }
-
-} // End namespace SCIRun
-#endif
