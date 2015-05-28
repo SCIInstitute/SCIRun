@@ -65,19 +65,21 @@ class SCISHARE BuildFEGridMappingAlgo : public AlgorithmBase
     // and currents are assumed as sources that need to be divided or added
     // together.
     bool run(Datatypes::MatrixHandle nodeLink,
-      Datatypes::MatrixHandle& PotentialGeomToGrid,
-      Datatypes::MatrixHandle& PotentialGridToGeom,
-      Datatypes::MatrixHandle& CurrentGeomToGrid,
-      Datatypes::MatrixHandle& CurrentGridToGeom) const;
+      Datatypes::SparseRowMatrixHandle& PotentialGeomToGrid,
+      Datatypes::SparseRowMatrixHandle& PotentialGridToGeom,
+      Datatypes::SparseRowMatrixHandle& CurrentGeomToGrid,
+      Datatypes::SparseRowMatrixHandle& CurrentGridToGeom) const;
 
     // Special version for not linking elements that
     // are not in the same domain
     bool run(FieldHandle domainField,
       Datatypes::MatrixHandle nodeLink,
-      Datatypes::MatrixHandle& PotentialGeomToGrid,
-      Datatypes::MatrixHandle& PotentialGridToGeom,
-      Datatypes::MatrixHandle& CurrentGeomToGrid,
-             Datatypes:: MatrixHandle& CurrentGridToGeom) const;
+      Datatypes::SparseRowMatrixHandle& PotentialGeomToGrid,
+      Datatypes::SparseRowMatrixHandle& PotentialGridToGeom,
+      Datatypes::SparseRowMatrixHandle& CurrentGeomToGrid,
+      Datatypes::SparseRowMatrixHandle& CurrentGridToGeom) const;
+
+		virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 };
 
 }}}}

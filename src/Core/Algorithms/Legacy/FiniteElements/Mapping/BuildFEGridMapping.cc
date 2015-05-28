@@ -59,10 +59,10 @@ BuildFEGridMappingAlgo::BuildFEGridMappingAlgo()
 bool
 BuildFEGridMappingAlgo::run(
   MatrixHandle nodeLink,
-    MatrixHandle& PotentialGeomToGrid,
-    MatrixHandle& PotentialGridToGeom,
-    MatrixHandle& CurrentGeomToGrid,
-    MatrixHandle& CurrentGridToGeom) const
+  SparseRowMatrixHandle& PotentialGeomToGrid,
+  SparseRowMatrixHandle& PotentialGridToGeom,
+  SparseRowMatrixHandle& CurrentGeomToGrid,
+  SparseRowMatrixHandle& CurrentGridToGeom) const
 {
   ScopedAlgorithmStatusReporter asr(this, "BuildFEGridMapping");
 
@@ -215,10 +215,10 @@ bool
 BuildFEGridMappingAlgo::
 run(FieldHandle domainField,
     MatrixHandle nodeLink,
-    MatrixHandle& PotentialGeomToGrid,
-    MatrixHandle& PotentialGridToGeom,
-    MatrixHandle& CurrentGeomToGrid,
-    MatrixHandle& CurrentGridToGeom) const
+    SparseRowMatrixHandle& PotentialGeomToGrid,
+    SparseRowMatrixHandle& PotentialGridToGeom,
+    SparseRowMatrixHandle& CurrentGeomToGrid,
+    SparseRowMatrixHandle& CurrentGridToGeom) const
 {
   ScopedAlgorithmStatusReporter asr(this, "BuildFEGridMapping");
 
@@ -424,4 +424,9 @@ run(FieldHandle domainField,
   }
 
   return (true);
+}
+
+AlgorithmOutput BuildFEGridMappingAlgo::run_generic(const AlgorithmInput &) const
+{
+  throw "not implemented";
 }

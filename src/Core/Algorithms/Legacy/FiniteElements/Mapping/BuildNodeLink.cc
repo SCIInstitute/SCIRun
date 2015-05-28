@@ -145,3 +145,8 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
   nodeLink.reset(new SparseRowMatrix(nodeLinkHalf + nodeLinkHalfT));
   return (true);
 }
+
+AlgorithmOutput BuildNodeLinkAlgo::run_generic(const AlgorithmInput &) const
+{
+  throw "not implemented";
+}

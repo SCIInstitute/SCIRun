@@ -45,12 +45,12 @@ namespace SCIRun {
         virtual void setStateDefaults() override {}
         virtual void execute() override;
 
-        INPUT_PORT(0, LHS, Matrix);
-        INPUT_PORT(1, RHS, Matrix);
+        INPUT_PORT(0, LHS, SparseRowMatrix);
+        INPUT_PORT(1, RHS, DenseColumnMatrix);
 	      INPUT_PORT(2, LinkedNodes, Matrix);
-        OUTPUT_PORT(0, OutputLHS, Matrix);
+        OUTPUT_PORT(0, OutputLHS, SparseRowMatrix);
 	      OUTPUT_PORT(1, OutputRHS, Matrix);
-        OUTPUT_PORT(2, Mapping, Matrix);
+        OUTPUT_PORT(2, Mapping, SparseRowMatrix);
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 

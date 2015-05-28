@@ -27,6 +27,7 @@
 
 #include <Modules/Legacy/Math/AddLinkedNodesToLinearSystem.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Algorithms/Legacy/FiniteElements/Mapping/BuildNodeLink.h>
 #include <Core/Algorithms/Legacy/FiniteElements/Mapping/BuildFEGridMapping.h>
 
@@ -89,7 +90,8 @@ AddLinkedNodesToLinearSystem::execute()
     }
     else
     {
-      rhs.reset(new DenseColumnMatrix(A->nrows(), 0);
+      rhs.reset(new DenseColumnMatrix(A->nrows()));
+      rhs->setZero();
     }
 
     if (rhs->nrows() != linkedNodes->nrows())
@@ -111,8 +113,8 @@ AddLinkedNodesToLinearSystem::execute()
       return;
     }
 
-    MatrixHandle potentialGeomToGrid, potentialGridToGeom;
-    MatrixHandle currentGeomToGrid, currentGridToGeom;
+    SparseRowMatrixHandle potentialGeomToGrid, potentialGridToGeom;
+    SparseRowMatrixHandle currentGeomToGrid, currentGridToGeom;
 
     grid_algo.set(Parameters::build_current_gridtogeom, false);
     grid_algo.set(Parameters::build_potential_geomtogrid, false);
@@ -125,11 +127,8 @@ AddLinkedNodesToLinearSystem::execute()
 
     // Remove the linked nodes from the system and make sure they are the same node
 
-    A = currentGeomToGrid * A * potentialGridToGeom;
-    rhs = currentGeomToGrid * rhs;
-
-    sendOutput(OutputLHS, A);
-    sendOutput(OutputRHS, rhs);
+    sendOutput(OutputLHS, boost::make_shared<SparseRowMatrix>(*currentGeomToGrid * *A * *potentialGridToGeom));
+    sendOutput(OutputRHS, boost::make_shared<DenseColumnMatrix>(*currentGeomToGrid * *rhs));
     sendOutput(Mapping, potentialGridToGeom);
   }
 }
