@@ -37,16 +37,19 @@
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/Scalar.h>
-#include <Core/Algorithms/Legacy/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
+#include <Core/Algorithms/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
 
 #include <Core/Math/MiscMath.h>
 #include <sstream>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Math;
+
+/// @class ReportColumnMatrixMisfit
+/// @brief This module computes and visualizes the error between two vectors.
 
 const ModuleLookupInfo ReportColumnMatrixMisfit::staticInfo_("ReportColumnMatrixMisfit", "Math", "SCIRun");
 
@@ -59,41 +62,10 @@ ReportColumnMatrixMisfit::ReportColumnMatrixMisfit() : Module(staticInfo_)
 
 void ReportColumnMatrixMisfit::setStateDefaults()
 {
-  //todo
-
+  auto state = get_state();
+  state->setValue(Parameters::PValue, 2.0);
+  state->setValue(Parameters::MisfitMethod, std::string("CCinv"));
 }
-
-
-#if 0
-namespace SCIRun {
-
-/// @class ReportColumnMatrixMisfit
-/// @brief This module computes and visualizes the error between two vectors.
-
-class ReportColumnMatrixMisfit : public Module
-{
-public:
-  explicit ReportColumnMatrixMisfit(GuiContext* ctx);
-  virtual void execute();
-private:
-  GuiInt       have_ui_;
-  GuiString    methodTCL_;
-  GuiString    pTCL_;
-
-  void showGraph(const ColumnMatrix& v1, const ColumnMatrix& v2, double ccInv, double rmsRel);
-  bool containsInfiniteComponent(const ColumnMatrix& v);
-};
-
-DECLARE_MAKER(ReportColumnMatrixMisfit)
-
-ReportColumnMatrixMisfit::ReportColumnMatrixMisfit(GuiContext* ctx)
-  : Module("ReportColumnMatrixMisfit", ctx, Filter, "Math", "SCIRun"),
-    have_ui_(get_ctx()->subVar("have_ui")),
-    methodTCL_(get_ctx()->subVar("methodTCL")),
-    pTCL_(get_ctx()->subVar("pTCL"))
-{
-}
-#endif
 
 void ReportColumnMatrixMisfit::execute()
 {
@@ -110,7 +82,7 @@ void ReportColumnMatrixMisfit::execute()
   }
 
   auto state = get_state();
-  const double pp = 2;//state->getValue(...).toDouble();
+  const double pp = state->getValue(Parameters::PValue).toDouble();
 
   ColumnMatrixMisfitCalculator calc(*ivec1, *ivec2, pp);
 
@@ -119,14 +91,14 @@ void ReportColumnMatrixMisfit::execute()
   const double rms = calc.getRMS();
   const double rmsRel = calc.getRelativeRMS();
 
-  #if 0
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (have_ui_.get())
   {
     showGraph(*ivec1, *ivec2, ccInv, rmsRel);
   }
   #endif
 
-  const std::string meth = "CC";//state->getValue(...).toString();
+  const std::string meth = state->getValue(Parameters::MisfitMethod).toString();
   double val;
   if (meth == "CC")
   {
@@ -153,7 +125,7 @@ void ReportColumnMatrixMisfit::execute()
   sendOutput(Error_Out, boost::make_shared<Double>(val));
 }
 
-#if 0
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void ReportColumnMatrixMisfit::showGraph(const ColumnMatrix& v1, const ColumnMatrix& v2, double ccInv, double rmsRel)
 {
   if (containsInfiniteComponent(v1) || containsInfiniteComponent(v2))

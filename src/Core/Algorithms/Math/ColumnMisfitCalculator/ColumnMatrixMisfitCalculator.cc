@@ -26,18 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Algorithms/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
 
-ColumnMatrixMisfitCalculator::ColumnMatrixMisfitCalculator(const ColumnMatrix& x, const ColumnMatrix& y, double pp)
+ALGORITHM_PARAMETER_DEF(Math, MisfitMethod);
+ALGORITHM_PARAMETER_DEF(Math, PValue);
+
+ColumnMatrixMisfitCalculator::ColumnMatrixMisfitCalculator(const DenseColumnMatrix& x, const DenseColumnMatrix& y, double pp)
 : rmsRel_(0), rms_(0), cc_(0), ccInv_(0), pp_(pp)
 {
   if (x.nrows() != y.nrows())
     return;
 
-  int ne = y.nrows();
+  size_t ne = y.nrows();
 
   // compute CC
 
@@ -82,12 +87,12 @@ ColumnMatrixMisfitCalculator::ColumnMatrixMisfitCalculator(const ColumnMatrix& x
   }
 
   rms_ = pow(rms/ne,1/pp);
-  double ccDenom = Sqrt(ccDenom1*ccDenom2);
+  double ccDenom = std::sqrt(ccDenom1*ccDenom2);
 
   const double MAX_VALUE = 1e6;
-  cc_ = Min(ccNum/ccDenom, MAX_VALUE);
-  ccInv_ = Min(1.0-ccNum/ccDenom, MAX_VALUE);
-  rmsRel_ = Min(rms*pow(ne/Norm1,1/pp), MAX_VALUE);
+  cc_ = std::min(ccNum/ccDenom, MAX_VALUE);
+  ccInv_ = std::min(1.0 - ccNum / ccDenom, MAX_VALUE);
+  rmsRel_ = std::min(rms*pow(ne / Norm1, 1 / pp), MAX_VALUE);
 }
 
 double ColumnMatrixMisfitCalculator::getCorrelationCoefficient() const

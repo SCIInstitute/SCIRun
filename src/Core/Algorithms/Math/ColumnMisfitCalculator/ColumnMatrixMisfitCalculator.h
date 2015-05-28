@@ -30,23 +30,34 @@
 #define CORE_ALGORITHMS_MATH_COLUMNMATRIXMISFITCALCULATOR_H
 
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <boost/noncopyable.hpp>
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Math {
 
-  class SCISHARE ColumnMatrixMisfitCalculator : boost::noncopyable
-  {
-  public:
-    ColumnMatrixMisfitCalculator(const Core::Datatypes::DenseColumnMatrix& x, const Core::Datatypes::DenseColumnMatrix& y, double pp);
-    double getPValue() const;
-    double getCorrelationCoefficient() const;
-    double getInverseCorrelationCoefficient() const;
-    double getRelativeRMS() const;
-    double getRMS() const;
-  private:
-    double rmsRel_, rms_, cc_, ccInv_, pp_;
-  };
+        ALGORITHM_PARAMETER_DECL(MisfitMethod);
+        ALGORITHM_PARAMETER_DECL(PValue);
+
+        //TODO: change to proper algo class
+        class SCISHARE ColumnMatrixMisfitCalculator : boost::noncopyable
+        {
+        public:
+          ColumnMatrixMisfitCalculator(const Core::Datatypes::DenseColumnMatrix& x, const Core::Datatypes::DenseColumnMatrix& y, double pp);
+          double getPValue() const;
+          double getCorrelationCoefficient() const;
+          double getInverseCorrelationCoefficient() const;
+          double getRelativeRMS() const;
+          double getRMS() const;
+        private:
+          double rmsRel_, rms_, cc_, ccInv_, pp_;
+        };
+      }
+    }
+  }
 }
 
 #endif
