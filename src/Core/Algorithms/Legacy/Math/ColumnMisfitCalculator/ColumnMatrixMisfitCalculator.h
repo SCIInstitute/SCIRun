@@ -38,7 +38,7 @@ namespace SCIRun {
   class SCISHARE ColumnMatrixMisfitCalculator : boost::noncopyable
   {
   public:
-    ColumnMatrixMisfitCalculator(const ColumnMatrix& x, const ColumnMatrix& y, double pp);
+    ColumnMatrixMisfitCalculator(const Core::Datatypes::DenseColumnMatrix& x, const Core::Datatypes::DenseColumnMatrix& y, double pp);
     double getPValue() const;
     double getCorrelationCoefficient() const;
     double getInverseCorrelationCoefficient() const;

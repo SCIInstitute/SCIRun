@@ -26,11 +26,11 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/FiniteElements/Mapping/BuildFEGridMapping.h>
+#include <Core/Algorithms/Legacy/FiniteElements/Mapping/BuildFEGridMapping.h>
 
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -48,15 +48,15 @@ ALGORITHM_PARAMETER_DEF(FiniteElements, build_current_geomtogrid);
 // Set default values
 BuildFEGridMappingAlgo::BuildFEGridMappingAlgo()
 {
-  addParameter("build_potential_gridtogeom",true);
-  addParameter("build_potential_geomtogrid",true);
-  addParameter("build_current_gridtogeom",true);
-  addParameter("build_current_geomtogrid",true);
+  addParameter(Parameters::build_potential_gridtogeom, true);
+  addParameter(Parameters::build_potential_geomtogrid, true);
+  addParameter(Parameters::build_current_gridtogeom, true);
+  addParameter(Parameters::build_current_geomtogrid, true);
 }
 
 bool
 BuildFEGridMappingAlgo::run(
-  MatrixHandle& NodeLink,
+  MatrixHandle nodeLink,
     MatrixHandle& PotentialGeomToGrid,
     MatrixHandle& PotentialGridToGeom,
     MatrixHandle& CurrentGeomToGrid,
@@ -64,33 +64,28 @@ BuildFEGridMappingAlgo::run(
 {
   ScopedAlgorithmStatusReporter asr(this, "BuildFEGridMapping");
 
-  bool pot_geomtogrid = get_bool("build_potential_geomtogrid");
-  bool pot_gridtogeom = get_bool("build_potential_gridtogeom");
-  bool cur_geomtogrid = get_bool("build_current_geomtogrid");
-  bool cur_gridtogeom = get_bool("build_current_gridtogeom");
-
-  if (!NodeLink)
+  if (!nodeLink)
   {
     error("No matrix on input");
     return (false);
   }
 
-  if (!(matrix_is::sparse(NodeLink)))
+  if (!matrix_is::sparse(nodeLink))
   {
     error("NodeLink Matrix is not sparse");
     return (false);
   }
 
-  if (NodeLink->nrows() != NodeLink->ncols())
+  if (nodeLink->nrows() != nodeLink->ncols())
   {
     error("NodeLink Matrix needs to be square");
     return (false);
   }
 
-  SparseRowMatrix* spr = matrix_cast::as_sparse(NodeLink);
+  SparseRowMatrixHandle spr = matrix_cast::as_sparse(nodeLink);
   size_type m = spr->ncols();
-  index_type *rows = spr->get_rows();
-  index_type *cols = spr->get_cols();
+  const index_type *rows = spr->get_rows();
+  const index_type *cols = spr->get_cols();
 
   SparseRowMatrix::Data matData(m+1, m);
 
@@ -157,10 +152,15 @@ BuildFEGridMappingAlgo::run(
     return (false);
   }
 
+  const bool pot_geomtogrid = get(Parameters::build_potential_geomtogrid).toBool();
+  const bool pot_gridtogeom = get(Parameters::build_potential_gridtogeom).toBool();
+  const bool cur_geomtogrid = get(Parameters::build_current_geomtogrid).toBool();
+  const bool cur_gridtogeom = get(Parameters::build_current_gridtogeom).toBool();
+
   if (pot_gridtogeom)
   {
     PotentialGridToGeom = mat;
-    if (PotentialGridToGeom.get_rep() == 0)
+    if (!PotentialGridToGeom)
     {
       error("Could not build PotentialGridToGeom mapping matrix");
       return (false);
@@ -170,7 +170,7 @@ BuildFEGridMappingAlgo::run(
   if (cur_geomtogrid)
   {
     CurrentGeomToGrid = mat->sparse()->make_transpose();
-    if (CurrentGeomToGrid.get_rep() == 0)
+    if (!CurrentGeomToGrid)
     {
       error("Could not build CurrentGeomToGrid mapping matrix");
       return (false);
@@ -179,11 +179,11 @@ BuildFEGridMappingAlgo::run(
 
   if (cur_gridtogeom || pot_geomtogrid)
   {
-    MatrixHandle mat2 = mat->sparse()->make_transpose();
+    MatrixHandle mat2 = mat->make_transpose();
     mat2.detach();
 
-    index_type* cc = mat2->sparse()->get_cols();
-    index_type* rr = mat2->sparse()->get_rows();
+    const index_type* cc = mat2->sparse()->get_cols();
+    const index_type* rr = mat2->sparse()->get_rows();
     double* vv = mat2->sparse()->get_vals();
 
     for (index_type r=0; r<k; r++)
@@ -197,7 +197,7 @@ BuildFEGridMappingAlgo::run(
     if (cur_gridtogeom)
     {
       CurrentGridToGeom = mat2->sparse()->make_transpose();
-      if (CurrentGridToGeom.get_rep() == 0)
+      if (!CurrentGridToGeom)
       {
         error("Could not build CurrentGridToGeom mapping matrix");
         return (false);
@@ -207,7 +207,7 @@ BuildFEGridMappingAlgo::run(
     if (pot_geomtogrid)
     {
       PotentialGeomToGrid = mat2;
-      if (PotentialGeomToGrid.get_rep() == 0)
+      if (!PotentialGeomToGrid)
       {
         error("Could not build PotentialGeomToGrid mapping matrix");
         return (false);
@@ -219,8 +219,8 @@ BuildFEGridMappingAlgo::run(
 
 bool
 BuildFEGridMappingAlgo::
-run(FieldHandle& DomainField,
-    MatrixHandle& NodeLink,
+run(FieldHandle domainField,
+    MatrixHandle nodeLink,
     MatrixHandle& PotentialGeomToGrid,
     MatrixHandle& PotentialGridToGeom,
     MatrixHandle& CurrentGeomToGrid,
@@ -228,20 +228,13 @@ run(FieldHandle& DomainField,
 {
   ScopedAlgorithmStatusReporter asr(this, "BuildFEGridMapping");
 
-  bool pot_geomtogrid = get_bool("build_potential_geomtogrid");
-  bool pot_gridtogeom = get_bool("build_potential_gridtogeom");
-  bool cur_geomtogrid = get_bool("build_current_geomtogrid");
-  bool cur_gridtogeom = get_bool("build_current_gridtogeom");
-
   if (!DomainField)
   {
     error("CreateLinkBetweenMeshAndGridGridByDomain: No input field");
     return (false);
   }
 
-  // no pregridiled version available, so gridile one
-
-  FieldInformation fi(DomainField);
+  FieldInformation fi(domainField);
 
   if (fi.is_nonlinear())
   {
@@ -261,25 +254,25 @@ run(FieldHandle& DomainField,
     return (false);
   }
 
-  if (NodeLink.get_rep() == 0)
+  if (!nodeLink)
   {
     error("No matrix on input");
     return (false);
   }
 
-  if (!(matrix_is::sparse(NodeLink)))
+  if (!matrix_is::sparse(nodeLink))
   {
     error("NodeLink Matrix is not sparse");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (NodeLink->nrows() != NodeLink->ncols())
+  if (nodeLink->nrows() != nodeLink->ncols())
   {
     error("NodeLink Matrix needs to be square");
     return (false);
   }
 
-  VField *ifield = DomainField->vfield();
+  VField *ifield = domainField->vfield();
   if (!ifield)
   {
     error("FieldHandle is empty");
@@ -296,24 +289,19 @@ run(FieldHandle& DomainField,
   VMesh::Node::size_type numnodes;
   imesh->size(numnodes);
 
-  if (NodeLink->nrows() != numnodes)
+  if (nodeLink->nrows() != numnodes)
   {
     error("NodeLink Matrix has improper dimensions");
     return (false);
   }
 
-  SparseRowMatrix* spr = matrix_cast::as_sparse(NodeLink);
+  SparseRowMatrixHandle spr = matrix_cast::as_sparse(nodeLink);
   size_type m = spr->ncols();
-  index_type *rows = spr->get_rows();
-  index_type *cols = spr->get_cols();
+  const index_type *rows = spr->get_rows();
+  const index_type *cols = spr->get_cols();
 
-  SparseRowMatrix::Data matData(m+1, m);
+  LegacySparseDataContainer<double> sparseData(m+1, m);
 
-  if (!matData.allocated())
-  {
-    error("Could not allocate memory for sparse matrix");
-    return (false);
-  }
   const SparseRowMatrix::Rows& rr = matData.rows();
   const SparseRowMatrix::Columns& cc = matData.columns();
   const SparseRowMatrix::Storage& vv = matData.data();
@@ -379,6 +367,11 @@ run(FieldHandle& DomainField,
     error("Could not build geometry to gridutational mesh mapping matrix");
     return (false);
   }
+
+  const bool pot_geomtogrid = get(Parameters::build_potential_geomtogrid).toBool();
+  const bool pot_gridtogeom = get(Parameters::build_potential_gridtogeom).toBool();
+  const bool cur_geomtogrid = get(Parameters::build_current_geomtogrid).toBool();
+  const bool cur_gridtogeom = get(Parameters::build_current_gridtogeom).toBool();
 
   if (pot_gridtogeom)
   {

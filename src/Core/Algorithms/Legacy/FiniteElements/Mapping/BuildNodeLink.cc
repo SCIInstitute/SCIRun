@@ -26,12 +26,14 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/FiniteElements/Mapping/BuildNodeLink.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/FiniteElements/Mapping/BuildNodeLink.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 #include <Core/Math/MiscMath.h>
+#include <boost/scoped_array.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -58,26 +60,25 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
     return (false);
   }
 
-  ColumnMatrix* dmat = NodeDomain->column();
-  MatrixHandle dmat_handle = dmat;
+  DenseColumnMatrixHandle nodeDomainCol = matrix_convert::to_column(nodeDomain);
 
-  size_type num_values = dmat->nrows();
+  size_type num_values = nodeDomainCol->nrows();
 
-  double min2 = -DBL_MAX;
-  double min = DBL_MAX;
-  double* data = dmat->get_data_pointer();
+  double min2 = -std::numeric_limits<double>::max();
+  double min = std::numeric_limits<double>::max();
+  //double* data = dmat->get_data_pointer();
 
   bool found_domain = false;
 
-  SparseRowMatrix::Builder nodeLinkData;
-  const SparseRowMatrix::Rows& rr = nodeLinkData.allocate_rows(num_values+1);
-  const SparseRowMatrix::Columns& cc = nodeLinkData.allocate_columns(num_values);
+  LegacySparseDataContainer<double> sparseData(num_values+1, num_values, 0);
+  auto rr = sparseData.rows();
+  auto cc = sparseData.cols();
   size_type nnz = 0;
 
   if (!rr || !cc)
   {
     error("Could not allocate memory for sparse matrix");
-    algo_end(); return (false);
+    return (false);
   }
 
   for (index_type j = 0; j<num_values; j++) cc[j] = -1;
@@ -85,11 +86,11 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
   do
   {
     found_domain = false;
-    min = DBL_MAX;
+    min = std::numeric_limits<double>::max();
 
     for (index_type j = 0; j<num_values; j++)
     {
-      double val = data[j];
+      double val = (*nodeDomainCol)(j);
       if (IsFinite(val))
       {
         if (val < min && val > min2 )
@@ -106,7 +107,7 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
       index_type idx = -1;
       for (index_type j = 0; j<num_values; j++)
       {
-        double val = data[j];
+        double val = (*nodeDomainCol)(j);
         if (val == min2)
         {
           if (idx < 0) idx = j;
@@ -117,12 +118,13 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
   }
   while (found_domain);
 
-  const SparseRowMatrix::Storage& aa = nodeLinkData.allocate_data(nnz);
+  sparseData.allocateData(nnz);
+  auto aa = sparseData.data();
 
   if (!aa)
   {
     error("Could not allocate memory for sparse matrix");
-    algo_end(); return (false);
+    return (false);
   }
 
   index_type k = 0;
@@ -138,8 +140,8 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
     rr[j+1] = k;
   }
 
-  NodeLink = new SparseRowMatrix(num_values,num_values,nodeLinkData.build(),nnz);
-  MatrixHandle TNodeLink = NodeLink->make_transpose();
-  NodeLink = NodeLink + TNodeLink;
+  SparseRowMatrix nodeLinkHalf(num_values, num_values, rr.get(), cc.get(), aa.get(), nnz);
+  SparseRowMatrix noseLinkHalfT(nodeLinkTemp.transpose());
+  nodeLink.reset(new SparseRowMatrix(nodeLinkHalf + nodeLinkHalfT));
   return (true);
 }

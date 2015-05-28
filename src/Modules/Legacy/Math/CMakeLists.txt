@@ -107,6 +107,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Math
   Core_Datatypes
   Core_Math
   Algorithms_Math
+  Core_Algorithms_Legacy_FiniteElements
   Core_Parser
   #Core_Persistent
   #Core_Thread

@@ -64,7 +64,7 @@ class SCISHARE BuildFEGridMappingAlgo : public AlgorithmBase
     // More over potentials are assumed to be continuous over the boundary
     // and currents are assumed as sources that need to be divided or added
     // together.
-    bool run(Datatypes::MatrixHandle& NodeLink,
+    bool run(Datatypes::MatrixHandle nodeLink,
       Datatypes::MatrixHandle& PotentialGeomToGrid,
       Datatypes::MatrixHandle& PotentialGridToGeom,
       Datatypes::MatrixHandle& CurrentGeomToGrid,
@@ -72,8 +72,8 @@ class SCISHARE BuildFEGridMappingAlgo : public AlgorithmBase
 
     // Special version for not linking elements that
     // are not in the same domain
-    bool run(FieldHandle&  DomainField,
-      Datatypes::MatrixHandle& NodeLink,
+    bool run(FieldHandle domainField,
+      Datatypes::MatrixHandle nodeLink,
       Datatypes::MatrixHandle& PotentialGeomToGrid,
       Datatypes::MatrixHandle& PotentialGridToGeom,
       Datatypes::MatrixHandle& CurrentGeomToGrid,
