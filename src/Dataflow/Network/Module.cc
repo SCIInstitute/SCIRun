@@ -44,6 +44,7 @@
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Thread/Interruptible.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
@@ -889,4 +890,9 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 {
   ModuleLevelUniqueIDGenerator gen(*this, tag);
   return gen();
+}
+
+bool Module::isStoppable() const
+{
+  return dynamic_cast<const Core::Thread::Interruptible*>(this) != nullptr;
 }

@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_VISUALIZATION_GENERATESTREAMLINES_H_
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Thread/Interruptible.h>
 #include <Modules/Legacy/Visualization/share.h>
 
 namespace SCIRun {
@@ -38,13 +39,13 @@ namespace SCIRun {
 
       class SCISHARE GenerateStreamLines : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
+        public Has1OutputPort<FieldPortTag>,
+        public Core::Thread::Interruptible
       {
       public:
         GenerateStreamLines();
         virtual void setStateDefaults() override;
         virtual void execute() override;
-        virtual bool isStoppable() const override { return true; }
 
         INPUT_PORT(0, Vector_Field, LegacyField);
         INPUT_PORT(1, Seed_Points, LegacyField);

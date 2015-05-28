@@ -26,32 +26,24 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Core/Thread/Mutex.h>
-#include <Core/Thread/Interruptible.h>
-#include <boost/thread.hpp>
+#ifndef CORE_THREAD_INTERRUPTIBLE_H
+#define CORE_THREAD_INTERRUPTIBLE_H
 
-using namespace SCIRun::Core::Thread;
+#include <Core/Thread/share.h>
 
-Mutex::Mutex(const std::string& name) : name_(name)
+namespace SCIRun
 {
+namespace Core
+{
+  namespace Thread
+  {
+    class SCISHARE Interruptible
+    {
+    public:
+      static void checkForInterruption();
+    };
+  }
+}
 }
 
-void Mutex::lock()
-{
-  impl_.lock();
-}
-
-void Mutex::unlock()
-{
-  impl_.unlock();
-}
-
-void Interruptible::checkForInterruption()
-{
-  boost::this_thread::interruption_point();
-  #ifdef WIN32 // this is working on Mac, but not Windows.
-  std::cout << "trying to interrupt_point in thread " << boost::this_thread::get_id() << std::endl;
-  std::cout << "interruption enabled? " << boost::this_thread::interruption_enabled() << std::endl;
-  std::cout << "interruption requested? " << boost::this_thread::interruption_requested() << std::endl;
-  #endif
-}
+#endif
