@@ -66,12 +66,7 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
   ENDIF()
 
   IF(${compress_type} MATCHES "GIT")
-
-
-# TODO: temporary - switch git tag back to master for all
-#       builds once boost 1.56 is available and boost atomic
-#       library fix is verified.
-SET(boost_GIT_TAG "origin/boost_1_58_test")
+    SET(boost_GIT_TAG "origin/master")
 
     # TODO: fix install step
     #
