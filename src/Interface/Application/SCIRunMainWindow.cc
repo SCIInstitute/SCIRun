@@ -41,11 +41,14 @@
 #include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PreferencesWindow.h>
+#include <Interface/Application/TagManagerWindow.h>
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommandFactory.h>
 #include <Interface/Application/GuiCommands.h>
+#include <Interface/Application/Utility.h>
+#include <Interface/Application/ModuleProxyWidget.h>
 #include <Core/Logging/LoggerInterface.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
@@ -249,6 +252,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   setupProvenanceWindow();
   setupDevConsole();
   setupPythonConsole();
+  setupTagManagerWindow();
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
@@ -307,6 +311,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   actionConfiguration_->setChecked(!configurationDockWidget_->isHidden());
   actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
+  actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
 
 	moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
 		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
@@ -314,6 +319,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 		);
 
   provenanceWindow_->hide();
+  tagManagerWindow_->hide();
 
   hideNonfunctioningWidgets();
 
@@ -1377,12 +1383,38 @@ void SCIRunMainWindow::adjustModuleDock(int state)
   Preferences::Instance().modulesAreDockable.setValue(dockable);
 }
 
+#ifdef __APPLE__
+static const Qt::Key MetadataShiftKey = Qt::Key_Meta;
+#else
+static const Qt::Key MetadataShiftKey = Qt::Key_Control;
+#endif
+
 void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Shift)
 	{
 		statusBar()->showMessage("Network zoom active");
 	}
+  else if (event->key() == MetadataShiftKey)
+  {
+    networkEditor_->metadataLayer(true);
+    statusBar()->showMessage("Metadata layer active");
+  }
+  else if (event->key() == Qt::Key_Alt)
+  {
+    networkEditor_->tagLayer(true, NoTag);
+    statusBar()->showMessage("Tag layer active: none");
+  }
+  else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
+  {
+    if (networkEditor_->tagLayerActive())
+    {
+      auto key = event->key() - Qt::Key_0;
+      networkEditor_->tagLayer(true, key);
+      statusBar()->showMessage("Tag layer active: " + QString::number(key));
+    }
+  }
+
   QMainWindow::keyPressEvent(event);
 }
 
@@ -1392,6 +1424,17 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
 	{
     statusBar()->showMessage("Network zoom inactive", 1000);
 	}
+  else if (event->key() == MetadataShiftKey)
+  {
+    networkEditor_->metadataLayer(false);
+    statusBar()->showMessage("Metadata layer inactive", 1000);
+  }
+  else if (event->key() == Qt::Key_Alt)
+  {
+    networkEditor_->tagLayer(false, -1);
+    statusBar()->showMessage("Tag layer inactive", 1000);
+  }
+
   QMainWindow::keyPressEvent(event);
 }
 
@@ -1423,5 +1466,51 @@ void SCIRunMainWindow::adjustExecuteButtonAppearance()
     actionTextIconCheckBox_->setText("Execute Button Text+Icon");
 		executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     break;
+  }
+}
+
+namespace
+{
+  const char* tagIndexProperty = "tagIndex";
+  const int NUMBER_OF_TAGS = 10;
+}
+
+void SCIRunMainWindow::setupTagManagerWindow()
+{
+  tagManagerWindow_ = new TagManagerWindow(this);
+  connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
+  connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
+
+  QLabel* tagLabels[] = { tagManagerWindow_->tagLabel_0, tagManagerWindow_->tagLabel_1, tagManagerWindow_->tagLabel_2,
+    tagManagerWindow_->tagLabel_3, tagManagerWindow_->tagLabel_4, tagManagerWindow_->tagLabel_5,
+    tagManagerWindow_->tagLabel_6, tagManagerWindow_->tagLabel_7, tagManagerWindow_->tagLabel_8, tagManagerWindow_->tagLabel_9 };
+  QLineEdit* tagLineEdits[] = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
+    tagManagerWindow_->taglineEdit_3, tagManagerWindow_->taglineEdit_4, tagManagerWindow_->taglineEdit_5,
+    tagManagerWindow_->taglineEdit_6, tagManagerWindow_->taglineEdit_7, tagManagerWindow_->taglineEdit_8, tagManagerWindow_->taglineEdit_9 };
+
+  for (int i = 0; i < NUMBER_OF_TAGS; ++i)
+  {
+    auto colorStr = colorToString(tagColor(i));
+    tagLabels[i]->setStyleSheet("QLabel { background-color : " + colorStr + "; }");
+    tagLineEdits[i]->setProperty(tagIndexProperty, i);
+    connect(tagLineEdits[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
+  }
+  tagNames_.resize(NUMBER_OF_TAGS);
+}
+
+void SCIRunMainWindow::updateTagName(const QString& name)
+{
+  tagNames_[sender()->property(tagIndexProperty).toInt()] = name;
+}
+
+void SCIRunMainWindow::setTagNames(const QStringList& names)
+{
+  tagNames_ = names.toVector();
+  QLineEdit* tagLineEdits[] = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
+    tagManagerWindow_->taglineEdit_3, tagManagerWindow_->taglineEdit_4, tagManagerWindow_->taglineEdit_5,
+    tagManagerWindow_->taglineEdit_6, tagManagerWindow_->taglineEdit_7, tagManagerWindow_->taglineEdit_8, tagManagerWindow_->taglineEdit_9 };
+  for (int i = 0; i < NUMBER_OF_TAGS; ++i)
+  {
+    tagLineEdits[i]->setText(tagNames_[i]);
   }
 }

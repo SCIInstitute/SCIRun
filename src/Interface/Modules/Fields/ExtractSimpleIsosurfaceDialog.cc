@@ -44,8 +44,3 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   fixSize();
   addDoubleSpinBoxManager(doubleSpinBox_, ExtractSimpleIsosurfaceAlgo::GUIIsoValue);
 }
-
-void ExtractSimpleIsosurfaceDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}

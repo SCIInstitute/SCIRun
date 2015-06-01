@@ -45,6 +45,10 @@ namespace Gui
 {
   QColor to_color(const std::string& str, int alpha = 255);
 
+  QColor tagColor(int tag);
+
+  QString colorToString(const QColor& color);
+
   inline QAction* separatorAction(QWidget* parent)
   {
     auto sep = new QAction(parent);

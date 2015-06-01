@@ -45,8 +45,3 @@ ApplyFEMCurrentSourceDialog::ApplyFEMCurrentSourceDialog(const std::string& name
   addSpinBoxManager(sourceElectrodeSpinBox_, SCIRun::Modules::FiniteElements::ApplyFEMCurrentSource::SourceNode);
   addComboBoxManager(modelComboBox_, SCIRun::Modules::FiniteElements::ApplyFEMCurrentSource::ModelType);
 }
-
-void ApplyFEMCurrentSourceDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}

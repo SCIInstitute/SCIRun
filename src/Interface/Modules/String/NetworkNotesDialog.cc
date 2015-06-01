@@ -40,11 +40,6 @@ NetworkNotesDialog::NetworkNotesDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-	addTextEditManager(networkNotesTextEdit_, NetworkNotesModule::InputString);
-}
 
-void NetworkNotesDialog::pull()
-{
-  pull_newVersionToReplaceOld();
+	addTextEditManager(networkNotesTextEdit_, NetworkNotesModule::InputString);
 }

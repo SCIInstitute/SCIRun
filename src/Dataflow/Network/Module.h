@@ -34,6 +34,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/atomic.hpp>
+#include <atomic>
 #include <vector>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -101,6 +102,8 @@ namespace Networks {
 
     virtual void enqueueExecuteAgain();
 
+    virtual const MetadataMap& metadata() const override;
+
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
     virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id);
@@ -135,6 +138,8 @@ namespace Networks {
     {
       return false; /// @todo: need to examine HasPorts base classes
     }
+
+    virtual bool isStoppable() const final;
 
     bool oport_connected(const PortId& id) const;
     bool inputsChanged() const;
@@ -274,6 +279,7 @@ namespace Networks {
     Core::Algorithms::AlgorithmHandle algo_;
 
     ModuleStateHandle state_;
+    MetadataMap metadata_;
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;
 
@@ -286,6 +292,7 @@ namespace Networks {
     ExecutionSelfRequestSignalType executionSelfRequested_;
 
     ModuleReexecutionStrategyHandle reexecute_;
+    std::atomic<bool> threadStopped_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;

@@ -41,7 +41,7 @@ FairMeshDialog::FairMeshDialog(const std::string& name, ModuleStateHandle state,
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   connect(fastWeightingButton_, SIGNAL(clicked()), this, SLOT(push()));
   connect(desbrunWeightingButton_, SIGNAL(clicked()), this, SLOT(push()));
 
@@ -60,14 +60,10 @@ void FairMeshDialog::push()
   }
 }
 
-void FairMeshDialog::pull()
+void FairMeshDialog::pullSpecial() //TODO: change to checkbox manager
 {
-  Pulling p(this);
-  
   using namespace Parameters;
   auto method = state_->getValue(FairMeshMethod).toString();
   fastWeightingButton_->setChecked("fast" == method);
   desbrunWeightingButton_->setChecked("desbrun" == method);
-
-  pull_newVersionToReplaceOld();
 }

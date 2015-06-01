@@ -30,17 +30,20 @@
 SET(Interface_Modules_Bundle_FORMS
   GetFieldsFromBundleDialog.ui
   InsertFieldsIntoBundleDialog.ui
+  ReportBundleInfoDialog.ui
 )
 
 SET(Interface_Modules_Bundle_HEADERS
   GetFieldsFromBundleDialog.h
   InsertFieldsIntoBundleDialog.h
+  ReportBundleInfoDialog.h
   share.h
 )
 
 SET(Interface_Modules_Bundle_SOURCES 
   GetFieldsFromBundleDialog.cc
   InsertFieldsIntoBundleDialog.cc
+  ReportBundleInfoDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Bundle_FORMS_HEADERS ${Interface_Modules_Bundle_FORMS})

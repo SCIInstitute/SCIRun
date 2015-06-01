@@ -83,8 +83,9 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h>
-#include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h> 
+#include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h>
 #include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
+#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
@@ -97,13 +98,14 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/WriteField.h>
+#include <Modules/DataIO/ReadBundle.h>
 #include <Modules/String/CreateString.h>
 #include <Modules/String/NetworkNotes.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/ShowFieldGlyphs.h>
 #include <Modules/Visualization/CreateStandardColorMap.h>
-#include <Modules/Visualization/ShowColorMapModule.h> 
+#include <Modules/Visualization/ShowColorMapModule.h>
 #include <Modules/Visualization/RescaleColorMap.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
@@ -194,9 +196,9 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
   addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
   addModuleDesc<ComputeSVD>("ComputeSVD","Math","SCIRun","...","...");
-  
+
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
-  addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
+  addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
   addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
   addModuleDesc<RescaleColorMap>("Real ported module", "...");
@@ -208,10 +210,12 @@ void ModuleDescriptionLookup::addEssentialModules()
 
 void ModuleDescriptionLookup::addBundleModules()
 {
+  addModuleDesc<ReadBundleModule>("Ported module", "...");
   //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
   //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
   //TODO: incomplete impl
-  //addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+  addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+  addModuleDesc<ReportBundleInfo>("Real ported module", "...");
   //addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
   addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
 }

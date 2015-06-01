@@ -40,12 +40,7 @@ CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   buttonBox->setVisible(false);
   addLineEditManager(stringInput_, CreateStringModule::InputString);
-}
-
-void CreateStringDialog::pull()
-{
-  pull_newVersionToReplaceOld();
 }

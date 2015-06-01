@@ -40,12 +40,7 @@ SplitFieldByDomainDialog::SplitFieldByDomainDialog(const std::string& name, Modu
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   addCheckBoxManager(sortBySizeCheckBox_, SplitFieldByDomainAlgo::SortBySize);
   addCheckBoxManager(sortAscendingCheckBox_, SplitFieldByDomainAlgo::SortAscending);
-}
-
-void SplitFieldByDomainDialog::pull()
-{
-  pull_newVersionToReplaceOld();
 }

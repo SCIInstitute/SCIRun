@@ -187,6 +187,14 @@ void SCIRunMainWindow::readSettings()
     setDataPath(path);
   }
 
+  const QString tagNamesKey = "tagNames";
+  if (settings.contains(tagNamesKey))
+  {
+    auto tagNames = settings.value(tagNamesKey).toStringList();
+    GuiLogger::Instance().log("Setting read: tagNames = " + tagNames.join(";"));
+    setTagNames(tagNames);
+  }
+
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -213,6 +221,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("favoriteModules", favoriteModuleNames_);
   settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));
   settings.setValue("dataPath", convertPathList(prefs.dataPath()));
+  settings.setValue("tagNames", QStringList(tagNames_.toList()));
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

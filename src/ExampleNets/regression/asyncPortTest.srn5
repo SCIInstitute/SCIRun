@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -66,7 +66,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -154,7 +154,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -242,7 +242,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -458,57 +458,57 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>AsyncPortTestModule:14</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-611</first>
-				<second>168</second>
+				<first>-6.11000000000000000e+002</first>
+				<second>1.68000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-540</first>
-				<second>-334</second>
+				<first>-5.40000000000000000e+002</first>
+				<second>-3.34000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:2</first>
 			<second>
-				<first>-842</first>
-				<second>-318</second>
+				<first>-8.42000000000000000e+002</first>
+				<second>-3.18000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:7</first>
 			<second>
-				<first>-1057</first>
-				<second>35</second>
+				<first>-1.05700000000000000e+003</first>
+				<second>3.50000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:3</first>
 			<second>
-				<first>-848</first>
-				<second>-198</second>
+				<first>-8.48000000000000000e+002</first>
+				<second>-1.98000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:6</first>
 			<second>
-				<first>-537</first>
-				<second>-212</second>
+				<first>-5.37000000000000000e+002</first>
+				<second>-2.12000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:4</first>
 			<second>
-				<first>-818</first>
-				<second>-86</second>
+				<first>-8.18000000000000000e+002</first>
+				<second>-8.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:8</first>
 			<second>
-				<first>-521</first>
-				<second>-88</second>
+				<first>-5.21000000000000000e+002</first>
+				<second>-8.80000000000000000e+001</second>
 			</second>
 		</item>
 	</modulePositions>

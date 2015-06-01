@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE EvaluateLinearAlgebraUnaryDialog : public ModuleDialogGeneric, 
+
+class SCISHARE EvaluateLinearAlgebraUnaryDialog : public ModuleDialogGeneric,
   public Ui::EvaluateLinearAlgebraUnary
 {
 	Q_OBJECT
-	
+
 public:
-  EvaluateLinearAlgebraUnaryDialog(const std::string& name, 
+  EvaluateLinearAlgebraUnaryDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

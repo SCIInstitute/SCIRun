@@ -109,6 +109,11 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <strikeout>true</strikeout>
+     </font>
+    </property>
     <property name="text">
      <string>Comets</string>
     </property>
@@ -151,6 +156,11 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <strikeout>true</strikeout>
+     </font>
+    </property>
     <property name="text">
      <string>Springs</string>
     </property>
@@ -167,6 +177,11 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <strikeout>true</strikeout>
+     </font>
+    </property>
     <property name="text">
      <string>Rings</string>
     </property>
@@ -182,6 +197,11 @@
       <width>91</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <strikeout>true</strikeout>
+     </font>
     </property>
     <property name="text">
      <string>Disks</string>
@@ -225,6 +245,11 @@
      <height>20</height>
     </size>
    </property>
+   <property name="font">
+    <font>
+     <strikeout>true</strikeout>
+    </font>
+   </property>
    <property name="text">
     <string>Normalize before scaling</string>
    </property>
@@ -246,6 +271,11 @@
      <width>0</width>
      <height>20</height>
     </size>
+   </property>
+   <property name="font">
+    <font>
+     <strikeout>true</strikeout>
+    </font>
    </property>
    <property name="text">
     <string>Render bidirectionally</string>
@@ -287,6 +317,11 @@
      <width>0</width>
      <height>20</height>
     </size>
+   </property>
+   <property name="font">
+    <font>
+     <strikeout>true</strikeout>
+    </font>
    </property>
    <property name="text">
     <string>Render glyphs below threshold</string>
@@ -332,6 +367,11 @@
      <widget class="QRadioButton" name="conversionRGBVectorsColoringRButton_">
       <property name="enabled">
        <bool>false</bool>
+      </property>
+      <property name="font">
+       <font>
+        <strikeout>true</strikeout>
+       </font>
       </property>
       <property name="text">
        <string>Conversion to RGB</string>

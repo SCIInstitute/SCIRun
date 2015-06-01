@@ -43,8 +43,6 @@ namespace SCIRun {
 
     public:
       ShowFieldGlyphsScalarTabDialog(QWidget* parent = 0);
-     
-      private Q_SLOTS:
 
     private:
 

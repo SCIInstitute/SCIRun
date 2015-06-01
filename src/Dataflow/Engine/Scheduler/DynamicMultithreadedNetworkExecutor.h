@@ -36,7 +36,12 @@
 
 namespace SCIRun {
 namespace Dataflow {
-namespace Engine {
+  namespace Engine {
+
+    namespace DynamicExecutor
+    {
+      class ExecutionThreadGroup;
+    }
 
   class SCISHARE DynamicMultithreadedNetworkExecutor : public NetworkExecutor<ParallelModuleExecutionOrder>
   {
@@ -45,6 +50,7 @@ namespace Engine {
     virtual void execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Core::Thread::Mutex& executionLock) override;
   private:
     const Networks::NetworkInterface& network_;
+    boost::shared_ptr<DynamicExecutor::ExecutionThreadGroup> threadGroup_;
   };
 
 }}}

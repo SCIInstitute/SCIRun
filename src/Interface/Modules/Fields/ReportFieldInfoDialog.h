@@ -35,18 +35,17 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ReportFieldInfoDialog : public ModuleDialogGeneric, 
+
+class SCISHARE ReportFieldInfoDialog : public ModuleDialogGeneric,
   public Ui::ReportFieldInfoDialog
 {
 	Q_OBJECT
-	
+
 public:
-  ReportFieldInfoDialog(const std::string& name, 
+  ReportFieldInfoDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void moduleExecuted() { pullAndDisplayInfo(); }
-  virtual void pull() {}
 private Q_SLOTS:
     void pullAndDisplayInfo();
 };

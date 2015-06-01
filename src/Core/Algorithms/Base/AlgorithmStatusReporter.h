@@ -38,18 +38,22 @@
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
-  
+
   /// @todo: integrate with logger type
   class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
     AlgorithmStatusReporter();
     ~AlgorithmStatusReporter() {}
-        
+
     virtual void report_start(const std::string& tag) const {}
     virtual void report_end() const {}
 
-    virtual void update_progress(double percent) const { updaterFunc_(percent); }
+    virtual void update_progress(double percent) const
+    {
+      if (updaterFunc_)
+        updaterFunc_(percent); 
+    }
 
     typedef boost::function<void(double)> UpdaterFunc;
     void setUpdaterFunc(UpdaterFunc func) { updaterFunc_ = func; }
@@ -67,7 +71,7 @@ namespace Algorithms {
   private:
     const AlgorithmStatusReporter* asr_;
   };
-  
+
 }}}
 
 #endif

@@ -781,7 +781,7 @@ void Screenshot::saveScreenshot()
 {
   index_++;
   QString fileName = screenshotFile();
-  //qDebug() << "saving ViewScene screenshot to:" << fileName;
+	QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
   screenshot_.save(fileName);
 }
 

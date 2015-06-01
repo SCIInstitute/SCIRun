@@ -40,12 +40,7 @@ EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-	addLineEditManager(functionLineEdit_, Variables::FunctionString); 
-  addRadioButtonGroupManager({ addRadioButton_, subtractRadioButton_, multiplyRadioButton_, functionRadioButton_ }, Variables::Operator);
-}
 
-void EvaluateLinearAlgebraBinaryDialog::pull()
-{
-  pull_newVersionToReplaceOld();
+	addLineEditManager(functionLineEdit_, Variables::FunctionString);
+  addRadioButtonGroupManager({ addRadioButton_, subtractRadioButton_, multiplyRadioButton_, functionRadioButton_ }, Variables::Operator);
 }

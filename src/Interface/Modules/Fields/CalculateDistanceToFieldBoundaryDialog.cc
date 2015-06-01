@@ -46,8 +46,3 @@ CalculateDistanceToFieldBoundaryDialog::CalculateDistanceToFieldBoundaryDialog(c
   addComboBoxManager(basisTypeComboBox_, Parameters::BasisType);
   addComboBoxManager(dataTypeComboBox_, Parameters::OutputFieldDatatype);
 }
-
-void CalculateDistanceToFieldBoundaryDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}

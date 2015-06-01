@@ -41,11 +41,6 @@ RegisterWithCorrespondencesDialog::RegisterWithCorrespondencesDialog(const std::
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
-	
-  addRadioButtonGroupManager({ morphRadioButton_, affineRadioButton_, noneRadioButton_ }, Variables::Operator);
-	
-}
 
-void RegisterWithCorrespondencesDialog::pull() {
-	pull_newVersionToReplaceOld();
+  addRadioButtonGroupManager({ morphRadioButton_, affineRadioButton_, noneRadioButton_ }, Variables::Operator);
 }

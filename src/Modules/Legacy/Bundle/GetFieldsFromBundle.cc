@@ -7,7 +7,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,11 +40,11 @@ using namespace SCIRun::Core::Algorithms;
 ModuleLookupInfo GetFieldsFromBundle::staticInfo_("GetFieldsFromBundle", "Bundle", "SCIRun");
 AlgorithmParameterName GetFieldsFromBundle::FieldNameList("FieldNameList");
 const AlgorithmParameterName GetFieldsFromBundle::FieldNames[] = {
-  AlgorithmParameterName("field1-name"), 
-  AlgorithmParameterName("field2-name"), 
-  AlgorithmParameterName("field3-name"), 
-  AlgorithmParameterName("field4-name"), 
-  AlgorithmParameterName("field5-name"), 
+  AlgorithmParameterName("field1-name"),
+  AlgorithmParameterName("field2-name"),
+  AlgorithmParameterName("field3-name"),
+  AlgorithmParameterName("field4-name"),
+  AlgorithmParameterName("field5-name"),
   AlgorithmParameterName("field6-name")
 };
 
@@ -63,10 +63,9 @@ GetFieldsFromBundle::GetFieldsFromBundle() : Module(staticInfo_)
 void GetFieldsFromBundle::setStateDefaults()
 {
   auto state = get_state();
-  //state->setValue(FieldNameList, std::string());
-  
+
   for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
-  {  
+  {
     state->setValue(FieldNames[i], "field" + boost::lexical_cast<std::string>(i));
   }
 }
@@ -74,23 +73,13 @@ void GetFieldsFromBundle::setStateDefaults()
 void GetFieldsFromBundle::execute()
 {
   auto bundle = getRequiredInput(InputBundle);
-  
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (inputs_changed_ || guifield1name_.changed() || 
-      guifield2name_.changed() || guifield3name_.changed() ||
-      guifield4name_.changed() || guifield5name_.changed() ||
-      guifield6name_.changed() || !oport_cached("bundle") || 
-      !oport_cached("field1")  || !oport_cached("field2") || 
-      !oport_cached("field3")  || !oport_cached("field4") ||
-      !oport_cached("field5")  || !oport_cached("field6"))
-#endif
+
   if (needToExecute())
   {
     update_state(Executing);
 
     auto state = get_state();
-    //TODO: why does this crash?
-    //state->setTransientValue(FieldNameList.name(), makeFieldNameList(*bundle));
+    state->setTransientValue(FieldNameList.name(), bundle->getFieldNames());
 
     FieldHandle outputs[NUM_BUNDLE_OUT];
     for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
@@ -100,9 +89,9 @@ void GetFieldsFromBundle::execute()
       {
         auto field = bundle->getField(fieldName);
         outputs[i] = field;
-      } 
+      }
     }
-        
+
     sendOutput(OutputBundle, bundle);
 
     //TODO: fix duplication

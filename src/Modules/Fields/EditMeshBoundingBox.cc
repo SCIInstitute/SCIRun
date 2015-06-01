@@ -316,70 +316,12 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
   {
     glyphs.addSphere(a, scale, num_strips, ColorRGB(1, 0, 0));
   }
-
-  glyphs.getBufferInfo(numVBOElements, tri_points, tri_normals, colors, tri_indices);
-
-  // Attempt some form of precalculation of iboBuffer and vboBuffer size.
-  uint32_t iboSize = (uint32_t)(tri_indices.size() * sizeof(uint32_t));
-  uint32_t vboSize = (uint32_t)(tri_points.size() * 2 * 3 * sizeof(float));
-
-
-  /// \todo To reduce memory requirements, we can use a 16bit index buffer.
-
-  /// \todo To further reduce a large amount of memory, get rid of the index
-  ///       buffer and use glDrawArrays to render without an IBO. An IBO is
-  ///       a waste of space.
-  ///       http://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml
-
-  /// \todo Switch to unique_ptrs and move semantics.
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-
-  // Accessing the pointers like this is contrived. We only do this for
-  // speed since we will be using the pointers in a tight inner loop.
-  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
-  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
-
-
-  //write to the IBO/VBOs
-  for (size_t i = 0; i < tri_indices.size(); i++)
-    iboBuffer->write(tri_indices[i]);
-
-  for (size_t i = 0; i < tri_points.size(); i++)
-  {
-    // Write first point on line
-    vboBuffer->write(static_cast<float>(tri_points.at(i).x()));
-    vboBuffer->write(static_cast<float>(tri_points.at(i).y()));
-    vboBuffer->write(static_cast<float>(tri_points.at(i).z()));
-    // Write normal
-    vboBuffer->write(static_cast<float>(tri_normals.at(i).x()));
-    vboBuffer->write(static_cast<float>(tri_normals.at(i).y()));
-    vboBuffer->write(static_cast<float>(tri_normals.at(i).z()));
-  }
+  
   std::stringstream ss;
   ss << scale;
   for (auto a : points) ss << a.x() << a.y() << a.z();
 
   std::string uniqueNodeID = "bounding_box_cylinders" + std::string(ss.str().c_str());
-  std::string vboName = uniqueNodeID + "VBO";
-  std::string iboName = uniqueNodeID + "IBO";
-  std::string passName = uniqueNodeID + "Pass";
-
-  // Construct VBO.
-  std::string shader = "Shaders/DirPhong";
-  std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
-  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
-  GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
-
-  // If true, then the VBO will be placed on the GPU. We don't want to place
-  // VBOs on the GPU when we are generating rendering lists.
-  GeometryObject::SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements, bbox_, true);
-
-  // Construct IBO.
-  GeometryObject::SpireIBO geomIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   RenderState renState;
 
@@ -389,25 +331,11 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
   renState.defaultColor = ColorRGB(1, 1, 1);
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
   renState.set(RenderState::USE_NORMALS, true);
-
-  // Construct Pass.
-  GeometryObject::SpireSubPass pass(passName, vboName, iboName, shader,
-    colorScheme, renState, renderType, geomVBO, geomIBO);
-  // Add all uniforms generated above to the pass.
-  std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-    glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-    glm::vec4(1.f, 1.f, 1.f, 1.f)));
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-    glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-  for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
+ 
   Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr, *this, "BoundingBox"));
-  geom->mIBOs.push_back(geomIBO);
-  geom->mVBOs.push_back(geomVBO);
-  geom->mPasses.push_back(pass);
+
+  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+    colorScheme, renState, GeometryObject::SpireIBO::TRIANGLES, bbox_);
 
   return geom;
 }

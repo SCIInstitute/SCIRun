@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE JoinFieldsDialog : public ModuleDialogGeneric, 
+
+class SCISHARE JoinFieldsDialog : public ModuleDialogGeneric,
   public Ui::JoinFields
 {
 	Q_OBJECT
-	
+
 public:
-  JoinFieldsDialog(const std::string& name, 
+  JoinFieldsDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

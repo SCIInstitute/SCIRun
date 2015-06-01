@@ -46,7 +46,7 @@ GenerateStreamLinesDialog::GenerateStreamLinesDialog(const std::string& name, Mo
   streamlineMethod_.insert(StringPair("Heun Method", "Heun"));
   streamlineMethod_.insert(StringPair("Classic 4th Order Runge-Kutta", "RungeKutta"));
   streamlineMethod_.insert(StringPair("Adaptive Runge-Kutta-Fehlberg", "RungeKuttaFehlberg"));
-  
+
   addSpinBoxManager(maxStepsSpinBox_, Parameters::StreamlineMaxSteps);
   addDoubleSpinBoxManager(toleranceDoubleSpinBox_, Parameters::StreamlineTolerance);
   addDoubleSpinBoxManager(stepSizeDoubleSpinBox_, Parameters::StreamlineStepSize);
@@ -55,9 +55,4 @@ GenerateStreamLinesDialog::GenerateStreamLinesDialog(const std::string& name, Mo
   addComboBoxManager(methodComboBox_, Parameters::StreamlineMethod, streamlineMethod_);
   addCheckBoxManager(autoParameterCheckBox_, Parameters::AutoParameters);
   addCheckBoxManager(filterColinearCheckBox_, Parameters::RemoveColinearPoints);
-}
-
-void GenerateStreamLinesDialog::pull()
-{
-  pull_newVersionToReplaceOld();
 }

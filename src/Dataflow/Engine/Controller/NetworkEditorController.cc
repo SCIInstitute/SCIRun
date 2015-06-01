@@ -110,7 +110,6 @@ ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info
 
 void NetworkEditorController::removeModule(const ModuleId& id)
 {
-  //auto disableDynamicPortManager(createDynamicPortSwitch());
   theNetwork_->remove_module(id);
   //before or after?
   // deciding on after: ProvenanceWindow/Manager wants the state *after* removal.
@@ -119,9 +118,14 @@ void NetworkEditorController::removeModule(const ModuleId& id)
   printNetwork();
 }
 
+void NetworkEditorController::interruptModule(const ModuleId& id)
+{
+  theNetwork_->interruptModuleRequest(id);
+  ///*emit*/ networkInterrupted_();
+}
+
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
-  //auto disableDynamicPortManager(createDynamicPortSwitch());
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
   ModuleId id(module->get_id());
   auto newModule = addModuleImpl(module->get_info());
@@ -311,6 +315,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         serializationManager_->updateModulePositions(xml->modulePositions);
         serializationManager_->updateModuleNotes(xml->moduleNotes);
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
+        serializationManager_->updateModuleTags(xml->moduleTags);
       }
       else
         Log::get() << INFO <<  "module position editor unavailable, module positions at default" << std::endl;

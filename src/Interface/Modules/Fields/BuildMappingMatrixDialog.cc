@@ -53,10 +53,8 @@ BuildMappingMatrixDialog::BuildMappingMatrixDialog(const std::string& name, Modu
   connect(noMaxCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setNoMaximumValue(int)));
 }
 
-void BuildMappingMatrixDialog::pull()
+void BuildMappingMatrixDialog::pullSpecial()
 {
-  pull_newVersionToReplaceOld();
-  Pulling p(this);
   if (state_->getValue(Parameters::MaxDistance).toDouble() < 0)
   {
     noMaxCheckBox_->setChecked(true);

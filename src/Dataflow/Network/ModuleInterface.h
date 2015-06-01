@@ -166,6 +166,10 @@ namespace Networks {
     virtual void addPortConnection(const boost::signals2::connection& con) = 0;
 
     virtual void enqueueExecuteAgain() = 0;
+
+    virtual const MetadataMap& metadata() const = 0;
+
+    virtual bool isStoppable() const = 0;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

@@ -63,6 +63,7 @@ public:
       ("verbose", "Turn on debug log information")
       ("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
       ("reexecuteMode", po::value<std::string>(), "network reexecution mode--DEVELOPER USE ONLY")
+      ("frameInitLimit", po::value<int>(), "ViewScene frame init limit--increase if renderer fails")
       ("list-modules", "print list of available modules")
       ;
 
@@ -130,10 +131,11 @@ public:
     const boost::optional<boost::filesystem::path>& dataDirectory,
     const boost::optional<std::string>& threadMode,
     const boost::optional<std::string>& reexecuteMode,
+    const boost::optional<int>& frameInitLimit,
     const Flags& flags
    ) : entireCommandLine_(entireCommandLine),
     inputFiles_(inputFiles), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory),
-    threadMode_(threadMode), reexecuteMode_(reexecuteMode),
+    threadMode_(threadMode), reexecuteMode_(reexecuteMode), frameInitLimit_(frameInitLimit),
     flags_(flags)
   {}
 
@@ -201,6 +203,11 @@ public:
   {
     return reexecuteMode_;
   }
+  
+  virtual boost::optional<int> frameInitLimit() const override
+  {
+    return frameInitLimit_;
+  }
 
   virtual bool printModuleList() const override
   {
@@ -218,6 +225,7 @@ private:
   boost::optional<boost::filesystem::path> pythonScriptFile_;
   boost::optional<boost::filesystem::path> dataDirectory_;
   boost::optional<std::string> threadMode_, reexecuteMode_;
+  boost::optional<int> frameInitLimit_;
   Flags flags_;
 };
 
@@ -251,6 +259,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     }
     auto threadMode = parsed.count("threadMode") != 0 ? parsed["threadMode"].as<std::string>() : boost::optional<std::string>();
     auto reexecuteMode = parsed.count("reexecuteMode") != 0 ? parsed["reexecuteMode"].as<std::string>() : boost::optional<std::string>();
+    auto frameInitLimit = parsed.count("frameInitLimit") != 0 ? parsed["frameInitLimit"].as<int>() : boost::optional<int>();
     return boost::make_shared<ApplicationParametersImpl>
       (boost::algorithm::join(cmdline, " "),
       std::move(inputFiles),
@@ -258,6 +267,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       dataDirectory,
       threadMode,
       reexecuteMode,
+      frameInitLimit,
       ApplicationParametersImpl::Flags(
         parsed.count("help") != 0,
         parsed.count("version") != 0,
