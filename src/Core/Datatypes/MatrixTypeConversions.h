@@ -58,15 +58,6 @@ namespace Datatypes {
     matrix_cast();
   };
 
-  enum SCISHARE MatrixTypeCode
-  {
-    NULL_MATRIX = -1,
-    DENSE = 0,
-    SPARSE_ROW,
-    COLUMN,
-    UNKNOWN
-  };
-
   class SCISHARE matrix_is
   {
   public:

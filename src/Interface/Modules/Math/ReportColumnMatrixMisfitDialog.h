@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,49 +24,32 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#ifndef CORE_ALGORITHMS_MATH_LINEARSYSTEM_ADDKNOWNSTOLINEARSYSTEM_H
-#define CORE_ALGORITHMS_MATH_LINEARSYSTEM_ADDKNOWNSTOLINEARSYSTEM_H 1
+#ifndef INTERFACE_MODULES_REPORTCOLUMNMATRIXMISFIT_H
+#define INTERFACE_MODULES_REPORTCOLUMNMATRIXMISFIT_H
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Matrix.h>
+#include "Interface/Modules/Math/ui_ReportColumnMatrixMisfit.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Gui {
 
-// for Windows support
-#include <Core/Algorithms/Math/share.h>
+    class SCISHARE ReportColumnMatrixMisfitDialog : public ModuleDialogGeneric,
+      public Ui::ReportColumnMatrixMisfit
+    {
+      Q_OBJECT
 
-namespace SCIRunAlgo {
+    public:
+      ReportColumnMatrixMisfitDialog(const std::string& name,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = 0);
+    private:
+      GuiStringTranslationMap methodMap_;
+    };
 
-using namespace SCIRun;
-
-// Add knowns to a linear system, set the knowns in x by giving them a value
-// all unknowns should be marked with a NaN. This algorithm will take a linear
-// system comprised of matrices A and b and set all the values that are specified
-// in x to that value and will change the linear system so that these values
-// are set.
-//
-// If matrix A is not sparse, set convert_matrix_types to true to convert
-// to sparse row matrix type.
-
-class SCISHARE AddKnownsToLinearSystemAlgo : public AlgoBase
-{
-  public:
-    // Set default values
-    AddKnownsToLinearSystemAlgo()
-    {}
-  
-    bool run(MatrixHandle a_in, 
-             MatrixHandle b_in,
-             MatrixHandle x, 
-             SparseRowMatrixHandle& a_out, 
-             MatrixHandle& b_out,
-             bool convert_matrix_types = false);
-};
-
-
+  }
 }
 
 #endif
