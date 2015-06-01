@@ -64,18 +64,9 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowFieldModule::EdgesAsCylinders);
   addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_ }, ShowFieldModule::NodeAsSpheres);
 
-  //TODO: make enumerable version of function
-  connectButtonToExecuteSignal(showNodesCheckBox_);
-  connectButtonToExecuteSignal(showEdgesCheckBox_);
-  connectButtonToExecuteSignal(showFacesCheckBox_);
-  connectButtonToExecuteSignal(enableTransparencyNodesCheckBox_);
-  connectButtonToExecuteSignal(enableTransparencyEdgesCheckBox_);
-  connectButtonToExecuteSignal(enableTransparencyFacesCheckBox_);
-  connectButtonToExecuteSignal(invertNormalsCheckBox);
-  connectButtonToExecuteSignal(edgesAsLinesButton_);
-  connectButtonToExecuteSignal(edgesAsCylindersButton_);
-  connectButtonToExecuteSignal(nodesAsPointsButton_);
-  connectButtonToExecuteSignal(nodesAsSpheresButton_);
+  connectButtonsToExecuteSignal({ showNodesCheckBox_, showEdgesCheckBox_, showFacesCheckBox_, enableTransparencyNodesCheckBox_,
+    enableTransparencyEdgesCheckBox_, enableTransparencyFacesCheckBox_, invertNormalsCheckBox, edgesAsLinesButton_,
+    edgesAsCylindersButton_, nodesAsPointsButton_, nodesAsSpheresButton_ });
 
   createExecuteInteractivelyToggleAction();
 

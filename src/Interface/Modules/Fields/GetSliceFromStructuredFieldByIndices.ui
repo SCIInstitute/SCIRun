@@ -29,14 +29,14 @@
       <item row="3" column="2">
        <widget class="QSpinBox" name="kAxisSpinBox_">
         <property name="maximum">
-         <number>1</number>
+         <number>9999</number>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
        <widget class="QSlider" name="kAxisHorizontalSlider_">
         <property name="maximum">
-         <number>0</number>
+         <number>9999</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -53,14 +53,14 @@
       <item row="2" column="2">
        <widget class="QSpinBox" name="jAxisSpinBox_">
         <property name="maximum">
-         <number>1</number>
+         <number>9999</number>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
        <widget class="QSlider" name="jAxisHorizontalSlider_">
         <property name="maximum">
-         <number>0</number>
+         <number>9999</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -84,7 +84,7 @@
       <item row="1" column="2">
        <widget class="QSpinBox" name="iAxisSpinBox_">
         <property name="maximum">
-         <number>1</number>
+         <number>9999</number>
         </property>
        </widget>
       </item>
@@ -105,7 +105,7 @@
       <item row="1" column="1">
        <widget class="QSlider" name="iAxisHorizontalSlider_">
         <property name="maximum">
-         <number>0</number>
+         <number>9999</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -211,102 +211,6 @@
     </hint>
     <hint type="destinationlabel">
      <x>203</x>
-     <y>120</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>iAxisRadioButton_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>iAxisHorizontalSlider_</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>43</x>
-     <y>68</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>203</x>
-     <y>68</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>iAxisRadioButton_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>iAxisSpinBox_</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>43</x>
-     <y>68</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>359</x>
-     <y>68</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>jAxisRadioButton_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>jAxisHorizontalSlider_</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>43</x>
-     <y>94</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>203</x>
-     <y>94</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>jAxisRadioButton_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>jAxisSpinBox_</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>43</x>
-     <y>94</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>359</x>
-     <y>94</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>kAxisRadioButton_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>kAxisHorizontalSlider_</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>43</x>
-     <y>120</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>203</x>
-     <y>120</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>kAxisRadioButton_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>kAxisSpinBox_</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>43</x>
-     <y>120</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>359</x>
      <y>120</y>
     </hint>
    </hints>

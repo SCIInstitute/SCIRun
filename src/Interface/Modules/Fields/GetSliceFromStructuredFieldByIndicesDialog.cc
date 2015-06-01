@@ -41,30 +41,23 @@ GetSliceFromStructuredFieldByIndicesDialog::GetSliceFromStructuredFieldByIndices
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  //connect(compartmentRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-  //connect(compartmentsRangeRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-
   using namespace Parameters;
   addSpinBoxManager(iAxisSpinBox_, Index_i);
   addSpinBoxManager(jAxisSpinBox_, Index_j);
   addSpinBoxManager(kAxisSpinBox_, Index_k);
   addRadioButtonGroupManager({ iAxisRadioButton_, jAxisRadioButton_, kAxisRadioButton_ }, Axis_ijk);
 
-  createExecuteInteractivelyToggleAction();
-
-  //TODO: hook up with dialog execution model choice
-  connect(iAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeActionTriggered()));
-  connect(jAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeActionTriggered()));
-  connect(kAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeActionTriggered()));
-
-  //connect()
+  //TODO: test whether users want live execution for this module
+  //createExecuteInteractivelyToggleAction();
+  //connect(iAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeFromStateChangeTriggered()));
+  //connect(jAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeFromStateChangeTriggered()));
+  //connect(kAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeFromStateChangeTriggered()));
 }
 
 void GetSliceFromStructuredFieldByIndicesDialog::pullSpecial()
 {
   using namespace Parameters;
 
-  //qDebug() << "iAxis max: " << state_->getValue(Dim_i).toInt();
   iAxisSpinBox_->setMaximum(state_->getValue(Dim_i).toInt());
   jAxisSpinBox_->setMaximum(state_->getValue(Dim_j).toInt());
   kAxisSpinBox_->setMaximum(state_->getValue(Dim_k).toInt());
