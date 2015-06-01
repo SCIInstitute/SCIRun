@@ -37,10 +37,12 @@
 #include <Interface/Modules/DataIO/WriteFieldDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
+#include <Interface/Modules/Math/EvaluateLinearAlgebraGeneralDialog.h>
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
+#include <Interface/Modules/Math/ReportColumnMatrixMisfitDialog.h>
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
 #include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Interface/Modules/Math/GetMatrixSliceDialog.h>
@@ -59,6 +61,7 @@
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
+#include <Interface/Modules/Fields/GetSliceFromStructuredFieldByIndicesDialog.h>
 #include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
@@ -99,7 +102,7 @@
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
 #include <boost/assign.hpp>
 #include <boost/functional/factory.hpp>
-#include <boost/foreach.hpp>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -128,6 +131,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ReadBundle, ReadBundleDialog)
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryDialog)
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryDialog)
+    ADD_MODULE_DIALOG(EvaluateLinearAlgebraGeneral, EvaluateLinearAlgebraGeneralDialog)
     ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
     ADD_MODULE_DIALOG(ShowField, ShowFieldDialog)
     ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
@@ -178,19 +182,17 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ClipFieldByFunction, ClipFieldByFunctionDialog)
     ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
     ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
+    ADD_MODULE_DIALOG(ReportColumnMatrixMisfit, ReportColumnMatrixMisfitDialog)
+    ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
     ADD_MODULE_DIALOG(ConvertFieldBasis, ConvertFieldBasisDialog)
     ADD_MODULE_DIALOG(BuildNoiseColumnMatrix, BuildNoiseColumnMatrixDialog)
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
     ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
+    ADD_MODULE_DIALOG(GetSliceFromStructuredFieldByIndices, GetSliceFromStructuredFieldByIndicesDialog)
     ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
     ADD_MODULE_DIALOG(SolveInverseProblemWithTikhonov, SolveInverseProblemWithTikhonovDialog)
-
-
-
-
-
     ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)
     ADD_MODULE_DIALOG(RescaleColorMap, RescaleColorMapDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
@@ -200,7 +202,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 
 ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId, ModuleStateHandle state)
 {
-  BOOST_FOREACH(const DialogMakerMap::value_type& makerPair, dialogMakerMap_)
+  for(const auto& makerPair : dialogMakerMap_)
   {
     //TODO: match full string name; need to strip module id's number
     auto findIndex = moduleId.find(makerPair.first);

@@ -44,9 +44,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 
-#include <boost/foreach.hpp>
-#include <boost/thread.hpp> //TODO interrupt API coming
-
 #include <glm/glm.hpp>
 
 using namespace SCIRun::Modules::Visualization;
@@ -374,7 +371,8 @@ void ShowFieldModule::renderFacesLinear(
 
   while (fiter != fiterEnd)
   {
-    boost::this_thread::interruption_point();
+    checkForInterruption();
+
     mesh->get_nodes(nodes, *fiter);
 
     std::vector<Core::Geometry::Point> points(nodes.size());
@@ -1057,8 +1055,6 @@ void ShowFieldModule::addFaceGeom(
   }
 }
 
-
-
 void ShowFieldModule::renderNodes(
   boost::shared_ptr<SCIRun::Field> field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
@@ -1101,7 +1097,7 @@ void ShowFieldModule::renderNodes(
   ss << state.get(RenderState::USE_SPHERE) << radius << num_strips << colorScheme;
 
   std::string uniqueNodeID = id + "node" + ss.str();
-  
+
   auto st = get_state();
   nodeTransparencyValue_ = static_cast<float>(st->getValue(NodeTransparencyValue).toDouble());
 
@@ -1113,6 +1109,8 @@ void ShowFieldModule::renderNodes(
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
+    checkForInterruption();
+
     Core::Geometry::Point p;
     mesh->get_point(p, *eiter);
     //coloring options
@@ -1146,8 +1144,8 @@ void ShowFieldModule::renderNodes(
     }
 
     ++eiter;
-  }  
- 
+  }
+
   glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
     colorScheme, state, primIn, mesh->get_bounding_box());
 }
@@ -1180,7 +1178,7 @@ void ShowFieldModule::renderEdges(
     colorScheme = GeometryObject::COLOR_IN_SITU;
 
   mesh->synchronize(Mesh::EDGES_E);
-  
+
   VMesh::Edge::iterator eiter, eiter_end;
   mesh->begin(eiter);
   mesh->end(eiter_end);
@@ -1195,7 +1193,7 @@ void ShowFieldModule::renderEdges(
   ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius << colorScheme;
 
   std::string uniqueNodeID = id + "edge" + ss.str();
-  
+
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;
   // Use cylinders...
   if (state.get(RenderState::USE_CYLINDER))
@@ -1204,6 +1202,8 @@ void ShowFieldModule::renderEdges(
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
+    checkForInterruption();
+
     VMesh::Node::array_type nodes;
     mesh->get_nodes(nodes, *eiter);
 
@@ -1272,13 +1272,13 @@ void ShowFieldModule::renderEdges(
     }
     else
     {
-      glyphs.addNeedle(p0, p1, edge_colors[0], edge_colors[1]);      
+      glyphs.addNeedle(p0, p1, edge_colors[0], edge_colors[1]);
     }
 
     ++eiter;
   }
-    
-  glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), edgeTransparencyValue_, 
+
+  glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
     colorScheme, state, primIn, mesh->get_bounding_box());
 }
 

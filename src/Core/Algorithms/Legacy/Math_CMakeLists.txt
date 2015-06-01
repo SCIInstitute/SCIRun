@@ -31,13 +31,14 @@
 SET(Core_Algorithms_Legacy_Math_HEADERS
   share.h
   LinearSystem/AddKnownsToLinearSystem.h
+  ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h
 )
 
 SET(Core_Algorithms_Legacy_Math_SRCS
   #AppendMatrix/AppendMatrices.cc
   #AppendMatrix/AppendMatrix.cc
   #CollectMatrices/CollectMatricesAlgorithm.cc
-  #ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.cc
+  ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.cc
   #FindMatrix/FindNonZeroMatrixRows.cc
   #FindMatrix/FindNonZeroMatrixColumns.cc
   #FindMatrix/FindZeroMatrixRows.cc

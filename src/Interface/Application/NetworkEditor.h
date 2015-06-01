@@ -29,14 +29,16 @@
 #ifndef INTERFACE_APPLICATION_NETWORKEDITOR_H
 #define INTERFACE_APPLICATION_NETWORKEDITOR_H
 
-#include <boost/shared_ptr.hpp>
 #include <QGraphicsView>
+#ifndef Q_MOC_RUN
+#include <boost/shared_ptr.hpp>
 #include <map>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 #include <Interface/Application/Note.h>
+#endif
 
 class QMenu;
 class QToolBar;

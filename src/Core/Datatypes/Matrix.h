@@ -42,15 +42,13 @@ namespace Datatypes {
 
   /// @todo: use Eigen's Visitor type?
   template <typename T>
-  struct MatrixVisitorGeneric
+  struct SCISHARE MatrixVisitorGeneric
   {
     virtual ~MatrixVisitorGeneric() {}
     virtual void visit(DenseMatrixGeneric<T>&) = 0;
     virtual void visit(SparseRowMatrixGeneric<T>&) = 0;
     virtual void visit(DenseColumnMatrixGeneric<T>&) = 0;
   };
-
-  typedef MatrixVisitorGeneric<double> MatrixVisitor;
 
   class SCISHARE MatrixIOBase : public Datatype
   {
@@ -71,8 +69,10 @@ namespace Datatypes {
   public:
     virtual size_t nrows() const = 0;
     virtual size_t ncols() const = 0;
+    size_t get_dense_size() const { return nrows() * ncols(); }
 
-    virtual void accept(MatrixVisitorGeneric<T>& visitor) = 0;
+    typedef MatrixVisitorGeneric<T> Visitor;
+    virtual void accept(Visitor& visitor) = 0;
 
     bool empty() const { return 0 == nrows() && 0 == ncols(); }
 
@@ -96,6 +96,15 @@ namespace Datatypes {
 
   template <typename T>
   PersistentTypeID MatrixBase<T>::type_id("MatrixBase", "MatrixIOBase", 0);
+
+  enum SCISHARE MatrixTypeCode
+  {
+    NULL_MATRIX = -1,
+    DENSE = 0,
+    SPARSE_ROW,
+    COLUMN,
+    UNKNOWN
+  };
 
 }}}
 

@@ -31,7 +31,6 @@
 
 #include "Interface/Modules/BrainStimulator/ui_ElectrodeCoilSetupDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Core/Algorithms/Base/Variable.h>
 #include <Interface/Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
