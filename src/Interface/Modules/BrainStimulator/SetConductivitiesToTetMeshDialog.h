@@ -31,7 +31,6 @@
 
 #include "Interface/Modules/BrainStimulator/ui_SetConductivitiesToTetMeshDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/BrainStimulator/share.h>
 
 namespace SCIRun {

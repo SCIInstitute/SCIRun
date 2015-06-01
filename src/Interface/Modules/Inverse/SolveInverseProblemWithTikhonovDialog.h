@@ -31,7 +31,6 @@
 
 #include "Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonov.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Inverse/share.h>
 
 namespace SCIRun {

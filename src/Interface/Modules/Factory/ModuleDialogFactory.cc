@@ -102,7 +102,7 @@
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
 #include <boost/assign.hpp>
 #include <boost/functional/factory.hpp>
-#include <boost/foreach.hpp>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -201,7 +201,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 
 ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId, ModuleStateHandle state)
 {
-  BOOST_FOREACH(const DialogMakerMap::value_type& makerPair, dialogMakerMap_)
+  for(const auto& makerPair : dialogMakerMap_)
   {
     //TODO: match full string name; need to strip module id's number
     auto findIndex = moduleId.find(makerPair.first);

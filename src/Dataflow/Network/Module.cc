@@ -44,6 +44,7 @@
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Thread/Interruptible.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
@@ -397,7 +398,7 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
 
-  metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? nullptr : options[0]));
+  metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? boost::none : options[0]));
 
   return options;
 }
@@ -889,4 +890,9 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 {
   ModuleLevelUniqueIDGenerator gen(*this, tag);
   return gen();
+}
+
+bool Module::isStoppable() const
+{
+  return dynamic_cast<const Core::Thread::Interruptible*>(this) != nullptr;
 }
