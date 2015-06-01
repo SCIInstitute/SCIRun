@@ -42,10 +42,9 @@ class SCISHARE ApplyFEMCurrentSourceDialog : public ModuleDialogGeneric,
 	Q_OBJECT
 
 public:
-  ApplyFEMCurrentSourceDialog(const std::string& name, 
+  ApplyFEMCurrentSourceDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

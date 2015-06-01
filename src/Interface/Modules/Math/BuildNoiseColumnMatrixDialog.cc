@@ -45,20 +45,11 @@ BuildNoiseColumnMatrixDialog::BuildNoiseColumnMatrixDialog(const std::string& na
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
-	
-	addDoubleSpinBoxManager(noiseSpinBox_,SCIRun::Core::Algorithms::Math::BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio());
 
+	addDoubleSpinBoxManager(noiseSpinBox_,SCIRun::Core::Algorithms::Math::BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio());
 	
 	connect(noiseSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBox()));
 	connect(noiseSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSlider()));
-	//connect(noiseSlider_, SIGNAL(valueChanged(int)), this, SLOT(pull()));
-	//connect(noiseSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(pull()));
-	
-}
-
-void BuildNoiseColumnMatrixDialog::pull()
-{
-	pull_newVersionToReplaceOld();
 }
 
 void BuildNoiseColumnMatrixDialog::setSlider() {
@@ -70,14 +61,3 @@ void BuildNoiseColumnMatrixDialog::setSpinBox() {
 	double temporary = noiseSpinBox_->value() - (int)noiseSpinBox_->value();
 	noiseSpinBox_->setValue(noiseSlider_->value()+temporary);
 }
-
-	
-
-
-
-
-
-
-
-
-

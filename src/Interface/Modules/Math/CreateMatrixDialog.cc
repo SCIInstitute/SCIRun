@@ -42,7 +42,7 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
- 
+
   connect(editCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(pushMatrixToState(int)));
   connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(editBoxUnsaved()));
 }
@@ -59,13 +59,13 @@ void CreateMatrixDialog::pushMatrixToState(int state)
   }
 }
 
-void CreateMatrixDialog::pull()
+void CreateMatrixDialog::pullSpecial()
 {
   Pulling p(this);
   matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).toString()));
   if (firstPull_)
     editBoxSaved();
-  
+
   firstPull_ = false;
 }
 

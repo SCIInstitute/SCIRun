@@ -40,11 +40,6 @@ SwapFieldDataWithMatrixEntriesDialog::SwapFieldDataWithMatrixEntriesDialog(const
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-  addCheckBoxManager(preserveScalarFieldTypeCheckBox_, Parameters::PreserveScalar);
-}
 
-void SwapFieldDataWithMatrixEntriesDialog::pull()
-{
-  pull_newVersionToReplaceOld();
+  addCheckBoxManager(preserveScalarFieldTypeCheckBox_, Parameters::PreserveScalar);
 }

@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE CreateStringDialog : public ModuleDialogGeneric, 
+
+class SCISHARE CreateStringDialog : public ModuleDialogGeneric,
   public Ui::CreateString
 {
 	Q_OBJECT
-	
+
 public:
-  CreateStringDialog(const std::string& name, 
+  CreateStringDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

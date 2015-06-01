@@ -41,7 +41,7 @@ CreateLatVolDialog::CreateLatVolDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   addSpinBoxManager(xSizeSpinBox_, CreateLatVolModule::XSize);
   addSpinBoxManager(ySizeSpinBox_, CreateLatVolModule::YSize);
   addSpinBoxManager(zSizeSpinBox_, CreateLatVolModule::ZSize);
@@ -49,9 +49,4 @@ CreateLatVolDialog::CreateLatVolDialog(const std::string& name, ModuleStateHandl
 
   addRadioButtonGroupManager({ dataAtNodesButton_, dataAtCellsButton_, dataAtNoneButton_ }, CreateLatVolModule::DataAtLocation);
   addRadioButtonGroupManager({ elementSizeNormalizedButton_, elementSizeOneButton_ }, CreateLatVolModule::ElementSizeNormalized);
-}
-
-void CreateLatVolDialog::pull()
-{
-  pull_newVersionToReplaceOld();
 }

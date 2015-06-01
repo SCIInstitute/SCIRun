@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>246</height>
+    <width>612</width>
+    <height>261</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -40,19 +40,13 @@
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-      </property>
+     <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Field 1:</string>
         </property>
        </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="field1NameLineEdit_"/>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
@@ -61,18 +55,12 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="field2NameLineEdit_"/>
-      </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>Field 3:</string>
         </property>
        </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="field3NameLineEdit_"/>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_4">
@@ -81,9 +69,6 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="field4NameLineEdit_"/>
-      </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
@@ -91,18 +76,37 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="field5NameLineEdit_"/>
-      </item>
-      <item row="6" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
          <string>Field 6:</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
-       <widget class="QLineEdit" name="field6NameLineEdit_"/>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="fieldComboBox1_">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="fieldComboBox2_"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="fieldComboBox3_"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="fieldComboBox4_"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="fieldComboBox5_"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QComboBox" name="fieldComboBox6_"/>
       </item>
      </layout>
     </widget>
@@ -123,14 +127,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QTextEdit" name="fieldNameListTextEdit_">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>165</height>
-         </size>
-        </property>
-       </widget>
+       <widget class="QListWidget" name="fieldObjectListWidget_"/>
       </item>
      </layout>
     </widget>

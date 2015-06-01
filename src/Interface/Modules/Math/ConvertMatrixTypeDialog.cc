@@ -51,9 +51,3 @@ ConvertMatrixTypeDialog::ConvertMatrixTypeDialog(const std::string& name, Module
 
   addComboBoxManager(matrixTypeComboBox_, Parameters::OutputMatrixType, map_);
 }
-
-void ConvertMatrixTypeDialog::pull()
-{
-  pull_newVersionToReplaceOld();  
-}
-

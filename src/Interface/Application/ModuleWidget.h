@@ -29,10 +29,11 @@
 #ifndef INTERFACE_APPLICATION_MODULEWIDGET_H
 #define INTERFACE_APPLICATION_MODULEWIDGET_H
 
+#include <QStackedWidget>
+#ifndef Q_MOC_RUN
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/timer.hpp>
-#include <QStackedWidget>
 #include <set>
 #include <deque>
 #include <atomic>
@@ -42,6 +43,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ExecutableObject.h>
+#endif
 
 class QGraphicsProxyWidget;
 class QDockWidget;
@@ -150,9 +152,11 @@ public Q_SLOTS:
   void setMiniMode(bool mini);
   void collapseToMiniMode();
   void expandToFullMode();
+  void updateMetadata(bool active);
   static void setGlobalMiniMode(bool mini);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
+  void interrupt(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
@@ -181,6 +185,7 @@ private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();
+  void stopButtonPushed();
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();
   void replaceModuleWith();

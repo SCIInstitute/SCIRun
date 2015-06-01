@@ -34,6 +34,7 @@
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkUnitExecutor.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Logging/Log.h>
+#include <Core/Thread/Mutex.h>
 #include <boost/thread/thread.hpp>
 
 #include <Dataflow/Engine/Scheduler/share.h>
@@ -43,12 +44,72 @@ namespace Dataflow {
 namespace Engine {
 namespace DynamicExecutor {
 
+  class SCISHARE ExecutionThreadGroup : boost::noncopyable
+  {
+  public:
+    ExecutionThreadGroup()
+    {
+      //std::cout << this << " ExecutionThreadGroup()" << std::endl;
+      clear();
+    }
+    ~ExecutionThreadGroup()
+    {
+      //std::cout << this << " ~ETG()" << std::endl;
+    }
+    void startExecution(const ModuleExecutor& executor)
+    {
+      auto thread = executeThreads_->create_thread(boost::bind(&ModuleExecutor::run, executor));
+      Core::Thread::Guard g(mapLock_->get());
+      threadsByModuleId_[executor.module_->get_id().id_] = thread;
+      //std::cout << this << " inserted thread into map: " << executor.module_->get_id().id_ << " : " << thread << std::endl;
+    }
+    void joinAll()
+    {
+      executeThreads_->join_all();
+    }
+    void clear()
+    {
+      //std::cout << "ETG::clear()" << std::endl;
+      executeThreads_.reset(new boost::thread_group);
+      threadsByModuleId_.clear();
+      std::ostringstream lockName;
+      lockName << "threadMap " << this;
+      mapLock_.reset(new Core::Thread::Mutex(lockName.str()));
+    }
+    boost::thread* getThreadForModule(const std::string& moduleId) const
+    {
+      //std::cout << this << " getThreadForModule " << moduleId << std::endl;
+      if (!mapLock_)
+      {
+        //std::cout << "mapLock is null" << std::endl;
+        return nullptr;
+      }
+      Core::Thread::Guard g(mapLock_->get());
+
+      //std::cout << this << " getThreadForModule " << moduleId << " locked, size is " << threadsByModuleId_.size() << std::endl;
+      auto it = threadsByModuleId_.find(moduleId);
+      //std::cout << this << " getThreadForModule " << moduleId << " iterator obtained " << std::endl;
+      if (it == threadsByModuleId_.end())
+        return nullptr;
+      //std::cout << this << " getThreadForModule " << moduleId << " iterator is not end " << std::endl;
+      if (!executeThreads_->is_thread_in(it->second))
+        return nullptr;
+      //std::cout << this << " getThreadForModule is in group, returning " << moduleId << std::endl;
+      return it->second;
+    }
+  private:
+    mutable boost::shared_ptr<boost::thread_group> executeThreads_;
+    std::map<std::string, boost::thread*> threadsByModuleId_;
+    mutable boost::shared_ptr<Core::Thread::Mutex> mapLock_;
+  };
+
+  typedef boost::shared_ptr<ExecutionThreadGroup> ExecutionThreadGroupPtr;
 
   class SCISHARE ModuleConsumer : boost::noncopyable
   {
   public:
     explicit ModuleConsumer(ModuleWorkQueuePtr workQueue, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer,
-      boost::thread_group& executeThreadGroup) :
+      ExecutionThreadGroupPtr executeThreadGroup) :
     work_(workQueue), producer_(producer), lookup_(lookup),
     executeThreadGroup_(executeThreadGroup),
     shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
@@ -88,8 +149,7 @@ namespace DynamicExecutor {
               log_ << Core::Logging::DEBUG_LOG << "~~~Processing " << unit->get_id();
 
             ModuleExecutor executor(unit, lookup_, producer_);
-            /// @todo: thread pool
-            executeThreadGroup_.create_thread(boost::bind(&ModuleExecutor::run, executor));
+            executeThreadGroup_->startExecution(executor);
           }
           else
           {
@@ -110,7 +170,7 @@ namespace DynamicExecutor {
     ModuleWorkQueuePtr work_;
     ProducerInterfacePtr producer_;
     const Networks::ExecutableLookup* lookup_;
-    boost::thread_group& executeThreadGroup_;
+    ExecutionThreadGroupPtr executeThreadGroup_;
 
     static Core::Logging::Log& log_;
     bool shouldLog_;

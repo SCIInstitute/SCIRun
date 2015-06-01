@@ -75,10 +75,8 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   }
 }
 
-void GetMatrixSliceDialog::pull()
+void GetMatrixSliceDialog::pullSpecial()
 {
-  pull_newVersionToReplaceOld();
-  Pulling p(this);
   auto max = state_->getValue(Parameters::MaxIndex).toInt();
   indexSlider_->setMaximum(max);
   indexSpinBox_->setMaximum(max);

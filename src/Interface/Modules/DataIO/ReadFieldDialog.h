@@ -39,16 +39,17 @@
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE ReadFieldDialog : public ModuleDialogGeneric, 
+class SCISHARE ReadFieldDialog : public ModuleDialogGeneric,
   public Ui::ReadFieldDialog, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
-	
+
 public:
-  ReadFieldDialog(const std::string& name, 
+  ReadFieldDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+protected:
+  virtual void pullSpecial() override;
 
 private Q_SLOTS:
   void pushFileNameToState();

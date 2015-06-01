@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,8 +33,8 @@
 /// ported by Moritz Dannhauer (09/24/2014) from SCIRun4
 ///
 ///@details
-/// Calculates the divergence of a vector field over the volume. It is designed to calculate the volume integral of the vector field 
-/// (gradient of the potential in electrical simulations). Builds the volume portion of the RHS of FE calculations where the RHS of 
+/// Calculates the divergence of a vector field over the volume. It is designed to calculate the volume integral of the vector field
+/// (gradient of the potential in electrical simulations). Builds the volume portion of the RHS of FE calculations where the RHS of
 /// the function is GRAD dot F.
 /// Input: A FE mesh with field vectors distributed on the elements (constant basis). Output: The Grad dot F
 
@@ -43,7 +43,6 @@
 
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <vector>
 #include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
 namespace SCIRun {
@@ -58,12 +57,12 @@ class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
     static AlgorithmInputName Mesh;
     static AlgorithmOutputName RHS;
     static AlgorithmParameterName vectorTableBasisMatrices();
-    
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER      
-   Datatypes::DenseMatrixHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const; 
+
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+   Datatypes::DenseMatrixHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const;
   #endif
-  
-   Datatypes::DenseMatrixHandle run(FieldHandle input) const; 
+
+   Datatypes::DenseMatrixHandle run(FieldHandle input) const;
    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 private:
    mutable int generation_;

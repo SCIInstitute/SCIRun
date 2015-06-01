@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
-#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Dataflow/Network/ModuleStateInterface.h>
 #include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
@@ -69,9 +69,8 @@ RefineMeshDialog::RefineMeshDialog(const std::string& name, ModuleStateHandle st
   connect(constraintComboBox_, SIGNAL(activated(int)), this, SLOT(setIsoValueEnabled()));
 }
 
-void RefineMeshDialog::pull()
+void RefineMeshDialog::pullSpecial()
 {
-  pull_newVersionToReplaceOld();
   isoValueSpinBox_->setEnabled(constraintComboBox_->currentText().contains("isovalue"));
 }
 

@@ -64,18 +64,9 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowFieldModule::EdgesAsCylinders);
   addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_ }, ShowFieldModule::NodeAsSpheres);
 
-  //TODO: make enumerable version of function
-  connectButtonToExecuteSignal(showNodesCheckBox_);
-  connectButtonToExecuteSignal(showEdgesCheckBox_);
-  connectButtonToExecuteSignal(showFacesCheckBox_);
-  connectButtonToExecuteSignal(enableTransparencyNodesCheckBox_);
-  connectButtonToExecuteSignal(enableTransparencyEdgesCheckBox_);
-  connectButtonToExecuteSignal(enableTransparencyFacesCheckBox_);
-  connectButtonToExecuteSignal(invertNormalsCheckBox);
-  connectButtonToExecuteSignal(edgesAsLinesButton_);
-  connectButtonToExecuteSignal(edgesAsCylindersButton_);
-  connectButtonToExecuteSignal(nodesAsPointsButton_);
-  connectButtonToExecuteSignal(nodesAsSpheresButton_);
+  connectButtonsToExecuteSignal({ showNodesCheckBox_, showEdgesCheckBox_, showFacesCheckBox_, enableTransparencyNodesCheckBox_,
+    enableTransparencyEdgesCheckBox_, enableTransparencyFacesCheckBox_, invertNormalsCheckBox, edgesAsLinesButton_,
+    edgesAsCylindersButton_, nodesAsPointsButton_, nodesAsSpheresButton_ });
 
   createExecuteInteractivelyToggleAction();
 
@@ -118,10 +109,8 @@ void ShowFieldDialog::createStartupNote()
   setStartupNote("ID: " + showFieldId);
 }
 
-void ShowFieldDialog::pull()
+void ShowFieldDialog::pullSpecial()
 {
-  pull_newVersionToReplaceOld();
-  Pulling p(this);
   ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).toString());
   //std::cout << "pull color: " << color.r() << " " << color.g() << " " << color.b() << std::endl;
   // check for old saved color format: integers 0-255.

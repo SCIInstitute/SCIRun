@@ -96,9 +96,8 @@ void GenerateROIStatisticsDialog::push()
 }
 
 
-void GenerateROIStatisticsDialog::pull()
+void GenerateROIStatisticsDialog::pullSpecial()
 {
-  Pulling p(this);
   auto tableHandle = optional_any_cast_or_default<VariableHandle>(state_->getTransientValue(Parameters::StatisticsTableValues));
 
   if (tableHandle)

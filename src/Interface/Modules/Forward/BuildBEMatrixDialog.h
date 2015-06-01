@@ -31,7 +31,6 @@
 
 #include "Interface/Modules/Forward/ui_BuildBEMatrix.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Forward/share.h>
 
 namespace SCIRun {
@@ -48,7 +47,8 @@ public:
     QWidget* parent = 0);
 public Q_SLOTS:
   virtual void updateFromPortChange(int numPorts) override;
-  virtual void pull() override;
+protected:
+  virtual void pullSpecial() override;
 private Q_SLOTS:
   void pullNames();
   void pullFieldTypes();

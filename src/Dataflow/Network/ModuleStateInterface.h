@@ -50,10 +50,10 @@ namespace Networks {
   {
   public:
     virtual ~ModuleStateInterface();
-
-    typedef std::vector<SCIRun::Core::Algorithms::AlgorithmParameterName> Keys;
+    
     typedef SCIRun::Core::Algorithms::AlgorithmParameterName Name;
     typedef SCIRun::Core::Algorithms::AlgorithmParameter Value;
+    typedef std::vector<Name> Keys;
 
     //serialized state
     virtual const Value getValue(const Name& name) const = 0;
@@ -118,6 +118,23 @@ namespace Networks {
   private:
     boost::atomic<bool> stateChanged_;
     boost::signals2::connection conn_;
+  };
+
+  typedef std::map<std::string, std::string> StringMap;
+
+  // Keep it simple
+  class SCISHARE MetadataMap
+  {
+  public:
+    explicit MetadataMap(ModuleStateHandle& state);
+    MetadataMap(const MetadataMap&) = delete;
+    MetadataMap& operator=(const MetadataMap&) = delete;
+
+    std::string getMetadata(const std::string& key) const;
+    void setMetadata(const std::string& key, const std::string& value);
+    StringMap getFullMap() const;
+  private:
+    ModuleStateHandle& state_;
   };
 
 }}}

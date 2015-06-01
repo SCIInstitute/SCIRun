@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,7 +30,7 @@
 
 
 #ifndef DATAFLOW_NETWORK_NETWORK_FWD_H
-#define DATAFLOW_NETWORK_NETWORK_FWD_H 
+#define DATAFLOW_NETWORK_NETWORK_FWD_H
 
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
@@ -66,6 +66,7 @@ class NetworkXML;
 struct ModulePositions;
 struct ModuleNotes;
 struct ConnectionNotes;
+struct ModuleTags;
 /// @todo: rename this
 struct NetworkFile;
 class NetworkGlobalSettings;
@@ -73,6 +74,7 @@ class NetworkEditorSerializationManager;
 class ConnectionMakerService;
 class NetworkEditorControllerInterface;
 class ReexecuteStrategyFactory;
+class MetadataMap;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;
@@ -90,6 +92,7 @@ typedef boost::shared_ptr<NetworkXML> NetworkXMLHandle;
 typedef boost::shared_ptr<ModulePositions> ModulePositionsHandle;
 typedef boost::shared_ptr<ModuleNotes> ModuleNotesHandle;
 typedef boost::shared_ptr<ConnectionNotes> ConnectionNotesHandle;
+typedef boost::shared_ptr<ModuleTags> ModuleTagsHandle;
 typedef boost::shared_ptr<NetworkFile> NetworkFileHandle;
 
 typedef std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>> ModuleDescriptionMap;

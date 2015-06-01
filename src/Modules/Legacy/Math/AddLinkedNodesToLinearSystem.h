@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,19 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#undef SCISHARE
+#ifndef MODULES_LEGACY_Math_AddLinkedNodesToLinearSystem_H__
+#define MODULES_LEGACY_Math_AddLinkedNodesToLinearSystem_H__
 
-#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
-#ifdef BUILD_Core_Algorithms_Math
-#define SCISHARE __declspec(dllexport)
-#else
-#define SCISHARE __declspec(dllimport)
-#endif
-#else
-#define SCISHARE
-#endif
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Math/share.h>
 
-#if defined(min)
-#undef min
-#undef max
+namespace SCIRun {
+  namespace Modules {
+    namespace Math {
+
+      class SCISHARE AddLinkedNodesToLinearSystem : public Dataflow::Networks::Module,
+        public Has3InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+      {
+      public:
+        AddLinkedNodesToLinearSystem();
+        virtual void setStateDefaults() override {}
+        virtual void execute() override;
+
+        INPUT_PORT(0, LHS, SparseRowMatrix);
+        INPUT_PORT(1, RHS, DenseColumnMatrix);
+	      INPUT_PORT(2, LinkedNodes, Matrix);
+        OUTPUT_PORT(0, OutputLHS, SparseRowMatrix);
+	      OUTPUT_PORT(1, OutputRHS, Matrix);
+        OUTPUT_PORT(2, Mapping, SparseRowMatrix);
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+
+    }
+  }
+}
+
 #endif

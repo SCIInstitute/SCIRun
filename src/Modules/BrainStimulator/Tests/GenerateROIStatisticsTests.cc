@@ -56,22 +56,22 @@ namespace
 {
   FieldHandle CreateGetMeshSolution()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "Fields/generateroistatistics/mesh_sol.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/test_atlas/mesh_sol.fld");
   }
 
   FieldHandle CreateCoordinatesCubesShiftedBy10()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "Fields/generateroistatistics/coordinates_cubes_shifted_by_10.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/test_atlas/coordinates_cubes_shifted_by_10.fld");
   }
 
   FieldHandle CreateCoordinatesCubes()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "Fields/generateroistatistics/coordinates_cubes.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/test_atlas/coordinates_cubes.fld");
   }
 
   FieldHandle CreateAtlas()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "Fields/generateroistatistics/atlas.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/test_atlas/atlas.fld");
   }
 
   // scalar fields covered by the algorithm tests

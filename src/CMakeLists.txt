@@ -176,11 +176,11 @@ IF(BUILD_TESTING)
   SET(BUILDNAME "${BUILDNAME_SCIRun}" CACHE STRING "Name of build on the dashboard")
   MARK_AS_ADVANCED(BUILDNAME)
 
+  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestDataConfig.cmake)
+  TEST_DATA()
+
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
-
-  # adding a brand new path to store the github data repo location; eventually will be another external project link.
-  SET(SCIRUN_TEST_RESOURCE_DIR "../../SCIRunTestData" CACHE PATH "Root for all github-based testing files")
 
   IF(NOT EXISTS "${SCIRUN_TEST_RESOURCE_DIR}")
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )

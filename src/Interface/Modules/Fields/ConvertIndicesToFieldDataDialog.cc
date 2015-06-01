@@ -42,8 +42,3 @@ ConvertIndicesToFieldDataDialog::ConvertIndicesToFieldDataDialog(const std::stri
   fixSize();
   addComboBoxManager( dataTypeComboBox_, Parameters::OutputFieldDataType);
 }
-
-void ConvertIndicesToFieldDataDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}

@@ -48,10 +48,12 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 ALGORITHM_PARAMETER_DEF(Fields, PreserveScalar)
+ALGORITHM_PARAMETER_DEF(Fields, NeedOutputMatrix)
 
 SwapFieldDataWithMatrixEntriesAlgo::SwapFieldDataWithMatrixEntriesAlgo()
 {
   addParameter(Parameters::PreserveScalar, false);
+  addParameter(Parameters::NeedOutputMatrix, false);
 }
 
 bool
@@ -72,7 +74,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandl
   const bool preserve_scalar = get(Parameters::PreserveScalar).toBool();
   output_field = CreateField(fi);
 
-  if (input_matrix)
+  if (get(Parameters::NeedOutputMatrix).toBool())
   {
     output_matrix = get_algo_.run(input_field);
   }
@@ -121,10 +123,12 @@ AlgorithmOutput SwapFieldDataWithMatrixEntriesAlgo::run_generic(const AlgorithmI
   auto inputmatrix = input.get<Matrix>(Variables::InputMatrix);
 
   FieldHandle output_field;
-  if (!runImpl(field, inputmatrix, output_field))
+  MatrixHandle outputMatrix;
+  if (!runImpl(field, inputmatrix, output_field, outputMatrix))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
   output[Variables::OutputField] = output_field;
+  output[Variables::OutputMatrix] = outputMatrix;
   return output;
 }

@@ -29,10 +29,12 @@
 #ifndef INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 #define INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 
+#ifndef Q_MOC_RUN
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Singleton.h>
 #include <set>
 #include <Interface/Application/NetworkEditor.h>  //TODO
+#endif
 
 class QTextEdit;
 class QTreeWidget;

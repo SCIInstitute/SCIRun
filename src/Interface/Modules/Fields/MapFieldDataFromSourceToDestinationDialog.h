@@ -35,17 +35,18 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE MapFieldDataFromSourceToDestinationDialog : public ModuleDialogGeneric, 
+
+class SCISHARE MapFieldDataFromSourceToDestinationDialog : public ModuleDialogGeneric,
   public Ui::MapFieldDataFromSourceToDestination
 {
 	Q_OBJECT
-	
+
 public:
-  MapFieldDataFromSourceToDestinationDialog(const std::string& name, 
+  MapFieldDataFromSourceToDestinationDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+protected:
+  virtual void pullSpecial() override;
 private Q_SLOTS:
   void setNoMaximumValue(int state);
   void setUseNanForUnassignedValues(int state);

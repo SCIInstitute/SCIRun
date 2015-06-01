@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -42,10 +42,9 @@ class SCISHARE ExtractSimpleIsosurfaceDialog : public ModuleDialogGeneric,
 	Q_OBJECT
 
 public:
-  ExtractSimpleIsosurfaceDialog(const std::string& name, 
+  ExtractSimpleIsosurfaceDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

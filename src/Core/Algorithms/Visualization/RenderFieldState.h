@@ -74,6 +74,7 @@ public:
     // Scalar data flags
 
     // Vector data flags
+    USE_TRANSPARENT_VECTOR_GLYPHS,
     BIDIRECTIONAL,
 
     // Tensor data flags
@@ -96,10 +97,12 @@ public:
     AXIS_GLYPH,
     LINE_GLYPH,
     NEEDLE_GLYPH,
-    ARROW_GLYPH,
+    COMET_GLYPH,
     CONE_GLYPH,
+    ARROW_GLYPH,
     DISK_GLYPH,
-    RING_GLYPH
+    RING_GLYPH,
+    SPRING_GLYPH
   };
 
   enum TransparencySortType
@@ -133,6 +136,7 @@ public:
   // Render state flags.
   bool mFlags[MAX_ACTION_FLAGS];
   TransparencySortType mSortType = CONTINUOUS_SORT;
+  GlyphType mGlyphType = POINT_GLYPH;
 
   Core::Datatypes::ColorRGB defaultColor;
 };

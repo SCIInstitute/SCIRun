@@ -68,6 +68,7 @@ namespace Datatypes {
       else
       {
         /// @todo: need to split out that Synchronize enum
+        //TODO: pass in the correct synch constant
         vmesh_->synchronize(/*Mesh::EDGES_E*/ 2);
         vmesh_->end(iter_);
       }
@@ -232,6 +233,50 @@ namespace Datatypes {
     typedef SmartMeshIterator<VirtualMeshType, NodeInfo> Type;
   };
   
+  template <class VirtualMeshType>
+  class CellInfo
+  {
+  public:
+    typedef typename VirtualMeshType::Cell::iterator iterator;
+    typedef typename VirtualMeshType::Cell::index_type index_type;
+    enum
+    {
+      sync_enum = 1 << 3
+    };
+    explicit CellInfo(VirtualMeshType* mesh) : synched_(false), index_(0), vmesh_(mesh) {}
+    void setIndex(index_type i) { index_ = i; }
+
+    index_type index() const { return index_; }
+    Geometry::Point center() const
+    {
+      Geometry::Point p;
+      vmesh_->get_center(p, index_);
+      return p;
+    }
+    typename VirtualMeshType::Edge::array_type edgeIndices() const
+    {
+      if (!synched_)
+      {
+        /// @todo: need to split out that Synchronize enum
+        vmesh_->synchronize(/*Mesh::??*/sync_enum);
+        synched_ = true;
+      }
+      typename VirtualMeshType::Edge::array_type edgesFromNode(6);
+      vmesh_->get_edges(edgesFromNode, index_);
+      return edgesFromNode;
+    }
+  private:
+    mutable bool synched_;
+    index_type index_;
+    VirtualMeshType* vmesh_;
+  };
+
+  template <typename VirtualMeshType>
+  struct SmartCellIterator
+  {
+    typedef SmartMeshIterator<VirtualMeshType, CellInfo> Type;
+  };
+
 }}}
 
 #endif

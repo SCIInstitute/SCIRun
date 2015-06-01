@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,7 +38,7 @@
 
 namespace SCIRun
 {
-  namespace Core 
+  namespace Core
   {
     namespace Datatypes
     {
@@ -93,10 +93,12 @@ namespace SCIRun
         const Columns& columns() const { return columns_; }
         const Storage& data() const { return data_; }
 
+        void allocateData(size_type n) { data_.reset(new T[n]); }
+
       private:
         const Rows rows_;
         const Columns columns_;
-        const Storage data_;
+        Storage data_;
       };
     }
   }

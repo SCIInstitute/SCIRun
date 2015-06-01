@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/FiniteElements/BuildFEVolRHSDialog.h>
 #include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
-#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
@@ -46,9 +46,3 @@ BuildFEVolRHSDialog::BuildFEVolRHSDialog(const std::string& name, ModuleStateHan
   fixSize();
   //addCheckBoxManager(vectorTableBasisMatrices_, BuildFEVolRHSAlgo::vectorTableBasisMatrices());
 }
-
-void BuildFEVolRHSDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}
-

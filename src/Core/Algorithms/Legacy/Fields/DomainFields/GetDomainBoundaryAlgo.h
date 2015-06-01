@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -31,6 +31,7 @@
 #define CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_GETDOMAINBOUNDARY_H 1
 
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
 #include <Core/Algorithms/Legacy/Fields/share.h>
@@ -49,7 +50,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(NoInnerBoundary);
         ALGORITHM_PARAMETER_DECL(DisconnectBoundaries);
 
-class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase
+class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase, public Core::Thread::Interruptible
 {
   public:
     GetDomainBoundaryAlgo();
@@ -64,4 +65,4 @@ class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase
 
 }}}}
 
-#endif 
+#endif

@@ -73,11 +73,6 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
 }
 
-void SolveInverseProblemWithTikhonovDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}
-
 void SolveInverseProblemWithTikhonovDialog::setSpinBoxValue(int value)
 {
   lambdaSliderDoubleSpinBox_->setValue(value);

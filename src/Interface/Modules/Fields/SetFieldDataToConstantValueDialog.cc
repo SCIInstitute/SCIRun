@@ -43,10 +43,5 @@ SetFieldDataToConstantValueDialog::SetFieldDataToConstantValueDialog(const std::
 
   addComboBoxManager(basisOrderComboBox_, Parameters::BasisOrder);
   addComboBoxManager(fieldDataTypeComboBox_, Parameters::DataType);
-  addDoubleSpinBoxManager(valueSpinBox_, Parameters::Value); 
-}
-
-void SetFieldDataToConstantValueDialog::pull()
-{
-  pull_newVersionToReplaceOld();
+  addDoubleSpinBoxManager(valueSpinBox_, Parameters::Value);
 }

@@ -70,7 +70,7 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
 
 #if 0 //TODO: make compiler symbol for WITH_QWT_WIDGETS
-  //TODO: fix parenting, all these objects leak 
+  //TODO: fix parenting, all these objects leak
 	QwtPlot *myPlot = this->qwtPlot;
 	QwtLegend *myLegend = new QwtLegend;
 	QwtPlotCurve *curve1 = new QwtPlotCurve("Current Target");
@@ -78,25 +78,25 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 	QwtPlotCurve *curve3 = new QwtPlotCurve("CurrentError");
 	double x[5] = { 0, 10, 15, 20, 25 };
 	double y[5] = { 0, 2, 4, 16, 64 };
-	
+
 	curve1->setSamples(&x[0], &y[0], (size_t)5);
 	curve1->setPen(Qt::blue);
 	curve1->setLegendAttribute(QwtPlotCurve::LegendShowLine);
 	curve1->setItemAttribute(QwtPlotItem::Legend, true);
-	
+
 	curve2->setPen(Qt::darkRed);
 	curve2->setLegendAttribute(QwtPlotCurve::LegendShowLine);
 	curve2->setItemAttribute(QwtPlotItem::Legend, true);
-	
+
 	curve3->setPen(Qt::darkGreen);
 	curve3->setLegendAttribute(QwtPlotCurve::LegendShowLine);
 	curve3->setItemAttribute(QwtPlotItem::Legend, true);
-	
+
 	myPlot->setAxisTitle(2, QString("Iteration"));
 	myPlot->setAxisTitle(0, QString("Error (RMS)"));
 	myPlot->setTitle(QString("Convergence"));
 	myPlot->insertLegend(myLegend, QwtPlot::RightLegend);
-	
+
 	curve1->attach(myPlot);
 	myPlot->replot();
 	myPlot->show();
@@ -104,9 +104,4 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 
   addComboBoxManager(preconditionerComboBox_, Variables::Preconditioner);
   addComboBoxManager(methodComboBox_, Variables::Method, impl_->solverNameLookup_);
-}
-
-void SolveLinearSystemDialog::pull()
-{
-  pull_newVersionToReplaceOld();
 }

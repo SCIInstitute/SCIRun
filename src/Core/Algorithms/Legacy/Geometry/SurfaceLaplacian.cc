@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -46,7 +46,7 @@ MatrixHandle SCIRun::surfaceLaplacian(VMesh *tsm)
   ENSURE_NOT_NULL(tsm, "Mesh is null");
 
   tsm->synchronize(Mesh::NODE_NEIGHBORS_E);
-  
+
   VMesh::size_type nnz = 0;
   int num_nodes = tsm->num_nodes();
   VMesh::Node::array_type nodes;
@@ -66,7 +66,7 @@ MatrixHandle SCIRun::surfaceLaplacian(VMesh *tsm)
 
   index_type k = 0;
 	row_buffer[0] = 0;
-	
+
   for (VNodeIndex<SCIRun::index_type> idx = 0; idx < num_nodes; idx++)
   {
     double sum1 = 0;
@@ -97,13 +97,12 @@ MatrixHandle SCIRun::surfaceLaplacian(VMesh *tsm)
     double avg_odist = sum2/nodes.size(); // ihi
     // put laplacian stuff here on down (diagonal is probably not negative...fix it)
 
-    values[k] = -4.0 * avg_odist / avg_dist;  // diag values  
-    k++;								  
+    values[k] = -4.0 * avg_odist / avg_dist;  // diag values
+    k++;
     for(size_type idx2 = 0; idx2 < nodes.size(); idx2++)
-    { 
+    {
       col_buffer[k] = nodes[idx2];
 
-      double nodenum_inv = 1.0/nodes.size();
       values[k] = (4.0 * avg_dist_inv / nodes.size()) / (dist[idx2]); // non-diag values
 
       k++;
@@ -111,6 +110,6 @@ MatrixHandle SCIRun::surfaceLaplacian(VMesh *tsm)
 
     row_buffer[idx + 1] = k;
   }
-	
+
   return boost::make_shared<SparseRowMatrix>(num_nodes, num_nodes, row_buffer, col_buffer, values, nnz);
 }

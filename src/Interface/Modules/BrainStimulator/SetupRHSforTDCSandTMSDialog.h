@@ -31,24 +31,23 @@
 
 #include "Interface/Modules/BrainStimulator/ui_SetupRHSforTDCSandTMSDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE SetupRHSforTDCSandTMSDialog : public ModuleDialogGeneric, 
+
+class SCISHARE SetupRHSforTDCSandTMSDialog : public ModuleDialogGeneric,
   public Ui::SetupRHSforTDCSandTMSDialog
 {
 	Q_OBJECT
 
 public:
-  SetupRHSforTDCSandTMSDialog(const std::string& name, 
+  SetupRHSforTDCSandTMSDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  
-  private Q_SLOTS:
-  void pull();
+protected:
+  virtual void pullSpecial() override;
+private Q_SLOTS:
   void push();
 };
 

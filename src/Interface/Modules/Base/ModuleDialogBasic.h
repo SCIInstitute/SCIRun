@@ -35,14 +35,13 @@
 
 namespace SCIRun {
 namespace Gui {
-  
+
   class SCISHARE ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
   {
     Q_OBJECT
 
   public:
     explicit ModuleDialogBasic(const std::string& name, QWidget* parent = 0);
-    virtual void pull() {}
   };
 
 }
