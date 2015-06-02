@@ -82,7 +82,7 @@ class SCISHARE TempFileManager {
     // some other useful functions
     
     // Get the local of the SCIRun temp directory
-    std::string get_scirun_tmp_dir(std::string subdir = std::string(""));
+    std::string get_scirun_tmp_dir(std::string subdir = "");
     
     // This writes an unique file in SCIRun's temp directory in the current homedirectory
     // It will use this to ID this directory.
