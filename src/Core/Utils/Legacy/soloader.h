@@ -57,9 +57,9 @@
 /// returns a pointer to the data or function called "symbolname"
 /// from within the shared library called "libname"
 
-SCISHARE void* GetLibrarySymbolAddress(const std::string libname, const std::string symbolname, std::string& errormsg);
+SCISHARE void* GetLibrarySymbolAddress(const std::string& libname, const std::string& symbolname, std::string& errormsg);
 
-inline void* GetLibrarySymbolAddress(const std::string libname, const std::string symbolname)
+inline void* GetLibrarySymbolAddress(const std::string& libname, const std::string& symbolname)
 {
   std::string errormsg;
   return (GetLibrarySymbolAddress(libname,symbolname,errormsg));
@@ -71,9 +71,9 @@ inline void* GetLibrarySymbolAddress(const std::string libname, const std::strin
 /// opens, and returns the handle to, the library module
 /// called "libname"
 
-SCISHARE LIBRARY_HANDLE GetLibraryHandle(const std::string libname, std::string& errormsg);
+SCISHARE LIBRARY_HANDLE GetLibraryHandle(const std::string& libname, std::string& errormsg);
 
-inline LIBRARY_HANDLE GetLibraryHandle(const std::string libname)
+inline LIBRARY_HANDLE GetLibraryHandle(const std::string& libname)
 {
   std::string errormsg;
   return (GetLibraryHandle(libname,errormsg));
@@ -90,7 +90,7 @@ inline LIBRARY_HANDLE GetLibraryHandle()
 /// returns a pointer to the data or function called "symbolname"
 /// from within the shared library with handle "handle"
 
-SCISHARE void* GetHandleSymbolAddress(LIBRARY_HANDLE handle, const std::string symbolname, std::string& errormsg);
+SCISHARE void* GetHandleSymbolAddress(LIBRARY_HANDLE handle, const std::string& symbolname, std::string& errormsg);
 
 /////////////////////////////////////////////////////////////////
 /// CloseLibrary()

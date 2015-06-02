@@ -45,7 +45,7 @@ SCIRUN_ADD_LIBRARY(Modules_Legacy_MatlabInterface
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_MatlabInterface
   Core_Persistent
-  #Core_Util
+  Core_Util_Legacy
   #Core_Exceptions
   #Core_Thread
   #Dataflow_GuiInterface
@@ -59,7 +59,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_MatlabInterface
   #Core_Matlab
   #Core_Services
   #Core_ICom
-  #Core_SystemCall
+  Core_SystemCall
   ${SCI_TEEM_LIBRARY}
   ${SCI_ZLIB_LIBRARY}
   #${M_LIBRARY}

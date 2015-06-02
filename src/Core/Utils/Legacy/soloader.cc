@@ -1,5 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -35,20 +33,22 @@
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Utils/Legacy/soloader.h>
 #include <Core/Utils/Legacy/Environment.h>
-#include <Core/Thread/Legacy/Mutex.h>
+#include <Core/Thread/Mutex.h>
 
 #include <iostream>
 #include <string>
 
+using namespace SCIRun::Core::Thread;
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
 
 // Create a lock around this one to be sure that we do not call this one twice
-SCIRun::Mutex dl_lock_("dlopen/dlsym/dlclose lock");
-std::map<std::string,LIBRARY_HANDLE> scirun_open_libs_;
+static Mutex dl_lock_("dlopen/dlsym/dlclose lock");
+static std::map<std::string,LIBRARY_HANDLE> scirun_open_libs_;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void* GetLibrarySymbolAddress(const std::string libname, const std::string symbolname, std::string& errormsg)
 {
   errormsg = "";
@@ -202,14 +202,14 @@ findLib(std::string lib, std::string& errormsg)
   handle = GetLibraryHandle(lib,errormsg);
   return (handle);
 }
+#endif
 
-void* GetHandleSymbolAddress(LIBRARY_HANDLE handle, const std::string symbolname, std::string& errormsg)
+void* GetHandleSymbolAddress(LIBRARY_HANDLE handle, const std::string& symbolname, std::string& errormsg)
 {
   errormsg = "";
   void* proc = 0;
-  
+  Guard g(dl_lock_.get());
 #ifdef _WIN32
-  dl_lock_.lock();
   proc = GetProcAddress(handle,symbolname.c_str());
   if (proc == 0)
   {
@@ -222,7 +222,6 @@ void* GetHandleSymbolAddress(LIBRARY_HANDLE handle, const std::string symbolname
     if (lpMsgBuf) errormsg = std::string(lpMsgBuf);
     LocalFree(lpMsgBuf);
   }  
-  dl_lock_.unlock();
 
 #elif defined __APPLE__ && !defined APPLE_LEOPARD
   // Add a leading underscore to the symbolname for call to mach lib functions
@@ -230,31 +229,28 @@ void* GetHandleSymbolAddress(LIBRARY_HANDLE handle, const std::string symbolname
   // will never return true.
   
   std::string usymbolname = "_" + symbolname;
-  dl_lock_.lock();
+
   if( NSIsSymbolNameDefined(usymbolname.c_str()) ) 
   {
     proc =  dlsym(handle,symbolname.c_str());
     if (proc == 0) { char *msg = dlerror();  if(msg) errormsg = std::string(msg); }
   } 
-  dl_lock_.unlock();
+
 #else
-  dl_lock_.lock();
   dlerror(); // clear existing error.
   proc = dlsym(handle,symbolname.c_str());
   if (proc == 0) { char *msg = dlerror();  if(msg) errormsg = std::string(msg); }
-  dl_lock_.unlock();
 #endif
   return (proc);
 }
 
-LIBRARY_HANDLE GetLibraryHandle(const std::string libname,std::string& errormsg)
+LIBRARY_HANDLE GetLibraryHandle(const std::string& libname,std::string& errormsg)
 {
   LIBRARY_HANDLE lh;
+  Guard g(dl_lock_.get());
 #ifdef _WIN32
-  dl_lock_.lock();
   if (libname == "")
   {
-//    lh = LoadLibrary(0);  
     lh = 0;
   }
   else
@@ -271,7 +267,6 @@ LIBRARY_HANDLE GetLibraryHandle(const std::string libname,std::string& errormsg)
       LocalFree(lpMsgBuf);
     }
   }
-  dl_lock_.unlock();
 #else  
   std::string name;
   if (libname != "") 
@@ -285,7 +280,6 @@ LIBRARY_HANDLE GetLibraryHandle(const std::string libname,std::string& errormsg)
     }
   }
 
-  dl_lock_.lock();
   if (libname != "")
   {
     if (scirun_open_libs_.find(libname) != scirun_open_libs_.end())
@@ -304,13 +298,12 @@ LIBRARY_HANDLE GetLibraryHandle(const std::string libname,std::string& errormsg)
   }
   
   if (lh == 0) { char *msg = dlerror();  if(msg) errormsg = std::string(msg); }
-
-  dl_lock_.unlock();
   
 #endif
   return (lh);
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void CloseLibrary(LIBRARY_HANDLE LibraryHandle)
 {
 #ifdef _WIN32
@@ -332,20 +325,7 @@ void CloseLibrary(LIBRARY_HANDLE LibraryHandle)
 #endif
 }
 
-/*
-const char* SOError( )
-{
-#ifdef _WIN32
-  char* lpMsgBuf;
-  FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-    NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
-
-  return lpMsgBuf;
-#else
-  return dlerror();
 #endif
-}
-*/
 
 LIBRARY_HANDLE FindLibInPath(const std::string& lib, const std::string& path, std::string& errormsg)
 {
@@ -356,20 +336,21 @@ LIBRARY_HANDLE FindLibInPath(const std::string& lib, const std::string& path, st
   // try to find the library in the specified path
   while (tempPaths!="") 
   {
-    const unsigned int firstColon = tempPaths.find(':');
-    if(firstColon < tempPaths.size()) 
+    const size_t firstColon = tempPaths.find(':');
+    if (firstColon < tempPaths.size()) 
     {
-      dir=tempPaths.substr(0,firstColon);
-      tempPaths=tempPaths.substr(firstColon+1);
+      dir = tempPaths.substr(0,firstColon);
+      tempPaths = tempPaths.substr(firstColon+1);
     } 
     else 
     {
-      dir=tempPaths;
-      tempPaths="";
+      dir = tempPaths;
+      tempPaths = "";
     }
 
     handle = GetLibraryHandle(dir+"/"+lib,errormsg);
-    if (handle) return (handle);
+    if (handle) 
+      return (handle);
   }
 
   // if not yet found, try to find it in the rpath 
@@ -378,4 +359,4 @@ LIBRARY_HANDLE FindLibInPath(const std::string& lib, const std::string& path, st
     
   return (handle);
 }
-#endif
+
