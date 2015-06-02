@@ -32,6 +32,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -42,7 +43,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(SamplePoints);
         ALGORITHM_PARAMETER_DECL(SampleMethod);
 
-class SCISHARE MapFieldDataOntoElemsAlgo : public AlgorithmBase
+class SCISHARE MapFieldDataOntoElemsAlgo : public AlgorithmBase, public Thread::Interruptible
 {
   public:
     MapFieldDataOntoElemsAlgo();

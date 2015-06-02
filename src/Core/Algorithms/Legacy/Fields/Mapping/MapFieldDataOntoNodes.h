@@ -31,6 +31,7 @@
 #define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAONTONODES_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -43,7 +44,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(OutsideValue);
         ALGORITHM_PARAMETER_DECL(MaxDistance);
 
-class SCISHARE MapFieldDataOntoNodesAlgo : public AlgorithmBase
+class SCISHARE MapFieldDataOntoNodesAlgo : public AlgorithmBase, public Thread::Interruptible
 {
   public:
     MapFieldDataOntoNodesAlgo();

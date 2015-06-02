@@ -286,7 +286,7 @@ FieldHandle MapFieldDataFromNodeToElemAlgo::run(FieldHandle input_field) const
      {
       THROW_ALGORITHM_INPUT_ERROR("output uint field cannot be allocated");
      }
-   } else 
+   } else
 
   if (input_field->vfield()->is_scalar())
    {

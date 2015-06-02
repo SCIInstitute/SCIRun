@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,28 +32,29 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Fields {
-        
+
         ALGORITHM_PARAMETER_DECL(DefaultValue);
         ALGORITHM_PARAMETER_DECL(MappingMethod);
-        
-class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase
+
+class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase, public Thread::Interruptible
 {
 public:
   MapFieldDataFromSourceToDestinationAlgo();
 
   bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
-  
+
   virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-  
+
   static const Core::Algorithms::AlgorithmOutputName Remapped_Destination;
 };
 
       }}}}
 
-#endif 
+#endif
