@@ -45,14 +45,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun;
-
-template <class DATA>
-bool
-  MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
-  FieldHandle& input,
-  FieldHandle& output);
-
 
 template <class DATA>
 bool
@@ -60,7 +54,6 @@ bool
   FieldHandle& input,
   FieldHandle& output)
 {
-
   std::string method = algo->get_option(MapFieldDataFromElemToNodeAlgo::Method);
 
   VField *ifield = input->vfield();
@@ -89,138 +82,143 @@ bool
     algo->remark("Interpolation of piecewise constant data is done by averaging adjoining values");
   }
 
-  if ((method == "Interpolation")||(method == "Average"))
+  if ((method == "Interpolation") || (method == "Average"))
   {
     while (it != eit)
     {
+      Interruptible::checkForInterruption();
       mesh->get_elems(elems, *(it));
       size_t nsize = elems.size();
       DATA val(0);
       DATA tval;
       for (size_t p = 0; p < nsize; p++)
       {
-        ifield->get_value(tval,elems[p]);
+        ifield->get_value(tval, elems[p]);
         val += tval;
       }
-      val = static_cast<DATA>(val*(1.0/static_cast<double>(nsize)));
-      ofield->set_value(val,*(it));
+      val = static_cast<DATA>(val*(1.0 / static_cast<double>(nsize)));
+      ofield->set_value(val, *(it));
       ++it;
       cnt++;
-      if (cnt==1000)
+      if (cnt == 1000)
       {
-        cnt=0; c+=1000;
-        algo->update_progress(c/sz);
+        cnt = 0; c += 1000;
+        algo->update_progress(c / sz);
       }
     }
-
-  } else
-    if (method == "Max")
+  }
+  else if (method == "Max")
+  {
+    while (it != eit)
     {
-      while (it != eit)
+      Interruptible::checkForInterruption();
+      mesh->get_elems(elems, *(it));
+      size_t nsize = elems.size();
+      DATA val(0);
+      DATA tval(0);
+      if (nsize > 0)
       {
-        mesh->get_elems(elems, *(it));
-        size_t nsize = elems.size();
-        DATA val(0);
-        DATA tval(0);
-        if (nsize > 0)
+        ifield->get_value(val, elems[0]);
+        for (size_t p = 1; p < nsize; p++)
         {
-          ifield->get_value(val,elems[0]);
-          for (size_t p = 1; p < nsize; p++)
-          {
-            ifield->get_value(tval,elems[p]);
-            if (tval > val) val = tval;
-          }
-        }
-        ofield->set_value(val,*(it));
-        ++it;
-        cnt++;
-        if (cnt==1000)
-        {
-          cnt=0; c+=1000;
-          algo->update_progress(c/sz);
+          ifield->get_value(tval, elems[p]);
+          if (tval > val) val = tval;
         }
       }
-    } else
-      if (method == "Min")
+      ofield->set_value(val, *(it));
+      ++it;
+      cnt++;
+      if (cnt == 1000)
       {
-        while (it != eit)
+        cnt = 0; c += 1000;
+        algo->update_progress(c / sz);
+      }
+    }
+  }
+  else if (method == "Min")
+  {
+    while (it != eit)
+    {
+      Interruptible::checkForInterruption();
+      mesh->get_elems(elems, *it);
+      size_t nsize = elems.size();
+      DATA val(0);
+      DATA tval(0);
+      if (nsize > 0)
+      {
+        ifield->get_value(val, elems[0]);
+        for (size_t p = 1; p < nsize; p++)
         {
-          mesh->get_elems(elems, *it);
-          size_t nsize = elems.size();
-          DATA val(0);
-          DATA tval(0);
-          if (nsize > 0)
-          {
-            ifield->get_value(val,elems[0]);
-            for (size_t p = 1; p < nsize; p++)
-            {
-              ifield->value(tval,elems[p]);
-              if (tval < val) val = tval;
-            }
-          }
-          ofield->set_value(val,*(it));
-          ++it;
-          cnt++;
-          if (cnt==1000)
-          {
-            cnt=0; c+=1000;
-            algo->update_progress(c/sz);
-          }
+          ifield->value(tval, elems[p]);
+          if (tval < val) val = tval;
         }
-      } else
-        if (method=="Sum")
-        {
-          while (it != eit)
-          {
-            mesh->get_elems(elems, *(it));
-            size_t nsize = elems.size();
-            DATA val(0);
-            DATA tval(0);
-            for (size_t p = 0; p < nsize; p++)
-            {
-              ifield->get_value(tval,elems[p]);
-              val += tval;
-            }
-            ofield->set_value(val,*(it));
-            ++it;
-            cnt++;
-            if (cnt==1000)
-            {
-              cnt=0; c+=1000;
-              algo->update_progress(c/sz);
-            }
-          }
-        } else
-          if (method == "Median")
-          {
-            std::vector<DATA> valarray;
-            while (it != eit)
-            {
-              mesh->get_elems(elems, *(it));
-              size_t nsize = elems.size();
-              valarray.resize(nsize);
-              for (size_t p = 0; p < nsize; p++)
-              {
-                ifield->get_value(valarray[p],elems[p]);
-              }
-              sort(valarray.begin(),valarray.end());
-              int idx = static_cast<int>((valarray.size()/2));
-              ofield->set_value(valarray[idx],*(it));
-              ++it;
-              cnt++;
-              if (cnt==1000)
-              {
-                cnt=0; c+=1000;
-                algo->update_progress(c/sz);
-              }
-            }
-          } else
-          {
-            algo->remark("Method is not implemented!");
-            return false;
-          }
+      }
+      ofield->set_value(val, *(it));
+      ++it;
+      cnt++;
+      if (cnt == 1000)
+      {
+        cnt = 0; c += 1000;
+        algo->update_progress(c / sz);
+      }
+    }
+  }
+  else if (method == "Sum")
+  {
+    while (it != eit)
+    {
+      Interruptible::checkForInterruption();
+      mesh->get_elems(elems, *(it));
+      size_t nsize = elems.size();
+      DATA val(0);
+      DATA tval(0);
+      for (size_t p = 0; p < nsize; p++)
+      {
+        ifield->get_value(tval, elems[p]);
+        val += tval;
+      }
+      ofield->set_value(val, *(it));
+      ++it;
+      cnt++;
+      if (cnt == 1000)
+      {
+        cnt = 0; c += 1000;
+        algo->update_progress(c / sz);
+      }
+    }
+  }
+  else if (method == "Median")
+  {
+    std::vector<DATA> valarray;
+    while (it != eit)
+    {
+      Interruptible::checkForInterruption();
+      mesh->get_elems(elems, *(it));
+      size_t nsize = elems.size();
+      valarray.resize(nsize);
+      for (size_t p = 0; p < nsize; p++)
+      {
+        ifield->get_value(valarray[p], elems[p]);
+      }
+      sort(valarray.begin(), valarray.end());
+      int idx = static_cast<int>((valarray.size() / 2));
+      ofield->set_value(valarray[idx], *(it));
+      ++it;
+      cnt++;
+      if (cnt == 1000)
+      {
+        cnt = 0; c += 1000;
+        algo->update_progress(c / sz);
+      }
+    }
+  }
+  else
+  {
+    algo->remark("Method is not implemented!");
+    return false;
+  }
 
-          return true;
+  return true;
 }
 
 

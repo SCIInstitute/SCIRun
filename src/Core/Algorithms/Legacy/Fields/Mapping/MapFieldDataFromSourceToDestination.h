@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 #ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
@@ -43,18 +43,21 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(DefaultValue);
         ALGORITHM_PARAMETER_DECL(MappingMethod);
 
-class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase, public Thread::Interruptible
-{
-public:
-  MapFieldDataFromSourceToDestinationAlgo();
+        class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase, public Thread::Interruptible
+        {
+        public:
+          MapFieldDataFromSourceToDestinationAlgo();
 
-  bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
+          bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
 
-  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 
-  static const Core::Algorithms::AlgorithmOutputName Remapped_Destination;
-};
+          static const Core::Algorithms::AlgorithmOutputName Remapped_Destination;
+        };
 
-      }}}}
+      }
+    }
+  }
+}
 
 #endif
