@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_FIELDS_CALCULATESIGNEDDISTANCETOFIELD_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Thread/Interruptible.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -38,11 +39,12 @@ namespace SCIRun {
 
       /// @class CalculateSignedDistanceToField
       /// @brief Calculate the distance to a surface mesh and use the normal of
-      /// the surface to determine on which side of the surface the element is located. 
+      /// the surface to determine on which side of the surface the element is located.
 
       class SCISHARE CalculateSignedDistanceToField : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, FieldPortTag>,
-        public Has2OutputPorts<FieldPortTag, FieldPortTag>
+        public Has2OutputPorts<FieldPortTag, FieldPortTag>,
+        public Core::Thread::Interruptible
       {
       public:
         CalculateSignedDistanceToField();
