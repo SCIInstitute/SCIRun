@@ -35,6 +35,7 @@
  */
 
 #include <Modules/Legacy/Matlab/Interface/InterfaceWithMatlab.h>
+#include <Core/Logging/Log.h>
 
 #include <Core/Matlab/matlabconverter.h>
 #include <Core/Matlab/matlabfile.h>
@@ -43,6 +44,7 @@
 #include <Core/Thread/ConditionVariable.h>
 
 #include <Core/SystemCall/TempFileManager.h>
+#include <Core/Utils/Legacy/soloader.h>
 #if 0
 #include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Packages/MatlabInterface/Services/MatlabEngine.h>
@@ -140,6 +142,7 @@ namespace MatlabImpl
           class InterfaceWithMatlabImpl //: public ServiceBase 
           {
           public:
+            explicit InterfaceWithMatlabImpl(InterfaceWithMatlab* module) : module_(module) {}
 #if 0
 
             // Constructor
@@ -161,8 +164,8 @@ namespace MatlabImpl
             static std::string totclstring(const std::string& instring);
             std::vector<std::string>	converttcllist(const std::string& str);
 
-            void	update_status(const std::string& text);
 #endif
+            void	update_status(const std::string& text);
 
             bool	open_matlab_engine();
             bool	close_matlab_engine();
@@ -180,6 +183,7 @@ namespace MatlabImpl
             bool	synchronise_input();
 
           private:
+            InterfaceWithMatlab* module_;
             // Temp directory for writing files coming from the 
             // the matlab engine
 
@@ -507,14 +511,14 @@ namespace MatlabImpl
     // we need to unregister
     CleanupManager::invoke_remove_callback(InterfaceWithMatlab::cleanup_callback,reinterpret_cast<void *>(this));
   }
+#endif
 
-
-  void	InterfaceWithMatlab::update_status(const std::string& text)
+  void InterfaceWithMatlabImpl::update_status(const std::string& text)
   {
-    std::string cmd = get_id() + " UpdateStatus \"" + totclstring(text) + "\"";
-    TCLInterface::execute(cmd);
+    LOG_DEBUG(module_->get_id().id_ << " UpdateStatus \"" << text << "\"");
   }
 
+#if 0
   matlabarray::mitype InterfaceWithMatlab::convertdataformat(const std::string& dataformat)
   {
     matlabarray::mitype type = matlabarray::miUNKNOWN;
@@ -596,7 +600,7 @@ bool InterfaceWithMatlabImpl::synchronise_input()
 
 const ModuleLookupInfo InterfaceWithMatlab::staticInfo_("InterfaceWithMatlab", "Interface", "Matlab");
 
-InterfaceWithMatlab::InterfaceWithMatlab() : Module(staticInfo_), impl_(new InterfaceWithMatlabImpl)
+InterfaceWithMatlab::InterfaceWithMatlab() : Module(staticInfo_), impl_(new InterfaceWithMatlabImpl(this))
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(InputField);
@@ -770,12 +774,15 @@ void InterfaceWithMatlab::execute()
 
   bool InterfaceWithMatlabImpl::open_matlab_engine()
   {
+    std::string matlablibrary;
+    const std::string inetaddress;
+#if 0
     std::string inetaddress = inet_address_.get();
     std::string inetport = inet_port_.get();
     std::string passwd = inet_passwd_.get();
     std::string session = inet_session_.get();
     std::string startmatlab;
-    std::string matlablibrary;
+    
     if ( sci_getenv("SCIRUN_STARTMATLAB") ) startmatlab = sci_getenv("SCIRUN_STARTMATLAB");
     if ( sci_getenv("SCIRUN_MATLABLIBRARY") ) matlablibrary = sci_getenv("SCIRUN_MATLABLIBRARY");
 
@@ -795,14 +802,14 @@ void InterfaceWithMatlab::execute()
       matlab_timeout_old_ = timeout;
       start_matlab_old_ = startmatlab;
     }
-
+#endif
 #ifndef USE_MATLAB_ENGINE_LIBRARY
     if (!(matlab_engine_.get_rep()))
 #else
     if (!engine_)
 #endif
     {
-
+#if 0
       IComAddress address;
       if (inetaddress == "")
       {
@@ -815,8 +822,7 @@ void InterfaceWithMatlab::execute()
 
       int sessionnum;
       from_string(session,sessionnum);    
-
-      // Inform the impatient user we are still working for him
+#endif
       update_status("Please wait while launching matlab, this may take a few minutes ....\n");
 
 #ifndef USE_MATLAB_ENGINE_LIBRARY
@@ -833,7 +839,8 @@ void InterfaceWithMatlab::execute()
       }
 
 #else
-      if (engOpen == 0) {
+      if (engOpen == 0) 
+      {
         // load functions from dll
         std::string error_msg;
 
@@ -854,7 +861,7 @@ void InterfaceWithMatlab::execute()
 
         if (!englib) 
         {
-          error(std::string("Could not open matlab library libeng."));
+          module_->error(std::string("Could not open matlab library libeng."));
           return false;
         }
 
@@ -866,12 +873,12 @@ void InterfaceWithMatlab::execute()
 
         if (!engOpen || !engClose || !engSetVisible || !engEvalString || !engOutputBuffer) 
         {
-          if ( !engOpen ) error( std::string( "Cannot find engOpen" ) );
-          if ( !engClose ) error( std::string( "Cannot find engClose" ) );
-          if ( !engSetVisible ) error( std::string( "Cannot find engSetVisible" ) );
-          if ( !engEvalString ) error( std::string( "Cannot find engEvalString" ) );
-          if ( !engOutputBuffer ) error( std::string( "Cannot find engOutputBuffer" ) );
-          error(std::string("Could not open matlab engine functions from matlab library"));
+          if (!engOpen) module_->error(std::string("Cannot find engOpen"));
+          if (!engClose) module_->error(std::string("Cannot find engClose"));
+          if (!engSetVisible) module_->error(std::string("Cannot find engSetVisible"));
+          if (!engEvalString) module_->error(std::string("Cannot find engEvalString"));
+          if (!engOutputBuffer) module_->error(std::string("Cannot find engOutputBuffer"));
+          module_->error(std::string("Could not open matlab engine functions from matlab library"));
           return false;
         }      
       }
@@ -894,8 +901,8 @@ void InterfaceWithMatlab::execute()
 
       if (!engine_) 
       {
-        error(std::string("InterfaceWithMatlab: Could not open matlab engine"));
-        error(std::string("InterfaceWithMatlab: Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine"));
+        module_->error(std::string("InterfaceWithMatlab: Could not open matlab engine"));
+        module_->error(std::string("InterfaceWithMatlab: Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine"));
         return false;
       }
 
@@ -903,6 +910,7 @@ void InterfaceWithMatlab::execute()
       engSetVisible(engine_, true);
 #endif
 
+#if 0
       file_transfer_ = new FileTransferClient();
       if(!(file_transfer_->open(address,"matlabenginefiletransfer",sessionnum,passwd)))
       {
@@ -916,10 +924,10 @@ void InterfaceWithMatlab::execute()
         engine_ = 0;
 #endif
         std::cout << "ERROR" << file_transfer_->geterror() << std::endl;
-        error(std::string("InterfaceWithMatlab: Could not open matlab engine file transfer service (error=") + err + std::string(")"));
-        error(std::string("InterfaceWithMatlab: Make sure the matlab engine file transfer service has not been disabled in [MATLAB_DIRECTPRY]/services/matlabengine.rc"));
-        error(std::string("InterfaceWithMatlab: Press the 'Edit Local Config of Matlab Engine' to change the configuration"));
-        error(std::string("InterfaceWithMatlab: Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine"));
+        module_->error(std::string("InterfaceWithMatlab: Could not open matlab engine file transfer service (error=") + err + std::string(")"));
+        module_->error(std::string("InterfaceWithMatlab: Make sure the matlab engine file transfer service has not been disabled in [MATLAB_DIRECTPRY]/services/matlabengine.rc"));
+        module_->error(std::string("InterfaceWithMatlab: Press the 'Edit Local Config of Matlab Engine' to change the configuration"));
+        module_->error(std::string("InterfaceWithMatlab: Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine"));
 
         file_transfer_ = 0;
         return(false);
@@ -943,7 +951,7 @@ void InterfaceWithMatlab::execute()
           engClose(engine_);
           engine_ = 0;
 #endif
-          error(std::string("InterfaceWithMatlab: Could not create remote temporary directory"));
+          module_->error(std::string("InterfaceWithMatlab: Could not create remote temporary directory"));
           file_transfer_->close();
           file_transfer_ = 0;
           return(false);		
@@ -962,6 +970,7 @@ void InterfaceWithMatlab::execute()
         file_transfer_->translate_scirun_tempdir(tempdir);
         file_transfer_->set_remote_dir(tempdir);
       }
+#endif
 
 #ifndef USE_MATLAB_ENGINE_LIBRARY
       IComPacketHandle packet;
