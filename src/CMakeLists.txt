@@ -106,9 +106,9 @@ MESSAGE(STATUS "Git version commit hash: " "${VERSION_HASHVAR}")
 #parse the version information into pieces.
 string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${VERSION_TAG}")
 string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${VERSION_TAG}")
-#TODO: make generic 
+#TODO: make generic
 string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\-(alpha.[A-Za-z0-9_]+)\\-?.*" "\\1" VERSION_PATCH "${VERSION_TAG}")
-#TODO: parse SHA 
+#TODO: parse SHA
 #string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" VERSION_SHA1 "${VERSION}")
 #set(VERSION_SHORT "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
@@ -161,6 +161,20 @@ INCLUDE(ExternalProject)
 IF(WIN32)
   ADD_DEFINITIONS("/wd4251 /wd4275 -D_CRT_SECURE_NO_WARNINGS")
 ENDIF(WIN32)
+
+########################################################################
+# External project utilities
+
+OPTION(DISABLE_ExternalProject_UPDATE "Turn off ExternalProject UPDATE_COMMAND property (if not connected to the internet, for example" ON)
+MARK_AS_ADVANCED(DISABLE_ExternalProject_UPDATE)
+IF(DISABLE_ExternalProject_UPDATE)
+  # do nothing commands...
+  IF(WIN32)
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "rem")
+  ELSE()
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
+  ENDIF()
+ENDIF()
 
 ########################################################################
 # Configure test support
@@ -290,20 +304,6 @@ ENDIF()
 #     ADD_SUBDIRECTORY(Documentation/Manuals)
 #   ENDIF()
 # ENDIF()
-
-########################################################################
-# External project utilities
-
-OPTION(DISABLE_ExternalProject_UPDATE "Turn off ExternalProject UPDATE_COMMAND property (if not connected to the internet, for example" ON)
-MARK_AS_ADVANCED(DISABLE_ExternalProject_UPDATE)
-IF(DISABLE_ExternalProject_UPDATE)
-  # do nothing commands...
-  IF(WIN32)
-    SET(DISABLED_UPDATE "UPDATE_COMMAND" "rem")
-  ELSE()
-    SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
-  ENDIF()
-ENDIF()
 
 ########################################################################
 # Download external data sources
