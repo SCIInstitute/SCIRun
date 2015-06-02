@@ -162,6 +162,7 @@ private Q_SLOTS:
   void makeModulesLargeSize();
   void makeModulesSmallSize();
   void setDataDirectoryFromGUI();
+  void toolkitDownload();
   void addToPathFromGUI();
   void displayAcknowledgement();
   void setFocusOnFilterLine();

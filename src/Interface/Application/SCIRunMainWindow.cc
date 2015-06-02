@@ -292,6 +292,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
   connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
 
+	connect(actionForwardInverse_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
+	connect(actionBrainStimulator_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
+
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
 
@@ -1351,8 +1354,8 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     actionPaste_;
   QList<QMenu*> nonfunctioningMenus;
   nonfunctioningMenus <<
-    menuSubnets_ <<
-    menuToolkits_;
+    menuSubnets_;
+		//<< menuToolkits_;
   QList<QWidget*> nonfunctioningWidgets;
   nonfunctioningWidgets <<
     scirunNetsLabel_ <<
@@ -1513,4 +1516,17 @@ void SCIRunMainWindow::setTagNames(const QStringList& names)
   {
     tagLineEdits[i]->setText(tagNames_[i]);
   }
+}
+
+void SCIRunMainWindow::toolkitDownload()
+{
+	static std::map<QString, QUrl> toolkitUrls;
+	if (toolkitUrls.empty())
+	{
+		toolkitUrls["Brain Stimulator"] = "http://www.cheatsheet.com/wp-content/uploads/2014/12/iStock_000051301040_Small-640x427.jpg?044193";
+		toolkitUrls["Forward/Inverse"] = "http://a2.espncdn.com/combiner/i?img=%2Fmedia%2Fmotion%2F2015%2F0602%2Fdm_150602_nba_hoiberg_presser_sound%2Fdm_150602_nba_hoiberg_presser_sound.jpg&w=156&h=156&scale=crop&cquality=90&location=center";
+	}
+	QAction* action = qobject_cast<QAction*>(sender());
+	auto name = action->text();
+	qDebug() << "download toolkit " << name << "at URL " << toolkitUrls[name];
 }
