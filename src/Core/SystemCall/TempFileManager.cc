@@ -40,6 +40,7 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 using namespace SCIRun;
 
@@ -68,7 +69,7 @@ TempFileManager::create_randname(std::string str)
   std::string result = str;
   for (; p < size; p++) {
     // Use only A-Z, a-z, and 0-9 for naming random filenames
-    r = static_cast<int>((fabs(rand_() * 61)));
+    r = static_cast<int>((std::fabs(rand_() * 61)));
     if (r < 10)
       c = static_cast<char>(r + 48);
     else if ((10 <= r) && (r < 36))
@@ -145,7 +146,7 @@ TempFileManager::create_tempdir(std::string pattern, std::string &dirname)
 bool
 TempFileManager::create_tempfile(std::string dir, std::string pattern, std::string &filename)
 {
-  if (dir.back() != boost::filesystem::path::preferred_separator) 
+  if (dir.back() != boost::filesystem::path::preferred_separator)
     dir += boost::filesystem::path::preferred_separator;
 
   bool done = false;
@@ -209,6 +210,7 @@ TempFileManager::create_tempfilename(std::string dir, std::string pattern, std::
   return(create_tempfile(dir, pattern, filename));
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool TempFileManager::create_tempfifo(std::string dir, std::string pattern, std::string &fifoname)
 {
   if (dir.back() != boost::filesystem::path::preferred_separator)
@@ -234,7 +236,7 @@ bool TempFileManager::create_tempfifo(std::string dir, std::string pattern, std:
         // with a unique filename
         done = true;
 
-      } 
+      }
 #endif
       // An error occured: file already existed/ could not be opened etc...
     }
@@ -251,7 +253,7 @@ bool TempFileManager::create_tempfifo(std::string dir, std::string pattern, std:
   fifoname = newfifo;
   return(true);
 }
-
+#endif
 
 bool
 TempFileManager::delete_tempdir(std::string dirname)
@@ -265,10 +267,16 @@ TempFileManager::delete_tempfile(std::string filename)
   return boost::filesystem::remove(filename);
 }
 
+#ifdef _WIN32
+#define UNLINK _unlink
+#else
+#define UNLINK unlink
+#endif
+
 bool
 TempFileManager::delete_tempfifo(std::string fifoname)
 {
-  _unlink(fifoname.c_str());
+  UNLINK(fifoname.c_str());
   return(true);
 }
 
@@ -395,4 +403,3 @@ TempFileManager::get_homedirID()
   homeidstring = homeidstring.substr(7);
   return(homeidstring);
 }
-

@@ -45,6 +45,7 @@
 
 #include <Core/SystemCall/TempFileManager.h>
 #include <Core/Utils/Legacy/soloader.h>
+#include <Core/Services/ServiceClient.h>
 #if 0
 #include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Packages/MatlabInterface/Services/MatlabEngine.h>
@@ -52,7 +53,7 @@
 
 #include <Core/ICom/IComAddress.h>
 #include <Core/ICom/IComPacket.h>
-#include <Core/Services/ServiceClient.h>
+
 #include <Core/Services/Service.h>
 #include <Core/Services/ServiceBase.h>
 #include <Core/Services/FileTransferClient.h>
@@ -92,7 +93,7 @@ ENGEVALSTRINGPROC engEvalString = 0;
 ENGOUTPUTBUFFERPROC engOutputBuffer = 0;
 #endif
 
-namespace MatlabImpl 
+namespace MatlabImpl
 {
   class InterfaceWithMatlabEngineThreadInfo;
   class InterfaceWithMatlabEngineThread;
@@ -139,7 +140,7 @@ namespace MatlabImpl
       namespace Matlab {
         namespace Interface {
 
-          class InterfaceWithMatlabImpl //: public ServiceBase 
+          class InterfaceWithMatlabImpl //: public ServiceBase
           {
           public:
             explicit InterfaceWithMatlabImpl(InterfaceWithMatlab* module) : module_(module) {}
@@ -184,7 +185,7 @@ namespace MatlabImpl
 
           private:
             InterfaceWithMatlab* module_;
-            // Temp directory for writing files coming from the 
+            // Temp directory for writing files coming from the
             // the matlab engine
 
             std::string temp_directory_;
@@ -274,7 +275,7 @@ namespace MatlabImpl
             GuiInt      matlab_timeout_;
 
             std::string start_matlab_old_;
-            int         matlab_timeout_old_;  
+            int         matlab_timeout_old_;
 #endif
 
 #ifndef USE_MATLAB_ENGINE_LIBRARY
@@ -339,7 +340,7 @@ namespace MatlabImpl
       if(!(serv_handle_->recv(packet)))
       {
         info_handle_->dolock();
-        if (info_handle_->exit_ == true) 
+        if (info_handle_->exit_ == true)
         {
           // It crashed as result of closing of connection
           // Anyway, the module was destroyed so it should not
@@ -360,14 +361,14 @@ namespace MatlabImpl
         continue;
       }
 
-      info_handle_->dolock();       
+      info_handle_->dolock();
 
       if (info_handle_->exit_ == true)
       {
         info_handle_->wait_exit_.conditionBroadcast();
         info_handle_->unlock();
         return;
-      } 
+      }
 
       switch (packet->gettag())
       {
@@ -376,10 +377,10 @@ namespace MatlabImpl
         std::string str;
         if (packet->getparam1() < 0) str = "STDOUT END";
         else str = packet->getstring();
-        std::string cmd = info_handle_->output_cmd_ + " \"" + InterfaceWithMatlab::totclstring(str) + "\""; 
-        info_handle_->unlock();       
+        std::string cmd = info_handle_->output_cmd_ + " \"" + InterfaceWithMatlab::totclstring(str) + "\"";
+        info_handle_->unlock();
         TCLInterface::lock();
-        TCLInterface::execute(cmd);                     
+        TCLInterface::execute(cmd);
         TCLInterface::unlock();
       }
       break;
@@ -388,10 +389,10 @@ namespace MatlabImpl
         std::string str;
         if (packet->getparam1() < 0) str = "STDERR END";
         else str = packet->getstring();
-        std::string cmd = info_handle_->output_cmd_ + " \"STDERR: " + InterfaceWithMatlab::totclstring(str) + "\""; 
-        info_handle_->unlock();       
+        std::string cmd = info_handle_->output_cmd_ + " \"STDERR: " + InterfaceWithMatlab::totclstring(str) + "\"";
+        info_handle_->unlock();
         TCLInterface::lock();
-        TCLInterface::execute(cmd);                     
+        TCLInterface::execute(cmd);
         TCLInterface::unlock();
       }
       break;
@@ -404,15 +405,15 @@ namespace MatlabImpl
         info_handle_->exit_ = true;
         info_handle_->wait_exit_.conditionBroadcast();
         done = true;
-        info_handle_->unlock();       
+        info_handle_->unlock();
       }
       break;
       case TAG_MCODE_SUCCESS:
       {
         info_handle_->code_done_ = true;
         info_handle_->code_success_ = true;
-        info_handle_->wait_code_done_.conditionBroadcast();				
-        info_handle_->unlock();       
+        info_handle_->wait_code_done_.conditionBroadcast();
+        info_handle_->unlock();
       }
       break;
       case TAG_MCODE_ERROR:
@@ -420,12 +421,12 @@ namespace MatlabImpl
         info_handle_->code_done_ = true;
         info_handle_->code_success_ = false;
         info_handle_->code_error_ = packet->getstring();
-        info_handle_->wait_code_done_.conditionBroadcast();				
-        info_handle_->unlock();       
+        info_handle_->wait_code_done_.conditionBroadcast();
+        info_handle_->unlock();
       }
       break;
       default:
-        info_handle_->unlock();       
+        info_handle_->unlock();
       }
     }
   }
@@ -433,7 +434,7 @@ namespace MatlabImpl
   DECLARE_MAKER(InterfaceWithMatlab)
 
   InterfaceWithMatlab::InterfaceWithMatlab(GuiContext *context) :
-    Module("InterfaceWithMatlab", context, Filter, "Interface", "MatlabInterface"), 
+    Module("InterfaceWithMatlab", context, Filter, "Interface", "MatlabInterface"),
     input_matrix_name_(context->subVar("input-matrix-name")),
     input_field_name_(context->subVar("input-field-name")),
     input_nrrd_name_(context->subVar("input-nrrd-name")),
@@ -497,9 +498,9 @@ namespace MatlabImpl
   // Function for cleaning up
   // matlab modules
   void InterfaceWithMatlab::cleanup_callback(void *data)
-  { 
+  {
     InterfaceWithMatlab* ptr = reinterpret_cast<InterfaceWithMatlab *>(data);
-    // We just want to make sure that the matlab engine is released and 
+    // We just want to make sure that the matlab engine is released and
     // any temp dirs are cleaned up
     ptr->close_matlab_engine();
     ptr->delete_temp_directory();
@@ -548,7 +549,7 @@ namespace MatlabImpl
 
     // Yeah, it is TCL dependent:
     // TCL::llength determines the length of the list
-    TCLInterface::eval("llength { "+str + " }",result);	
+    TCLInterface::eval("llength { "+str + " }",result);
     std::istringstream iss(result);
     iss >> lengthlist;
     if (lengthlist < 0) return(list);
@@ -592,7 +593,7 @@ bool InterfaceWithMatlabImpl::synchronise_input()
   str = output_string_name_.get(); output_string_name_list_ = converttcllist(str);
 
   TCLInterface::execute(get_id() + " update_text"); // update matlab_code_ before use.
-  matlab_code_list_ = matlab_code_.get(); 
+  matlab_code_list_ = matlab_code_.get();
 #endif
   return(true);
 }
@@ -650,7 +651,7 @@ void InterfaceWithMatlab::execute()
   {
     error("InterfaceWithMatlab: Could not create m-file code for matlabengine");
     return;
-  }	
+  }
 
   if (!send_matlab_job())
   {
@@ -690,7 +691,7 @@ void InterfaceWithMatlab::execute()
     thread_info_->unlock();
 
     packet->settag(TAG_MCODE);
-    packet->setstring(remotefile); 
+    packet->setstring(remotefile);
     matlab_engine_->send(packet);
 
     thread_info_->dolock();
@@ -700,7 +701,7 @@ void InterfaceWithMatlab::execute()
     }
     bool success = thread_info_->code_success_;
     bool exitcond = thread_info_->exit_;
-    if (!success) 
+    if (!success)
     {
       if (exitcond)
       {
@@ -715,7 +716,7 @@ void InterfaceWithMatlab::execute()
       {
         error("InterfaceWithMatlab: matlab code failed: "+thread_info_->code_error_);
         error("InterfaceWithMatlab: Detected an error in the Matlab code, the matlab engine is still running and caught the exception");
-        error("InterfaceWithMatlab: Please check the matlab code in the GUI and try again. The output window in the GUI should contain the reported error message generated by matlab");            
+        error("InterfaceWithMatlab: Please check the matlab code in the GUI and try again. The output window in the GUI should contain the reported error message generated by matlab");
       }
       thread_info_->code_done_ = false;
       thread_info_->unlock();
@@ -732,9 +733,9 @@ void InterfaceWithMatlab::execute()
     success = (engEvalString(engine_, command.c_str()) == 0);
 
     std::string output(output_buffer_);
-    std::string cmd = get_id()+" AddOutput \"" + InterfaceWithMatlab::totclstring(output) + "\""; 
+    std::string cmd = get_id()+" AddOutput \"" + InterfaceWithMatlab::totclstring(output) + "\"";
     TCLInterface::lock();
-    TCLInterface::execute(cmd);                     
+    TCLInterface::execute(cmd);
     TCLInterface::unlock();
 
     std::cout << output_buffer_ << std::endl;
@@ -760,7 +761,7 @@ void InterfaceWithMatlab::execute()
     }
 
     packet->settag(TAG_INPUT);
-    packet->setstring(str); 
+    packet->setstring(str);
     matlab_engine_->send(packet);
 
     return(true);
@@ -782,7 +783,7 @@ void InterfaceWithMatlab::execute()
     std::string passwd = inet_passwd_.get();
     std::string session = inet_session_.get();
     std::string startmatlab;
-    
+
     if ( sci_getenv("SCIRUN_STARTMATLAB") ) startmatlab = sci_getenv("SCIRUN_STARTMATLAB");
     if ( sci_getenv("SCIRUN_MATLABLIBRARY") ) matlablibrary = sci_getenv("SCIRUN_MATLABLIBRARY");
 
@@ -821,7 +822,7 @@ void InterfaceWithMatlab::execute()
       }
 
       int sessionnum;
-      from_string(session,sessionnum);    
+      from_string(session,sessionnum);
 #endif
       update_status("Please wait while launching matlab, this may take a few minutes ....\n");
 
@@ -829,17 +830,17 @@ void InterfaceWithMatlab::execute()
       matlab_engine_ = new ServiceClient();
       if(!(matlab_engine_->open(address,"matlabengine",sessionnum,passwd,timeout,startmatlab)))
       {
-        error(std::string("InterfaceWithMatlab: Could not open matlab engine (error=") + matlab_engine_->geterror() + std::string(")"));
-        error(std::string("InterfaceWithMatlab: Make sure the matlab engine has not been disabled in [SCIRUN_DIRECTORY]/services/matlabengine.rc"));
-        error(std::string("InterfaceWithMatlab: Press the 'Edit Local Config of Matlab Engine' to change the configuration"));
-        error(std::string("InterfaceWithMatlab: Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine"));
+        module_->error(std::string("InterfaceWithMatlab: Could not open matlab engine (error=") + matlab_engine_->geterror() + std::string(")"));
+        module_->error(std::string("InterfaceWithMatlab: Make sure the matlab engine has not been disabled in [SCIRUN_DIRECTORY]/services/matlabengine.rc"));
+        module_->error(std::string("InterfaceWithMatlab: Press the 'Edit Local Config of Matlab Engine' to change the configuration"));
+        module_->error(std::string("InterfaceWithMatlab: Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine"));
 
         matlab_engine_ = 0;
         return(false);
       }
 
 #else
-      if (engOpen == 0) 
+      if (engOpen == 0)
       {
         // load functions from dll
         std::string error_msg;
@@ -859,7 +860,7 @@ void InterfaceWithMatlab::execute()
           englib = GetLibraryHandle( "libeng.dll", error_msg );
         }
 
-        if (!englib) 
+        if (!englib)
         {
           module_->error(std::string("Could not open matlab library libeng."));
           return false;
@@ -871,7 +872,7 @@ void InterfaceWithMatlab::execute()
         engEvalString = (ENGEVALSTRINGPROC) GetHandleSymbolAddress(englib, "engEvalString",error_msg);
         engOutputBuffer = (ENGOUTPUTBUFFERPROC) GetHandleSymbolAddress(englib, "engOutputBuffer",error_msg);
 
-        if (!engOpen || !engClose || !engSetVisible || !engEvalString || !engOutputBuffer) 
+        if (!engOpen || !engClose || !engSetVisible || !engEvalString || !engOutputBuffer)
         {
           if (!engOpen) module_->error(std::string("Cannot find engOpen"));
           if (!engClose) module_->error(std::string("Cannot find engClose"));
@@ -880,7 +881,7 @@ void InterfaceWithMatlab::execute()
           if (!engOutputBuffer) module_->error(std::string("Cannot find engOutputBuffer"));
           module_->error(std::string("Could not open matlab engine functions from matlab library"));
           return false;
-        }      
+        }
       }
 
 
@@ -899,7 +900,7 @@ void InterfaceWithMatlab::execute()
         engine_ = engOpen(inetaddress.c_str());
       }
 
-      if (!engine_) 
+      if (!engine_)
       {
         module_->error(std::string("InterfaceWithMatlab: Could not open matlab engine"));
         module_->error(std::string("InterfaceWithMatlab: Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine"));
@@ -954,7 +955,7 @@ void InterfaceWithMatlab::execute()
           module_->error(std::string("InterfaceWithMatlab: Could not create remote temporary directory"));
           file_transfer_->close();
           file_transfer_ = 0;
-          return(false);		
+          return(false);
         }
         file_transfer_->set_local_dir(temp_directory_);
         file_transfer_->set_remote_dir(remote_tempdir_);
@@ -985,7 +986,7 @@ void InterfaceWithMatlab::execute()
         matlab_engine_ = 0;
         file_transfer_ = 0;
 
-        return(false);	
+        return(false);
       }
 
 
@@ -1003,7 +1004,7 @@ void InterfaceWithMatlab::execute()
         matlab_engine_ = 0;
         file_transfer_ = 0;
 
-        return(false);					
+        return(false);
       }
 
       thread_info_ = new InterfaceWithMatlabEngineThreadInfo();
@@ -1016,10 +1017,10 @@ void InterfaceWithMatlab::execute()
         matlab_engine_ = 0;
         file_transfer_ = 0;
 
-        return(false);		
+        return(false);
       }
 
-      thread_info_->output_cmd_ = get_id()+" AddOutput"; 
+      thread_info_->output_cmd_ = get_id()+" AddOutput";
 
       // By cloning the object, it will have the same fields and sockets, but the socket
       // and error handling will be separate. As the thread will invoke its own instructions
@@ -1051,7 +1052,7 @@ void InterfaceWithMatlab::execute()
         file_transfer_ = 0;
 
         error(std::string("InterfaceWithMatlab: Could not create thread"));
-        return(false);	
+        return(false);
       }
       thread->detach();
 
@@ -1080,12 +1081,12 @@ void InterfaceWithMatlab::execute()
   bool InterfaceWithMatlab::close_matlab_engine()
   {
 #ifndef USE_MATLAB_ENGINE_LIBRARY
-    if (matlab_engine_.get_rep()) 
+    if (matlab_engine_.get_rep())
     {
       matlab_engine_->close();
       matlab_engine_ = 0;
     }
-    if (file_transfer_.get_rep()) 
+    if (file_transfer_.get_rep())
     {
       file_transfer_->close();
       file_transfer_ = 0;
@@ -1225,7 +1226,7 @@ void InterfaceWithMatlab::execute()
 
         NrrdDataHandle handle;
         std::string info;
-        matlabconverter translate(dynamic_cast<SCIRun::ProgressReporter *>(this));      
+        matlabconverter translate(dynamic_cast<SCIRun::ProgressReporter *>(this));
         if (translate.sciNrrdDataCompatible(ma,info)) translate.mlArrayTOsciNrrdData(ma,handle);
         send_output_handle(port,handle,true); port++;
       }
@@ -1367,7 +1368,7 @@ void InterfaceWithMatlab::execute()
     {
       int port = 0;
 
-      std::ofstream m_file; 
+      std::ofstream m_file;
       std::string loadcmd;
 
       mfile_ = std::string("scirun_code.m");
@@ -1382,7 +1383,7 @@ void InterfaceWithMatlab::execute()
         port++;
 
         // if there is no data
-        if (handle.get_rep() == 0)  
+        if (handle.get_rep() == 0)
         {
           // we do not need the old file any more so delete it
           input_matrix_matfile_[p] = "";
@@ -1399,7 +1400,7 @@ void InterfaceWithMatlab::execute()
           // hence we do not need to translate it again
           // with big datasets this should improve performance
           loadcmd = "load " + file_transfer_->remote_file(input_matrix_matfile_[p]) + ";\n";
-          m_file << loadcmd;		
+          m_file << loadcmd;
           continue;
         }
 
@@ -1416,7 +1417,7 @@ void InterfaceWithMatlab::execute()
 
         matlabconverter translate(dynamic_cast<SCIRun::ProgressReporter *>(this));
         translate.converttostructmatrix();
-        if (input_matrix_array_list_[p] == "numeric array") 
+        if (input_matrix_array_list_[p] == "numeric array")
           translate.converttonumericmatrix();
         translate.setdatatype(convertdataformat(input_matrix_type_list_[p]));
         translate.sciMatrixTOmlArray(handle,ma);
@@ -1427,7 +1428,7 @@ void InterfaceWithMatlab::execute()
         loadcmd = "load " + file_transfer_->remote_file(input_matrix_matfile_[p]) + ";\n";
         m_file << loadcmd;
 
-        if (need_file_transfer_) 
+        if (need_file_transfer_)
         {
           if(!(file_transfer_->put_file(
             file_transfer_->local_file(input_matrix_matfile_[p]),
@@ -1440,8 +1441,8 @@ void InterfaceWithMatlab::execute()
           }
         }
 
-        input_matrix_type_list_old_[p] = input_matrix_type_list_[p];      
-        input_matrix_array_list_old_[p] = input_matrix_array_list_[p];      
+        input_matrix_type_list_old_[p] = input_matrix_type_list_[p];
+        input_matrix_array_list_old_[p] = input_matrix_array_list_[p];
         input_matrix_name_list_old_[p] = input_matrix_name_list_[p];
         input_matrix_generation_old_[p] = handle->generation;
 
@@ -1454,7 +1455,7 @@ void InterfaceWithMatlab::execute()
         port++;
 
         // if there is no data
-        if (handle.get_rep() == 0) 
+        if (handle.get_rep() == 0)
         {
           // we do not need the old file any more so delete it
           input_field_matfile_[p] = "";
@@ -1489,7 +1490,7 @@ void InterfaceWithMatlab::execute()
         matlabconverter translate(dynamic_cast<SCIRun::ProgressReporter *>(this));
         translate.converttostructmatrix();
 
-        if (input_field_array_list_[p] == "numeric array") 
+        if (input_field_array_list_[p] == "numeric array")
         {
           translate.converttonumericmatrix();
         }
@@ -1501,7 +1502,7 @@ void InterfaceWithMatlab::execute()
         loadcmd = "load " + file_transfer_->remote_file(input_field_matfile_[p]) + ";\n";
         m_file << loadcmd;
 
-        if (need_file_transfer_) 
+        if (need_file_transfer_)
         {
           if(!(file_transfer_->put_file(
             file_transfer_->local_file(input_field_matfile_[p]),
@@ -1515,7 +1516,7 @@ void InterfaceWithMatlab::execute()
         }
         input_field_array_list_old_[p] = input_field_array_list_[p];
         input_field_name_list_old_[p] = input_field_name_list_[p];
-        input_field_generation_old_[p] = handle->generation;            
+        input_field_generation_old_[p] = handle->generation;
       }
 
       for (int p = 0; p < NUM_NRRD_PORTS; p++)
@@ -1525,7 +1526,7 @@ void InterfaceWithMatlab::execute()
         port++;
 
         // if there is no data
-        if (handle.get_rep() == 0) 
+        if (handle.get_rep() == 0)
         {
           // we do not need the old file any more so delete it
           input_nrrd_matfile_[p] = "";
@@ -1561,15 +1562,15 @@ void InterfaceWithMatlab::execute()
         matlabconverter translate(dynamic_cast<SCIRun::ProgressReporter *>(this));
         translate.converttostructmatrix();
         if (input_nrrd_array_list_[p] == "numeric array") translate.converttonumericmatrix();
-        translate.setdatatype(convertdataformat(input_nrrd_type_list_[p]));	
+        translate.setdatatype(convertdataformat(input_nrrd_type_list_[p]));
         translate.sciNrrdDataTOmlArray(handle,ma);
         mf.putmatlabarray(ma,input_nrrd_name_list_[p]);
         mf.close();
 
-        loadcmd = "load " + file_transfer_->remote_file(input_nrrd_matfile_[p]) + ";\n";            
+        loadcmd = "load " + file_transfer_->remote_file(input_nrrd_matfile_[p]) + ";\n";
         m_file << loadcmd;
 
-        if (need_file_transfer_) 
+        if (need_file_transfer_)
         {
           if(!(file_transfer_->put_file(
             file_transfer_->local_file(input_nrrd_matfile_[p]),
@@ -1580,11 +1581,11 @@ void InterfaceWithMatlab::execute()
             error(err);
             return(false);
           }
-        }  
+        }
         input_nrrd_type_list_old_[p] = input_nrrd_type_list_[p];
         input_nrrd_array_list_old_[p] = input_nrrd_array_list_[p];
-        input_nrrd_name_list_old_[p] = input_nrrd_name_list_[p];       
-        input_nrrd_generation_old_[p] = handle->generation;       
+        input_nrrd_name_list_old_[p] = input_nrrd_name_list_[p];
+        input_nrrd_generation_old_[p] = handle->generation;
       }
 
       for (int p = 0; p < NUM_STRING_PORTS; p++)
@@ -1594,7 +1595,7 @@ void InterfaceWithMatlab::execute()
         port++;
 
         // if there is no data
-        if (handle.get_rep() == 0) 
+        if (handle.get_rep() == 0)
         {
           // we do not need the old file any more so delete it
           input_string_matfile_[p].clear();
@@ -1630,10 +1631,10 @@ void InterfaceWithMatlab::execute()
         mf.putmatlabarray(ma,input_string_name_list_[p]);
         mf.close();
 
-        loadcmd = "load " + file_transfer_->remote_file(input_string_matfile_[p]) + ";\n";            
+        loadcmd = "load " + file_transfer_->remote_file(input_string_matfile_[p]) + ";\n";
         m_file << loadcmd;
 
-        if (need_file_transfer_) 
+        if (need_file_transfer_)
         {
           if(!(file_transfer_->put_file(
             file_transfer_->local_file(input_string_matfile_[p]),
@@ -1645,9 +1646,9 @@ void InterfaceWithMatlab::execute()
             return(false);
           }
 
-        }  
-        input_string_name_list_old_[p] = input_string_name_list_[p];       
-        input_string_generation_old_[p] = handle->generation;       
+        }
+        input_string_name_list_old_[p] = input_string_name_list_[p];
+        input_string_generation_old_[p] = handle->generation;
       }
 
     }
@@ -1659,14 +1660,14 @@ void InterfaceWithMatlab::execute()
     catch (matlabfile::io_error)
     {   // IO error from ferror
       error("InterfaceWithMatlab: IO error");
-      return(false);		
+      return(false);
     }
-    catch (matlabfile::matfileerror) 
+    catch (matlabfile::matfileerror)
     {   // All other errors are classified as internal
       // matfileerrror is the base class on which all
       // other exceptions are based.
       error("InterfaceWithMatlab: Internal error in writer");
-      return(false);		
+      return(false);
     }
 
     return(true);
@@ -1733,7 +1734,7 @@ void InterfaceWithMatlab::execute()
 
           if (str[0] == '\b')
           {
-            inputstring_ = inputstring_.substr(0,(inputstring_.size()-1));            
+            inputstring_ = inputstring_.substr(0,(inputstring_.size()-1));
           }
           else
           {
@@ -1753,12 +1754,12 @@ void InterfaceWithMatlab::execute()
         else
         {
           std::string key = args[3];
-          if (key == "Enter") 
+          if (key == "Enter")
           {
             str = "\n";
             inputstring_ += str;
           }
-          else if (key == "BackSpace") 
+          else if (key == "BackSpace")
           {
             inputstring_ = inputstring_.substr(0,(inputstring_.size()-1));
           }
@@ -1776,7 +1777,7 @@ void InterfaceWithMatlab::execute()
               }
               inputstring_ = "";
             }
-          }    
+          }
 
         }
         return;
@@ -1830,7 +1831,7 @@ void InterfaceWithMatlab::execute()
 
       if (args[1] == "configfile")
       {
-        ServiceDBHandle servicedb = new ServiceDB;     
+        ServiceDBHandle servicedb = new ServiceDB;
         // load all services and find all makers
         servicedb->loadpackages();
 
