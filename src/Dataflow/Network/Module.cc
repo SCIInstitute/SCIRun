@@ -122,8 +122,8 @@ namespace detail
     {
       if (current_ != state)
       {
-        signal_(static_cast<int>(current_));
         //std::cout << "Transitioning to " << state << std::endl;
+        signal_(static_cast<int>(state));
       }
       current_ = state;
       return true;
@@ -670,19 +670,6 @@ ModuleExecutionState& Module::executionState()
   return *executionState_;
 }
 
-//ModuleInterface::ExecutionState Module::executionState() const
-//{
-//  return executionState_;
-//}
-
-//void Module::setExecutionState(ModuleInterface::ExecutionState state)
-//{
-//  //std::cout << get_id() << " setExecutionState old " << executionState_ << " new " << state << std::endl;
-//  if (state != executionState_)
-//    executionStateChanged_(state);
-//  executionState_ = state;
-//}
-
 bool Module::needToExecute() const
 {
   static Mutex needToExecuteLock("needToExecute");
@@ -906,8 +893,6 @@ std::string ModuleLevelUniqueIDGenerator::generateModuleLevelUniqueID(const Modu
     toHash << key << "->" << state->getValue(key).value() << "_";
   }
   toHash << "}";
-
-  //std::cout << "trying to hash: " << toHash.str() << std::endl;
 
   ostr << hash_(toHash.str());
 
