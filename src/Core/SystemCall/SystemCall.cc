@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
   For more information, please see: http://software.sci.utah.edu
 
@@ -892,3 +893,4 @@ void SystemCall::rem_exit_handler(SystemCallHandlerHandle handle)
 
 } // namespace
 
+#endif

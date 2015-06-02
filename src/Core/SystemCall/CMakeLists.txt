@@ -49,7 +49,7 @@ TARGET_LINK_LIBRARIES(Core_SystemCall
   #Core_Util 
   #Core_Exceptions 
   #Core_ICom 
-  #Core_Math
+  Core_Math
  #${SOCKET_LIBRARY}
 )
 

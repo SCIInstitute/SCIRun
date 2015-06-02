@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -115,4 +116,5 @@ inline int SystemCallError::geterrclass()
 
 } // end namespace
 
+#endif
 #endif

@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -57,3 +58,4 @@ SystemCallError::SystemCallError(std::string error, int errnr, sce_error errclas
 
 
 } // end namespace
+#endif

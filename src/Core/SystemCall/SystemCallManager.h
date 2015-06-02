@@ -51,6 +51,7 @@
  *
  */
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 
 #ifndef CORE_SYSTEMCALL_SYSTEMCALLMANAGER_H
@@ -248,4 +249,5 @@ extern SCISHARE SystemCallManager* systemcallmanager_;
 
 }
 
+#endif
 #endif

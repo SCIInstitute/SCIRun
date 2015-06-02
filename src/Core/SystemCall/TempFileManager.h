@@ -44,17 +44,9 @@
 #ifndef CORE_SYSTEMCALL_TEMPFILE_H
 #define CORE_SYSTEMCALL_TEMPFILE_H 1
 
-
 #include <string>
-
-
 #include <Core/Math/MusilRNG.h>
-
 #include <Core/SystemCall/share.h>
-
-// This class is a wrapper around a few unix functions used to create temporary
-// files. The functions do not have a WIN32_ implementation yet
-
 
 namespace SCIRun {
 
