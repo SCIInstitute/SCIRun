@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -34,15 +34,23 @@ SET(Core_SystemCall_SRCS
   TempFileManager.cc
 )
 
-SCIRUN_ADD_LIBRARY(Core_SystemCall ${Core_SystemCall_SRCS})
+SET(Core_SystemCall_HEADERS
+  SystemCallManager.h
+  SystemCallError.h
+  SystemCall.h
+  TempFileManager.h
+  share.h
+)
+
+SCIRUN_ADD_LIBRARY(Core_SystemCall ${Core_SystemCall_SRCS} ${Core_SystemCall_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_SystemCall 
   Core_Thread 
-  Core_Util 
-  Core_Exceptions 
-  Core_ICom 
-  Core_Math
- ${SOCKET_LIBRARY}
+  #Core_Util 
+  #Core_Exceptions 
+  #Core_ICom 
+  #Core_Math
+ #${SOCKET_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
