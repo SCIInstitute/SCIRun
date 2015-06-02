@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -40,12 +40,14 @@
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
 
-#if 0
+#include <Core/Thread/ConditionVariable.h>
+
 #include <Core/SystemCall/TempFileManager.h>
+#if 0
 #include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Packages/MatlabInterface/Services/MatlabEngine.h>
 #include <Core/Thread/Runnable.h>
-#include <Core/Thread/Thread.h>
+
 #include <Core/ICom/IComAddress.h>
 #include <Core/ICom/IComPacket.h>
 #include <Core/Services/ServiceClient.h>
@@ -65,8 +67,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Thread;
 
-#if 0
 #ifdef _WIN32
 #define USE_MATLAB_ENGINE_LIBRARY
 #endif
@@ -88,21 +90,17 @@ ENGEVALSTRINGPROC engEvalString = 0;
 ENGOUTPUTBUFFERPROC engOutputBuffer = 0;
 #endif
 
-namespace MatlabIO {
-
-  using namespace SCIRun;
-
-
-  class InterfaceWithMatlab;
+namespace MatlabImpl 
+{
   class InterfaceWithMatlabEngineThreadInfo;
   class InterfaceWithMatlabEngineThread;
 
-  typedef LockingHandle<InterfaceWithMatlabEngineThreadInfo> InterfaceWithMatlabEngineThreadInfoHandle;
-
-  class InterfaceWithMatlabEngineThread : public Runnable, public ServiceBase 
+  typedef boost::shared_ptr<InterfaceWithMatlabEngineThreadInfo> InterfaceWithMatlabEngineThreadInfoHandle;
+#if 0
+  class InterfaceWithMatlabEngineThread : /*public Runnable,*/ public ServiceBase
   {
   public:
-    InterfaceWithMatlabEngineThread(ServiceClientHandle serv_handle,InterfaceWithMatlabEngineThreadInfoHandle info_handle);
+    InterfaceWithMatlabEngineThread(ServiceClientHandle serv_handle, InterfaceWithMatlabEngineThreadInfoHandle info_handle);
     virtual ~InterfaceWithMatlabEngineThread();
     void run();
 
@@ -110,8 +108,8 @@ namespace MatlabIO {
     ServiceClientHandle serv_handle_;
     InterfaceWithMatlabEngineThreadInfoHandle info_handle_;
   };
-
-  class InterfaceWithMatlabEngineThreadInfo 
+#endif
+  class InterfaceWithMatlabEngineThreadInfo
   {
   public:
     InterfaceWithMatlabEngineThreadInfo();
@@ -132,8 +130,7 @@ namespace MatlabIO {
     bool                passed_test_;
 
   };
-#endif
-
+}
 
   namespace SCIRun {
     namespace Modules {
@@ -181,20 +178,15 @@ namespace MatlabIO {
             bool  send_input(const std::string& str);
 
             bool	synchronise_input();
-#if 0
-          private:
-            enum { NUM_MATRIX_PORTS = 5 };
-            enum { NUM_FIELD_PORTS = 3 };
-            enum { NUM_NRRD_PORTS = 3 };
-            enum { NUM_STRING_PORTS = 3 };
 
+          private:
             // Temp directory for writing files coming from the 
             // the matlab engine
 
             std::string temp_directory_;
 
             // GUI variables
-
+#if 0
             // Names of matrices
             GuiString   input_matrix_name_;
             GuiString   input_field_name_;
@@ -265,11 +257,11 @@ namespace MatlabIO {
             std::string inet_port_old_;
             std::string inet_passwd_old_;
             std::string inet_session_old_;
-
+#endif
             // The tempfilemanager
             TempFileManager tfmanager_;
             std::string		mfile_;
-
+#if 0
             GuiString		matlab_code_;
             GuiString   matlab_code_file_;
             GuiString		matlab_var_;
@@ -279,6 +271,7 @@ namespace MatlabIO {
 
             std::string start_matlab_old_;
             int         matlab_timeout_old_;  
+#endif
 
 #ifndef USE_MATLAB_ENGINE_LIBRARY
             ServiceClientHandle           matlab_engine_;
@@ -287,16 +280,17 @@ namespace MatlabIO {
             Engine* engine_;
             char output_buffer_[51200];
 #endif
+
+#if 0
             FileTransferClientHandle      file_transfer_;
 
             bool            need_file_transfer_;
             std::string     remote_tempdir_;
-
+#endif
             std::string     inputstring_;
 
           public:
             static void cleanup_callback(void *data);
-#endif
           };
         }}}}
 
@@ -604,17 +598,12 @@ const ModuleLookupInfo InterfaceWithMatlab::staticInfo_("InterfaceWithMatlab", "
 
 InterfaceWithMatlab::InterfaceWithMatlab() : Module(staticInfo_), impl_(new InterfaceWithMatlabImpl)
 {
-  INITIALIZE_PORT(i1);
-  INITIALIZE_PORT(i2);
-  INITIALIZE_PORT(i3);
-  INITIALIZE_PORT(i4);
-  INITIALIZE_PORT(i5);
-  INITIALIZE_PORT(field1);
-  INITIALIZE_PORT(field2);
-  //INITIALIZE_PORT(field3);
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(InputString);
   INITIALIZE_PORT(OutputField);
   INITIALIZE_PORT(OutputMatrix);
-  INITIALIZE_PORT(FilenameOut);
+  INITIALIZE_PORT(OutputString);
 }
 
 void InterfaceWithMatlab::setStateDefaults()
@@ -777,9 +766,9 @@ void InterfaceWithMatlab::execute()
     return true;
 #endif
   }
+#endif
 
-
-  bool InterfaceWithMatlab::open_matlab_engine()
+  bool InterfaceWithMatlabImpl::open_matlab_engine()
   {
     std::string inetaddress = inet_address_.get();
     std::string inetport = inet_port_.get();
@@ -1077,6 +1066,7 @@ void InterfaceWithMatlab::execute()
     return(true);
   }
 
+#if 0
 
   bool InterfaceWithMatlab::close_matlab_engine()
   {
@@ -1672,17 +1662,18 @@ void InterfaceWithMatlab::execute()
 
     return(true);
   }
+#endif
 
-  bool InterfaceWithMatlab::create_temp_directory()
+  bool InterfaceWithMatlabImpl::create_temp_directory()
   {
-    if (temp_directory_ == "")
+    if (temp_directory_.empty())
     {
-      return(tfmanager_.create_tempdir("matlab-engine.XXXXXX",temp_directory_));
+      return (tfmanager_.create_tempdir("matlab-engine.XXXXXX",temp_directory_));
     }
     return(true);
   }
 
-
+#if 0
   bool InterfaceWithMatlab::delete_temp_directory()
   {
     if(temp_directory_ != "") tfmanager_.delete_tempdir(temp_directory_);
