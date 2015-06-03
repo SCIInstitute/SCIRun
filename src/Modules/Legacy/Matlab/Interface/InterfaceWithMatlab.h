@@ -26,30 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Factory/ModuleDialogFactory.h>
-#include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
-#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
-#include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
-#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
-#include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
-#include <Interface/Modules/Matlab/InterfaceWithMatlabDialog.h>
-#include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
-#include <boost/assign.hpp>
-#include <boost/functional/factory.hpp>
+#ifndef MODULES_LEGACY_MATLAB_MATLABINTERFACE_H
+#define MODULES_LEGACY_MATLAB_MATLABINTERFACE_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace boost::assign;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Matlab/Interface/share.h>
 
-void ModuleDialogFactory::addDialogsToMakerMap2()
-{
-  insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(tDCSSimulator, TDCSSimulatorDialog)
-    ADD_MODULE_DIALOG(ElectrodeCoilSetup, ElectrodeCoilSetupDialog)
-    ADD_MODULE_DIALOG(SetConductivitiesToMesh, SetConductivitiesToTetMeshDialog)
-    ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
-    ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
-    ADD_MODULE_DIALOG(GenerateStreamLines, GenerateStreamLinesDialog)
-    ADD_MODULE_DIALOG(InterfaceWithMatlab, InterfaceWithMatlabDialog)
-  ;
-}
+namespace SCIRun {
+namespace Modules {
+namespace Matlab {
+namespace Interface {
+  
+  class SCISHARE InterfaceWithMatlab : public SCIRun::Dataflow::Networks::Module,
+    public Has3InputPorts<DynamicPortTag<MatrixPortTag>, DynamicPortTag<FieldPortTag>, DynamicPortTag<StringPortTag>>,
+    public Has6OutputPorts<FieldPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag, StringPortTag, StringPortTag>
+  {
+  public:
+    InterfaceWithMatlab();
+    virtual void execute();
+    virtual void setStateDefaults();
+    INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
+    INPUT_PORT_DYNAMIC(1, InputField, LegacyField);
+    INPUT_PORT_DYNAMIC(2, InputString, String);
+    OUTPUT_PORT(0, OutputField0, LegacyField);
+    OUTPUT_PORT(1, OutputField1, LegacyField);
+    OUTPUT_PORT(2, OutputMatrix0, Matrix);
+    OUTPUT_PORT(3, OutputMatrix1, Matrix);
+    OUTPUT_PORT(4, OutputString0, String);
+    OUTPUT_PORT(5, OutputString1, String);
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  private:
+    boost::shared_ptr<class InterfaceWithMatlabImpl> impl_;
+  };
+
+}}}}
+
+#endif

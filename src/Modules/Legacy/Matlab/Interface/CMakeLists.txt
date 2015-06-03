@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -26,61 +26,47 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/Thread classes
+# CMakeLists.txt for Packages/MatlabInterface/Dataflow/Modules/Interface
 
-SET(Core_Thread_Legacy_SRCS
-  CleanupManager.cc 
-  Guard.cc 
-  Runnable.cc 
-  ThreadError.cc 
-  SimpleReducer.cc 
-  ThreadLock.cc 
-  ThreadGroup.cc 
-  ThreadPool.cc 
+SET(Modules_Legacy_MatlabInterface_SRCS
+  InterfaceWithMatlab.cc
+  #InterfaceWithMatlabViaBundles.cc
 )
 
-SET(Core_Thread_Legacy_HEADERS
-  Barrier.h
-  CleanupManager.h
-  ConditionVariable.h
-  CrowdMonitor.h
-  FutureValue.h
-  Guard.h
-  Mailbox.h
-  RecursiveMutex.h
-  Reducer.h
-  Runnable.h
-  Semaphore.h
-  ThreadError.h
-  share.h
-  SimpleReducer.h
-  ThreadLock.h
-  ThreadGroup.h
-  ThreadPool.h
-  Time.h  
+SET(Modules_Legacy_MatlabInterface_HEADERS
+  InterfaceWithMatlab.h
+  #InterfaceWithMatlabViaBundles.h
+)
+
+SCIRUN_ADD_LIBRARY(Modules_Legacy_MatlabInterface 
+  ${Modules_Legacy_MatlabInterface_SRCS}
+  ${Modules_Legacy_MatlabInterface_HEADERS}
+  )
+
+TARGET_LINK_LIBRARIES(Modules_Legacy_MatlabInterface
+  Core_Persistent
+  Core_Util_Legacy
+  #Core_Exceptions
+  #Core_Thread
+  #Dataflow_GuiInterface
+  #Core_Geom
+  Core_Datatypes
+  #Core_Geometry
+  #Core_GeomInterface
+  #Dataflow_TkExtensions
+  Dataflow_Network
+  #Core_XMLUtil
+  #Core_Matlab
+  #Core_Services
+  #Core_ICom
+  Core_SystemCall
+  ${SCI_TEEM_LIBRARY}
+  ${SCI_ZLIB_LIBRARY}
+  #${M_LIBRARY}
+  #${TK_LIBRARY}
+  #${GL_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Thread_Legacy)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_MatlabInterface)
 ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_LIBRARY(Core_Thread_Legacy 
-  ${Core_Thread_Legacy_SRCS}
-  ${Core_Thread_Legacy_HEADERS}
-)
-
-SET(Core_Thread_Legacy_Link
-  Core_Exceptions_Legacy 
-  #${THREAD_LIBRARY}  
-  #${TRACEBACK_LIB} 
-)
-
-IF(WIN32)
-  SET(Core_Thread_Legacy_Link ${Core_Thread_Legacy_Link} winmm.lib)
-ENDIF(WIN32)
-
-TARGET_LINK_LIBRARIES(Core_Thread_Legacy 
-  ${Core_Thread_Legacy_Link}
-)
-
-ADD_DEPENDENCIES(Core_Thread_Legacy Boost_external)

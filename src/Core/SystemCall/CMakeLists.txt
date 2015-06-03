@@ -26,61 +26,33 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/Thread classes
-
-SET(Core_Thread_Legacy_SRCS
-  CleanupManager.cc 
-  Guard.cc 
-  Runnable.cc 
-  ThreadError.cc 
-  SimpleReducer.cc 
-  ThreadLock.cc 
-  ThreadGroup.cc 
-  ThreadPool.cc 
+# Sources of Core/SystemCall classes
+SET(Core_SystemCall_SRCS
+  SystemCallManager.cc 
+  SystemCallError.cc 
+  SystemCall.cc 
+  TempFileManager.cc
 )
 
-SET(Core_Thread_Legacy_HEADERS
-  Barrier.h
-  CleanupManager.h
-  ConditionVariable.h
-  CrowdMonitor.h
-  FutureValue.h
-  Guard.h
-  Mailbox.h
-  RecursiveMutex.h
-  Reducer.h
-  Runnable.h
-  Semaphore.h
-  ThreadError.h
+SET(Core_SystemCall_HEADERS
+  SystemCallManager.h
+  SystemCallError.h
+  SystemCall.h
+  TempFileManager.h
   share.h
-  SimpleReducer.h
-  ThreadLock.h
-  ThreadGroup.h
-  ThreadPool.h
-  Time.h  
+)
+
+SCIRUN_ADD_LIBRARY(Core_SystemCall ${Core_SystemCall_SRCS} ${Core_SystemCall_HEADERS})
+
+TARGET_LINK_LIBRARIES(Core_SystemCall 
+  Core_Thread 
+  #Core_Util 
+  #Core_Exceptions 
+  #Core_ICom 
+  Core_Math
+ #${SOCKET_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Thread_Legacy)
+  ADD_DEFINITIONS(-DBUILD_Core_SystemCall)
 ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_LIBRARY(Core_Thread_Legacy 
-  ${Core_Thread_Legacy_SRCS}
-  ${Core_Thread_Legacy_HEADERS}
-)
-
-SET(Core_Thread_Legacy_Link
-  Core_Exceptions_Legacy 
-  #${THREAD_LIBRARY}  
-  #${TRACEBACK_LIB} 
-)
-
-IF(WIN32)
-  SET(Core_Thread_Legacy_Link ${Core_Thread_Legacy_Link} winmm.lib)
-ENDIF(WIN32)
-
-TARGET_LINK_LIBRARIES(Core_Thread_Legacy 
-  ${Core_Thread_Legacy_Link}
-)
-
-ADD_DEPENDENCIES(Core_Thread_Legacy Boost_external)

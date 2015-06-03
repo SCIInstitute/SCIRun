@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software.
+#  in all copies or substantial portions of the Software. 
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,61 +26,28 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/Thread classes
-
-SET(Core_Thread_Legacy_SRCS
-  CleanupManager.cc 
-  Guard.cc 
-  Runnable.cc 
-  ThreadError.cc 
-  SimpleReducer.cc 
-  ThreadLock.cc 
-  ThreadGroup.cc 
-  ThreadPool.cc 
+SET(Modules_Legacy_Matlab_DataIO_Tests_SRCS
+  ImportDatatypesFromMatlabTests.cc
+  #ExportDatatypesFromMatlabTests.cc
 )
 
-SET(Core_Thread_Legacy_HEADERS
-  Barrier.h
-  CleanupManager.h
-  ConditionVariable.h
-  CrowdMonitor.h
-  FutureValue.h
-  Guard.h
-  Mailbox.h
-  RecursiveMutex.h
-  Reducer.h
-  Runnable.h
-  Semaphore.h
-  ThreadError.h
-  share.h
-  SimpleReducer.h
-  ThreadLock.h
-  ThreadGroup.h
-  ThreadPool.h
-  Time.h  
+#SET(Engine_Network_Tests_HEADERS
+#  NetworkEditorControllerTests_.h
+#)
+
+SCIRUN_ADD_UNIT_TEST(Modules_Legacy_Matlab_DataIO_Tests
+  ${Modules_Legacy_Matlab_DataIO_Tests_SRCS}
 )
 
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Thread_Legacy)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_LIBRARY(Core_Thread_Legacy 
-  ${Core_Thread_Legacy_SRCS}
-  ${Core_Thread_Legacy_HEADERS}
+TARGET_LINK_LIBRARIES(Modules_Legacy_Matlab_DataIO_Tests
+  Modules_Legacy_Matlab_DataIO
+  Modules_Factory
+  Dataflow_State
+  Testing_Utils
+  Testing_ModuleTestBase
+  Algorithms_Factory
+  gtest_main
+  gtest
+  gmock
+  ${SCI_BOOST_LIBRARY}
 )
-
-SET(Core_Thread_Legacy_Link
-  Core_Exceptions_Legacy 
-  #${THREAD_LIBRARY}  
-  #${TRACEBACK_LIB} 
-)
-
-IF(WIN32)
-  SET(Core_Thread_Legacy_Link ${Core_Thread_Legacy_Link} winmm.lib)
-ENDIF(WIN32)
-
-TARGET_LINK_LIBRARIES(Core_Thread_Legacy 
-  ${Core_Thread_Legacy_Link}
-)
-
-ADD_DEPENDENCIES(Core_Thread_Legacy Boost_external)

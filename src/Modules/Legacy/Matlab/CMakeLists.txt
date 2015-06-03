@@ -29,4 +29,4 @@
 # CMakeLists.txt for Packages/MatlabInterface/Dataflow/Modules
 
 ADD_SUBDIRECTORY(DataIO)
-#ADD_SUBDIRECTORY(Interface)
+ADD_SUBDIRECTORY(Interface)
