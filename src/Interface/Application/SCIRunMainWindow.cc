@@ -1498,7 +1498,7 @@ void SCIRunMainWindow::setupTagManagerWindow()
   connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
   connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
 
-  QLabel* tagLabels[] = { tagManagerWindow_->tagLabel_0, tagManagerWindow_->tagLabel_1, tagManagerWindow_->tagLabel_2,
+  QWidget* tagLabels[] = { tagManagerWindow_->tagPushButton0_, tagManagerWindow_->tagLabel_1, tagManagerWindow_->tagLabel_2,
     tagManagerWindow_->tagLabel_3, tagManagerWindow_->tagLabel_4, tagManagerWindow_->tagLabel_5,
     tagManagerWindow_->tagLabel_6, tagManagerWindow_->tagLabel_7, tagManagerWindow_->tagLabel_8, tagManagerWindow_->tagLabel_9 };
   QLineEdit* tagLineEdits[] = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
@@ -1508,7 +1508,7 @@ void SCIRunMainWindow::setupTagManagerWindow()
   for (int i = 0; i < NUMBER_OF_TAGS; ++i)
   {
     auto colorStr = colorToString(tagColor(i));
-    tagLabels[i]->setStyleSheet("QLabel { background-color : " + colorStr + "; }");
+    tagLabels[i]->setStyleSheet("background-color : " + colorStr + ";");
     tagLineEdits[i]->setProperty(tagIndexProperty, i);
     connect(tagLineEdits[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
   }
