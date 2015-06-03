@@ -348,7 +348,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
-  
+
   scene_->addItem(proxy);
   proxy->createStartupNote();
 
@@ -1169,11 +1169,16 @@ void NetworkEditor::tagLayer(bool active, int tag)
     item->setData(CurrentTagKey, tag);
     if (active)
     {
-      if (tag != NoTag)
+      const auto itemTag = item->data(TagDataKey).toInt();
+      if (tag == AllTags)
       {
-        if (tag == item->data(TagDataKey).toInt())
+        highlightTaggedItem(item, itemTag);
+      }
+      else if (tag != NoTag)
+      {
+        if (tag == itemTag)
         {
-          highlightTaggedItem(item, tag);
+          highlightTaggedItem(item, itemTag);
         }
         else
           item->setGraphicsEffect(blurEffect());

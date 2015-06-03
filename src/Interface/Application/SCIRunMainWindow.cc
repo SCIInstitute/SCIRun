@@ -1422,17 +1422,23 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
   }
   else if (event->key() == Qt::Key_Alt)
   {
-    networkEditor_->tagLayer(true, NoTag);
-    statusBar()->showMessage("Tag layer active: none");
+		if (!actionToggleTagLayer_->isChecked())
+		{
+	 		networkEditor_->tagLayer(true, NoTag);
+    	statusBar()->showMessage("Tag layer active: none");
+		}
   }
   else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
   {
-    if (networkEditor_->tagLayerActive())
-    {
-      auto key = event->key() - Qt::Key_0;
-      networkEditor_->tagLayer(true, key);
-      statusBar()->showMessage("Tag layer active: " + QString::number(key));
-    }
+		if (!actionToggleTagLayer_->isChecked())
+		{
+    	if (networkEditor_->tagLayerActive())
+    	{
+      	auto key = event->key() - Qt::Key_0;
+      	networkEditor_->tagLayer(true, key);
+      	statusBar()->showMessage("Tag layer active: " + QString::number(key));
+    	}
+		}
   }
 
   QMainWindow::keyPressEvent(event);
@@ -1451,8 +1457,11 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
   }
   else if (event->key() == Qt::Key_Alt)
   {
-    networkEditor_->tagLayer(false, -1);
-    statusBar()->showMessage("Tag layer inactive", 1000);
+		if (!actionToggleTagLayer_->isChecked())
+		{
+    	networkEditor_->tagLayer(false, -1);
+    	statusBar()->showMessage("Tag layer inactive", 1000);
+		}
   }
 
   QMainWindow::keyPressEvent(event);
@@ -1534,30 +1543,21 @@ void SCIRunMainWindow::setTagNames(const QStringList& names)
     tagLineEdits[i]->setText(tagNames_[i]);
   }
 }
-/*
-else if (event->key() == Qt::Key_Alt)
-{
-	networkEditor_->tagLayer(true, NoTag);
-	statusBar()->showMessage("Tag layer active: none");
-}
-else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
-{
-	if (networkEditor_->tagLayerActive())
-	{
-		auto key = event->key() - Qt::Key_0;
-		networkEditor_->tagLayer(true, key);
-		statusBar()->showMessage("Tag layer active: " + QString::number(key));
-	}
-}
-*/
+
 void SCIRunMainWindow::toggleTagLayer(bool toggle)
 {
-	qDebug() << "tag layer:" << toggle;
+	networkEditor_->tagLayer(toggle, AllTags);
+	//TODO: extract methods
+	if (toggle)
+		statusBar()->showMessage("Tag layer active: all");
+	else
+		statusBar()->showMessage("Tag layer inactive", 1000);
 }
 
 void SCIRunMainWindow::toggleMetadataLayer(bool toggle)
 {
 	networkEditor_->metadataLayer(toggle);
+	//TODO: extract methods
 	if (toggle)
 		statusBar()->showMessage("Metadata layer active");
 	else
