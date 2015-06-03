@@ -27,13 +27,8 @@
 */
 
 #include <Interface/Modules/Matlab/InterfaceWithMatlabDialog.h>
-// #include <Modules/DataIO/ReadField.h>
-// #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-// #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-// #include <Core/ImportExport/GenericIEPlugin.h>
-// #include <iostream>
-// #include <boost/filesystem.hpp>
-// #include <QFileDialog>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -46,4 +41,7 @@ InterfaceWithMatlabDialog::InterfaceWithMatlabDialog(const std::string& name, Mo
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+
+  WidgetStyleMixin::tabStyle(matlabEngineTabWidget_);
+  addTextEditManager(matlabCodeTextEdit_, Variables::FunctionString);
 }

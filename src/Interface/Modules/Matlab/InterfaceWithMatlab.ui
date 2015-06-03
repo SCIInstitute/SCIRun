@@ -59,7 +59,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QTabWidget" name="tabWidget">
+       <widget class="QTabWidget" name="matlabEngineTabWidget_">
         <property name="tabPosition">
          <enum>QTabWidget::North</enum>
         </property>
@@ -80,11 +80,21 @@
          <attribute name="title">
           <string>Matlab Engine Output</string>
          </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QTextEdit" name="textEdit"/>
+          </item>
+         </layout>
         </widget>
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
           <string>Matlab Engine Status</string>
          </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QTextEdit" name="textEdit_2"/>
+          </item>
+         </layout>
         </widget>
        </widget>
       </item>
