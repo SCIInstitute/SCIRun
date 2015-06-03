@@ -51,6 +51,7 @@ class DeveloperConsole;
 class PreferencesWindow;
 class TagManagerWindow;
 class PythonConsoleWidget;
+class FileDownloader;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -96,6 +97,7 @@ private:
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
   QToolButton* executeButton_;
+  FileDownloader* fileDownloader_;
 
 private:
   void postConstructionSignalHookup();
@@ -163,6 +165,8 @@ private Q_SLOTS:
   void makeModulesSmallSize();
   void setDataDirectoryFromGUI();
   void toolkitDownload();
+  void downloadToolkitAt(const QUrl& url);
+  void doToolkit();
   void addToPathFromGUI();
   void displayAcknowledgement();
   void setFocusOnFilterLine();

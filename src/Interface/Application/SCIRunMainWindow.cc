@@ -80,7 +80,7 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(0)
+SCIRunMainWindow::SCIRunMainWindow() : fileDownloader_(0), firstTimePythonShown_(true), returnCode_(0)
 {
 	setupUi(this);
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -93,9 +93,6 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 		"QToolBar {        background-color: rgb(66,66,69); border: 1px solid black; color: black;     }"
 		"QProgressBar {        background-color: rgb(66,66,69); border: 0px solid black; color: black  ;   }"
 		"QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69); }"
-		//"border: 1px solid white;"
-		//"border-radius: 3px;"
-
 		"QPushButton {"
 		"  border: 2px solid #8f8f91;"
 		"  border - radius: 6px;"
@@ -1518,6 +1515,52 @@ void SCIRunMainWindow::setTagNames(const QStringList& names)
   }
 }
 
+#include <QByteArray>
+//#include <QNetworkAccessManager>
+//#include <QNetworkRequest>
+#include <QNetworkReply>
+
+namespace SCIRun
+{
+	namespace Gui
+	{
+
+class FileDownloader : public QObject
+{
+  Q_OBJECT
+
+public:
+  explicit FileDownloader(QUrl imageUrl, QObject *parent = 0);
+  QByteArray downloadedData() const { return downloadedData_; }
+
+Q_SIGNALS:
+  void downloaded();
+
+ private Q_SLOTS:
+  void fileDownloaded(QNetworkReply* reply);
+
+ private:
+  QNetworkAccessManager webCtrl_;
+  QByteArray downloadedData_;
+};
+
+FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
+{
+ 	connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
+
+ 	QNetworkRequest request(imageUrl);
+	webCtrl_.get(request);
+}
+
+void FileDownloader::fileDownloaded(QNetworkReply* reply)
+{
+  downloadedData_ = reply->readAll();
+	reply->deleteLater();
+  Q_EMIT downloaded();
+}
+
+}}
+
 void SCIRunMainWindow::toolkitDownload()
 {
 	static std::map<QString, QUrl> toolkitUrls;
@@ -1529,4 +1572,27 @@ void SCIRunMainWindow::toolkitDownload()
 	QAction* action = qobject_cast<QAction*>(sender());
 	auto name = action->text();
 	qDebug() << "download toolkit " << name << "at URL " << toolkitUrls[name];
+	downloadToolkitAt(toolkitUrls[name]);
+}
+
+void SCIRunMainWindow::downloadToolkitAt(const QUrl& url)
+{
+	if (fileDownloader_)
+		return;
+
+	fileDownloader_ = new FileDownloader(url, this);
+	connect(fileDownloader_, SIGNAL(downloaded()), this, SLOT(doToolkit()));
+}
+
+void SCIRunMainWindow::doToolkit()
+{
+	if (!fileDownloader_)
+		return;
+
+	QPixmap image;
+	image.loadFromData(fileDownloader_->downloadedData());
+	actionForwardInverse_->setIcon(image);
+
+	delete fileDownloader_;
+	fileDownloader_ = nullptr;
 }
