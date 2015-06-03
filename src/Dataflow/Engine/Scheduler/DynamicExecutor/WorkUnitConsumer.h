@@ -49,19 +49,13 @@ namespace DynamicExecutor {
   public:
     ExecutionThreadGroup()
     {
-      //std::cout << this << " ExecutionThreadGroup()" << std::endl;
       clear();
-    }
-    ~ExecutionThreadGroup()
-    {
-      //std::cout << this << " ~ETG()" << std::endl;
     }
     void startExecution(const ModuleExecutor& executor)
     {
       auto thread = executeThreads_->create_thread(boost::bind(&ModuleExecutor::run, executor));
       Core::Thread::Guard g(mapLock_->get());
       threadsByModuleId_[executor.module_->get_id().id_] = thread;
-      //std::cout << this << " inserted thread into map: " << executor.module_->get_id().id_ << " : " << thread << std::endl;
     }
     void joinAll()
     {
@@ -69,7 +63,6 @@ namespace DynamicExecutor {
     }
     void clear()
     {
-      //std::cout << "ETG::clear()" << std::endl;
       executeThreads_.reset(new boost::thread_group);
       threadsByModuleId_.clear();
       std::ostringstream lockName;
@@ -78,23 +71,17 @@ namespace DynamicExecutor {
     }
     boost::thread* getThreadForModule(const std::string& moduleId) const
     {
-      //std::cout << this << " getThreadForModule " << moduleId << std::endl;
       if (!mapLock_)
       {
-        //std::cout << "mapLock is null" << std::endl;
         return nullptr;
       }
       Core::Thread::Guard g(mapLock_->get());
 
-      //std::cout << this << " getThreadForModule " << moduleId << " locked, size is " << threadsByModuleId_.size() << std::endl;
       auto it = threadsByModuleId_.find(moduleId);
-      //std::cout << this << " getThreadForModule " << moduleId << " iterator obtained " << std::endl;
       if (it == threadsByModuleId_.end())
         return nullptr;
-      //std::cout << this << " getThreadForModule " << moduleId << " iterator is not end " << std::endl;
       if (!executeThreads_->is_thread_in(it->second))
         return nullptr;
-      //std::cout << this << " getThreadForModule is in group, returning " << moduleId << std::endl;
       return it->second;
     }
   private:

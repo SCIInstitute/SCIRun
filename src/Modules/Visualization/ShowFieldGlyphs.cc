@@ -281,6 +281,7 @@ void ShowFieldGlyphs::renderVectors(
   {
     for (const auto& node : facade->nodes())
     {
+      checkForInterruption();
       Vector v;
       fld->get_value(v, node.index());
       Point p1 = node.point();
@@ -330,6 +331,7 @@ void ShowFieldGlyphs::renderVectors(
   {
     for (const auto& cell : facade->cells())
     {
+      checkForInterruption();
       Vector v;
       fld->get_value(v, cell.index());
       Point p1 = cell.center();
@@ -435,6 +437,7 @@ void ShowFieldGlyphs::renderScalars(
   {
     for (const auto& node : facade->nodes())
     {
+      checkForInterruption();
       Vector v;
       fld->get_value(v, node.index());
       Point p = node.point();
@@ -472,6 +475,7 @@ void ShowFieldGlyphs::renderScalars(
   {
     for (const auto& cell : facade->cells())
     {
+      checkForInterruption();
       Vector v;
       fld->get_value(v, cell.index());
       Point p = cell.center();
@@ -555,6 +559,7 @@ void ShowFieldGlyphs::renderTensors(
   {
     for (const auto& node : facade->nodes())
     {
+      checkForInterruption();
       Vector v;
       fld->get_value(v, node.index());
       Point p = node.point();
@@ -583,6 +588,7 @@ void ShowFieldGlyphs::renderTensors(
   {
     for (const auto& cell : facade->cells())
     {
+      checkForInterruption();
       Vector v;
       fld->get_value(v, cell.index());
       Point p = cell.center();
