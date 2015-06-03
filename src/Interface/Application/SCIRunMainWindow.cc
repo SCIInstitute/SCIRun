@@ -1516,9 +1516,7 @@ void SCIRunMainWindow::setTagNames(const QStringList& names)
 }
 
 //#include <QByteArray>
-//#include <QNetworkAccessManager>
-//#include <QNetworkRequest>
-//#include <QNetworkReply>
+
 
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
 {

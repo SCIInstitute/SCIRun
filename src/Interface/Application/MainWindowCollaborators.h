@@ -35,6 +35,9 @@
 #include <set>
 #include <Interface/Application/NetworkEditor.h>  //TODO
 #endif
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 class QTextEdit;
 class QTreeWidget;
