@@ -178,6 +178,8 @@ private Q_SLOTS:
   void adjustExecuteButtonAppearance();
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
+  void toggleTagLayer(bool toggle);
+  void toggleMetadataLayer(bool toggle);
   void adjustModuleDock(int state);
   void exitApplication(int code);
 };

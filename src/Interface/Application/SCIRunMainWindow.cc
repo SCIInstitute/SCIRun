@@ -288,6 +288,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
   connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
 
+	connect(actionToggleTagLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleTagLayer(bool)));
+  connect(actionToggleMetadataLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleMetadataLayer(bool)));
+
   connect(actionResetNetworkZoom_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
@@ -300,7 +303,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   actionForwardInverse_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png"));
   actionForwardInverse_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.zip"));
   actionForwardInverse_->setProperty(ToolkitFilename, QString("FwdInvToolkit_v1.zip"));
-  
+
 	connect(actionBrainStimulator_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
   actionBrainStimulator_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png"));
   actionBrainStimulator_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip"));
@@ -1531,6 +1534,35 @@ void SCIRunMainWindow::setTagNames(const QStringList& names)
     tagLineEdits[i]->setText(tagNames_[i]);
   }
 }
+/*
+else if (event->key() == Qt::Key_Alt)
+{
+	networkEditor_->tagLayer(true, NoTag);
+	statusBar()->showMessage("Tag layer active: none");
+}
+else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
+{
+	if (networkEditor_->tagLayerActive())
+	{
+		auto key = event->key() - Qt::Key_0;
+		networkEditor_->tagLayer(true, key);
+		statusBar()->showMessage("Tag layer active: " + QString::number(key));
+	}
+}
+*/
+void SCIRunMainWindow::toggleTagLayer(bool toggle)
+{
+	qDebug() << "tag layer:" << toggle;
+}
+
+void SCIRunMainWindow::toggleMetadataLayer(bool toggle)
+{
+	networkEditor_->metadataLayer(toggle);
+	if (toggle)
+		statusBar()->showMessage("Metadata layer active");
+	else
+		statusBar()->showMessage("Metadata layer inactive", 1000);
+}
 
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent), reply_(0)
 {
@@ -1560,7 +1592,8 @@ void SCIRunMainWindow::toolkitDownload()
 {
 	QAction* action = qobject_cast<QAction*>(sender());
 
-  auto downloader = new ToolkitDownloader(action, this);
+	static std::vector<ToolkitDownloader*> downloaders;
+	downloaders.push_back(new ToolkitDownloader(action, this));
 }
 
 ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QWidget* parent) : QObject(parent), iconDownloader_(0), zipDownloader_(0)
@@ -1622,7 +1655,7 @@ void ToolkitDownloader::saveToolkit()
 {
   if (!zipDownloader_)
     return;
-  
+
   QString fullFilename = toolkitDir_.filePath(filename_);
   qDebug() << "saving to " << fullFilename;
   QFile file(fullFilename);
