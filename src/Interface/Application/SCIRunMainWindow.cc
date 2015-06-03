@@ -82,8 +82,9 @@ using namespace SCIRun::Core::Algorithms;
 
 static const char* ToolkitIconURL = "ToolkitIconURL";
 static const char* ToolkitURL = "ToolkitURL";
+static const char* ToolkitFilename = "ToolkitFilename";
 
-SCIRunMainWindow::SCIRunMainWindow() : fileDownloader_(0), firstTimePythonShown_(true), returnCode_(0)
+SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(0)
 {
 	setupUi(this);
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -295,9 +296,12 @@ SCIRunMainWindow::SCIRunMainWindow() : fileDownloader_(0), firstTimePythonShown_
 	connect(actionForwardInverse_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
   actionForwardInverse_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png"));
   actionForwardInverse_->setProperty(ToolkitURL, QString("https://github.com/SCIInstitute/FwdInvToolkit/archive/FwdInvToolkit_v1.zip"));
+  actionForwardInverse_->setProperty(ToolkitFilename, QString("FwdInvToolkit_v1.zip"));
+  
 	connect(actionBrainStimulator_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
   actionBrainStimulator_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png"));
   actionBrainStimulator_->setProperty(ToolkitURL, QString("https://github.com/SCIInstitute/BrainStimulator/archive/BrainStimulator_v1.2.zip"));
+  actionBrainStimulator_->setProperty(ToolkitFilename, QString("BrainStimulator_v1.2.zip"));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
@@ -1528,78 +1532,90 @@ FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
 
  	QNetworkRequest request(imageUrl);
 	webCtrl_.get(request);
-	//qDebug() << "request filed";
+  qDebug() << "request filed: " << imageUrl;
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply* reply)
 {
+  qDebug() << "slot called";
   downloadedData_ = reply->readAll();
 	reply->deleteLater();
-	//qDebug() << "file downloaded";
+	qDebug() << "file downloaded";
   Q_EMIT downloaded();
 }
 
 void SCIRunMainWindow::toolkitDownload()
 {
 	QAction* action = qobject_cast<QAction*>(sender());
-	auto name = action->text();
-  //qDebug() << "download toolkit " << name << "at URL " << toolkitUrls[name];
-  downloadToolkitAt(action->property(ToolkitIconURL).toString());
+
+  auto downloader = new ToolkitDownloader(action, this);
 }
 
-void SCIRunMainWindow::downloadToolkitAt(const QUrl& url)
+ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QWidget* parent) : QObject(parent), iconDownloader_(0), zipDownloader_(0)
 {
-	if (fileDownloader_)
-		return;
+  if (infoObject)
+  {
+    iconUrl_ = infoObject->property(ToolkitIconURL).toString();
+    qDebug() << "Toolkit info: \nIcon: " << iconUrl_;
+    fileUrl_ = infoObject->property(ToolkitURL).toString();
+    qDebug() << "File url: " << fileUrl_;
+    filename_ = infoObject->property(ToolkitFilename).toString();
+    qDebug() << "Filename: " << filename_;
 
-	fileDownloader_ = new FileDownloader(url, this);
-	connect(fileDownloader_, SIGNAL(downloaded()), this, SLOT(doToolkit()));
+    downloadIcon();
+  }
 }
 
-void SCIRunMainWindow::doToolkit()
+void ToolkitDownloader::downloadIcon()
 {
-	if (!fileDownloader_)
-		return;
+  iconDownloader_ = new FileDownloader(iconUrl_, this);
+  connect(iconDownloader_, SIGNAL(downloaded()), this, SLOT(showMessageBox()));
+}
 
-	QPixmap image;
-	image.loadFromData(fileDownloader_->downloadedData());
+void ToolkitDownloader::showMessageBox()
+{
+  if (!iconDownloader_)
+    return;
 
-  fileDownloader_->deleteLater();
-  fileDownloader_ = nullptr;
+  QPixmap image;
+  image.loadFromData(iconDownloader_->downloadedData());
 
-	QMessageBox toolkitInfo;
+  QMessageBox toolkitInfo;
 #ifdef WIN32
   toolkitInfo.setWindowTitle("Toolkit information");
 #else
-	toolkitInfo.setText("Toolkit information");
+  toolkitInfo.setText("Toolkit information");
 #endif
-	toolkitInfo.setInformativeText("Click OK to download the latest version of this toolkit.");
-	toolkitInfo.setStandardButtons(QMessageBox::Ok|QMessageBox::Cancel);
-	toolkitInfo.setIconPixmap(image);
-	toolkitInfo.setDefaultButton(QMessageBox::Ok);
-	toolkitInfo.show();
-	auto choice = toolkitInfo.exec();
+  toolkitInfo.setInformativeText("Click OK to download the latest version of this toolkit.");
+  toolkitInfo.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+  toolkitInfo.setIconPixmap(image);
+  toolkitInfo.setDefaultButton(QMessageBox::Ok);
+  toolkitInfo.show();
+  auto choice = toolkitInfo.exec();
 
   if (choice == QMessageBox::Ok)
   {
-    auto dir = QFileDialog::getExistingDirectory(this, "Select toolkit directory", ".");
+    auto dir = QFileDialog::getExistingDirectory(qobject_cast<QWidget*>(parent()), "Select toolkit directory", ".");
     if (!dir.isEmpty())
     {
       qDebug() << "directory selected " << dir;
       toolkitDir_ = dir;
-      //fileDownloader_ = new FileDownloader(toolkitUrls[], this);
-      //connect(fileDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
+      zipDownloader_ = new FileDownloader(fileUrl_, this);
+      connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
     }
   }
 }
 
-void SCIRunMainWindow::saveToolkit()
+void ToolkitDownloader::saveToolkit()
 {
-  if (!fileDownloader_)
+  if (!zipDownloader_)
     return;
-
-  //QFile file = toolkitDir_ + ("C:/MyDir/some_name.ext");
-  //file.open(QIODevice::WriteOnly);
-  //file.write(fileDownloader_->downloadedData());
-  //file.close();
+  
+  QString fullFilename = toolkitDir_.filePath(filename_);
+  qDebug() << "saving to " << fullFilename;
+  QFile file(fullFilename);
+  file.open(QIODevice::WriteOnly);
+  file.write(zipDownloader_->downloadedData());
+  file.close();
+  qDebug() << "save done";
 }
