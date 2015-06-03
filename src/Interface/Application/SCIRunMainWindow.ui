@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1081</width>
-         <height>467</height>
+         <width>1093</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -161,6 +161,9 @@
     <addaction name="actionResetNetworkZoom_"/>
     <addaction name="actionDragMode_"/>
     <addaction name="actionSelectMode_"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggleMetadataLayer_"/>
+    <addaction name="actionToggleTagLayer_"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
@@ -1295,6 +1298,16 @@
   <action name="actionBrainStimulator_">
    <property name="text">
     <string>Brain Stimulator</string>
+   </property>
+  </action>
+  <action name="actionToggleMetadataLayer_">
+   <property name="text">
+    <string>Toggle Metadata Layer</string>
+   </property>
+  </action>
+  <action name="actionToggleTagLayer_">
+   <property name="text">
+    <string>Toggle Tag Layer</string>
    </property>
   </action>
  </widget>
