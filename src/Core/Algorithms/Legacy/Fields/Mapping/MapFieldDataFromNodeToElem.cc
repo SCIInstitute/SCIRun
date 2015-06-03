@@ -42,16 +42,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun;
-
-/// Internal function to this algorithm: no need for this function to be
-/// public. It is called from the algorithm class only.
-
-template <class DATA>
-bool
-MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
-                            FieldHandle& input,
-                            FieldHandle& output);
 
 /// This is the basic algorithm behind the mapping algorithm
 
@@ -91,6 +83,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     DATA tval(0);
     while (it != eit)
     {
+      Interruptible::checkForInterruption();
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -101,14 +94,14 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       }
 
       ofield->resize_fdata();
-      val = static_cast<DATA>(val * static_cast<double>((1.0/static_cast<double>(nsize))));
-      ofield->set_value(val,*it);
+      val = static_cast<DATA>(val * static_cast<double>((1.0 / static_cast<double>(nsize))));
+      ofield->set_value(val, *it);
       ++it;
       cnt++;
-      if (cnt==1000)
+      if (cnt == 1000)
       {
-        cnt=0; c+=1000;
-	algo->update_progress(c/sz);
+        cnt = 0; c += 1000;
+        algo->update_progress_max(c, sz);
       }
     }
   }
@@ -116,6 +109,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
   {
     while (it != eit)
     {
+      Interruptible::checkForInterruption();
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -135,7 +129,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       if (cnt==1000)
       {
         cnt=0; c+=1000;
-        algo->update_progress(c/sz);
+        algo->update_progress_max(c, sz);
       }
     }
   }
@@ -144,6 +138,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     DATA tval(0);
     while (it != eit)
     {
+      Interruptible::checkForInterruption();
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -162,7 +157,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       if (cnt==1000)
       {
         cnt=0; c+=1000;
-        algo->update_progress(c/sz);
+        algo->update_progress_max(c, sz);
       }
     }
   }
@@ -171,6 +166,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     DATA tval(0);
     while (it != eit)
     {
+      Interruptible::checkForInterruption();
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       DATA val(0);
@@ -184,8 +180,8 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       cnt++;
       if (cnt==1000)
       {
-        cnt=0; c+=1000;
-	algo->update_progress(c/sz);
+        cnt = 0; c += 1000;
+        algo->update_progress_max(c, sz);
       }
     }
   }
@@ -194,22 +190,23 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
     std::vector<DATA> valarray;
     while (it != eit)
     {
+      Interruptible::checkForInterruption();
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
       valarray.resize(nsize);
       for (size_t p = 0; p < nsize; p++)
       {
-        ifield->get_value(valarray[p],nodearray[p]);
+        ifield->get_value(valarray[p], nodearray[p]);
       }
-      sort(valarray.begin(),valarray.end());
-      int idx = static_cast<int>((valarray.size()/2));
-      ofield->set_value(valarray[idx],*it);
+      sort(valarray.begin(), valarray.end());
+      int idx = static_cast<int>((valarray.size() / 2));
+      ofield->set_value(valarray[idx], *it);
       ++it;
       cnt++;
-      if (cnt==1000)
+      if (cnt == 1000)
       {
-        cnt=0; c+=1000;
-	algo->update_progress(c/sz);
+        cnt = 0; c += 1000;
+        algo->update_progress_max(c, sz);
       }
     }
   } else return false;
@@ -239,81 +236,78 @@ AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run_generic(const AlgorithmInput
 
 FieldHandle MapFieldDataFromNodeToElemAlgo::run(FieldHandle input_field) const
 {
-   FieldHandle output;
+  FieldHandle output;
 
-   if (!input_field)
-   {
-     THROW_ALGORITHM_INPUT_ERROR("Input field is not allocated");
-   }
+  if (!input_field)
+  {
+    THROW_ALGORITHM_INPUT_ERROR("Input field is not allocated");
+  }
 
-   FieldInformation fi(input_field);
-   FieldInformation fo(input_field);
+  FieldInformation fi(input_field);
+  FieldInformation fo(input_field);
 
-   fo.make_lineardata();
+  fo.make_lineardata();
 
-   if(fi.is_constantdata())
-   {
-     output = input_field;
-     remark(" Data is already at the elements");
-     return output;
-   }
+  if (fi.is_constantdata())
+  {
+    output = input_field;
+    remark(" Data is already at the elements");
+    return output;
+  }
 
-   if (!(fi.is_lineardata()))
-   {
+  if (!(fi.is_lineardata()))
+  {
     THROW_ALGORITHM_INPUT_ERROR(" This function needs to have data at the nodes ");
-   }
+  }
 
-   fo.make_constantdata();
+  fo.make_constantdata();
 
-   output = CreateField(fo,input_field->mesh());
+  output = CreateField(fo, input_field->mesh());
 
-   if (!output)
-   {
-     THROW_ALGORITHM_INPUT_ERROR("output field cannot be allocated");
-   }
+  if (!output)
+  {
+    THROW_ALGORITHM_INPUT_ERROR("output field cannot be allocated");
+  }
 
-   if (input_field->vfield()->is_signed_integer())
+  if (input_field->vfield()->is_signed_integer())
+  {
+    if (!MapFieldDataFromNodeToElemT<int>(this, input_field, output))
     {
-       if(!MapFieldDataFromNodeToElemT<int>(this,input_field,output))
-          {
-	    THROW_ALGORITHM_INPUT_ERROR("output int field cannot be allocated");
-	  }
-    } else
-
-  if (input_field->vfield()->is_unsigned_integer())
-   {
-     if(!MapFieldDataFromNodeToElemT<unsigned int>(this,input_field,output))
-     {
+      THROW_ALGORITHM_INPUT_ERROR("output int field cannot be allocated");
+    }
+  }
+  else if (input_field->vfield()->is_unsigned_integer())
+  {
+    if (!MapFieldDataFromNodeToElemT<unsigned int>(this, input_field, output))
+    {
       THROW_ALGORITHM_INPUT_ERROR("output uint field cannot be allocated");
-     }
-   } else 
-
-  if (input_field->vfield()->is_scalar())
-   {
-     if (!MapFieldDataFromNodeToElemT<double>(this,input_field,output))
-     {
+    }
+  }
+  else if (input_field->vfield()->is_scalar())
+  {
+    if (!MapFieldDataFromNodeToElemT<double>(this, input_field, output))
+    {
       THROW_ALGORITHM_INPUT_ERROR("output scalar field cannot be allocated");
-     }
-   } else
-
-  if (input_field->vfield()->is_vector())
-  {
-    if (!MapFieldDataFromNodeToElemT<Vector>(this,input_field,output))
-    {
-     THROW_ALGORITHM_INPUT_ERROR("output vector field cannot be allocated");
     }
-  } else
-
-  if (input_field->vfield()->is_tensor())
+  }
+  else if (input_field->vfield()->is_vector())
   {
-    if (!MapFieldDataFromNodeToElemT<Tensor>(this,input_field,output))
+    if (!MapFieldDataFromNodeToElemT<Vector>(this, input_field, output))
     {
-     THROW_ALGORITHM_INPUT_ERROR("output tensor field cannot be allocated");
+      THROW_ALGORITHM_INPUT_ERROR("output vector field cannot be allocated");
     }
-  } else
+  }
+  else if (input_field->vfield()->is_tensor())
+  {
+    if (!MapFieldDataFromNodeToElemT<Tensor>(this, input_field, output))
+    {
+      THROW_ALGORITHM_INPUT_ERROR("output tensor field cannot be allocated");
+    }
+  }
+  else
   {
     THROW_ALGORITHM_INPUT_ERROR(" Unknown field data type ");
   }
 
-   return output;
+  return output;
 }

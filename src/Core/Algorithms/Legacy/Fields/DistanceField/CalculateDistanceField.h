@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -31,6 +31,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -44,7 +45,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(OutputFieldDatatype);
         ALGORITHM_PARAMETER_DECL(OutputValueField);
 
-        class SCISHARE CalculateDistanceFieldAlgo : public AlgorithmBase
+        class SCISHARE CalculateDistanceFieldAlgo : public AlgorithmBase, public Core::Thread::Interruptible
         {
         public:
           CalculateDistanceFieldAlgo();
@@ -55,9 +56,9 @@ namespace SCIRun {
           static const AlgorithmOutputName DistanceField;
           static const AlgorithmOutputName ValueField;
 
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
         };
 
       }}}}
 
-#endif 
+#endif

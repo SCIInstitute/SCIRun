@@ -58,7 +58,7 @@ const ExecutionBounds& ExecutionContext::bounds() const
 
 void ExecutionContext::preexecute()
 {
-  network.setModuleExecutionState(ModuleInterface::Waiting, additionalFilter);
+  network.setModuleExecutionState(ModuleExecutionState::Waiting, additionalFilter);
 }
 
 bool WaitsForStartupInitialization::waitedAlready_(false);
