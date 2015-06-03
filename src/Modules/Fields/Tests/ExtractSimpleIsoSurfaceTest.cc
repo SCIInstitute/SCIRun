@@ -54,17 +54,17 @@ class ExtractSimpleIsosurfaceModuleTests : public ModuleTest
 
 FieldHandle LoadInTriangles()
 {
-   return loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleoisosurface/test_isosimsuf_tri.fld");
+   return loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld");
 }
 
 FieldHandle LoadInTetrahedrals()
 {
-   return loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleoisosurface/test_isosimsuf_tet.fld");
+   return loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld");
 }
 
 FieldHandle LoadInLatVol()
 {
-   return loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleoisosurface/test_isosimsuf_latvol.fld");
+   return loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_latvol.fld");
 }
 
 
