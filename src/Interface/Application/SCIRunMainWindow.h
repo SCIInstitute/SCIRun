@@ -98,8 +98,8 @@ private:
   QStringList favoriteModuleNames_;
   QToolButton* executeButton_;
   FileDownloader* fileDownloader_;
+  QDir toolkitDir_;
 
-private:
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
@@ -167,6 +167,7 @@ private Q_SLOTS:
   void toolkitDownload();
   void downloadToolkitAt(const QUrl& url);
   void doToolkit();
+  void saveToolkit();
   void addToPathFromGUI();
   void displayAcknowledgement();
   void setFocusOnFilterLine();

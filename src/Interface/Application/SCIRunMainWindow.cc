@@ -80,6 +80,9 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
+static const char* ToolkitIconURL = "ToolkitIconURL";
+static const char* ToolkitURL = "ToolkitURL";
+
 SCIRunMainWindow::SCIRunMainWindow() : fileDownloader_(0), firstTimePythonShown_(true), returnCode_(0)
 {
 	setupUi(this);
@@ -290,7 +293,11 @@ SCIRunMainWindow::SCIRunMainWindow() : fileDownloader_(0), firstTimePythonShown_
   connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
 
 	connect(actionForwardInverse_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
+  actionForwardInverse_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png"));
+  actionForwardInverse_->setProperty(ToolkitURL, QString("https://github.com/SCIInstitute/FwdInvToolkit/archive/FwdInvToolkit_v1.zip"));
 	connect(actionBrainStimulator_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
+  actionBrainStimulator_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png"));
+  actionBrainStimulator_->setProperty(ToolkitURL, QString("https://github.com/SCIInstitute/BrainStimulator/archive/BrainStimulator_v1.2.zip"));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
@@ -1534,16 +1541,10 @@ void FileDownloader::fileDownloaded(QNetworkReply* reply)
 
 void SCIRunMainWindow::toolkitDownload()
 {
-	static std::map<QString, QUrl> toolkitUrls;
-	if (toolkitUrls.empty())
-	{
-		toolkitUrls["Brain Stimulator"] = "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png";
-		toolkitUrls["Forward/Inverse"] = "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png";
-	}
 	QAction* action = qobject_cast<QAction*>(sender());
 	auto name = action->text();
   //qDebug() << "download toolkit " << name << "at URL " << toolkitUrls[name];
-	downloadToolkitAt(toolkitUrls[name]);
+  downloadToolkitAt(action->property(ToolkitIconURL).toString());
 }
 
 void SCIRunMainWindow::downloadToolkitAt(const QUrl& url)
@@ -1562,6 +1563,9 @@ void SCIRunMainWindow::doToolkit()
 
 	QPixmap image;
 	image.loadFromData(fileDownloader_->downloadedData());
+
+  fileDownloader_->deleteLater();
+  fileDownloader_ = nullptr;
 
 	QMessageBox toolkitInfo;
 #ifdef WIN32
@@ -1582,9 +1586,20 @@ void SCIRunMainWindow::doToolkit()
     if (!dir.isEmpty())
     {
       qDebug() << "directory selected " << dir;
+      toolkitDir_ = dir;
+      //fileDownloader_ = new FileDownloader(toolkitUrls[], this);
+      //connect(fileDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
     }
   }
+}
 
- 	fileDownloader_->deleteLater();
-	fileDownloader_ = nullptr;
+void SCIRunMainWindow::saveToolkit()
+{
+  if (!fileDownloader_)
+    return;
+
+  //QFile file = toolkitDir_ + ("C:/MyDir/some_name.ext");
+  //file.open(QIODevice::WriteOnly);
+  //file.write(fileDownloader_->downloadedData());
+  //file.close();
 }
