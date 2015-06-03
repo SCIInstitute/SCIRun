@@ -1428,6 +1428,17 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
     	statusBar()->showMessage("Tag layer active: none");
 		}
   }
+	else if (event->key() == Qt::Key_A)
+	{
+		if (!actionToggleTagLayer_->isChecked())
+		{
+    	if (networkEditor_->tagLayerActive())
+    	{
+      	networkEditor_->tagLayer(true, AllTags);
+      	statusBar()->showMessage("Tag layer active: All");
+    	}
+		}
+	}
   else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
   {
 		if (!actionToggleTagLayer_->isChecked())
