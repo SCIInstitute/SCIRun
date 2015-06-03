@@ -118,6 +118,26 @@ namespace Gui {
     WidgetDisablingService::Instance().removeWidget(w);
   }
 
+
+  class FileDownloader : public QObject
+  {
+    Q_OBJECT
+
+  public:
+    explicit FileDownloader(QUrl imageUrl, QObject *parent = 0);
+    QByteArray downloadedData() const { return downloadedData_; }
+
+  Q_SIGNALS:
+    void downloaded();
+
+   private Q_SLOTS:
+    void fileDownloaded(QNetworkReply* reply);
+
+   private:
+    QNetworkAccessManager webCtrl_;
+    QByteArray downloadedData_;
+  };
+
 }
 }
 #endif

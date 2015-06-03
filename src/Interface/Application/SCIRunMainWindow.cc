@@ -1515,34 +1515,10 @@ void SCIRunMainWindow::setTagNames(const QStringList& names)
   }
 }
 
-#include <QByteArray>
+//#include <QByteArray>
 //#include <QNetworkAccessManager>
 //#include <QNetworkRequest>
-#include <QNetworkReply>
-
-namespace SCIRun
-{
-	namespace Gui
-	{
-
-class FileDownloader : public QObject
-{
-  Q_OBJECT
-
-public:
-  explicit FileDownloader(QUrl imageUrl, QObject *parent = 0);
-  QByteArray downloadedData() const { return downloadedData_; }
-
-Q_SIGNALS:
-  void downloaded();
-
- private Q_SLOTS:
-  void fileDownloaded(QNetworkReply* reply);
-
- private:
-  QNetworkAccessManager webCtrl_;
-  QByteArray downloadedData_;
-};
+//#include <QNetworkReply>
 
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
 {
@@ -1558,8 +1534,6 @@ void FileDownloader::fileDownloaded(QNetworkReply* reply)
 	reply->deleteLater();
   Q_EMIT downloaded();
 }
-
-}}
 
 void SCIRunMainWindow::toolkitDownload()
 {
