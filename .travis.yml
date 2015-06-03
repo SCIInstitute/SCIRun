@@ -38,12 +38,11 @@ script:
   && make -j8
   && make SCIRunTestData_external
   && make test
-  || ./Modules_Legacy_Inverse_Tests     # expected failures
-  || ./Modules_Math_Tests               # memory crash
-  || ./Modules_Fields_Tests             # isosurface--file paths?
-  || ./Core_Datatypes_Tests             # EigenDenseMatrixTest.CanAssign
-  || ./Core_Application_Tests           # ApplicationTest.GetUserDesktopDirectory
-#  || ./Algorithms_FiniteElements_Tests # didn't fail most recently--could be random
+  || ./Modules_Legacy_Inverse_Tests
+  || ./Modules_Math_Tests
+  || ./Modules_Fields_Tests
+  || ./Core_Datatypes_Tests
+  || ./Core_Application_Tests
 
 notifications:
   slack: sciinstitute:lZnpQQXNd4Io5iGDPQDpJmI1
