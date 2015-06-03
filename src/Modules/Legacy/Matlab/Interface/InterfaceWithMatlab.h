@@ -39,7 +39,7 @@ namespace Interface {
   
   class SCISHARE InterfaceWithMatlab : public SCIRun::Dataflow::Networks::Module,
     public Has3InputPorts<DynamicPortTag<MatrixPortTag>, DynamicPortTag<FieldPortTag>, DynamicPortTag<StringPortTag>>,
-    public Has3OutputPorts<FieldPortTag, MatrixPortTag, StringPortTag>
+    public Has6OutputPorts<FieldPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag, StringPortTag, StringPortTag>
   {
   public:
     InterfaceWithMatlab();
@@ -48,9 +48,12 @@ namespace Interface {
     INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
     INPUT_PORT_DYNAMIC(1, InputField, LegacyField);
     INPUT_PORT_DYNAMIC(2, InputString, String);
-    OUTPUT_PORT(0, OutputField, LegacyField);
-    OUTPUT_PORT(1, OutputMatrix, Matrix);
-    OUTPUT_PORT(2, OutputString, String);
+    OUTPUT_PORT(0, OutputField0, LegacyField);
+    OUTPUT_PORT(1, OutputField1, LegacyField);
+    OUTPUT_PORT(2, OutputMatrix0, Matrix);
+    OUTPUT_PORT(3, OutputMatrix1, Matrix);
+    OUTPUT_PORT(4, OutputString0, String);
+    OUTPUT_PORT(5, OutputString1, String);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   private:

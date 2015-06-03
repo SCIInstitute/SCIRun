@@ -45,8 +45,9 @@
 
 #include <Core/SystemCall/TempFileManager.h>
 #include <Core/Utils/Legacy/soloader.h>
-#include <Core/Services/ServiceClient.h>
+
 #if 0
+#include <Core/Services/ServiceClient.h>
 #include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Packages/MatlabInterface/Services/MatlabEngine.h>
 #include <Core/Thread/Runnable.h>
@@ -606,9 +607,12 @@ InterfaceWithMatlab::InterfaceWithMatlab() : Module(staticInfo_), impl_(new Inte
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(InputString);
-  INITIALIZE_PORT(OutputField);
-  INITIALIZE_PORT(OutputMatrix);
-  INITIALIZE_PORT(OutputString);
+  INITIALIZE_PORT(OutputField0);
+  INITIALIZE_PORT(OutputMatrix0);
+  INITIALIZE_PORT(OutputString0);
+  INITIALIZE_PORT(OutputField1);
+  INITIALIZE_PORT(OutputMatrix1);
+  INITIALIZE_PORT(OutputString1);
 }
 
 void InterfaceWithMatlab::setStateDefaults()
