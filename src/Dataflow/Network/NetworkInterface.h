@@ -93,7 +93,7 @@ namespace Networks {
     virtual ConnectionDescriptionList connections() const = 0;
     virtual void incrementErrorCode(const ModuleId& moduleId) = 0;
     virtual NetworkGlobalSettings& settings() = 0;
-    virtual void setModuleExecutionState(ModuleInterface::ExecutionState state, ModuleFilter filter) = 0;
+    virtual void setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter) = 0;
     virtual void clear() = 0;
 
     virtual boost::signals2::connection connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const = 0;

@@ -78,7 +78,7 @@ namespace SCIRun {
               {
                 auto module = network_->lookupModule(mod.second);
 
-                if (module->executionState() == Networks::ModuleInterface::Waiting)
+                if (module->executionState().currentState() == Networks::ModuleExecutionState::Waiting)
                 {
                   if (shouldLog_)
                     log_ << Core::Logging::DEBUG_LOG << "Producer pushing module " << mod.second << std::endl;

@@ -67,7 +67,7 @@ namespace Networks {
     virtual bool containsViewScene() const;
     virtual NetworkGlobalSettings& settings();
     virtual std::string toString() const;
-    virtual void setModuleExecutionState(ModuleInterface::ExecutionState state, ModuleFilter filter);
+    virtual void setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter);
     virtual boost::signals2::connection connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const;
     virtual void interruptModuleRequest(const ModuleId& id);
     virtual void clear();

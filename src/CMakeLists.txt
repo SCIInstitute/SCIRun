@@ -163,6 +163,20 @@ IF(WIN32)
 ENDIF(WIN32)
 
 ########################################################################
+# External project utilities
+
+OPTION(DISABLE_ExternalProject_UPDATE "Turn off ExternalProject UPDATE_COMMAND property (if not connected to the internet, for example" ON)
+MARK_AS_ADVANCED(DISABLE_ExternalProject_UPDATE)
+IF(DISABLE_ExternalProject_UPDATE)
+  # do nothing commands...
+  IF(WIN32)
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "rem")
+  ELSE()
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
+  ENDIF()
+ENDIF()
+
+########################################################################
 # Configure test support
 
 INCLUDE( CTest )
@@ -290,20 +304,6 @@ ENDIF()
 #     ADD_SUBDIRECTORY(Documentation/Manuals)
 #   ENDIF()
 # ENDIF()
-
-########################################################################
-# External project utilities
-
-OPTION(DISABLE_ExternalProject_UPDATE "Turn off ExternalProject UPDATE_COMMAND property (if not connected to the internet, for example" ON)
-MARK_AS_ADVANCED(DISABLE_ExternalProject_UPDATE)
-IF(DISABLE_ExternalProject_UPDATE)
-  # do nothing commands...
-  IF(WIN32)
-    SET(DISABLED_UPDATE "UPDATE_COMMAND" "rem")
-  ELSE()
-    SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
-  ENDIF()
-ENDIF()
 
 ########################################################################
 # Download external data sources

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -55,17 +55,17 @@ void MapFieldDataFromElemToNodeModule::setStateDefaults()
 }
 
 void MapFieldDataFromElemToNodeModule::execute()
-{ 
+{
   FieldHandle input = getRequiredInput(InputField);
-  
+
   if (needToExecute())
   {
    update_state(Executing);
-  
+
    setAlgoOptionFromState(MapFieldDataFromElemToNodeAlgo::Method);
-  
+
    auto output = algo().run_generic(withInputData((InputField, input)));
-  
+
    sendOutputFromAlgorithm(OutputField, output);
   }
 }
