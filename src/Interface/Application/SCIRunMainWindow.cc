@@ -1515,21 +1515,20 @@ void SCIRunMainWindow::setTagNames(const QStringList& names)
   }
 }
 
-//#include <QByteArray>
-
-
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
 {
  	connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
 
  	QNetworkRequest request(imageUrl);
 	webCtrl_.get(request);
+	//qDebug() << "request filed";
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply* reply)
 {
   downloadedData_ = reply->readAll();
 	reply->deleteLater();
+	//qDebug() << "file downloaded";
   Q_EMIT downloaded();
 }
 
@@ -1538,12 +1537,12 @@ void SCIRunMainWindow::toolkitDownload()
 	static std::map<QString, QUrl> toolkitUrls;
 	if (toolkitUrls.empty())
 	{
-		toolkitUrls["Brain Stimulator"] = "http://www.cheatsheet.com/wp-content/uploads/2014/12/iStock_000051301040_Small-640x427.jpg?044193";
-		toolkitUrls["Forward/Inverse"] = "http://a2.espncdn.com/combiner/i?img=%2Fmedia%2Fmotion%2F2015%2F0602%2Fdm_150602_nba_hoiberg_presser_sound%2Fdm_150602_nba_hoiberg_presser_sound.jpg&w=156&h=156&scale=crop&cquality=90&location=center";
+		toolkitUrls["Brain Stimulator"] = "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png";
+		toolkitUrls["Forward/Inverse"] = "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png";
 	}
 	QAction* action = qobject_cast<QAction*>(sender());
 	auto name = action->text();
-	qDebug() << "download toolkit " << name << "at URL " << toolkitUrls[name];
+  //qDebug() << "download toolkit " << name << "at URL " << toolkitUrls[name];
 	downloadToolkitAt(toolkitUrls[name]);
 }
 
@@ -1561,10 +1560,19 @@ void SCIRunMainWindow::doToolkit()
 	if (!fileDownloader_)
 		return;
 
+	//qDebug() << "trying to do toolkit stuff";
 	QPixmap image;
 	image.loadFromData(fileDownloader_->downloadedData());
-	actionForwardInverse_->setIcon(image);
 
-	delete fileDownloader_;
+	QMessageBox toolkitInfo;
+	toolkitInfo.setText("Toolkit information");
+	toolkitInfo.setInformativeText("Click OK to download the latest version of this toolkit.");
+	toolkitInfo.setStandardButtons(QMessageBox::Ok|QMessageBox::Cancel);
+	toolkitInfo.setIconPixmap(image);
+	toolkitInfo.setDefaultButton(QMessageBox::Ok);
+	toolkitInfo.show();
+	toolkitInfo.exec();
+
+ 	fileDownloader_->deleteLater();
 	fileDownloader_ = nullptr;
 }
