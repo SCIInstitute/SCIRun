@@ -24,13 +24,14 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 #ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAONTONODES_H
 #define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAONTONODES_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -43,21 +44,24 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(OutsideValue);
         ALGORITHM_PARAMETER_DECL(MaxDistance);
 
-class SCISHARE MapFieldDataOntoNodesAlgo : public AlgorithmBase
-{
-  public:
-    MapFieldDataOntoNodesAlgo();
+        class SCISHARE MapFieldDataOntoNodesAlgo : public AlgorithmBase, public Thread::Interruptible
+        {
+        public:
+          MapFieldDataOntoNodesAlgo();
 
-    bool runImpl(FieldHandle source, FieldHandle weights, FieldHandle destination, FieldHandle& output) const;
-    bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
+          bool runImpl(FieldHandle source, FieldHandle weights, FieldHandle destination, FieldHandle& output) const;
+          bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
 
-    static const AlgorithmInputName Source;
-    static const AlgorithmInputName Destination;
-    static const AlgorithmInputName Weights;
+          static const AlgorithmInputName Source;
+          static const AlgorithmInputName Destination;
+          static const AlgorithmInputName Weights;
 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-};
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
 
-      }}}}
+      }
+    }
+  }
+}
 
 #endif

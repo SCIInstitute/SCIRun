@@ -45,22 +45,15 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun;
 
-template <class DATA> 
-bool 
+template <class DATA>
+bool
   MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
-  FieldHandle& input, 
-  FieldHandle& output);
-
-
-template <class DATA> 
-bool 
-  MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
-  FieldHandle& input, 
+  FieldHandle& input,
   FieldHandle& output)
 {
-
   std::string method = algo->get_option(MapFieldDataFromElemToNodeAlgo::Method);
 
   VField *ifield = input->vfield();
@@ -89,138 +82,143 @@ bool
     algo->remark("Interpolation of piecewise constant data is done by averaging adjoining values");
   }
 
-  if ((method == "Interpolation")||(method == "Average"))
+  if ((method == "Interpolation") || (method == "Average"))
   {
     while (it != eit)
     {
+      Interruptible::checkForInterruption();
       mesh->get_elems(elems, *(it));
       size_t nsize = elems.size();
       DATA val(0);
       DATA tval;
       for (size_t p = 0; p < nsize; p++)
       {
-        ifield->get_value(tval,elems[p]);
+        ifield->get_value(tval, elems[p]);
         val += tval;
       }
-      val = static_cast<DATA>(val*(1.0/static_cast<double>(nsize)));
-      ofield->set_value(val,*(it));
+      val = static_cast<DATA>(val*(1.0 / static_cast<double>(nsize)));
+      ofield->set_value(val, *(it));
       ++it;
       cnt++;
-      if (cnt==1000) 
-      { 
-        cnt=0; c+=1000; 
-        algo->update_progress(c/sz); 
-      }   
-    }
-
-  } else
-    if (method == "Max")	
-    {
-      while (it != eit)
+      if (cnt == 1000)
       {
-        mesh->get_elems(elems, *(it));
-        size_t nsize = elems.size();
-        DATA val(0);
-        DATA tval(0); 
-        if (nsize > 0)
+        cnt = 0; c += 1000;
+        algo->update_progress(c / sz);
+      }
+    }
+  }
+  else if (method == "Max")
+  {
+    while (it != eit)
+    {
+      Interruptible::checkForInterruption();
+      mesh->get_elems(elems, *(it));
+      size_t nsize = elems.size();
+      DATA val(0);
+      DATA tval(0);
+      if (nsize > 0)
+      {
+        ifield->get_value(val, elems[0]);
+        for (size_t p = 1; p < nsize; p++)
         {
-          ifield->get_value(val,elems[0]);
-          for (size_t p = 1; p < nsize; p++)
-          {
-            ifield->get_value(tval,elems[p]);
-            if (tval > val) val = tval;
-          }
-        }
-        ofield->set_value(val,*(it));
-        ++it;
-        cnt++; 
-        if (cnt==1000) 
-        { 
-          cnt=0; c+=1000; 
-          algo->update_progress(c/sz); 
+          ifield->get_value(tval, elems[p]);
+          if (tval > val) val = tval;
         }
       }
-    } else
-      if (method == "Min")	
+      ofield->set_value(val, *(it));
+      ++it;
+      cnt++;
+      if (cnt == 1000)
       {
-        while (it != eit)
+        cnt = 0; c += 1000;
+        algo->update_progress(c / sz);
+      }
+    }
+  }
+  else if (method == "Min")
+  {
+    while (it != eit)
+    {
+      Interruptible::checkForInterruption();
+      mesh->get_elems(elems, *it);
+      size_t nsize = elems.size();
+      DATA val(0);
+      DATA tval(0);
+      if (nsize > 0)
+      {
+        ifield->get_value(val, elems[0]);
+        for (size_t p = 1; p < nsize; p++)
         {
-          mesh->get_elems(elems, *it);
-          size_t nsize = elems.size();
-          DATA val(0);
-          DATA tval(0);
-          if (nsize > 0)
-          {
-            ifield->get_value(val,elems[0]);
-            for (size_t p = 1; p < nsize; p++)
-            {
-              ifield->value(tval,elems[p]);
-              if (tval < val) val = tval;
-            }     
-          }
-          ofield->set_value(val,*(it));
-          ++it;
-          cnt++; 
-          if (cnt==1000) 
-          { 
-            cnt=0; c+=1000; 
-            algo->update_progress(c/sz); 
-          }
+          ifield->value(tval, elems[p]);
+          if (tval < val) val = tval;
         }
-      } else
-        if (method=="Sum")
-        {
-          while (it != eit)
-          {
-            mesh->get_elems(elems, *(it));
-            size_t nsize = elems.size();
-            DATA val(0);
-            DATA tval(0);
-            for (size_t p = 0; p < nsize; p++)
-            {
-              ifield->get_value(tval,elems[p]);
-              val += tval;
-            }
-            ofield->set_value(val,*(it));
-            ++it;
-            cnt++; 
-            if (cnt==1000) 
-            { 
-              cnt=0; c+=1000; 
-              algo->update_progress(c/sz); 
-            }
-          }
-        } else
-          if (method == "Median")
-          {
-            std::vector<DATA> valarray;
-            while (it != eit)
-            {
-              mesh->get_elems(elems, *(it));
-              size_t nsize = elems.size();
-              valarray.resize(nsize);
-              for (size_t p = 0; p < nsize; p++)
-              {
-                ifield->get_value(valarray[p],elems[p]);
-              }
-              sort(valarray.begin(),valarray.end());
-              int idx = static_cast<int>((valarray.size()/2));
-              ofield->set_value(valarray[idx],*(it));
-              ++it;
-              cnt++; 
-              if (cnt==1000) 
-              { 
-                cnt=0; c+=1000; 
-                algo->update_progress(c/sz); 
-              }
-            }
-          } else
-          {
-            algo->remark("Method is not implemented!"); 
-            return false;
-          }
+      }
+      ofield->set_value(val, *(it));
+      ++it;
+      cnt++;
+      if (cnt == 1000)
+      {
+        cnt = 0; c += 1000;
+        algo->update_progress(c / sz);
+      }
+    }
+  }
+  else if (method == "Sum")
+  {
+    while (it != eit)
+    {
+      Interruptible::checkForInterruption();
+      mesh->get_elems(elems, *(it));
+      size_t nsize = elems.size();
+      DATA val(0);
+      DATA tval(0);
+      for (size_t p = 0; p < nsize; p++)
+      {
+        ifield->get_value(tval, elems[p]);
+        val += tval;
+      }
+      ofield->set_value(val, *(it));
+      ++it;
+      cnt++;
+      if (cnt == 1000)
+      {
+        cnt = 0; c += 1000;
+        algo->update_progress(c / sz);
+      }
+    }
+  }
+  else if (method == "Median")
+  {
+    std::vector<DATA> valarray;
+    while (it != eit)
+    {
+      Interruptible::checkForInterruption();
+      mesh->get_elems(elems, *(it));
+      size_t nsize = elems.size();
+      valarray.resize(nsize);
+      for (size_t p = 0; p < nsize; p++)
+      {
+        ifield->get_value(valarray[p], elems[p]);
+      }
+      sort(valarray.begin(), valarray.end());
+      int idx = static_cast<int>((valarray.size() / 2));
+      ofield->set_value(valarray[idx], *(it));
+      ++it;
+      cnt++;
+      if (cnt == 1000)
+      {
+        cnt = 0; c += 1000;
+        algo->update_progress(c / sz);
+      }
+    }
+  }
+  else
+  {
+    algo->remark("Method is not implemented!");
+    return false;
+  }
 
-          return true;
+  return true;
 }
 
 
@@ -246,13 +244,13 @@ AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run_generic(const AlgorithmInput
 
 /// Function call to convert data from Field into Matrix data
 FieldHandle MapFieldDataFromElemToNodeAlgo::run(FieldHandle input_field) const
-{   
+{
   FieldHandle output;
 
   if (!input_field)
   {
     THROW_ALGORITHM_INPUT_ERROR("Input field is not allocated");
-  } 
+  }
 
   FieldInformation fi(input_field);
   FieldInformation fo(input_field);
@@ -276,16 +274,16 @@ FieldHandle MapFieldDataFromElemToNodeAlgo::run(FieldHandle input_field) const
   if (!output)
   {
     THROW_ALGORITHM_INPUT_ERROR("output field cannot be allocated");
-  } 
+  }
 
   if (input_field->vfield()->is_signed_integer())
   {
     if(!MapFieldDataFromElemToNodeT<int>(this,input_field,output))
     {
       THROW_ALGORITHM_INPUT_ERROR("output int field cannot be allocated");
-    } 
+    }
   }
-  else if (input_field->vfield()->is_unsigned_integer()) 
+  else if (input_field->vfield()->is_unsigned_integer())
   {
     if(!MapFieldDataFromElemToNodeT<unsigned int>(this,input_field,output))
     {
@@ -294,26 +292,26 @@ FieldHandle MapFieldDataFromElemToNodeAlgo::run(FieldHandle input_field) const
   } else if (input_field->vfield()->is_scalar())
   {
     if (!MapFieldDataFromElemToNodeT<double>(this,input_field,output))
-    { 
+    {
       THROW_ALGORITHM_INPUT_ERROR("output scalar field cannot be allocated");
     }
-  } else if (input_field->vfield()->is_vector()) 
+  } else if (input_field->vfield()->is_vector())
   {
     if (!MapFieldDataFromElemToNodeT<Vector>(this,input_field,output))
     {
-      THROW_ALGORITHM_INPUT_ERROR("output vector field cannot be allocated");    
+      THROW_ALGORITHM_INPUT_ERROR("output vector field cannot be allocated");
     }
-  } else if (input_field->vfield()->is_tensor()) 
+  } else if (input_field->vfield()->is_tensor())
   {
     if (!MapFieldDataFromElemToNodeT<Tensor>(this,input_field,output))
     {
-      THROW_ALGORITHM_INPUT_ERROR("output tensor field cannot be allocated"); 
+      THROW_ALGORITHM_INPUT_ERROR("output tensor field cannot be allocated");
     }
-  } 
+  }
   else
   {
-    THROW_ALGORITHM_INPUT_ERROR(" Unknown field data type ");  
-  }     
+    THROW_ALGORITHM_INPUT_ERROR(" Unknown field data type ");
+  }
 
   return output;
 }

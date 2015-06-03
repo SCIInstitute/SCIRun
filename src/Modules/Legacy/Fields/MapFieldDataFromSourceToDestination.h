@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_FIELDS_MapFieldDataFromSourceToDestination_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Thread/Interruptible.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -38,18 +39,19 @@ namespace Fields {
 
   class SCISHARE MapFieldDataFromSourceToDestination : public Dataflow::Networks::Module,
     public Has2InputPorts<FieldPortTag, FieldPortTag>,
-    public Has1OutputPort<FieldPortTag>
+    public Has1OutputPort<FieldPortTag>,
+    public Core::Thread::Interruptible
   {
   public:
     MapFieldDataFromSourceToDestination();
 
     virtual void execute() override;
     virtual void setStateDefaults() override;
-    
+
     INPUT_PORT(0, Source, LegacyField);
     INPUT_PORT(1, Destination, LegacyField);
     OUTPUT_PORT(0, Remapped_Destination, LegacyField);
-  
+
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 

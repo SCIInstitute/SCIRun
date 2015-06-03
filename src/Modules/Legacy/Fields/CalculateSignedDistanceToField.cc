@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -50,28 +50,23 @@ void CalculateSignedDistanceToField::execute()
 {
   FieldHandle input = getRequiredInput(InputField);
   FieldHandle object = getRequiredInput(ObjectField);
- 
+
   bool value_connected = oport_connected(ValueField);
    
-  /*if inputs_changed_ || !oport_cached("SignedDistanceField") ||
-  (!oport_cached("ValueField") && value_connected)
-  */
   if (needToExecute())
   {
     update_state(Executing);
-    
+
     auto inputs = make_input((InputField, input)(ObjectField, object));
 
     algo().set(CalculateSignedDistanceFieldAlgo::OutputValueField, value_connected);
     auto output = algo().run_generic(inputs);
-   
-    sendOutputFromAlgorithm(SignedDistanceField, output); 
+
+    sendOutputFromAlgorithm(SignedDistanceField, output);
 
     if (value_connected)
     {
-      sendOutputFromAlgorithm(ValueField, output); 
+      sendOutputFromAlgorithm(ValueField, output);
     }
   }
 }
-
-
