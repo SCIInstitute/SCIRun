@@ -1560,18 +1560,30 @@ void SCIRunMainWindow::doToolkit()
 	if (!fileDownloader_)
 		return;
 
-	//qDebug() << "trying to do toolkit stuff";
 	QPixmap image;
 	image.loadFromData(fileDownloader_->downloadedData());
 
 	QMessageBox toolkitInfo;
+#ifdef WIN32
+  toolkitInfo.setWindowTitle("Toolkit information");
+#else
 	toolkitInfo.setText("Toolkit information");
+#endif
 	toolkitInfo.setInformativeText("Click OK to download the latest version of this toolkit.");
 	toolkitInfo.setStandardButtons(QMessageBox::Ok|QMessageBox::Cancel);
 	toolkitInfo.setIconPixmap(image);
 	toolkitInfo.setDefaultButton(QMessageBox::Ok);
 	toolkitInfo.show();
-	toolkitInfo.exec();
+	auto choice = toolkitInfo.exec();
+
+  if (choice == QMessageBox::Ok)
+  {
+    auto dir = QFileDialog::getExistingDirectory(this, "Select toolkit directory", ".");
+    if (!dir.isEmpty())
+    {
+      qDebug() << "directory selected " << dir;
+    }
+  }
 
  	fileDownloader_->deleteLater();
 	fileDownloader_ = nullptr;
