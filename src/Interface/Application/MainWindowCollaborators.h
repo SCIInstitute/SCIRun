@@ -134,11 +134,12 @@ namespace Gui {
   Q_SIGNALS:
     void downloaded();
 
-   private Q_SLOTS:
+  private Q_SLOTS:
     void fileDownloaded(QNetworkReply* reply);
-
-   private:
+    void downloadProgress(qint64 received, qint64 total);
+  private:
     QNetworkAccessManager webCtrl_;
+    QNetworkReply* reply_;
     QByteArray downloadedData_;
   };
 
@@ -150,6 +151,7 @@ namespace Gui {
   private Q_SLOTS:
     void showMessageBox();
     void saveToolkit();
+    
   private:
     void downloadIcon(); //TODO: cache somehow
     FileDownloader* iconDownloader_;
