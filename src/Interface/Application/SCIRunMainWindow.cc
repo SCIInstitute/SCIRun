@@ -174,6 +174,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   standardBar->addAction(actionResetNetworkZoom_);
   standardBar->addAction(actionDragMode_);
   standardBar->addAction(actionSelectMode_);
+  standardBar->addAction(actionToggleMetadataLayer_);
+  standardBar->addAction(actionToggleTagLayer_);
   //standardBar->setStyleSheet(styleSheet());
   //setUnifiedTitleAndToolBarOnMac(true);
 
@@ -689,6 +691,9 @@ void SCIRunMainWindow::setActionIcons()
   actionZoomBestFit_->setIcon(QPixmap(":/general/Resources/zoom_fit.png"));
   actionDragMode_->setIcon(QPixmap(":/general/Resources/cursor_hand_icon.png"));
   actionSelectMode_->setIcon(QPixmap(":/general/Resources/select.png"));
+
+  actionToggleMetadataLayer_->setIcon(QPixmap(":/general/Resources/metadataLayer.png"));
+  actionToggleTagLayer_->setIcon(QPixmap(":/general/Resources/tagLayer.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)

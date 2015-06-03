@@ -1301,11 +1301,17 @@
    </property>
   </action>
   <action name="actionToggleMetadataLayer_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Toggle Metadata Layer</string>
    </property>
   </action>
   <action name="actionToggleTagLayer_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Toggle Tag Layer</string>
    </property>
