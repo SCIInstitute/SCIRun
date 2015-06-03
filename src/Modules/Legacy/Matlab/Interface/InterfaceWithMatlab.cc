@@ -73,9 +73,10 @@ using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Thread;
 
-#ifdef _WIN32
+//TODO: temporary for compilation.
+//#ifdef _WIN32
 #define USE_MATLAB_ENGINE_LIBRARY
-#endif
+//#endif
 
 #ifdef USE_MATLAB_ENGINE_LIBRARY
 // symbols from the matlab engine library - import from the dll/so manually to not
@@ -280,8 +281,10 @@ namespace MatlabImpl
 #endif
 
 #ifndef USE_MATLAB_ENGINE_LIBRARY
+#if 0
             ServiceClientHandle           matlab_engine_;
-            InterfaceWithMatlabEngineThreadInfoHandle	thread_info_;
+            InterfaceWithMatlabEngineThreadInfoHandle	thread_info_
+#endif
 #else
             Engine* engine_;
             char output_buffer_[51200];
@@ -809,7 +812,7 @@ void InterfaceWithMatlab::execute()
     }
 #endif
 #ifndef USE_MATLAB_ENGINE_LIBRARY
-    if (!(matlab_engine_.get_rep()))
+    if (!matlab_engine_)
 #else
     if (!engine_)
 #endif
@@ -831,6 +834,7 @@ void InterfaceWithMatlab::execute()
       update_status("Please wait while launching matlab, this may take a few minutes ....\n");
 
 #ifndef USE_MATLAB_ENGINE_LIBRARY
+#if 0
       matlab_engine_ = new ServiceClient();
       if(!(matlab_engine_->open(address,"matlabengine",sessionnum,passwd,timeout,startmatlab)))
       {
@@ -842,7 +846,7 @@ void InterfaceWithMatlab::execute()
         matlab_engine_ = 0;
         return(false);
       }
-
+#endif
 #else
       if (engOpen == 0)
       {
