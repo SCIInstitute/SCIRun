@@ -203,6 +203,8 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().log("Setting read: tagColors = " + tagColors.join(";"));
     tagManagerWindow_->setTagColors(tagColors.toVector());
   }
+  else
+    tagManagerWindow_->setTagColors(QVector<QString>());
 
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());

@@ -91,7 +91,7 @@ void TagManagerWindow::setTagColors(const QVector<QString>& colors)
 { 
   for (int i = 0; i < NumberOfTags; ++i)
   {
-    if (colors[i].isEmpty())
+    if (i >= colors.size() || colors[i].isEmpty())
       tagColors_[i] = colorToString(defaultTagColor(i));
     else
       tagColors_[i] = colors[i];
