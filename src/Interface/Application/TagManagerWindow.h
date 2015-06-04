@@ -44,6 +44,8 @@ class TagManagerWindow : public QDockWidget, public Ui::TagManager
 
 public:
   explicit TagManagerWindow(QWidget* parent = 0);
+public Q_SLOTS:
+	void editTagColor();
 };
 
 }

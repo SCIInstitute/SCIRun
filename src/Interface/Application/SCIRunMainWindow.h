@@ -139,6 +139,7 @@ private:
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   enum { NumberOfTags = 10 };
   std::vector<QLineEdit*> tagLineEdits_;
+  std::vector<QPushButton*> tagButtons_;
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);

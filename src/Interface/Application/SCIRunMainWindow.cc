@@ -1520,7 +1520,8 @@ void SCIRunMainWindow::setupTagManagerWindow()
   connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
   connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
 
-  QWidget* tagButtons[] = { tagManagerWindow_->tagPushButton0_, tagManagerWindow_->tagPushButton1_, tagManagerWindow_->tagPushButton2_,
+	//TODO: feature envy--move all this to TagManagerWindow class
+	tagButtons_ = { tagManagerWindow_->tagPushButton0_, tagManagerWindow_->tagPushButton1_, tagManagerWindow_->tagPushButton2_,
     tagManagerWindow_->tagPushButton3_, tagManagerWindow_->tagPushButton4_, tagManagerWindow_->tagPushButton5_,
     tagManagerWindow_->tagPushButton6_, tagManagerWindow_->tagPushButton7_, tagManagerWindow_->tagPushButton8_, tagManagerWindow_->tagPushButton9_ };
 	tagLineEdits_ = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
@@ -1530,7 +1531,9 @@ void SCIRunMainWindow::setupTagManagerWindow()
   for (int i = 0; i < NumberOfTags; ++i)
   {
     auto colorStr = colorToString(tagColor(i));
-		tagButtons[i]->setStyleSheet("background-color : " + colorStr + ";");
+		tagButtons_[i]->setStyleSheet("background-color : " + colorStr + ";");
+		tagButtons_[i]->setProperty("index", i);
+		connect(tagButtons_[i], SIGNAL(clicked()), tagManagerWindow_, SLOT(editTagColor()));
     tagLineEdits_[i]->setProperty(tagIndexProperty, i);
     connect(tagLineEdits_[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
   }

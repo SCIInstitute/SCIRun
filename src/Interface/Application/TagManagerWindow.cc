@@ -27,13 +27,21 @@
 */
 
 #include <QtGui>
-#include <iostream>
 #include <Interface/Application/TagManagerWindow.h>
 #include <Interface/Application/NetworkEditor.h>
+#include <Interface/Application/Utility.h>
 
 using namespace SCIRun::Gui;
 
 TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {
   setupUi(this);
+}
+
+void TagManagerWindow::editTagColor()
+{
+  auto tag = sender()->property("index").toInt();
+  auto newColor = QColorDialog::getColor(tagColor(tag), this, "Choose tag " + QString::number(tag) + " color");
+  qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorToString(newColor) + ";");
+  //TODO next: propagate to tag color manager class. 
 }
