@@ -33,15 +33,52 @@
 
 using namespace SCIRun::Gui;
 
+namespace 
+{
+  const char* tagIndexProperty = "tagIndex";
+}
+
 TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {
   setupUi(this);
+
+  tagButtons_ = { tagPushButton0_, tagPushButton1_, tagPushButton2_,
+    tagPushButton3_, tagPushButton4_, tagPushButton5_,
+    tagPushButton6_, tagPushButton7_, tagPushButton8_, tagPushButton9_ };
+  tagLineEdits_ = { taglineEdit_0, taglineEdit_1, taglineEdit_2,
+    taglineEdit_3, taglineEdit_4, taglineEdit_5,
+    taglineEdit_6, taglineEdit_7, taglineEdit_8, taglineEdit_9 };
+
+  for (int i = 0; i < NumberOfTags; ++i)
+  {
+    auto colorStr = colorToString(tagColor(i));
+    tagButtons_[i]->setStyleSheet("background-color : " + colorStr + ";");
+    tagButtons_[i]->setProperty(tagIndexProperty, i);
+    connect(tagButtons_[i], SIGNAL(clicked()), this, SLOT(editTagColor()));
+    tagLineEdits_[i]->setProperty(tagIndexProperty, i);
+    connect(tagLineEdits_[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
+  }
+
+  tagNames_.resize(NumberOfTags);
 }
 
 void TagManagerWindow::editTagColor()
 {
-  auto tag = sender()->property("index").toInt();
+  auto tag = sender()->property(tagIndexProperty).toInt();
   auto newColor = QColorDialog::getColor(tagColor(tag), this, "Choose tag " + QString::number(tag) + " color");
   qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorToString(newColor) + ";");
   //TODO next: propagate to tag color manager class. 
+}
+
+void TagManagerWindow::setTagNames(const QVector<QString>& names)
+{
+  for (int i = 0; i < NumberOfTags; ++i)
+  {
+    tagLineEdits_[i]->setText(names[i]);
+  }
+}
+
+void TagManagerWindow::updateTagName(const QString& name)
+{
+  tagNames_[sender()->property(tagIndexProperty).toInt()] = name;
 }

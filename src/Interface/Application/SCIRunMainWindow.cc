@@ -1509,49 +1509,16 @@ void SCIRunMainWindow::adjustExecuteButtonAppearance()
   }
 }
 
-namespace
-{
-  const char* tagIndexProperty = "tagIndex";
-}
-
 void SCIRunMainWindow::setupTagManagerWindow()
 {
   tagManagerWindow_ = new TagManagerWindow(this);
   connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
   connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
-
-	//TODO: feature envy--move all this to TagManagerWindow class
-	tagButtons_ = { tagManagerWindow_->tagPushButton0_, tagManagerWindow_->tagPushButton1_, tagManagerWindow_->tagPushButton2_,
-    tagManagerWindow_->tagPushButton3_, tagManagerWindow_->tagPushButton4_, tagManagerWindow_->tagPushButton5_,
-    tagManagerWindow_->tagPushButton6_, tagManagerWindow_->tagPushButton7_, tagManagerWindow_->tagPushButton8_, tagManagerWindow_->tagPushButton9_ };
-	tagLineEdits_ = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
-    tagManagerWindow_->taglineEdit_3, tagManagerWindow_->taglineEdit_4, tagManagerWindow_->taglineEdit_5,
-    tagManagerWindow_->taglineEdit_6, tagManagerWindow_->taglineEdit_7, tagManagerWindow_->taglineEdit_8, tagManagerWindow_->taglineEdit_9 };
-
-  for (int i = 0; i < NumberOfTags; ++i)
-  {
-    auto colorStr = colorToString(tagColor(i));
-		tagButtons_[i]->setStyleSheet("background-color : " + colorStr + ";");
-		tagButtons_[i]->setProperty("index", i);
-		connect(tagButtons_[i], SIGNAL(clicked()), tagManagerWindow_, SLOT(editTagColor()));
-    tagLineEdits_[i]->setProperty(tagIndexProperty, i);
-    connect(tagLineEdits_[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
-  }
-  tagNames_.resize(NumberOfTags);
-}
-
-void SCIRunMainWindow::updateTagName(const QString& name)
-{
-  tagNames_[sender()->property(tagIndexProperty).toInt()] = name;
 }
 
 void SCIRunMainWindow::setTagNames(const QStringList& names)
 {
-  tagNames_ = names.toVector();
-  for (int i = 0; i < NumberOfTags; ++i)
-  {
-    tagLineEdits_[i]->setText(tagNames_[i]);
-  }
+  tagManagerWindow_->setTagNames(names.toVector());
 }
 
 void SCIRunMainWindow::toggleTagLayer(bool toggle)

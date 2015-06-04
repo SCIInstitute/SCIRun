@@ -127,7 +127,6 @@ private:
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
-  QVector<QString> tagNames_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
@@ -137,9 +136,7 @@ private:
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
-  enum { NumberOfTags = 10 };
-  std::vector<QLineEdit*> tagLineEdits_;
-  std::vector<QPushButton*> tagButtons_;
+
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
@@ -176,7 +173,6 @@ private Q_SLOTS:
   void modulesSnapToChanged();
   void highlightPortsChanged();
   void resetWindowLayout();
-  void updateTagName(const QString& name);
   void zoomNetwork();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();

@@ -32,6 +32,7 @@
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/Connection.h>
+#include <Interface/Application/TagManagerWindow.h>
 #include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
@@ -221,7 +222,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("favoriteModules", favoriteModuleNames_);
   settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));
   settings.setValue("dataPath", convertPathList(prefs.dataPath()));
-  settings.setValue("tagNames", QStringList(tagNames_.toList()));
+  settings.setValue("tagNames", tagManagerWindow_->getTagNames());
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

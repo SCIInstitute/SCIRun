@@ -36,16 +36,22 @@
 namespace SCIRun {
 namespace Gui {
 
-  //class NetworkEditor;
-
 class TagManagerWindow : public QDockWidget, public Ui::TagManager
 {
 	Q_OBJECT
 
 public:
   explicit TagManagerWindow(QWidget* parent = 0);
+  enum { NumberOfTags = 10 };
+  void setTagNames(const QVector<QString>& names);
+  QStringList getTagNames() const { return tagNames_.toList(); }
 public Q_SLOTS:
 	void editTagColor();
+  void updateTagName(const QString& name);
+private:
+  std::vector<QLineEdit*> tagLineEdits_;
+  std::vector<QPushButton*> tagButtons_;
+  QVector<QString> tagNames_;
 };
 
 }
