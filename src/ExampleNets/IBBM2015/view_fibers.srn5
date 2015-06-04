@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="12">
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -53,86 +53,6 @@ TANGENT=dot(TAN,DATA);
 
 angle=atan(z(DATA)/TANGENT)*180/3.14159;
 RESULT=select(isfinite(angle),angle,90);</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ClipFieldByFunction:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>NewField</category_name_>
-						<module_name_>ClipFieldByFunction</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>ClipMethod</name>
-								</first>
-								<second>
-									<name>ClipMethod</name>
-									<value>
-										<which>2</which>
-										<value>One Node</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FunctionString</name>
-								</first>
-								<second>
-									<name>FunctionString</name>
-									<value>
-										<which>2</which>
-										<value>Z &gt; (A-1) &amp;&amp; Z&lt;(A+1);</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ClipFieldByFunction:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>NewField</category_name_>
-						<module_name_>ClipFieldByFunction</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>ClipMethod</name>
-								</first>
-								<second>
-									<name>ClipMethod</name>
-									<value>
-										<which>2</which>
-										<value>One Node</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FunctionString</name>
-								</first>
-								<second>
-									<name>FunctionString</name>
-									<value>
-										<which>2</which>
-										<value>Z &gt; 122 &amp;&amp; Z&lt;124;</value>
 									</value>
 								</second>
 							</item>
@@ -252,7 +172,207 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GetSliceFromStructuredFieldByIndices:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GetSliceFromStructuredFieldByIndices</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>7</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>Axis_ijk</name>
+								</first>
+								<second>
+									<name>Axis_ijk</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Dim_i</name>
+								</first>
+								<second>
+									<name>Dim_i</name>
+									<value>
+										<which>0</which>
+										<value>96</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Dim_j</name>
+								</first>
+								<second>
+									<name>Dim_j</name>
+									<value>
+										<which>0</which>
+										<value>128</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Dim_k</name>
+								</first>
+								<second>
+									<name>Dim_k</name>
+									<value>
+										<which>0</which>
+										<value>96</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Index_i</name>
+								</first>
+								<second>
+									<name>Index_i</name>
+									<value>
+										<which>0</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Index_j</name>
+								</first>
+								<second>
+									<name>Index_j</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Index_k</name>
+								</first>
+								<second>
+									<name>Index_k</name>
+									<value>
+										<which>0</which>
+										<value>53</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GetSliceFromStructuredFieldByIndices:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GetSliceFromStructuredFieldByIndices</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>7</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>Axis_ijk</name>
+								</first>
+								<second>
+									<name>Axis_ijk</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Dim_i</name>
+								</first>
+								<second>
+									<name>Dim_i</name>
+									<value>
+										<which>0</which>
+										<value>96</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Dim_j</name>
+								</first>
+								<second>
+									<name>Dim_j</name>
+									<value>
+										<which>0</which>
+										<value>128</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Dim_k</name>
+								</first>
+								<second>
+									<name>Dim_k</name>
+									<value>
+										<which>0</which>
+										<value>96</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Index_i</name>
+								</first>
+								<second>
+									<name>Index_i</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Index_j</name>
+								</first>
+								<second>
+									<name>Index_j</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Index_k</name>
+								</first>
+								<second>
+									<name>Index_k</name>
+									<value>
+										<which>0</which>
+										<value>53</value>
 									</value>
 								</second>
 							</item>
@@ -344,7 +464,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>ScalarsDisplayType</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -368,7 +488,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>ScalarsScale</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -392,7 +512,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>ScalarsTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.65000000000000002</value>
+										<value>6.50000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -402,81 +522,81 @@ RESULT=select(isfinite(angle),angle,90);</value>
 								</first>
 								<second>
 									<name>ShowScalarTab</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowScalars</name>
-								</first>
-								<second>
-									<name>ShowScalars</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowSecondaryTab</name>
-								</first>
-								<second>
-									<name>ShowSecondaryTab</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowTensorTab</name>
-								</first>
-								<second>
-									<name>ShowTensorTab</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowTensors</name>
-								</first>
-								<second>
-									<name>ShowTensors</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowTertiaryTab</name>
-								</first>
-								<second>
-									<name>ShowTertiaryTab</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowVectorTab</name>
-								</first>
-								<second>
-									<name>ShowVectorTab</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowScalars</name>
+								</first>
+								<second>
+									<name>ShowScalars</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowSecondaryTab</name>
+								</first>
+								<second>
+									<name>ShowSecondaryTab</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowTensorTab</name>
+								</first>
+								<second>
+									<name>ShowTensorTab</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowTensors</name>
+								</first>
+								<second>
+									<name>ShowTensors</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowTertiaryTab</name>
+								</first>
+								<second>
+									<name>ShowTertiaryTab</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowVectorTab</name>
+								</first>
+								<second>
+									<name>ShowVectorTab</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -536,7 +656,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>TensorsScale</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -560,7 +680,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>TensorsTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.65000000000000002</value>
+										<value>6.50000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -584,7 +704,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>VectorsDisplayType</name>
 									<value>
 										<which>0</which>
-										<value>4</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -608,7 +728,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>VectorsScale</name>
 									<value>
 										<which>1</which>
-										<value>1.1000000000000001</value>
+										<value>1.10000000000000009e+00</value>
 									</value>
 								</second>
 							</item>
@@ -632,7 +752,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>VectorsTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.65000000000000002</value>
+										<value>6.50000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -708,7 +828,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>ScalarsScale</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -732,7 +852,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>ScalarsTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.65000000000000002</value>
+										<value>6.50000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -876,7 +996,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>TensorsScale</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -900,7 +1020,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>TensorsTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.65000000000000002</value>
+										<value>6.50000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -948,7 +1068,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>VectorsScale</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -972,7 +1092,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>VectorsTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.65000000000000002</value>
+										<value>6.50000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1038,7 +1158,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>10</count>
+			<count>9</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CalculateFieldData:0</moduleId1_>
@@ -1046,21 +1166,9 @@ RESULT=select(isfinite(angle),angle,90);</value>
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ClipFieldByFunction:1</moduleId2_>
+				<moduleId2_>GetSliceFromStructuredFieldByIndices:1</moduleId2_>
 				<port2_>
-					<name>InputFields</name>
-					<id>1</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ClipFieldByFunction:0</moduleId1_>
-				<port1_>
-					<name>OutputField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ShowFieldGlyphs:0</moduleId2_>
-				<port2_>
-					<name>PrimaryData</name>
+					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1071,30 +1179,6 @@ RESULT=select(isfinite(angle),angle,90);</value>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>CalculateFieldData:0</moduleId2_>
-				<port2_>
-					<name>InputArrays</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateMatrix:1</moduleId1_>
-				<port1_>
-					<name>EnteredMatrix</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ClipFieldByFunction:0</moduleId2_>
-				<port2_>
-					<name>InputArrays</name>
-					<id>1</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateMatrix:1</moduleId1_>
-				<port1_>
-					<name>EnteredMatrix</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ClipFieldByFunction:1</moduleId2_>
 				<port2_>
 					<name>InputArrays</name>
 					<id>0</id>
@@ -1113,14 +1197,26 @@ RESULT=select(isfinite(angle),angle,90);</value>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadField:0</moduleId1_>
+				<moduleId1_>GetSliceFromStructuredFieldByIndices:0</moduleId1_>
 				<port1_>
-					<name>Field</name>
+					<name>OutputMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>CalculateFieldData:0</moduleId2_>
+				<moduleId2_>GetSliceFromStructuredFieldByIndices:1</moduleId2_>
 				<port2_>
-					<name>InputFields</name>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetSliceFromStructuredFieldByIndices:1</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowFieldGlyphs:0</moduleId2_>
+				<port2_>
+					<name>PrimaryData</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1130,9 +1226,21 @@ RESULT=select(isfinite(angle),angle,90);</value>
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ClipFieldByFunction:0</moduleId2_>
+				<moduleId2_>CalculateFieldData:0</moduleId2_>
 				<port2_>
 					<name>InputFields</name>
+					<id>2</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadField:0</moduleId1_>
+				<port1_>
+					<name>Field</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetSliceFromStructuredFieldByIndices:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1168,78 +1276,78 @@ RESULT=select(isfinite(angle),angle,90);</value>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-340</first>
-				<second>-1036</second>
-			</second>
-		</item>
-		<item>
-			<first>ClipFieldByFunction:0</first>
-			<second>
-				<first>-701</first>
-				<second>-876</second>
-			</second>
-		</item>
-		<item>
-			<first>ClipFieldByFunction:1</first>
-			<second>
-				<first>-378</first>
-				<second>-891</second>
+				<first>-2.99000000000000000e+02</first>
+				<second>-9.11000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:0</first>
 			<second>
-				<first>-273</first>
-				<second>-1301</second>
+				<first>-2.73000000000000000e+02</first>
+				<second>-1.30100000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:1</first>
 			<second>
-				<first>-569</first>
-				<second>-1299</second>
+				<first>-5.69000000000000000e+02</first>
+				<second>-1.29900000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>-48</first>
-				<second>-765</second>
+				<first>4.40000000000000000e+01</first>
+				<second>-8.77000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>GetSliceFromStructuredFieldByIndices:0</first>
+			<second>
+				<first>-6.86000000000000000e+02</first>
+				<second>-1.01600000000000000e+03</second>
+			</second>
+		</item>
+		<item>
+			<first>GetSliceFromStructuredFieldByIndices:1</first>
+			<second>
+				<first>-2.96000000000000000e+02</first>
+				<second>-8.07000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>-714</first>
-				<second>-1178</second>
+				<first>-6.98000000000000000e+02</first>
+				<second>-1.19000000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowFieldGlyphs:0</first>
 			<second>
-				<first>-685</first>
-				<second>-752</second>
+				<first>-6.37000000000000000e+02</first>
+				<second>-6.57000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowFieldGlyphs:1</first>
 			<second>
-				<first>23</first>
-				<second>-1142</second>
+				<first>2.30000000000000000e+01</first>
+				<second>-1.14200000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-678</first>
-				<second>-616</second>
+				<first>-6.32000000000000000e+02</first>
+				<second>-5.18000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:1</first>
 			<second>
-				<first>44</first>
-				<second>-985</second>
+				<first>4.40000000000000000e+01</first>
+				<second>-9.85000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1285,14 +1393,6 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
-			<first>ClipFieldByFunction:0</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ClipFieldByFunction:1</first>
-			<second>0</second>
-		</item>
-		<item>
 			<first>CreateMatrix:0</first>
 			<second>0</second>
 		</item>
@@ -1302,6 +1402,14 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetSliceFromStructuredFieldByIndices:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetSliceFromStructuredFieldByIndices:1</first>
 			<second>0</second>
 		</item>
 		<item>
