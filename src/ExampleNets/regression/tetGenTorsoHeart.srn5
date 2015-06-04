@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -50,7 +50,7 @@
 									<name>MaxVolConstraint</name>
 									<value>
 										<which>1</which>
-										<value>9.9999999999999995e-08</value>
+										<value>9.99999999999999950e-008</value>
 									</value>
 								</second>
 							</item>
@@ -62,7 +62,7 @@
 									<name>MinRadius</name>
 									<value>
 										<which>1</which>
-										<value>1</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -258,7 +258,7 @@
 									<name>tolerance</name>
 									<value>
 										<which>1</which>
-										<value>0.0001</value>
+										<value>1.00000000000000000e-004</value>
 									</value>
 								</second>
 							</item>
@@ -586,56 +586,69 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>InterfaceWithTetGen:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-380</first>
-				<second>-304</second>
+				<first>-3.80000000000000000e+002</first>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>JoinFields:3</first>
 			<second>
-				<first>-380</first>
-				<second>-456</second>
+				<first>-3.80000000000000000e+002</first>
+				<second>-4.56000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:1</first>
 			<second>
-				<first>-380</first>
-				<second>-608</second>
+				<first>-3.80000000000000000e+002</first>
+				<second>-6.08000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:2</first>
 			<second>
-				<first>-684</first>
-				<second>-608</second>
+				<first>-6.84000000000000000e+002</first>
+				<second>-6.08000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:4</first>
 			<second>
-				<first>-380</first>
-				<second>-152</second>
+				<first>-3.80000000000000000e+002</first>
+				<second>-1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:5</first>
 			<second>
-				<first>-684</first>
-				<second>-152</second>
+				<first>-6.84000000000000000e+002</first>
+				<second>-1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:6</first>
 			<second>
-				<first>-684</first>
-				<second>0</second>
+				<first>-6.84000000000000000e+002</first>
+				<second>0.00000000000000000e+000</second>
 			</second>
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>0</count>
+		<count>1</count>
 		<item_version>0</item_version>
+		<item class_id="19" tracking_level="0" version="0">
+			<first>ShowField:5</first>
+			<second class_id="20" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 5&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>ID: 5</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>

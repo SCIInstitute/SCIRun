@@ -339,6 +339,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
         onodes.resize(inodes.size());
         for (size_t q=0; q< onodes.size(); q++)
         {
+          checkForInterruption();
           a = inodes[q];
 
           std::pair<pointhash_map_type::iterator,pointhash_map_type::iterator> lit;
@@ -522,6 +523,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
         for (size_t q=0; q< onodes.size(); q++)
         {
+          checkForInterruption();
           a = inodes[q];
           if (node_map[a] == -1)
           {

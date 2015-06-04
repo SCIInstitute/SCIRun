@@ -81,6 +81,13 @@ void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
   }
 }
 
+void ModuleDialogGeneric::connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons)
+{
+  for (auto& button : buttons)
+    connectButtonToExecuteSignal(button);
+}
+
+
 void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
 {
   /*

@@ -106,9 +106,9 @@ MESSAGE(STATUS "Git version commit hash: " "${VERSION_HASHVAR}")
 #parse the version information into pieces.
 string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${VERSION_TAG}")
 string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${VERSION_TAG}")
-#TODO: make generic 
+#TODO: make generic
 string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\-(alpha.[A-Za-z0-9_]+)\\-?.*" "\\1" VERSION_PATCH "${VERSION_TAG}")
-#TODO: parse SHA 
+#TODO: parse SHA
 #string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" VERSION_SHA1 "${VERSION}")
 #set(VERSION_SHORT "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
@@ -161,6 +161,20 @@ INCLUDE(ExternalProject)
 IF(WIN32)
   ADD_DEFINITIONS("/wd4251 /wd4275 -D_CRT_SECURE_NO_WARNINGS")
 ENDIF(WIN32)
+
+########################################################################
+# External project utilities
+
+OPTION(DISABLE_ExternalProject_UPDATE "Turn off ExternalProject UPDATE_COMMAND property (if not connected to the internet, for example" ON)
+MARK_AS_ADVANCED(DISABLE_ExternalProject_UPDATE)
+IF(DISABLE_ExternalProject_UPDATE)
+  # do nothing commands...
+  IF(WIN32)
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "rem")
+  ELSE()
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
+  ENDIF()
+ENDIF()
 
 ########################################################################
 # Configure test support
@@ -290,20 +304,6 @@ ENDIF()
 #     ADD_SUBDIRECTORY(Documentation/Manuals)
 #   ENDIF()
 # ENDIF()
-
-########################################################################
-# External project utilities
-
-OPTION(DISABLE_ExternalProject_UPDATE "Turn off ExternalProject UPDATE_COMMAND property (if not connected to the internet, for example" ON)
-MARK_AS_ADVANCED(DISABLE_ExternalProject_UPDATE)
-IF(DISABLE_ExternalProject_UPDATE)
-  # do nothing commands...
-  IF(WIN32)
-    SET(DISABLED_UPDATE "UPDATE_COMMAND" "rem")
-  ELSE()
-    SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
-  ENDIF()
-ENDIF()
 
 ########################################################################
 # Download external data sources
@@ -498,7 +498,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 # TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
   SET(QT_MIN_VERSION "4.8.1")
-  FIND_PACKAGE(Qt4 REQUIRED)
+  FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork REQUIRED)
   SET(QT_USE_QTOPENGL TRUE)
 
   IF(QT_FOUND)
@@ -720,6 +720,7 @@ SET_PROPERTY(TARGET Core_Logging         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_ConsoleApplication         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_CommandLine         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Command         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_SystemCall         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Thread         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_ImportExport         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_IEPlugin         PROPERTY FOLDER "Core")
@@ -774,6 +775,7 @@ SET_PROPERTY(TARGET Modules_Legacy_Converters PROPERTY FOLDER "Modules/Basic")
 SET_PROPERTY(TARGET Modules_Legacy_Forward PROPERTY FOLDER "Modules/Forward")
 SET_PROPERTY(TARGET Modules_Legacy_Inverse PROPERTY FOLDER "Modules/Inverse")
 SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO PROPERTY FOLDER "Modules/DataIO")
+SET_PROPERTY(TARGET Modules_Legacy_MatlabInterface PROPERTY FOLDER "Modules/Matlab")
 SET_PROPERTY(TARGET Modules_Legacy_Visualization   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
@@ -786,6 +788,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
   SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
   SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET SCIRunTestData_external   PROPERTY FOLDER "Testing Support")
 
   SET_PROPERTY(TARGET Algorithms_Base_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_DataIO_Tests PROPERTY FOLDER "Core/Algorithms/Tests")

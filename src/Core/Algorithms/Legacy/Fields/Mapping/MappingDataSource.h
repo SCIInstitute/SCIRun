@@ -33,6 +33,7 @@
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -42,7 +43,7 @@ namespace SCIRun {
 
 // Class for extracting data from a field
 
-class SCISHARE MappingDataSource
+class SCISHARE MappingDataSource : public Thread::Interruptible
 {
   public:
     MappingDataSource();

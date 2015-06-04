@@ -63,22 +63,18 @@ namespace SCIRun {
           network_(network),
           executionLock_(executionLock)
         {
-          //std::cout << this << "DMNEI()" << std::endl;
         }
         ~DynamicMultithreadedNetworkExecutorImpl()
         {
           interruptCxn_.disconnect();
-          //std::cout << this << "~DMNEI()" << std::endl;
         }
         void operator()() const
         {
-          //std::cout << this << "DMNEI start" << std::endl;
           Guard g(executionLock_->get());
 
           if (network_)
           {
             interruptCxn_ = network_->connectModuleInterrupted([&](const std::string& id) { interruptModule(id); });
-            //std::cout << this << " DMNEI connected" << std::endl;
           }
 
           ScopedExecutionBoundsSignaller signaller(bounds_, [=]() { return lookup_->errorCode(); });
@@ -90,7 +86,6 @@ namespace SCIRun {
           consume.join();
           produce.join();
           executeThreads_->joinAll();
-          //std::cout << this << "DMNEI end" << std::endl;
         }
 
         void interruptModule(const std::string& id) const
@@ -150,7 +145,8 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
 
 bool ModuleWaitingFilter::operator()(SCIRun::Dataflow::Networks::ModuleHandle mh) const
 {
-  return mh->executionState() != Networks::ModuleInterface::Completed;
+  auto state = mh->executionState().currentState();
+  return state != Networks::ModuleExecutionState::Completed;// || state != Networks::ModuleExecutionState::Errored;
 }
 
 const ModuleWaitingFilter& ModuleWaitingFilter::Instance()

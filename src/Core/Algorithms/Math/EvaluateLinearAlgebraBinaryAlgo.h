@@ -30,7 +30,8 @@
 #define ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
@@ -61,6 +62,7 @@ namespace Math {
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };
+
 }}}}
 
 #endif

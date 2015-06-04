@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,47 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_MATH_LINEARSYSTEM_ADDKNOWNSTOLINEARSYSTEM_H
-#define CORE_ALGORITHMS_MATH_LINEARSYSTEM_ADDKNOWNSTOLINEARSYSTEM_H 1
+#ifndef MODULES_LEGACY_Math_AddLinkedNodesToLinearSystem_H__
+#define MODULES_LEGACY_Math_AddLinkedNodesToLinearSystem_H__
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Matrix.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Math/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Modules {
+    namespace Math {
 
-// for Windows support
-#include <Core/Algorithms/Math/share.h>
+      class SCISHARE AddLinkedNodesToLinearSystem : public Dataflow::Networks::Module,
+        public Has3InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+      {
+      public:
+        AddLinkedNodesToLinearSystem();
+        virtual void setStateDefaults() override {}
+        virtual void execute() override;
 
-namespace SCIRunAlgo {
+        INPUT_PORT(0, LHS, SparseRowMatrix);
+        INPUT_PORT(1, RHS, DenseColumnMatrix);
+	      INPUT_PORT(2, LinkedNodes, Matrix);
+        OUTPUT_PORT(0, OutputLHS, SparseRowMatrix);
+	      OUTPUT_PORT(1, OutputRHS, Matrix);
+        OUTPUT_PORT(2, Mapping, SparseRowMatrix);
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
 
-using namespace SCIRun;
-
-// Add knowns to a linear system, set the knowns in x by giving them a value
-// all unknowns should be marked with a NaN. This algorithm will take a linear
-// system comprised of matrices A and b and set all the values that are specified
-// in x to that value and will change the linear system so that these values
-// are set.
-//
-// If matrix A is not sparse, set convert_matrix_types to true to convert
-// to sparse row matrix type.
-
-class SCISHARE AddKnownsToLinearSystemAlgo : public AlgoBase
-{
-  public:
-    // Set default values
-    AddKnownsToLinearSystemAlgo()
-    {}
-  
-    bool run(MatrixHandle a_in, 
-             MatrixHandle b_in,
-             MatrixHandle x, 
-             SparseRowMatrixHandle& a_out, 
-             MatrixHandle& b_out,
-             bool convert_matrix_types = false);
-};
-
-
+    }
+  }
 }
 
 #endif
