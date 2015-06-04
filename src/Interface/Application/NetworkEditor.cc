@@ -59,7 +59,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
-  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent)
+  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, 
+  TagColorFunc tagColor,
+  QWidget* parent)
   : QGraphicsView(parent),
   deleteAction_(0),
   sendToBackAction_(0),
@@ -67,6 +69,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   modulesSelectedByCL_(false),
   currentScale_(1),
   tagLayerActive_(false),
+  tagColor_(tagColor),
   scene_(new QGraphicsScene(parent)),
   visibleItems_(true),
   lastModulePosition_(0,0),
@@ -1119,7 +1122,7 @@ void NetworkEditor::metadataLayer(bool active)
   }
 }
 
-QColor SCIRun::Gui::tagColor(int tag)
+QColor SCIRun::Gui::defaultTagColor(int tag)
 {
   switch (tag)
   {
@@ -1204,7 +1207,8 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
   else
   {
     auto colorize = new QGraphicsColorizeEffect;
-    colorize->setColor(tagColor(tagValue));
+    auto color = tagColor_(tagValue);
+    colorize->setColor(color);
     item->setGraphicsEffect(colorize);
   }
 }

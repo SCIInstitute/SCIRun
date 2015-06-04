@@ -193,7 +193,15 @@ void SCIRunMainWindow::readSettings()
   {
     auto tagNames = settings.value(tagNamesKey).toStringList();
     GuiLogger::Instance().log("Setting read: tagNames = " + tagNames.join(";"));
-    setTagNames(tagNames);
+    tagManagerWindow_->setTagNames(tagNames.toVector());
+  }
+
+  const QString tagColorsKey = "tagColors";
+  if (settings.contains(tagColorsKey))
+  {
+    auto tagColors = settings.value(tagColorsKey).toStringList();
+    GuiLogger::Instance().log("Setting read: tagColors = " + tagColors.join(";"));
+    tagManagerWindow_->setTagColors(tagColors.toVector());
   }
 
   restoreGeometry(settings.value("geometry").toByteArray());
@@ -223,6 +231,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));
   settings.setValue("dataPath", convertPathList(prefs.dataPath()));
   settings.setValue("tagNames", tagManagerWindow_->getTagNames());
+  settings.setValue("tagColors", tagManagerWindow_->getTagColors());
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

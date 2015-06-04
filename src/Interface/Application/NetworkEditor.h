@@ -38,6 +38,7 @@
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 #include <Interface/Application/Note.h>
+#include <Interface/Application/Utility.h>
 #endif
 
 class QMenu;
@@ -113,7 +114,9 @@ Q_SIGNALS:
 
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
-				boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
+				boost::shared_ptr<DialogErrorControl> dialogErrorControl, 
+        TagColorFunc tagColor = defaultTagColor,
+        QWidget* parent = 0);
     ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -250,6 +253,7 @@ Q_SIGNALS:
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
+    TagColorFunc tagColor_;
 
     QGraphicsScene* scene_;
 

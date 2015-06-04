@@ -118,7 +118,6 @@ private:
   void fillModuleSelector();
   void setupInputWidgets();
   void parseStyleXML();
-  void setTagNames(const QStringList& tagNames);
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
   void showStatusMessage(const QString& str);

@@ -30,6 +30,8 @@
 #include <Interface/Application/TagManagerWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Utility.h>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Gui;
 
@@ -51,8 +53,6 @@ TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(pare
 
   for (int i = 0; i < NumberOfTags; ++i)
   {
-    auto colorStr = colorToString(tagColor(i));
-    tagButtons_[i]->setStyleSheet("background-color : " + colorStr + ";");
     tagButtons_[i]->setProperty(tagIndexProperty, i);
     connect(tagButtons_[i], SIGNAL(clicked()), this, SLOT(editTagColor()));
     tagLineEdits_[i]->setProperty(tagIndexProperty, i);
@@ -60,18 +60,22 @@ TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(pare
   }
 
   tagNames_.resize(NumberOfTags);
+  tagColors_.resize(NumberOfTags);
 }
 
 void TagManagerWindow::editTagColor()
 {
   auto tag = sender()->property(tagIndexProperty).toInt();
-  auto newColor = QColorDialog::getColor(tagColor(tag), this, "Choose tag " + QString::number(tag) + " color");
-  qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorToString(newColor) + ";");
+  auto newColor = QColorDialog::getColor(tagColors_[tag], this, "Choose tag " + QString::number(tag) + " color");
+  auto colorStr = colorToString(newColor);
+  qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorStr + ";");
+  tagColors_[tag] = colorStr;
   //TODO next: propagate to tag color manager class. 
 }
 
 void TagManagerWindow::setTagNames(const QVector<QString>& names)
 {
+  tagNames_ = names;
   for (int i = 0; i < NumberOfTags; ++i)
   {
     tagLineEdits_[i]->setText(names[i]);
@@ -81,4 +85,38 @@ void TagManagerWindow::setTagNames(const QVector<QString>& names)
 void TagManagerWindow::updateTagName(const QString& name)
 {
   tagNames_[sender()->property(tagIndexProperty).toInt()] = name;
+}
+
+void TagManagerWindow::setTagColors(const QVector<QString>& colors)
+{ 
+  for (int i = 0; i < NumberOfTags; ++i)
+  {
+    if (colors[i].isEmpty())
+      tagColors_[i] = colorToString(defaultTagColor(i));
+    else
+      tagColors_[i] = colors[i];
+    tagButtons_[i]->setStyleSheet("background-color : " + tagColors_[i] + ";");
+  }
+}
+
+QColor TagManagerWindow::tagColor(int tag) const
+{
+  //rgb(128, 128, 0)
+  auto colorStr = tagColors_[tag];
+  int r, g, b;
+  try
+  {
+    static boost::regex reg("rgb\\((.+), (.+), (.+)\\)");
+    boost::smatch what;
+    regex_match(colorStr.toStdString(), what, reg);
+    r = boost::lexical_cast<int>(what[1]);
+    g = boost::lexical_cast<int>(what[2]);
+    b = boost::lexical_cast<int>(what[3]);
+  }
+  catch (...)
+  {
+    //error results in gray 
+    r = g = b = 155;
+  }
+  return QColor(r, g, b);
 }

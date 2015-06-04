@@ -117,6 +117,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 		);
 	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 	dialogErrorControl_.reset(new DialogErrorControl(this));
+  setupTagManagerWindow();
   setupNetworkEditor();
 
   setTipsAndWhatsThis();
@@ -255,7 +256,6 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   setupProvenanceWindow();
   setupDevConsole();
   setupPythonConsole();
-  setupTagManagerWindow();
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
@@ -457,7 +457,8 @@ void SCIRunMainWindow::setupNetworkEditor()
   Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
-  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, scrollAreaWidgetContents_);
+  auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
+  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, tagColorFunc, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   //networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -1514,11 +1515,6 @@ void SCIRunMainWindow::setupTagManagerWindow()
   tagManagerWindow_ = new TagManagerWindow(this);
   connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
   connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
-}
-
-void SCIRunMainWindow::setTagNames(const QStringList& names)
-{
-  tagManagerWindow_->setTagNames(names.toVector());
 }
 
 void SCIRunMainWindow::toggleTagLayer(bool toggle)
