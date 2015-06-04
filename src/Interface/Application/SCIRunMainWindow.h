@@ -121,6 +121,8 @@ private:
   void setTagNames(const QStringList& tagNames);
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
+  void showStatusMessage(const QString& str);
+  void showStatusMessage(const QString& str, int timeInMsec);
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;

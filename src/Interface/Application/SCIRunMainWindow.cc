@@ -1014,7 +1014,7 @@ namespace {
   void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
   {
     QTreeWidgetItem* faves = getFavoriteMenu(tree);
-    BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
+		for (const auto& package : moduleMap)
     {
       const std::string& packageName = package.first;
       auto packageItem = new QTreeWidgetItem();
@@ -1022,14 +1022,14 @@ namespace {
       packageItem->setForeground(0, packageColor());
       tree->addTopLevelItem(packageItem);
       size_t totalModules = 0;
-      BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
+      for (const auto& category : package.second)
       {
         const std::string& categoryName = category.first;
         auto categoryItem = new QTreeWidgetItem();
         categoryItem->setText(0, QString::fromStdString(categoryName));
         categoryItem->setForeground(0, categoryColor());
         packageItem->addChild(categoryItem);
-        BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
+				for (const auto& module : category.second)
         {
           const std::string& moduleName = module.first;
           auto moduleItem = new QTreeWidgetItem();
@@ -1413,19 +1413,19 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Shift)
 	{
-		statusBar()->showMessage("Network zoom active");
+		showStatusMessage("Network zoom active");
 	}
   else if (event->key() == MetadataShiftKey)
   {
     networkEditor_->metadataLayer(true);
-    statusBar()->showMessage("Metadata layer active");
+		showStatusMessage("Metadata layer active");
   }
   else if (event->key() == Qt::Key_Alt)
   {
 		if (!actionToggleTagLayer_->isChecked())
 		{
 	 		networkEditor_->tagLayer(true, NoTag);
-    	statusBar()->showMessage("Tag layer active: none");
+			showStatusMessage("Tag layer active: none");
 		}
   }
 	else if (event->key() == Qt::Key_A)
@@ -1435,7 +1435,7 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
     	if (networkEditor_->tagLayerActive())
     	{
       	networkEditor_->tagLayer(true, AllTags);
-      	statusBar()->showMessage("Tag layer active: All");
+				showStatusMessage("Tag layer active: All");
     	}
 		}
 	}
@@ -1447,7 +1447,7 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
     	{
       	auto key = event->key() - Qt::Key_0;
       	networkEditor_->tagLayer(true, key);
-      	statusBar()->showMessage("Tag layer active: " + QString::number(key));
+				showStatusMessage("Tag layer active: " + QString::number(key));
     	}
 		}
   }
@@ -1459,19 +1459,19 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Shift)
 	{
-    statusBar()->showMessage("Network zoom inactive", 1000);
+		showStatusMessage("Network zoom inactive", 1000);
 	}
   else if (event->key() == MetadataShiftKey)
   {
     networkEditor_->metadataLayer(false);
-    statusBar()->showMessage("Metadata layer inactive", 1000);
+		showStatusMessage("Metadata layer inactive", 1000);
   }
   else if (event->key() == Qt::Key_Alt)
   {
 		if (!actionToggleTagLayer_->isChecked())
 		{
     	networkEditor_->tagLayer(false, -1);
-    	statusBar()->showMessage("Tag layer inactive", 1000);
+			showStatusMessage("Tag layer inactive", 1000);
 		}
   }
 
@@ -1558,11 +1558,20 @@ void SCIRunMainWindow::setTagNames(const QStringList& names)
 void SCIRunMainWindow::toggleTagLayer(bool toggle)
 {
 	networkEditor_->tagLayer(toggle, AllTags);
-	//TODO: extract methods
 	if (toggle)
-		statusBar()->showMessage("Tag layer active: all");
+		showStatusMessage("Tag layer active: all");
 	else
-		statusBar()->showMessage("Tag layer inactive", 1000);
+		showStatusMessage("Tag layer inactive", 1000);
+}
+
+void SCIRunMainWindow::showStatusMessage(const QString& str)
+{
+	statusBar()->showMessage(str);
+}
+
+void SCIRunMainWindow::showStatusMessage(const QString& str, int timeInMsec)
+{
+	statusBar()->showMessage(str, timeInMsec);
 }
 
 void SCIRunMainWindow::toggleMetadataLayer(bool toggle)
@@ -1570,9 +1579,9 @@ void SCIRunMainWindow::toggleMetadataLayer(bool toggle)
 	networkEditor_->metadataLayer(toggle);
 	//TODO: extract methods
 	if (toggle)
-		statusBar()->showMessage("Metadata layer active");
+		showStatusMessage("Metadata layer active");
 	else
-		statusBar()->showMessage("Metadata layer inactive", 1000);
+		showStatusMessage("Metadata layer inactive", 1000);
 }
 
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent), reply_(0)
