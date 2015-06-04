@@ -1512,7 +1512,6 @@ void SCIRunMainWindow::adjustExecuteButtonAppearance()
 namespace
 {
   const char* tagIndexProperty = "tagIndex";
-  const int NUMBER_OF_TAGS = 10;
 }
 
 void SCIRunMainWindow::setupTagManagerWindow()
@@ -1524,18 +1523,18 @@ void SCIRunMainWindow::setupTagManagerWindow()
   QWidget* tagButtons[] = { tagManagerWindow_->tagPushButton0_, tagManagerWindow_->tagPushButton1_, tagManagerWindow_->tagPushButton2_,
     tagManagerWindow_->tagPushButton3_, tagManagerWindow_->tagPushButton4_, tagManagerWindow_->tagPushButton5_,
     tagManagerWindow_->tagPushButton6_, tagManagerWindow_->tagPushButton7_, tagManagerWindow_->tagPushButton8_, tagManagerWindow_->tagPushButton9_ };
-  QLineEdit* tagLineEdits[] = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
+	tagLineEdits_ = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
     tagManagerWindow_->taglineEdit_3, tagManagerWindow_->taglineEdit_4, tagManagerWindow_->taglineEdit_5,
     tagManagerWindow_->taglineEdit_6, tagManagerWindow_->taglineEdit_7, tagManagerWindow_->taglineEdit_8, tagManagerWindow_->taglineEdit_9 };
 
-  for (int i = 0; i < NUMBER_OF_TAGS; ++i)
+  for (int i = 0; i < NumberOfTags; ++i)
   {
     auto colorStr = colorToString(tagColor(i));
 		tagButtons[i]->setStyleSheet("background-color : " + colorStr + ";");
-    tagLineEdits[i]->setProperty(tagIndexProperty, i);
-    connect(tagLineEdits[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
+    tagLineEdits_[i]->setProperty(tagIndexProperty, i);
+    connect(tagLineEdits_[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
   }
-  tagNames_.resize(NUMBER_OF_TAGS);
+  tagNames_.resize(NumberOfTags);
 }
 
 void SCIRunMainWindow::updateTagName(const QString& name)
@@ -1546,12 +1545,9 @@ void SCIRunMainWindow::updateTagName(const QString& name)
 void SCIRunMainWindow::setTagNames(const QStringList& names)
 {
   tagNames_ = names.toVector();
-  QLineEdit* tagLineEdits[] = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
-    tagManagerWindow_->taglineEdit_3, tagManagerWindow_->taglineEdit_4, tagManagerWindow_->taglineEdit_5,
-    tagManagerWindow_->taglineEdit_6, tagManagerWindow_->taglineEdit_7, tagManagerWindow_->taglineEdit_8, tagManagerWindow_->taglineEdit_9 };
-  for (int i = 0; i < NUMBER_OF_TAGS; ++i)
+  for (int i = 0; i < NumberOfTags; ++i)
   {
-    tagLineEdits[i]->setText(tagNames_[i]);
+    tagLineEdits_[i]->setText(tagNames_[i]);
   }
 }
 
