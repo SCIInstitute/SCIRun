@@ -1340,8 +1340,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
      
      }
      
-     if ( (fieldnodes->nrows()!=3 || fieldnodes->ncols()!=3) && 
-          (fielddata->nrows()==fieldnodes->nrows() || fielddata->nrows()==fieldnodes->ncols()) 
+     if ( !(fieldnodes->nrows()==3 || fieldnodes->ncols()==3) && 
+          !(fielddata->nrows()==fieldnodes->nrows() || fielddata->nrows()==fieldnodes->ncols() ||
+	    fielddata->ncols()==fieldnodes->nrows() || fielddata->ncols()==fieldnodes->ncols()) 
         )
      {      
        std::ostringstream ostr_;
