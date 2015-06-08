@@ -26,49 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MATLABINTERFACE_SERVICES_MATLABENGINE_H
+#define MATLABINTERFACE_SERVICES_MATLABENGINE_H 1
 
-/*
- *  IComBase.h 
- *
- *  Written by:
- *  Jeroen Stinstra
- *
- */
- 
-#ifndef JGS_SCI_CORE_ICOM_ICOMBASE_H
-#define JGS_SCI_CORE_ICOM_ICOMBASE_H 1
-
-#ifndef _WIN32
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#else
-#include <winsock2.h>
-#endif
-
-#include <Core/ICom/share.h>
 
 namespace SCIRun {
 
-	// Define all the enums here
 
-	enum conntype			{ DIRECT = 1, SSH_TUNNEL = 2}; 
-
-class SCISHARE IComBase {
-    
-	// Define all the communication errors here
-  public:
-	class   icomerror {}; // general socket/packet communication error
-	
-	class   could_not_open_socket		: public icomerror {};
-	class   invalid_port_number			: public icomerror {};
-	class   could_not_resolve_address   : public icomerror {};
-	class   not_a_string_packet			: public icomerror {};
-	class   invalid_data_format			: public icomerror {};
-	class   invalid_address				: public icomerror {};
-	
-};
-
+enum {
+		TAG_MERROR  = 1000,		// MATLAB ENGINE ERROR
+		TAG_MSUCCESS,         // MATLAB ENGINE WAS SUCCESSFULLY STARTED
+		TAG_MCODE,            // FORWARD NAME OF M-FILE
+		TAG_MCODE_ERROR,      // MCODE FAILED
+		TAG_MCODE_SUCCESS,		// MCODE WAS EXECUTED SUCCESSFULLY
+    TAG_INPUT             // FORWARD STRING INPUT
+	};
 
 } // end namespace
 

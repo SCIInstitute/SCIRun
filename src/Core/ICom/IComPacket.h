@@ -40,18 +40,13 @@
 
 #include <Core/ICom/IComBase.h>
 
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Thread/UsedWithLockingHandle.h>
 #include <sys/types.h>
-
 
 #include <string>
 #include <vector>
 #include <iostream>
 
-
 #include <Core/ICom/share.h>
-// Keep the MIPS compiler from putting REMARKS on implicit template
 
 namespace SCIRun {
 
@@ -64,13 +59,11 @@ public:
 	IComPacket();
 	explicit IComPacket(int buffersize);			// Initialise with a certain buffersize
 
-	
 	// cloning function
 	// this actually copy the memory
 	// used for the internal packet service
-	IComPacket* clone();
+	IComPacket* clone() const;
 	
-	// Destructor
 	~IComPacket();
 
 	// Functions for managing the buffer associated with the packet.
@@ -130,7 +123,7 @@ public:
 	// get/set a standard array, all data will be copied and the appropriate
 	// casts will be made when reading or writing the data
 	template<class T> std::vector<T>	getvector();
-	template<class T> void				setvector(std::vector<T> &vec);
+	template<class T> void				setvector(const std::vector<T> &vec);
 
 	// Same as above but different addressing mode, data is a user allocated buffer
 	// and datasize is the number of ELEMENTS (not bytes)
@@ -177,7 +170,7 @@ template<class T> std::vector<T>  IComPacket::getvector()
 	return(vec);
 }
 
-template<class T> void IComPacket::setvector(std::vector<T> &vec)
+template<class T> void IComPacket::setvector(const std::vector<T> &vec)
 {
 	int elsize = sizeof(T);
 	int datasize = vec.size();
@@ -321,7 +314,7 @@ inline int IComPacket::buffersize()
 	return(buffersize_);
 }
 
-typedef LockingHandle<IComPacket> IComPacketHandle;
+typedef boost::shared_ptr<IComPacket> IComPacketHandle;
 
 } // end namespace
 

@@ -49,11 +49,12 @@
 #include <Core/Services/ServiceClient.h>
 //#include <Core/ICom/IComAddress.h>
 #include <Core/ICom/IComPacket.h>
+#include <Packages/MatlabInterface/Services/MatlabEngine.h>
 
 #if 0
 
 #include <Core/Datatypes/MatrixTypeConverter.h>
-#include <Packages/MatlabInterface/Services/MatlabEngine.h>
+
 #include <Core/Thread/Runnable.h>
 
 #include <Core/Services/Service.h>

@@ -1,4 +1,5 @@
-/*
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
@@ -24,52 +25,10 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+-->
 
+<service name="matlabenginefiletransfer" class="FileTransfer" classpackage="SCIRun" version="1.0">
+<rcfile>matlabengine.rc</rcfile>
+<buffersize>30000</buffersize>
+</service>
 
-/*
- *  IComBase.h 
- *
- *  Written by:
- *  Jeroen Stinstra
- *
- */
- 
-#ifndef JGS_SCI_CORE_ICOM_ICOMBASE_H
-#define JGS_SCI_CORE_ICOM_ICOMBASE_H 1
-
-#ifndef _WIN32
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#else
-#include <winsock2.h>
-#endif
-
-#include <Core/ICom/share.h>
-
-namespace SCIRun {
-
-	// Define all the enums here
-
-	enum conntype			{ DIRECT = 1, SSH_TUNNEL = 2}; 
-
-class SCISHARE IComBase {
-    
-	// Define all the communication errors here
-  public:
-	class   icomerror {}; // general socket/packet communication error
-	
-	class   could_not_open_socket		: public icomerror {};
-	class   invalid_port_number			: public icomerror {};
-	class   could_not_resolve_address   : public icomerror {};
-	class   not_a_string_packet			: public icomerror {};
-	class   invalid_data_format			: public icomerror {};
-	class   invalid_address				: public icomerror {};
-	
-};
-
-
-} // end namespace
-
-#endif
