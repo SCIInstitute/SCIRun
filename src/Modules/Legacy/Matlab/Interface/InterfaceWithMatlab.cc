@@ -109,7 +109,6 @@ namespace MatlabImpl
   {
   public:
     InterfaceWithMatlabEngineThread(ServiceClientHandle serv_handle, InterfaceWithMatlabEngineThreadInfoHandle info_handle);
-    virtual ~InterfaceWithMatlabEngineThread();
     void operator()();
 
   private:
@@ -121,7 +120,7 @@ namespace MatlabImpl
   {
   public:
     InterfaceWithMatlabEngineThreadInfo();
-    virtual ~InterfaceWithMatlabEngineThreadInfo();
+    ~InterfaceWithMatlabEngineThreadInfo();
 
     void dolock();
     void unlock();
@@ -136,6 +135,7 @@ namespace MatlabImpl
     ConditionVariable   wait_exit_;
     bool                exit_;
     bool                passed_test_;
+    Mutex lock_;
 
   };
 }
@@ -304,7 +304,6 @@ namespace MatlabImpl
           };
         }}}}
 
-#if 0
   InterfaceWithMatlabEngineThreadInfo::InterfaceWithMatlabEngineThreadInfo() :
     UsedWithLockingHandle<Mutex>("InterfaceWithMatlabEngineInfo lock"),
     wait_code_done_("InterfaceWithMatlabEngineInfo condition variable code"),
@@ -312,27 +311,24 @@ namespace MatlabImpl
     code_success_(false),
     wait_exit_("InterfaceWithMatlabEngineInfo condition variable exit"),
     exit_(false),
-    passed_test_(false)
+    passed_test_(false),
+    lock_("matlabThreadLock")
   {
   }
 
-  inline void InterfaceWithMatlabEngineThreadInfo::dolock()
+  void InterfaceWithMatlabEngineThreadInfo::dolock()
   {
-    lock.lock();
+    lock_.lock();
   }
 
-  inline void InterfaceWithMatlabEngineThreadInfo::unlock()
+  void InterfaceWithMatlabEngineThreadInfo::unlock()
   {
-    lock.unlock();
+    lock_.unlock();
   }
 
   InterfaceWithMatlabEngineThread::InterfaceWithMatlabEngineThread(ServiceClientHandle serv_handle, InterfaceWithMatlabEngineThreadInfoHandle info_handle) :
     serv_handle_(serv_handle),
     info_handle_(info_handle)
-  {
-  }
-
-  InterfaceWithMatlabEngineThread::~InterfaceWithMatlabEngineThread()
   {
   }
 
@@ -436,6 +432,7 @@ namespace MatlabImpl
     }
   }
 
+#if 0
   DECLARE_MAKER(InterfaceWithMatlab)
 
   InterfaceWithMatlab::InterfaceWithMatlab(GuiContext *context) :
@@ -1053,8 +1050,8 @@ void InterfaceWithMatlab::execute()
         << "\nmatlabengine address: " << matlab_engine_->getremoteaddress()
         << "\nmatlabengine session: " + matlab_engine_->getsession();
         //<< "\nmatlabengine filetransfer version :" << file_transfer_->getversion()
-        //<< "\nshared home directory: " << sharehomedir 
-        //<< "\nlocal temp directory: " << file_transfer_->local_file("") 
+        //<< "\nshared home directory: " << sharehomedir
+        //<< "\nlocal temp directory: " << file_transfer_->local_file("")
         //<< "\nremote temp directory: " << file_transfer_->remote_file("") + "\n";
       auto status = statusStr.str();
 #else

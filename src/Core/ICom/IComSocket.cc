@@ -132,22 +132,7 @@ bool IComSocket::create()
 
 void IComSocket::clear()
 {
-  if (socket_)
-  {
-    IComVirtualSocket* oldsocket = 0;
-    socket_->dolock();
-    socket_->ref_cnt--;
-    oldsocket = socket_;
-    socket_->unlock();
-    socket_ = 0;
-    if (oldsocket->ref_cnt == 0)
-    {
-      IComSocketError err;
-      if (oldsocket) oldsocket->close(err);
-      if (oldsocket) delete oldsocket;
-    }
-
-  }
+  socket_.reset();
 
   // reset error, socket is gone so we do not want to know about it anymore
   error_.error = "";
@@ -185,7 +170,7 @@ inline	std::string IComSocket::getsocketprotocol()
 }
 
 // Get the ptr to the internal socket structure
-inline IComVirtualSocket* IComSocket::getsocketptr()
+IComVirtualSocketHandle IComSocket::getsocketptr()
 {
   return(socket_);
 }

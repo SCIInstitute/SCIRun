@@ -148,7 +148,7 @@ public:
   // FUNCTIONS TO GET TO THE INTERNALS OF THE SOCKET IMPLEMENTATION
 
   // Get the pointer to the actual socket implementation
-  IComVirtualSocket*	getsocketptr();
+  IComVirtualSocketHandle	getsocketptr();
   // Get the type of the socket
   std::string			getsocketprotocol();
 
@@ -167,7 +167,7 @@ private:
   void clear();
   bool nosocketerror();
 
-  IComVirtualSocket*	socket_;
+  IComVirtualSocketHandle	socket_;
   std::string			protocol_;
 
   // These are kept here separately, so each thread can use a different

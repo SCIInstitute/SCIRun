@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,7 +33,7 @@
 #include <boost/shared_ptr.hpp>
 #include <Core/ICom/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
 
   class IComAddress;
@@ -42,9 +42,12 @@ namespace SCIRun
   class IComSocket;
   typedef boost::shared_ptr<IComSocket> IComSocketHandle;
 
+  class IComVirtualSocket;
+  typedef boost::shared_ptr<IComVirtualSocket> IComVirtualSocketHandle;
+
   class IComPacket;
   typedef boost::shared_ptr<IComPacket> IComPacketHandle;
 
-} 
+}
 
 #endif
