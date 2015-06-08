@@ -61,6 +61,8 @@ TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(pare
 
   tagNames_.resize(NumberOfTags);
   tagColors_.resize(NumberOfTags);
+
+  connect(helpPushButton_, SIGNAL(clicked()), this, SLOT(helpButtonClicked()));
 }
 
 void TagManagerWindow::editTagColor()
@@ -70,7 +72,6 @@ void TagManagerWindow::editTagColor()
   auto colorStr = colorToString(newColor);
   qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorStr + ";");
   tagColors_[tag] = colorStr;
-  //TODO next: propagate to tag color manager class. 
 }
 
 void TagManagerWindow::setTagNames(const QVector<QString>& names)
@@ -119,4 +120,9 @@ QColor TagManagerWindow::tagColor(int tag) const
     r = g = b = 155;
   }
   return QColor(r, g, b);
+}
+
+void TagManagerWindow::helpButtonClicked()
+{
+  QMessageBox::information(this, "Module Tag Help", "TODO: help here");
 }
