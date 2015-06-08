@@ -118,14 +118,14 @@ private:
   void fillModuleSelector();
   void setupInputWidgets();
   void parseStyleXML();
-  void setTagNames(const QStringList& tagNames);
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
+  void showStatusMessage(const QString& str);
+  void showStatusMessage(const QString& str, int timeInMsec);
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
-  QVector<QString> tagNames_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
@@ -135,6 +135,7 @@ private:
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
+
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
@@ -171,13 +172,14 @@ private Q_SLOTS:
   void modulesSnapToChanged();
   void highlightPortsChanged();
   void resetWindowLayout();
-  void updateTagName(const QString& name);
   void zoomNetwork();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
+  void toggleTagLayer(bool toggle);
+  void toggleMetadataLayer(bool toggle);
   void adjustModuleDock(int state);
   void exitApplication(int code);
 };

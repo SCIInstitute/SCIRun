@@ -89,6 +89,7 @@ namespace SCIRun
     static const int TagLayerKey = 100;
     static const int CurrentTagKey = 101;
     static const int NoTag = -1;
+    static const int AllTags = -50;
   }
 }
 

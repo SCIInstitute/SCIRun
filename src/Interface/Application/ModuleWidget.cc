@@ -449,17 +449,11 @@ void ModuleWidgetDisplayMini::adjustLayout(QLayout* layout)
 
 static const int UNSET = -1;
 static const int SELECTED = -50;
-//static const int ERRORED = -100;
-static bool isUnsetOrSelected(int state)
-{
-  return UNSET == state || SELECTED == state;
-}
 
 typedef boost::bimap<QString, int> ColorStateLookup;
 typedef ColorStateLookup::value_type ColorStatePair;
 static ColorStateLookup colorStateLookup;
 void fillColorStateLookup(const QString& background);
-
 
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
