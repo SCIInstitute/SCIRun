@@ -49,7 +49,8 @@
 #include <Core/Services/ServiceClient.h>
 //#include <Core/ICom/IComAddress.h>
 #include <Core/ICom/IComPacket.h>
-#include <Packages/MatlabInterface/Services/MatlabEngine.h>
+#include <Modules/Legacy/Matlab/Interface/Services/MatlabEngine.h>
+#include <boost/thread.hpp>
 
 #if 0
 
@@ -103,19 +104,19 @@ namespace MatlabImpl
   class InterfaceWithMatlabEngineThread;
 
   typedef boost::shared_ptr<InterfaceWithMatlabEngineThreadInfo> InterfaceWithMatlabEngineThreadInfoHandle;
-#if 0
+
   class InterfaceWithMatlabEngineThread : /*public Runnable,*/ public ServiceBase
   {
   public:
     InterfaceWithMatlabEngineThread(ServiceClientHandle serv_handle, InterfaceWithMatlabEngineThreadInfoHandle info_handle);
     virtual ~InterfaceWithMatlabEngineThread();
-    void run();
+    void operator()();
 
   private:
     ServiceClientHandle serv_handle_;
     InterfaceWithMatlabEngineThreadInfoHandle info_handle_;
   };
-#endif
+
   class InterfaceWithMatlabEngineThreadInfo
   {
   public:
@@ -1028,14 +1029,14 @@ void InterfaceWithMatlab::execute()
         return(false);
       }
 
-      thread_info_->output_cmd_ = module_->get_id()+" AddOutput";
+      thread_info_->output_cmd_ = module_->get_id().id_ + " AddOutput";
 
       // By cloning the object, it will have the same fields and sockets, but the socket
       // and error handling will be separate. As the thread will invoke its own instructions
       // it is better to have a separate copy. Besides, the socket obejct will point to the
       // same underlying socket. Hence only the error handling part will be duplicated
 
-      ServiceClientHandle matlab_engine_copy = matlab_engine_->clone();
+      ServiceClientHandle matlab_engine_copy(matlab_engine_->clone());
       MatlabImpl::InterfaceWithMatlabEngineThread enginethread(matlab_engine_copy,thread_info_);
 
       boost::thread thread(enginethread);
