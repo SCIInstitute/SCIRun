@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,13 +28,13 @@
 
 
 /*
- *  IComBase.h 
+ *  IComBase.h
  *
  *  Written by:
  *  Jeroen Stinstra
  *
  */
- 
+
 #ifndef JGS_SCI_CORE_ICOM_ICOMBASE_H
 #define JGS_SCI_CORE_ICOM_ICOMBASE_H 1
 
@@ -46,27 +46,28 @@
 #include <winsock2.h>
 #endif
 
+#include <Core/ICom/IComFwd.h>
 #include <Core/ICom/share.h>
 
 namespace SCIRun {
 
 	// Define all the enums here
 
-	enum conntype			{ DIRECT = 1, SSH_TUNNEL = 2}; 
+	enum conntype			{ DIRECT = 1, SSH_TUNNEL = 2};
 
 class SCISHARE IComBase {
-    
+
 	// Define all the communication errors here
   public:
 	class   icomerror {}; // general socket/packet communication error
-	
+
 	class   could_not_open_socket		: public icomerror {};
 	class   invalid_port_number			: public icomerror {};
 	class   could_not_resolve_address   : public icomerror {};
 	class   not_a_string_packet			: public icomerror {};
 	class   invalid_data_format			: public icomerror {};
 	class   invalid_address				: public icomerror {};
-	
+
 };
 
 

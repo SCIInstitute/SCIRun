@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,17 +33,12 @@
 #define CORE_SERVICES_SERVICELOG_H 1
 
 #include <Core/Services/ServiceBase.h>
-#include <Core/Thread/UsedWithLockingHandle.h>
-#include <Core/Containers/LockingHandle.h>
-
 #include <fstream>
-#include <string>
-
 #include <Core/Services/share.h>
 
 namespace SCIRun {
-	
-class SCISHARE ServiceLog : public ServiceBase, public UsedWithLockingHandleAndMutex
+
+class SCISHARE ServiceLog : public ServiceBase
 {
 public:
   // Create a log file, that can used by multiple threads without
@@ -53,7 +48,7 @@ public:
 
   // Since we used a ofstream, this one is automatically closed when the
   // object is destroyed.
-	
+
   // Write a message into the log
   void putmsg(const std::string& msg);
 
@@ -62,7 +57,7 @@ private:
   bool haslog_;
 };
 
-typedef LockingHandle<ServiceLog> ServiceLogHandle;
+typedef boost::shared_ptr<ServiceLog> ServiceLogHandle;
 }
 
 #endif

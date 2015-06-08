@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,22 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
- 
+
 /*
- *  IComSocket.cc 
+ *  IComSocket.cc
  *
  *  Written by:
  *  Jeroen Stinstra
  *
  */
- 
-#include <Core/ICom/IComSocket.h> 
+
+#include <Core/ICom/IComSocket.h>
 #include <Core/ICom/IComVirtualSocket.h>
 #include <Core/ICom/IComINetSocket.h>
 #include <Core/ICom/IComSslSocket.h>
 #include <Core/ICom/IComInternalSocket.h>
- 
-namespace SCIRun { 
+
+namespace SCIRun {
 
 
 // Create a new socket
@@ -57,41 +57,6 @@ IComSocket::IComSocket(std::string protocol) :
 IComSocket::~IComSocket()
 {
   clear();				// clear up the socket
-} 
-
-// copy constructor
-IComSocket::IComSocket(const IComSocket &s) :
-  socket_(0)
-{
-  protocol_ = s.protocol_;	// copy the protocol 
-  error_ = s.error_;			// copy the last error
-  if (s.socket_)
-  {
-    s.socket_->dolock();
-    s.socket_->ref_cnt++;
-    socket_ = s.socket_;
-    s.socket_->unlock();
-  }
-} 
-
-
-IComSocket& IComSocket::operator=(const IComSocket &s)
-{
-  if (this != &s)
-  {
-    if (socket_) clear();
-    socket_ = 0;
-    protocol_ = s.protocol_;
-    error_ = s.error_;
-    if (s.socket_)
-    {
-      s.socket_->dolock();
-      s.socket_->ref_cnt++;
-      socket_ = s.socket_;
-      s.socket_->unlock();
-    }
-  }
-  return(*this);
 }
 
 // create a socket and overrule the type setting
@@ -110,13 +75,12 @@ bool IComSocket::create()
   {
     try
     {
-      socket_ = static_cast<IComVirtualSocket *>(new IComINetSocket());
-      socket_->ref_cnt = 1;
+      socket_.reset(new IComINetSocket());
       return(true);
     }
     catch(...)
     {
-      socket_ = 0;
+      socket_.reset();
       error_.error = "Could not allocate socket";
       error_.errnr = EBADF;
       return(false);
@@ -127,42 +91,40 @@ bool IComSocket::create()
   {
     try
     {
-      socket_ = static_cast<IComVirtualSocket *>(new IComSslSocket());
-      socket_->ref_cnt = 1;
+      socket_.reset(new IComSslSocket());
       return(true);
     }
     catch(...)
     {
-      socket_ = 0;
+      socket_.reset();
       error_.error = "Could not allocate socket";
       error_.errnr = EBADF;
       return(false);
     }
   }
-	
+
   if (protocol_ == "internal")
   {
     try
     {
-      socket_ = static_cast<IComVirtualSocket *>(new IComInternalSocket());
-      socket_->ref_cnt = 1;
+      socket_.reset(new IComInternalSocket());
       return(true);
     }
     catch(...)
     {
-      socket_ = 0;
+      socket_.reset();
       error_.error = "Could not allocate socket";
       error_.errnr = EBADF;
       return(false);
     }
   }
 
-  // The algorithm should not get here, unless the protocol 
+  // The algorithm should not get here, unless the protocol
   // is not an existing one
   error_.error = "Unknown socket protocol has been specified";
   error_.errnr = EBADF;
 
-  std::cerr << "Socket creation failed as the socket type (" 
+  std::cerr << "Socket creation failed as the socket type ("
 	    << protocol_ << ") is an unknown type" << std::endl;
   return(false);
 }
@@ -178,15 +140,15 @@ void IComSocket::clear()
     oldsocket = socket_;
     socket_->unlock();
     socket_ = 0;
-    if (oldsocket->ref_cnt == 0) 
+    if (oldsocket->ref_cnt == 0)
     {
       IComSocketError err;
       if (oldsocket) oldsocket->close(err);
       if (oldsocket) delete oldsocket;
     }
-		
+
   }
-	
+
   // reset error, socket is gone so we do not want to know about it anymore
   error_.error = "";
   error_.errnr = 0;
@@ -196,7 +158,145 @@ bool IComSocket::nosocketerror()
 {
   error_.error = "No socket has yet been created";
   error_.errnr = EBADF;
-  return(false); 
+  return(false);
+}
+
+// Get a string with the last error description
+inline	std::string IComSocket::geterror()
+{
+  return(error_.error);
+}
+
+// Get the last reported errno
+inline int IComSocket::geterrno()
+{
+  return(error_.errnr);
+}
+
+inline	bool IComSocket::haserror()
+{
+  return(error_.errnr != 0);
+}
+
+// Get the protocol used in this socket
+inline	std::string IComSocket::getsocketprotocol()
+{
+  return(protocol_);
+}
+
+// Get the ptr to the internal socket structure
+inline IComVirtualSocket* IComSocket::getsocketptr()
+{
+  return(socket_);
+}
+
+inline bool IComSocket::close()
+{
+  // Currently closing the socket will completely close the socket and
+  // it will even remove any error messages. Hence it will always return
+  // true. However for symmetry this function returns a bool as well
+  // indicating success.
+  clear();
+  return(true);
+}
+
+inline bool IComSocket::getremoteaddress(IComAddress &address)
+{
+  if (socket_) {
+    return(socket_->getremoteaddress(address,error_));
+  } else {
+    return(nosocketerror());
+  }
+}
+
+inline bool IComSocket::getlocaladdress(IComAddress &address)
+{
+  if (socket_) {
+    return(socket_->getlocaladdress(address,error_));
+  } else {
+    return(nosocketerror());
+  }
+}
+
+inline bool IComSocket::settimeout(int secs, int microsecs)
+{
+  if (socket_) {
+    return(socket_->settimeout(secs,microsecs,error_));
+  } else {
+    return(nosocketerror());
+  }
+}
+
+inline bool IComSocket::listen()
+{
+  if (socket_) {
+    return(socket_->listen(error_));
+  } else {
+    return(nosocketerror());
+  }
+}
+
+inline bool IComSocket::accept(IComSocket& newsock)
+{
+  if (socket_) {
+    return(socket_->accept(newsock,error_));
+  } else {
+    return(nosocketerror());
+  }
+}
+
+inline bool IComSocket::poll(IComPacketHandle& packet)
+{
+  if (socket_) {
+    return(socket_->poll(packet,error_));
+  } else {
+    return(nosocketerror());
+  }
+}
+
+inline bool IComSocket::send(IComPacketHandle& packet)
+{
+  if (socket_) {
+    return(socket_->send(packet,error_));
+  } else {
+    return(nosocketerror());
+  }
+}
+
+inline bool IComSocket::recv(IComPacketHandle& packet)
+{
+  if (socket_) {
+    return(socket_->recv(packet,error_));
+  } else {
+    return(nosocketerror());
+  }
+}
+
+inline bool IComSocket::connect(IComAddress& address, conntype conn)
+{
+  if (socket_) {
+    return(socket_->connect(address,conn,error_));
+  } else {
+    return(nosocketerror());
+  }
+}
+
+inline bool IComSocket::bind(IComAddress& address)
+{
+  if (socket_) {
+    return(socket_->bind(address,error_));
+  } else {
+    return(nosocketerror());
+  }
+}
+
+inline bool IComSocket::isconnected()
+{
+  if (socket_) {
+    return(socket_->isconnected(error_));
+  } else {
+    return(nosocketerror());
+  }
 }
 
 } // namespace SCIRun

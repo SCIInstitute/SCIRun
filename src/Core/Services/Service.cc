@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,12 +30,13 @@
 // Service.cc
 
 #include <Core/Services/Service.h>
+#include <Core/Services/ServiceLog.h>
+#include <Core/ICom/IComSocket.h>
 
 namespace SCIRun {
 
 
-Service::Service(ServiceContext &ctx) :
-	UsedWithLockingHandle<Mutex>("Service Lock"),
+Service::Service(const ServiceContext &ctx) :
 	ctx_(ctx)
 {
 }
@@ -45,23 +46,23 @@ Service::~Service()
 	// Close the socket if it was not closed yet
 	// This function should be thread-safe
 
-	ctx_.socket.close();
+	ctx_.socket->close();
 
 }
 
 
-void Service::run()
+void Service::operator()()
 {
 	try
     {
-        execute();	
+        execute();
     }
     catch (...)
     {
-        ctx_.socket.close();
+        ctx_.socket->close();
         throw;
     }
-	ctx_.socket.close();
+	ctx_.socket->close();
 }
 
 void Service::execute()
@@ -91,7 +92,7 @@ bool Service::updateparameters()
 
   bool done = false;
   bool need_new_read = true;
-	
+
   std::string linebuffer;
   size_t bytesread;
   size_t linestart;
@@ -103,7 +104,7 @@ bool Service::updateparameters()
   size_t linetag;
   std::string tag;
   std::string data;
-	
+
   while(!done)
 	{
 		bytesread = fread(&(read_buffer[0]),1,read_buffer_length,filein);
@@ -118,17 +119,17 @@ bool Service::updateparameters()
 
 		need_new_read = false;
 		while (!need_new_read)
-		{	
+		{
 			linestart = 0;
 			buffersize = linebuffer.size();
 			// Skip all newlines returns tabs and spaces at the start of a line
-			while((linestart < buffersize)&&((linebuffer[linestart]=='\n')||(linebuffer[linestart]=='\r')||(linebuffer[linestart]=='\0')||(linebuffer[linestart]=='\t')||(linebuffer[linestart]==' '))) linestart++;			
+			while((linestart < buffersize)&&((linebuffer[linestart]=='\n')||(linebuffer[linestart]=='\r')||(linebuffer[linestart]=='\0')||(linebuffer[linestart]=='\t')||(linebuffer[linestart]==' '))) linestart++;
 
 			std::string newline;
 			// if bytesread is 0, it indicates an EOF, hence we just need to add the remainder
 			// of what is in the buffer. The file has not properly terminated strings....
 			if (bytesread == 0)
-			{	
+			{
 				if(linestart < linebuffer.size()) newline = linebuffer.substr(linestart);
 			}
 			else
@@ -146,11 +147,11 @@ bool Service::updateparameters()
 					need_new_read = false;
 				}
 			}
-	
+
 			if (!need_new_read)
 			{
 				if ((newline[0] == '#')||(newline[0] == '%'))
-				{   
+				{
 					// Comment
 				}
 				else
@@ -170,10 +171,10 @@ bool Service::updateparameters()
 			}
 		}
 	}
-		
+
   fclose(filein);
-  
-  return (true);	
+
+  return (true);
 }
 
 

@@ -6,7 +6,7 @@
   Copyright (c) 2009 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  
+
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -26,15 +26,15 @@
   DEALINGS IN THE SOFTWARE.
 */
 
- 
+
 /*
- *  IComVirtualSocket.h 
+ *  IComVirtualSocket.h
  *
  *  Written by:
  *  Jeroen Stinstra
  *
  */
- 
+
 #ifndef JGS_SCI_CORE_ICOM_INTERNALSOCKET_H
 #define JGS_SCI_CORE_ICOM_INTERNALSOCKET_H 1
 
@@ -43,6 +43,7 @@
 #include <Core/ICom/IComAddress.h>
 #include <Core/ICom/IComSocket.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Thread/ConditionVariable.h>
 #ifndef _WIN32
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -68,47 +69,47 @@ namespace SCIRun {
   public:
     IComInternalSocket();
     virtual ~IComInternalSocket();
-        
+
   public:
-  
+
     bool    bind(IComAddress& address, IComSocketError &err);
-    bool    connect(IComAddress& address, conntype conn, IComSocketError &err);     
-        
-    bool    close(IComSocketError &err);                    // close the socket 
+    bool    connect(IComAddress& address, conntype conn, IComSocketError &err);
+
+    bool    close(IComSocketError &err);                    // close the socket
 
     bool    getlocaladdress(IComAddress& address, IComSocketError &err);    // Get local address
     bool    getremoteaddress(IComAddress& address, IComSocketError &err);   // Get remote address
-        
-    bool    settimeout(int secs, int microsecs, IComSocketError &err);      // set the time out of the socket 
+
+    bool    settimeout(int secs, int microsecs, IComSocketError &err);      // set the time out of the socket
 
     bool    listen(IComSocketError &err);   // Listen for a connection
     bool    accept(IComSocket& newsock, IComSocketError &err);      // Accept the connection and get a new socket object
-        
+
     bool    poll(IComPacketHandle &packet, IComSocketError &err);                                           // Poll whether there is a packet waiting (non blocking)
     bool    send(IComPacketHandle &packet, IComSocketError &err);                                           // Send a packet (blocking)
-    bool    recv(IComPacketHandle &packet, IComSocketError &err);                                           // Recv a packet (blocking)     
+    bool    recv(IComPacketHandle &packet, IComSocketError &err);                                           // Recv a packet (blocking)
 
     bool    isconnected(IComSocketError &err);
 
   private:
-  
+
     bool                            listen_;
     bool                            connected_;
     bool                            registered_;
-  
-    IComAddress                     localaddress_;
-    IComAddress                     remoteaddress_;
+
+    IComAddressHandle                     localaddress_;
+    IComAddressHandle                     remoteaddress_;
     IComInternalSocket*             remotesocket_;
 
     std::list<IComPacketHandle>     packetlist_;
-    std::list<IComSocket>           connectionlist_;
-        
-    ConditionVariable               waitconnection_;
-    ConditionVariable               waitpacket_;
-        
+    std::list<IComSocketHandle>           connectionlist_;
+
+    Core::Thread::ConditionVariable               waitconnection_;
+    Core::Thread::ConditionVariable               waitpacket_;
+
     int                             secs_;
     int                             microsecs_;
-        
+
   };
 
 }

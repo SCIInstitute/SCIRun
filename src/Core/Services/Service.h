@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,17 +32,11 @@
 #ifndef CORE_SERVICES_SERVICE_H
 #define CORE_SERVICES_SERVICE_H 1
 
-#include <Core/ICom/IComSocket.h>
-#include <Core/ICom/IComAddress.h>
-#include <Core/ICom/IComPacket.h>
-
-#include <Core/Thread/Mutex.h>
-#include <Core/Thread/ConditionVariable.h>
-#include <Core/Thread/Thread.h>
-#include <Core/Thread/Runnable.h>
-
-#include <Core/Services/ServiceLog.h>
-#include <Core/Containers/LockingHandle.h>
+#include <Core/ICom/IComFwd.h>
+#include <Core/Services/ServiceBase.h>
+//#include <Core/Services/ServiceLog.h>
+#include <boost/shared_ptr.hpp>
+#include <map>
 
 #include <Core/Services/share.h>
 
@@ -62,7 +56,7 @@ extern "C" Service* make_service_##name(ServiceContext &ctx) \
 
 namespace SCIRun {
 
-class SCISHARE ServiceContext 
+class SCISHARE ServiceContext
 {
 public:
   std::string                                  servicename;
@@ -71,27 +65,25 @@ public:
   std::string                                  startcommand;
   int                                          timeout;
   std::map<std::string,std::string>            parameters;
-  IComSocket                                   socket;
+  IComSocketHandle                             socket;
   ServiceLogHandle                             log;
 };
 
 
 class Service;
-typedef LockingHandle<Service> ServiceHandle;
+typedef boost::shared_ptr<Service> ServiceHandle;
 
 
-class SCISHARE Service : public ServiceBase, public UsedWithLockingHandle<Mutex>
+class SCISHARE Service : public ServiceBase
 {
 public:
-
-  // Constructor/destructor
-  Service(ServiceContext &ctx);
+  explicit Service(const ServiceContext &ctx);
   virtual ~Service();
 
   // Run will be called by the thread environment as the entry point of
   // a new thread.
-  void			run();
-	
+  void			operator()();
+
   // Entrypoint of the actual function of the service
   virtual void	execute();
 
@@ -99,48 +91,48 @@ public:
 	bool					updateparameters();
   int						getsession();
   void          setsession(int session);
-  
+
   std::string   getstartcommand();
   int           gettimeout();
-  
+
   std::string		getservicename();
   std::string		getpackagename();
   std::string		getparameter(std::string);
-  IComSocket		getsocket();
+  IComSocketHandle		getsocket();
   ServiceLogHandle getlog();
   void					putmsg(std::string line);
   // Communication functions
-	
+
   inline bool			send(IComPacketHandle &packet);
   inline bool			recv(IComPacketHandle &packet);
   inline bool			poll(IComPacketHandle &packet);
-	
+
   inline bool			getlocaladdress(IComAddress &address);
   inline bool			getremoteaddress(IComAddress &address);
   inline bool			isconnected();
-	
+
   // Error retrieval mechanisms for communication errors
-	
+
   inline std::string	geterror();
   inline int					geterrno();
   inline bool					haserror();
-	
+
   // Error reporting, services log file
-	
+
   void			errormsg(std::string error);
   void			warningmsg(std::string warning);
-	
+
 public:
   // Locking Handle needs Mutex to be called lock so we cannot reuse that name
-  inline void			dolock();   
+  inline void			dolock();
   inline void			unlock();
-	
+
 private:
-	
+
   ServiceContext	ctx_;
 };
 
-
+#if 0 // move to cc file
 typedef	Service*  (*ServiceMaker)(ServiceContext &ctx);
 
 inline void	Service::dolock()
@@ -248,7 +240,7 @@ inline	bool Service::isconnected()
 {
   return(ctx_.socket.isconnected());
 }
-
+#endif
 
 } // namespace SCIRun
 

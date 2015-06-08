@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -56,6 +56,8 @@ namespace SCIRun {
     };
   };
 
+  class ServiceLog;
+  typedef boost::shared_ptr<ServiceLog> ServiceLogHandle;
+
 }
 #endif
-

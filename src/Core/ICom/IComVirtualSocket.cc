@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,7 +29,7 @@
 #include <Core/ICom/IComVirtualSocket.h>
 
 namespace SCIRun {
- 
+
 IComVirtualSocket::IComVirtualSocket() :
     UsedWithLockingHandleAndMutex("virtual_socket_lock")
 {
@@ -55,7 +55,7 @@ bool	IComVirtualSocket::connect(IComAddress& /*address*/, conntype /*conn*/, ICo
 {
 	return(socket_not_implemented(err));
 }
-	
+
 bool	IComVirtualSocket::close(IComSocketError &err)
 {
 	return(socket_not_implemented(err));
@@ -65,17 +65,17 @@ bool	IComVirtualSocket::getlocaladdress(IComAddress& /*address*/, IComSocketErro
 {
 	return(socket_not_implemented(err));
 }
-	
+
 bool	IComVirtualSocket::getremoteaddress(IComAddress& /*address*/, IComSocketError &err)
 {
  	return(socket_not_implemented(err));
 }
-	
+
 bool	IComVirtualSocket::settimeout(int /*secs*/, int /*microsecs*/, IComSocketError &err)
 {
 	return(socket_not_implemented(err));
 }
- 
+
 
 bool	IComVirtualSocket::listen(IComSocketError &err)
 {
@@ -101,11 +101,22 @@ bool	IComVirtualSocket::recv(IComPacketHandle& /*packet*/, IComSocketError &err)
 {
 	return(socket_not_implemented(err));
 }
- 
+
 bool	IComVirtualSocket::isconnected(IComSocketError &err)
 {
 	return(socket_not_implemented(err));
-} 
+}
 
- 
+// For locking the structure so it will be thread safe
+
+inline void IComVirtualSocket::dolock()
+{
+	lock_.lock();
+}
+
+inline void IComVirtualSocket::unlock()
+{
+	lock_.unlock();
+}
+
 } // namespace
