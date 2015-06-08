@@ -467,3 +467,82 @@ bool ServiceClient::close()
 }
 
 }
+
+
+
+inline bool ServiceClient::send(IComPacketHandle &packet)
+{
+  if (socket_.send(packet) == false)
+  {
+    seterror(socket_.geterror());
+    return(false);
+  }
+  clearerror();
+  return(true);
+}
+
+inline bool ServiceClient::recv(IComPacketHandle &packet)
+{
+  if (socket_.recv(packet) == false)
+  {
+    seterror(socket_.geterror());
+    return(false);
+  }
+  clearerror();
+  return(true);
+}
+
+inline bool ServiceClient::poll(IComPacketHandle &packet)
+{
+  if (socket_.poll(packet) == false)
+  {
+    seterror(socket_.geterror());
+    return(false);
+  }
+  clearerror();
+  return(true);
+}
+
+inline std::string ServiceClient::geterror()
+{
+  return(error_);
+}
+
+inline std::string ServiceClient::getversion()
+{
+  return(version_);
+}
+
+inline void ServiceClient::seterror(std::string error)
+{
+  error_ = error;
+}
+
+inline void ServiceClient::clearerror()
+{
+  error_ = "";
+}
+
+inline std::string ServiceClient::getremoteaddress()
+{
+  IComAddress address;
+  socket_.getremoteaddress(address);
+  return(address.geturl());
+}
+
+inline std::string ServiceClient::getsession()
+{
+  std::ostringstream oss;
+  oss << session_;
+  return(oss.str());
+}
+
+inline IComSocket ServiceClient::getsocket()
+{
+  return(socket_);
+}
+
+inline void ServiceClient::setsession(int session)
+{
+  session_ = session;
+}

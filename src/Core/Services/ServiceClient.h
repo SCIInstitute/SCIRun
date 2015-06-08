@@ -32,13 +32,12 @@
 #ifndef CORE_SERVICES_SERVICECLIENT_H
 #define CORE_SERVICES_SERVICECLIENT_H 1
 
-#include <Core/ICom/IComAddress.h>
-#include <Core/ICom/IComSocket.h>
+//#include <Core/ICom/IComAddress.h>
+//#include <Core/ICom/IComSocket.h>
 #include <Core/Services/ServiceBase.h>
-#include <Core/Services/ServiceDB.h>
-#include <Core/Services/Service.h>
-#include <Core/Thread/Thread.h>
-#include <Core/Containers/LockingHandle.h>
+//#include <Core/Services/ServiceDB.h>
+//#include <Core/Services/Service.h>
+//#include <Core/Thread/Thread.h>
 
 #include <iostream>
 #include <string>
@@ -47,7 +46,7 @@
 
 namespace SCIRun {
 
-class SCISHARE ServiceClient: public ServiceBase, public UsedWithLockingHandleAndMutex
+class SCISHARE ServiceClient : public ServiceBase
 {
   public:
 
@@ -92,84 +91,7 @@ class SCISHARE ServiceClient: public ServiceBase, public UsedWithLockingHandleAn
     bool         need_send_end_stream_;
 };
 
-typedef LockingHandle<ServiceClient> ServiceClientHandle;
-
-inline bool ServiceClient::send(IComPacketHandle &packet)
-{
-  if(socket_.send(packet) == false) 
-  {
-    seterror(socket_.geterror());
-    return(false);
-  }
-  clearerror();
-  return(true);
-}
-
-inline bool ServiceClient::recv(IComPacketHandle &packet)
-{
-  if(socket_.recv(packet) == false) 
-  {
-    seterror(socket_.geterror());
-    return(false);
-  }
-  clearerror();
-  return(true);
-}
-
-inline bool ServiceClient::poll(IComPacketHandle &packet)
-{
-  if(socket_.poll(packet) == false) 
-  {
-    seterror(socket_.geterror());
-    return(false);
-  }
-  clearerror();
-  return(true);
-}
-
-inline std::string ServiceClient::geterror()
-{
-  return(error_);
-}
-
-inline std::string ServiceClient::getversion()
-{
-  return(version_);
-}
-
-inline void ServiceClient::seterror(std::string error)
-{
-  error_ = error;
-}
-
-inline void ServiceClient::clearerror()
-{
-  error_ = "";
-}  
-
-inline std::string ServiceClient::getremoteaddress()
-{
-  IComAddress address;
-  socket_.getremoteaddress(address);
-  return(address.geturl());
-}
-
-inline std::string ServiceClient::getsession()
-{
-  std::ostringstream oss;
-  oss << session_;
-  return(oss.str());
-}
-
-inline IComSocket ServiceClient::getsocket()
-{
-  return(socket_);
-}
-
-inline void ServiceClient::setsession(int session)
-{
-    session_ = session;
-}
+typedef boost::shared_ptr<ServiceClient> ServiceClientHandle;
 
 }
 
