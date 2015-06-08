@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -41,7 +41,7 @@ IComINetSocket::IComINetSocket() :
 
 IComINetSocket::~IComINetSocket()
 {
-	IComSocketError err;	// dummy error, we are not interested in errors anymore at this point 
+	IComSocketError err;	// dummy error, we are not interested in errors anymore at this point
 	if (hassocket_) close(err);
 }
 
@@ -90,7 +90,7 @@ std::string IComINetSocket::getconnecterror(int errnr)
 		case EFAULT: return(std::string("Invalid socket address"));
 	}
 	return(std::string("Unknown error"));
-}		
+}
 
 
 std::string IComINetSocket::getlistenerror(int errnr)
@@ -102,7 +102,7 @@ std::string IComINetSocket::getlistenerror(int errnr)
 		case EOPNOTSUPP: return(std::string("Listen not supported by socket"));
 	}
 	return(std::string("Unknown error"));
-}	
+}
 
 
 std::string IComINetSocket::getsockopterror(int errnr)
@@ -116,7 +116,7 @@ std::string IComINetSocket::getsockopterror(int errnr)
 		case EDOM: return(std::string("Value for timeout is out of range"));
 	}
 	return(std::string("Unknown error"));
-}	
+}
 
 std::string IComINetSocket::getaccepterror(int errnr)
 {
@@ -128,10 +128,10 @@ std::string IComINetSocket::getaccepterror(int errnr)
 		case EFAULT: return(std::string("Invalid address"));
 		case EWOULDBLOCK: return(std::string("Who made this socket non-blocking??"));
 		case EMFILE: return(std::string("The process file descriptor table is full"));
-		case ENFILE: return(std::string("The system file descriptor table is full"));		
+		case ENFILE: return(std::string("The system file descriptor table is full"));
 	}
 	return(std::string("Unknown error"));
-}	
+}
 
 std::string IComINetSocket::getsenderror(int errnr)
 {
@@ -142,7 +142,7 @@ std::string IComINetSocket::getsenderror(int errnr)
 		case EFAULT: return(std::string("The send buffer is invalid"));
 		case EMSGSIZE: return(std::string("Size of the packet was too large for this socket"));
 		case ENOBUFS: return(std::string("Could not allocate enough buffers for socket"));
-		case EHOSTUNREACH: return(std::string("Could not reach destination address"));		
+		case EHOSTUNREACH: return(std::string("Could not reach destination address"));
         case EPIPE: return(std::string("Remote end of socket got closed"));
 	}
 	return(std::string("Unknown error"));
@@ -160,27 +160,27 @@ std::string IComINetSocket::getrecverror(int errnr)
 	return(std::string("Unknown error"));
 }
 
-		
+
 bool	IComINetSocket::bind(IComAddress& address, IComSocketError &err)
 {
-	
-	if (!address.isvalid()) 
+
+	if (!address.isvalid())
 	{	// This piece is thread safe -> no locking required
 		err.errnr = EADDRNOTAVAIL;
 		err.error = "Invalid internet address";
 		return(false);
 	}
-	
-	if (address.isinternal()) 
+
+	if (address.isinternal())
 	{	// This piece is thread safe -> no locking required
 		err.errnr = EADDRNOTAVAIL;
 		err.error = "Address is an internal address and not an internet address";
 		return(false);
 	}
-	
+
 	bool success = false;	// Condition variable indicating that creating the socket was a success
 	int	 addressnum = 0;	// The next loop goes through all addresses that qualify the user input
-	
+
 	// When an address does not work, we skip to the next one until we find an address that works.
 	// In case no valid address is found we return an error
 	while ((success==false)&&(addressnum < address.getnumaddresses()))
@@ -200,11 +200,11 @@ bool	IComINetSocket::bind(IComAddress& address, IComSocketError &err)
 				continue;
 			}
 			hassocket_ = true;
-			
+
 			if(::bind(socketfd_,address.getsockaddr(addressnum),address.getsockaddrlen(addressnum)) < 0)
 			{
 				err.errnr = errno;
-				err.error = getbinderror(err.errnr);				
+				err.error = getbinderror(err.errnr);
 #ifdef _WIN32
 				::closesocket(socketfd_);
 #else
@@ -219,7 +219,7 @@ bool	IComINetSocket::bind(IComAddress& address, IComSocketError &err)
 			unlock();
 			success = true;
 		}
-	
+
 		if (address.isipv6(addressnum))
 		{
 			dolock();
@@ -253,9 +253,9 @@ bool	IComINetSocket::bind(IComAddress& address, IComSocketError &err)
 			success = true;
 		}
 	}
-	
+
 	if (!success) return(false);
-	
+
 	address.selectaddress(addressnum);
 	localaddress_ = address;
 	isconnected_ = false;
@@ -275,13 +275,13 @@ int		IComINetSocket::connect_timeout(int sockfd, const sockaddr* sa, socklen_t s
 // So there is no major problem if this function is not included
 
 // This still needs to be finished
-#ifdef _JGS_USE_CONNECT_TIMEOUT 
+#ifdef _JGS_USE_CONNECT_TIMEOUT
 	sig_t	sigfunc;
 	int		ret;
-	
+
 	sigfunc = ::signal(SIGALRM,connect_alarm);
 	::alarm(nsecs);
-	
+
 	if ( (ret = ::connect(sockfd,sa,salen)) < 0)
 	{
 		if (errno == EINTR)
@@ -289,10 +289,10 @@ int		IComINetSocket::connect_timeout(int sockfd, const sockaddr* sa, socklen_t s
 			errno = ETIMEDOUT;
 		}
 	}
-	
+
 	::alarm(0);
 	::signal(SIGALRM,sigfunc);
-	
+
 	return(ret);
 #else
 	return(::connect(sockfd,sa,salen));
@@ -306,27 +306,27 @@ void*	IComINetSocket::connect_alarm(int /*signo*/)
 
 bool	IComINetSocket::connect(IComAddress& address, conntype /*conn*/, IComSocketError &err)
 {
-	
-	if (!address.isvalid()) 
+
+	if (!address.isvalid())
 	{	// This piece is thread safe -> no locking required
 		err.errnr = EADDRNOTAVAIL;
 		err.error = "Invalid internet address";
 		return(false);
 	}
-	
-	if (address.isinternal()) 
+
+	if (address.isinternal())
 	{	// This piece is thread safe -> no locking required
 		err.errnr = EADDRNOTAVAIL;
 		err.error = "Address is an internal address and not an internet address";
 		return(false);
 	}
-	
+
 	bool success = false;	// Condition variable indicating that creating the socket was a success
 	int	 addressnum = 0;	// The next loop goes through all addresses that qualify the user input
 	int  tries = 0;
-	
+
 	// When an address does not work, we skip to the next one until we find an address that works.
-	// In case no valid address is found we return an error. 
+	// In case no valid address is found we return an error.
 	// This routine checks various addresses:
 	// Hence the returned error is a failure to connect to the last one in the local address structure
 
@@ -357,7 +357,7 @@ bool	IComINetSocket::connect(IComAddress& address, conntype /*conn*/, IComSocket
 			// One with a time out and one without a time out
 			// Anyway Unix will always use a time out of 75sec.
 			// But for the impatient we can set a shorter time out
-			
+
 			int retvalue;
 			if (secs_ > 0)
 			{
@@ -367,12 +367,12 @@ bool	IComINetSocket::connect(IComAddress& address, conntype /*conn*/, IComSocket
 			{
 				retvalue = ::connect(socketfd_,address.getsockaddr(addressnum),address.getsockaddrlen(addressnum));
 			}
-			
+
 			if( retvalue < 0)
 			{
 				// Find out what went wrong in connecting to the server
 				err.errnr = errno;
-                
+
 				err.error = getconnecterror(errno);
 #ifdef _WIN32
 				::closesocket(socketfd_);
@@ -388,11 +388,11 @@ bool	IComINetSocket::connect(IComAddress& address, conntype /*conn*/, IComSocket
 				// However here we just close the socket and thus kill the interrupted
 				// connection process. We just try once more. It is not the most elegant
 				// solution, but it should work.
-				if ((err.errnr != EINTR)&&(err.errnr != EINPROGRESS)) 
-				{ 
+				if ((err.errnr != EINTR)&&(err.errnr != EINPROGRESS))
+				{
 					addressnum++; tries = 0;
-				} 
-				else 
+				}
+				else
 				{
 					tries++;
 					if (tries == 10) addressnum++;
@@ -402,7 +402,7 @@ bool	IComINetSocket::connect(IComAddress& address, conntype /*conn*/, IComSocket
 			unlock();
 			success = true;
 		}
-	
+
 		if (address.isipv6(addressnum))
 		{
 			tries++;
@@ -421,7 +421,7 @@ bool	IComINetSocket::connect(IComAddress& address, conntype /*conn*/, IComSocket
 				continue;
 			}
 			hassocket_ = true;
-			
+
 			int retvalue;
 			if (secs_ > 0)
 			{
@@ -431,7 +431,7 @@ bool	IComINetSocket::connect(IComAddress& address, conntype /*conn*/, IComSocket
 			{
 				retvalue = ::connect(socketfd_,address.getsockaddr(addressnum),address.getsockaddrlen(addressnum));
 			}
-			
+
 			if( retvalue < 0)
 			{
 				// Find out what went wrong in connecting to the server
@@ -451,11 +451,11 @@ bool	IComINetSocket::connect(IComAddress& address, conntype /*conn*/, IComSocket
 				// However here we just close the socket and thus kill the interrupted
 				// connection process. We just try once more. It is not the most elegant
 				// solution, but it should work.
-				if ((err.errnr != EINTR)&&(err.errnr != EINPROGRESS)) 
-				{ 
+				if ((err.errnr != EINTR)&&(err.errnr != EINPROGRESS))
+				{
 					addressnum++; tries = 0;
-				} 
-				else 
+				}
+				else
 				{
 					tries++;
 					if (tries == 10) addressnum++;
@@ -466,24 +466,24 @@ bool	IComINetSocket::connect(IComAddress& address, conntype /*conn*/, IComSocket
 			success = true;
 		}
 	}
-	if (!success) 
+	if (!success)
 	{
 		return(false);
 	}
-	
+
 	address.selectaddress(addressnum);
 	remoteaddress_ = address;
 	isconnected_ = true;
-	
+
 	// Reset the error, as we did not encouter one
 	err.error = "";
 	err.errnr = 0;
-	
-	return(true);	
+
+	return(true);
 }
 
 
-	
+
 bool	IComINetSocket::close(IComSocketError &err)
 {
 
@@ -495,7 +495,7 @@ bool	IComINetSocket::close(IComSocketError &err)
 
 		// Whatever error occured th socket should be closed
 		// and that is what we wanted.
-		
+
 		socketfd_ = 0;
 		isconnected_ = false;
 	}
@@ -511,7 +511,7 @@ bool	IComINetSocket::close(IComSocketError &err)
 bool IComINetSocket::getlocaladdress(IComAddress &address,IComSocketError &err)
 {
 	address = localaddress_;
-	
+
 	// There is no way this function can fail
 	// If there is no address an invalid address is generated
 	// which can be tested for in the IComAddress class
@@ -519,11 +519,11 @@ bool IComINetSocket::getlocaladdress(IComAddress &address,IComSocketError &err)
 	err.error = "";
 	return(true);
 }
-	
+
 bool IComINetSocket::getremoteaddress(IComAddress &address,IComSocketError &err)
 {
 	address = remoteaddress_;
-	
+
 	// There is no way this function can fail
 	// If there is no address an invalid address is generated
 	// which can be tested for in the IComAddress class
@@ -531,13 +531,13 @@ bool IComINetSocket::getremoteaddress(IComAddress &address,IComSocketError &err)
 	err.error = "";
 	return(true);
 }
-	
+
 bool IComINetSocket::settimeout(int secs, int microsecs, IComSocketError &err)
 {
 	dolock();
 
 	secs_ = secs;
-	microsecs_ = microsecs; 
+	microsecs_ = microsecs;
 	if (hassocket_)
 	{
 #ifdef _WIN32
@@ -558,7 +558,7 @@ bool IComINetSocket::settimeout(int secs, int microsecs, IComSocketError &err)
 			unlock();
 			return(false);
 		}
-		if ( ::setsockopt(socketfd_,SOL_SOCKET,SO_SNDTIMEO,tvp,size) < 0);
+		if (::setsockopt(socketfd_,SOL_SOCKET,SO_SNDTIMEO,tvp,size) < 0)
 		{
 			err.errnr = errno;
 			err.error = getsockopterror(errno);
@@ -566,13 +566,13 @@ bool IComINetSocket::settimeout(int secs, int microsecs, IComSocketError &err)
 			return(false);
 		}
 	}
-	
+
 	unlock();
 	err.errnr = 0;
 	err.error = "";
 	return(true);
 }
- 
+
 
 bool	IComINetSocket::listen(IComSocketError &err)
 {
@@ -580,14 +580,14 @@ bool	IComINetSocket::listen(IComSocketError &err)
 	{
 		dolock();
 		int ret = 0;
-		
+
 		while (1)
 		{
 			// In case some implementation decides it can interrupt
 			// a listen state of a thread. I haven't found any suggestions
 			// that there is such a system, but to be safe a protection is
 			// implemented against it.
-			
+
 			ret = ::listen(socketfd_,50);
 			if (ret < 0)
 			{
@@ -595,8 +595,8 @@ bool	IComINetSocket::listen(IComSocketError &err)
 			}
 			break;
 		}
-		
-		if(ret < 0) 
+
+		if(ret < 0)
 		{
 			err.errnr = errno;
 			err.error = getlistenerror(errno);
@@ -616,24 +616,24 @@ bool	IComINetSocket::listen(IComSocketError &err)
 
 bool    IComINetSocket::accept(IComSocket& newsock, IComSocketError &err)
 {
-	if (!hassocket_) 
+	if (!hassocket_)
 	{
 		err.errnr = EBADF;
 		err.error = "No socket has been created for accepting connections";
 		return(false);
 	}
-	
+
 	// Here we start changing the content of the structure
 	// Or at least we do not want to have two processes accepting connections at the
 	// same time. Hence protect the accept procedure with a lock
-	
+
 	dolock();
 	int newfd = -1;			// Socket created by the system on which the accepted connection can be found
 	IComAddress newaddress; // The address of this new connection
-	
-    
+
+
 	if (localaddress_.isipv4())
-	{ 
+	{
 		sockaddr_in sa;
 		socklen_t salen = sizeof(sockaddr_in);
 		// Try to get the file descriptor of the socket that th system connected for use
@@ -641,16 +641,16 @@ bool    IComINetSocket::accept(IComSocket& newsock, IComSocketError &err)
 		{
 			newfd = ::accept(socketfd_,reinterpret_cast<sockaddr *>(&sa),&salen);
 			if (newfd < 0)
-			{	
+			{
 				// If some process interupted our call to accept, we have to call the
-				// accept function again. 
+				// accept function again.
 				// On some systems io calls are interupted when a software interrupt occurs
 				// Hence we have to restart such a call
 				if (errno == EINTR) continue;
 			}
 			break;
 		}
-        
+
 		if (newfd < 0)
 		{
 			// An error occured, so we need to deal with that
@@ -659,21 +659,21 @@ bool    IComINetSocket::accept(IComSocket& newsock, IComSocketError &err)
 			unlock();
 			return(false);
 		}
-        
+
 		if (salen == sizeof(sockaddr_in)) newaddress.setaddress("scirun",reinterpret_cast<sockaddr *>(&sa));
 	}
 
 	if (localaddress_.isipv6())
-	{ 
+	{
 		sockaddr_in6 sa;
 		socklen_t salen = sizeof(sockaddr_in6);
 		while (1)
 		{
 			newfd = ::accept(socketfd_,reinterpret_cast<sockaddr *>(&sa),&salen);
 			if (newfd < 0)
-			{	
+			{
 				// If some process interupted our call to accept, we have to call the
-				// accept function again. 
+				// accept function again.
 				// On some systems io calls are interupted when a software interrupt occurs
 				// Hence we have to restart such a call manually
 				if (errno == EINTR) continue;
@@ -706,7 +706,7 @@ bool    IComINetSocket::accept(IComSocket& newsock, IComSocketError &err)
 		unlock();
 		return(false);
 	}
-	
+
 	// As mentioned above, newsock is only a handle to a IComVitrualSocket
 	// If everything is OK, this vitrual socket has been overloaded with the
 	// real socket. In the next line we try to get to this real socket
@@ -721,14 +721,14 @@ bool    IComINetSocket::accept(IComSocket& newsock, IComSocketError &err)
 		err.error = "Internal pointer to socket is not valid";
 		return(false);
 	}
-	
+
 	// Now we have the internal structure of the newly created
 	// INet socket. Which we now have to fill with the new information
 	// This is a kind of cheating, as we go to the lowest level directly to
 	// create the new socket. The problem is that the system already create a
 	// socket for us, hence we need to artificially set the information in this
 	// new socket.
-	
+
 	newsocket->socketfd_ = newfd;
 	newsocket->hassocket_ = true;
 	newsocket->isconnected_ = true;
@@ -753,7 +753,7 @@ bool	IComINetSocket::poll(IComPacketHandle &packet, IComSocketError &err)
 	int len = 0;
 
 	if (packet == 0) packet = new IComPacket;
-	
+
 #ifdef _WIN32
         int flags = MSG_PEEK;
 #else
@@ -783,12 +783,12 @@ bool	IComINetSocket::send(IComPacketHandle &packet, IComSocketError &err)
 	int bytessend = 0;
 	int bytestosend = 0;
 	char *buf = 0;
-	
+
     // If we are writing to a socket that was close, we want
     // an error msg, we do not want the program to quit as the
     // default handler does.
 	//    ::signal(SIGPIPE,SIG_IGN);
-    
+
 	::strncpy(reinterpret_cast<char *>(&(header[0])),"icpacket",8);
 	header[2] = packet->getelsize();
 	header[3] = packet->getdatasize();
@@ -796,7 +796,7 @@ bool	IComINetSocket::send(IComPacketHandle &packet, IComSocketError &err)
 	header[5] = packet->getid();
 	header[6] = packet->getparam1();
 	header[7] = packet->getparam2();
-	
+
 	dolock();
 	bytessend = 0;
 	bytestosend = 32;
@@ -812,7 +812,7 @@ bool	IComINetSocket::send(IComPacketHandle &packet, IComSocketError &err)
 		}
 		bytessend += len;
 	}
-	
+
 	if (len < 0)
 	{
 		err.errnr = errno;
@@ -820,8 +820,8 @@ bool	IComINetSocket::send(IComPacketHandle &packet, IComSocketError &err)
 		unlock();
 		return(false);
 	}
-	
-	if (bytessend != bytestosend) 
+
+	if (bytessend != bytestosend)
 	{
 		err.errnr = EMSGSIZE;
 		err.error = "Could not send the complete packet";
@@ -839,12 +839,12 @@ bool	IComINetSocket::send(IComPacketHandle &packet, IComSocketError &err)
 		{
 			if ((errno == EINTR)||(errno == EAGAIN)) continue;
             if ((errno == EPIPE)) isconnected_ = false;
-            break;            
+            break;
 		}
 		bytessend += len;
 	}
 
-	
+
 	if (len < 0)
 	{
 		err.errnr = errno;
@@ -852,18 +852,18 @@ bool	IComINetSocket::send(IComPacketHandle &packet, IComSocketError &err)
 		unlock();
 		return(false);
 	}
-	
-	
-	if (bytessend != bytestosend) 
+
+
+	if (bytessend != bytestosend)
 	{
 		err.errnr = EMSGSIZE;
 		err.error = "Could not send the complete packet";
 		unlock();
 		return(false);
 	}
-	
+
 	unlock();
-	
+
 	err.errnr = 0;
 	err.error = "";
 	return(true);
@@ -881,13 +881,13 @@ bool	IComINetSocket::recv(IComPacketHandle &packet, IComSocketError &err)
 	if (packet == 0) packet = new IComPacket();
 
 	buffer[8] = 0;
-	
+
     len = 0;
-	bytesread   = 0;  
+	bytesread   = 0;
 	bytestoread = 8;
 	while (bytesread < bytestoread)
 	{
-		len = ::recv(socketfd_,&(buffer[bytesread]),(bytestoread-bytesread),0);	
+		len = ::recv(socketfd_,&(buffer[bytesread]),(bytestoread-bytesread),0);
 		if (len < 0)
 		{
 			if ((errno == EINTR)||(errno == EAGAIN)) continue;
@@ -895,42 +895,7 @@ bool	IComINetSocket::recv(IComPacketHandle &packet, IComSocketError &err)
 		}
 		bytesread += len;
 	}
-	
-	if (len < 0) 
-	{
-		if (errno == ENOTCONN) isconnected_ = false;
-		err.errnr = errno;
-		err.error = getrecverror(errno);
-		return(false);
-	}
-	if (bytesread != bytestoread)
-	{
-		err.errnr = EMSGSIZE;
-		err.error = std::string("Could not read enough bytes from stream");
-		return(false);
-	}
-	if (::strncmp("icpacket",buffer,8) != 0) 
-	{
-		err.errnr = EMSGSIZE;
-		err.error = std::string("Protocol fault, received improper data");
-		return(false);
-	}
-	
-    len = 0;
-	bytesread = 0;
-	bytestoread = 24;
-	
-	while (bytesread < bytestoread)
-	{
-		len = ::recv(socketfd_,&(buffer[bytesread]),(bytestoread-bytesread),0);	
-		if (len < 0)
-		{
-			if ((errno == EINTR)||(errno == EAGAIN)) continue;
-			break;
-		}
-		bytesread += len;
-	}
-	
+
 	if (len < 0)
 	{
 		if (errno == ENOTCONN) isconnected_ = false;
@@ -942,24 +907,59 @@ bool	IComINetSocket::recv(IComPacketHandle &packet, IComSocketError &err)
 	{
 		err.errnr = EMSGSIZE;
 		err.error = std::string("Could not read enough bytes from stream");
-		return(false);		
-	}	
+		return(false);
+	}
+	if (::strncmp("icpacket",buffer,8) != 0)
+	{
+		err.errnr = EMSGSIZE;
+		err.error = std::string("Protocol fault, received improper data");
+		return(false);
+	}
+
+    len = 0;
+	bytesread = 0;
+	bytestoread = 24;
+
+	while (bytesread < bytestoread)
+	{
+		len = ::recv(socketfd_,&(buffer[bytesread]),(bytestoread-bytesread),0);
+		if (len < 0)
+		{
+			if ((errno == EINTR)||(errno == EAGAIN)) continue;
+			break;
+		}
+		bytesread += len;
+	}
+
+	if (len < 0)
+	{
+		if (errno == ENOTCONN) isconnected_ = false;
+		err.errnr = errno;
+		err.error = getrecverror(errno);
+		return(false);
+	}
+	if (bytesread != bytestoread)
+	{
+		err.errnr = EMSGSIZE;
+		err.error = std::string("Could not read enough bytes from stream");
+		return(false);
+	}
 	long* header = reinterpret_cast<long *>(buffer);
 
-	
+
 	if (header[0] > 255)
 	{	// The whole thing must be byte swapped if the first number is over 255
 		packet->swap_bytes(header,6,4);
 		byteswap = true;
 	}
-	
+
 	packet->setelsize(header[0]);
 	packet->setdatasize(header[1]);
 	packet->settag(header[2]);
 	packet->setid(header[3]);
 	packet->setparam1(header[4]);
 	packet->setparam2(header[5]);
-	
+
 	int bytesize = header[0]*header[1];
     if (bytesize > 0)
     {
@@ -972,7 +972,7 @@ bool	IComINetSocket::recv(IComPacketHandle &packet, IComSocketError &err)
             std::cerr << "Did run out of memory\n";
             return(false);
         }
-        
+
         len = 0;
         bytesread = 0;
         bytestoread = bytesize;
@@ -984,10 +984,10 @@ bool	IComINetSocket::recv(IComPacketHandle &packet, IComSocketError &err)
                 if ((errno == EINTR)||(errno == EAGAIN)) continue;
                 break;
             }
-            bytesread += len; 
+            bytesread += len;
         }
-        
-        
+
+
         if (len < 0)
         {
             if (errno == ENOTCONN) isconnected_ = false;
@@ -1000,25 +1000,24 @@ bool	IComINetSocket::recv(IComPacketHandle &packet, IComSocketError &err)
         {
             err.errnr = EMSGSIZE;
             err.error = std::string("Could not read enough bytes from stream");
-            return(false);		
-        }	
-        
+            return(false);
+        }
+
         if (byteswap) packet->swap_bytes(buf,header[1],header[0]);
 	}
-    
+
 	err.errnr = 0;
-	err.error = "";				
+	err.error = "";
 	return(true);
 }
- 
+
 bool	IComINetSocket::isconnected(IComSocketError& /*err*/)
 {
-	// I need to update this function to have a better mechanism for detecting 
+	// I need to update this function to have a better mechanism for detecting
 	// broken connections. This currently only checks of the socket was originally
 	// connected
 	return(isconnected_);
-} 
+}
 
 
 } // end namespace
-

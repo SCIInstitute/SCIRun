@@ -34,6 +34,7 @@
 
 #include <Core/Services/ServiceBase.h>
 #include <fstream>
+#include <Core/Thread/Mutex.h>
 #include <Core/Services/share.h>
 
 namespace SCIRun {
@@ -55,6 +56,7 @@ public:
 private:
   std::ofstream logfile_;
   bool haslog_;
+  Core::Thread::Mutex lock_;
 };
 
 typedef boost::shared_ptr<ServiceLog> ServiceLogHandle;

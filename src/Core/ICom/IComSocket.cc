@@ -87,6 +87,7 @@ bool IComSocket::create()
     }
   }
 
+#if 0
   if (protocol_ == "sciruns")
   {
     try
@@ -102,6 +103,7 @@ bool IComSocket::create()
       return(false);
     }
   }
+#endif
 
   if (protocol_ == "internal")
   {

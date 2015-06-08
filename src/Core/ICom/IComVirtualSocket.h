@@ -40,13 +40,11 @@
 
 #include <errno.h>
 #include <Core/ICom/IComBase.h>
-//#include <Core/ICom/IComPacket.h>
-//#include <Core/ICom/IComAddress.h>
+#include <Core/ICom/IComSocket.h>
 #include <Core/Thread/Mutex.h>
 
 namespace SCIRun {
 
-class IComSocket;
 class IComPacket;
 
 class IComVirtualSocket : public IComBase

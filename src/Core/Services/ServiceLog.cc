@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -31,38 +31,37 @@
 
 
 #include <Core/Services/ServiceLog.h>
-#include <Core/Thread/Guard.h>
+#include <Core/Thread/Mutex.h>
 
 namespace SCIRun {
 
-ServiceLog::ServiceLog(const std::string& filename) :
-  UsedWithLockingHandleAndMutex("servicelog lock"), 
-  haslog_(false) 
-{	
-  if (!filename.empty()) 
+ServiceLog::ServiceLog(const std::string& filename) : haslog_(false)
+  lock_("servicelog lock")
+{
+  if (!filename.empty())
   {
-    try 
+    try
     {
       logfile_.open(filename.c_str());
       haslog_ = true;
     }
-    catch(...) 
+    catch(...)
     {
       haslog_ = false;
     }
   }
-}	
+}
 
 ServiceLog::~ServiceLog() {}
 
 void ServiceLog::putmsg(const std::string& msg)
 {
-  if (haslog_) 
+  if (haslog_)
   {
-    Guard g(&lock);
+    Guard g(lock_.get());
     logfile_ << msg << std::endl;
     logfile_.flush();
   }
-}	
+}
 
 }

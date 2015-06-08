@@ -74,8 +74,8 @@ class IComAddress;
 class IComVirtualSocket;
 
 // Special class for reporting errors
-class IComSocketError {
-  public:
+struct SCISHARE IComSocketError
+{
 	std::string error;  // Description of the error
 	int			errnr;  // Corresponding errno
 };

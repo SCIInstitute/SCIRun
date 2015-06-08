@@ -304,7 +304,7 @@ namespace MatlabImpl
           };
         }}}}
 
-  InterfaceWithMatlabEngineThreadInfo::InterfaceWithMatlabEngineThreadInfo() :
+  MatlabImpl::InterfaceWithMatlabEngineThreadInfo::InterfaceWithMatlabEngineThreadInfo() :
     UsedWithLockingHandle<Mutex>("InterfaceWithMatlabEngineInfo lock"),
     wait_code_done_("InterfaceWithMatlabEngineInfo condition variable code"),
     code_done_(false),
@@ -316,23 +316,23 @@ namespace MatlabImpl
   {
   }
 
-  void InterfaceWithMatlabEngineThreadInfo::dolock()
+  void MatlabImpl::InterfaceWithMatlabEngineThreadInfo::dolock()
   {
     lock_.lock();
   }
 
-  void InterfaceWithMatlabEngineThreadInfo::unlock()
+  void MatlabImpl::InterfaceWithMatlabEngineThreadInfo::unlock()
   {
     lock_.unlock();
   }
 
-  InterfaceWithMatlabEngineThread::InterfaceWithMatlabEngineThread(ServiceClientHandle serv_handle, InterfaceWithMatlabEngineThreadInfoHandle info_handle) :
+  MatlabImpl::InterfaceWithMatlabEngineThread::InterfaceWithMatlabEngineThread(ServiceClientHandle serv_handle, InterfaceWithMatlabEngineThreadInfoHandle info_handle) :
     serv_handle_(serv_handle),
     info_handle_(info_handle)
   {
   }
 
-  void InterfaceWithMatlabEngineThread::run()
+  void MatlabImpl::InterfaceWithMatlabEngineThread::operator()()
   {
     IComPacketHandle	packet;
     bool				done = false;

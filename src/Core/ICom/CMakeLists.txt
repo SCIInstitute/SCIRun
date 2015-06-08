@@ -32,8 +32,8 @@ SET(Core_ICom_SRCS
   #IComPacket.cc
   IComSocket.cc
   #IComVirtualSocket.cc
-  #IComINetSocket.cc
-  #IComInternalSocket.cc
+  IComINetSocket.cc
+  IComInternalSocket.cc
   #IComSslSocket.cc
   #IComRHostList.cc
 )

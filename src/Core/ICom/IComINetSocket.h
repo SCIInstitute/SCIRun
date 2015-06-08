@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,15 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
- 
+
 /*
- *  IComVirtualSocket.h 
+ *  IComVirtualSocket.h
  *
  *  Written by:
  *  Jeroen Stinstra
  *
  */
- 
+
 #ifndef JGS_SCI_CORE_ICOM_INETSOCKET_H
 #define JGS_SCI_CORE_ICOM_INETSOCKET_H 1
 
@@ -67,30 +67,30 @@ class IComINetSocket : public IComVirtualSocket {
   public:
 	IComINetSocket();
 	virtual ~IComINetSocket();
-	
+
   public:
-  
-	bool	bind(IComAddress& address, IComSocketError &err);
-	bool	connect(IComAddress& address, conntype conn, IComSocketError &err);	
-	
-	bool	close(IComSocketError &err);	
 
-	bool	getlocaladdress(IComAddress &address, IComSocketError &err);	// Get local address
-	bool	getremoteaddress(IComAddress &address, IComSocketError &err);	// Get remote address
-	
-	bool	settimeout(int secs, int microsecs, IComSocketError &err);	// set the time out of the socket 
+	virtual bool	bind(IComAddress& address, IComSocketError &err) override;
+  virtual bool	connect(IComAddress& address, conntype conn, IComSocketError &err) override;;
 
-	bool	listen(IComSocketError &err);					// Listen for a connection
-	bool    accept(IComSocket& newsock, IComSocketError &err);	// Accept the connection and get a new socket object
-	
-	bool	poll(IComPacketHandle &packet, IComSocketError &err);	// Poll whether there is a packet waiting (non blocking)
-	bool	send(IComPacketHandle &packet, IComSocketError &err);	// Send a packet (blocking)
-	bool	recv(IComPacketHandle &packet, IComSocketError &err);	// Recv a packet (blocking)	
+  virtual bool	close(IComSocketError &err) override;;
 
-	bool	isconnected(IComSocketError &err);
+  virtual bool	getlocaladdress(IComAddress &address, IComSocketError &err) override;;	// Get local address
+  virtual bool	getremoteaddress(IComAddress &address, IComSocketError &err) override;;	// Get remote address
+
+  virtual bool	settimeout(int secs, int microsecs, IComSocketError &err) override;;	// set the time out of the socket
+
+  virtual bool	listen(IComSocketError &err) override;;					// Listen for a connection
+  virtual bool    accept(IComSocket& newsock, IComSocketError &err) override;;	// Accept the connection and get a new socket object
+
+  virtual bool	poll(IComPacketHandle &packet, IComSocketError &err) override;;	// Poll whether there is a packet waiting (non blocking)
+  virtual bool	send(IComPacketHandle &packet, IComSocketError &err) override;;	// Send a packet (blocking)
+  virtual bool	recv(IComPacketHandle &packet, IComSocketError &err) override;;	// Recv a packet (blocking)
+
+  virtual bool	isconnected(IComSocketError &err) override;;
 
   private:
-  
+
 	int connect_timeout(int sockfd, const sockaddr* sa, socklen_t salen,int nsecs);
 	void* connect_alarm(int signo);
 
@@ -104,23 +104,23 @@ class IComINetSocket : public IComVirtualSocket {
 	std::string	getconnecterror(int errnr);
 	std::string	getlistenerror(int errnr);
 	std::string getsockopterror(int errnr);
-	std::string getaccepterror(int errnr);	
-	std::string getsenderror(int errnr);	
-	std::string getrecverror(int errnr);	
+	std::string getaccepterror(int errnr);
+	std::string getsenderror(int errnr);
+	std::string getrecverror(int errnr);
 
-  
+
 	int		bytesinbuffer_;
 	char	buffer_[32];
-	
+
 	int		socketfd_;
 	bool	hassocket_;
 	bool	isconnected_;
 	int		secs_;
 	int		microsecs_;
-	
+
 	IComAddress localaddress_;
 	IComAddress remoteaddress_;
-	
+
 	// THIS FUNCTION NEEDS TO BE COMPLETED
 };
 

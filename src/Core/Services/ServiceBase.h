@@ -32,6 +32,7 @@
 #ifndef CORE_SERVICES_SERVICEBASE_H
 #define CORE_SERVICES_SERVICEBASE_H 1
 
+#include <boost/shared_ptr.hpp>
 #include <Core/Services/share.h>
 
 namespace SCIRun {
