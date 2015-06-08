@@ -32,12 +32,8 @@
 #ifndef CORE_SERVICES_SERVICECLIENT_H
 #define CORE_SERVICES_SERVICECLIENT_H 1
 
-//#include <Core/ICom/IComAddress.h>
-//#include <Core/ICom/IComSocket.h>
+#include <Core/ICom/IComFwd.h>
 #include <Core/Services/ServiceBase.h>
-//#include <Core/Services/ServiceDB.h>
-//#include <Core/Services/Service.h>
-//#include <Core/Thread/Thread.h>
 
 #include <iostream>
 #include <string>
@@ -54,32 +50,32 @@ class SCISHARE ServiceClient : public ServiceBase
     ServiceClient();
     virtual ~ServiceClient();
 
-    bool  open(IComAddress address, std::string servicename, 
+    bool  open(IComAddressHandle address, std::string servicename,
                int session, std::string passwd);
 
-    bool  open(IComAddress address, std::string servicename, 
+    bool  open(IComAddressHandle address, std::string servicename,
                int session, std::string passwd,
                int timeout, std::string startcommand);
 
     bool  close();
   
-    ServiceClient* clone();
+    ServiceClient* clone() const;
 
     ////////////////////////////////////////
   
-    inline IComSocket  getsocket();
+    IComSocketHandle  getsocket();
     
-    inline std::string geterror();
-    inline std::string getremoteaddress();
-    inline std::string getversion();
-    inline std::string getsession();
-    inline void        setsession(int session);
+    std::string geterror();
+    std::string getremoteaddress();
+    std::string getversion();
+    std::string getsession();
+    void        setsession(int session);
 
-    inline bool    send(IComPacketHandle &packet);
-    inline bool    recv(IComPacketHandle &packet);
-    inline bool    poll(IComPacketHandle &packet);
-    inline void    seterror(std::string);
-    inline void    clearerror();
+    bool    send(IComPacketHandle &packet);
+    bool    recv(IComPacketHandle &packet);
+    bool    poll(IComPacketHandle &packet);
+    void    seterror(std::string);
+    void    clearerror();
   
   private:
 
@@ -87,7 +83,7 @@ class SCISHARE ServiceClient : public ServiceBase
     std::string  version_;
     std::string  error_;
     int          errno_;
-    IComSocket   socket_;
+    IComSocketHandle   socket_;
     bool         need_send_end_stream_;
 };
 

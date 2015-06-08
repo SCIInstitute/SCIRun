@@ -57,7 +57,7 @@ namespace SCIRun {
 
 class IComSocket;
 
-class SCISHARE IComPacket : public IComBase, public UsedWithLockingHandle<Mutex>
+class SCISHARE IComPacket : public IComBase
 {
   friend class IComSocket;
 public:

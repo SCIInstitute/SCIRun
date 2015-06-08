@@ -29,22 +29,36 @@
 # Sources of Core/ICom classes
 SET(Core_ICom_SRCS
   IComAddress.cc 
-  IComPacket.cc 
-  IComSocket.cc 
-  IComVirtualSocket.cc 
-  IComINetSocket.cc 
-  IComInternalSocket.cc 
-  IComSslSocket.cc 
-  IComRHostList.cc
+  #IComPacket.cc 
+  #IComSocket.cc 
+  #IComVirtualSocket.cc 
+  #IComINetSocket.cc 
+  #IComInternalSocket.cc 
+  #IComSslSocket.cc 
+  #IComRHostList.cc
 )
 
-SCIRUN_ADD_LIBRARY(Core_ICom ${Core_ICom_SRCS})
+SET(Core_ICom_HEADERS
+  IComAddress.h
+  IComPacket.h
+  IComSocket.h
+  IComVirtualSocket.h
+  IComINetSocket.h
+  IComInternalSocket.h
+  IComSslSocket.h
+  IComRHostList.h
+  IComBase.h
+  IComFwd.h
+  share.h
+)
+
+SCIRUN_ADD_LIBRARY(Core_ICom ${Core_ICom_SRCS} ${Core_ICom_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_ICom 
-  Core_Thread       
-  Core_Util
-  Core_Exceptions   
-  ${SOCKET_LIBRARY}
+  #Core_Thread       
+  #Core_Util
+  #Core_Exceptions   
+  #${SOCKET_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
