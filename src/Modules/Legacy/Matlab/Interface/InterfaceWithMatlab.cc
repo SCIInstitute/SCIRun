@@ -48,7 +48,7 @@
 
 #include <Core/Services/ServiceClient.h>
 //#include <Core/ICom/IComAddress.h>
-//#include <Core/ICom/IComPacket.h>
+#include <Core/ICom/IComPacket.h>
 
 #if 0
 
@@ -282,10 +282,8 @@ namespace MatlabImpl
 #endif
 
 #ifndef USE_MATLAB_ENGINE_LIBRARY
-#if 0
             ServiceClientHandle           matlab_engine_;
-            InterfaceWithMatlabEngineThreadInfoHandle	thread_info_
-#endif
+            MatlabImpl::InterfaceWithMatlabEngineThreadInfoHandle	thread_info_;
 #else
             Engine* engine_;
             char output_buffer_[51200];
@@ -987,13 +985,13 @@ void InterfaceWithMatlab::execute()
       if(!(matlab_engine_->recv(packet)))
       {
         matlab_engine_->close();
-        file_transfer_->close();
-        error(std::string("InterfaceWithMatlab: Could not get answer from matlab engine (error=") + matlab_engine_->geterror() + std::string(")"));
-        error(std::string("InterfaceWithMatlab: This is an internal communication error, make sure that the portnumber is correct"));
-        error(std::string("InterfaceWithMatlab: If address information is correct, this most probably points to a bug in the SCIRun software"));
+        //file_transfer_->close();
+        module_->error(std::string("InterfaceWithMatlab: Could not get answer from matlab engine (error=") + matlab_engine_->geterror() + std::string(")"));
+        module_->error(std::string("InterfaceWithMatlab: This is an internal communication error, make sure that the portnumber is correct"));
+        module_->error(std::string("InterfaceWithMatlab: If address information is correct, this most probably points to a bug in the SCIRun software"));
 
-        matlab_engine_ = 0;
-        file_transfer_ = 0;
+        matlab_engine_.reset();
+        //file_transfer_ = 0;
 
         return(false);
       }
@@ -1002,34 +1000,34 @@ void InterfaceWithMatlab::execute()
       if (packet->gettag() == TAG_MERROR)
       {
         matlab_engine_->close();
-        file_transfer_->close();
+        //file_transfer_->close();
 
-        error(std::string("InterfaceWithMatlab: InterfaceWithMatlab engine returned an error (error=") + packet->getstring() + std::string(")"));
-        error(std::string("InterfaceWithMatlab: Please check whether '[MATLAB_DIRECTORY]/services/matlabengine.rc' has been setup properly"));
-        error(std::string("InterfaceWithMatlab: Press the 'Edit Local Config of Matlab Engine' to change the configuration"));
-        error(std::string("InterfaceWithMatlab: Edit the 'startmatlab=' line to start matlab properly"));
-        error(std::string("InterfaceWithMatlab: If you running matlab remotely, this file must be edited on the machine running matlab"));
+        module_->error(std::string("InterfaceWithMatlab: InterfaceWithMatlab engine returned an error (error=") + packet->getstring() + std::string(")"));
+        module_->error(std::string("InterfaceWithMatlab: Please check whether '[MATLAB_DIRECTORY]/services/matlabengine.rc' has been setup properly"));
+        module_->error(std::string("InterfaceWithMatlab: Press the 'Edit Local Config of Matlab Engine' to change the configuration"));
+        module_->error(std::string("InterfaceWithMatlab: Edit the 'startmatlab=' line to start matlab properly"));
+        module_->error(std::string("InterfaceWithMatlab: If you running matlab remotely, this file must be edited on the machine running matlab"));
 
-        matlab_engine_ = 0;
-        file_transfer_ = 0;
+        matlab_engine_.reset();
+        //file_transfer_ = 0;
 
         return(false);
       }
 
-      thread_info_ = new InterfaceWithMatlabEngineThreadInfo();
-      if (thread_info_.get_rep() == 0)
+      thread_info_.reset(new MatlabImpl::InterfaceWithMatlabEngineThreadInfo());
+      if (!thread_info_)
       {
         matlab_engine_->close();
-        file_transfer_->close();
+        //file_transfer_->close();
 
-        error(std::string("InterfaceWithMatlab: Could not create thread information object"));
-        matlab_engine_ = 0;
-        file_transfer_ = 0;
+        module_->error("InterfaceWithMatlab: Could not create thread information object");
+        matlab_engine_.reset();
+        //file_transfer_ = 0;
 
         return(false);
       }
 
-      thread_info_->output_cmd_ = get_id()+" AddOutput";
+      thread_info_->output_cmd_ = module_->get_id()+" AddOutput";
 
       // By cloning the object, it will have the same fields and sockets, but the socket
       // and error handling will be separate. As the thread will invoke its own instructions
@@ -1037,45 +1035,26 @@ void InterfaceWithMatlab::execute()
       // same underlying socket. Hence only the error handling part will be duplicated
 
       ServiceClientHandle matlab_engine_copy = matlab_engine_->clone();
-      InterfaceWithMatlabEngineThread* enginethread = new InterfaceWithMatlabEngineThread(matlab_engine_copy,thread_info_);
-      if (enginethread == 0)
-      {
-        matlab_engine_->close();
-        file_transfer_->close();
+      MatlabImpl::InterfaceWithMatlabEngineThread enginethread(matlab_engine_copy,thread_info_);
 
-        matlab_engine_ = 0;
-        file_transfer_ = 0;
-
-        error(std::string("InterfaceWithMatlab: Could not create thread object"));
-        return(false);
-      }
-
-      Thread* thread = new Thread(enginethread,"InterfaceWithMatlab module thread");
-      if (thread == 0)
-      {
-        delete enginethread;
-        matlab_engine_->close();
-        file_transfer_->close();
-
-        matlab_engine_ = 0;
-        file_transfer_ = 0;
-
-        error(std::string("InterfaceWithMatlab: Could not create thread"));
-        return(false);
-      }
-      thread->detach();
+      boost::thread thread(enginethread);
+      thread.detach();
 
       int sessionn = packet->getparam1();
       matlab_engine_->setsession(sessionn);
 
-      std::string sharehomedir = "yes";
-      if (need_file_transfer_) sharehomedir = "no";
+      //std::string sharehomedir = "yes";
+      //if (need_file_transfer_) sharehomedir = "no";
 
-      // TODO: stream
-      std::string status = "Matlab engine running\n\nmatlabengine version: " + matlab_engine_->getversion() + "\nmatlabengine address: " +
-        matlab_engine_->getremoteaddress() + "\nmatlabengine session: " + matlab_engine_->getsession() + "\nmatlabengine filetransfer version :" +
-        file_transfer_->getversion() + "\nshared home directory: " + sharehomedir + "\nlocal temp directory: " + file_transfer_->local_file("") +
-        "\nremote temp directory: " + file_transfer_->remote_file("") + "\n";
+      std::ostringstream statusStr;
+      statusStr << "Matlab engine running\n\nmatlabengine version: " << matlab_engine_->getversion()
+        << "\nmatlabengine address: " << matlab_engine_->getremoteaddress()
+        << "\nmatlabengine session: " + matlab_engine_->getsession();
+        //<< "\nmatlabengine filetransfer version :" << file_transfer_->getversion()
+        //<< "\nshared home directory: " << sharehomedir 
+        //<< "\nlocal temp directory: " << file_transfer_->local_file("") 
+        //<< "\nremote temp directory: " << file_transfer_->remote_file("") + "\n";
+      auto status = statusStr.str();
 #else
       std::string status = "InterfaceWithMatlab engine running\n";
 #endif
