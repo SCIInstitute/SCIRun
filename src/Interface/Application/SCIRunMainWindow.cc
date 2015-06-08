@@ -269,7 +269,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   connect(portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(highlightPortsChanged()));
   connect(portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(highlightPorts(int)));
 
-  connect(dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
+  connect(prefsWindow_->dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
 
   makeFilterButtonMenu();
 
@@ -1397,7 +1397,7 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
 
 void SCIRunMainWindow::adjustModuleDock(int state)
 {
-  bool dockable = dockableModulesCheckBox_->isChecked();
+  bool dockable = prefsWindow_->dockableModulesCheckBox_->isChecked();
   actionPinAllModuleUIs_->setEnabled(dockable);
   Preferences::Instance().modulesAreDockable.setValue(dockable);
 }
