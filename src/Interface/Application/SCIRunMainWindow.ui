@@ -150,21 +150,6 @@
     <addaction name="actionDevConsole_"/>
     <addaction name="actionPreferences_"/>
     <addaction name="separator"/>
-    <addaction name="actionPinAllModuleUIs_"/>
-    <addaction name="actionHideAllModuleUIs_"/>
-    <addaction name="actionRestoreAllModuleUIs_"/>
-    <addaction name="separator"/>
-    <addaction name="actionCenterNetworkViewer_"/>
-    <addaction name="actionZoomIn_"/>
-    <addaction name="actionZoomOut_"/>
-    <addaction name="actionZoomBestFit_"/>
-    <addaction name="actionResetNetworkZoom_"/>
-    <addaction name="actionDragMode_"/>
-    <addaction name="actionSelectMode_"/>
-    <addaction name="separator"/>
-    <addaction name="actionToggleMetadataLayer_"/>
-    <addaction name="actionToggleTagLayer_"/>
-    <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -180,9 +165,30 @@
     <addaction name="actionDelete_"/>
     <addaction name="actionSelectAll_"/>
    </widget>
+   <widget class="QMenu" name="menuNetwork">
+    <property name="title">
+     <string>Network</string>
+    </property>
+    <addaction name="actionPinAllModuleUIs_"/>
+    <addaction name="actionHideAllModuleUIs_"/>
+    <addaction name="actionRestoreAllModuleUIs_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCenterNetworkViewer_"/>
+    <addaction name="actionZoomIn_"/>
+    <addaction name="actionZoomOut_"/>
+    <addaction name="actionZoomBestFit_"/>
+    <addaction name="actionResetNetworkZoom_"/>
+    <addaction name="separator"/>
+    <addaction name="actionDragMode_"/>
+    <addaction name="actionSelectMode_"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggleMetadataLayer_"/>
+    <addaction name="actionToggleTagLayer_"/>
+   </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
    <addaction name="menuModules_"/>
+   <addaction name="menuNetwork"/>
    <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
    <addaction name="menuWindow"/>
@@ -1305,7 +1311,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Toggle Metadata Layer</string>
+    <string>Metadata Layer</string>
    </property>
   </action>
   <action name="actionToggleTagLayer_">
@@ -1313,7 +1319,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Toggle Tag Layer</string>
+    <string>Tag Layer</string>
    </property>
   </action>
  </widget>
