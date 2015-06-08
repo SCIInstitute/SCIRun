@@ -124,5 +124,11 @@ QColor TagManagerWindow::tagColor(int tag) const
 
 void TagManagerWindow::helpButtonClicked()
 {
-  QMessageBox::information(this, "Module Tag Help", "TODO: help here");
+  QMessageBox::information(this, 
+    "Module Tag Layer Guide", 
+    "This layer allows the user to group modules in a network file by tag number. Ten tags are available, labeled 0 - 9. "
+    "Each tag's color can be chosen in the Tag Manager window, as well as a descriptive label. Tag colors are a global setting, while module tags are saved in the network file. \n\n"
+    "To use, while in the Network Editor, hold down the Alt / Option key. Then press A to see all module tag groups(each module will be colorized "
+    "according to the chosen colors). Or press 0 - 9 keys to see each tag group individually; other modules will be slightly blurred out. While in "
+    "the single - tag view, you can click a module to toggle it as tagged. There is also a button in the toolbar to view all tagged modules.");
 }
