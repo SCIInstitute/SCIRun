@@ -28,7 +28,7 @@
 
 # Sources of Core/Services classes
 SET(Core_Services_SRCS
-  #Service.cc 
+  Service.cc 
   #ServiceDB.cc 
   #ServiceFrame.cc 
   #ServiceLog.cc 
