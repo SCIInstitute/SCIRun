@@ -28,29 +28,44 @@
 
 # Sources of Core/Services classes
 SET(Core_Services_SRCS
-  Service.cc 
-  ServiceDB.cc 
-  ServiceFrame.cc 
-  ServiceLog.cc 
-  ServiceManager.cc 
-  ServiceNode.cc 
-  ServiceClient.cc 
-  SimpleService.cc 
-  FileTransfer.cc 
-  FileTransferClient.cc
+  #Service.cc 
+  #ServiceDB.cc 
+  #ServiceFrame.cc 
+  #ServiceLog.cc 
+  #ServiceManager.cc 
+  #ServiceNode.cc 
+  #ServiceClient.cc 
+  #SimpleService.cc 
+  #FileTransfer.cc 
+  #FileTransferClient.cc
 )
 
-SCIRUN_ADD_LIBRARY(Core_Services ${Core_Services_SRCS})
+SET(Core_Services_HEADERS
+  Service.h
+  ServiceDB.h
+  ServiceFrame.h
+  ServiceLog.h
+  ServiceManager.h
+  ServiceNode.h
+  ServiceClient.h
+  SimpleService.h
+  FileTransfer.h
+  FileTransferClient.h
+  ServiceBase.h
+  share.h
+)
+
+SCIRUN_ADD_LIBRARY(Core_Services ${Core_Services_SRCS} ${Core_Services_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_Services 
-  Core_Thread 
-  Core_Util 
-  Core_Exceptions 
-  Core_ICom 
+  #Core_Thread 
+  #Core_Util 
+  #Core_Exceptions 
+  #Core_ICom 
   Core_SystemCall 
-  Core_XMLUtil 
-  ${SCI_BOOST_LIBRARY}
-  ${SCI_LIBXML2_LIBRARY}
+  #Core_XMLUtil 
+  #${SCI_BOOST_LIBRARY}
+  #${SCI_LIBXML2_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

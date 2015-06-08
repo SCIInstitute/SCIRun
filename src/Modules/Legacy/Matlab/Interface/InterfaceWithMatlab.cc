@@ -46,14 +46,15 @@
 #include <Core/SystemCall/TempFileManager.h>
 #include <Core/Utils/Legacy/soloader.h>
 
-#if 0
 #include <Core/Services/ServiceClient.h>
+//#include <Core/ICom/IComAddress.h>
+//#include <Core/ICom/IComPacket.h>
+
+#if 0
+
 #include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Packages/MatlabInterface/Services/MatlabEngine.h>
 #include <Core/Thread/Runnable.h>
-
-#include <Core/ICom/IComAddress.h>
-#include <Core/ICom/IComPacket.h>
 
 #include <Core/Services/Service.h>
 #include <Core/Services/ServiceBase.h>
@@ -75,7 +76,7 @@ using namespace SCIRun::Core::Thread;
 
 //TODO: temporary for compilation.
 //#ifdef _WIN32
-#define USE_MATLAB_ENGINE_LIBRARY
+//#define USE_MATLAB_ENGINE_LIBRARY
 //#endif
 
 #ifdef USE_MATLAB_ENGINE_LIBRARY
