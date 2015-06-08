@@ -263,8 +263,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
 
-  connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
-  connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
+  connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
+  connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
   connect(portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(highlightPortsChanged()));
   connect(portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(highlightPorts(int)));
@@ -483,7 +483,7 @@ void SCIRunMainWindow::executeAll()
 void SCIRunMainWindow::setupQuitAfterExecute()
 {
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
-  prefs_->setRegressionMode(true);
+  prefsWindow_->setRegressionMode(true);
 }
 
 void SCIRunMainWindow::exitApplication(int code)
@@ -649,7 +649,7 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 
 bool SCIRunMainWindow::okToContinue()
 {
-  if (isWindowModified() && !prefs_->isRegression())  //TODO: regressionMode
+  if (isWindowModified() && !prefsWindow_->isRegression())  //TODO: regressionMode
   {
     int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"),
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
@@ -893,11 +893,11 @@ void SCIRunMainWindow::readDefaultNotePosition(int index)
 
 void SCIRunMainWindow::setupPreferencesWindow()
 {
-  prefs_ = new PreferencesWindow(networkEditor_, this);
+  prefsWindow_ = new PreferencesWindow(networkEditor_, this);
 
-  connect(actionPreferences_, SIGNAL(triggered()), prefs_, SLOT(show()));
+  connect(actionPreferences_, SIGNAL(triggered()), prefsWindow_, SLOT(show()));
   //connect(prefs_, SIGNAL(visibilityChanged(bool)), actionPreferences_, SLOT(setChecked(bool)));
-  prefs_->setVisible(false);
+  prefsWindow_->setVisible(false);
 }
 
 void SCIRunMainWindow::setupPythonConsole()
@@ -1337,7 +1337,7 @@ void SCIRunMainWindow::selectModuleKeyboardAction()
 
 void SCIRunMainWindow::modulesSnapToChanged()
 {
-  bool snapTo = modulesSnapToCheckBox_->isChecked();
+  bool snapTo = prefsWindow_->modulesSnapToCheckBox_->isChecked();
   Preferences::Instance().modulesSnapToGrid.setValue(snapTo);
 }
 

@@ -114,7 +114,7 @@ void SCIRunMainWindow::readSettings()
   {
     auto value = settings.value(snapTo).toBool();
     prefs.modulesSnapToGrid.setValue(value);
-    modulesSnapToCheckBox_->setChecked(value);
+    prefsWindow_->modulesSnapToCheckBox_->setChecked(value);
     GuiLogger::Instance().log("Setting read: modules snap to grid = " + QString::number(prefs.modulesSnapToGrid));
   }
 
@@ -141,7 +141,7 @@ void SCIRunMainWindow::readSettings()
   {
     bool disableModuleErrorDialogs = settings.value(disableModuleErrorDialogsKey).toBool();
     GuiLogger::Instance().log("Setting read: disable module error dialogs = " + QString::number(disableModuleErrorDialogs));
-    prefs_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
+    prefsWindow_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
   }
 
   const QString saveBeforeExecute = "saveBeforeExecute";
@@ -149,7 +149,7 @@ void SCIRunMainWindow::readSettings()
   {
     bool mode = settings.value(saveBeforeExecute).toBool();
     GuiLogger::Instance().log("Setting read: save before execute = " + QString::number(mode));
-    prefs_->setSaveBeforeExecute(mode);
+    prefsWindow_->setSaveBeforeExecute(mode);
   }
 
   const QString newViewSceneMouseControls = "newViewSceneMouseControls";
@@ -221,8 +221,8 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
-  settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
-  settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
+  settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());
+  settings.setValue("saveBeforeExecute", prefsWindow_->saveBeforeExecute());
   settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
   settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));

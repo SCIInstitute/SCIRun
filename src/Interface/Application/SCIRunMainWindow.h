@@ -91,7 +91,7 @@ private:
   ProvenanceWindow* provenanceWindow_;
   TagManagerWindow* tagManagerWindow_;
   DeveloperConsole* devConsole_;
-  PreferencesWindow* prefs_;
+  PreferencesWindow* prefsWindow_;
   PythonConsoleWidget* pythonConsole_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
