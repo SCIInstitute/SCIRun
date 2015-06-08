@@ -380,8 +380,6 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)),
     commandConverter_.get(), SLOT(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
-
-  prefs_->setRegressionTestDataDir();
 }
 
 void SCIRunMainWindow::setTipsAndWhatsThis()

@@ -71,10 +71,6 @@ void SCIRunMainWindow::readSettings()
   updateRecentFileActions();
   GuiLogger::Instance().log("Setting read: recent network file list");
 
-  QString regressionTestDataDir = settings.value("regressionTestDataDirectory").toString();
-  GuiLogger::Instance().log("Setting read: regression test data directory = " + regressionTestDataDir);
-  prefs_->setRegressionTestDataDir(regressionTestDataDir);
-
   //TODO: make a separate class for these keys, bad duplication.
   const QString colorKey = qname(prefs.networkBackgroundColor);
   if (settings.contains(colorKey))
@@ -219,7 +215,6 @@ void SCIRunMainWindow::writeSettings()
 
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
-  settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
   settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
   settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
   settings.setValue(qname(prefs.modulesAreDockable), prefs.modulesAreDockable.val());

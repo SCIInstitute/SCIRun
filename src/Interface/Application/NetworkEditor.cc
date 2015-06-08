@@ -973,11 +973,6 @@ void NetworkEditor::enableInputWidgets()
   deleteAction_->setEnabled(true);
 }
 
-void NetworkEditor::setRegressionTestDataDir(const QString& dir)
-{
-  controller_->getSettings().setValue("regressionTestDataDir", dir.toStdString());
-}
-
 void NetworkEditor::setBackground(const QBrush& brush)
 {
   scene_->setBackgroundBrush(brush);
