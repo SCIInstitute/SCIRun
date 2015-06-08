@@ -31,10 +31,9 @@
  * AUTH: Jeroen Stinstra
  */
 
-#include <Core/Util/StringUtil.h> 
-#include <Core/ICom/IComAddress.h> 
-#include <string.h>
-#include <stdlib.h>
+#include <Core/ICom/IComAddress.h>
+#include <Core/Thread/Mutex.h>
+#include <boost/lexical_cast.hpp>
 
 #define JGS_SCIRUNS_DEFAULT_PORT "9554"
 #define JGS_SCIRUN_DEFAULT_PORT "9553"
@@ -47,7 +46,7 @@ namespace SCIRun {
 // Each call into the kernel will be locked until the data has been
 // processed.
 
-SCIRun::Mutex DNSLock("dnslock");
+SCIRun::Core::Thread::Mutex DNSLock("dnslock");
 
 IComAddress::IComAddress() :
 isvalid_(false), isinternal_(false)
@@ -1197,7 +1196,9 @@ int IComAddress::ga_serv(struct addrinfo *aihead, const struct addrinfo *hintsp,
 	if (isdigit(serv[0])) 
   {		
     /* check for port number string first */
-		int tport; std::string serv_str(serv); from_string(serv_str,tport);
+		
+    std::string serv_str(serv); 
+    int tport = boost::lexical_cast<int>(serv_str);
     port = htons(tport);
 		if (hintsp->ai_socktype) 
     {

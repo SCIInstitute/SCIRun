@@ -39,7 +39,7 @@
 #define JGS_SCI_CORE_ICOM_PACKET_H 1
 
 #include <Core/ICom/IComBase.h>
-
+#include <boost/shared_ptr.hpp>
 #include <sys/types.h>
 
 #include <string>

@@ -40,9 +40,7 @@
 
 
 #include <Core/ICom/IComBase.h>
-#include <Core/Thread/Thread.h>
 #include <Core/Thread/Mutex.h>
-#include <Core/Containers/LockingHandle.h>
 
 #ifndef _WIN32
 #include <sys/socket.h>
@@ -54,6 +52,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #define socklen_t int
+#if 0
 // define constants in terms of windows constants
 #define EPROTONOSUPPORT WSAEPROTONOSUPPORT 
 #define ENOBUFS WSAENOBUFS
@@ -73,7 +72,7 @@
 #define EMSGSIZE WSAEMSGSIZE
 #define ENOTCONN WSAENOTCONN
 #define EINPROGRESS WSAEINPROGRESS
-
+#endif
 
 #endif
 
