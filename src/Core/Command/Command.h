@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-/// @todo Documentation Core/Command/Command.h 
+/// @todo Documentation Core/Command/Command.h
 
 #ifndef CORE_COMMAND_COMMAND_H
 #define CORE_COMMAND_COMMAND_H
@@ -77,6 +77,7 @@ namespace SCIRun
         ShowSplashScreen,
         PrintHelp,
         PrintVersion,
+        PrintModules,
         LoadNetworkFile,
         RunPythonScript,
         SetupDataDirectory,

@@ -59,17 +59,20 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
-  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent)
+  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, 
+  TagColorFunc tagColor,
+  QWidget* parent)
   : QGraphicsView(parent),
   deleteAction_(0),
   sendToBackAction_(0),
   propertiesAction_(0),
   modulesSelectedByCL_(false),
   currentScale_(1),
+  tagLayerActive_(false),
+  tagColor_(tagColor),
   scene_(new QGraphicsScene(parent)),
   visibleItems_(true),
   lastModulePosition_(0,0),
-  defaultModulePosition_(0,0),
   dialogErrorControl_(dialogErrorControl),
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
@@ -292,6 +295,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
 
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)));
+  connect(module, SIGNAL(interrupt(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(interrupt(const SCIRun::Dataflow::Networks::ModuleId&)));
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(noteChanged()), this, SIGNAL(modified()));
   connect(module, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
@@ -326,8 +330,12 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
   proxy->setZValue(zLevelManager_->get_max());
+  while (!scene_->items(lastModulePosition_.x() - 20, lastModulePosition_.y() - 20, 40, 40).isEmpty())
+  {
+    lastModulePosition_ += QPointF(20, -20);
+  }
   proxy->setPos(lastModulePosition_);
-  lastModulePosition_ += moduleAddIncrement;
+
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
@@ -338,6 +346,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
   connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
   connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
+  connect(proxy, SIGNAL(tagChanged(int)), this, SLOT(highlightTaggedItem(int)));
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
@@ -345,7 +354,6 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   scene_->addItem(proxy);
   proxy->createStartupNote();
-  proxy->snapToGrid();
 
   scene_->clearSelection();
   proxy->setSelected(true);
@@ -610,13 +618,13 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   //TODO: mime check here to ensure this only gets called for drags from treewidget
   if (moduleSelectionGetter_->isModule())
   {
-    addNewModuleAtPosition(event->pos());
+    addNewModuleAtPosition(mapToScene(event->pos()));
   }
 }
 
-void NetworkEditor::addNewModuleAtPosition(const QPoint& position)
+void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
 {
-  lastModulePosition_ = mapToScene(position);
+  lastModulePosition_ = position;
   controller_->addModule(moduleSelectionGetter_->text().toStdString());
   Q_EMIT modified();
 }
@@ -625,8 +633,8 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 {
   if (moduleSelectionGetter_->isModule())
   {
-    defaultModulePosition_ += moduleAddIncrement.toPoint();
-    addNewModuleAtPosition(defaultModulePosition_);
+    auto upperLeft = mapToScene(viewport()->geometry()).boundingRect().center();
+    addNewModuleAtPosition(upperLeft);
   }
 }
 
@@ -786,6 +794,19 @@ ConnectionNotesHandle NetworkEditor::dumpConnectionNotes() const
   return notes;
 }
 
+ModuleTagsHandle NetworkEditor::dumpModuleTags() const
+{
+  ModuleTagsHandle tags(boost::make_shared<ModuleTags>());
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto mod = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      tags->tags[mod->getModuleWidget()->getModuleId()] = mod->data(TagDataKey).toInt();
+    }
+  }
+  return tags;
+}
+
 void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
@@ -811,6 +832,21 @@ void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
         auto noteXML = noteIter->second;
         Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
         w->getModuleWidget()->updateNoteFromFile(note);
+      }
+    }
+  }
+}
+
+void NetworkEditor::updateModuleTags(const ModuleTags& moduleTags)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      auto tagIter = moduleTags.tags.find(w->getModuleWidget()->getModuleId());
+      if (tagIter != moduleTags.tags.end())
+      {
+        w->setData(TagDataKey, tagIter->second);
       }
     }
   }
@@ -1072,6 +1108,108 @@ void NetworkEditor::setModuleMini(bool mini)
     auto module = getModule(item);
     if (module)
       module->setMiniMode(mini);
+  }
+}
+
+void NetworkEditor::metadataLayer(bool active)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    item->setOpacity(active ? 0.4 : 1);
+    auto module = getModule(item);
+    if (module)
+      module->updateMetadata(active);
+  }
+}
+
+QColor SCIRun::Gui::defaultTagColor(int tag)
+{
+  switch (tag)
+  {
+  case 0:
+    return Qt::blue;
+  case 1:
+    return Qt::green;
+  case 2:
+    return Qt::darkYellow;
+  case 3:
+    return Qt::darkMagenta;
+  case 4:
+    return Qt::darkCyan;
+  case 5:
+    return Qt::darkRed;
+  case 6:
+    return Qt::darkGray;
+  case 7:
+    return Qt::darkGreen;
+  case 8:
+    return Qt::darkBlue;
+  case 9:
+    return Qt::black;
+  default:
+    return Qt::white;
+  }
+}
+
+QString SCIRun::Gui::colorToString(const QColor& color)
+{
+  return QString("rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
+}
+
+static QGraphicsEffect* blurEffect()
+{
+  auto blur = new QGraphicsBlurEffect;
+  blur->setBlurRadius(2);
+  return blur;
+}
+
+void NetworkEditor::tagLayer(bool active, int tag)
+{
+  tagLayerActive_ = active;
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    item->setData(TagLayerKey, active);
+    item->setData(CurrentTagKey, tag);
+    if (active)
+    {
+      const auto itemTag = item->data(TagDataKey).toInt();
+      if (tag == AllTags)
+      {
+        highlightTaggedItem(item, itemTag);
+      }
+      else if (tag != NoTag)
+      {
+        if (tag == itemTag)
+        {
+          highlightTaggedItem(item, itemTag);
+        }
+        else
+          item->setGraphicsEffect(blurEffect());
+      }
+    }
+    else
+      item->setGraphicsEffect(0);
+  }
+}
+
+void NetworkEditor::highlightTaggedItem(int tagValue)
+{
+  highlightTaggedItem(qobject_cast<QGraphicsItem*>(sender()), tagValue);
+  Q_EMIT modified();
+}
+
+void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
+{
+  if (tagValue == NoTag)
+  {
+    item->setGraphicsEffect(blurEffect());
+  }
+  else
+  {
+    auto colorize = new QGraphicsColorizeEffect;
+    auto color = tagColor_(tagValue);
+    colorize->setColor(color);
+    item->setGraphicsEffect(colorize);
   }
 }
 

@@ -106,9 +106,9 @@ MESSAGE(STATUS "Git version commit hash: " "${VERSION_HASHVAR}")
 #parse the version information into pieces.
 string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${VERSION_TAG}")
 string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${VERSION_TAG}")
-#TODO: make generic 
+#TODO: make generic
 string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\-(alpha.[A-Za-z0-9_]+)\\-?.*" "\\1" VERSION_PATCH "${VERSION_TAG}")
-#TODO: parse SHA 
+#TODO: parse SHA
 #string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" VERSION_SHA1 "${VERSION}")
 #set(VERSION_SHORT "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
@@ -163,6 +163,20 @@ IF(WIN32)
 ENDIF(WIN32)
 
 ########################################################################
+# External project utilities
+
+OPTION(DISABLE_ExternalProject_UPDATE "Turn off ExternalProject UPDATE_COMMAND property (if not connected to the internet, for example" ON)
+MARK_AS_ADVANCED(DISABLE_ExternalProject_UPDATE)
+IF(DISABLE_ExternalProject_UPDATE)
+  # do nothing commands...
+  IF(WIN32)
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "rem")
+  ELSE()
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
+  ENDIF()
+ENDIF()
+
+########################################################################
 # Configure test support
 
 INCLUDE( CTest )
@@ -176,11 +190,11 @@ IF(BUILD_TESTING)
   SET(BUILDNAME "${BUILDNAME_SCIRun}" CACHE STRING "Name of build on the dashboard")
   MARK_AS_ADVANCED(BUILDNAME)
 
+  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestDataConfig.cmake)
+  TEST_DATA()
+
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
-
-  # adding a brand new path to store the github data repo location; eventually will be another external project link.
-  SET(SCIRUN_TEST_RESOURCE_DIR "../../SCIRunTestData" CACHE PATH "Root for all github-based testing files")
 
   IF(NOT EXISTS "${SCIRUN_TEST_RESOURCE_DIR}")
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
@@ -290,20 +304,6 @@ ENDIF()
 #     ADD_SUBDIRECTORY(Documentation/Manuals)
 #   ENDIF()
 # ENDIF()
-
-########################################################################
-# External project utilities
-
-OPTION(DISABLE_ExternalProject_UPDATE "Turn off ExternalProject UPDATE_COMMAND property (if not connected to the internet, for example" ON)
-MARK_AS_ADVANCED(DISABLE_ExternalProject_UPDATE)
-IF(DISABLE_ExternalProject_UPDATE)
-  # do nothing commands...
-  IF(WIN32)
-    SET(DISABLED_UPDATE "UPDATE_COMMAND" "rem")
-  ELSE()
-    SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
-  ENDIF()
-ENDIF()
 
 ########################################################################
 # Download external data sources
@@ -498,7 +498,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 # TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
   SET(QT_MIN_VERSION "4.8.1")
-  FIND_PACKAGE(Qt4 REQUIRED)
+  FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork REQUIRED)
   SET(QT_USE_QTOPENGL TRUE)
 
   IF(QT_FOUND)
@@ -607,6 +607,7 @@ ADD_SUBDIRECTORY(Interface)
 ADD_SUBDIRECTORY(Core)
 ADD_SUBDIRECTORY(Dataflow)
 ADD_SUBDIRECTORY(Modules)
+ADD_SUBDIRECTORY(Graphics)
 
 ADD_SUBDIRECTORY(Main)
 
@@ -719,6 +720,7 @@ SET_PROPERTY(TARGET Core_Logging         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_ConsoleApplication         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_CommandLine         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Command         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_SystemCall         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Thread         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_ImportExport         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_IEPlugin         PROPERTY FOLDER "Core")
@@ -773,8 +775,11 @@ SET_PROPERTY(TARGET Modules_Legacy_Converters PROPERTY FOLDER "Modules/Basic")
 SET_PROPERTY(TARGET Modules_Legacy_Forward PROPERTY FOLDER "Modules/Forward")
 SET_PROPERTY(TARGET Modules_Legacy_Inverse PROPERTY FOLDER "Modules/Inverse")
 SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO PROPERTY FOLDER "Modules/DataIO")
+SET_PROPERTY(TARGET Modules_Legacy_MatlabInterface PROPERTY FOLDER "Modules/Matlab")
 SET_PROPERTY(TARGET Modules_Legacy_Visualization   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
+
+SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
 
 IF(BUILD_TESTING)
   SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
@@ -783,6 +788,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
   SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
   SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET SCIRunTestData_external   PROPERTY FOLDER "Testing Support")
 
   SET_PROPERTY(TARGET Algorithms_Base_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_DataIO_Tests PROPERTY FOLDER "Core/Algorithms/Tests")
@@ -823,6 +829,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_BrainStimulator_Tests   PROPERTY FOLDER "Modules/Brain")
   SET_PROPERTY(TARGET Modules_DataIO_Tests   PROPERTY FOLDER "Modules/DataIO")
   SET_PROPERTY(TARGET Modules_Fields_Tests   PROPERTY FOLDER "Modules/Fields")
+  SET_PROPERTY(TARGET Modules_Legacy_Inverse_Tests   PROPERTY FOLDER "Modules/Inverse")
   SET_PROPERTY(TARGET Modules_Math_Tests   PROPERTY FOLDER "Modules/Math")
   SET_PROPERTY(TARGET Modules_FiniteElements_Tests   PROPERTY FOLDER "Modules/FiniteElements")
   SET_PROPERTY(TARGET Modules_Render_Tests   PROPERTY FOLDER "Modules/Render")

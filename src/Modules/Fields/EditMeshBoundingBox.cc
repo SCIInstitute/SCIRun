@@ -30,6 +30,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
@@ -37,6 +38,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Graphics;
 
 const ModuleLookupInfo EditMeshBoundingBox::staticInfo_("EditMeshBoundingBox", "ChangeMesh", "SCIRun");
 
@@ -155,10 +157,10 @@ EditMeshBoundingBox::EditMeshBoundingBox()
 : GeometryGeneratingModule(staticInfo_),
   impl_(new EditMeshBoundingBoxImpl)
 {
-    INITIALIZE_PORT(InputField);
-    INITIALIZE_PORT(OutputField);
-    INITIALIZE_PORT(Transformation_Widget);
-    INITIALIZE_PORT(Transformation_Matrix);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(Transformation_Widget);
+  INITIALIZE_PORT(Transformation_Matrix);
 }
 
 void EditMeshBoundingBox::createBoxWidget()
@@ -273,187 +275,69 @@ bool EditMeshBoundingBox::isBoxEmpty() const
 
 Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
 {
-    GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
-    int64_t numVBOElements = 0;
-    std::vector<std::pair<Point,Point>> bounding_edges;
-    //get all the bbox edges
-    Point c,r,d,b;
-    box_->getPosition(c,r,d,b);
-    Vector x = r - c, y = d - c, z = b - c;
-    std::vector<Point> points;
-    points.resize(8);
-    points.at(0) = c+x+y+z;
-    points.at(1) = c+x+y-z;
-    points.at(2) = c+x-y+z;
-    points.at(3) = c+x-y-z;
-    points.at(4) = c-x+y+z;
-    points.at(5) = c-x+y-z;
-    points.at(6) = c-x-y+z;
-    points.at(7) = c-x-y-z;
-    uint32_t point_indicies[] = {
-        0,1,0,2,0,4,
-        7,6,7,5,3,7,
-        4,5,4,6,1,5,
-        3,2,3,1,2,6
-    };
-    auto state = get_state();
-    double scale = state->getValue(Scale).toDouble();
-    int num_strips = 50.;
-    std::vector<Vector> tri_points;
-    std::vector<Vector> tri_normals;
-    std::vector<uint32_t> tri_indices;
-    //generate triangles for the cylinders.
-    for (int edge = 0; edge < 24; edge +=2) {
-        Vector c1,c2;
-        c1 = Vector(points[point_indicies[edge]]);
-        c2 = Vector(points[point_indicies[edge+1]]);
-        Vector n(c1 - c2), u = Vector(1,0,0);
-        n.normalize();
-        if (n == u)
-            u = Vector(0,1,0);
-        if (n == u)
-            u = Vector(0,0,1);
-        Vector crx = Cross(u,n);
-        Vector p;
-        for(int strips = 0; strips <= num_strips; strips++) {
-            uint32_t offset = (uint32_t)numVBOElements;
-            p = std::cos(2. * M_PI * (double)strips / (double)num_strips) * u +
-            std::sin(2. * M_PI * (double)strips / (double)num_strips) * crx;
-            tri_points.push_back(scale * p + c1);
-            numVBOElements++;
-            tri_points.push_back(scale * p + c2);
-            numVBOElements++;
-            tri_normals.push_back(p);
-            tri_normals.push_back(p);
-            if (strips < num_strips) {
-                tri_indices.push_back( 0 + offset);
-                tri_indices.push_back( 1 + offset);
-                tri_indices.push_back( 2 + offset);
-                tri_indices.push_back( 2 + offset);
-                tri_indices.push_back( 1 + offset);
-                tri_indices.push_back( 3 + offset);
-            }
-        }
-    }
-    //generate triangles for the spheres
-    Vector p1,p2;
-    double theta_inc = 2. * M_PI / double(num_strips), phi_inc = M_PI / double(num_strips);
-    for (auto a : points) {
-        for (double phi = 0.; phi <= M_PI; phi += phi_inc ) {
-            for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) {
-                uint32_t offset = (uint32_t)numVBOElements;
-                p1 = Vector(sin(theta) * cos(phi),sin(theta) * sin(phi),cos(theta));
-                p2 = Vector(sin(theta) * cos(phi+phi_inc),sin(theta) * sin(phi+phi_inc),cos(theta));
-                tri_points.push_back(scale * p1 + Vector(a));
-                numVBOElements++;
-                tri_points.push_back(scale * p2 + Vector(a));
-                numVBOElements++;
-                tri_normals.push_back(p1);
-                tri_normals.push_back(p2);
-                if (theta+theta_inc < 2. * M_PI) {
-                    tri_indices.push_back( 0 + offset);
-                    tri_indices.push_back( 1 + offset);
-                    tri_indices.push_back( 2 + offset);
-                    tri_indices.push_back( 2 + offset);
-                    tri_indices.push_back( 1 + offset);
-                    tri_indices.push_back( 3 + offset);
-                }
-            }
-        }
-    }
+  GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
+  int64_t numVBOElements = 0;
+  std::vector<std::pair<Point,Point>> bounding_edges;
+  //get all the bbox edges
+  Point c,r,d,b;
+  box_->getPosition(c,r,d,b);
+  Vector x = r - c, y = d - c, z = b - c;
+  std::vector<Point> points;
+  points.resize(8);
+  points.at(0) = c + x + y + z;
+  points.at(1) = c + x + y - z;
+  points.at(2) = c + x - y + z;
+  points.at(3) = c + x - y - z;
+  points.at(4) = c - x + y + z;
+  points.at(5) = c - x + y - z;
+  points.at(6) = c - x - y + z;
+  points.at(7) = c - x - y - z;
+  uint32_t point_indicies[] = {
+    0, 1, 0, 2, 0, 4,
+    7, 6, 7, 5, 3, 7,
+    4, 5, 4, 6, 1, 5,
+    3, 2, 3, 1, 2, 6
+  };
+  auto state = get_state();
+  double scale = state->getValue(Scale).toDouble();
+  int num_strips = 50.;
+  std::vector<Vector> tri_points;
+  std::vector<Vector> tri_normals;
+  std::vector<uint32_t> tri_indices;
+  std::vector<ColorRGB> colors;
+  GlyphGeom glyphs;
+  //generate triangles for the cylinders.
+  for (int edge = 0; edge < 24; edge += 2)
+  {
+    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], scale, num_strips, ColorRGB(), ColorRGB());
+  }
+  //generate triangles for the spheres
+  for (auto a : points)
+  {
+    glyphs.addSphere(a, scale, num_strips, ColorRGB(1, 0, 0));
+  }
+  
+  std::stringstream ss;
+  ss << scale;
+  for (auto a : points) ss << a.x() << a.y() << a.z();
 
+  std::string uniqueNodeID = "bounding_box_cylinders" + std::string(ss.str().c_str());
 
-    // Attempt some form of precalculation of iboBuffer and vboBuffer size.
-    uint32_t iboSize = (uint32_t)(tri_indices.size() * sizeof(uint32_t));
-    uint32_t vboSize = (uint32_t)(tri_points.size() * 2 * 3 * sizeof(float));
+  RenderState renState;
 
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::USE_TRANSPARENCY, false);
 
-    /// \todo To reduce memory requirements, we can use a 16bit index buffer.
+  renState.defaultColor = ColorRGB(1, 1, 1);
+  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::USE_NORMALS, true);
+ 
+  Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr, *this, "BoundingBox"));
 
-    /// \todo To further reduce a large amount of memory, get rid of the index
-    ///       buffer and use glDrawArrays to render without an IBO. An IBO is
-    ///       a waste of space.
-    ///       http://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml
+  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+    colorScheme, renState, GeometryObject::SpireIBO::TRIANGLES, bbox_);
 
-    /// \todo Switch to unique_ptrs and move semantics.
-    std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-                                                                new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
-    std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
-                                                                new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-
-    // Accessing the pointers like this is contrived. We only do this for
-    // speed since we will be using the pointers in a tight inner loop.
-    CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
-    CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
-
-
-    //write to the IBO/VBOs
-    for(size_t i = 0; i < tri_indices.size(); i++)
-        iboBuffer->write(tri_indices[i]);
-
-    for (size_t i = 0; i < tri_points.size(); i++)
-    {
-        // Write first point on line
-        vboBuffer->write(static_cast<float>(tri_points.at(i).x()));
-        vboBuffer->write(static_cast<float>(tri_points.at(i).y()));
-        vboBuffer->write(static_cast<float>(tri_points.at(i).z()));
-        // Write normal
-        vboBuffer->write(static_cast<float>(tri_normals.at(i).x()));
-        vboBuffer->write(static_cast<float>(tri_normals.at(i).y()));
-        vboBuffer->write(static_cast<float>(tri_normals.at(i).z()));
-    }
-    std::stringstream ss;
-    ss << scale;
-    for(auto a : points) ss << a.x() << a.y() << a.z();
-    
-    std::string uniqueNodeID = "bounding_box_cylinders" + std::string(ss.str().c_str());
-    std::string vboName      = uniqueNodeID + "VBO";
-    std::string iboName      = uniqueNodeID + "IBO";
-    std::string passName     = uniqueNodeID + "Pass";
-
-    // Construct VBO.
-    std::string shader = "Shaders/DirPhong";
-    std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
-    GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
-
-    // If true, then the VBO will be placed on the GPU. We don't want to place
-    // VBOs on the GPU when we are generating rendering lists.
-    GeometryObject::SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements, bbox_, true);
-
-    // Construct IBO.
-    GeometryObject::SpireIBO geomIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
-
-    RenderState renState;
-
-    renState.set(RenderState::IS_ON, true);
-    renState.set(RenderState::USE_TRANSPARENCY, false);
-
-    renState.defaultColor = ColorRGB(1,1,1);
-    renState.set(RenderState::USE_DEFAULT_COLOR, true);
-    renState.set(RenderState::USE_NORMALS, true);
-
-    // Construct Pass.
-    GeometryObject::SpireSubPass pass(passName, vboName, iboName, shader,
-                                 colorScheme, renState, renderType, geomVBO, geomIBO);
-    // Add all uniforms generated above to the pass.
-    std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-                                                             glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-                                                             glm::vec4(1.f, 1.f, 1.f, 1.f)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-                                                             glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
-    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr, *this, "BoundingBox"));
-    geom->mIBOs.push_back(geomIBO);
-    geom->mVBOs.push_back(geomVBO);
-    geom->mPasses.push_back(pass);
-
-    return geom;
+  return geom;
 }
 
 void

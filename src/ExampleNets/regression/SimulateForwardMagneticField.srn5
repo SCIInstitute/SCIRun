@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>11</count>
+			<count>12</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CalculateFieldData:5</first>
@@ -56,7 +56,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -67,6 +67,30 @@
 									<value>
 										<which>2</which>
 										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapResolution</name>
+								</first>
+								<second>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -315,6 +339,70 @@
 				</second>
 			</item>
 			<item>
+				<first>RescaleColorMap:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>1.0104224155513834e-05</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>-1.8264737487238003e-06</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ShowField:10</first>
 				<second>
 					<module>
@@ -484,7 +572,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>10</count>
+			<count>12</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CalculateFieldData:5</moduleId1_>
@@ -504,7 +592,7 @@
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:10</moduleId2_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -559,6 +647,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:10</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>ShowField:10</moduleId1_>
 				<port1_>
 					<name>SceneGraph</name>
@@ -600,6 +700,18 @@
 					<name>MagneticFieldMagnitudes</name>
 					<id>0</id>
 				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SimulateForwardMagneticField:0</moduleId1_>
+				<port1_>
+					<name>MagneticFieldMagnitudes</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>ShowField:10</moduleId2_>
 				<port2_>
 					<name>Field</name>
@@ -609,7 +721,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>11</count>
+		<count>12</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateFieldData:5</first>
@@ -668,10 +780,17 @@
 			</second>
 		</item>
 		<item>
+			<first>RescaleColorMap:0</first>
+			<second>
+				<first>-152</first>
+				<second>-608</second>
+			</second>
+		</item>
+		<item>
 			<first>ShowField:10</first>
 			<second>
-				<first>-527</first>
-				<second>-523</second>
+				<first>-456</first>
+				<second>-456</second>
 			</second>
 		</item>
 		<item>
@@ -684,14 +803,27 @@
 		<item>
 			<first>ViewScene:13</first>
 			<second>
-				<first>-463</first>
-				<second>-399</second>
+				<first>-456</first>
+				<second>-304</second>
 			</second>
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>0</count>
+		<count>1</count>
 		<item_version>0</item_version>
+		<item class_id="19" tracking_level="0" version="0">
+			<first>ShowField:10</first>
+			<second class_id="20" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 10&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>ID: 10</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>

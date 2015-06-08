@@ -51,7 +51,7 @@ public:
   {
     nec_->disableSignals();
   }
-  ~ScopedControllerSignalDisabler() 
+  ~ScopedControllerSignalDisabler()
   {
     nec_->enableSignals();
   }
@@ -59,10 +59,10 @@ private:
   NetworkEditorControllerInterface* nec_;
 };
 
-NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory, 
+NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory,
   ReexecuteStrategyFactoryHandle reexFactory,
   NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm)
-  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory), 
+  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory),
   reexFactory_(reexFactory),
   controller_(nec), nesm_(nesm)
 {
@@ -98,7 +98,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
   return network;
 }
 
-NetworkToXML::NetworkToXML(NetworkEditorSerializationManager* nesm) 
+NetworkToXML::NetworkToXML(NetworkEditorSerializationManager* nesm)
   : nesm_(nesm)
 {}
 
@@ -128,6 +128,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
     file->modulePositions = *nesm_->dumpModulePositions();
     file->moduleNotes = *nesm_->dumpModuleNotes();
     file->connectionNotes = *nesm_->dumpConnectionNotes();
+    file->moduleTags = *nesm_->dumpModuleTags();
   }
   return file;
 }

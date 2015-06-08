@@ -32,6 +32,7 @@
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/Connection.h>
+#include <Interface/Application/TagManagerWindow.h>
 #include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
@@ -187,6 +188,24 @@ void SCIRunMainWindow::readSettings()
     setDataPath(path);
   }
 
+  const QString tagNamesKey = "tagNames";
+  if (settings.contains(tagNamesKey))
+  {
+    auto tagNames = settings.value(tagNamesKey).toStringList();
+    GuiLogger::Instance().log("Setting read: tagNames = " + tagNames.join(";"));
+    tagManagerWindow_->setTagNames(tagNames.toVector());
+  }
+
+  const QString tagColorsKey = "tagColors";
+  if (settings.contains(tagColorsKey))
+  {
+    auto tagColors = settings.value(tagColorsKey).toStringList();
+    GuiLogger::Instance().log("Setting read: tagColors = " + tagColors.join(";"));
+    tagManagerWindow_->setTagColors(tagColors.toVector());
+  }
+  else
+    tagManagerWindow_->setTagColors(QVector<QString>());
+
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -213,6 +232,8 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("favoriteModules", favoriteModuleNames_);
   settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));
   settings.setValue("dataPath", convertPathList(prefs.dataPath()));
+  settings.setValue("tagNames", tagManagerWindow_->getTagNames());
+  settings.setValue("tagColors", tagManagerWindow_->getTagColors());
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

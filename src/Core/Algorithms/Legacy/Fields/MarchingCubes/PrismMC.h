@@ -36,25 +36,31 @@
  *
  */
 
-#ifndef CORE_ALGORITHMS_VISUALIZATION_PRISMMC_H
-#define CORE_ALGORITHMS_VISUALIZATION_PRISMMC_H 1
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBE_PRISMMC_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBE_PRISMMC_H 1
 
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/Point.h>
 
-#include <Core/Geom/GeomTriangles.h>
-#include <Core/Algorithms/Fields/MarchingCubes/BaseMC.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Geom/GeomTriangles.h>
+#endif
 
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
 namespace SCIRun {
-
 class PrismMC : public BaseMC
 {
   public:
-    PrismMC( Field *field ) : field_handle_(field),                             
+    PrismMC( FieldHandle field ) : field_handle_(field),                             
                               field_(field->vfield()),
                               mesh_(field->vmesh()),
-                              triangles_(0), 
+                             #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+			      triangles_(0), 
+			     #endif
                               trisurf_handle_(0),
                               trisurf_(0) {}
 
@@ -69,26 +75,23 @@ class PrismMC : public BaseMC
     void extract_n( VMesh::Elem::index_type, double );
     void extract_c( VMesh::Elem::index_type, double );
 
-    VMesh::Node::index_type find_or_add_edgepoint(index_type u0, 
-                                                  index_type u1,
-                                                  double d0,
-                                                  const Point &p);
+    VMesh::Node::index_type find_or_add_edgepoint(index_type u0, index_type u1, double d0, const SCIRun::Core::Geometry::Point &p);
 
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type &);
-    
-    void find_or_add_parent(index_type u0, index_type u1,
-                            double d0, index_type face);
+  
+    void find_or_add_parent(index_type u0, index_type u1, double d0, index_type face);
 
     FieldHandle field_handle_;
     VField*     field_;
     VMesh*      mesh_;
 
-    GeomFastTriangles *triangles_;
-
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+     GeomFastTriangles *triangles_;
+    #endif
+    
     FieldHandle trisurf_handle_;
     VMesh*      trisurf_;
 };
   
-} // End namespace SCIRun
-
+} // End namespace SCIRun 
 #endif

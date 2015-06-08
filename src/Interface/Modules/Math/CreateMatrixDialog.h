@@ -30,27 +30,22 @@
 #define INTERFACE_MODULES_CREATE_MATRIX_H
 
 #include "Interface/Modules/Math/ui_CreateMatrix.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
-  //TODO DAN
 
-class SCISHARE CreateMatrixDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::CreateMatrix
+class SCISHARE CreateMatrixDialog : public ModuleDialogGeneric, public Ui::CreateMatrix
 {
 	Q_OBJECT
-	
+
 public:
-  CreateMatrixDialog(const std::string& name, 
+  CreateMatrixDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+protected:
+  virtual void pullSpecial() override;
 
 private Q_SLOTS:
   void pushMatrixToState(int state);

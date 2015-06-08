@@ -41,7 +41,7 @@ SET(Core_IEPlugin_SRCS
   NrrdField_Plugin.cc
   #NrrdToMatrix_Plugin.cc
   ObjToField_Plugin.cc
-  #PointCloudField_Plugin.cc
+  PointCloudField_Plugin.cc
   #PVWave_Plugin.cc
   #QuadSurfField_Plugin.cc
   SimpleTextFileToMatrix_Plugin.cc
@@ -68,7 +68,7 @@ SET(Core_IEPlugin_HEADERS
   NrrdField_Plugin.h
   #NrrdToMatrix_Plugin.h
   ObjToField_Plugin.h
-  #PointCloudField_Plugin.h
+  PointCloudField_Plugin.h
   #PVWave_Plugin.h
   #QuadSurfField_Plugin.h
   SimpleTextFileToMatrix_Plugin.h

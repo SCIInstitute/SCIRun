@@ -55,6 +55,16 @@ int mainImpl(int argc, const char* argv[])
 #include <vector>
 #include <boost/algorithm/string.hpp>
 
+static std::string&& stripQuotes(std::string& s)
+{
+  if (s.front() == '"' && s.back() == '"')
+  {
+    s.erase(0, 1); // erase the first character
+    s.erase(s.size() - 1); // erase the last character
+  }
+  return std::move(s);
+}
+
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 #ifdef SCIRUN_SHOW_CONSOLE 
@@ -67,16 +77,20 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
   const int argc = __argc;  
   const char *argv[50];
   char *tempArgv[] = {GetCommandLine()};  
-  
+
   // The GetCommandLine() function returns argv as a single string. The split function splits it up into
   // the individual arguments.
-  std::vector<std::string> getArgv;
-  boost::algorithm::split(getArgv, tempArgv[0], boost::is_any_of(" \0"));
-    
-  // Put the individual arguments into the argv that will be passed.
-  for(int i = 0; i < argc; i++) 
-	  argv[i] = getArgv[i].c_str();  
   
+  // TODO: another edge case is the Windows package. Full path of SCIRun.exe is passed with no quotes, so if the path
+  // has spaces this function does not work--we need the entire exe path to be in argv[0]. Unit test coming soon.
+  std::vector<std::string> getArgv;
+  boost::algorithm::split(getArgv, tempArgv[0], boost::is_any_of(" \0"), boost::algorithm::token_compress_on);
+  
+  // Put the individual arguments into the argv that will be passed.
+  for (int i = 0; i < argc; i++)
+  {
+    argv[i] = stripQuotes(getArgv[i]).c_str();
+  }
   return mainImpl(argc, argv);
 }
 

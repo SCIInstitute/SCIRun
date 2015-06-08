@@ -63,6 +63,8 @@ public:
       ("verbose", "Turn on debug log information")
       ("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
       ("reexecuteMode", po::value<std::string>(), "network reexecution mode--DEVELOPER USE ONLY")
+      ("frameInitLimit", po::value<int>(), "ViewScene frame init limit--increase if renderer fails")
+      ("list-modules", "print list of available modules")
       ;
 
       positional_.add("input-file", -1);
@@ -114,11 +116,13 @@ public:
       bool disableGui,
       bool disableSplash,
       bool isRegressionMode,
-      bool isVerboseMode) : help_(help), version_(version), executeNetwork_(executeNetwork),
+      bool isVerboseMode,
+      bool printModules) : help_(help), version_(version), executeNetwork_(executeNetwork),
       executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
-      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode), isVerboseMode_(isVerboseMode)
+      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode), isVerboseMode_(isVerboseMode),
+      printModules_(printModules)
     {}
-    bool help_, version_, executeNetwork_, executeNetworkAndQuit_, disableGui_, disableSplash_, isRegressionMode_, isVerboseMode_;
+    bool help_, version_, executeNetwork_, executeNetworkAndQuit_, disableGui_, disableSplash_, isRegressionMode_, isVerboseMode_, printModules_;
   };
   ApplicationParametersImpl(
     const std::string& entireCommandLine,
@@ -127,79 +131,90 @@ public:
     const boost::optional<boost::filesystem::path>& dataDirectory,
     const boost::optional<std::string>& threadMode,
     const boost::optional<std::string>& reexecuteMode,
+    const boost::optional<int>& frameInitLimit,
     const Flags& flags
    ) : entireCommandLine_(entireCommandLine),
     inputFiles_(inputFiles), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory),
-    threadMode_(threadMode), reexecuteMode_(reexecuteMode),
+    threadMode_(threadMode), reexecuteMode_(reexecuteMode), frameInitLimit_(frameInitLimit),
     flags_(flags)
   {}
 
-  virtual const std::vector<std::string>& inputFiles() const
+  virtual const std::vector<std::string>& inputFiles() const override
   {
     return inputFiles_;
   }
 
-  virtual boost::optional<boost::filesystem::path> pythonScriptFile() const
+  virtual boost::optional<boost::filesystem::path> pythonScriptFile() const override
   {
     return pythonScriptFile_;
   }
 
-  virtual boost::optional<boost::filesystem::path> dataDirectory() const
+  virtual boost::optional<boost::filesystem::path> dataDirectory() const override
   {
     return dataDirectory_;
   }
 
-  virtual bool help() const
+  virtual bool help() const override
   {
     return flags_.help_;
   }
 
-  virtual bool version() const
+  virtual bool version() const override
   {
     return flags_.version_;
   }
 
-  virtual bool executeNetwork() const
+  virtual bool executeNetwork() const override
   {
     return flags_.executeNetwork_;
   }
 
-  virtual bool executeNetworkAndQuit() const
+  virtual bool executeNetworkAndQuit() const override
   {
     return flags_.executeNetworkAndQuit_;
   }
 
-  virtual bool disableGui() const
+  virtual bool disableGui() const override
   {
     return flags_.disableGui_;
   }
 
-  virtual bool disableSplash() const
+  virtual bool disableSplash() const override
   {
     return flags_.disableSplash_;
   }
 
-  virtual bool isRegressionMode() const
+  virtual bool isRegressionMode() const override
   {
     return flags_.isRegressionMode_;
   }
 
-  virtual bool verboseMode() const
+  virtual bool verboseMode() const override
   {
     return flags_.isVerboseMode_;
   }
 
-  virtual boost::optional<std::string> threadMode() const
+  virtual boost::optional<std::string> threadMode() const override
   {
     return threadMode_;
   }
 
-  virtual boost::optional<std::string> reexecuteMode() const
+  virtual boost::optional<std::string> reexecuteMode() const override
   {
     return reexecuteMode_;
   }
+  
+  virtual boost::optional<int> frameInitLimit() const override
+  {
+    return frameInitLimit_;
+  }
 
-  virtual const std::string& entireCommandLine() const
+  virtual bool printModuleList() const override
+  {
+    return flags_.printModules_;
+  }
+
+  virtual const std::string& entireCommandLine() const override
   {
     return entireCommandLine_;
   }
@@ -210,6 +225,7 @@ private:
   boost::optional<boost::filesystem::path> pythonScriptFile_;
   boost::optional<boost::filesystem::path> dataDirectory_;
   boost::optional<std::string> threadMode_, reexecuteMode_;
+  boost::optional<int> frameInitLimit_;
   Flags flags_;
 };
 
@@ -243,6 +259,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     }
     auto threadMode = parsed.count("threadMode") != 0 ? parsed["threadMode"].as<std::string>() : boost::optional<std::string>();
     auto reexecuteMode = parsed.count("reexecuteMode") != 0 ? parsed["reexecuteMode"].as<std::string>() : boost::optional<std::string>();
+    auto frameInitLimit = parsed.count("frameInitLimit") != 0 ? parsed["frameInitLimit"].as<int>() : boost::optional<int>();
     return boost::make_shared<ApplicationParametersImpl>
       (boost::algorithm::join(cmdline, " "),
       std::move(inputFiles),
@@ -250,6 +267,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       dataDirectory,
       threadMode,
       reexecuteMode,
+      frameInitLimit,
       ApplicationParametersImpl::Flags(
         parsed.count("help") != 0,
         parsed.count("version") != 0,
@@ -258,7 +276,8 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
         parsed.count("headless") != 0,
         parsed.count("no_splash") != 0,
         parsed.count("regression") != 0,
-        parsed.count("verbose") != 0)
+        parsed.count("verbose") != 0,
+        parsed.count("list-modules") != 0)
       );
   }
   catch (std::exception& e)

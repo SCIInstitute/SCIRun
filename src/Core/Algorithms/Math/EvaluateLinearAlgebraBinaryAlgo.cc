@@ -24,81 +24,109 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Parser/ArrayMathEngine.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/MatrixMathVisitors.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Datatypes::MatrixMath;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun;
 
 EvaluateLinearAlgebraBinaryAlgorithm::EvaluateLinearAlgebraBinaryAlgorithm()
 {
   addParameter(Variables::Operator, 0);
-	addParameter(Variables::FunctionString, std::string("x+y"));
+  addParameter(Variables::FunctionString, std::string("x+y"));
 }
 
 EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorithm::run(const EvaluateLinearAlgebraBinaryAlgorithm::Inputs& inputs, const EvaluateLinearAlgebraBinaryAlgorithm::Parameters& params) const
 {
-  DenseMatrixHandle result;
-  DenseMatrixConstHandle lhs = inputs.get<0>();
-  DenseMatrixConstHandle rhs = inputs.get<1>();
+  MatrixHandle result;
+  auto lhs = inputs.get<0>();
+  auto rhs = inputs.get<1>();
   ENSURE_ALGORITHM_INPUT_NOT_NULL(lhs, "lhs");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(rhs, "rhs");
 
   Operator oper = params.get<0>();
-  /// @todo: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
   {
   case ADD:
+  {
     if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to add matrices.");
-    result.reset(lhs->clone());
-    *result += *rhs;
-    break;
+    AddMatrices add(lhs);
+    rhs->accept(add);
+    return add.sum_;
+  }
   case SUBTRACT:
+  {
     if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to subtract matrices.");
-    result.reset(lhs->clone());
-    *result -= *rhs;
-    break;
+    result.reset(rhs->clone());
+    NegateMatrix neg;
+    result->accept(neg);
+    AddMatrices add(lhs);
+    result->accept(add);
+    return add.sum_;
+  }
   case MULTIPLY:
+  {
     if (lhs->ncols() != rhs->nrows())
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to multiply matrices.");
-    result.reset(lhs->clone());
-    *result *= *rhs;
-    break;
-	case FUNCTION:
-			{
-				NewArrayMathEngine engine;
-				MatrixHandle lhsInput, rhsInput;
-				lhsInput.reset(lhs->clone());
-				rhsInput.reset(rhs->clone());
+    MultiplyMatrices mult(lhs);
+    rhs->accept(mult);
+    return mult.product_;
+  }
+  case FUNCTION:
+  {
+    // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result. 
+    // There's no way to know ahead of time, so I'll just throw an error here and require the user to do this type of math elsewhere.
+    if (matrix_is::sparse(lhs) || matrix_is::sparse(rhs))
+    {
+      if ((lhs->nrows() * lhs->ncols() > 10000) || (rhs->nrows() * rhs->ncols() > 10000))
+        THROW_ALGORITHM_INPUT_ERROR("ArrayMathEngine needs overhaul to be used with large sparse inputs. See https://github.com/SCIInstitute/SCIRun/issues/482");
+    }
 
-				if (!(engine.add_input_fullmatrix("x", lhsInput ) ))
-          THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
-				if (!(engine.add_input_fullmatrix("y", rhsInput ) ))
-          THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
+    NewArrayMathEngine engine;
+    MatrixHandle lhsInput(lhs->clone()), rhsInput(rhs->clone());
 
-				boost::optional<std::string> func = params.get<1>();
-				std::string function_string = func.get();
+    if (!(engine.add_input_fullmatrix("x", lhsInput)))
+      THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
+    if (!(engine.add_input_fullmatrix("y", rhsInput)))
+      THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
 
-				function_string = "RESULT="+function_string;
-				engine.add_expressions(function_string);
+    boost::optional<std::string> func = params.get<1>();
+    std::string function_string = func.get();
 
-				if(!(engine.add_output_fullmatrix("RESULT",lhsInput)))
-          THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
-				if (!(engine.run()))
-          THROW_ALGORITHM_INPUT_ERROR("Error running math engine");
-				result = matrix_cast::as_dense(lhsInput);
-			}
-    break;
+    function_string = "RESULT=" + function_string;
+    engine.add_expressions(function_string);
+
+    //bad API: how does it know what type/size the output matrix should be? Here are my guesses:
+    MatrixHandle omatrix;
+    if (matrix_is::sparse(lhs))
+      omatrix.reset(lhs->clone());
+    else if (matrix_is::sparse(rhs))
+      omatrix.reset(rhs->clone());
+    else if (matrix_is::dense(lhs) && matrix_is::dense(rhs))
+      omatrix.reset(lhs->clone());
+    else
+      omatrix = matrix_convert::to_sparse(lhs);
+
+    if (!(engine.add_output_fullmatrix("RESULT", omatrix)))
+      THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
+    if (!(engine.run()))
+      THROW_ALGORITHM_INPUT_ERROR("Error running math engine");
+    result = omatrix;
+  }
+  break;
   default:
     THROW_ALGORITHM_INPUT_ERROR("ERROR: unknown binary operation");
     break;
@@ -109,9 +137,9 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
 
 AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto LHS = input.get<DenseMatrix>(Variables::LHS);
-  auto RHS = input.get<DenseMatrix>(Variables::RHS);
-	auto func = boost::make_optional(get(Variables::FunctionString).toString());
+  auto LHS = input.get<Matrix>(Variables::LHS);
+  auto RHS = input.get<Matrix>(Variables::RHS);
+  auto func = boost::make_optional(get(Variables::FunctionString).toString());
 
   auto result = run(boost::make_tuple(LHS, RHS), boost::make_tuple(Operator(get(Variables::Operator).toInt()), func));
 

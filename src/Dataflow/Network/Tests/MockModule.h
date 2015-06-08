@@ -66,6 +66,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(get_id, ModuleId());
           MOCK_CONST_METHOD0(has_ui, bool());
           MOCK_CONST_METHOD0(hasDynamicPorts, bool());
+          MOCK_CONST_METHOD0(metadata, const MetadataMap&());
           MOCK_METHOD1(setUiVisible, void(bool));
           MOCK_METHOD1(set_id, void(const std::string&));
           MOCK_CONST_METHOD0(get_info, const ModuleLookupInfo&());
@@ -77,12 +78,11 @@ namespace SCIRun {
           MOCK_METHOD1(connectExecuteBegins, boost::signals2::connection(const ExecuteBeginsSignalType::slot_type&));
           MOCK_METHOD1(connectExecuteEnds, boost::signals2::connection(const ExecuteEndsSignalType::slot_type&));
           MOCK_METHOD1(connectErrorListener, boost::signals2::connection(const ErrorSignalType::slot_type&));
-          MOCK_METHOD1(connectExecutionStateChanged, boost::signals2::connection(const ExecutionStateChangedSignalType::slot_type&));
           MOCK_CONST_METHOD0(needToExecute, bool());
+          MOCK_CONST_METHOD0(isStoppable, bool());
           MOCK_METHOD0(setStateDefaults, void());
           MOCK_CONST_METHOD0(getAlgorithm, SCIRun::Core::Algorithms::AlgorithmHandle());
-          MOCK_CONST_METHOD0(executionState, SCIRun::Dataflow::Networks::ModuleInterface::ExecutionState());
-          MOCK_METHOD1(setExecutionState, void(SCIRun::Dataflow::Networks::ModuleInterface::ExecutionState));
+          MOCK_METHOD0(executionState, SCIRun::Dataflow::Networks::ModuleExecutionState&());
           MOCK_METHOD1(addPortConnection, void(const boost::signals2::connection&));
           MOCK_CONST_METHOD0(getReexecutionStrategy, ModuleReexecutionStrategyHandle());
           MOCK_METHOD1(setReexecutionStrategy, void(ModuleReexecutionStrategyHandle));

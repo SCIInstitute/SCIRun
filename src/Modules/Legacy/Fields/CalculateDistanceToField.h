@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_FIELDS_CALCULATEDISTANCETOFIELD_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Thread/Interruptible.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -38,7 +39,8 @@ namespace SCIRun {
 
       class SCISHARE CalculateDistanceToField : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, FieldPortTag>,
-        public Has2OutputPorts<FieldPortTag, FieldPortTag>
+        public Has2OutputPorts<FieldPortTag, FieldPortTag>,
+        public Core::Thread::Interruptible
       {
       public:
         CalculateDistanceToField();

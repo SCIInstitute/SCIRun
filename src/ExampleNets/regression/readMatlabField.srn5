@@ -4,55 +4,27 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>5</count>
+			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>CreateStandardColorMap:4</first>
+				<first>ReadField:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Visualization</category_name_>
-						<module_name_>CreateStandardColorMap</module_name_>
-					</module>
-					<state class_id="6" tracking_level="0" version="0">
-						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>1</count>
-							<item_version>0</item_version>
-							<item class_id="8" tracking_level="0" version="0">
-								<first class_id="9" tracking_level="0" version="0">
-									<name>ColorMapName</name>
-								</first>
-								<second class_id="10" tracking_level="0" version="0">
-									<name>ColorMapName</name>
-									<value class_id="11" tracking_level="0" version="0">
-										<which>2</which>
-										<value>Rainbow</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadField:0</first>
-				<second>
-					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>DataIO</category_name_>
 						<module_name_>ReadField</module_name_>
 					</module>
-					<state>
-						<stateMap>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
 							<count>2</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
 									<name>FileTypeName</name>
 								</first>
-								<second>
+								<second class_id="10" tracking_level="0" version="0">
 									<name>FileTypeName</name>
-									<value>
+									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
 										<value>Matlab Field</value>
 									</value>
@@ -244,23 +216,11 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>4</count>
+			<count>3</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>CreateStandardColorMap:4</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ShowField:2</moduleId2_>
-				<port2_>
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
 				<moduleId1_>ReadField:0</moduleId1_>
-				<port1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
@@ -297,18 +257,11 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>5</count>
+		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
-			<first>CreateStandardColorMap:4</first>
-			<second class_id="17" tracking_level="0" version="0">
-				<first>-1900</first>
-				<second>-1292</second>
-			</second>
-		</item>
-		<item>
 			<first>ReadField:0</first>
-			<second>
+			<second class_id="17" tracking_level="0" version="0">
 				<first>-2052</first>
 				<second>-1368</second>
 			</second>
@@ -316,28 +269,41 @@
 		<item>
 			<first>ReportFieldInfo:3</first>
 			<second>
-				<first>-2204</first>
-				<second>-1292</second>
+				<first>-2432</first>
+				<second>-1216</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:2</first>
 			<second>
 				<first>-2052</first>
-				<second>-1216</second>
+				<second>-1064</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:1</first>
 			<second>
 				<first>-2052</first>
-				<second>-1140</second>
+				<second>-912</second>
 			</second>
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>0</count>
+		<count>1</count>
 		<item_version>0</item_version>
+		<item class_id="19" tracking_level="0" version="0">
+			<first>ShowField:2</first>
+			<second class_id="20" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 2&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>ID: 2</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>

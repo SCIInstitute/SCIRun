@@ -1,22 +1,22 @@
-//  
+//
 //  For more information, please see: http://software.sci.utah.edu
-//  
+//
 //  The MIT License
-//  
+//
 //  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 //  University of Utah.
-//  
-//  
+//
+//
 //  Permission is hereby granted, free of charge, to any person obtaining a
 //  copy of this software and associated documentation files (the "Software"),
 //  to deal in the Software without restriction, including without limitation
 //  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 //  and/or sell copies of the Software, and to permit persons to whom the
 //  Software is furnished to do so, subject to the following conditions:
-//  
+//
 //  The above copyright notice and this permission notice shall be included
 //  in all copies or substantial portions of the Software.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 //  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -24,647 +24,661 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
-//  
+//
 
 #include <Core/Parser/LinAlgFunctionCatalog.h>
 #include <Core/Thread/Mutex.h>
 #include <cmath>
 #include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 namespace LinAlgFunctions {
 
 using namespace SCIRun;
-  
+using namespace SCIRun::Core::Datatypes;
+
 //--------------------------------------------------------------------------
 // Simple Scalar functions
 
-bool isnan_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
-  err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+// BIG TODO: rewrite with Eigen function apply, most of these will be one-line implementations.
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-  
+bool isnan_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
+{
+  err = "";
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
+
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     if (IsNan(*data)) *data = 1.0; else *data = 0.0;
     data++;
   }
-  
+
   return (true);
 }
 
 
 bool isfinite_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
 
   while (data != data_end)
   {
     if (IsFinite(*data)) *data = 1.0; else *data = 0.0;
   }
-  
+
   return (true);
 }
 
 bool isinfinite_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
-  
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-  
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
+
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     if (IsInfinite(*data)) *data = 1.0; else *data = 0.0;
     data++;
   }
-  
+
   return (true);
 }
 
 
 bool sign_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
-  
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
- 
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+
   while (data != data_end)
   {
    if (*data >= 0.0) *data = 1.0; else *data = 0.0;
    data++;
   }
-  
+
   return (true);
 }
 
 bool inv_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     *data = 1.0/(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool boolean_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     if(*data) *data = 1.0; else *data = 0.0; data++;
   }
-  
+
   return (true);
 }
 
 bool abs_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     if(*data<0) *data = -(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool norm_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
-    if(*data<0) *data = -(*data); data++; 
+    if(*data<0) *data = -(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool round_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     *data = static_cast<double>(static_cast<int>(*data+0.5)); data++;
   }
-  
+
   return (true);
 }
 
 bool floor_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     *data = ::floor(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool ceil_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     *data = ::ceil(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool exp_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
-    *data = ::exp(*data); data++; 
+    *data = ::exp(*data); data++;
   }
-  
-  return (true);
-}
 
-/*
-bool pow_ss(SCIRun::LinAlgProgramCode& pc)
-{ 
-  double* data0 = pc.get_variable(0); 
-  double* data1 = pc.get_variable(1); 
-  double* data2 = pc.get_variable(2); 
-  double* data0_end = data0 + pc.get_size();
-  
-  while (data0 != data0_end) 
-  {
-    *data0 = ::pow(*data0,*data2); data0++; data1++; data2++;
-  }
-  
   return (true);
 }
-*/
 
 bool sqrt_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     *data = ::sqrt(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool log_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     *data = ::log(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool ln_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
   while (data != data_end)
   {
     *data = ::log(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool log2_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
-  double s = 1.0/log(2.0);  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  double s = 1.0/log(2.0);
+  while (data != data_end)
   {
     *data = ::log(*data)*s; data++;
   }
-  
+
   return (true);
 }
 
 bool log10_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size;  
-    
-  double s = 1.0/log(10.0);  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  const double s = 1.0/log(10.0);
+  while (data != data_end)
   {
     *data = ::log(*data)*s; data++;
-  } 
-    
+  }
+
   return (true);
 }
 
 bool cbrt_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     *data = ::pow(*data,1.0/3.0); data++;
   }
-  
+
   return (true);
 }
 
 bool sin_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     *data = ::sin(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool cos_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     *data = ::cos(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool tan_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     *data = ::tan(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool sinh_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     *data = ::sinh(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool cosh_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     *data = ::cosh(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool asin_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     *data = ::asin(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool acos_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     *data = ::acos(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool atan_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     *data = ::atan(*data); data++;
   }
-  
+
   return (true);
 }
 
 bool asinh_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     double d = *data;
     *data = (d==0?0:(d>0?1:-1)) * ::log((d<0?-d:d) + ::sqrt(1+d*d)); data++;
   }
-  
+
   return (true);
 }
 
 bool acosh_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  *data0 = (*data1)->clone();
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  double* data = (*data0)->get_data_pointer();
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end)  
+  if (!(*data1)) return (false);
+  data0->reset((*data1)->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     double d = *data;
     *data = ::log(d + ::sqrt(d*d-1)); data++;
   }
-  
+
   return (true);
 }
 
 
 bool or_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  MatrixHandle* data2 = pc.get_handle(2); 
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
+  MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   if ((*data1)->nrows() != (*data2)->nrows())
   {
@@ -678,47 +692,39 @@ bool or_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  // Convert none dense matrices to dense for this operation
-  MatrixHandle data1h = (*data1).get_rep();
-  if (!(matrix_is::dense(data1h) || matrix_is::column(data1h)))
-  {
-    data1h = (*data1)->dense();
-  }
+  // Convert non-dense matrices to dense for this operation
+  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
+  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
 
-  MatrixHandle data2h = (*data2).get_rep();
-  if (!(matrix_is::dense(data2h) || matrix_is::column(data2h)))
-  {
-    data2h = (*data2)->dense();
-  }
+  data0->reset(data1h->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
 
-  *data0 = data1h->clone();
+  double* data = data0h->data();
 
-  double* data = (*data0)->get_data_pointer();
+  double* d1 = data1h->data();
+  double* d2 = data2h->data();
 
-  double* d1 = data1h->get_data_pointer();
-  double* d2 = data2h->get_data_pointer();
+  size_type size = data0h->size();
+  double* data_end = data+size;
 
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end) 
+  while (data != data_end)
   {
     if (*d1 || *d2) *data = 1.0; else *data = 0.0; data++; d1++; d2++;
   }
-  
+
   return (true);
 }
 
 
 bool and_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  MatrixHandle* data2 = pc.get_handle(2); 
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
+  MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   if ((*data1)->nrows() != (*data2)->nrows())
   {
@@ -732,46 +738,38 @@ bool and_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  // Convert none dense matrices to dense for this operation
-  MatrixHandle data1h = (*data1).get_rep();
-  if (!(matrix_is::dense(data1h) || matrix_is::column(data1h)))
-  {
-    data1h = ((*data1)->dense());
-  }
+  // Convert non-dense matrices to dense for this operation
+  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
+  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
 
-  MatrixHandle data2h = (*data2).get_rep();
-  if (!(matrix_is::dense(data2h) || matrix_is::column(data2h)))
-  {
-    data2h = ((*data2)->dense());
-  }
+  data0->reset(data1h->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
 
-  *data0 = data1h->clone();
+  double* data = data0h->data();
 
-  double* data = (*data0)->get_data_pointer();
+  double* d1 = data1h->data();
+  double* d2 = data2h->data();
 
-  double* d1 = data1h->get_data_pointer();
-  double* d2 = data2h->get_data_pointer();
+  size_type size = data0h->size();
+  double* data_end = data+size;
 
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end) 
+  while (data != data_end)
   {
     if (*d1 && *d2) *data = 1.0; else *data = 0.0; data++; d1++; d2++;
   }
-  
+
   return (true);
 }
 
 bool eq_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  MatrixHandle* data2 = pc.get_handle(2); 
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
+  MatrixHandle* data2 = pc.get_handle(2);
 
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   if ((*data1)->nrows() != (*data2)->nrows())
   {
@@ -785,46 +783,38 @@ bool eq_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  // Convert none dense matrices to dense for this operation
-  MatrixHandle data1h = (*data1).get_rep();
-  if (!(matrix_is::dense(data1h) || matrix_is::column(data1h)))
-  {
-    data1h = ((*data1)->dense());
-  }
+  // Convert non-dense matrices to dense for this operation
+  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
+  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
 
-  MatrixHandle data2h = (*data2).get_rep();
-  if (!(matrix_is::dense(data2h) || matrix_is::column(data2h)))
-  {
-    data2h = ((*data2)->dense());
-  }
+  data0->reset(data1h->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
 
-  *data0 = data1h->clone();
+  double* data = data0h->data();
 
-  double* data = (*data0)->get_data_pointer();
+  double* d1 = data1h->data();
+  double* d2 = data2h->data();
 
-  double* d1 = data1h->get_data_pointer();
-  double* d2 = data2h->get_data_pointer();
+  size_type size = data0h->size();
+  double* data_end = data+size;
 
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end) 
+  while (data != data_end)
   {
     if (*d1 == *d2) *data = 1.0; else *data = 0.0; data++; d1++; d2++;
   }
-  
+
   return (true);
 }
 
 bool neq_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  MatrixHandle* data2 = pc.get_handle(2); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
+  MatrixHandle* data2 = pc.get_handle(2);
+
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   if ((*data1)->nrows() != (*data2)->nrows())
   {
@@ -838,46 +828,38 @@ bool neq_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  // Convert none dense matrices to dense for this operation
-  MatrixHandle data1h = (*data1).get_rep();
-  if (!(matrix_is::dense(data1h) || matrix_is::column(data1h)))
-  {
-    data1h = ((*data1)->dense());
-  }
+  // Convert non-dense matrices to dense for this operation
+  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
+  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
 
-  MatrixHandle data2h = (*data2).get_rep();
-  if (!(matrix_is::dense(data2h) || matrix_is::column(data2h)))
-  {
-    data2h = ((*data2)->dense());
-  }
+  data0->reset(data1h->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
 
-  *data0 = data1h->clone();
+  double* data = data0h->data();
 
-  double* data = (*data0)->get_data_pointer();
+  double* d1 = data1h->data();
+  double* d2 = data2h->data();
 
-  double* d1 = data1h->get_data_pointer();
-  double* d2 = data2h->get_data_pointer();
+  size_type size = data0h->size();
+  double* data_end = data+size;
 
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end) 
+  while (data != data_end)
   {
     if (*d1 != *d2) *data = 1.0; else *data = 0.0; data++; d1++; d2++;
   }
-  
+
   return (true);
 }
 
 bool le_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  MatrixHandle* data2 = pc.get_handle(2); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
+  MatrixHandle* data2 = pc.get_handle(2);
+
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   if ((*data1)->nrows() != (*data2)->nrows())
   {
@@ -891,47 +873,39 @@ bool le_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  // Convert none dense matrices to dense for this operation
-  MatrixHandle data1h = (*data1).get_rep();
-  if (!(matrix_is::dense(data1h) || matrix_is::column(data1h)))
-  {
-    data1h = ((*data1)->dense());
-  }
+  // Convert non-dense matrices to dense for this operation
+  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
+  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
 
-  MatrixHandle data2h = (*data2).get_rep();
-  if (!(matrix_is::dense(data2h) || matrix_is::column(data2h)))
-  {
-    data2h = ((*data2)->dense());
-  }
-  
-  *data0 = data1h->clone();
+  data0->reset(data1h->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
 
-  double* data = (*data0)->get_data_pointer();
+  double* data = data0h->data();
 
-  double* d1 = data1h->get_data_pointer();
-  double* d2 = data2h->get_data_pointer();
+  double* d1 = data1h->data();
+  double* d2 = data2h->data();
 
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end) 
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     if (*d1 <= *d2) *data = 1.0; else *data = 0.0; data++; d1++; d2++;
   }
-  
+
   return (true);
 }
 
 
 bool ge_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  MatrixHandle* data2 = pc.get_handle(2); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
+  MatrixHandle* data2 = pc.get_handle(2);
+
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   if ((*data1)->nrows() != (*data2)->nrows())
   {
@@ -945,46 +919,38 @@ bool ge_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  // Convert none dense matrices to dense for this operation
-  MatrixHandle data1h = (*data1).get_rep();
-  if (!(matrix_is::dense(data1h) || matrix_is::column(data1h)))
-  {
-    data1h = ((*data1)->dense());
-  }
+  // Convert non-dense matrices to dense for this operation
+  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
+  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
 
-  MatrixHandle data2h = (*data2).get_rep();
-  if (!(matrix_is::dense(data2h) || matrix_is::column(data2h)))
-  {
-    data2h = ((*data2)->dense());
-  }
+  data0->reset(data1h->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
 
-  *data0 = data1h->clone();
+  double* data = data0h->data();
 
-  double* data = (*data0)->get_data_pointer();
+  double* d1 = data1h->data();
+  double* d2 = data2h->data();
 
-  double* d1 = data1h->get_data_pointer();
-  double* d2 = data2h->get_data_pointer();
+  size_type size = data0h->size();
+  double* data_end = data+size;
 
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end) 
+  while (data != data_end)
   {
     if (*d1 >= *d2) *data = 1.0; else *data = 0.0; data++; d1++; d2++;
   }
-  
+
   return (true);
 }
 
 bool ls_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  MatrixHandle* data2 = pc.get_handle(2); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
+  MatrixHandle* data2 = pc.get_handle(2);
+
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   if ((*data1)->nrows() != (*data2)->nrows())
   {
@@ -998,46 +964,38 @@ bool ls_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  // Convert none dense matrices to dense for this operation
-  MatrixHandle data1h = (*data1).get_rep();
-  if (!(matrix_is::dense(data1h) || matrix_is::column(data1h)))
-  {
-    data1h = ((*data1)->dense());
-  }
+  // Convert non-dense matrices to dense for this operation
+  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
+  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
 
-  MatrixHandle data2h = (*data2).get_rep();
-  if (!(matrix_is::dense(data2h) || matrix_is::column(data2h)))
-  {
-    data2h = ((*data2)->dense());
-  }
+  data0->reset(data1h->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
 
-  *data0 = data1h->clone();
+  double* data = data0h->data();
 
-  double* data = (*data0)->get_data_pointer();
+  double* d1 = data1h->data();
+  double* d2 = data2h->data();
 
-  double* d1 = data1h->get_data_pointer();
-  double* d2 = data2h->get_data_pointer();
+  size_type size = data0h->size();
+  double* data_end = data+size;
 
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end) 
+  while (data != data_end)
   {
     if (*d1 < *d2) *data = 1.0; else *data = 0.0; data++; d1++; d2++;
   }
-  
+
   return (true);
 }
 
 bool gt_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  MatrixHandle* data2 = pc.get_handle(2); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  if ((*data2).get_rep() == 0) return (false);
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
+  MatrixHandle* data2 = pc.get_handle(2);
+
+  if (!(*data1)) return (false);
+  if (!(*data2)) return (false);
 
   if ((*data1)->nrows() != (*data2)->nrows())
   {
@@ -1051,179 +1009,59 @@ bool gt_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  // Convert none dense matrices to dense for this operation
-  MatrixHandle data1h = (*data1).get_rep();
-  if (!(matrix_is::dense(data1h) || matrix_is::column(data1h)))
-  {
-    data1h = ((*data1)->dense());
-  }
+  // Convert non-dense matrices to dense for this operation
+  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
+  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
 
-  MatrixHandle data2h = (*data2).get_rep();
-  if (!(matrix_is::dense(data2h) || matrix_is::column(data2h)))
-  {
-    data2h = ((*data2)->dense());
-  }
+  data0->reset(data1h->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
 
-  *data0 = data1h->clone();
+  double* data = data0h->data();
 
-  double* data = (*data0)->get_data_pointer();
+  double* d1 = data1h->data();
+  double* d2 = data2h->data();
 
-  double* d1 = data1h->get_data_pointer();
-  double* d2 = data2h->get_data_pointer();
+  size_type size = data0h->size();
+  double* data_end = data+size;
 
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end) 
+  while (data != data_end)
   {
     if (*d1 > *d2) *data = 1.0; else *data = 0.0; data++; d1++; d2++;
   }
-  
+
   return (true);
 }
 
 
 bool not_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
-{ 
+{
   err = "";
-  MatrixHandle* data0 = pc.get_handle(0); 
-  MatrixHandle* data1 = pc.get_handle(1); 
-  
-  if ((*data1).get_rep() == 0) return (false);
-  
-  // Convert none dense matrices to dense for this operation
-  MatrixHandle data1h = (*data1).get_rep();
-  if (!(matrix_is::dense(data1h) || matrix_is::column(data1h)))
-  {
-    data1h = ((*data1)->dense());
-  }
+  MatrixHandle* data0 = pc.get_handle(0);
+  MatrixHandle* data1 = pc.get_handle(1);
 
-  *data0 = data1h->clone();
+  if (!(*data1)) return (false);
 
-  double* data = (*data0)->get_data_pointer();
-  double* d1 = data1h->get_data_pointer();
+  // Convert non-dense matrices to dense for this operation
+  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
 
-  size_type size = (*data0)->get_data_size();
-  double* data_end = data+size; 
-  
-  while (data != data_end) 
+  data0->reset(data1h->clone());
+  auto data0h = matrix_cast::as_dense(*data0);
+
+  double* data = data0h->data();
+  double* d1 = data1h->data();
+
+  size_type size = data0h->size();
+  double* data_end = data+size;
+
+  while (data != data_end)
   {
     if (*d1) *data = 0.0; else *data = 1.0; data++; d1++;
   }
-  
+
   return (true);
 }
 
-
-
-/*
-bool max_ss(SCIRun::LinAlgProgramCode& pc)
-{ 
-  double* data0 = pc.get_variable(0); 
-  double* data1 = pc.get_variable(1); 
-  double* data2 = pc.get_variable(2); 
-  double* data0_end = data0 + pc.get_size();
-  
-  while (data0 != data0_end) 
-  {
-    if (*data1 > *data2) *data0 = *data1; else *data0 = *data2; 
-    data0++; data1++; data2++;
-  }
-  
-  return (true);
-}
-
-bool median_sss(SCIRun::LinAlgProgramCode& pc)
-{ 
-  double* data0 = pc.get_variable(0); 
-  double* data1 = pc.get_variable(1); 
-  double* data2 = pc.get_variable(2); 
-  double* data3 = pc.get_variable(3); 
-  double* data0_end = data0 + pc.get_size();
-  
-  while (data0 != data0_end) 
-  {
-    if (*data1 > *data2) 
-    {
-      if (*data3 < *data2)
-      {
-        *data0 = *data2; 
-      }
-      else
-      {
-        if (*data1 < *data3)
-          *data0 = *data1;
-        else
-          *data0 = *data3;
-      }
-    }
-    else
-    {
-      if (*data3 < *data1)
-      {
-        *data0 = *data1; 
-      }
-      else
-      {
-        if (*data2 > *data3)
-          *data0 = *data3;
-        else
-          *data0 = *data2;
-      }    
-    }
-    data0++; data1++; data2++; data3++;
-  }
-  
-  return (true);
-}
-
-
-
-bool min_ss(SCIRun::LinAlgProgramCode& pc)
-{ 
-  double* data0 = pc.get_variable(0); 
-  double* data1 = pc.get_variable(1); 
-  double* data2 = pc.get_variable(2); 
-  double* data0_end = data0 + pc.get_size();
-  
-  while (data0 != data0_end) 
-  {
-    if (*data1 < *data2) *data0 = *data1; else *data0 = *data2; 
-    data0++; data1++; data2++;
-  }
-  
-  return (true);
-}
-
-
-SCIRun::Mutex RandomMutex("Mutex for rand() and random() functions");
-
-bool random_value_(SCIRun::LinAlgProgramCode& pc)
-{ 
-  double* data0 = pc.get_variable(0); 
-  double* data0_end = data0 + pc.get_size();
-  
-  // Random is not thread safe
-  RandomMutex.lock();
-  while (data0 != data0_end) 
-  {
-// Note: _WIN32 is always defined for applications for Win32 and Win64 (see http://msdn.microsoft.com/en-us/library/b0084kay.aspx).
-#ifdef _WIN32
-    // random() not available in Windows stdlib
-    *data0 = static_cast<double>(rand())/static_cast<double>(RAND_MAX + 1);
-#else
-    *data0 = static_cast<double>(random())/static_cast<double>(0x7FFFFFFF);
-#endif
-    data0++;
-  }
-  RandomMutex.unlock();
-  
-  return (true);
-}
-
-*/
-
-} // end namsespace 
+} // end namsespace
 
 namespace SCIRun {
 

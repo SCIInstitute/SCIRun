@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>8</count>
+			<count>9</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CalculateFieldData:0</first>
@@ -300,7 +300,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -311,6 +311,94 @@
 									<value>
 										<which>2</which>
 										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapResolution</name>
+								</first>
+								<second>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>RescaleColorMap:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>-3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -460,11 +548,23 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>9</count>
+			<count>11</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CalculateFieldData:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CalculateFieldData:0</moduleId1_>
+				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
@@ -552,6 +652,18 @@
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>ShowField:4</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
@@ -573,7 +685,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>8</count>
+		<count>9</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
@@ -613,8 +725,15 @@
 		<item>
 			<first>CreateStandardColorMap:3</first>
 			<second>
-				<first>-473</first>
-				<second>-54</second>
+				<first>-912</first>
+				<second>-152</second>
+			</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:0</first>
+			<second>
+				<first>-532</first>
+				<second>76</second>
 			</second>
 		</item>
 		<item>
@@ -633,8 +752,21 @@
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>0</count>
+		<count>1</count>
 		<item_version>0</item_version>
+		<item class_id="19" tracking_level="0" version="0">
+			<first>ShowField:4</first>
+			<second class_id="20" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 4&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>ID: 4</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>

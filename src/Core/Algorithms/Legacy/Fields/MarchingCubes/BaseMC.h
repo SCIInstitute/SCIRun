@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 /*
@@ -41,38 +41,45 @@
 #ifndef CORE_ALGORITHMS_VISUALIZATION_BASEMC_H
 #define CORE_ALGORITHMS_VISUALIZATION_BASEMC_H 1
 
-#include <sci_defs/hashmap_defs.h>
-
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Geom/GeomObj.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <boost/unordered_map.hpp>
 
-#include <Core/Util/TypeDescription.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#include <Core/Geom/GeomObj.h>
+#endif
+
+#include <Core/Utils/Legacy/TypeDescription.h>
 
 
 namespace SCIRun {
 
-class BaseMC
-{
+  class BaseMC
+  {
   public:
 
     BaseMC() : build_field_(false), build_geom_(false), basis_order_(-1),
-         nnodes_(0), ncells_(0), geomHandle_(0) {}
+      nnodes_(0), ncells_(0) {}
 
     virtual ~BaseMC() {}
 
-    virtual void reset( int,
-            bool build_field,
-            bool build_geom,
-            bool transparency ) = 0;
-            
-    virtual FieldHandle get_field(double val) = 0;
-    
-    GeomHandle   get_geom() { return geomHandle_; }
-    MatrixHandle get_interpolant();     
-    MatrixHandle get_parent_cells();
+    virtual void reset(int,
+      bool build_field,
+      bool build_geom,
+      bool transparency) = 0;
 
-  protected:
+    virtual FieldHandle get_field(double val) = 0;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    GeomHandle   get_geom() { return geomHandle_; }
+#endif
+
+    Core::Datatypes::MatrixHandle get_interpolant();
+    Core::Datatypes::MatrixHandle get_parent_cells();
+
+    bool build_field_;
+    bool build_geom_;
+    int basis_order_;
 
     struct edgepair_t
     {
@@ -80,80 +87,37 @@ class BaseMC
       SCIRun::index_type second;
       double dfirst;
     };
-
-    struct edgepairless
-    {
-      bool operator()(const edgepair_t &a, const edgepair_t &b) const
-      {
-        return less(a,b);
-      }
-      static bool less(const edgepair_t &a, const edgepair_t &b)
-      {
-        return a.first < b.first || (a.first == b.first && a.second < b.second);
-      }
-    };
-
-  #ifdef HAVE_HASH_MAP
-    
-    struct edgepairequal
-    {
-      bool operator()(const edgepair_t &a, const edgepair_t &b) const
-      {
-        return a.first == b.first && a.second == b.second;
-      }
-    };
-
+  protected:
     struct edgepairhash
     {
-      unsigned int operator()(const edgepair_t &a) const
+      size_t operator()(const edgepair_t &a) const
       {
-  #if defined(__ECC) || defined(_MSC_VER)
-        hash_compare<unsigned int> h;
-  #else
-        hash<unsigned int> h;
-  #endif
-        return h(a.first ^ a.second);
+        boost::hash<size_t> h;
+        return h((a.first << 3) ^ a.second);
       }
-  # if defined(__ECC) || defined(_MSC_VER)
-
-        // These are particularly needed by ICC's hash stuff
-        static const size_t bucket_size = 4;
-        static const size_t min_buckets = 8;
-        
-        // This is a less than function.
-        bool operator()(const edgepair_t & a, const edgepair_t & b) const {
-          return edgepairless::less(a,b);
-        }
-  # endif // endif ifdef __ICC
     };
 
-  # if defined(__ECC) || defined(_MSC_VER)
-    typedef hash_map<edgepair_t, SCIRun::index_type, edgepairhash> edge_hash_type;
-  #else
-    typedef hash_map<edgepair_t,
-         SCIRun::index_type,
-         edgepairhash,
-         edgepairequal> edge_hash_type;
-  #endif // !defined(__ECC) && !defined(_MSC_VER)
-    
-  #else
-    typedef std::map<edgepair_t,SCIRun::index_type,edgepairless> edge_hash_type;
-  #endif
+    typedef boost::unordered_map<edgepair_t, SCIRun::index_type, edgepairhash> edge_hash_type;
 
-    edge_hash_type             edge_map_;  // Unique edge cuts when surfacing node data
     std::vector<SCIRun::index_type> cell_map_;  // Unique cells when surfacing node data.
     std::vector<SCIRun::index_type> node_map_;  // Unique nodes when surfacing cell data.
-
-    bool build_field_;
-    bool build_geom_;
-    int basis_order_;
 
     SCIRun::size_type nnodes_;
     SCIRun::size_type ncells_;
 
-    GeomHandle geomHandle_;
-};
-     
+    edge_hash_type edge_map_;  // Unique edge cuts when surfacing node data
+  };
+
+  inline bool operator==(const BaseMC::edgepair_t& lhs, const BaseMC::edgepair_t& rhs)
+  {
+    return lhs.first == rhs.first && lhs.second == rhs.second;
+  }
+
+  inline bool operator!=(const BaseMC::edgepair_t& lhs, const BaseMC::edgepair_t& rhs)
+  {
+    return !(lhs == rhs);
+  }
+
 } // End namespace SCIRun
 
-#endif 
+#endif

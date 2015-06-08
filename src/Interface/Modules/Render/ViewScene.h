@@ -49,6 +49,7 @@ DEALINGS IN THE SOFTWARE.
 class QToolBar;
 class QStandardItemModel;
 class QStandardItem;
+class QGLWidget;
 
 namespace SCIRun {
 
@@ -59,6 +60,20 @@ namespace SCIRun {
     class GLWidget;
     class ViewSceneControlsDock;
 
+    class Screenshot : public QObject
+    {
+      Q_OBJECT
+    public:
+      explicit Screenshot(QGLWidget *glwidget, QObject *parent = 0);
+      void takeScreenshot();
+      void saveScreenshot();
+      QString screenshotFile() const;
+    private:
+      QGLWidget* viewport_;
+      QImage screenshot_;
+      uint index_;
+    };
+
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric,
       public Ui::ViewScene
     {
@@ -68,12 +83,11 @@ namespace SCIRun {
       ViewSceneDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = 0);
-      virtual void pull() {}
 
     Q_SIGNALS:
       void newGeometryValueForwarder();
 
-      protected Q_SLOTS:
+    protected Q_SLOTS:
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
@@ -88,6 +102,8 @@ namespace SCIRun {
       void setTransparencySortTypeLists(bool index);
       void handleUnselectedItem(const QString& name);
       void handleSelectedItem(const QString& name);
+      void screenshotClicked();
+      void saveNewGeometryChanged(int state);
 
     protected:
       virtual void closeEvent(QCloseEvent* evt) override;
@@ -98,6 +114,7 @@ namespace SCIRun {
       bool isObjectUnselected(std::string& name);
       void addToolBar();
       void addAutoViewButton();
+      void addScreenshotButton();
       void addObjectToggleMenu();
       void addViewBarButton();
       void addViewBar();
@@ -126,6 +143,8 @@ namespace SCIRun {
       std::shared_ptr<class ViewSceneItemManager> itemManager_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;
+      Screenshot* screenshotTaker_;
+      bool saveScreenshotOnNewGeometry_;
 
       friend class ViewSceneControlsDock;
 		};

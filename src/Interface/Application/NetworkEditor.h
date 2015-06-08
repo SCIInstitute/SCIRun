@@ -29,14 +29,17 @@
 #ifndef INTERFACE_APPLICATION_NETWORKEDITOR_H
 #define INTERFACE_APPLICATION_NETWORKEDITOR_H
 
-#include <boost/shared_ptr.hpp>
 #include <QGraphicsView>
+#ifndef Q_MOC_RUN
+#include <boost/shared_ptr.hpp>
 #include <map>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 #include <Interface/Application/Note.h>
+#include <Interface/Application/Utility.h>
+#endif
 
 class QMenu;
 class QToolBar;
@@ -111,7 +114,9 @@ Q_SIGNALS:
 
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
-				boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
+				boost::shared_ptr<DialogErrorControl> dialogErrorControl, 
+        TagColorFunc tagColor = defaultTagColor,
+        QWidget* parent = 0);
     ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -130,6 +135,9 @@ Q_SIGNALS:
 
     virtual SCIRun::Dataflow::Networks::ConnectionNotesHandle dumpConnectionNotes() const;
     virtual void updateConnectionNotes(const SCIRun::Dataflow::Networks::ConnectionNotes& notes);
+
+    virtual SCIRun::Dataflow::Networks::ModuleTagsHandle dumpModuleTags() const override;
+    virtual void updateModuleTags(const SCIRun::Dataflow::Networks::ModuleTags& notes) override;
 
     size_t numModules() const;
 
@@ -154,6 +162,10 @@ Q_SIGNALS:
     int currentZoomPercentage() const;
 
     void setVisibility(bool visible);
+
+    void metadataLayer(bool active);
+    void tagLayer(bool active, int tag);
+    bool tagLayerActive() const { return tagLayerActive_; }
 
   protected:
     virtual void dropEvent(QDropEvent* event) override;
@@ -189,6 +201,7 @@ Q_SIGNALS:
     void zoomReset();
     void centerView();
     void setModuleMini(bool mini);
+    void highlightTaggedItem(int tagValue);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -224,10 +237,11 @@ Q_SIGNALS:
     ModuleWidget* selectedModule() const;
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
-    void addNewModuleAtPosition(const QPoint& position);
+    void addNewModuleAtPosition(const QPointF& position);
     ConnectionLine* getSingleConnectionSelected();
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions) const;
+    void highlightTaggedItem(QGraphicsItem* item, int tagValue);
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;
@@ -238,12 +252,13 @@ Q_SIGNALS:
     //QAction* executeAction_;
 		bool modulesSelectedByCL_;
     double currentScale_;
+    bool tagLayerActive_;
+    TagColorFunc tagColor_;
 
     QGraphicsScene* scene_;
 
     bool visibleItems_;
     QPointF lastModulePosition_;
-    QPoint defaultModulePosition_;
 		boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;

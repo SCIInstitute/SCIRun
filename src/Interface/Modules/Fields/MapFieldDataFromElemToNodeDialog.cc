@@ -43,8 +43,3 @@ MapFieldDataFromElemToNodeDialog::MapFieldDataFromElemToNodeDialog(const std::st
   fixSize();
   addComboBoxManager(methodComboBox_, MapFieldDataFromElemToNodeAlgo::Method);
 }
-
-void MapFieldDataFromElemToNodeDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}

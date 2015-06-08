@@ -294,12 +294,8 @@ void ElectrodeCoilSetupDialog::pushComboBoxChange(int index)
   push();
 }
 
-void ElectrodeCoilSetupDialog::pull()
+void ElectrodeCoilSetupDialog::pullSpecial()
 {
-  pull_newVersionToReplaceOld();
-
-  Pulling p(this);
-
   const bool AllTDCSInputsButton = state_->getValue(Parameters::AllInputsTDCS).toBool();
   const bool UseThisPrototypeButton = state_->getValue(Parameters::ProtoTypeInputCheckbox).toBool();
   auto all_elc_values = (state_->getValue(Parameters::TableValues)).toVector();

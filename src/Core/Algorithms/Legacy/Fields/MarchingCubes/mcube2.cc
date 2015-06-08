@@ -32,7 +32,7 @@
 // marching cubes case table for generating isosurfaces
 //
 
-#include <Core/Algorithms/Fields/MarchingCubes/mcube2.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/mcube2.h>
 
 namespace SCIRun {
 

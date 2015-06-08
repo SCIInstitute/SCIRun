@@ -81,6 +81,7 @@ public:
   std::string commandHelpString() const;
   std::string applicationName() const;
   std::string version() const;
+  std::string moduleList();
 
   void shutdown();
 

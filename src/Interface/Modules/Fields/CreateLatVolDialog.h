@@ -35,22 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE CreateLatVolDialog : public ModuleDialogGeneric, 
+
+class SCISHARE CreateLatVolDialog : public ModuleDialogGeneric,
   public Ui::CreateLatVol
 {
 	Q_OBJECT
-	
+
 public:
-  CreateLatVolDialog(const std::string& name, 
+  CreateLatVolDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
-
-private Q_SLOTS:
-  void push();
-private:
-  std::string getDataAtLocation() const;
 };
 
 }

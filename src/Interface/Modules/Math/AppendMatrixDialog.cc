@@ -43,7 +43,7 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   connect(appendRowsButton_, SIGNAL(clicked()), this, SLOT(isRows()));
   connect(appendColumnsButton_, SIGNAL(clicked()), this, SLOT(isCols()));
   buttonBox->setVisible(false);
@@ -59,7 +59,7 @@ void AppendMatrixDialog::isCols()
   state_->setValue(Variables::RowsOrColumns, AppendMatrixAlgorithm::COLUMNS);
 }
 
-void AppendMatrixDialog::pull()
+void AppendMatrixDialog::pullSpecial()
 {
   //TODO convert to new widget managers
   if (AppendMatrixAlgorithm::ROWS == state_->getValue(Variables::RowsOrColumns).toInt())

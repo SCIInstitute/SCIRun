@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1081</width>
-         <height>467</height>
+         <width>1093</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -109,6 +109,7 @@
      <addaction name="actionSelectModule_"/>
     </widget>
     <addaction name="menuActions"/>
+    <addaction name="actionTagManager_"/>
    </widget>
    <widget class="QMenu" name="menuSubnets_">
     <property name="enabled">
@@ -120,11 +121,13 @@
    </widget>
    <widget class="QMenu" name="menuToolkits_">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>&amp;Toolkits</string>
     </property>
+    <addaction name="actionForwardInverse_"/>
+    <addaction name="actionBrainStimulator_"/>
    </widget>
    <widget class="QMenu" name="menuHelp_">
     <property name="title">
@@ -158,6 +161,9 @@
     <addaction name="actionResetNetworkZoom_"/>
     <addaction name="actionDragMode_"/>
     <addaction name="actionSelectMode_"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggleMetadataLayer_"/>
+    <addaction name="actionToggleTagLayer_"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
@@ -1274,6 +1280,40 @@
   <action name="actionZoomBestFit_">
    <property name="text">
     <string>Zoom Best Fit</string>
+   </property>
+  </action>
+  <action name="actionTagManager_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tag Manager</string>
+   </property>
+  </action>
+  <action name="actionForwardInverse_">
+   <property name="text">
+    <string>Forward/Inverse</string>
+   </property>
+  </action>
+  <action name="actionBrainStimulator_">
+   <property name="text">
+    <string>Brain Stimulator</string>
+   </property>
+  </action>
+  <action name="actionToggleMetadataLayer_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toggle Metadata Layer</string>
+   </property>
+  </action>
+  <action name="actionToggleTagLayer_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toggle Tag Layer</string>
    </property>
   </action>
  </widget>

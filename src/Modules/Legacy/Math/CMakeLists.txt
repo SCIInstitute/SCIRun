@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
 #  in all copies or substantial portions of the Software.
-# 
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -30,7 +30,7 @@
 
 SET(Modules_Legacy_Math_SRCS
   #CreateScalarMatrix.cc
-  #AddLinkedNodesToLinearSystem.cc
+  AddLinkedNodesToLinearSystem.cc
   AddKnownsToLinearSystem.cc
   #RemoveZerosFromMatrix.cc
   #SortMatrix.cc
@@ -42,10 +42,10 @@ SET(Modules_Legacy_Math_SRCS
   ComputeSVD.cc
   ConvertMatrixType.cc
   #CollectMatrices.cc
-  #ReportColumnMatrixMisfit.cc
+  ReportColumnMatrixMisfit.cc
   #EvaluateLinAlgBinary.cc
   #EvaluateLinAlgUnary.cc
-  #EvaluateLinAlgGeneral.cc
+  EvaluateLinAlgGeneral.cc
   #ReportRootMeanSquareError.cc
   #GetColumnOrRowFromMatrix.cc
   SolveMinNormLeastSqSystem.cc
@@ -66,7 +66,7 @@ SET(Modules_Legacy_Math_SRCS
 
 SET(Modules_Legacy_Math_HEADERS
   #CreateScalarMatrix.h
-  #AddLinkedNodesToLinearSystem.h
+  AddLinkedNodesToLinearSystem.h
   AddKnownsToLinearSystem.h
   #RemoveZerosFromMatrix.h
   #SortMatrix.h
@@ -78,10 +78,10 @@ SET(Modules_Legacy_Math_HEADERS
   ComputeSVD.h
   ConvertMatrixType.h
   #CollectMatrices.h
-  #ReportColumnMatrixMisfit.h
+  ReportColumnMatrixMisfit.h
   #EvaluateLinAlgBinary.h
   #EvaluateLinAlgUnary.h
-  #EvaluateLinAlgGeneral.h
+  EvaluateLinAlgGeneral.h
   #ReportRootMeanSquareError.h
   #GetColumnOrRowFromMatrix.h
   SolveMinNormLeastSqSystem.h
@@ -107,7 +107,8 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Math
   Core_Datatypes
   Core_Math
   Algorithms_Math
-  #Core_Parser
+  Core_Algorithms_Legacy_FiniteElements
+  Core_Parser
   #Core_Persistent
   #Core_Thread
   #Core_Utils

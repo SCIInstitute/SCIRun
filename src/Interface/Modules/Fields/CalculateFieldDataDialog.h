@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE CalculateFieldDataDialog : public ModuleDialogGeneric, 
+
+class SCISHARE CalculateFieldDataDialog : public ModuleDialogGeneric,
   public Ui::CalculateFieldData
 {
 	Q_OBJECT
-	
+
 public:
-  CalculateFieldDataDialog(const std::string& name, 
+  CalculateFieldDataDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

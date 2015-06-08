@@ -39,6 +39,7 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
@@ -59,6 +60,7 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.h>
+#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
@@ -86,6 +88,7 @@
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
 #include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
 #include <boost/functional/factory.hpp>
 #include <boost/assign.hpp>
 
@@ -174,6 +177,9 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 	    ADD_MODULE_ALGORITHM(ConvertIndicesToFieldData, ConvertIndicesToFieldDataAlgo)
 	    ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgo)
 		ADD_MODULE_ALGORITHM(ConvertMatrixToString, ConvertMatrixToStringAlgo)
+      ADD_MODULE_ALGORITHM(ConvertHexVolToTetVol, ConvertMeshToTetVolMeshAlgo)
+     ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
+	 ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
     ;
   }
 }

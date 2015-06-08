@@ -30,20 +30,19 @@
 #define ALGORITHMS_MATH_EVALUATELINEARALGEBRAUNARY_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/MatrixFwd.h>
-//#include <boost/optional.hpp>
+#include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Math/share.h>
 
 /// \addtogroup Algorithms_Math
 /// @{
-///  
+///
 
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Math {
 
-/// 
+///
 /// \class EvaluateLinearAlgebraUnaryAlgorithm
 ///
 /// \brief Computes several unary operations on general matrices
@@ -60,7 +59,7 @@ namespace Math {
 /// have \f$ A = V D V^{-1} \f$. This is called the eigendecomposition.
 ///
 /// Call the function compute() to compute the eigenvalues and eigenvectors of
-/// a given matrix. Alternatively, you can use the 
+/// a given matrix. Alternatively, you can use the
 /// EigenSolver(const MatrixType&, bool) constructor which computes the
 /// eigenvalues and eigenvectors at construction time. Once the eigenvalue and
 /// eigenvectors are computed, they can be retrieved with the eigenvalues() and
@@ -89,15 +88,16 @@ namespace Math {
 			FUNCTION
     };
 
-    typedef SCIRun::Core::Datatypes::DenseMatrixConstHandle Inputs;
+    typedef SCIRun::Core::Datatypes::MatrixHandle Inputs;
     typedef boost::tuple<Operator, boost::optional<double>, boost::optional<std::string> > Parameters;
-    typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
+    typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;
 
     EvaluateLinearAlgebraUnaryAlgorithm();
     Outputs run(const Inputs& matrix, const Parameters& params) const;
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };
+
 }}}}
 
 

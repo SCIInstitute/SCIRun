@@ -30,6 +30,7 @@
 #define UTILITY_H
 
 #include <sstream>
+#include <QAction>
 
 namespace SCIRun {
 
@@ -44,6 +45,11 @@ std::string to_string(const Point& p)
 namespace Gui
 {
   QColor to_color(const std::string& str, int alpha = 255);
+
+  QColor defaultTagColor(int tag);
+  typedef std::function<QColor(int)> TagColorFunc;
+
+  QString colorToString(const QColor& color);
 
   inline QAction* separatorAction(QWidget* parent)
   {

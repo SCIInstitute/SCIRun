@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
 
-struct NumberOfElements : MatrixVisitor
+struct NumberOfElements : Matrix::Visitor
 {
   size_t value() const { return value_; }
   
@@ -63,7 +63,7 @@ struct NumberOfElements : MatrixVisitor
   }
 };
 
-struct MinimumCoefficient : MatrixVisitor
+struct MinimumCoefficient : Matrix::Visitor
 {
   double value() const { return value_; }
 
@@ -89,7 +89,7 @@ struct MinimumCoefficient : MatrixVisitor
   }
 };
 
-struct MaximumCoefficient : MatrixVisitor
+struct MaximumCoefficient : Matrix::Visitor
 {
   double value() const { return value_; }
 

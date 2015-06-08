@@ -6,7 +6,7 @@
   Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  
+
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -42,6 +42,7 @@
 #include <boost/range/algorithm/count_if.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/bind/bind.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Datatypes/NrrdData.h>
@@ -50,13 +51,11 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 static Persistent* make_Bundle() {
   return new Bundle;
 }
 
 PersistentTypeID Bundle::type_id("Bundle", "PropertyManager", make_Bundle);
-#endif
 
 Bundle::Bundle()
 {
@@ -86,7 +85,7 @@ void Bundle::merge(LockingHandle<Bundle> C)
   {
     std::string name = C->bundleName_[p];
     LockingHandle<PropertyManager> handle = C->bundle_[p];
-      
+
     int index;
     index = findName(bundleName_,name);
     if (index == -1)
@@ -101,6 +100,7 @@ void Bundle::merge(LockingHandle<Bundle> C)
     }
   }
 }
+#endif
 
 #define BUNDLE_VERSION 2
 
@@ -111,177 +111,189 @@ Bundle::io(Piostream& stream)
 {
   stream.begin_class("Bundle", BUNDLE_VERSION);
   // Do the base class first...
- 
-  PropertyManager::io(stream);
-  
-  if (stream.reading()) 
+
+  PropertyManager().io(stream);
+
+  if (stream.reading())
   {
     int size;
 
     stream.begin_cheap_delim();
-      
+
     stream.io(size);
 
-    bundle_.resize(size);
-    bundleName_.resize(size);
-  
+    std::vector<std::string> bundleName_(size);
+
     std::string type;
     for (int p = 0; p < size; p++)
     {
       stream.begin_cheap_delim();
       stream.io(bundleName_[p]);
+      const std::string name = bundleName_[p];
       stream.io(type);
-      stream.end_cheap_delim();		
+      stream.end_cheap_delim();
       stream.begin_cheap_delim();
       if (type=="field")
       {
-        LockingHandle<Field> handle;
+        FieldHandle handle;
         Pio(stream,handle);
-        bundle_[p] = dynamic_cast<PropertyManager *>(handle.get_rep());
+        bundle_[name] = handle;
       }
-      if (type=="matrix")
+      else if (type=="matrix")
       {
         MatrixHandle handle;
         Pio(stream,handle);
-        bundle_[p] = dynamic_cast<PropertyManager *>(handle.get_rep());
+        bundle_[name] = handle;
       }
-      if (type=="string")
+      else if (type=="string")
       {
-        LockingHandle<String> handle;
+        std::cerr << "error from Bundle Pio: can't read string objects directly yet" << std::endl;
+        #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+        StringHandle handle;
         Pio(stream,handle);
-        bundle_[p] = dynamic_cast<PropertyManager *>(handle.get_rep());
+        bundle_[name] = handle;
+        #endif
       }
-      if (type=="nrrd")
+      else if (type=="nrrd")
       {
-        LockingHandle<NrrdData> handle;
+        std::cerr << "error from Bundle Pio: can't read nrrd objects directly yet" << std::endl;
+        #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+        NrrdDataHandle handle;
         Pio(stream,handle);
-        bundle_[p] = dynamic_cast<PropertyManager *>(handle.get_rep());
+        bundle_[name] = handle;
+        #endif
       }
-      if (type=="colormap")
+      else if (type=="colormap")
       {
-        LockingHandle<ColorMap> handle;
+        std::cerr << "error from Bundle Pio: can't read ColorMap objects directly yet" << std::endl;
+        #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+        ColorMapHandle handle;
         Pio(stream,handle);
-        bundle_[p] = dynamic_cast<PropertyManager *>(handle.get_rep());
+        bundle_[name] = handle;
+        #endif
       }
-      if (type=="bundle")
+      else if (type=="bundle")
       {
-        LockingHandle<Bundle> handle;
+        BundleHandle handle;
         Pio(stream,handle);
-        bundle_[p] = dynamic_cast<PropertyManager *>(handle.get_rep());
+        bundle_[name] = handle;
       }
       stream.end_cheap_delim();
     }
-    stream.end_cheap_delim();		
-  } 
-  else 
-  { 
+    stream.end_cheap_delim();
+  }
+  else
+  {
     int size, tsize;
     stream.begin_cheap_delim();
     tsize = 0;
-    size = bundleName_.size();
+    size = bundle_.size();
+
+    std::vector<std::string> names;
+    boost::copy(bundle_ | boost::adaptors::map_keys, std::back_inserter(names));
+
     for (int p = 0; p < size; p ++)
     {
-      if (bundle_[p].get_rep()) tsize++;
+      if (bundle_[names[p]]) tsize++;
     }
 
     stream.io(tsize);
     for (int p = 0; p < size; p++)
     {
-      if (bundle_[p].get_rep())
+      std::string name = names[p];
+      if (bundle_[name])
       {
-        stream.begin_cheap_delim();		
-        stream.io(bundleName_[p]);
+        stream.begin_cheap_delim();
+        stream.io(name);
 
         std::string type;
-        LockingHandle<Field> fieldhandle = 
-                                    dynamic_cast<Field*>(bundle_[p].get_rep());
-        if (fieldhandle.get_rep()) 
-        { 
+        auto fieldhandle = getField(name);
+        if (fieldhandle)
+        {
           type = "field";
           stream.io(type);
-          stream.end_cheap_delim();		
-          stream.begin_cheap_delim();            
-          Pio(stream,fieldhandle); 
-          stream.end_cheap_delim(); 
-          continue; 
+          stream.end_cheap_delim();
+          stream.begin_cheap_delim();
+          Pio(stream,fieldhandle);
+          stream.end_cheap_delim();
+          continue;
         }
-      
-        MatrixHandle matrixhandle = 
-                                   dynamic_cast<Matrix<double>*>(bundle_[p].get_rep());
-        if (matrixhandle.get_rep()) 
-        { 
+
+        auto matrixhandle = getMatrix(name);
+        if (matrixhandle)
+        {
           type = "matrix";
           stream.io(type);
-          stream.end_cheap_delim();		
-          stream.begin_cheap_delim();            
-          Pio(stream,matrixhandle); 
-          stream.end_cheap_delim(); 
-          continue; 
+          stream.end_cheap_delim();
+          stream.begin_cheap_delim();
+          Pio(stream,matrixhandle);
+          stream.end_cheap_delim();
+          continue;
         }
-        
-        LockingHandle<String> stringhandle = 
-                                   dynamic_cast<String*>(bundle_[p].get_rep());
-        if (stringhandle.get_rep()) 
-        { 
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+        auto stringhandle = getString(name);
+        if (stringhandle)
+        {
           type = "string";
           stream.io(type);
-          stream.end_cheap_delim();		
-          stream.begin_cheap_delim();            
-          Pio(stream,stringhandle); 
-          stream.end_cheap_delim(); 
-          continue; 
+          stream.end_cheap_delim();
+          stream.begin_cheap_delim();
+          Pio(stream,stringhandle);
+          stream.end_cheap_delim();
+          continue;
         }
-    
-                  
-        LockingHandle<NrrdData> nrrdhandle = 
+
+        LockingHandle<NrrdData> nrrdhandle =
                                  dynamic_cast<NrrdData*>(bundle_[p].get_rep());
         if (nrrdhandle.get_rep())
-        { 
+        {
           type = "nrrd";
           bool embed_old = nrrdhandle->get_embed_object();
           nrrdhandle->set_embed_object(true);
           stream.io(type);
-          stream.end_cheap_delim();		
-          stream.begin_cheap_delim();            
-          Pio(stream,nrrdhandle); 
-          stream.end_cheap_delim(); 
+          stream.end_cheap_delim();
+          stream.begin_cheap_delim();
+          Pio(stream,nrrdhandle);
+          stream.end_cheap_delim();
           nrrdhandle->set_embed_object(embed_old);
-          continue; 
-        }
-    
-      
-        LockingHandle<ColorMap> colormaphandle = 
-                                 dynamic_cast<ColorMap*>(bundle_[p].get_rep());
-        if (colormaphandle.get_rep()) 
-        { 
-          type = "colormap"; 
-          stream.io(type);
-          stream.end_cheap_delim();		
-          stream.begin_cheap_delim();            
-          Pio(stream,colormaphandle); 
-          stream.end_cheap_delim(); 
-          continue; 
+          continue;
         }
 
-        LockingHandle<Bundle> bundlehandle = 
+
+        LockingHandle<ColorMap> colormaphandle =
+                                 dynamic_cast<ColorMap*>(bundle_[p].get_rep());
+        if (colormaphandle.get_rep())
+        {
+          type = "colormap";
+          stream.io(type);
+          stream.end_cheap_delim();
+          stream.begin_cheap_delim();
+          Pio(stream,colormaphandle);
+          stream.end_cheap_delim();
+          continue;
+        }
+
+        LockingHandle<Bundle> bundlehandle =
                                   dynamic_cast<Bundle*>(bundle_[p].get_rep());
-        if (bundlehandle.get_rep()) 
-        { 
+        if (bundlehandle.get_rep())
+        {
           type = "bundle";
           stream.io(type);
-          stream.end_cheap_delim();		
-          stream.begin_cheap_delim();            
-          Pio(stream,bundlehandle); 
-          stream.end_cheap_delim(); 
-          continue; 
+          stream.end_cheap_delim();
+          stream.begin_cheap_delim();
+          Pio(stream,bundlehandle);
+          stream.end_cheap_delim();
+          continue;
         }
+        #endif
       }
     }
-    stream.end_cheap_delim();		
+    stream.end_cheap_delim();
   }
-} 
+}
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool Bundle::NrrdToMatrixConvertible(NrrdDataHandle nrrdH)
 {
   if (nrrdH.get_rep() == 0) return(false);
@@ -341,7 +353,7 @@ bool Bundle::MatrixToNrrdConvertible(MatrixHandle matH)
 bool Bundle::MatrixToNrrd(MatrixHandle matH,NrrdDataHandle &nrrdH)
 {
   if (matH.get_rep() == 0) return false;
-  if (matrix_is::dense(matH)) 
+  if (matrix_is::dense(matH))
   {
     DenseMatrix* matrix = matH->dense();
 
@@ -370,9 +382,9 @@ bool Bundle::MatrixToNrrd(MatrixHandle matH,NrrdDataHandle &nrrdH)
       int i,j;
       i = 0;
       j = 0;
-      for(int r=0; r<rows; r++) 
+      for(int r=0; r<rows; r++)
         {
-          for(int c=0; c<cols; c++) 
+          for(int c=0; c<cols; c++)
             {
               i = c + cols*r;
               val[i] = data[j++];
@@ -396,18 +408,18 @@ bool Bundle::MatrixToNrrd(MatrixHandle matH,NrrdDataHandle &nrrdH)
       double *val = reinterpret_cast<double*>(nrrdH->nrrd_->data);
       double *data = matrix->get_data_pointer();
 
-      for(int c=0; c<cols; c++) 
+      for(int c=0; c<cols; c++)
         {
-          for(int r=0; r<rows; r++) 
+          for(int r=0; r<rows; r++)
             {
               *val++ = *data++;
             }
         }
-    
+
     }
     return(true);
-  } 
-  else if (matrix_is::column(matH)) 
+  }
+  else if (matrix_is::column(matH))
   {
     ColumnMatrix* matrix = matH->column();
     size_t size[NRRD_DIM_MAX];
@@ -421,15 +433,15 @@ bool Bundle::MatrixToNrrd(MatrixHandle matH,NrrdDataHandle &nrrdH)
     double *val = reinterpret_cast<double*>(nrrdH->nrrd_->data);
     double *data = matrix->get_data_pointer();
 
-    for(int i=0; i<matrix->nrows(); i++) 
+    for(int i=0; i<matrix->nrows(); i++)
     {
       *val = *data;
       ++data;
       ++val;
     }
     return(true);
-  } 
-  else 
+  }
+  else
   {
     // For the moment we do not convert this one
     // This is the SPARSE matrix one
@@ -439,8 +451,8 @@ bool Bundle::MatrixToNrrd(MatrixHandle matH,NrrdDataHandle &nrrdH)
 
 
 MatrixHandle
-Bundle::getMatrix(const std::string& name) 
-{ 
+Bundle::getMatrix(const std::string& name)
+{
   MatrixHandle matrixH;
   matrixH = get< Matrix<double> >(name);
   if (matrixH.get_rep() == 0)
@@ -456,8 +468,8 @@ Bundle::getMatrix(const std::string& name)
   return matrixH;
 }
 
-bool Bundle::isMatrix(const std::string& name)  
-{ 
+bool Bundle::isMatrix(const std::string& name)
+{
   bool isMat;
   isMat = is< Matrix<double> >(name);
   if (!isMat)
@@ -467,16 +479,16 @@ bool Bundle::isMatrix(const std::string& name)
       NrrdDataHandle nrrdH = get<NrrdData>(name);
       if (NrrdToMatrixConvertible(nrrdH)) isMat = true;
     }
-  } 
+  }
   return(isMat);
 }
 
-int Bundle::numMatrices() 
-{ 
+int Bundle::numMatrices()
+{
   int nummat;
   nummat = num< Matrix<double> >();
-    
-  int numnrrd; 
+
+  int numnrrd;
   numnrrd = num<NrrdData>();
   std::string name;
   for (int p=0;p < numnrrd; p++)
@@ -487,12 +499,12 @@ int Bundle::numMatrices()
   return(nummat);
 }
 
-std::string Bundle::getMatrixName(int index) 
+std::string Bundle::getMatrixName(int index)
 {
   int nummat = num< Matrix<double> >();
   if (index < nummat) return(getName< Matrix<double> >(index));
 
-  int numnrrd; 
+  int numnrrd;
   numnrrd = num<NrrdData>();
   for (int p=0;p < numnrrd; p++)
   {
@@ -513,8 +525,8 @@ std::string Bundle::getHandleType(int index)
 }
 
 
-LockingHandle<NrrdData> Bundle::getNrrd(const std::string& name) 
-{ 
+LockingHandle<NrrdData> Bundle::getNrrd(const std::string& name)
+{
   NrrdDataHandle nrrdH;
   nrrdH = get<NrrdData>(name);
   if (nrrdH.get_rep() == 0)
@@ -531,8 +543,8 @@ LockingHandle<NrrdData> Bundle::getNrrd(const std::string& name)
 }
 
 bool
-Bundle::isNrrd(const std::string& name)  
-{ 
+Bundle::isNrrd(const std::string& name)
+{
   bool isnrrd;
   isnrrd = is<NrrdData>(name);
   if (!isnrrd)
@@ -542,16 +554,16 @@ Bundle::isNrrd(const std::string& name)
       MatrixHandle matrixH = get< Matrix<double> >(name);
       if (MatrixToNrrdConvertible(matrixH)) isnrrd = true;
     }
-  } 
+  }
   return(isnrrd);
 }
 
-int Bundle::numNrrds() 
-{ 
+int Bundle::numNrrds()
+{
   int numnrrd;
   numnrrd = num<NrrdData>();
-    
-  int nummat; 
+
+  int nummat;
   nummat = num< Matrix<double> >();
   std::string name;
   for (int p=0;p < nummat; p++)
@@ -562,12 +574,12 @@ int Bundle::numNrrds()
   return(numnrrd);
 }
 
-std::string Bundle::getNrrdName(int index) 
+std::string Bundle::getNrrdName(int index)
 {
   int numnrrd = num<NrrdData>();
   if (index < numnrrd) return(getName<NrrdData>(index));
 
-  int nummat; 
+  int nummat;
   nummat = num< Matrix<double> >();
   for (int p=0;p < nummat; p++)
   {

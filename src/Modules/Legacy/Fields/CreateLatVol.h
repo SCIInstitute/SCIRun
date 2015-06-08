@@ -60,12 +60,15 @@ namespace SCIRun {
         INPUT_PORT(1, LatVolSize, DenseMatrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
-        static Core::Algorithms::AlgorithmParameterName XSize;
-        static Core::Algorithms::AlgorithmParameterName YSize;
-        static Core::Algorithms::AlgorithmParameterName ZSize;
-        static Core::Algorithms::AlgorithmParameterName PadPercent;
-        static Core::Algorithms::AlgorithmParameterName DataAtLocation;
-        static Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
+        static const Core::Algorithms::AlgorithmParameterName XSize;
+        static const Core::Algorithms::AlgorithmParameterName YSize;
+        static const Core::Algorithms::AlgorithmParameterName ZSize;
+        static const Core::Algorithms::AlgorithmParameterName PadPercent;
+        static const Core::Algorithms::AlgorithmParameterName DataAtLocation;
+        static const Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
+
+        enum DataLocation { NODES, CELLS, NONE };
+        enum MeshDimensions { ELEMENTS_NORMALIZED, ELEMENT_SIZE_ONE };
 
       private:
         enum DataTypeEnum { SCALAR, VECTOR, TENSOR };

@@ -30,24 +30,21 @@
 #define INTERFACE_MODULES_SOLVELINEARSYSTEMDIALOG_H
 
 #include "Interface/Modules/Math/ui_SolveLinearSystem.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE SolveLinearSystemDialog : public ModuleDialogGeneric, 
+
+class SCISHARE SolveLinearSystemDialog : public ModuleDialogGeneric,
   public Ui::SolveLinearSystem
 {
 	Q_OBJECT
-	
+
 public:
-  SolveLinearSystemDialog(const std::string& name, 
+  SolveLinearSystemDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 private:
   boost::shared_ptr<class SolveLinearSystemDialogImpl> impl_;
 };

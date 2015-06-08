@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
-    <height>503</height>
+    <width>615</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -59,7 +59,7 @@
        <property name="minimumSize">
         <size>
          <width>500</width>
-         <height>0</height>
+         <height>342</height>
         </size>
        </property>
        <property name="toolTip">

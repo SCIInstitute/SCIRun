@@ -56,6 +56,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/GetDomainBoundary.h>
+#include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Legacy/Fields/CreateFieldData.h>
@@ -83,10 +84,14 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h>
-#include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h> 
+#include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h>
+#include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
+#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
+#include <Modules/Legacy/Math/AddLinkedNodesToLinearSystem.h>
+#include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
@@ -96,18 +101,21 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/WriteField.h>
+#include <Modules/DataIO/ReadBundle.h>
 #include <Modules/String/CreateString.h>
 #include <Modules/String/NetworkNotes.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
+#include <Modules/Visualization/ShowFieldGlyphs.h>
 #include <Modules/Visualization/CreateStandardColorMap.h>
-#include <Modules/Visualization/ShowColorMapModule.h> 
+#include <Modules/Visualization/ShowColorMapModule.h>
 #include <Modules/Visualization/RescaleColorMap.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Modules/Basic/AsyncPortTestModule.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
+#include <Modules/Legacy/Matlab/Interface/InterfaceWithMatlab.h>
 #include <Modules/Legacy/Converters/ConvertMatrixToString.h>
 //#include <Modules/Fields/@ModuleName@.h>
 
@@ -125,6 +133,7 @@ using namespace SCIRun::Modules::Matlab::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Render;
+using namespace SCIRun::Modules::Matlab::Interface;
 using namespace SCIRun::Modules::Converters;
 
 void ModuleDescriptionLookup::addEssentialModules()
@@ -146,6 +155,7 @@ void ModuleDescriptionLookup::addEssentialModules()
 	addModuleDesc<NetworkNotesModule>("NetworkNotes", "String", "SCIRun", "Functional, needs GUI work.", "...");
   //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
   addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
+  addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
   addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
@@ -161,6 +171,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CreateStandardColorMap>("In progress: four color maps available", "...");
   addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
+  addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
 	addModuleDesc<SwapFieldDataWithMatrixEntries>("SwapFieldDataWithMatrixEntires","...");
@@ -186,28 +197,35 @@ void ModuleDescriptionLookup::addEssentialModules()
 	addModuleDesc<RefineMesh>("RefineMesh","ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
 	addModuleDesc<BuildMatrixOfSurfaceNormals>("Real ported module", "...");
+  addModuleDesc<AddLinkedNodesToLinearSystem>("Real ported module", "...");
+  addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
   addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
   addModuleDesc<ComputeSVD>("ComputeSVD","Math","SCIRun","...","...");
+
+  addModuleDesc<InterfaceWithMatlab>("Real ported module", "...");
   
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
-  addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
+  addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
   addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
   addModuleDesc<RescaleColorMap>("Real ported module", "...");
   addModuleDesc<ConvertMatrixToString>("ConvertMatrixToString","Converters","SCIRun","...","...");
+  addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences","ChangeFieldData","SCIRun","...","...");
 
   // insert module desc here
 }
 
 void ModuleDescriptionLookup::addBundleModules()
 {
+  addModuleDesc<ReadBundleModule>("Ported module", "...");
   //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
   //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
   //TODO: incomplete impl
-  //addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+  addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+  addModuleDesc<ReportBundleInfo>("Real ported module", "...");
   //addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
   addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
 }
