@@ -30,30 +30,42 @@
 #define MATRIX_TEST_CASES_H
 
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
-namespace SCIRun {
+namespace SCIRun 
+{
 namespace TestUtils
 {
-  using SCIRun::Core::Datatypes::DenseMatrix;
-  
-  DenseMatrix matrix1()
+  static inline Core::Datatypes::DenseMatrix matrix1()
   {
-    DenseMatrix m (3, 3);
+    Core::Datatypes::DenseMatrix m(3, 3);
     for (int i = 0; i < m.rows(); ++ i)
       for (int j = 0; j < m.cols(); ++ j)
         m(i, j) = 3.0 * i + j;
     return m;
   }
-  DenseMatrix matrixNonSquare()
+  static inline Core::Datatypes::SparseRowMatrixHandle matrix1sparse()
   {
-    DenseMatrix m (3, 4);
+    return Core::Datatypes::matrix_convert::to_sparse(boost::make_shared<Core::Datatypes::DenseMatrix>(matrix1()));
+  }
+  static inline Core::Datatypes::DenseColumnMatrixHandle matrix1column()
+  {
+    return Core::Datatypes::matrix_convert::to_column(boost::make_shared<Core::Datatypes::DenseMatrix>(matrix1()));
+  }
+  static inline Core::Datatypes::DenseMatrix matrixNonSquare()
+  {
+    Core::Datatypes::DenseMatrix m(3, 4);
     for (int i = 0; i < m.rows(); ++ i)
       for (int j = 0; j < m.cols(); ++ j)
         m(i, j) = 3.0 * i + j;
     return m;
   }
-  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
+  const Core::Datatypes::DenseMatrix Zero(Core::Datatypes::DenseMatrix::Zero(3, 3));
 }
 }
+
+#define EXPECT_SPARSE_EQ(m1, m2) EXPECT_EQ(\
+  *SCIRun::Core::Datatypes::matrix_convert::to_dense(boost::make_shared<SCIRun::Core::Datatypes::SparseRowMatrix>(m1)), \
+  *SCIRun::Core::Datatypes::matrix_convert::to_dense(boost::make_shared<SCIRun::Core::Datatypes::SparseRowMatrix>(m2)))
 
 #endif

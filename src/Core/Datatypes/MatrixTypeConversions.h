@@ -66,6 +66,7 @@ namespace Datatypes {
     static bool sparse(const MatrixHandle& mh);
     static bool column(const MatrixHandle& mh);
     static std::string whatType(const MatrixHandle& mh);
+    static MatrixTypeCode typeCode(const MatrixHandle& mh);
   private:
     matrix_is();
   };
@@ -77,6 +78,7 @@ namespace Datatypes {
     static DenseColumnMatrixHandle to_column(const MatrixHandle& mh);
     static DenseMatrixHandle to_dense(const MatrixHandle& mh);
     static SparseRowMatrixHandle to_sparse(const MatrixHandle& mh);
+    static SparseRowMatrixHandle denseToSparse(const DenseMatrix& mh);
   private:
     matrix_convert();
     static const double zero_threshold;  /// defines a threshold below that its a zero matrix element (sparsematrix)

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_FIELDS_MapFieldDataFromElemToNode_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Thread/Interruptible.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -38,14 +39,15 @@ namespace SCIRun {
 
       class SCISHARE MapFieldDataFromElemToNodeModule : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
+        public Has1OutputPort<FieldPortTag>,
+        public Core::Thread::Interruptible
       {
       public:
         MapFieldDataFromElemToNodeModule();
 
         virtual void execute();
         virtual void setStateDefaults();
-        
+
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, OutputField, LegacyField);
       };

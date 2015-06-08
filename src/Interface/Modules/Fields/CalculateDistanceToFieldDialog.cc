@@ -46,8 +46,3 @@ CalculateDistanceToFieldDialog::CalculateDistanceToFieldDialog(const std::string
   addComboBoxManager(basisTypeComboBox_, Parameters::BasisType);
   addComboBoxManager(dataTypeComboBox_, Parameters::OutputFieldDatatype);
 }
-
-void CalculateDistanceToFieldDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}

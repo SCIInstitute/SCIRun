@@ -35,17 +35,18 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE AppendMatrixDialog : public ModuleDialogGeneric, 
+
+class SCISHARE AppendMatrixDialog : public ModuleDialogGeneric,
   public Ui::AppendMatrix
 {
 	Q_OBJECT
-	
+
 public:
-  AppendMatrixDialog(const std::string& name, 
+  AppendMatrixDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+protected:
+  virtual void pullSpecial() override;
 
 private Q_SLOTS:
   void isRows();

@@ -48,7 +48,8 @@ using namespace SCIRun::Modules::Render;
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(0), shown_(false), itemValueChanged_(true),
-	itemManager_(new ViewSceneItemManager)
+	itemManager_(new ViewSceneItemManager),
+  screenshotTaker_(0), saveScreenshotOnNewGeometry_(false)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -86,7 +87,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
 	  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-	  if (spire == nullptr)
+	  if (!spire)
 		  return;
 	  if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
 	  {
@@ -100,19 +101,23 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
     //Set background Color
-    ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
-    bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-                      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-                      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
-
+    if (state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString() != "")
+    {
+      ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
+      bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+                        static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+                        static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+    }
+    else
+    {
+      bgColor_ = Qt::black;
+    }
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
   }
 
-
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
-
 }
 
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
@@ -137,7 +142,7 @@ void ViewSceneDialog::newGeometryValue()
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
   std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-  if (spire == nullptr)
+  if (!spire)
     return;
   spire->removeAllGeomObjects();
 
@@ -153,7 +158,7 @@ void ViewSceneDialog::newGeometryValue()
       return;
     }
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-    if (spire == nullptr)
+    if (!spire)
     {
       LOG_DEBUG("Logical error: Spire lock not acquired.");
       return;
@@ -200,13 +205,17 @@ void ViewSceneDialog::newGeometryValue()
       itemValueChanged_ = false;
     }
   }
-
   else
   {
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-    if (spire == nullptr)
+    if (!spire)
       return;
     spire->removeAllGeomObjects();
+  }
+
+  if (saveScreenshotOnNewGeometry_)
+  {
+    screenshotClicked();
   }
 
   //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
@@ -217,7 +226,7 @@ void ViewSceneDialog::newGeometryValue()
 void ViewSceneDialog::menuMouseControlChanged(int index)
 {
 	std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-	if (spire == nullptr)
+	if (!spire)
 		return;
 
 	if (index == 0)
@@ -492,6 +501,7 @@ void ViewSceneDialog::addToolBar()
 	mToolBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
 
 	addAutoViewButton();
+  addScreenshotButton();
 	addObjectToggleMenu();
 
 	glLayout->addWidget(mToolBar);
@@ -507,7 +517,25 @@ void ViewSceneDialog::addAutoViewButton()
 	autoViewBtn->setShortcut(Qt::Key_0);
 	connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
 	mToolBar->addWidget(autoViewBtn);
-	mToolBar->addSeparator();
+}
+
+void ViewSceneDialog::addScreenshotButton()
+{
+  QPushButton* screenshotButton = new QPushButton(this);
+  screenshotButton->setToolTip("Take screenshot");
+  screenshotButton->setText("Take screenshot");
+  screenshotButton->setAutoDefault(false);
+  screenshotButton->setDefault(false);
+  screenshotButton->setShortcut(Qt::Key_F12);
+  connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
+  mToolBar->addWidget(screenshotButton);
+
+  auto saveNewGeom = new QCheckBox(this);
+  saveNewGeom->setText("Save screenshot on geometry update");
+  connect(saveNewGeom, SIGNAL(stateChanged(int)), this, SLOT(saveNewGeometryChanged(int)));
+  mToolBar->addWidget(saveNewGeom);
+
+  mToolBar->addSeparator();
 }
 
 class FixMacCheckBoxes : public QStyledItemDelegate
@@ -718,4 +746,51 @@ void ViewSceneItemManager::slotChanged(const QModelIndex& topLeft, const QModelI
 		LOG_DEBUG("Item " << item->text().toStdString() << " Checked!" << std::endl);
 		Q_EMIT itemSelected(item->text());
 	}
+}
+
+void ViewSceneDialog::screenshotClicked()
+{
+  if (!screenshotTaker_)
+    screenshotTaker_ = new Screenshot(mGLWidget, this);
+
+  screenshotTaker_->takeScreenshot();
+  screenshotTaker_->saveScreenshot();
+}
+
+const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
+
+Screenshot::Screenshot(QGLWidget *glwidget, QObject *parent)
+  : QObject(parent),
+  viewport_(glwidget),
+  index_(0)
+{
+  QDir dir(filePath);
+  if (!dir.exists())
+  {
+    //qDebug() << "creating file directory" << filePath;
+    dir.mkpath(filePath);
+  }
+}
+
+void Screenshot::takeScreenshot()
+{
+  screenshot_ = viewport_->grabFrameBuffer();
+}
+
+void Screenshot::saveScreenshot()
+{
+  index_++;
+  QString fileName = screenshotFile();
+	QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
+  screenshot_.save(fileName);
+}
+
+QString Screenshot::screenshotFile() const
+{
+  return filePath + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
+}
+
+void ViewSceneDialog::saveNewGeometryChanged(int state)
+{
+  saveScreenshotOnNewGeometry_ = state != 0;
 }

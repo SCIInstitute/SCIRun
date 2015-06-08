@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_FIELDS_GETDOMAINBOUNDARY_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Thread/Interruptible.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -37,11 +38,12 @@ namespace SCIRun {
     namespace Fields {
 
 	/// @class GetDomainBoundary
-	/// @brief This module extracts the boundaries of the different regions in a label map. 
+	/// @brief This module extracts the boundaries of the different regions in a label map.
 
       class SCISHARE GetDomainBoundary : public Dataflow::Networks::Module,
         public Has4InputPorts<FieldPortTag, ScalarPortTag, ScalarPortTag, MatrixPortTag>,
-        public Has1OutputPort<FieldPortTag>
+        public Has1OutputPort<FieldPortTag>,
+        public Core::Thread::Interruptible
       {
       public:
         GetDomainBoundary();
@@ -55,7 +57,7 @@ namespace SCIRun {
         INPUT_PORT(3, ElemLink, SparseRowMatrix);
         OUTPUT_PORT(0, BoundaryField, LegacyField);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }

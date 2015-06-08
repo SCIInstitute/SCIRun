@@ -63,12 +63,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
 }
 
-void CreateStandardColorMapDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}
-
-void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s) 
+void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
 {
   ColorMap cm(s.toStdString(), resolutionSlider_->value(),
     static_cast<double>(shiftSlider_->value()) / 100.,
@@ -82,7 +77,7 @@ void CreateStandardColorMapDialog::updateColorMapPreview()
   updateColorMapPreview(colorMapNameComboBox_->currentText());
 }
 
-const QString CreateStandardColorMapDialog::buildGradientString(const ColorMap& cm) 
+const QString CreateStandardColorMapDialog::buildGradientString(const ColorMap& cm)
 {
   //TODO: cache these values, GUI is slow to update.
   std::stringstream ss;
@@ -98,12 +93,12 @@ const QString CreateStandardColorMapDialog::buildGradientString(const ColorMap& 
   return QString::fromStdString(ss.str());
 }
 
-void CreateStandardColorMapDialog::setShiftSlider(double d) 
+void CreateStandardColorMapDialog::setShiftSlider(double d)
 {
   shiftSlider_->setValue(static_cast<int>(d * 100.));
 }
 
-void CreateStandardColorMapDialog::setResolutionSlider(int i) 
+void CreateStandardColorMapDialog::setResolutionSlider(int i)
 {
   resolutionSlider_->setValue(i);
 }
@@ -113,12 +108,7 @@ void CreateStandardColorMapDialog::setShiftSpinner(int i)
   shiftSpin_->setValue(static_cast<double>(i) / 100.);
 }
 
-void CreateStandardColorMapDialog::onInvertCheck(bool b) 
+void CreateStandardColorMapDialog::onInvertCheck(bool b)
 {
   updateColorMapPreview();
 }
-
-
-
-
-

@@ -33,7 +33,7 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Modules/Visualization/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
@@ -49,21 +49,23 @@ namespace SCIRun
     }
   }
 
-  namespace Modules 
+  namespace Modules
   {
-    namespace Visualization 
+    namespace Visualization
     {
 
       class SCISHARE RescaleColorMap : public SCIRun::Dataflow::Networks::Module,
-        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
+        public Has2InputPorts<ColorMapPortTag, DynamicPortTag<FieldPortTag>>,
         public Has1OutputPort<ColorMapPortTag>
       {
       public:
         RescaleColorMap();
         virtual void execute();
         virtual void setStateDefaults();
-        INPUT_PORT(0, Field, LegacyField);
-        INPUT_PORT(1, ColorMapObject, ColorMap);
+        virtual bool hasDynamicPorts() const override { return true; }
+        INPUT_PORT(0, ColorMapObject, ColorMap);
+        INPUT_PORT_DYNAMIC(1, Field, LegacyField);
+
         OUTPUT_PORT(0, ColorMapOutput, ColorMap);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;

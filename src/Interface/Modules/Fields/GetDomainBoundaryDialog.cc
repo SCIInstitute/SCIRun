@@ -41,7 +41,7 @@ GetDomainBoundaryDialog::GetDomainBoundaryDialog(const std::string& name, Module
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   connect(compartmentRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
   connect(compartmentsRangeRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
 
@@ -65,13 +65,9 @@ void GetDomainBoundaryDialog::push()
   }
 }
 
-void GetDomainBoundaryDialog::pull()
+void GetDomainBoundaryDialog::pullSpecial() //TODO change to radio button manager
 {
-  Pulling p(this);
-  
   using namespace Parameters;
   compartmentRadioButton_->setChecked(!state_->getValue(UseRange).toBool());
   compartmentsRangeRadioButton_->setChecked(state_->getValue(UseRange).toBool());
-
-  pull_newVersionToReplaceOld();
 }

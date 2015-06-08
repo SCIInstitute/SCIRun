@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE NetworkNotesDialog : public ModuleDialogGeneric, 
+
+class SCISHARE NetworkNotesDialog : public ModuleDialogGeneric,
   public Ui::NetworkNotes
 {
 	Q_OBJECT
-	
+
 public:
-  NetworkNotesDialog(const std::string& name, 
+  NetworkNotesDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

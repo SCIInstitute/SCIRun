@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,63 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Bundle.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/BundlePort.h>
+#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Modules::Bundles;
 
 /// @class ReportBundleInfo
-/// @brief This module lists all the objects stored in a bundle. 
+/// @brief This module lists all the objects stored in a bundle.
 
-class ReportBundleInfo : public Module {
-public:
-  ReportBundleInfo(GuiContext*);
-  virtual void execute();
+const Dataflow::Networks::ModuleLookupInfo ReportBundleInfo::staticInfo_("ReportBundleInfo", "Bundle", "SCIRun");
 
-private:
-  GuiString tclInfoString_;
-};
-
-
-DECLARE_MAKER(ReportBundleInfo)
-
-ReportBundleInfo::ReportBundleInfo(GuiContext* ctx)
-  : Module("ReportBundleInfo", ctx, Sink, "Bundle", "SCIRun"),
-    tclInfoString_(get_ctx()->subVar("tclinfostring",false), "")
+ReportBundleInfo::ReportBundleInfo() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputBundle);
 }
 
 void ReportBundleInfo::execute()
 {
-  /// Define the dataflow object
-  BundleHandle bundle;
+  auto bundle = getRequiredInput(InputBundle);
 
-  /// Get the bundle from the module
-  get_input_handle("bundle",bundle,true);
-
-  /// If the input changed we need to update output
-  if (inputs_changed_)
+  if (needToExecute())
   {
     update_state(Executing);
-    std::string tclinfostring;
-   
-    /// Get number of objects in bundle
-    int numhandles = bundle->getNumHandles();
+    std::ostringstream infostring;
 
-    std::string name;
-    std::string type;
-      
-    /// Loop through all objects and display name and type
-    for (int p=0; p < numhandles; p++)
+    for (const auto& nameHandlePair : *bundle)
     {
-      name = bundle->getHandleName(p);
-      type = bundle->getHandleType(p);
-      tclinfostring += " {" + name + " (" + type + ") }";
+      std::string name = nameHandlePair.first;
+      std::string type = typeid(*nameHandlePair.second).name(); //nameHandlePair.second->dynamic_type_name();
+      infostring << " {" << name << " (" << type << ") }\n";
     }
-      
-    tclInfoString_.set(tclinfostring);
+
+    get_state()->setTransientValue("ReportedInfo", infostring.str());
   }
 }
-

@@ -81,6 +81,12 @@ namespace Console {
     virtual bool execute();
   };
 
+  class SCISHARE PrintModulesCommand : public Core::Commands::ConsoleCommand
+  {
+  public:
+    virtual bool execute();
+  };
+
   /// @TODO
 //   class SCISHARE SetupDataDirectoryCommand : public Core::Commands::ConsoleCommand
 //   {

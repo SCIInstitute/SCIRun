@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,7 +30,7 @@
 
 
 #ifndef DATAFLOW_NETWORK_NETWORK_INTERFACE_H
-#define DATAFLOW_NETWORK_NETWORK_INTERFACE_H 
+#define DATAFLOW_NETWORK_NETWORK_INTERFACE_H
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
@@ -56,21 +56,23 @@ namespace Networks {
 
   typedef std::pair<ModuleHandle, PortId> ModulePortIdPair;
 
-  struct SCISHARE ConnectionOutputPort : public ModulePortIdPair 
+  struct SCISHARE ConnectionOutputPort : public ModulePortIdPair
   {
     ConnectionOutputPort(ModuleHandle m, const PortId& p) : ModulePortIdPair(m,p) {}
 
     /// @todo: only used in test code
     ConnectionOutputPort(ModuleHandle m, size_t index);
   };
-  
-  struct SCISHARE ConnectionInputPort : public ModulePortIdPair 
+
+  struct SCISHARE ConnectionInputPort : public ModulePortIdPair
   {
     ConnectionInputPort(ModuleHandle m,  const PortId& p) : ModulePortIdPair(m,p) {}
 
     /// @todo: only used in test code
     ConnectionInputPort(ModuleHandle m, size_t index);
   };
+
+  typedef boost::signals2::signal<void(const std::string&)> ModuleInterruptedSignal;
 
   class SCISHARE NetworkInterface : public ExecutableLookup
   {
@@ -82,8 +84,8 @@ namespace Networks {
     virtual bool remove_module(const ModuleId& id) = 0;
     virtual size_t nmodules() const = 0;
     virtual ModuleHandle module(size_t i) const = 0;
-    virtual ModuleHandle lookupModule(const ModuleId& id) const = 0; 
-    
+    virtual ModuleHandle lookupModule(const ModuleId& id) const = 0;
+
     virtual ConnectionId connect(const ConnectionOutputPort&, const ConnectionInputPort&) = 0;
     virtual bool disconnect(const ConnectionId&) = 0;
     virtual size_t nconnections() const = 0;
@@ -91,8 +93,11 @@ namespace Networks {
     virtual ConnectionDescriptionList connections() const = 0;
     virtual void incrementErrorCode(const ModuleId& moduleId) = 0;
     virtual NetworkGlobalSettings& settings() = 0;
-    virtual void setModuleExecutionState(ModuleInterface::ExecutionState state, ModuleFilter filter) = 0;
+    virtual void setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter) = 0;
     virtual void clear() = 0;
+
+    virtual boost::signals2::connection connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const = 0;
+    virtual void interruptModuleRequest(const ModuleId& id) = 0;
 
     virtual std::string toString() const = 0;
   };

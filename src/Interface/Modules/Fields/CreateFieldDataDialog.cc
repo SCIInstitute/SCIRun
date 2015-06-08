@@ -41,13 +41,8 @@ CreateFieldDataDialog::CreateFieldDataDialog(const std::string& name, ModuleStat
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   addTextEditManager(functionTextEdit_, CreateFieldDataModule::FunctionString);
   addComboBoxManager(fieldOutputDataComboBox_, CreateFieldDataModule::FormatString);
-  addComboBoxManager(fieldOutputBasisComboBox_, CreateFieldDataModule::BasisString); 
-}
-
-void CreateFieldDataDialog::pull()
-{
-  pull_newVersionToReplaceOld();
+  addComboBoxManager(fieldOutputBasisComboBox_, CreateFieldDataModule::BasisString);
 }

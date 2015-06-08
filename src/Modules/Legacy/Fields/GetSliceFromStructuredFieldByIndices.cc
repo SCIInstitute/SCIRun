@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 ///
 ///     @file    GetSliceFromStructuredFieldByIndices.h
@@ -36,161 +36,114 @@
 ///     @date    March 2006
 /// 
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseMatrix.h>
-
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-
-
-namespace SCIRun {
 
 /// @class GetSliceFromStructuredFieldByIndices
 /// @brief This module reduces the dimension of a topologically regular field by 1 dimension. 
 
-class GetSliceFromStructuredFieldByIndices : public Module {
-  public:
-    GetSliceFromStructuredFieldByIndices(GuiContext *context);
-    virtual ~GetSliceFromStructuredFieldByIndices() {}
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields::Parameters;
+using namespace SCIRun::Core::Geometry;
 
-    virtual void execute();
+ALGORITHM_PARAMETER_DEF(Fields, Dim_i);
+ALGORITHM_PARAMETER_DEF(Fields, Dim_j);
+ALGORITHM_PARAMETER_DEF(Fields, Dim_k);
+ALGORITHM_PARAMETER_DEF(Fields, Index_i);
+ALGORITHM_PARAMETER_DEF(Fields, Index_j);
+ALGORITHM_PARAMETER_DEF(Fields, Index_k);
+ALGORITHM_PARAMETER_DEF(Fields, Axis_ijk);
 
-  private:
-    GuiInt               gui_axis_;
-    GuiInt               gui_dims_;
+const ModuleLookupInfo GetSliceFromStructuredFieldByIndices::staticInfo_("GetSliceFromStructuredFieldByIndices", "NewField", "SCIRun");
 
-    GuiInt               gui_dim_i_;
-    GuiInt               gui_dim_j_;
-    GuiInt               gui_dim_k_;
-
-    GuiInt               gui_index_i_;
-    GuiInt               gui_index_j_;
-    GuiInt               gui_index_k_;
-
-    /// gui_update_type_ must be declared after all gui vars because !
-    /// some are traced in the tcl code. If gui_update_type_ is set to
-    /// Auto having it last will prevent the net from executing when it
-    /// is instantiated.
-
-    GuiString            gui_update_type_;
-    GuiInt               gui_continuous_;
-};
-
-
-DECLARE_MAKER(GetSliceFromStructuredFieldByIndices)
-
-GetSliceFromStructuredFieldByIndices::GetSliceFromStructuredFieldByIndices(GuiContext *context)
-  : Module("GetSliceFromStructuredFieldByIndices", context, Filter, "NewField", "SCIRun"),
-    
-    gui_axis_(context->subVar("axis"), 2),
-    gui_dims_(context->subVar("dims"), 3),
-
-    gui_dim_i_(context->subVar("dim-i"), 1),
-    gui_dim_j_(context->subVar("dim-j"), 1),
-    gui_dim_k_(context->subVar("dim-k"), 1),
-
-    gui_index_i_(context->subVar("index-i"), 1),
-    gui_index_j_(context->subVar("index-j"), 1),
-    gui_index_k_(context->subVar("index-k"), 1),
-
-    gui_update_type_(context->subVar("update_type"), "Manual"),
-    gui_continuous_(context->subVar("continuous"), 0)
+GetSliceFromStructuredFieldByIndices::GetSliceFromStructuredFieldByIndices() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(OutputMatrix);
 }
 
-
-void
-GetSliceFromStructuredFieldByIndices::execute()
+void GetSliceFromStructuredFieldByIndices::setStateDefaults()
 {
-  FieldHandle field_in_handle = 0;
-  MatrixHandle matrix_handle = 0;
+  auto state = get_state();
+  state->setValue(Dim_i, 0);
+  state->setValue(Dim_j, 0);
+  state->setValue(Dim_k, 0);
+  state->setValue(Index_i, 0);
+  state->setValue(Index_j, 0);
+  state->setValue(Index_k, 0);
+  state->setValue(Axis_ijk, 2);
+}
 
-  /// Get the input field handle from the port.
-  get_input_handle( "Input Field", field_in_handle, true );
+void GetSliceFromStructuredFieldByIndices::execute()
+{
+  auto inputField = getRequiredInput(InputField);
 
   /// Get the optional matrix handle from the port. Note if a matrix is
   /// present it is sent down stream. Otherwise it will be created.
-  get_input_handle( "Input Matrix", matrix_handle, false );
+  auto inputMatrixOption = getOptionalInput(InputMatrix);
 
+  bool indexesChanged = false;
   update_state(Executing);
+
+  VField* ifield = inputField->vfield();
+  VMesh*  imesh = inputField->vmesh();
 
   // Because the field slicer is index based it can only work on
   // structured data. For unstructured data SamplePlane should be used.
-  if( field_in_handle->vmesh()->is_unstructuredmesh() ) 
+  if (imesh->is_unstructuredmesh())
   {
-    error( "This module is only available for topologically structured data." );
+    error("This module is only available for topologically structured data.");
     return;
   }
 
   // For cell based data the max index is one less than the dimension in each direction
   unsigned int offset;
 
-  if( field_in_handle->vfield()->basis_order() == 0)
+  if (ifield->basis_order() == 0)
     offset = 1;
   else
     offset = 0;
 
   // Get the dimensions of the mesh.
   VMesh::dimension_type dims;
-  
-  VField* ifield = field_in_handle->vfield();
-  VMesh*  imesh   = field_in_handle->vmesh();
 
-  imesh->get_dimensions( dims );
-  
+  imesh->get_dimensions(dims);
+
   bool update_dims = false;
-
-  if( dims.size() >= 1 ) 
-  {
-    /// Check to see if the gui dimensions are different than the field.
-    if( gui_dim_i_.get() != static_cast<int>(dims[0]-offset) )
-    {
-      gui_dim_i_.set( static_cast<int>(dims[0]-offset) );
-      update_dims = true;
-    }
-  }
-
-  if( dims.size() >= 2 ) 
-  {
-    /// Check to see if the gui dimensions are different than the field.
-    if( gui_dim_j_.get() != static_cast<int>(dims[1]-offset) ) 
-    {
-      gui_dim_j_.set( static_cast<int>(dims[1]-offset) );
-      update_dims = true;
-    }
-  }
-
-  if( dims.size() >= 3 ) 
-  {
-    /// Check to see if the gui dimensions are different than the field.
-    if( gui_dim_k_.get() != static_cast<int>(dims[2]-offset) ) 
-    {
-      gui_dim_k_.set( static_cast<int>(dims[2]-offset) );
-      update_dims = true;
-    }
-  }
+  auto state = get_state();
 
   /// Check to see if the gui dimensions are different than the field.
-  /// This is last because the GUI var has a callback on it.
-  if( gui_dims_.get() != static_cast<int>(dims.size()) ) 
+  if (dims.size() >= 1)
   {
-    gui_dims_.set( dims.size() );
-    update_dims = true;
+    if (state->getValue(Dim_i).toInt() != static_cast<int>(dims[0] - offset))
+    {
+      state->setValue(Dim_i, static_cast<int>(dims[0] - offset));
+      }
+    }
+
+  if (dims.size() >= 2)
+  {
+    if (state->getValue(Dim_j).toInt() != static_cast<int>(dims[1] - offset))
+    {
+      state->setValue(Dim_j, static_cast<int>(dims[1] - offset));
+    }
   }
 
-  /// If the gui dimensions are different than the field then update the gui.
-  if( update_dims ) 
+  if (dims.size() >= 3)
   {
-    /// Dims has callback on it, so it must be set it after i, j, and k.
-    std::ostringstream str;
-    str << get_id() << " set_size ";
-    TCLInterface::execute(str.str().c_str());
-
-    reset_vars();
+    if (state->getValue(Dim_k).toInt() != static_cast<int>(dims[2] - offset))
+    {
+      state->setValue(Dim_k, static_cast<int>(dims[2] - offset));
+    }
   }
 
   /// An input matrix is present so use the values in it to override
@@ -198,151 +151,126 @@ GetSliceFromStructuredFieldByIndices::execute()
   /// Column 0 selected axis to slice.
   /// Column 1 index of the axis to slice.
   /// Column 2 dimensions of the data.
-  if( matrix_handle.get_rep() ) 
+  if (inputMatrixOption && *inputMatrixOption)
   {
-    if( (matrix_handle->nrows() == 1 && matrix_handle->ncols() == 1) ) 
+    auto inputMatrix = *inputMatrixOption;
+    if ((inputMatrix->nrows() == 1 && inputMatrix->ncols() == 1))
     {
       /// Check to see what index has been selected.
-      if( gui_axis_.get() == 0 )
+      if (state->getValue(Axis_ijk).toInt() == 0)
       {
-        gui_index_i_.set( (int) matrix_handle->get(0, 0) );
-        gui_index_i_.reset();
+        state->setValue(Index_i, static_cast<int>(inputMatrix->get(0, 0)));
       }
 
-      if( gui_axis_.get() == 1 )
+      if (state->getValue(Axis_ijk).toInt() == 1)
       {
-        gui_index_j_.set( (int) matrix_handle->get(0, 0) );
-        gui_index_j_.reset();
+        state->setValue(Index_j, static_cast<int>(inputMatrix->get(0, 0)));
       }
 
-      if( gui_axis_.get() == 2 )
+      if (state->getValue(Axis_ijk).toInt() == 2)
       {
-        gui_index_k_.set( (int) matrix_handle->get(0, 0) );
-        gui_index_k_.reset();
+        state->setValue(Index_k, static_cast<int>(inputMatrix->get(0, 0)));
       }
 
-      std::ostringstream str;
-      str << get_id() << " update_index ";
-      
-      TCLInterface::execute(str.str().c_str());
-	
-      reset_vars();
-	
-      inputs_changed_ = true;
+      indexesChanged = true;
     }
-   
+
     /// The matrix is optional. If present make sure it is a 3x3 matrix.
     /// The row indices is the axis index. The column is the data.
-    else if( (matrix_handle->nrows() == 3 &&
-	      matrix_handle->ncols() == 3) ) 
+    else if ((inputMatrix->nrows() == 3 &&
+      inputMatrix->ncols() == 3))
     {
       /// Sanity check. Make sure the gui dimensions match the matrix
       /// dimensions.
-      if( gui_dim_i_.get() != matrix_handle->get(0, 2) ||
-          gui_dim_j_.get() != matrix_handle->get(1, 2) ||
-          gui_dim_k_.get() != matrix_handle->get(2, 2) ) 
+      if (state->getValue(Dim_i).toInt() != inputMatrix->get(0, 2) ||
+        state->getValue(Dim_j).toInt() != inputMatrix->get(1, 2) ||
+        state->getValue(Dim_k).toInt() != inputMatrix->get(2, 2))
       {
         std::ostringstream str;
         str << "The dimensions of the matrix slicing do match the field. "
-            << " Expected "
-            << gui_dim_i_.get() << " "
-            << gui_dim_j_.get() << " "
-            << gui_dim_k_.get()
-            << " Got "
-            << matrix_handle->get(0, 2) << " "
-            << matrix_handle->get(1, 2) << " "
-            << matrix_handle->get(2, 2);
-	
-        error( str.str() );
+          << " Expected "
+          << state->getValue(Dim_i).toInt() << " "
+          << state->getValue(Dim_j).toInt() << " "
+          << state->getValue(Dim_k).toInt()
+          << " Got "
+          << inputMatrix->get(0, 2) << " "
+          << inputMatrix->get(1, 2) << " "
+          << inputMatrix->get(2, 2);
+
+        error(str.str());
         return;
       }
 
       /// Check to see what axis has been selected. Only one should be
       /// selected.
-      for (index_type i=0; i < matrix_handle->nrows(); i++) 
+      for (index_type i = 0; i < inputMatrix->nrows(); i++)
       {
-        if( matrix_handle->get(i, 0) == 1 && gui_axis_.get() != i ) 
+        if (inputMatrix->get(i, 0) == 1 && state->getValue(Axis_ijk).toInt() != i)
         {
-          gui_axis_.set( i );	
-          inputs_changed_ = true;
+          state->setValue(Axis_ijk, static_cast<int>(i));
+          indexesChanged = true;
         }
       }
-      
+
       /// Check to see what index has been selected and if it matches
       /// the gui index.
-      if( gui_index_i_.get() != matrix_handle->get(0, 1) ||
-          gui_index_j_.get() != matrix_handle->get(1, 1) ||
-          gui_index_k_.get() != matrix_handle->get(2, 1) ) 
+      if (state->getValue(Index_i).toInt() != inputMatrix->get(0, 1) ||
+        state->getValue(Index_j).toInt() != inputMatrix->get(1, 1) ||
+        state->getValue(Index_k).toInt() != inputMatrix->get(2, 1))
       {
-        gui_index_i_.set( (int) matrix_handle->get(0, 1) );
-        gui_index_j_.set( (int) matrix_handle->get(1, 1) );
-        gui_index_k_.set( (int) matrix_handle->get(2, 1) );
-        
-        gui_index_i_.reset();
-        gui_index_j_.reset();
-        gui_index_k_.reset();
+        state->setValue(Index_i, static_cast<int>(inputMatrix->get(0, 1)));
+        state->setValue(Index_j, static_cast<int>(inputMatrix->get(1, 1)));
+        state->setValue(Index_k, static_cast<int>(inputMatrix->get(2, 1)));
 
-        std::ostringstream str;
-        str << get_id() << " update_index ";
-        
-        TCLInterface::execute(str.str().c_str());
-        
-        reset_vars();
-        
-        inputs_changed_ = true;
+        indexesChanged = true;
       }
     }
     else
     {
-      error( "Input matrix is not a 1x1 or a 3x3 matrix" );
+      error("Input matrix is not a 1x1 or a 3x3 matrix");
       return;
     }
   }
 
   /// If no data or an input change recreate the field. I.e Only
   /// execute when neeed.
-  if( inputs_changed_  ||
-      !oport_cached("Output Field") ||
-      !oport_cached("Output Matrix") ||
-       gui_axis_.changed() ||
-      (gui_axis_.get() == 0 && gui_index_i_.changed()) ||
-      (gui_axis_.get() == 1 && gui_index_j_.changed()) ||
-      (gui_axis_.get() == 2 && gui_index_k_.changed()) ) 
+
+  if (indexesChanged || needToExecute())
   {
 
     // Update the state. Other state changes are handled in either
     // getting handles or in the calling method Module::do_execute.
     update_state(Executing);
 
-    if( ifield->basis_order() == 0 )
+    if (ifield->basis_order() == 0)
     {
       VMesh::index_type i_start = 0;
       VMesh::index_type j_start = 0;
       VMesh::index_type k_start = 0;
 
-      VMesh::index_type i_stop = gui_dim_i_.get();
-      VMesh::index_type j_stop = gui_dim_i_.get();
-      VMesh::index_type k_stop = gui_dim_i_.get();
+      VMesh::index_type i_stop = state->getValue(Dim_i).toInt();
+      VMesh::index_type j_stop = state->getValue(Dim_j).toInt();
+      VMesh::index_type k_stop = state->getValue(Dim_k).toInt();
 
       VMesh::index_type i_stride = 1;
       VMesh::index_type j_stride = 1;
       VMesh::index_type k_stride = 1;
-    
+
       /// Get the index for the axis selected.
-      if (gui_axis_.get() == 0) 
+      if (state->getValue(Axis_ijk).toInt() == 0)
       {
-        i_start = gui_index_i_.get();
-        i_stop  = gui_index_i_.get() + 1;
-      } 
-      else if (gui_axis_.get() == 1) 
+        i_start = state->getValue(Index_i).toInt();
+        i_stop = state->getValue(Index_i).toInt() + 1;
+      }
+      else if (state->getValue(Axis_ijk).toInt() == 1)
       {
-        j_start = gui_index_j_.get();
-        j_stop  = gui_index_j_.get() + 1;
-      } 
-      else 
+        j_start = state->getValue(Index_j).toInt();
+        j_stop = state->getValue(Index_j).toInt() + 1;
+      }
+      else
       {
-        k_start = gui_index_k_.get();
-        k_stop  = gui_index_k_.get() + 1;
+        k_start = state->getValue(Index_k).toInt();
+        k_stop = state->getValue(Index_k).toInt() + 1;
       }
 
       FieldHandle field_out_handle;
@@ -351,23 +279,23 @@ GetSliceFromStructuredFieldByIndices::execute()
       VMesh::index_type i, j, k, inode, jnode, knode;
 
       VMesh::dimension_type dims;
-      imesh->get_dimensions( dims );
+      imesh->get_dimensions(dims);
 
       size_t rank = dims.size();
 
-      if( rank == 3 ) 
+      if (rank == 3)
       {
         idim_in = dims[0];
         jdim_in = dims[1];
         kdim_in = dims[2];
-      } 
-      else if( rank == 2 ) 
+      }
+      else if (rank == 2)
       {
         idim_in = dims[0];
         jdim_in = dims[1];
         kdim_in = 1;
-      } 
-      else if( rank == 1 ) 
+      }
+      else if (rank == 1)
       {
         idim_in = dims[0];
         jdim_in = 1;
@@ -375,9 +303,9 @@ GetSliceFromStructuredFieldByIndices::execute()
       }
 
       /// This happens when wrapping.
-      if( i_stop <= i_start ) i_stop += idim_in;
-      if( j_stop <= j_start ) j_stop += jdim_in;
-      if( k_stop <= k_start ) k_stop += kdim_in;
+      if (i_stop <= i_start) i_stop += idim_in;
+      if (j_stop <= j_start) j_stop += jdim_in;
+      if (k_stop <= k_start) k_stop += kdim_in;
 
       /// Add one because we want the last node.
       VMesh::index_type idim_out = (i_stop - i_start) / i_stride + (rank >= 1 ? 1 : 0);
@@ -386,61 +314,61 @@ GetSliceFromStructuredFieldByIndices::execute()
 
       VMesh::index_type i_stop_stride;
       VMesh::index_type j_stop_stride;
-      VMesh::index_type k_stop_stride; 
+      VMesh::index_type k_stop_stride;
 
       if (imesh->is_structuredmesh() && !(imesh->is_regularmesh()))
       {
         /// Account for the modulo of stride so that the last node will be
         /// included even if it "partial" elem when compared to the others.
-        if( (i_stop - i_start) % i_stride ) idim_out += (rank >= 1 ? 1 : 0);
-        if( (j_stop - j_start) % j_stride ) jdim_out += (rank >= 2 ? 1 : 0);
-        if( (k_stop - k_start) % k_stride ) kdim_out += (rank >= 3 ? 1 : 0);
+        if ((i_stop - i_start) % i_stride) idim_out += (rank >= 1 ? 1 : 0);
+        if ((j_stop - j_start) % j_stride) jdim_out += (rank >= 2 ? 1 : 0);
+        if ((k_stop - k_start) % k_stride) kdim_out += (rank >= 3 ? 1 : 0);
 
-        i_stop_stride = i_stop + (rank >= 1 ? i_stride : 0); 
-        j_stop_stride = j_stop + (rank >= 2 ? j_stride : 0); 
-        k_stop_stride = k_stop + (rank >= 3 ? k_stride : 0); 
-      } 
-      else 
+        i_stop_stride = i_stop + (rank >= 1 ? i_stride : 0);
+        j_stop_stride = j_stop + (rank >= 2 ? j_stride : 0);
+        k_stop_stride = k_stop + (rank >= 3 ? k_stride : 0);
+      }
+      else
       {
         i_stop_stride = i_stop + (rank >= 1 ? 1 : 0);
         j_stop_stride = j_stop + (rank >= 2 ? 1 : 0);
-        k_stop_stride = k_stop + (rank >= 3 ? 1 : 0); 
+        k_stop_stride = k_stop + (rank >= 3 ? 1 : 0);
       }
 
-      FieldInformation fi(field_in_handle);
+      FieldInformation fi(inputField);
       MeshHandle mesh;
-      
-      if( rank == 3 ) 
+
+      if (rank == 3)
       {
         dims[0] = idim_out;
         dims[1] = jdim_out;
         dims[2] = kdim_out;
-        mesh = CreateMesh(fi,dims[0],dims[1],dims[2]);
-      } 
-      else if( rank == 2 ) 
+        mesh = CreateMesh(fi, dims[0], dims[1], dims[2]);
+      }
+      else if (rank == 2)
       {
         dims[0] = idim_out;
         dims[1] = jdim_out;
-        mesh = CreateMesh(fi,dims[0],dims[1]);
-      } 
-      else if( rank == 1 ) 
+        mesh = CreateMesh(fi, dims[0], dims[1]);
+      }
+      else if (rank == 1)
       {
         dims[0] = idim_out;
-        mesh = CreateMesh(fi,dims[0]);
+        mesh = CreateMesh(fi, dims[0]);
       }
 
       VMesh* omesh = mesh->vmesh();
 
-      field_out_handle = CreateField(fi,mesh);
+      field_out_handle = CreateField(fi, mesh);
       VField* ofield = field_out_handle->vfield();
-      ofield->copy_properties(ifield);
+      CopyProperties(*inputField, *field_out_handle);
 
       Point pt;
       Point p, o;
-      
+
       VMesh::Node::index_type inodeIdx = 0, jnodeIdx = 0, knodeIdx = 0;
       VMesh::Node::index_type onodeIdx = 0;
-      
+
       VMesh::Elem::index_type ielemIdx = 0, jelemIdx = 0, kelemIdx = 0;
       VMesh::Elem::index_type oelemIdx = 0;
 
@@ -448,39 +376,39 @@ GetSliceFromStructuredFieldByIndices::execute()
       if (imesh->is_regularmesh())
       {
         /// Set the orginal transform.
-        omesh->set_transform( imesh->get_transform() );
+        omesh->set_transform(imesh->get_transform());
         inodeIdx = 0;
 
         /// Get the orgin of mesh. */
-        imesh->get_center(o, inodeIdx);    
+        imesh->get_center(o, inodeIdx);
 
         /// Set the iterator to the first point.
-        inodeIdx += (k_start*(jdim_in*idim_in)+j_start*(idim_in)+i_start);
-      
+        inodeIdx += (k_start*(jdim_in*idim_in) + j_start*(idim_in)+i_start);
+
         /// Get the point.
         imesh->get_center(p, inodeIdx);
 
         /// Put the new field into the correct location.
         Transform trans;
 
-        trans.pre_translate( (Vector) (-o) );
-        trans.pre_scale( Vector( i_stride, j_stride, k_stride ) );
-        trans.pre_translate( (Vector) (o) );
-        trans.pre_translate( (Vector) (p-o) );
-          
-        omesh->transform( trans );
+        trans.pre_translate((Vector)(-o));
+        trans.pre_scale(Vector(i_stride, j_stride, k_stride));
+        trans.pre_translate((Vector)(o));
+        trans.pre_translate((Vector)(p - o));
+
+        omesh->transform(trans);
       }
 
       /// Index based on the old mesh so that we are assured of getting the last
       /// node even if it forms a "partial" elem.
-      for( k=k_start; k<k_stop_stride; k+=k_stride ) 
+      for (k = k_start; k<k_stop_stride; k += k_stride)
       {
 
         /// Check for going past the stop.
-        if( k > k_stop ) k = k_stop;
+        if (k > k_stop) k = k_stop;
 
         /// Check for overlap.
-        if( k-k_stride <= k_start+kdim_in && k_start+kdim_in <= k )
+        if (k - k_stride <= k_start + kdim_in && k_start + kdim_in <= k)
         {
           knode = k_start;
         }
@@ -488,23 +416,23 @@ GetSliceFromStructuredFieldByIndices::execute()
         {
           knode = k % kdim_in;
         }
-        
+
         /// A hack here so that an iterator can be used.
         /// Set this iterator to be at the correct kth index.
         knodeIdx = 0;
         kelemIdx = 0;
-        
-        knodeIdx = knode*jdim_in*idim_in;
-        kelemIdx = knode*(jdim_in-1)*(idim_in-1);
 
-        for( j=j_start; j<j_stop_stride; j+=j_stride ) 
+        knodeIdx = knode*jdim_in*idim_in;
+        kelemIdx = knode*(jdim_in - 1)*(idim_in - 1);
+
+        for (j = j_start; j<j_stop_stride; j += j_stride)
         {
-          
+
           /// Check for going past the stop.
-          if( j > j_stop ) j = j_stop;
+          if (j > j_stop) j = j_stop;
 
           /// Check for overlap.
-          if( j-j_stride <= j_start+jdim_in && j_start+jdim_in <= j )
+          if (j - j_stride <= j_start + jdim_in && j_start + jdim_in <= j)
             jnode = j_start;
           else
             jnode = j % jdim_in;
@@ -515,24 +443,24 @@ GetSliceFromStructuredFieldByIndices::execute()
           jelemIdx = kelemIdx;
 
           jnodeIdx += jnode*idim_in;
-          jelemIdx += jnode*(idim_in-1);
+          jelemIdx += jnode*(idim_in - 1);
 
-          for( i=i_start; i<i_stop_stride; i+=i_stride ) 
+          for (i = i_start; i < i_stop_stride; i += i_stride)
           {
 
             /// Check for going past the stop.
-            if( i > i_stop )
+            if (i > i_stop)
               i = i_stop;
 
             /// Check for overlap.
-            if( i-i_stride <= i_start+idim_in && i_start+idim_in <= i )
+            if (i - i_stride <= i_start + idim_in && i_start + idim_in <= i)
               inode = i_start;
             else
               inode = i % idim_in;
 
             /// A hack here so that an iterator can be used.
             /// Set this iterator to be at the correct ith index.
-            
+
             inodeIdx = jnodeIdx;
             ielemIdx = jelemIdx;
             inodeIdx += inode;
@@ -543,27 +471,27 @@ GetSliceFromStructuredFieldByIndices::execute()
               imesh->get_center(pt, inodeIdx);
               omesh->set_point(pt, onodeIdx);
             }
-            
-            switch( ifield->basis_order() ) 
-            {
-              case 0:
 
-              if( i+i_stride<i_stop_stride &&
-                  j+j_stride<j_stop_stride &&
-                  k+k_stride<k_stop_stride ) 
+            switch (ifield->basis_order())
+            {
+            case 0:
+
+              if (i + i_stride < i_stop_stride &&
+                j + j_stride < j_stop_stride &&
+                k + k_stride < k_stop_stride)
               {
-                ofield->copy_value(ifield,ielemIdx,oelemIdx);
+                ofield->copy_value(ifield, ielemIdx, oelemIdx);
                 oelemIdx++;
               }
               break;
 
             case 1:
-                ofield->copy_value(ifield,inodeIdx,onodeIdx);
+              ofield->copy_value(ifield, inodeIdx, onodeIdx);
               break;
 
             default:
               break;
-            } 
+            }
 
             onodeIdx++;
           }
@@ -571,96 +499,96 @@ GetSliceFromStructuredFieldByIndices::execute()
       }
 
       // Send the data downstream
-      send_output_handle( "Output Field", field_out_handle );
+      sendOutput(OutputField, field_out_handle);
     }
-    else 
-    {    
+    else
+    {
 
       FieldHandle field_out_handle;
-    
+
       index_type old_i, old_j, old_k;
       index_type new_i, new_j;
 
       VMesh::dimension_type dim;
-      imesh->get_dimensions( dim );
+      imesh->get_dimensions(dim);
 
       /// Get the dimensions of the old field.
-      if( dim.size() == 3 ) 
+      if (dim.size() == 3)
       {
         old_i = dim[0];
         old_j = dim[1];
         old_k = dim[2];
 
-      } 
-      else if( dim.size() == 2 ) 
+      }
+      else if (dim.size() == 2)
       {
         old_i = dim[0];
         old_j = dim[1];
         old_k = 1;
-      } 
-      else if( dim.size() == 1 ) 
+      }
+      else if (dim.size() == 1)
       {
         old_i = dim[0];
         old_j = 1;
         old_k = 1;
       }
 
-      int axis = gui_axis_.get();
-      
+      int axis = state->getValue(Axis_ijk).toInt();
+
       /// Get the dimensions of the new field.
-      if (axis == 0) 
+      if (axis == 0)
       {
         new_i = old_j;
         new_j = old_k;
-      } 
-      else if (axis == 1) 
+      }
+      else if (axis == 1)
       {
         new_i = old_i;
         new_j = old_k;
-      } 
-      else if (axis == 2) 
+      }
+      else if (axis == 2)
       {
         new_i = old_i;
         new_j = old_j;
       }
 
-      FieldInformation fi(field_in_handle);
-      
+      FieldInformation fi(inputField);
+
       /// 3D LatVol to 2D Image
-      if( imesh->is_latvolmesh() ) 
-      {  
+      if (imesh->is_latvolmesh())
+      {
         fi.make_imagemesh();
-        MeshHandle mesh =  CreateMesh(fi,new_i,new_j);
-        field_out_handle = CreateField(fi,mesh);
+        MeshHandle mesh = CreateMesh(fi, new_i, new_j);
+        field_out_handle = CreateField(fi, mesh);
       }
       /// 3D StructHexVol to 2D StructQuadSurf
-      else if( imesh->is_structhexvolmesh() )
+      else if (imesh->is_structhexvolmesh())
       {
         fi.make_structquadsurfmesh();
-        MeshHandle mesh = CreateMesh(fi,new_i,new_j);
-        field_out_handle = CreateField(fi,mesh);
-      }      
+        MeshHandle mesh = CreateMesh(fi, new_i, new_j);
+        field_out_handle = CreateField(fi, mesh);
+      }
       /// 2D Image to 1D Scanline or 
       /// 1D Scanline to 0D Scanline (perhaps it should be pointcloud).
-      else if( imesh->is_imagemesh() || imesh->is_scanlinemesh()) 
+      else if (imesh->is_imagemesh() || imesh->is_scanlinemesh())
       {
         fi.make_scanlinemesh();
-        MeshHandle mesh = CreateMesh(fi,new_i);
-        field_out_handle = CreateField(fi,mesh);
+        MeshHandle mesh = CreateMesh(fi, new_i);
+        field_out_handle = CreateField(fi, mesh);
       }
       /// 2D StructQuadSurf to 1D StructCurve
-      else if( imesh->is_structquadsurfmesh() ) 
+      else if (imesh->is_structquadsurfmesh())
       {
         fi.make_structcurvemesh();
-        MeshHandle mesh = CreateMesh(fi,new_i);
-        field_out_handle = CreateField(fi,mesh);
+        MeshHandle mesh = CreateMesh(fi, new_i);
+        field_out_handle = CreateField(fi, mesh);
       }
       // 1D StructCurve to 0D PointCloud
-      else if( imesh->is_structcurvemesh() ) 
+      else if (imesh->is_structcurvemesh())
       {
         fi.make_pointcloudmesh();
         field_out_handle = CreateField(fi);
-        
+
         VMesh* omesh = field_out_handle->vmesh();
         VField* ofield = field_out_handle->vfield();
         omesh->resize_nodes(new_i);
@@ -669,53 +597,53 @@ GetSliceFromStructuredFieldByIndices::execute()
 
       VField* ofield = field_out_handle->vfield();
       VMesh* omesh = field_out_handle->vmesh();
-      ofield->copy_properties(ifield);
- 
+      CopyProperties(*inputField, *field_out_handle);
+
       /// Get the index for the axis selected.
       index_type index;
-      if (gui_axis_.get() == 0) 
+      if (state->getValue(Axis_ijk).toInt() == 0)
       {
-        index = gui_index_i_.get();
-      } 
-      else if (gui_axis_.get() == 1) 
-      {
-        index = gui_index_j_.get();
-      } 
-      else 
-      {
-        index = gui_index_k_.get();
+        index = state->getValue(Index_i).toInt();
       }
-  
-      if( dim.size() == 3 ) 
+      else if (state->getValue(Axis_ijk).toInt() == 1)
+      {
+        index = state->getValue(Index_j).toInt();
+      }
+      else
+      {
+        index = state->getValue(Index_k).toInt();
+      }
+
+      if (dim.size() == 3)
       {
         old_i = dim[0];
         old_j = dim[1];
         old_k = dim[2];
-      } 
-      else if( dim.size() == 2 ) 
+      }
+      else if (dim.size() == 2)
       {
         old_i = dim[0];
         old_j = dim[1];
         old_k = 1;      /// This makes it is possible to slice from 1D to 0D easily.
-      } 
-      else if( dim.size() == 1 ) 
+      }
+      else if (dim.size() == 1)
       {
         old_i = dim[0];
         old_j = 1;
         old_k = 1;      /// This makes it is possible to slice from 1D to 0D easily.
       }
 
-      if (axis == 0) 
+      if (axis == 0)
       {
         new_i = old_j;
         new_j = old_k;
-      } 
-      else if (axis == 1) 
+      }
+      else if (axis == 1)
       {
         new_i = old_i;
         new_j = old_k;
-      } 
-      else if (axis == 2) 
+      }
+      else if (axis == 2)
       {
         new_i = old_i;
         new_j = old_j;
@@ -725,10 +653,10 @@ GetSliceFromStructuredFieldByIndices::execute()
       VMesh::Node::index_type onodeIdx = 0;
 
       Point p;
- 
+
       VMesh::index_type i, j;
- 
-      if( imesh->is_regularmesh())
+
+      if (imesh->is_regularmesh())
       {
         Transform trans = imesh->get_transform();
         double offset = 0.0;
@@ -748,22 +676,22 @@ GetSliceFromStructuredFieldByIndices::execute()
         }
         trans.post_translate(Vector(0.0, 0.0, index));
 
-        omesh->set_transform( trans );
+        omesh->set_transform(trans);
       }
 
       inodeIdx = 0;
       onodeIdx = 0;
-      
+
       /// Slicing along the i axis. In order to get the slice in this
       /// direction only one location can be obtained at a time. So the
       /// iterator must increment to the correct column (i) index, the
       /// location samples, and then incremented to the end of the row.
-      if (axis == 0) 
+      if (axis == 0)
       {
-        for (j=0; j<new_j; j++) 
+        for (j = 0; j < new_j; j++)
         {
-          for (i=0; i<new_i; i++) 
-          {	
+          for (i = 0; i < new_i; i++)
+          {
             // Set the iterator to the correct column (i).
             inodeIdx += index;
 
@@ -773,11 +701,11 @@ GetSliceFromStructuredFieldByIndices::execute()
               imesh->get_center(p, inodeIdx);
               omesh->set_point(p, onodeIdx);
             }
-            
-            ofield->copy_value(ifield,inodeIdx,onodeIdx);
+
+            ofield->copy_value(ifield, inodeIdx, onodeIdx);
             onodeIdx++;
 
-            inodeIdx += old_i-index;
+            inodeIdx += old_i - index;
           }
         }
       }
@@ -785,15 +713,15 @@ GetSliceFromStructuredFieldByIndices::execute()
       /// direction a complete row can be obtained at a time. So the
       /// iterator must increment to the correct row (j) index, the
       /// location samples, and then incremented to the end of the slice.
-      else if(axis == 1) 
-      { 
-        for (j=0; j < new_j; j++) 
+      else if (axis == 1)
+      {
+        for (j = 0; j < new_j; j++)
         {
           /// Set the iterator to the correct row (j).
           inodeIdx += index*old_i;
 
           /// Get all of the points and values along this row.
-          for (i=0; i<new_i; i++) 
+          for (i = 0; i < new_i; i++)
           {
             /// Get the point and value at this location
             if (omesh->is_irregularmesh())
@@ -802,25 +730,25 @@ GetSliceFromStructuredFieldByIndices::execute()
               omesh->set_point(p, onodeIdx);
             }
 
-            ofield->copy_value(ifield,inodeIdx,onodeIdx);
+            ofield->copy_value(ifield, inodeIdx, onodeIdx);
             onodeIdx++;
             inodeIdx++;
           }
 
           /// Move to the end of all the rows.
-          inodeIdx += (old_j-index-1)*(old_i);
+          inodeIdx += (old_j - index - 1)*(old_i);
         }
-      } 
+      }
       /// Slicing along the k axis.
-      else if(axis == 2) 
+      else if (axis == 2)
       {
 
         inodeIdx += index*old_j*old_i;
-        
+
         /// Get all of the points and values along this slice.
-        for (j=0; j < new_j; j++) 
+        for (j = 0; j < new_j; j++)
         {
-          for (i=0; i < new_i; i++) 
+          for (i = 0; i < new_i; i++)
           {
             /// Get the point and value at this location
             if (omesh->is_irregularmesh())
@@ -829,42 +757,37 @@ GetSliceFromStructuredFieldByIndices::execute()
               omesh->set_point(p, onodeIdx);
             }
 
-            ofield->copy_value(ifield,inodeIdx,onodeIdx);
-        
+            ofield->copy_value(ifield, inodeIdx, onodeIdx);
+
             onodeIdx++;
             inodeIdx++;
           }
         }
-      }      
+      }
 
       // Send the data downstream.
-      send_output_handle( "Output Field", field_out_handle );
+      sendOutput(OutputField, field_out_handle);
     }
 
     /// Create the output matrix with the axis selected, index, and
     /// dimensions.
-    if( matrix_handle == 0 ) 
+    if (!(inputMatrixOption && *inputMatrixOption))
     {
-      DenseMatrix *selected = new DenseMatrix(3,3);
+      DenseMatrixHandle selected(new DenseMatrix(3, 3));
 
-      for (int i=0; i < 3; i++)
-        selected->put(i, 0, (double) (gui_axis_.get() == i) );
+      for (int i = 0; i < 3; i++)
+        selected->put(i, 0, (double)(state->getValue(Axis_ijk).toInt() == i));
 
-      selected->put(0, 1, gui_index_i_.get() );
-      selected->put(1, 1, gui_index_j_.get() );
-      selected->put(2, 1, gui_index_k_.get() );
+      selected->put(0, 1, state->getValue(Index_i).toInt());
+      selected->put(1, 1, state->getValue(Index_j).toInt());
+      selected->put(2, 1, state->getValue(Index_k).toInt());
 
-      selected->put(0, 2, gui_dim_i_.get() );
-      selected->put(1, 2, gui_dim_j_.get() );
-      selected->put(2, 2, gui_dim_k_.get() );
+      selected->put(0, 2, state->getValue(Dim_i).toInt());
+      selected->put(1, 2, state->getValue(Dim_j).toInt());
+      selected->put(2, 2, state->getValue(Dim_k).toInt());
 
-      matrix_handle = MatrixHandle(selected);
-
-      // Send the data downstream.
-      send_output_handle( "Output Matrix", matrix_handle );
+      sendOutput(OutputMatrix, selected);
     }
+  }
+  }
 
-  }  
-}
-
-} // End namespace SCIRun

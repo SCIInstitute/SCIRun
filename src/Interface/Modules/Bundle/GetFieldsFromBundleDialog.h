@@ -39,14 +39,15 @@ namespace Gui {
 class SCISHARE GetFieldsFromBundleDialog : public ModuleDialogGeneric, public Ui::GetFieldsFromBundleDialog
 {
 	Q_OBJECT
-	
+
 public:
-  GetFieldsFromBundleDialog(const std::string& name, 
+  GetFieldsFromBundleDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
-
-private Q_SLOTS:
+protected:
+  virtual void pullSpecial() override;
+private:
+  std::vector<std::string> fieldNames_;
 };
 
 }

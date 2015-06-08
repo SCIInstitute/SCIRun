@@ -53,6 +53,13 @@ using namespace SCIRun::Core::Commands;
       return q;
     }
 
+    if (params->printModuleList())
+    {
+      q->enqueue(cmdFactory_->create(PrintModules));
+      q->enqueue(cmdFactory_->create(QuitCommand));
+      return q;
+    }
+
     if (params->version())
     {
       q->enqueue(cmdFactory_->create(PrintVersion));

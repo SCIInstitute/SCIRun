@@ -47,7 +47,7 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   addTwoChoiceBooleanComboBoxManager(rowColumnComboBox_, Parameters::IsSliceColumn);
   addSpinBoxManager(indexIncrementSpinBox_, Parameters::SliceIncrement);
   addSpinBoxManager(executionDelaySpinBox_, Parameters::PlayModeDelay);
-  
+
   playModeMap_.insert(StringPair("Loop once", "looponce"));
   playModeMap_.insert(StringPair("Loop forever (EXPERIMENTAL)", "loopforever"));
   addComboBoxManager(playModeComboBox_, Parameters::PlayModeType, playModeMap_);
@@ -75,11 +75,11 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   }
 }
 
-void GetMatrixSliceDialog::pull()
+void GetMatrixSliceDialog::pullSpecial()
 {
-  pull_newVersionToReplaceOld();
-  Pulling p(this);
-  indexSlider_->setMaximum(state_->getValue(Parameters::MaxIndex).toInt());
+  auto max = state_->getValue(Parameters::MaxIndex).toInt();
+  indexSlider_->setMaximum(max);
+  indexSpinBox_->setMaximum(max);
   indexSlider_->setMinimum(0);
 }
 
@@ -113,9 +113,13 @@ void GetMatrixSliceDialog::startPlay()
 {
   state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PLAY));
   Q_EMIT executeActionTriggered();
+  Q_EMIT executionLoopStarted();
+  //qDebug() << " execution loop started emitted ";
 }
 
 void GetMatrixSliceDialog::stopPlay()
 {
   state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+  Q_EMIT executionLoopHalted();
+  //qDebug() << " execution loop halted emitted ";
 }

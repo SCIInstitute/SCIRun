@@ -43,9 +43,3 @@ TDCSSimulatorDialog::TDCSSimulatorDialog(const std::string& name, ModuleStateHan
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 }
-
-void TDCSSimulatorDialog::pull()
-{
-  //TODO
-}
-

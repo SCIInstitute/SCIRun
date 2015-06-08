@@ -69,7 +69,7 @@ namespace SCIRun {
             ///< component for assigning entity IDs.
         public:
             SRInterface(std::shared_ptr<Gui::GLContext> context,
-                        const std::vector<std::string>& shaderDirs);
+                        const std::vector<std::string>& shaderDirs, int frameInitLimit);
             ~SRInterface();
             
             /// Call this whenever the window is resized. This will modify the viewport
@@ -278,6 +278,7 @@ namespace SCIRun {
             ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
             ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
             RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
+            const int frameInitLimit_;
         };
         
     } // namespace Render

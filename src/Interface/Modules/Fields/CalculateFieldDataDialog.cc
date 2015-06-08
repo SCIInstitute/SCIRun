@@ -41,12 +41,7 @@ CalculateFieldDataDialog::CalculateFieldDataDialog(const std::string& name, Modu
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   addTextEditManager(expressionTextEdit_, CalculateFieldDataModule::FunctionString);
   addComboBoxManager(outputTypeComboBox_, CalculateFieldDataModule::FormatString);
-}
-
-void CalculateFieldDataDialog::pull()
-{
-  pull_newVersionToReplaceOld();
 }

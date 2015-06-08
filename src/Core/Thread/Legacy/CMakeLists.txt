@@ -32,7 +32,6 @@ SET(Core_Thread_Legacy_SRCS
   CleanupManager.cc 
   Guard.cc 
   Runnable.cc 
-  Thread.cc 
   ThreadError.cc 
   SimpleReducer.cc 
   ThreadLock.cc 
@@ -48,12 +47,10 @@ SET(Core_Thread_Legacy_HEADERS
   FutureValue.h
   Guard.h
   Mailbox.h
-  Mutex.h
   RecursiveMutex.h
   Reducer.h
   Runnable.h
   Semaphore.h
-  Thread.h
   ThreadError.h
   share.h
   SimpleReducer.h
@@ -61,7 +58,6 @@ SET(Core_Thread_Legacy_HEADERS
   ThreadGroup.h
   ThreadPool.h
   Time.h  
-  UsedWithLockingHandle.h
 )
 
 IF(BUILD_SHARED_LIBS)

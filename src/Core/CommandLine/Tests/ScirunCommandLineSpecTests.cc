@@ -52,7 +52,9 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  --no_splash           Turn off splash screen\n"
     "  --verbose             Turn on debug log information\n"
     "  --threadMode arg      network execution threading mode--DEVELOPER USE ONLY\n"
-    "  --reexecuteMode arg   network reexecution mode--DEVELOPER USE ONLY\n";
+    "  --reexecuteMode arg   network reexecution mode--DEVELOPER USE ONLY\n"
+    "  --frameInitLimit arg  ViewScene frame init limit--increase if renderer fails\n"
+    "  --list-modules        print list of available modules\n";
 
   EXPECT_EQ(expectedHelp, parser.describe());
 

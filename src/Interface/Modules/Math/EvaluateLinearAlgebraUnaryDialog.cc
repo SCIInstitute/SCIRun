@@ -45,8 +45,3 @@ EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::st
   addLineEditManager(functionLineEdit_, Variables::FunctionString);
   addRadioButtonGroupManager({ negateRadioButton_, transposeRadioButton_, scalarMultiplyRadioButton_, functionRadioButton_ }, Variables::Operator);
 }
-
-void EvaluateLinearAlgebraUnaryDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}

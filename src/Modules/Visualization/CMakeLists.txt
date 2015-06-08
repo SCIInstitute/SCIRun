@@ -30,6 +30,7 @@ SET(Modules_Visualization_SRCS
   CreateStandardColorMap.cc
   MatrixAsVectorField.cc
   ShowField.cc
+  ShowFieldGlyphs.cc
   ShowString.cc
   ShowColorMapModule.cc
   RescaleColorMap.cc
@@ -40,6 +41,7 @@ SET(Modules_Visualization_HEADERS
   CreateStandardColorMap.h
   MatrixAsVectorField.h
   ShowField.h
+  ShowFieldGlyphs.h
   ShowString.h
   ShowColorMapModule.h
   RescaleColorMap.h
@@ -58,6 +60,7 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Core_Datatypes_Mesh
   Core_Datatypes_Legacy_Field
   Core_Algorithms_Visualization
+  Graphics_Glyphs
   ${OPENGL_LIBRARIES}
 )
 

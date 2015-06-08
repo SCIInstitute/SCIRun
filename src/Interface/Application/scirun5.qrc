@@ -25,6 +25,8 @@
     <file>Resources/zoom_out.png</file>
     <file>Resources/zoom_reset.png</file>
     <file>Resources/align_center.png</file>
+    <file>Resources/tagLayer.png</file>
+    <file>Resources/metadataLayer.png</file>
     <file>Resources/new/general/folder.png</file>
     <file>Resources/new/general/header-divider.png</file>
     <file>Resources/new/general/help.png</file>

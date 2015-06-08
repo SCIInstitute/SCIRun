@@ -62,7 +62,7 @@ MapFieldDataOntoNodesAlgo::MapFieldDataOntoNodesAlgo()
 
 namespace detail {
 
-class MapFieldDataOntoNodesPAlgo
+class MapFieldDataOntoNodesPAlgo : public Interruptible
 {
   public:
     explicit MapFieldDataOntoNodesPAlgo(unsigned int numProcs) :
@@ -124,6 +124,7 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
     Point p; Vector val; Vector norm;
     for (VMesh::Node::index_type idx=start; idx<end; idx++)
     {
+      checkForInterruption();
       omesh->get_center(p,idx);
       omesh->get_normal(norm,idx);
       datasource->get_data(val,p);
@@ -139,6 +140,7 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
       Point p; double val;
       for (VMesh::Node::index_type idx=start; idx<end; idx++)
       {
+        checkForInterruption();
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
@@ -150,6 +152,7 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
       Point p; Vector val;
       for (VMesh::Node::index_type idx=start; idx<end; idx++)
       {
+        checkForInterruption();
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
@@ -161,6 +164,7 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
       Point p; Tensor val;
       for (VMesh::Node::index_type idx=start; idx<end; idx++)
       {
+        checkForInterruption();
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
@@ -336,10 +340,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
       return (false);
     }
   }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  // Copy properties
-  output->vfield()->copy_properties(destination->vfield());
-#endif
+  CopyProperties(*destination, *output);
 
   return (true);
 }
@@ -463,10 +464,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
       return (false);
     }
   }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  // Copy properties
-  output->vfield()->copy_properties(destination->vfield());
-#endif
+  CopyProperties(*destination, *output);
 
   return (true);
 }

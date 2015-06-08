@@ -1,21 +1,21 @@
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -54,6 +54,11 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
     ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB=1)
   ENDIF()
 
+  # for travis clang builds--need a narrower test
+  IF(UNIX)
+    ADD_DEFINITIONS(-DBOOST_NO_CXX11_ALLOCATOR)
+  ENDIF()
+
   # TODO: set up 64-bit build detection
   # Boost Jam needs to have 64-bit build explicitly configured
   IF(WIN32)
@@ -61,15 +66,7 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
   ENDIF()
 
   IF(${compress_type} MATCHES "GIT")
-
-    IF(APPLE)
-      # TODO: temporary - switch git tag back to master for all
-      #       builds once boost 1.56 is available and boost atomic
-      #       library fix is verified.
-      SET(boost_GIT_TAG "origin/boost_1_54")
-    ELSE()
-      SET(boost_GIT_TAG "origin/boost_1_56_test")
-    ENDIF()
+    SET(boost_GIT_TAG "origin/master")
 
     # TODO: fix install step
     #
@@ -109,10 +106,10 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
 #            -DCMAKE_LIBRARY_OUTPUT_DIRECTORY:PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
 #            -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY:PATH=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
 #            -DCMAKE_ANSI_CFLAGS:STRING="${jpeg_pic}"
-#    ) 
+#    )
   ENDIF()
 
-  #  EXTERNALPROJECT_GET_PROPERTY (JPEG BINARY_DIR SOURCE_DIR) 
+  #  EXTERNALPROJECT_GET_PROPERTY (JPEG BINARY_DIR SOURCE_DIR)
 
   #  IF (${BLDTYPE} MATCHES "Debug")
   #    IF (WIN32 AND NOT MINGW)
@@ -191,4 +188,3 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
 
 
 ENDMACRO()
-

@@ -41,49 +41,12 @@ CreateLatVolDialog::CreateLatVolDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   addSpinBoxManager(xSizeSpinBox_, CreateLatVolModule::XSize);
   addSpinBoxManager(ySizeSpinBox_, CreateLatVolModule::YSize);
   addSpinBoxManager(zSizeSpinBox_, CreateLatVolModule::ZSize);
+  addDoubleSpinBoxManager(padPercentageSpinBox_, CreateLatVolModule::PadPercent);
 
-  connect(elementSizeNormalizedButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(elementSizeOneButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(dataAtNodesButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(dataAtCellsButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(dataAtNoneButton_, SIGNAL(clicked()), this, SLOT(push()));
-}
-
-void CreateLatVolDialog::push()
-{
-  if (!pulling_)
-  {
-    state_->setValue(CreateLatVolModule::ElementSizeNormalized, elementSizeNormalizedButton_->isChecked());
-    state_->setValue(CreateLatVolModule::DataAtLocation, getDataAtLocation());
-  }
-}
-
-std::string CreateLatVolDialog::getDataAtLocation() const
-{
-  //TODO: need to standardize these options at the algo/module level
-  if (dataAtNodesButton_->isChecked())
-    return "Nodes";
-  if (dataAtCellsButton_->isChecked())
-    return "Cells";
-  if (dataAtNoneButton_->isChecked())
-    return "None";
-  return "Unknown";
-}
-
-void CreateLatVolDialog::pull()
-{
-  //TODO convert to new widget managers
-  Pulling p(this);
-  elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolModule::ElementSizeNormalized).toBool());
-  elementSizeOneButton_->setChecked(!elementSizeNormalizedButton_->isChecked());
-
-  std::string loc = state_->getValue(CreateLatVolModule::DataAtLocation).toString();
-  dataAtNodesButton_->setChecked(loc == "Nodes");
-  dataAtCellsButton_->setChecked(loc == "Cells");
-  dataAtNoneButton_->setChecked(loc == "None");
-  pull_newVersionToReplaceOld();
+  addRadioButtonGroupManager({ dataAtNodesButton_, dataAtCellsButton_, dataAtNoneButton_ }, CreateLatVolModule::DataAtLocation);
+  addRadioButtonGroupManager({ elementSizeNormalizedButton_, elementSizeOneButton_ }, CreateLatVolModule::ElementSizeNormalized);
 }

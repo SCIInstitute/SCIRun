@@ -30,6 +30,7 @@
 #include <Core/IEPlugin/NrrdField_Plugin.h>
 #include <Core/IEPlugin/MatlabFiles_Plugin.h>
 #include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>
+#include <Core/IEPlugin/PointCloudField_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/IEPlugin/IEPluginInit.h>
@@ -54,4 +55,6 @@ void IEPluginManager::Initialize()
   //static NrrdIEPluginLegacyAdapter MatlabNrrd_plugin("Matlab Matrix",".mat", "*.mat",MatlabNrrd_reader,MatlabNrrd_writer);
 
   static MatrixIEPluginLegacyAdapter SimpleTextFileMatrix_plugin("SimpleTextFile","*.*", "",SimpleTextFileMatrix_reader,SimpleTextFileMatrix_writer);
+
+  static FieldIEPluginLegacyAdapter PointCloudField_plugin("PointCloudField", "*.pts *.pos *.txt", "", TextToPointCloudField_reader, PointCloudFieldToText_writer);
 }

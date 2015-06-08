@@ -43,8 +43,3 @@ SetFieldDataDialog::SetFieldDataDialog(const std::string& name, ModuleStateHandl
   fixSize();
   addCheckBoxManager(keepTypeCheckBox_, SetFieldDataAlgo::keepTypeCheckBox);
 }
-
-void SetFieldDataDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}

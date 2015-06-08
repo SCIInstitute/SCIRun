@@ -48,6 +48,8 @@ CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type, int param) co
     return boost::make_shared<PrintHelpCommand>();
   case PrintVersion:
     return boost::make_shared<PrintVersionCommand>();
+  case PrintModules:
+    return boost::make_shared<PrintModulesCommand>();
   case LoadNetworkFile:
     return boost::make_shared<LoadFileCommandGui>(param);
   case RunPythonScript:

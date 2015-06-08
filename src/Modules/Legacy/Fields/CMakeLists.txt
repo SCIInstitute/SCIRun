@@ -72,6 +72,9 @@ SET(Modules_Legacy_Fields_HEADERS
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
   ConvertIndicesToFieldData.h
+  ConvertHexVolToTetVol.h
+  ExtractSimpleIsosurface.h
+  GetSliceFromStructuredFieldByIndices.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -125,11 +128,11 @@ SET(Modules_Legacy_Fields_SRCS
   #ReportFieldInfo.cc
   #ReportFieldGeometryMeasures.cc
   #SetFieldProperty.cc
-  #GetSliceFromStructuredFieldByIndices.cc
+  GetSliceFromStructuredFieldByIndices.cc
   #SubsampleStructuredFieldByIndices.cc
   JoinFields.cc
   CalculateGradients.cc
-  #ConvertHexVolToTetVol.cc
+  ConvertHexVolToTetVol.cc
   #MergeFields.cc
   #InsertHexVolSheetAlongSurface.cc
   #MergeTriSurfs.cc
@@ -193,6 +196,7 @@ SET(Modules_Legacy_Fields_SRCS
   #CalculateProfile.cc
   MapFieldDataFromElemToNode.cc  
   MapFieldDataFromNodeToElem.cc
+  ExtractSimpleIsosurface.cc
 )
 
 IF(WITH_TETGEN)

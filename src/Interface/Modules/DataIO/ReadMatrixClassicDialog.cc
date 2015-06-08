@@ -45,19 +45,19 @@ ReadMatrixClassicDialog::ReadMatrixClassicDialog(const std::string& name, Module
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
   //addLineEditManager() TODO: investigate these other signals with lineedit.
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
 }
 
-void ReadMatrixClassicDialog::pull()
+void ReadMatrixClassicDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
-void ReadMatrixClassicDialog::pushFileNameToState() 
+void ReadMatrixClassicDialog::pushFileNameToState()
 {
   state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }

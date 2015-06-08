@@ -56,6 +56,7 @@ namespace SCIRun
   }
 }
 
-#define ADD_MODULE_DIALOG(module, dialog) (#module, boost::factory<dialog*>())
+#define MODULE_FACTORY_LAMBDA(type) [](const std::string& name,SCIRun::Dataflow::Networks::ModuleStateHandle state,QWidget* parent) { return new type(name, state, parent); }
+#define ADD_MODULE_DIALOG(module, dialog) (#module, MODULE_FACTORY_LAMBDA(dialog))
 
 #endif

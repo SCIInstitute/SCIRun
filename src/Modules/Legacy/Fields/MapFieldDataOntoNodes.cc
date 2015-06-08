@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -65,19 +65,19 @@ MapFieldDataOntoNodes::execute()
   auto source = getRequiredInput(Source);
   auto destination = getRequiredInput(Destination);
   auto weights = getOptionalInput(Weights);
-  
+
 //   if (inputs_changed_ || !oport_cached("Output") ||
 //     gui_quantity_.changed() || gui_value_.changed() ||
 //     gui_outside_value_.changed() || gui_max_distance_.changed())
   if (needToExecute())
   {
     update_state(Executing);
-    
+
     setAlgoOptionFromState(Parameters::Quantity);
     setAlgoOptionFromState(Parameters::InterpolationModel);
     setAlgoDoubleFromState(Parameters::OutsideValue);
     setAlgoDoubleFromState(Parameters::MaxDistance);
-  
+
     auto output = algo().run_generic(withInputData((Source, source)(Destination, destination)(Weights, optionalAlgoInput(weights))));
 
     sendOutputFromAlgorithm(OutputField, output);

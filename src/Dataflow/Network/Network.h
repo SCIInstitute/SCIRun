@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,7 +29,7 @@
 
 
 #ifndef DATAFLOW_NETWORK_NETWORK_H
-#define DATAFLOW_NETWORK_NETWORK_H 
+#define DATAFLOW_NETWORK_NETWORK_H
 
 #include <boost/noncopyable.hpp>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
@@ -67,7 +67,9 @@ namespace Networks {
     virtual bool containsViewScene() const;
     virtual NetworkGlobalSettings& settings();
     virtual std::string toString() const;
-    virtual void setModuleExecutionState(ModuleInterface::ExecutionState state, ModuleFilter filter);
+    virtual void setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter);
+    virtual boost::signals2::connection connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const;
+    virtual void interruptModuleRequest(const ModuleId& id);
     virtual void clear();
   private:
     ModuleFactoryHandle moduleFactory_;
@@ -76,6 +78,7 @@ namespace Networks {
     Modules modules_;
     int errorCode_;
     NetworkGlobalSettings settings_;
+    mutable ModuleInterruptedSignal interruptModule_;
   };
 
 }}}

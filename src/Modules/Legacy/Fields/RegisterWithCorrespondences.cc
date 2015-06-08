@@ -28,85 +28,44 @@
 
 #include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/Field.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Core/Algorithms/Fields/RegisterWithCorrespondences.h>
-
-namespace SCIRun {
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Fields;
 
 /// @class RegisterWithCorrespondences
 /// @brief This module allows you to morph using a thin plate spline algorithm
 /// one point set or mesh to another point set or mesh. 
 
-class RegisterWithCorrespondences : public Module {
-public:
-  RegisterWithCorrespondences(GuiContext*);
-
-  virtual ~RegisterWithCorrespondences() {}
-  virtual void execute();
-
-private:
-  SCIRunAlgo::RegisterWithCorrespondencesAlgo algo_;
-  GuiString method_;
-  GuiString edmethod_;
-
-};
-
-
-DECLARE_MAKER(RegisterWithCorrespondences)
-
-RegisterWithCorrespondences::RegisterWithCorrespondences(GuiContext* ctx) :
-  Module("RegisterWithCorrespondences", ctx, Source, "ChangeFieldData", "SCIRun"),
-    method_(ctx->subVar("method")),
-    edmethod_(ctx->subVar("ed-method"))
+RegisterWithCorrespondences::RegisterWithCorrespondences() : Module(ModuleLookupInfo("RegisterWithCorrespondences","ChangeFieldData","SCIRun"))
 {
-  algo_.set_progress_reporter(this);
+	INITIALIZE_PORT(InputField);
+	INITIALIZE_PORT(Correspondences1);
+	INITIALIZE_PORT(Correspondences2);
+	INITIALIZE_PORT(OutputField);
 }
 
-void
-RegisterWithCorrespondences::execute()
+void RegisterWithCorrespondences::setStateDefaults() {
+	setStateIntFromAlgo(Variables::Operator);
+}
+
+void RegisterWithCorrespondences::execute()
 {
-  FieldHandle input, cors1, cors2, output;
-  
-  get_input_handle("InputField",input,true);
-  get_input_handle("Correspondences1",cors1,true);
-  get_input_handle("Correspondences2",cors2,true);
-  
-  if (inputs_changed_ || !oport_cached("Output") || method_.changed() ||
-      edmethod_.changed())
+	auto input1 = getRequiredInput(InputField);
+	auto input2 = getRequiredInput(Correspondences1);
+	auto input3 = getRequiredInput(Correspondences2);
+  if (needToExecute())
   {
-    update_state(Executing);
-  
-    if (method_.get() == "transform")
-    {      
-      if (edmethod_.get() == "affine")
-      {
-        std::cout<<"affine"<<std::endl;
-        
-        if(!(algo_.runA(input,cors1,cors2,output))) return;
-      }
-      else  if (edmethod_.get() == "morph")
-      {
-        std::cout<<"morph"<<std::endl;
-         if(!(algo_.runM(input,cors1,cors2,output))) return;
-      }
-      else
-      {
-        std::cout<<"none"<<std::endl;
-         if(!(algo_.runN(input,cors1,cors2,output))) return;    
-      }
-    }
-  
-    send_output_handle("Output",output,true);
+    setAlgoIntFromState(Variables::Operator);
+    auto output = algo().run_generic(withInputData((InputField, input1)(Correspondences1, input2)(Correspondences2, input3)));
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }
 
-} // End namespace SCIRun
-
-
-#endif

@@ -41,7 +41,7 @@ ProjectPointsOntoMeshDialog::ProjectPointsOntoMeshDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   connect(pointsOntoElementsRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
   connect(pointsOntoNodesRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
 }
@@ -55,14 +55,10 @@ void ProjectPointsOntoMeshDialog::push()
   }
 }
 
-void ProjectPointsOntoMeshDialog::pull()
+void ProjectPointsOntoMeshDialog::pullSpecial()
 {
-  Pulling p(this);
-  
   using namespace Parameters;
   auto method = state_->getValue(ProjectMethod).toString();
   pointsOntoElementsRadioButton_->setChecked("elements" == method);
   pointsOntoNodesRadioButton_->setChecked("nodes" == method);
-
-  pull_newVersionToReplaceOld();
 }

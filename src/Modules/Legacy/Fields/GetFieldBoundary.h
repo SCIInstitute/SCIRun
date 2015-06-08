@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_FIELDS_GETFIELDBOUNDARY_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Thread/Interruptible.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -41,7 +42,8 @@ namespace SCIRun {
 
       class SCISHARE GetFieldBoundary : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
-        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
+        public Has2OutputPorts<FieldPortTag, MatrixPortTag>,
+        public Core::Thread::Interruptible
       {
       public:
         GetFieldBoundary();

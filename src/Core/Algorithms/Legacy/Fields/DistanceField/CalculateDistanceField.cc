@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -62,7 +62,7 @@ CalculateDistanceFieldAlgo::CalculateDistanceFieldAlgo()
 namespace detail
 {
 
-class CalculateDistanceFieldP 
+class CalculateDistanceFieldP : public Interruptible
 {
   public:
     CalculateDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField*  ofield, const AlgorithmBase* algo) :
@@ -75,13 +75,13 @@ class CalculateDistanceFieldP
     {
       VMesh::size_type num_values = ofield->num_values();
       VMesh::size_type num_evalues = ofield->num_evalues();
-    
+
       double max = DBL_MAX;
       if (algo_->get(Parameters::Truncate).toBool())
       {
         max = algo_->get(Parameters::TruncateDistance).toDouble();
       }
-      
+
       double val = 0.0;
       int cnt = 0;
 
@@ -90,14 +90,15 @@ class CalculateDistanceFieldP
         VMesh::Elem::index_type fidx;
         VMesh::index_type start, end;
         range(proc,nproc,start,end,num_values);
-        
+
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
+          checkForInterruption();
           Point p, p2;
           imesh->get_center(p,idx);
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
           ofield->set_value(val,idx);
-          
+
           if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
         }
       }
@@ -109,13 +110,14 @@ class CalculateDistanceFieldP
 
         for (VMesh::Node::index_type idx=start; idx<end; idx++)
         {
+          checkForInterruption();
           Point p, p2;
           imesh->get_center(p,idx);
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
           ofield->set_value(val,idx);
-          
+
           if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
-        }  
+        }
       }
       else if (ofield->basis_order() > 1)
       {
@@ -125,27 +127,28 @@ class CalculateDistanceFieldP
 
         for (VMesh::ENode::index_type idx=start; idx<end; idx++)
         {
+          checkForInterruption();
           Point p, p2;
           imesh->get_center(p,idx);
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
           ofield->set_value(val,idx);
-          
+
           if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
-        }  
-      }    
+        }
+      }
     }
 
     void parallel2(int proc, int nproc)
     {
       VMesh::size_type num_values = ofield->num_values();
       VMesh::size_type num_evalues = ofield->num_evalues();
-    
+
       if (algo_->get(Parameters::Truncate).toBool())
       {
         // Cannot do both at the same time
         if (proc == 0) algo_->warning("Closest value has been requested, disabling truncated distance map.");
       }
-      
+
       double val = 0.0;
       int cnt = 0;
 
@@ -156,13 +159,14 @@ class CalculateDistanceFieldP
         VMesh::coords_type coords;
         Point p, p2;
         range(proc,nproc,start,end,num_values);
-        
+
         if (objfield->is_scalar())
         {
           double scalar;
-          
+
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
+            checkForInterruption();
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -174,9 +178,10 @@ class CalculateDistanceFieldP
         else if (objfield->is_vector())
         {
           Vector vec;
-          
+
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
+            checkForInterruption();
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -188,9 +193,10 @@ class CalculateDistanceFieldP
         else if (objfield->is_tensor())
         {
           Tensor tensor;
-          
+
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
+            checkForInterruption();
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
@@ -198,7 +204,7 @@ class CalculateDistanceFieldP
             vfield->set_value(tensor,idx);
             if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }
-        }        
+        }
       }
       else if (ofield->basis_order() == 1)
       {
@@ -207,49 +213,52 @@ class CalculateDistanceFieldP
         VMesh::coords_type coords;
         range(proc,nproc,start,end,num_values);
         Point p, p2;
-        
+
         if (objfield->is_scalar())
         {
           double scalar;
-          
+
           for (VMesh::Node::index_type idx=start; idx<end; idx++)
           {
+            checkForInterruption();
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
             objfield->interpolate(scalar,coords,fidx);
             vfield->set_value(scalar,idx);
-            
+
             if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }
         }
         else if (objfield->is_vector())
         {
           Vector vec;
-          
+
           for (VMesh::Node::index_type idx=start; idx<end; idx++)
           {
+            checkForInterruption();
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
             objfield->interpolate(vec,coords,fidx);
             vfield->set_value(vec,idx);
-            
+
             if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }
         }
         else if (objfield->is_tensor())
         {
           Tensor tensor;
-          
+
           for (VMesh::Node::index_type idx=start; idx<end; idx++)
           {
+            checkForInterruption();
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
             objfield->interpolate(tensor,coords,fidx);
             vfield->set_value(tensor,idx);
-            
+
             if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }
         }
@@ -267,47 +276,50 @@ class CalculateDistanceFieldP
           double scalar;
           for (VMesh::ENode::index_type idx=start; idx<end; idx++)
           {
+            checkForInterruption();
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
             objfield->interpolate(scalar,coords,fidx);
             vfield->set_value(scalar,idx);
-            
+
             if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
-          }  
+          }
         }
         else if (objfield->is_vector())
         {
           Vector vec;
           for (VMesh::ENode::index_type idx=start; idx<end; idx++)
           {
+            checkForInterruption();
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
             objfield->interpolate(vec,coords,fidx);
             vfield->set_value(vec,idx);
-            
+
             if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
-          }  
+          }
         }
         else if (objfield->is_tensor())
         {
           Tensor tensor;
           for (VMesh::ENode::index_type idx=start; idx<end; idx++)
           {
+            checkForInterruption();
             imesh->get_center(p,idx);
             objmesh->find_closest_elem(val,p2,coords,fidx,p);
             ofield->set_value(val,idx);
             objfield->interpolate(tensor,coords,fidx);
             vfield->set_value(tensor,idx);
-            
+
             if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
-          }  
+          }
         }
-      }    
+      }
     }
 
-  
+
     void range(int proc, int nproc,
                VMesh::index_type& start, VMesh::index_type& end,
                VMesh::size_type size)
@@ -317,7 +329,7 @@ class CalculateDistanceFieldP
       end = (proc+1)*m;
       if (proc == nproc-1) end = size;
     }
-    
+
   private:
     VMesh*   imesh;
     VMesh*   objmesh;
@@ -334,7 +346,7 @@ bool
 CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "CalculateDistanceField");
-  
+
   if (!input)
   {
     error("No input field");
@@ -358,32 +370,32 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
 
   fo.make_double();
   output = CreateField(fo,input->mesh());
-  
+
   if (!output)
   {
     error("Could not create output field");
     return (false);
   }
-  
+
   VMesh* imesh = input->vmesh();
   VMesh* objmesh = object->vmesh();
   VField* ofield = output->vfield();
   ofield->resize_values();
- 
+
   if (imesh->num_nodes() == 0)
   {
-    warning("Input Field does not contain any nodes, setting distance to maximum.");    
+    warning("Input Field does not contain any nodes, setting distance to maximum.");
     return (true);
   }
-    
+
   if (objmesh->num_nodes() == 0)
   {
     warning("Object Field does not contain any nodes, setting distance to maximum.");
     ofield->set_all_values(DBL_MAX);
-    
+
     return (true);
   }
-  
+
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
 
   if (ofield->basis_order() > 2)
@@ -403,7 +415,7 @@ bool
 CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value) const
 {
   ScopedAlgorithmStatusReporter asr(this, "CalculateDistanceField");
-  
+
   if (!input)
   {
     error("No input field");
@@ -425,7 +437,7 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
   if (fb.is_nodata())
   {
     error("Object field does not contain any values");
-    return (false);  
+    return (false);
   }
   // Create Value mesh with same type as object type
 
@@ -437,7 +449,7 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
 
   fo.set_data_type(get_option(Parameters::OutputFieldDatatype));
   distance = CreateField(fo,input->mesh());
-  
+
   if (!distance)
   {
     error("Could not create output field");
@@ -449,26 +461,26 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
     error("Could not create output field");
     return (false);
   }
-  
+
   VMesh* imesh = input->vmesh();
   VMesh* objmesh = object->vmesh();
   VField* objfield = object->vfield();
-  
+
   VField* dfield = distance->vfield();
   dfield->resize_values();
 
   VField* vfield = value->vfield();
   vfield->resize_values();
-  
+
   if (objmesh->num_nodes() == 0)
   {
     warning("Object Field does not contain any nodes, setting distance to maximum.");
     dfield->set_all_values(DBL_MAX);
     vfield->clear_all_values();
-    
+
     return (true);
   }
-  
+
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
 
   if (distance->basis_order() > 2)
