@@ -33,6 +33,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Thread/Interruptible.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -141,16 +142,17 @@ StreamlineValue convertValue(const std::string& option)
     return IntegrationIndex;
   if (option == "Integration step")
     return IntegrationStep;
-  if (option == "Distance from seed") 
+  if (option == "Distance from seed")
     return DistanceFromSeed;
-  if (option == "Streamline length") 
-    return StreamlineLength; 
+  if (option == "Streamline length")
+    return StreamlineLength;
 
   BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown streamline value selected"));
 }
 
 
-class GenerateStreamLinesAlgoP {
+class GenerateStreamLinesAlgoP : public Core::Thread::Interruptible
+{
 
   public:
     GenerateStreamLinesAlgoP() :
@@ -191,6 +193,7 @@ class GenerateStreamLinesAlgoP {
 void
 GenerateStreamLinesAlgoP::runImpl()
 {
+  // first candidate for module/algo stopping.
   try
   {
     VMesh::Node::index_type n1, n2;
@@ -209,10 +212,12 @@ GenerateStreamLinesAlgoP::runImpl()
 
     for (VMesh::Node::index_type idx=1; idx<num_seeds; ++idx)
     {
+      checkForInterruption();
+
       seed_mesh_->get_point(BI.seed_, idx);
 
        // Is the seed point inside the field?
-      if (!field_->interpolate(test, BI.seed_)) 
+      if (!field_->interpolate(test, BI.seed_))
         continue;
 
       BI.nodes_.clear();
@@ -347,12 +352,6 @@ GenerateStreamLinesAlgoP::runImpl()
     algo_->error(a);
     success_ = false;
   }
-  catch (...)
-  {
-    algo_->error("Crashed for unknown reason.");
-    success_ = false;
-  }
-
 }
 
 
@@ -461,7 +460,7 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
       seed_mesh_->get_center(seed, idx);
 
       // Is the seed point inside the field?
-      if (!(mesh_->locate(elem, seed))) 
+      if (!(mesh_->locate(elem, seed)))
         continue;
       nodes.clear();
       nodes.push_back(seed);
@@ -589,12 +588,7 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
   }
   catch (const char *a)
   {
-    algo->error(std::string(a));
-    success_ = false;
-  }
-  catch (...)
-  {
-    algo->error(std::string("Crashed for unknown reason."));
+    algo->error(a);
     success_ = false;
   }
 

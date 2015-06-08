@@ -1,20 +1,20 @@
 /*
  * The MIT License
- * 
+ *
  * Copyright (c) 2015 Scientific Computing and Imaging Institute,
  * University of Utah.
- * 
- * 
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -25,29 +25,35 @@
  */
 /// @todo Documentation Modules/Legacy/Math/AddLinkedNodesToLinearSystem.cc
 
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/ColumnMatrix.h>
-#include <Core/Algorithms/FiniteElements/Mapping/BuildNodeLink.h>
-#include <Core/Algorithms/FiniteElements/Mapping/BuildFEGridMapping.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-
-
-namespace SCIRun {
+#include <Modules/Legacy/Math/AddLinkedNodesToLinearSystem.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/Mapping/BuildNodeLink.h>
+#include <Core/Algorithms/Legacy/FiniteElements/Mapping/BuildFEGridMapping.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Math;
 
-class AddLinkedNodesToLinearSystem : public Module {
-public:
-  AddLinkedNodesToLinearSystem(GuiContext*);
+const ModuleLookupInfo AddLinkedNodesToLinearSystem::staticInfo_("AddLinkedNodesToLinearSystem", "Math", "SCIRun");
 
-  virtual ~AddLinkedNodesToLinearSystem() {}
+AddLinkedNodesToLinearSystem::AddLinkedNodesToLinearSystem() : Module(staticInfo_, false)
+{
+  INITIALIZE_PORT(LHS);
+  INITIALIZE_PORT(RHS);
+  INITIALIZE_PORT(LinkedNodes);
+  INITIALIZE_PORT(OutputLHS);
+  INITIALIZE_PORT(OutputRHS);
+  INITIALIZE_PORT(Mapping);
+}
 
-  virtual void execute();
-  
+#if 0
+
 private:
-  SCIRunAlgo::BuildNodeLinkAlgo bnl_algo_;  
+  SCIRunAlgo::BuildNodeLinkAlgo bnl_algo_;
   SCIRunAlgo::BuildFEGridMappingAlgo grid_algo_;
 };
 
@@ -60,66 +66,69 @@ AddLinkedNodesToLinearSystem::AddLinkedNodesToLinearSystem(GuiContext* ctx) :
   bnl_algo_.set_progress_reporter(this);
   grid_algo_.set_progress_reporter(this);
 }
+#endif
 
 void
 AddLinkedNodesToLinearSystem::execute()
 {
-  MatrixHandle A, RHS, LinkedNodes, Mapping;
-  
-  get_input_handle("Matrix",A,true);
-  get_input_handle("RHS",RHS,false);
-  get_input_handle("LinkedNodes",LinkedNodes,true);
-  
-  if (inputs_changed_ || !oport_cached("Matrix") || !oport_cached("RHS") ||
-      !oport_cached("Mapping"))
+  auto A = getRequiredInput(LHS);
+  auto RHSoption = getOptionalInput(RHS);
+  auto linkedNodes = getRequiredInput(LinkedNodes);
+
+  if (needToExecute())
   {
-    MatrixHandle NodeLink;
-    
     if (A->nrows() != A->ncols())
     {
       error("Stiffness matrix needs to be square");
       return;
     }
-    
-    if (RHS.get_rep() == 0)
+
+    DenseColumnMatrixHandle rhs;
+    if (RHSoption && *RHSoption)
     {
-      RHS = new ColumnMatrix(A->nrows());
-      RHS->zero();
+      rhs = *RHSoption;
     }
-    
-    if (RHS->nrows() != LinkedNodes->nrows())
+    else
+    {
+      rhs.reset(new DenseColumnMatrix(A->nrows()));
+      rhs->setZero();
+    }
+
+    if (rhs->nrows() != linkedNodes->nrows())
     {
       error("Linked nodes has the wrong number of rows");
       return;
     }
-    
+
+    MatrixHandle nodeLink;
+
+    //TODO: double-algo module
+    BuildNodeLinkAlgo bnl_algo;
+    BuildFEGridMappingAlgo grid_algo;
+
     // Build Linking matrix
-    if(!(bnl_algo_.run(LinkedNodes,NodeLink))) return;
-    
-    MatrixHandle PotentialGeomToGrid, PotentialGridToGeom;
-    MatrixHandle CurrentGeomToGrid, CurrentGridToGeom;
-    
-    grid_algo_.set_bool("build_current_gridtogeom",false);
-    grid_algo_.set_bool("build_potential_geomtogrid",false);
-    
-    if(!(grid_algo_.run(NodeLink,PotentialGeomToGrid,PotentialGridToGeom,
-                        CurrentGeomToGrid,CurrentGridToGeom))) return;
-                        
-    // Remove the linked nodes from the system and make sure they are the
-    // same node
+    if (!bnl_algo.run(linkedNodes, nodeLink))
+    {
+      error("BuildNodeLinkAlgo returned false");
+      return;
+    }
 
-    A = CurrentGeomToGrid*A*PotentialGridToGeom;
-    RHS = CurrentGeomToGrid*RHS;
-    Mapping = PotentialGridToGeom;
-  
-    send_output_handle("Matrix",A);
-    send_output_handle("RHS",RHS);
-    send_output_handle("Mapping",Mapping);
+    SparseRowMatrixHandle potentialGeomToGrid, potentialGridToGeom;
+    SparseRowMatrixHandle currentGeomToGrid, currentGridToGeom;
+
+    grid_algo.set(Parameters::build_current_gridtogeom, false);
+    grid_algo.set(Parameters::build_potential_geomtogrid, false);
+
+    if (!grid_algo.run(nodeLink, potentialGeomToGrid, potentialGridToGeom, currentGeomToGrid, currentGridToGeom))
+    {
+      error("BuildFEGridMappingAlgo returned false");
+      return;
+    }
+
+    // Remove the linked nodes from the system and make sure they are the same node
+
+    sendOutput(OutputLHS, boost::make_shared<SparseRowMatrix>(*currentGeomToGrid * *A * *potentialGridToGeom));
+    sendOutput(OutputRHS, boost::make_shared<DenseColumnMatrix>(*currentGeomToGrid * *rhs));
+    sendOutput(Mapping, potentialGridToGeom);
   }
-  
-
 }
-
-} // End namespace SCIRun
-
-

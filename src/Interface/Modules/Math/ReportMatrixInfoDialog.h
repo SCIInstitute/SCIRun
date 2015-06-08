@@ -30,26 +30,22 @@
 #define INTERFACE_MODULES_REPORT_MATRIX_INFO_H
 
 #include "Interface/Modules/Math/ui_ReportMatrixInfo.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ReportMatrixInfoDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
+
+class SCISHARE ReportMatrixInfoDialog : public ModuleDialogGeneric,
   public Ui::ReportMatrixInfo
 {
 	Q_OBJECT
-	
+
 public:
-  ReportMatrixInfoDialog(const std::string& name, 
+  ReportMatrixInfoDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void moduleExecuted() { pullAndDisplayInfo(); }
-  virtual void pull() {}
 private Q_SLOTS:
   void pullAndDisplayInfo();
 };

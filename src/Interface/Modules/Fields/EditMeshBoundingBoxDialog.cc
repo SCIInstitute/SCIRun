@@ -81,10 +81,3 @@ void EditMeshBoundingBoxDialog::ScaleUpPush() { scale_*=1.25; spinner_scale_.set
 void EditMeshBoundingBoxDialog::ScaleDoubleUpPush() { scale_*=1.5625; spinner_scale_.setValue(scale_); }
 void EditMeshBoundingBoxDialog::ScaleDownPush() { scale_*=0.8; spinner_scale_.setValue(scale_); }
 void EditMeshBoundingBoxDialog::ScaleDoubleDownPush() { scale_*=0.64; spinner_scale_.setValue(scale_); }
-
-void EditMeshBoundingBoxDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-  Pulling p(this);
-  //outputCenterXSpinBox_->setValue(state_->getValue(EditMeshBoundingBoxModule::OutputCenterX).toDouble());
-}

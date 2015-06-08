@@ -7,7 +7,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,8 +30,8 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H 1
 
-
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -39,14 +39,14 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-class SCISHARE MapFieldDataFromNodeToElemAlgo : public AlgorithmBase
+class SCISHARE MapFieldDataFromNodeToElemAlgo : public AlgorithmBase, public Thread::Interruptible
 {
   public:
     MapFieldDataFromNodeToElemAlgo();
-    
+
     static AlgorithmParameterName Method;
-    FieldHandle run(FieldHandle input_field) const; 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+    FieldHandle run(FieldHandle input_field) const;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
 };
 

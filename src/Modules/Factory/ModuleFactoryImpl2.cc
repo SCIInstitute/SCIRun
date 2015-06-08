@@ -53,6 +53,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
 #include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
+#include <Modules/Legacy/Math/EvaluateLinAlgGeneral.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -95,4 +96,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
   addModuleDesc<ExtractSimpleIsosurfaceModule>("ExtractSimpleIsosurface","NewField","SCIRun","...","...");
   addModuleDesc<ClipVolumeByIsovalueModule>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
+  addModuleDesc<EvaluateLinearAlgebraGeneral>("Real ported module", "...");
 }

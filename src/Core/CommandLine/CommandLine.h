@@ -57,6 +57,7 @@ namespace SCIRun {
         virtual bool verboseMode() const = 0;
         virtual boost::optional<std::string> threadMode() const = 0;
         virtual boost::optional<std::string> reexecuteMode() const = 0;
+        virtual boost::optional<int> frameInitLimit() const = 0;
         virtual bool printModuleList() const = 0;
         virtual const std::string& entireCommandLine() const = 0;
       };

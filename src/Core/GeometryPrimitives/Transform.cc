@@ -325,7 +325,6 @@ Transform::build_rotate(double m[4][4], double angle, const Vector& axis)
   inverse_valid = false;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void
 Transform::pre_rotate(double angle, const Vector& axis)
 {
@@ -344,7 +343,7 @@ Transform::post_rotate(double angle, const Vector& axis)
   inverse_valid = false;
 }       
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool
 Transform::rotate(const Vector& from, const Vector& to)
 {

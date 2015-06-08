@@ -59,6 +59,7 @@ namespace SCIRun
     Q_SIGNALS:
       void selected();
       void widgetMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
+      void tagChanged(int tag);
     protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
@@ -83,6 +84,12 @@ namespace SCIRun
       bool doHighlight_;
     };
 
+    // arbitrary values
+    static const int TagDataKey = 123;
+    static const int TagLayerKey = 100;
+    static const int CurrentTagKey = 101;
+    static const int NoTag = -1;
+    static const int AllTags = -50;
   }
 }
 

@@ -53,5 +53,5 @@ TEST_F(CalculateFieldDataModuleTests, ThrowsForNullInput)
   stubPortNWithThisData(clv, 0, nullField);
   stubPortNWithThisData(clv, 1, nullField);
 
-  EXPECT_THROW(clv->execute(), NoHandleOnPortException);
+  EXPECT_THROW(clv->execute(), NullHandleOnPortException);
 }

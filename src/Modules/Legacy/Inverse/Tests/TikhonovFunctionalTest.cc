@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 // Testing libraries
@@ -63,130 +63,125 @@ class TikhonovFunctionalTest : public ModuleTest
 
 
 // NULL fwd matrix + NULL measure data
-TEST_F(TikhonovFunctionalTest,loadNullFwdMatrixANDNullData)
+TEST_F(TikhonovFunctionalTest, loadNullFwdMatrixANDNullData)
 {
-    // create inputs
-    auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
-    MatrixHandle nullMatrix, nullColumnMatrix;
-    // input data
-    stubPortNWithThisData(tikAlgImp, 0, nullMatrix);
-    stubPortNWithThisData(tikAlgImp, 2, nullColumnMatrix);
-    // check result
-    EXPECT_THROW(tikAlgImp->execute(), NullHandleOnPortException);
-    
+  // create inputs
+  auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
+  MatrixHandle nullMatrix, nullColumnMatrix;
+  // input data
+  stubPortNWithThisData(tikAlgImp, 0, nullMatrix);
+  stubPortNWithThisData(tikAlgImp, 2, nullColumnMatrix);
+  // check result
+  EXPECT_THROW(tikAlgImp->execute(), NullHandleOnPortException);
+
 }
 
 // ID fwd matrix + null measured data
-TEST_F(TikhonovFunctionalTest,loadIDFwdMatrixANDNullData)
+TEST_F(TikhonovFunctionalTest, loadIDFwdMatrixANDNullData)
 {
-    // create inputs
-    auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
-    MatrixHandle fwdMatrix( new DenseMatrix(DenseMatrix::Identity(3,3)) );    // forward matrix (IDentityt)
-    MatrixHandle nullColumnMatrix;              // measurement data (null)
-    
-    // input data
-    stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
-    stubPortNWithThisData(tikAlgImp, 2, nullColumnMatrix);
-    // check result
-    EXPECT_THROW(tikAlgImp->execute(), NullHandleOnPortException);
-    
+  // create inputs
+  auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
+  MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(3, 3)));    // forward matrix (IDentityt)
+  MatrixHandle nullColumnMatrix;              // measurement data (null)
+
+  // input data
+  stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
+  stubPortNWithThisData(tikAlgImp, 2, nullColumnMatrix);
+  // check result
+  EXPECT_THROW(tikAlgImp->execute(), NullHandleOnPortException);
+
 }
 
 // NULL fwd matrix + RANF measured data
-TEST_F(TikhonovFunctionalTest,loadNullFwdMatrixANDRandData)
+TEST_F(TikhonovFunctionalTest, loadNullFwdMatrixANDRandData)
 {
-    // create inputs
-    auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
-    MatrixHandle fwdMatrix;    // forward matrix (IDentityt)
-    MatrixHandle measuredData( new DenseMatrix(DenseMatrix::Random(3,1)) );    // measurement data (rand)
-    
-    // input data
-    stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
-    stubPortNWithThisData(tikAlgImp, 2, measuredData);
-    // check result
-    EXPECT_THROW(tikAlgImp->execute(), NullHandleOnPortException);
-    
+  // create inputs
+  auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
+  MatrixHandle fwdMatrix;    // forward matrix (IDentityt)
+  MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(3, 1)));    // measurement data (rand)
+
+  // input data
+  stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
+  stubPortNWithThisData(tikAlgImp, 2, measuredData);
+  // check result
+  EXPECT_THROW(tikAlgImp->execute(), NullHandleOnPortException);
+
 }
 
 // ID fwd matrix + RAND measured data
-TEST_F(TikhonovFunctionalTest,loadIDFwdMatrixANDRandData)
+TEST_F(TikhonovFunctionalTest, loadIDFwdMatrixANDRandData)
 {
-    // create inputs
-    auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
-    MatrixHandle fwdMatrix( new DenseMatrix(DenseMatrix::Identity(3,3)) );    // forward matrix (IDentityt)
-    MatrixHandle measuredData( new DenseMatrix(DenseMatrix::Random(3,1)) );   // measurement data (rand)
-    
-    // input data
-    stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
-    stubPortNWithThisData(tikAlgImp, 2, measuredData);
-    // check result
-    EXPECT_NO_THROW(tikAlgImp->execute());
-    
+  // create inputs
+  auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
+  MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(3, 3)));    // forward matrix (IDentityt)
+  MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(3, 1)));   // measurement data (rand)
+
+  // input data
+  stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
+  stubPortNWithThisData(tikAlgImp, 2, measuredData);
+  // check result
+  EXPECT_NO_THROW(tikAlgImp->execute());
+
 }
 
 // ID non-square fwd matrix + RAND measured data  (underdetermined)
 // TODO: FAILS TEST: fails test when it shouldn't. The sizes of forward matrix and data are the same
-TEST_F(TikhonovFunctionalTest,loadIDNonSquareFwdMatrixANDRandData)
+TEST_F(TikhonovFunctionalTest, loadIDNonSquareFwdMatrixANDRandData)
 {
-    // create inputs
-    auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
-    MatrixHandle fwdMatrix( new DenseMatrix(DenseMatrix::Identity(3,4)) );    // forward matrix (IDentityt)
-    MatrixHandle measuredData( new DenseMatrix(DenseMatrix::Random(4,1)) );   // measurement data (rand)
-    
-    // input data
-    stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
-    stubPortNWithThisData(tikAlgImp, 2, measuredData);
-    // check result
-    EXPECT_NO_THROW(tikAlgImp->execute());
-    
+  // create inputs
+  auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
+  MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(3, 4)));    // forward matrix (IDentityt)
+  MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
+
+  // input data
+  stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
+  stubPortNWithThisData(tikAlgImp, 2, measuredData);
+  // check result
+  EXPECT_NO_THROW(tikAlgImp->execute());
 }
 
 // ID non-square fwd matrix + RAND measured data  (overdetermined)
-// TODO: FAILS TEST: fails test when it shouldn't. The sizes of forward matrix and data are the same
-TEST_F(TikhonovFunctionalTest,loadIDNonSquareFwdMatrixANDRandData2)
+TEST_F(TikhonovFunctionalTest, loadIDNonSquareFwdMatrixANDRandData2)
 {
-    // create inputs
-    auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
-    MatrixHandle fwdMatrix( new DenseMatrix(DenseMatrix::Identity(4,3)) );    // forward matrix (IDentityt)
-    MatrixHandle measuredData( new DenseMatrix(DenseMatrix::Random(3,1)) );   // measurement data (rand)
-    
-    // input data
-    stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
-    stubPortNWithThisData(tikAlgImp, 2, measuredData);
-    // check result
-    EXPECT_NO_THROW(tikAlgImp->execute());
-    
+  // create inputs
+  auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
+  MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 3)));    // forward matrix (IDentityt)
+  MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(3, 1)));   // measurement data (rand)
+
+  // input data
+  stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
+  stubPortNWithThisData(tikAlgImp, 2, measuredData);
+  // check result
+  EXPECT_NO_THROW(tikAlgImp->execute());
 }
 
 // ID square fwd matrix + RAND measured data  - different sizes
-// TODO: FAILS TEST: does not fail test when it shouldn't. The sizes of forward matrix and data are the different (note that this is only for size(fwd,2) < size(data,1) )!
-TEST_F(TikhonovFunctionalTest,loadIDSquareFwdMatrixANDRandDataDiffSizes)
+TEST_F(TikhonovFunctionalTest, loadIDSquareFwdMatrixANDRandDataDiffSizes)
 {
-    // create inputs
-    auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
-    MatrixHandle fwdMatrix( new DenseMatrix(DenseMatrix::Identity(3,3)) );    // forward matrix (IDentityt)
-    MatrixHandle measuredData( new DenseMatrix(DenseMatrix::Random(4,1)) );   // measurement data (rand)
-    
-    // input data
-    stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
-    stubPortNWithThisData(tikAlgImp, 2, measuredData);
-    // check result
-    EXPECT_THROW(tikAlgImp->execute(), SCIRun::Core::DimensionMismatch);
-    
+  // create inputs
+  auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
+  MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(3, 3)));    // forward matrix (IDentityt)
+  MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
+
+  // input data
+  stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
+  stubPortNWithThisData(tikAlgImp, 2, measuredData);
+  // check result
+  EXPECT_THROW(tikAlgImp->execute(), SCIRun::Core::DimensionMismatch);
 }
 
 // ID non-square fwd matrix + RAND measured data  - different sizes
-TEST_F(TikhonovFunctionalTest,loadIDNonSquareFwdMatrixANDRandDataDiffSizes)
+// TODO: FAILS TEST: does not fail test when it shouldn't. The sizes of forward matrix and data are the different (note that this is only for size(fwd,2) < size(data,1) )!
+TEST_F(TikhonovFunctionalTest, loadIDNonSquareFwdMatrixANDRandDataDiffSizes)
 {
-    // create inputs
-    auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
-    MatrixHandle fwdMatrix( new DenseMatrix(DenseMatrix::Identity(3,4)) );    // forward matrix (IDentityt)
-    MatrixHandle measuredData( new DenseMatrix(DenseMatrix::Random(3,1)) );   // measurement data (rand)
-    
-    // input data
-    stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
-    stubPortNWithThisData(tikAlgImp, 2, measuredData);
-    // check result
-    EXPECT_THROW(tikAlgImp->execute(),SCIRun::Core::DimensionMismatch);
-    
+  // create inputs
+  auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
+  MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(3, 4)));    // forward matrix (IDentityt)
+  MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(3, 1)));   // measurement data (rand)
+
+  // input data
+  stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
+  stubPortNWithThisData(tikAlgImp, 2, measuredData);
+  // check result
+  EXPECT_THROW(tikAlgImp->execute(), SCIRun::Core::DimensionMismatch);
 }

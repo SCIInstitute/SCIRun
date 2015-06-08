@@ -35,18 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE TDCSSimulatorDialog : public ModuleDialogGeneric, 
+
+class SCISHARE TDCSSimulatorDialog : public ModuleDialogGeneric,
   public Ui::tDCSSimulatorDialog
 {
 	Q_OBJECT
-	
+
 public:
-  TDCSSimulatorDialog(const std::string& name, 
+  TDCSSimulatorDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  //virtual void moduleExecuted() { pullAndDisplayInfo(); }
-  virtual void pull();
 };
 
 }

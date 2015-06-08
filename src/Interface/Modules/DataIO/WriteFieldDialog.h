@@ -38,18 +38,19 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE WriteFieldDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
+
+class SCISHARE WriteFieldDialog : public ModuleDialogGeneric,
+  //public SCIRun::State::SendScalarState,
   public Ui::WriteFieldDialog, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
-	
+
 public:
-  WriteFieldDialog(const std::string& name, 
+  WriteFieldDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+protected:
+  virtual void pullSpecial() override;
 
 private Q_SLOTS:
   void pushFileNameToState();

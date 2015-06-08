@@ -42,12 +42,7 @@ SplitFieldByConnectedRegionDialog::SplitFieldByConnectedRegionDialog(const std::
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   addCheckBoxManager(SortDomainBySize, SplitFieldByConnectedRegionAlgo::SortDomainBySize());
   addCheckBoxManager(SortAscending, SplitFieldByConnectedRegionAlgo::SortAscending());
-}                         
-                          
-void SplitFieldByConnectedRegionDialog::pull()
-{
- pull_newVersionToReplaceOld();   
 }

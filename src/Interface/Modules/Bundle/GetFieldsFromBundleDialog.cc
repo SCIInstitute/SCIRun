@@ -43,39 +43,45 @@ GetFieldsFromBundleDialog::GetFieldsFromBundleDialog(const std::string& name, Mo
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  addComboBoxManager(fieldComboBox1_, GetFieldsFromBundle::FieldNames[0]);
+  addComboBoxManager(fieldComboBox2_, GetFieldsFromBundle::FieldNames[1]);
+  addComboBoxManager(fieldComboBox3_, GetFieldsFromBundle::FieldNames[2]);
+  addComboBoxManager(fieldComboBox4_, GetFieldsFromBundle::FieldNames[3]);
+  addComboBoxManager(fieldComboBox5_, GetFieldsFromBundle::FieldNames[4]);
+  addComboBoxManager(fieldComboBox6_, GetFieldsFromBundle::FieldNames[5]);
 }
 
-void GetFieldsFromBundleDialog::pull()
+void GetFieldsFromBundleDialog::pullSpecial()
 {
-  auto names = optional_any_cast_or_default<std::string>(state_->getTransientValue(GetFieldsFromBundle::FieldNameList.name()));
-  fieldNameListTextEdit_->setText(QString::fromStdString(names));
-
-  field1NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[0]).toString()));
-  field2NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[1]).toString()));
-  field3NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[2]).toString()));
-  field4NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[3]).toString()));
-  field5NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[4]).toString()));
-  field6NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[5]).toString()));
-  /*
-  for (int i = 0; i < GetFieldsFromBundle::NUM_BUNDLE_OUT; ++i)
+  auto names = optional_any_cast_or_default<std::vector<std::string>>(state_->getTransientValue(GetFieldsFromBundle::FieldNameList.name()));
+  if (fieldNames_ != names)
   {
-    field
-  }
-  */
+    fieldNames_ = names;
+    //TODO: put into an array, call functions.
+    fieldComboBox1_->clear();
+    fieldComboBox2_->clear();
+    fieldComboBox3_->clear();
+    fieldComboBox4_->clear();
+    fieldComboBox5_->clear();
+    fieldComboBox6_->clear();
+    fieldObjectListWidget_->clear();
 
-  //auto numFields = state_->getValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields).toInt();
-  //tableWidget->setRowCount(numFields);
-  //for (int i = 0; i < numFields; ++i)
-  //{
-  //  auto name = new QTableWidgetItem(tr("Field %1").arg(i+1));
-  //  tableWidget->setItem(i, 0, name);
-  //  auto check = new QTableWidgetItem();
-  //  check->setCheckState(Qt::Checked);
-  //  check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
-  //  tableWidget->setItem(i, 1, check);
-  //  auto info = new QTableWidgetItem("[unknown, populated upon execute]");
-  //  //info->setFlags(Qt::NoItemFlags);
-  //  tableWidget->setItem(i, 2, info);
-  //}
-  //tableWidget->resizeColumnsToContents();
+    for (const auto& name : names)
+    {
+      auto qname = QString::fromStdString(name);
+      fieldObjectListWidget_->addItem(qname);
+      fieldComboBox1_->addItem(qname);
+      fieldComboBox2_->addItem(qname);
+      fieldComboBox3_->addItem(qname);
+      fieldComboBox4_->addItem(qname);
+      fieldComboBox5_->addItem(qname);
+      fieldComboBox6_->addItem(qname);
+    }
+    fieldComboBox1_->setCurrentIndex(fieldComboBox1_->findText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[0]).toString())));
+    fieldComboBox2_->setCurrentIndex(fieldComboBox2_->findText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[1]).toString())));
+    fieldComboBox3_->setCurrentIndex(fieldComboBox3_->findText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[2]).toString())));
+    fieldComboBox4_->setCurrentIndex(fieldComboBox4_->findText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[3]).toString())));
+    fieldComboBox5_->setCurrentIndex(fieldComboBox5_->findText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[4]).toString())));
+    fieldComboBox6_->setCurrentIndex(fieldComboBox6_->findText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[5]).toString())));
+  }
 }

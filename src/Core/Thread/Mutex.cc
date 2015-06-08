@@ -27,6 +27,8 @@
  */
 
 #include <Core/Thread/Mutex.h>
+#include <Core/Thread/Interruptible.h>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Core::Thread;
 
@@ -42,4 +44,14 @@ void Mutex::lock()
 void Mutex::unlock()
 {
   impl_.unlock();
+}
+
+void Interruptible::checkForInterruption()
+{
+  boost::this_thread::interruption_point();
+  //#ifdef WIN32 // this is working on Mac, but not Windows.
+  //std::cout << "trying to interrupt_point in thread " << boost::this_thread::get_id() << std::endl;
+  //std::cout << "interruption enabled? " << boost::this_thread::interruption_enabled() << std::endl;
+  //std::cout << "interruption requested? " << boost::this_thread::interruption_requested() << std::endl;
+  //#endif
 }

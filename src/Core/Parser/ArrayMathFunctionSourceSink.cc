@@ -37,9 +37,12 @@
 #include <Core/Parser/ArrayMathInterpreter.h>
 #include <Core/Parser/ArrayMathFunctionCatalog.h>
 
+#include <Core/Thread/Mutex.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
 
 namespace ArrayMathFunctions {
 
@@ -683,10 +686,16 @@ bool set_matrix_element_s(ArrayMathProgramCode& pc)
   auto data0 = pc.get_matrix(0);
   index_type   idx = pc.get_index();
  
+  static Mutex sparseAccessMutex("sparseAccessMutex");
+
   size_type m = data0->nrows();
   
   if (m > 0)
   {
+    std::unique_ptr<Guard> guard;
+    if (matrix_is::sparse(data0))
+      guard.reset(new Guard(sparseAccessMutex.get()));
+    
     while (data1 != data1_end) 
     {
       index_type j = idx/m;  

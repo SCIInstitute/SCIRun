@@ -33,9 +33,11 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Parser/ArrayMathEngine.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/MatrixMathVisitors.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Datatypes::MatrixMath;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun;
 
@@ -43,140 +45,6 @@ EvaluateLinearAlgebraBinaryAlgorithm::EvaluateLinearAlgebraBinaryAlgorithm()
 {
   addParameter(Variables::Operator, 0);
   addParameter(Variables::FunctionString, std::string("x+y"));
-}
-
-namespace impl //TODO: break out; useful in general
-{
-  class BinaryVisitor : public MatrixVisitor
-  {
-  protected:
-    explicit BinaryVisitor(MatrixHandle operand) : typeCode_(matrix_is::typeCode(operand)) {}
-    static Matrix* cloneIfNotNull(MatrixHandle m)
-    {
-      ENSURE_NOT_NULL(m, "Addend");
-      return m->clone();
-    }
-
-    MatrixTypeCode typeCode_;
-  };
-
-  class AddMatrices : public BinaryVisitor
-  {
-  public:
-    explicit AddMatrices(MatrixHandle addend) : BinaryVisitor(addend),
-      sum_(cloneIfNotNull(addend))
-    {
-    }
-
-    virtual void visit(DenseMatrixGeneric<double>& dense) override
-    {
-      switch (typeCode_)
-      {
-      case DENSE:
-        *matrix_cast::as_dense(sum_) += dense;
-        break;
-      case COLUMN:
-        *matrix_cast::as_column(sum_) += dense;
-        break;
-      case SPARSE_ROW:
-        *matrix_cast::as_sparse(sum_) = *matrix_cast::as_sparse(sum_) + *matrix_convert::denseToSparse(dense);
-        break;
-      }
-    }
-    virtual void visit(SparseRowMatrixGeneric<double>& sparse) override
-    {
-      switch (typeCode_)
-      {
-      case DENSE:
-        sum_.reset(new SparseRowMatrix(*matrix_convert::to_sparse(sum_) + sparse));
-        typeCode_ = SPARSE_ROW;
-        break;
-      case COLUMN:
-        sum_.reset(new SparseRowMatrix(*matrix_convert::to_sparse(sum_) + sparse));
-        typeCode_ = SPARSE_ROW;
-        break;
-      case SPARSE_ROW:
-        *matrix_cast::as_sparse(sum_) = *matrix_cast::as_sparse(sum_) + sparse;
-        break;
-      }
-    }
-    virtual void visit(DenseColumnMatrixGeneric<double>& column) override
-    {
-      switch (typeCode_)
-      {
-      case DENSE:
-        *matrix_cast::as_dense(sum_) += column;
-        break;
-      case COLUMN:
-        *matrix_cast::as_column(sum_) += column;
-        break;
-      case SPARSE_ROW:
-        *matrix_cast::as_sparse(sum_) = *matrix_cast::as_sparse(sum_) + *matrix_convert::denseToSparse(column);
-        break;
-      }
-    }
-
-    MatrixHandle sum_;
-  };
-
-  class MultiplyMatrices : public BinaryVisitor
-  {
-  public:
-    explicit MultiplyMatrices(MatrixHandle factor) : BinaryVisitor(factor),
-      product_(cloneIfNotNull(factor))
-      {
-      }
-
-      virtual void visit(DenseMatrixGeneric<double>& dense) override
-      {
-        switch (typeCode_)
-        {
-        case DENSE:
-          *matrix_cast::as_dense(product_) *= dense;
-          break;
-        case COLUMN:
-          *matrix_cast::as_column(product_) *= dense;
-          break;
-        case SPARSE_ROW:
-          *matrix_cast::as_sparse(product_) = *matrix_cast::as_sparse(product_) * *matrix_convert::denseToSparse(dense);
-          break;
-        }
-      }
-      virtual void visit(SparseRowMatrixGeneric<double>& sparse) override
-      {
-        switch (typeCode_)
-        {
-        case DENSE:
-          product_.reset(new SparseRowMatrix(*matrix_convert::to_sparse(product_) * sparse));
-          typeCode_ = SPARSE_ROW;
-          break;
-        case COLUMN:
-          product_.reset(new SparseRowMatrix(*matrix_convert::to_sparse(product_) * sparse));
-          typeCode_ = SPARSE_ROW;
-          break;
-        case SPARSE_ROW:
-          *matrix_cast::as_sparse(product_) = *matrix_cast::as_sparse(product_) * sparse;
-          break;
-        }
-      }
-      virtual void visit(DenseColumnMatrixGeneric<double>& column) override
-      {
-        switch (typeCode_)
-        {
-        case DENSE:
-          *matrix_cast::as_dense(product_) *= column;
-          break;
-        case COLUMN:
-          *matrix_cast::as_column(product_) *= column;
-          break;
-        case SPARSE_ROW:
-          *matrix_cast::as_sparse(product_) = *matrix_cast::as_sparse(product_) * *matrix_convert::denseToSparse(column);
-          break;
-        }
-      }
-
-      MatrixHandle product_;
-  };
 }
 
 EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorithm::run(const EvaluateLinearAlgebraBinaryAlgorithm::Inputs& inputs, const EvaluateLinearAlgebraBinaryAlgorithm::Parameters& params) const
@@ -194,7 +62,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   {
     if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to add matrices.");
-    impl::AddMatrices add(lhs);
+    AddMatrices add(lhs);
     rhs->accept(add);
     return add.sum_;
   }
@@ -203,9 +71,9 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to subtract matrices.");
     result.reset(rhs->clone());
-    detail::NegateMatrix neg;
+    NegateMatrix neg;
     result->accept(neg);
-    impl::AddMatrices add(lhs);
+    AddMatrices add(lhs);
     result->accept(add);
     return add.sum_;
   }
@@ -213,12 +81,20 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   {
     if (lhs->ncols() != rhs->nrows())
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to multiply matrices.");
-    impl::MultiplyMatrices mult(lhs);
+    MultiplyMatrices mult(lhs);
     rhs->accept(mult);
     return mult.product_;
   }
   case FUNCTION:
   {
+    // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result. 
+    // There's no way to know ahead of time, so I'll just throw an error here and require the user to do this type of math elsewhere.
+    if (matrix_is::sparse(lhs) || matrix_is::sparse(rhs))
+    {
+      if ((lhs->nrows() * lhs->ncols() > 10000) || (rhs->nrows() * rhs->ncols() > 10000))
+        THROW_ALGORITHM_INPUT_ERROR("ArrayMathEngine needs overhaul to be used with large sparse inputs. See https://github.com/SCIInstitute/SCIRun/issues/482");
+    }
+
     NewArrayMathEngine engine;
     MatrixHandle lhsInput(lhs->clone()), rhsInput(rhs->clone());
 

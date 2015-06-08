@@ -39,10 +39,9 @@ namespace SCIRun {
     namespace Engine {
       namespace DynamicExecutor {
 
-
         struct SCISHARE ModuleExecutor
         {
-          ModuleExecutor(Networks::ModuleHandle mod, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) : 
+          ModuleExecutor(Networks::ModuleHandle mod, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) :
             module_(mod), lookup_(lookup), producer_(producer), shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
           {
             Core::Logging::Log::get("executor").setVerbose(shouldLog_);

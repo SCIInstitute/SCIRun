@@ -54,7 +54,7 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  WidgetStyleMixin::tableHeaderStyle(this->tableWidget); 
+  WidgetStyleMixin::tableHeaderStyle(this->tableWidget);
   tableWidget->resizeColumnsToContents();
 
   connect(tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(pushTable(int,int)));
@@ -185,7 +185,7 @@ void BuildBEMatrixDialog::pushOutsides()
   }
 }
 
-void BuildBEMatrixDialog::pull()
+void BuildBEMatrixDialog::pullSpecial()
 {
   pullNames();
   pullFieldTypes();

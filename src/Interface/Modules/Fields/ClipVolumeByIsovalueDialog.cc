@@ -50,7 +50,6 @@ ClipVolumeByIsovalueDialog::ClipVolumeByIsovalueDialog(const std::string& name, 
   
 }
 
-void ClipVolumeByIsovalueDialog::pull()
+void ClipVolumeByIsovalueDialog::pullSpecial()
 {
-  pull_newVersionToReplaceOld();
 }

@@ -331,7 +331,14 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
   
   double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
   
+  std::cout << "iso:" << isoval << std::endl;
+  
   bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
+  
+  if(lte)
+    std::cout << "lte" << std::endl;    
+  else
+    std::cout << "not lte " << std::endl;
   
   VMesh::size_type num_elems = mesh->num_elems();
   

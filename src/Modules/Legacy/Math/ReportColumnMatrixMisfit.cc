@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -34,110 +34,122 @@
 ///   University of Utah
 ///@date  June 1999
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 #include <Core/Math/MiscMath.h>
 #include <sstream>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Math;
 
 /// @class ReportColumnMatrixMisfit
-/// @brief This module computes and visualizes the error between two vectors. 
+/// @brief This module computes and visualizes the error between two vectors.
 
-class ReportColumnMatrixMisfit : public Module 
+const ModuleLookupInfo ReportColumnMatrixMisfit::staticInfo_("ReportColumnMatrixMisfit", "Math", "SCIRun");
+
+ReportColumnMatrixMisfit::ReportColumnMatrixMisfit() : Module(staticInfo_)
 {
-public:
-  explicit ReportColumnMatrixMisfit(GuiContext* ctx);
-  virtual void execute();
-private:
-  GuiInt       have_ui_;
-  GuiString    methodTCL_;
-  GuiString    pTCL_;
-
-  void showGraph(const ColumnMatrix& v1, const ColumnMatrix& v2, double ccInv, double rmsRel);
-  bool containsInfiniteComponent(const ColumnMatrix& v);
-}; 
-
-DECLARE_MAKER(ReportColumnMatrixMisfit)
-
-ReportColumnMatrixMisfit::ReportColumnMatrixMisfit(GuiContext* ctx)
-  : Module("ReportColumnMatrixMisfit", ctx, Filter, "Math", "SCIRun"),
-    have_ui_(get_ctx()->subVar("have_ui")),
-    methodTCL_(get_ctx()->subVar("methodTCL")),
-    pTCL_(get_ctx()->subVar("pTCL"))
-{
+  INITIALIZE_PORT(Vec1);
+  INITIALIZE_PORT(Vec2);
+  INITIALIZE_PORT(Error_Out);
 }
 
-void
-ReportColumnMatrixMisfit::execute()
+void ReportColumnMatrixMisfit::setStateDefaults()
 {
-  MatrixHandle ivec1H;
-  get_input_handle("Vec1", ivec1H);
-  ColumnMatrixHandle ivec1 = ivec1H->column();
-
-  MatrixHandle ivec2H;
-  get_input_handle("Vec2", ivec2H);
-  ColumnMatrixHandle ivec2 = ivec2H->column();
-
-  if (ivec1->nrows() != ivec2->nrows()) 
-  {
-     error("Can't compute error on vectors of different lengths!");
-     error("vec1 length = " + to_string(ivec1->nrows()));
-     error("vec2 length = " + to_string(ivec2->nrows()));
-     return;
-  }
-
-  double pp;
-  string_to_double(pTCL_.get(), pp);
-  
-  ColumnMatrixMisfitCalculator calc(*ivec1, *ivec2, pp);
-
-  const double cc = calc.getCorrelationCoefficient();
-  const double ccInv = calc.getInverseCorrelationCoefficient();
-  const double rms = calc.getRMS();
-  const double rmsRel = calc.getRelativeRMS();
-
-  if (have_ui_.get()) 
-  {
-    showGraph(*ivec1, *ivec2, ccInv, rmsRel);
-  }
-
-  const std::string meth = methodTCL_.get();
-  double val;
-  if (meth == "CC") 
-  {
-    val = cc;
-  } 
-  else if (meth == "CCinv") 
-  {
-    val = ccInv;
-  } 
-  else if (meth == "RMS") 
-  {
-    val = rms;
-  } 
-  else if (meth == "RMSrel") 
-  {
-    val = rmsRel;
-  } 
-  else 
-  {
-    error("Unknown ReportColumnMatrixMisfit::methodTCL_ - " + meth);
-    val = 0;
-  }
-
-  ColumnMatrixHandle error = new ColumnMatrix(1);
-  (*error)[0] = val;
-  send_output_handle("Error Out", error);
+  auto state = get_state();
+  state->setValue(Parameters::PValue, 2.0);
+  state->setValue(Parameters::MisfitMethod, std::string("CCinv"));
+  state->setValue(Parameters::ccInv, 0.0);
+  state->setValue(Parameters::rmsRel, 0.0);
 }
 
-void ReportColumnMatrixMisfit::showGraph(const ColumnMatrix& v1, const ColumnMatrix& v2, double ccInv, double rmsRel) 
+void ReportColumnMatrixMisfit::execute()
+{
+  auto ivec1 = getRequiredInput(Vec1);
+  auto ivec2 = getRequiredInput(Vec2);
+
+  if (needToExecute())
+  {
+    if (ivec1->nrows() != ivec2->nrows())
+    {
+      std::ostringstream ostr;
+      ostr << "Can't compute error on vectors of different lengths!" <<
+        "vec1 length = " << ivec1->nrows() << "vec2 length = " << ivec2->nrows();
+      error(ostr.str());
+      return;
+    }
+
+    if (ivec1->ncols() != 1 || ivec2->ncols() != 1)
+    {
+      std::ostringstream ostr;
+      ostr << "Can't compute error on vectors of different lengths!" <<
+        "vec1 length = " << ivec1->nrows() << "vec2 length = " << ivec2->nrows();
+      error(ostr.str());
+      return;
+    }
+
+    auto state = get_state();
+    const double pp = state->getValue(Parameters::PValue).toDouble();
+
+    auto ivec1Col = matrix_convert::to_column(ivec1);
+    auto ivec2Col = matrix_convert::to_column(ivec2);
+
+    ColumnMatrixMisfitCalculator calc(*ivec1Col, *ivec2Col, pp);
+
+    const double cc = calc.getCorrelationCoefficient();
+    const double ccInv = calc.getInverseCorrelationCoefficient();
+    const double rms = calc.getRMS();
+    const double rmsRel = calc.getRelativeRMS();
+
+    showGraph(*ivec1Col, *ivec2Col, ccInv, rmsRel);
+
+    const std::string meth = state->getValue(Parameters::MisfitMethod).toString();
+    double val;
+    if (meth == "CC")
+    {
+      val = cc;
+    }
+    else if (meth == "CCinv")
+    {
+      val = ccInv;
+    }
+    else if (meth == "RMS")
+    {
+      val = rms;
+    }
+    else if (meth == "RMSrel")
+    {
+      val = rmsRel;
+    }
+    else
+    {
+      error("Unknown ReportColumnMatrixMisfit method - " + meth);
+      val = 0;
+    }
+
+    //sendOutput(Error_Out, boost::make_shared<Double>(val));
+  }
+}
+
+
+void ReportColumnMatrixMisfit::showGraph(const DenseColumnMatrix& v1, const DenseColumnMatrix& v2, double ccInv, double rmsRel) const
 {
   if (containsInfiniteComponent(v1) || containsInfiniteComponent(v2))
     return;
 
+  auto state = get_state();
+  state->setValue(Parameters::ccInv, ccInv);
+  state->setValue(Parameters::rmsRel, rmsRel);
+
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
   std::ostringstream str;
   str << get_id() << " append_graph " << ccInv << " " << rmsRel << " \"";
 
@@ -150,17 +162,18 @@ void ReportColumnMatrixMisfit::showGraph(const ColumnMatrix& v1, const ColumnMat
   str << "\" ; update idletasks";
 
   TCLInterface::execute(str.str());
+#endif
 }
 
-bool ReportColumnMatrixMisfit::containsInfiniteComponent(const ColumnMatrix& v)
+bool ReportColumnMatrixMisfit::containsInfiniteComponent(const DenseColumnMatrix& v) const
 {
-  if (std::find_if(v.begin(), v.end(), IsInfinite) != v.end())
+  for (int i = 0; i < v.size(); i++)
   {
-    remark("Input vector contains infinite values, graph not updated.");
-    return true;
+    if (IsInfinite(v[i]))
+    {
+      remark("Input vector contains infinite values, graph not updated.");
+      return true;
+    }
   }
   return false;
 }
-
-} // End namespace SCIRun
-

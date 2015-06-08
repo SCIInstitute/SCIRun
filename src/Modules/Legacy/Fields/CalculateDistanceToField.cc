@@ -69,9 +69,6 @@ CalculateDistanceToField::execute()
 
   bool value_connected = oport_connected(ValueField);
 
-//   if (inputs_changed_ || !oport_cached("DistanceField") ||
-//       (!oport_cached("ValueField") && value_connected) ||
-//       gui_truncate_.changed() || gui_truncate_distance_.changed())
   if (needToExecute())
   {
     update_state(Executing);

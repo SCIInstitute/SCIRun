@@ -31,6 +31,7 @@
 #define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_GETFIELDBOUNDARY_H 1
 
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
 #include <Core/Algorithms/Legacy/Fields/share.h>
@@ -40,7 +41,7 @@ namespace Core {
 namespace Algorithms {
 namespace Fields {
 
-class SCISHARE GetFieldBoundaryAlgo : public AlgorithmBase
+class SCISHARE GetFieldBoundaryAlgo : public AlgorithmBase, public Thread::Interruptible
 {
 public:
   GetFieldBoundaryAlgo();

@@ -54,12 +54,12 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
 
-AlgorithmParameterName CreateLatVol::XSize("XSize");
-AlgorithmParameterName CreateLatVol::YSize("YSize");
-AlgorithmParameterName CreateLatVol::ZSize("ZSize");
-AlgorithmParameterName CreateLatVol::PadPercent("PadPercent");
-AlgorithmParameterName CreateLatVol::DataAtLocation("DataAtLocation");
-AlgorithmParameterName CreateLatVol::ElementSizeNormalized("ElementSizeNormalized");
+const AlgorithmParameterName CreateLatVol::XSize("XSize");
+const AlgorithmParameterName CreateLatVol::YSize("YSize");
+const AlgorithmParameterName CreateLatVol::ZSize("ZSize");
+const AlgorithmParameterName CreateLatVol::PadPercent("PadPercent");
+const AlgorithmParameterName CreateLatVol::DataAtLocation("DataAtLocation");
+const AlgorithmParameterName CreateLatVol::ElementSizeNormalized("ElementSizeNormalized");
 
 CreateLatVol::CreateLatVol()
   : Module(ModuleLookupInfo("CreateLatVol", "NewField", "SCIRun"))
@@ -76,8 +76,8 @@ void CreateLatVol::setStateDefaults()
   state->setValue(YSize, 16);
   state->setValue(ZSize, 16);
   state->setValue(PadPercent, 0.0);
-  state->setValue(DataAtLocation, std::string("Nodes"));
-  state->setValue(ElementSizeNormalized, true);
+  state->setValue(DataAtLocation, static_cast<int>(NODES));
+  state->setValue(ElementSizeNormalized, static_cast<int>(ELEMENTS_NORMALIZED));
 }
 
 /// @todo: extract algorithm class!!!!!!!!!!!!!!!!!!!!
@@ -88,9 +88,6 @@ CreateLatVol::execute()
   auto ifieldhandleOption = getOptionalInput(InputField);
   auto sizeOption = getOptionalInput(LatVolSize);
 	
-  //if (inputs_changed_ || size_x_.changed() || size_y_.changed() ||
-  //    size_z_.changed() || padpercent_.changed() || data_at_.changed() ||
-  //    element_size_.changed() || !oport_cached("Output Sample Field") )
   if (needToExecute())
   {
     update_state(Executing);
@@ -132,7 +129,7 @@ CreateLatVol::execute()
     if (!ifieldhandleOption)
     {
       datatype = SCALAR;
-      if (get_state()->getValue(ElementSizeNormalized).toBool())
+      if (get_state()->getValue(ElementSizeNormalized).toInt() == ELEMENTS_NORMALIZED)
       {
         minb = Point(-1.0, -1.0, -1.0);
         maxb = Point(1.0, 1.0, 1.0);
@@ -168,13 +165,13 @@ CreateLatVol::execute()
     maxb += diag;
 
     int basis_order;
-    auto dataAtLocation = get_state()->getValue(DataAtLocation).toString();
-    if (dataAtLocation == "Nodes") basis_order = 1;
-    else if (dataAtLocation == "Cells") basis_order = 0;
-    else if (dataAtLocation == "None") basis_order = -1;
+    auto dataAtLocation = get_state()->getValue(DataAtLocation).toInt();
+    if (dataAtLocation == NODES) basis_order = 1;
+    else if (dataAtLocation == CELLS) basis_order = 0;
+    else if (dataAtLocation == NONE) basis_order = -1;
     else 
     {
-      error("Unsupported data_at location " + dataAtLocation + ".");
+      error("Unsupported data_at location " + boost::lexical_cast<std::string>(dataAtLocation) + ".");
       return;
     }
 

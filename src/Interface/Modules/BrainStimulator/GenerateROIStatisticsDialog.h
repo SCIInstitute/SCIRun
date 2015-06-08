@@ -31,23 +31,23 @@
 
 #include "Interface/Modules/BrainStimulator/ui_GenerateROIStatisticsDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE GenerateROIStatisticsDialog : public ModuleDialogGeneric, 
+
+class SCISHARE GenerateROIStatisticsDialog : public ModuleDialogGeneric,
   public Ui::GenerateROIStatisticsDialog
 {
 	Q_OBJECT
-	
+
 public:
-  GenerateROIStatisticsDialog(const std::string& name, 
+  GenerateROIStatisticsDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  private Q_SLOTS:
-  void pull();
+protected:
+  virtual void pullSpecial() override;
+private Q_SLOTS:
   void push();
 };
 

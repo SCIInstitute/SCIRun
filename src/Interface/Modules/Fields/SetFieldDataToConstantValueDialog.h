@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE SetFieldDataToConstantValueDialog : public ModuleDialogGeneric, 
+
+class SCISHARE SetFieldDataToConstantValueDialog : public ModuleDialogGeneric,
   public Ui::SetFieldDataToConstantValue
 {
 	Q_OBJECT
-	
+
 public:
-  SetFieldDataToConstantValueDialog(const std::string& name, 
+  SetFieldDataToConstantValueDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

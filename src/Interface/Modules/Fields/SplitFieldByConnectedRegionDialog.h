@@ -35,17 +35,16 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE SplitFieldByConnectedRegionDialog : public ModuleDialogGeneric, 
+
+class SCISHARE SplitFieldByConnectedRegionDialog : public ModuleDialogGeneric,
   public Ui::SplitFieldByConnectedRegionDialog
 {
 	Q_OBJECT
-	
+
 public:
-  SplitFieldByConnectedRegionDialog(const std::string& name, 
+  SplitFieldByConnectedRegionDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
 };
 
 }

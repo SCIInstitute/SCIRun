@@ -34,6 +34,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/atomic.hpp>
+#include <atomic>
 #include <vector>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -93,13 +94,13 @@ namespace Networks {
     virtual const ModuleStateHandle get_state() const;
     virtual void set_state(ModuleStateHandle state);
 
-    virtual ExecutionState executionState() const;
-    virtual void setExecutionState(ExecutionState state);
-    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber);
+    virtual ModuleExecutionState& executionState();
 
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber);
 
     virtual void enqueueExecuteAgain();
+
+    virtual const MetadataMap& metadata() const override;
 
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
@@ -135,6 +136,8 @@ namespace Networks {
     {
       return false; /// @todo: need to examine HasPorts base classes
     }
+
+    virtual bool isStoppable() const final;
 
     bool oport_connected(const PortId& id) const;
     bool inputsChanged() const;
@@ -274,18 +277,22 @@ namespace Networks {
     Core::Algorithms::AlgorithmHandle algo_;
 
     ModuleStateHandle state_;
+    MetadataMap metadata_;
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;
 
     ExecuteBeginsSignalType executeBegins_;
     ExecuteEndsSignalType executeEnds_;
     ErrorSignalType errorSignal_;
-    boost::atomic<ExecutionState> executionState_;
-    ExecutionStateChangedSignalType executionStateChanged_;
+    //boost::atomic<ExecutionState> executionState_;
+    //ExecutionStateChangedSignalType executionStateChanged_;
     std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
     ExecutionSelfRequestSignalType executionSelfRequested_;
 
     ModuleReexecutionStrategyHandle reexecute_;
+    std::atomic<bool> threadStopped_;
+
+    ModuleExecutionStateHandle executionState_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;

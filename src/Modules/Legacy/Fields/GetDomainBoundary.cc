@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-ModuleLookupInfo GetDomainBoundary::staticInfo_("GetDomainBoundary", "NewField", "SCIRun");
+const ModuleLookupInfo GetDomainBoundary::staticInfo_("GetDomainBoundary", "NewField", "SCIRun");
 
 GetDomainBoundary::GetDomainBoundary() 
   : Module(staticInfo_)

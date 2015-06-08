@@ -29,10 +29,16 @@
 #ifndef INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 #define INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 
+#ifndef Q_MOC_RUN
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Singleton.h>
 #include <set>
 #include <Interface/Application/NetworkEditor.h>  //TODO
+#endif
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QDir>
 
 class QTextEdit;
 class QTreeWidget;
@@ -115,6 +121,44 @@ namespace Gui {
   {
     WidgetDisablingService::Instance().removeWidget(w);
   }
+
+
+  class FileDownloader : public QObject
+  {
+    Q_OBJECT
+
+  public:
+    explicit FileDownloader(QUrl imageUrl, QObject *parent = 0);
+    QByteArray downloadedData() const { return downloadedData_; }
+
+  Q_SIGNALS:
+    void downloaded();
+
+  private Q_SLOTS:
+    void fileDownloaded(QNetworkReply* reply);
+    void downloadProgress(qint64 received, qint64 total);
+  private:
+    QNetworkAccessManager webCtrl_;
+    QNetworkReply* reply_;
+    QByteArray downloadedData_;
+  };
+
+  class ToolkitDownloader : public QObject
+  {
+    Q_OBJECT
+  public:
+    explicit ToolkitDownloader(QObject* infoObject, QWidget* parent = 0);
+  private Q_SLOTS:
+    void showMessageBox();
+    void saveToolkit();
+    
+  private:
+    void downloadIcon(); //TODO: cache somehow
+    FileDownloader* iconDownloader_;
+    FileDownloader* zipDownloader_;
+    QString iconUrl_, fileUrl_, filename_;
+    QDir toolkitDir_;
+  };
 
 }
 }

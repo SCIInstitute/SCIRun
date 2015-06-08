@@ -101,8 +101,32 @@ namespace Networks {
 
   typedef boost::shared_ptr<ModuleReexecutionStrategy> ModuleReexecutionStrategyHandle;
 
+  class SCISHARE ModuleExecutionState
+  {
+  public:
+    enum Value
+    {
+      NotExecuted,
+      Waiting,
+      Executing,
+      Completed,
+      Errored
+    };
+    virtual Value currentState() const = 0;
+
+    typedef boost::signals2::signal<void(int)> ExecutionStateChangedSignalType;
+
+    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) = 0;
+    virtual bool transitionTo(Value state) = 0;
+    virtual std::string currentColor() const = 0;
+    virtual ~ModuleExecutionState() {}
+  };
+
+  typedef boost::shared_ptr<ModuleExecutionState> ModuleExecutionStateHandle;
+
   /// @todo: interface is getting bloated, segregate it.
-  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface, public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
+  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface,
+    public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
   {
   public:
     virtual ~ModuleInterface();
@@ -112,22 +136,10 @@ namespace Networks {
 
     virtual bool do_execute() = 0;
 
-    enum ExecutionState
-    {
-      NotExecuted,
-      Waiting,
-      Executing,
-      Completed
-    };
-
-    typedef boost::signals2::signal<void(int)> ExecutionStateChangedSignalType;
-
-    virtual ExecutionState executionState() const = 0;
-    virtual void setExecutionState(ExecutionState state) = 0;
-    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) = 0;
-
     typedef boost::signals2::signal<void()> ExecutionSelfRequestSignalType;
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;
+
+    virtual ModuleExecutionState& executionState() = 0;
 
     /// @todo for deserialization
     virtual void set_id(const std::string& id) = 0;
@@ -145,11 +157,6 @@ namespace Networks {
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
     virtual void setUiToggleFunc(UiToggleFunc func) = 0;
 
-    /// @todo: name too clunky.
-    /// Called before the module is to be destroyed. More importantly, called
-    /// before the UI widget is to be destroyed.
-    virtual void preDestruction() {}
-
     /// @todo:
     // need to hook up output ports for cached state.
     virtual bool needToExecute() const = 0;
@@ -166,6 +173,10 @@ namespace Networks {
     virtual void addPortConnection(const boost::signals2::connection& con) = 0;
 
     virtual void enqueueExecuteAgain() = 0;
+
+    virtual const MetadataMap& metadata() const = 0;
+
+    virtual bool isStoppable() const = 0;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixMathVisitors.h>
 #include <stdexcept>
 
 #include <Core/Parser/ArrayMathEngine.h>
@@ -37,7 +38,7 @@
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Core::Algorithms::Math::detail;
+using namespace SCIRun::Core::Datatypes::MatrixMath;
 using namespace SCIRun::Core::Algorithms;
 
 EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
@@ -47,22 +48,9 @@ EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
 	addParameter(Variables::FunctionString, std::string("x+10"));
 }
 
-void NegateMatrix::visit(DenseMatrixGeneric<double>& dense)
-{
-  dense *= -1;
-}
-void NegateMatrix::visit(SparseRowMatrixGeneric<double>& sparse)
-{
-  sparse *= -1;
-}
-void NegateMatrix::visit(DenseColumnMatrixGeneric<double>& column)
-{
-  column *= -1;
-}
-
 namespace impl
 {
-  class TransposeMatrix : public MatrixVisitor
+  class TransposeMatrix : public Matrix::Visitor
   {
   public:
     virtual void visit(DenseMatrixGeneric<double>& dense) override
@@ -77,26 +65,6 @@ namespace impl
     {
       column.transposeInPlace();
     }
-  };
-
-  class ScalarMultiplyMatrix : public MatrixVisitor
-  {
-  public:
-    explicit ScalarMultiplyMatrix(double scalar) : scalar_(scalar) {}
-    virtual void visit(DenseMatrixGeneric<double>& dense) override
-    {
-      dense *= scalar_;
-    }
-    virtual void visit(SparseRowMatrixGeneric<double>& sparse) override
-    {
-      sparse *= scalar_;
-    }
-    virtual void visit(DenseColumnMatrixGeneric<double>& column) override
-    {
-      column *= scalar_;
-    }
-  private:
-    double scalar_;
   };
 }
 
@@ -131,12 +99,18 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
       THROW_ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
     double scalar = scalarOption.get();
     result.reset(matrix->clone());
-    impl::ScalarMultiplyMatrix mult(scalar);
+    ScalarMultiplyMatrix mult(scalar);
     result->accept(mult);
   }
   break;
   case FUNCTION:
   {
+    // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result. 
+    // There's no way to know ahead of time, so I'll just throw an error here and require the user to do this type of math elsewhere.
+    if (matrix_is::sparse(matrix) && (matrix->nrows() * matrix->ncols() > 10000))
+    {
+      THROW_ALGORITHM_INPUT_ERROR("ArrayMathEngine needs overhaul to be used with large sparse inputs. See https://github.com/SCIInstitute/SCIRun/issues/482");
+    }
     NewArrayMathEngine engine;
     result.reset(matrix->clone());
 
