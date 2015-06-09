@@ -284,8 +284,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   if (newInterface())
     networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
 
-  connect(scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
-	connect(addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
+  connect(prefsWindow_->scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
+  connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
@@ -1144,8 +1144,8 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
 {
   if (!dir.isEmpty())
   {
-    scirunDataLineEdit_->setText(dir);
-    scirunDataLineEdit_->setToolTip(dir);
+    prefsWindow_->scirunDataLineEdit_->setText(dir);
+    prefsWindow_->scirunDataLineEdit_->setToolTip(dir);
 
     RemembersFileDialogDirectory::setStartingDir(dir);
     Core::Preferences::Instance().setDataDirectory(dir.toStdString());
@@ -1156,8 +1156,8 @@ void SCIRunMainWindow::setDataPath(const QString& dirs)
 {
 	if (!dirs.isEmpty())
 	{
-		scirunDataPathTextEdit_->setPlainText(dirs);
-		scirunDataPathTextEdit_->setToolTip(dirs);
+    prefsWindow_->scirunDataPathTextEdit_->setPlainText(dirs);
+    prefsWindow_->scirunDataPathTextEdit_->setToolTip(dirs);
 
 		Core::Preferences::Instance().setDataPath(dirs.toStdString());
 	}
@@ -1167,12 +1167,12 @@ void SCIRunMainWindow::addToDataDirectory(const QString& dir)
 {
 	if (!dir.isEmpty())
 	{
-		auto text = scirunDataPathTextEdit_->toPlainText();
+    auto text = prefsWindow_->scirunDataPathTextEdit_->toPlainText();
 		if (!text.isEmpty())
 			text += ";\n";
 		text += dir;
-		scirunDataPathTextEdit_->setPlainText(text);
-		scirunDataPathTextEdit_->setToolTip(scirunDataPathTextEdit_->toPlainText());
+    prefsWindow_->scirunDataPathTextEdit_->setPlainText(text);
+    prefsWindow_->scirunDataPathTextEdit_->setToolTip(prefsWindow_->scirunDataPathTextEdit_->toPlainText());
 
 		RemembersFileDialogDirectory::setStartingDir(dir);
 		Core::Preferences::Instance().addToDataPath(dir.toStdString());
@@ -1379,18 +1379,18 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
 		//<< menuToolkits_;
   QList<QWidget*> nonfunctioningWidgets;
   nonfunctioningWidgets <<
-    scirunNetsLabel_ <<
-    scirunNetsLineEdit_ <<
-    scirunNetsPushButton_ <<
-    userDataLabel_ <<
-    userDataLineEdit_ <<
-    userDataPushButton_ <<
-    dataSetGroupBox_ <<
+    prefsWindow_->scirunNetsLabel_ <<
+    prefsWindow_->scirunNetsLineEdit_ <<
+    prefsWindow_->scirunNetsPushButton_ <<
+    prefsWindow_->userDataLabel_ <<
+    prefsWindow_->userDataLineEdit_ <<
+    prefsWindow_->userDataPushButton_ <<
+    prefsWindow_->dataSetGroupBox_ <<
     optionsGroupBox_ <<
     networkEditorMiniViewLabel_ <<
     miniviewTextLabel_ <<
-    scirunDataPathTextEdit_ <<
-    addToPathButton_;
+    prefsWindow_->scirunDataPathTextEdit_ <<
+    prefsWindow_->addToPathButton_;
 
   Q_FOREACH(QAction* a, nonfunctioningActions)
     a->setVisible(false);
