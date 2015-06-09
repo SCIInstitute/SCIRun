@@ -60,7 +60,7 @@ void TextEditAppender::remark(const std::string& msg) const
 void TextEditAppender::status(const std::string& msg) const
 {
   log(QString::fromStdString(msg));
-  Log::get() << DEBUG_LOG << msg << std::endl;
+  Log::get() << INFO << msg << std::endl;
 }
 
 QString TreeViewModuleGetter::text() const
