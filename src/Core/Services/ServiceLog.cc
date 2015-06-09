@@ -33,9 +33,11 @@
 #include <Core/Services/ServiceLog.h>
 #include <Core/Thread/Mutex.h>
 
+using namespace SCIRun::Core::Thread;
+
 namespace SCIRun {
 
-ServiceLog::ServiceLog(const std::string& filename) : haslog_(false)
+ServiceLog::ServiceLog(const std::string& filename) : haslog_(false),
   lock_("servicelog lock")
 {
   if (!filename.empty())

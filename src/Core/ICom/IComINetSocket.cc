@@ -710,10 +710,10 @@ bool    IComINetSocket::accept(IComSocket& newsock, IComSocketError &err)
 	// As mentioned above, newsock is only a handle to a IComVitrualSocket
 	// If everything is OK, this vitrual socket has been overloaded with the
 	// real socket. In the next line we try to get to this real socket
-	IComINetSocket* newsocket = dynamic_cast<IComINetSocket*>(newsock.getsocketptr());
+	auto newsocket = boost::dynamic_pointer_cast<IComINetSocket>(newsock.getsocketptr());
 
 	// In case that was not a success...
-	if (newsocket == 0)
+	if (!newsocket)
 	{
 		newsock.close();
 		unlock();
@@ -752,7 +752,7 @@ bool	IComINetSocket::poll(IComPacketHandle &packet, IComSocketError &err)
 	char buffer[1];
 	int len = 0;
 
-	if (packet == 0) packet = new IComPacket;
+	if (!packet) packet.reset(new IComPacket);
 
 #ifdef _WIN32
         int flags = MSG_PEEK;
@@ -776,7 +776,7 @@ bool	IComINetSocket::poll(IComPacketHandle &packet, IComSocketError &err)
 	// No package is waiting so the polling was not success, though there is no error
 }
 
-bool	IComINetSocket::send(IComPacketHandle &packet, IComSocketError &err)
+bool IComINetSocket::send(IComPacketHandle &packet, IComSocketError &err)
 {
 	int header[8];
 	int	len;
@@ -807,7 +807,7 @@ bool	IComINetSocket::send(IComPacketHandle &packet, IComSocketError &err)
 		if (len < 0)
 		{
 			if ((errno == EINTR)||(errno == EAGAIN)) continue;
-            if ((errno == EPIPE)) isconnected_ = false;
+            if (errno == EPIPE) isconnected_ = false;
             break;
 		}
 		bytessend += len;
@@ -838,7 +838,7 @@ bool	IComINetSocket::send(IComPacketHandle &packet, IComSocketError &err)
 		if (len < 0)
 		{
 			if ((errno == EINTR)||(errno == EAGAIN)) continue;
-            if ((errno == EPIPE)) isconnected_ = false;
+            if (errno == EPIPE) isconnected_ = false;
             break;
 		}
 		bytessend += len;
@@ -878,11 +878,11 @@ bool	IComINetSocket::recv(IComPacketHandle &packet, IComSocketError &err)
 	int  bytestoread = 0;
 	bool byteswap = false;
 
-	if (packet == 0) packet = new IComPacket();
+	if (!packet) packet.reset(new IComPacket());
 
 	buffer[8] = 0;
 
-    len = 0;
+  len = 0;
 	bytesread   = 0;
 	bytestoread = 8;
 	while (bytesread < bytestoread)

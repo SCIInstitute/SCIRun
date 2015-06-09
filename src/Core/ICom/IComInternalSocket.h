@@ -38,10 +38,10 @@
 #ifndef JGS_SCI_CORE_ICOM_INTERNALSOCKET_H
 #define JGS_SCI_CORE_ICOM_INTERNALSOCKET_H 1
 
-#include <Core/ICom/IComBase.h>
-#include <Core/ICom/IComPacket.h>
-#include <Core/ICom/IComAddress.h>
-#include <Core/ICom/IComSocket.h>
+//#include <Core/ICom/IComBase.h>
+//#include <Core/ICom/IComPacket.h>
+//#include <Core/ICom/IComAddress.h>
+#include <Core/ICom/IComVirtualSocket.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
 #ifndef _WIN32

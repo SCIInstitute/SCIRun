@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
- 
+
 /*
- *  IComInternalSocket.cc 
+ *  IComInternalSocket.cc
  *
  *  Written by:
  *  Jeroen Stinstra
@@ -36,11 +36,14 @@
  */
 
 #include <Core/ICom/IComInternalSocket.h>
+#include <Core/Thread/Mutex.h>
+
+using namespace SCIRun::Core::Thread;
 
 namespace SCIRun {
 
 Mutex internalsocketlock_("internal_socket_list");
-std::map<std::string,IComInternalSocket *> internalsocketlist_;
+std::map<std::string,IComInternalSocket*> internalsocketlist_;
 
 IComInternalSocket::IComInternalSocket() :
 	listen_(false),
@@ -58,7 +61,7 @@ IComInternalSocket::IComInternalSocket() :
 IComInternalSocket::~IComInternalSocket()
 {
 	IComSocketError err;
-	if (registered_ || listen_ || connected_) 
+	if (registered_ || listen_ || connected_)
 	{
 		close(err);
 	}
@@ -70,25 +73,25 @@ bool	IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 
 	internalsocketlock_.lock();		// Full access to the global list maintaining all internal sockets
 	dolock();							// Full access to this socket
-	
+
 	try
 	{
 		if (!address.isinternal()) 	throw invalid_address();
-	
+
 		std::string name = address.getinternalname();
-		if (internalsocketlist_[name] != 0)  throw invalid_address();	
-	
+		if (internalsocketlist_[name] != 0)  throw invalid_address();
+
 		internalsocketlist_[name] = this;
 		registered_ = true;
-		
+
 		// Reinitialize the socket
 		localaddress_ = address;
 		remoteaddress_.clear();
 		remotesocket_ = 0;
-		
+
 		connectionlist_.clear();
 		packetlist_.clear();
-				
+
 		unlock();
 		internalsocketlock_.unlock();
 	}
@@ -101,7 +104,7 @@ bool	IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 		internalsocketlock_.unlock();
 		return(false);
 	}
-	
+
 	err.errnr = 0;
 	err.error = "";
 	return(true);
@@ -112,17 +115,17 @@ bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSo
 {
 	IComInternalSocket* isock = 0;
 
-	internalsocketlock_.lock();	
+	internalsocketlock_.lock();
 	dolock();
-	
+
 	try
 	{
 		if (!address.isinternal()) throw invalid_address();
 
 		isock = internalsocketlist_[address.getinternalname()];
-		
+
 		if (isock == 0) throw invalid_address();
-		if (isock == this) 
+		if (isock == this)
 		{
 			std::cerr << "Socket tried to connect to itself\n";
 			throw invalid_address();
@@ -138,20 +141,20 @@ bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSo
 		newsocket.create("internal");
 
 		IComInternalSocket* rsock = dynamic_cast<IComInternalSocket *>(newsocket.getsocketptr());
-		
+
 		if (rsock == 0) throw could_not_open_socket();
-		
+
 		// Exchange the address information
 		rsock->remoteaddress_ = localaddress_;
 		rsock->remotesocket_ = this;
 		rsock->listen_ = false;
 		rsock->connected_ = true;
-	
+
 		remoteaddress_ = address;
 		remotesocket_ = rsock;
 		listen_ = false;
 		connected_ = true;
-		
+
 		isock->connectionlist_.push_back(newsocket);
 
 		// Wake up the internal server
@@ -202,20 +205,20 @@ bool    IComInternalSocket::accept(IComSocket& newsock, IComSocketError &err)
 {
 
 	dolock();
-	if (listen_ == false) 
-	{ 
-		unlock(); 
+	if (listen_ == false)
+	{
+		unlock();
 		err.errnr = EOPNOTSUPP;
 		err.error = "This socket is not in listening mode";
-		return(false); 
+		return(false);
 	}
-	
+
     if (connectionlist_.size() == 0)
     {
         // wait for an incoming packet
-        waitconnection_.wait(lock);   
+        waitconnection_.wait(lock);
     }
-    
+
 	if (connectionlist_.size() > 0)
 	{
 		newsock = connectionlist_.front();
@@ -224,19 +227,19 @@ bool    IComInternalSocket::accept(IComSocket& newsock, IComSocketError &err)
 		err.error = "";
 		unlock();
 		IComInternalSocket* sptr = dynamic_cast<IComInternalSocket*>(newsock.getsocketptr());
-		
-		if(!(sptr->remotesocket_)) 
+
+		if(!(sptr->remotesocket_))
 		{
 			err.errnr = ENOTCONN;
 			err.error = "This socket is not connected";
 			return(false);
 		}
-		
+
 		sptr->remotesocket_->dolock();
 		sptr->remotesocket_->connected_ = true;
 		sptr->remotesocket_->waitconnection_.conditionBroadcast();
 		sptr->remotesocket_->unlock();
-		
+
 		return(true);
 	}
 	else
@@ -253,7 +256,7 @@ bool	IComInternalSocket::close(IComSocketError &err)
 {
 	internalsocketlock_.lock();
 	dolock();
-	
+
 	if (connected_ && remotesocket_)
 	{
 		remotesocket_->dolock();
@@ -263,8 +266,8 @@ bool	IComInternalSocket::close(IComSocketError &err)
 		remotesocket_->waitconnection_.conditionBroadcast();
 		remotesocket_->unlock();
 	}
-	
-	
+
+
 	if (registered_ == true)
 	{
 		if (localaddress_.isinternal())
@@ -274,13 +277,13 @@ bool	IComInternalSocket::close(IComSocketError &err)
 		}
 	}
 
-	unlock();	
+	unlock();
 	internalsocketlock_.unlock();
 
 	// It is fully unconnected now, so we can release the locks
 	// We need to do this as the connectionlist_.clear(), could invoke
 	// this instruction again.
-	
+
 	// There should be no threads waiting for this socket
 	// in case there are just release them.
 
@@ -290,12 +293,12 @@ bool	IComInternalSocket::close(IComSocketError &err)
 
 	waitpacket_.conditionBroadcast();
 	waitconnection_.conditionBroadcast();
-	
+
 	remotesocket_ = 0;
 	packetlist_.clear();
 	connectionlist_.clear();
 
-	
+
 	err.errnr = 0;
 	err.error = "";
 	return(true);
@@ -310,18 +313,18 @@ bool IComInternalSocket::getlocaladdress(IComAddress &address, IComSocketError &
 	err.error = "";
 	return(true);
 }
-	
+
 bool IComInternalSocket::getremoteaddress(IComAddress &address, IComSocketError &err)
 {
 	dolock();
 	address = remoteaddress_;
 	unlock();
-	
+
 	err.errnr = 0;
 	err.error = "";
 	return(true);
 }
-	
+
 bool IComInternalSocket::settimeout(int secs, int microsecs, IComSocketError &err)
 {
 	dolock();
@@ -332,25 +335,25 @@ bool IComInternalSocket::settimeout(int secs, int microsecs, IComSocketError &er
 	err.error = "";
 	return(true);
 }
- 
+
 
 bool	IComInternalSocket::poll(IComPacketHandle &packet, IComSocketError &err)
 {
 	dolock();
-	if (!connected_) 
-	{ 
-		unlock(); 
+	if (!connected_)
+	{
+		unlock();
 		err.errnr = ENOTCONN;
 		err.error = "Socket is not connected";
-		return(false); 
+		return(false);
 	}
-	
+
 	if (packetlist_.size() > 0)
 	{
 		packet = packetlist_.front();
 		packetlist_.pop_front();
 		unlock();
-		
+
 		err.errnr = 0;
 		err.error = "";
 		return(true);
@@ -368,14 +371,14 @@ bool	IComInternalSocket::poll(IComPacketHandle &packet, IComSocketError &err)
 bool	IComInternalSocket::send(IComPacketHandle &packet, IComSocketError &err)
 {
 	dolock();
-	if (!connected_) 
-	{ 
-		unlock(); 
+	if (!connected_)
+	{
+		unlock();
 		err.errnr = ENOTCONN;
 		err.error = "Socket is not connected";
-		return(false); 
-	}	
-	
+		return(false);
+	}
+
 	if (packet.get_rep() == 0)
 	{
 		unlock();
@@ -383,22 +386,22 @@ bool	IComInternalSocket::send(IComPacketHandle &packet, IComSocketError &err)
 		err.error = "empty packet handle was supplied";
 		return(false);
 	}
-	
+
 	IComInternalSocket* rsock = remotesocket_;
-	if (!rsock) 
-	{ 
-		unlock(); 
+	if (!rsock)
+	{
+		unlock();
 		err.errnr = ENOTCONN;
 		err.error = "Socket is not connected";
-		return(false); 
-	}	
+		return(false);
+	}
 	unlock();
-	
+
 	rsock->dolock();
 	rsock->packetlist_.push_back(packet);
 	rsock->waitpacket_.conditionSignal();
     rsock->unlock();
-	
+
 
 	// This one is here to make the code more robust
 	// If some decides to reuse a packet, there is one
@@ -414,12 +417,12 @@ bool	IComInternalSocket::send(IComPacketHandle &packet, IComSocketError &err)
 bool	IComInternalSocket::recv(IComPacketHandle &packet, IComSocketError &err)
 {
 	dolock();
-	if (!connected_) 
-	{ 
-		unlock(); 
+	if (!connected_)
+	{
+		unlock();
 		err.errnr = ENOTCONN;
 		err.error = "Socket is not connected";
-		return(false); 
+		return(false);
 	}
 	if (packetlist_.size() > 0)
 	{
@@ -451,12 +454,12 @@ bool	IComInternalSocket::recv(IComPacketHandle &packet, IComSocketError &err)
 		}
 	}
 }
- 
+
 bool	IComInternalSocket::isconnected(IComSocketError &err)
 {
 	err.errnr = 0;
 	err.error = "";
 	return(connected_);
-} 
- 
+}
+
 }
