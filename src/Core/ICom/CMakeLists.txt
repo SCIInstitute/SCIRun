@@ -54,11 +54,20 @@ SET(Core_ICom_HEADERS
 
 SCIRUN_ADD_LIBRARY(Core_ICom ${Core_ICom_SRCS} ${Core_ICom_HEADERS})
 
+########################################################################
+# Socket library
+# DV Not sure if socket library needs to be defined for cygwin
+
+IF(WIN32 AND NOT CYGWIN)
+  SET(SOCKET_LIBRARY ws2_32 CACHE INTERNAL "Socket library ws2_32")
+  SET(THREAD_LIBRARY winmm CACHE INTERNAL "Time functionality library winmm")
+ENDIF(WIN32 AND NOT CYGWIN)
+
 TARGET_LINK_LIBRARIES(Core_ICom
   Core_Thread
   #Core_Util
   #Core_Exceptions
-  #${SOCKET_LIBRARY}
+  ${SOCKET_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

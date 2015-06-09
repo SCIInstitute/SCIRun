@@ -892,9 +892,8 @@ int IComAddress::ga_getaddrinfo(const char *hostname, const char *servname,
 
         if (isdigit(sptr->host[0]))
         {
-			struct in_addr	inaddr;
-
 #ifndef _WIN32
+          struct in_addr	inaddr;
                         // win32 doesn't have this - fix later
 			if (::inet_pton(AF_INET, sptr->host, &inaddr) == 1)
             {
@@ -914,9 +913,8 @@ int IComAddress::ga_getaddrinfo(const char *hostname, const char *servname,
 
 		if ((isxdigit(sptr->host[0]) || sptr->host[0] == ':') && (strchr(sptr->host, ':') != 0))
         {
-
-			struct in6_addr	in6addr;
 #ifndef _WIN32
+          struct in6_addr	in6addr;
 			if (::inet_pton(AF_INET6, sptr->host, &in6addr) == 1) {
 				if (hints.ai_family != AF_UNSPEC && hints.ai_family != AF_INET6)
 #ifdef _WIN32
