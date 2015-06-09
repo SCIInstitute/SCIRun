@@ -57,7 +57,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_MatlabInterface
   Dataflow_Network
   #Core_XMLUtil
   #Core_Matlab
-  #Core_Services
+  Core_Services
   Core_ICom
   Core_SystemCall
   ${SCI_TEEM_LIBRARY}
