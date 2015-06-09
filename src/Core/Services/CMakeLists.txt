@@ -31,7 +31,7 @@ SET(Core_Services_SRCS
   Service.cc
   #ServiceDB.cc
   #ServiceFrame.cc
-  ServiceLog.cc 
+  ServiceLog.cc
   #ServiceManager.cc
   #ServiceNode.cc
   #ServiceClient.cc
@@ -61,7 +61,7 @@ TARGET_LINK_LIBRARIES(Core_Services
   #Core_Thread
   #Core_Util
   #Core_Exceptions
-  #Core_ICom
+  Core_ICom
   Core_SystemCall
   #Core_XMLUtil
   #${SCI_BOOST_LIBRARY}

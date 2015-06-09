@@ -120,7 +120,6 @@ namespace MatlabImpl
   {
   public:
     InterfaceWithMatlabEngineThreadInfo();
-    ~InterfaceWithMatlabEngineThreadInfo();
 
     void dolock();
     void unlock();
@@ -305,7 +304,6 @@ namespace MatlabImpl
         }}}}
 
   MatlabImpl::InterfaceWithMatlabEngineThreadInfo::InterfaceWithMatlabEngineThreadInfo() :
-    UsedWithLockingHandle<Mutex>("InterfaceWithMatlabEngineInfo lock"),
     wait_code_done_("InterfaceWithMatlabEngineInfo condition variable code"),
     code_done_(false),
     code_success_(false),
@@ -378,11 +376,13 @@ namespace MatlabImpl
         std::string str;
         if (packet->getparam1() < 0) str = "STDOUT END";
         else str = packet->getstring();
+        #if 0
         std::string cmd = info_handle_->output_cmd_ + " \"" + InterfaceWithMatlab::totclstring(str) + "\"";
         info_handle_->unlock();
         TCLInterface::lock();
         TCLInterface::execute(cmd);
         TCLInterface::unlock();
+        #endif
       }
       break;
       case TAG_STDE:
@@ -390,11 +390,13 @@ namespace MatlabImpl
         std::string str;
         if (packet->getparam1() < 0) str = "STDERR END";
         else str = packet->getstring();
+        #if 0
         std::string cmd = info_handle_->output_cmd_ + " \"STDERR: " + InterfaceWithMatlab::totclstring(str) + "\"";
         info_handle_->unlock();
         TCLInterface::lock();
         TCLInterface::execute(cmd);
         TCLInterface::unlock();
+        #endif
       }
       break;
       case TAG_END_:

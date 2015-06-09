@@ -614,7 +614,7 @@ bool	IComINetSocket::listen(IComSocketError &err)
 	return(false);
 }
 
-bool    IComINetSocket::accept(IComSocket& newsock, IComSocketError &err)
+bool    IComINetSocket::accept(IComSocketHandle& newsock, IComSocketError &err)
 {
 	if (!hassocket_)
 	{
@@ -667,7 +667,7 @@ bool    IComINetSocket::accept(IComSocket& newsock, IComSocketError &err)
 	{
 		sockaddr_in6 sa;
 		socklen_t salen = sizeof(sockaddr_in6);
-		while (1)
+		while (true)
 		{
 			newfd = ::accept(socketfd_,reinterpret_cast<sockaddr *>(&sa),&salen);
 			if (newfd < 0)
@@ -697,9 +697,10 @@ bool    IComINetSocket::accept(IComSocket& newsock, IComSocketError &err)
 	// another handle, hence closing it will only detach this socket
 	// from the real socket structure.
 
-	newsock.close();
+  newsock.reset(new IComSocket);
+	newsock->close();
 
-	if(!(newsock.create("scirun")))
+	if(!(newsock->create("scirun")))
 	{
 		err.errnr = errno;
 		err.error = getsocketerror(errno);
@@ -710,12 +711,12 @@ bool    IComINetSocket::accept(IComSocket& newsock, IComSocketError &err)
 	// As mentioned above, newsock is only a handle to a IComVitrualSocket
 	// If everything is OK, this vitrual socket has been overloaded with the
 	// real socket. In the next line we try to get to this real socket
-	auto newsocket = boost::dynamic_pointer_cast<IComINetSocket>(newsock.getsocketptr());
+	auto newsocket = boost::dynamic_pointer_cast<IComINetSocket>(newsock->getsocketptr());
 
 	// In case that was not a success...
 	if (!newsocket)
 	{
-		newsock.close();
+		newsock->close();
 		unlock();
 		err.errnr = EBADF;
 		err.error = "Internal pointer to socket is not valid";

@@ -36,6 +36,7 @@
  */
 
 #include <Core/ICom/IComInternalSocket.h>
+#include <Core/ICom/IComAddress.h>
 #include <Core/Thread/Mutex.h>
 
 using namespace SCIRun::Core::Thread;
@@ -67,10 +68,8 @@ IComInternalSocket::~IComInternalSocket()
 	}
 }
 
-
-bool	IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
+bool IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 {
-
 	internalsocketlock_.lock();		// Full access to the global list maintaining all internal sockets
 	dolock();							// Full access to this socket
 
@@ -137,12 +136,12 @@ bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSo
 		if (isock->listen_ == false) throw invalid_address();	// Socket is not listening
 
 		// Create a new socket;
-		IComSocket newsocket;
-		newsocket.create("internal");
+		IComSocketHandle newsocket(new IComSocket);
+		newsocket->create("internal");
 
-		IComInternalSocket* rsock = dynamic_cast<IComInternalSocket *>(newsocket.getsocketptr());
+		auto rsock = boost::dynamic_pointer_cast<IComInternalSocket>(newsocket->getsocketptr());
 
-		if (rsock == 0) throw could_not_open_socket();
+		if (!rsock) throw could_not_open_socket();
 
 		// Exchange the address information
 		rsock->remoteaddress_ = localaddress_;
@@ -151,7 +150,7 @@ bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSo
 		rsock->connected_ = true;
 
 		remoteaddress_ = address;
-		remotesocket_ = rsock;
+		remotesocket_ = rsock.get();
 		listen_ = false;
 		connected_ = true;
 
@@ -159,8 +158,9 @@ bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSo
 
 		// Wake up the internal server
 		isock->unlock();
-		isock->waitconnection_.conditionSignal();
+		isock->waitconnection_.conditionBroadcast();
 
+    UniqueLock lock(lock_.get());
 		waitconnection_.wait(lock);	// This should unlock the lock on the socket
 		unlock();
 		err.errnr = 0;
@@ -181,10 +181,10 @@ bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSo
 }
 
 
-bool	IComInternalSocket::listen(IComSocketError &err)
+bool IComInternalSocket::listen(IComSocketError &err)
 {
 	dolock();
-	if (connected_ == true)
+	if (connected_)
 	{	// We cannot listen on a connected socket
 		unlock();
 		err.errnr = EISCONN;
@@ -192,6 +192,7 @@ bool	IComInternalSocket::listen(IComSocketError &err)
 		return(false);
 	}
 	listen_ = true;
+  UniqueLock lock(lock_.get());
 	waitconnection_.wait(lock);
 	unlock();
 	err.errnr = 0;
@@ -201,11 +202,10 @@ bool	IComInternalSocket::listen(IComSocketError &err)
 }
 
 
-bool    IComInternalSocket::accept(IComSocket& newsock, IComSocketError &err)
+bool IComInternalSocket::accept(IComSocketHandle& newsock, IComSocketError &err)
 {
-
 	dolock();
-	if (listen_ == false)
+	if (!listen_)
 	{
 		unlock();
 		err.errnr = EOPNOTSUPP;
@@ -216,6 +216,7 @@ bool    IComInternalSocket::accept(IComSocket& newsock, IComSocketError &err)
     if (connectionlist_.size() == 0)
     {
         // wait for an incoming packet
+        UniqueLock lock(lock_.get());
         waitconnection_.wait(lock);
     }
 
@@ -226,7 +227,7 @@ bool    IComInternalSocket::accept(IComSocket& newsock, IComSocketError &err)
 		err.errnr = 0;
 		err.error = "";
 		unlock();
-		IComInternalSocket* sptr = dynamic_cast<IComInternalSocket*>(newsock.getsocketptr());
+		auto sptr = boost::dynamic_pointer_cast<IComInternalSocket>(newsock->getsocketptr());
 
 		if(!(sptr->remotesocket_))
 		{
@@ -268,7 +269,7 @@ bool	IComInternalSocket::close(IComSocketError &err)
 	}
 
 
-	if (registered_ == true)
+	if (registered_)
 	{
 		if (localaddress_.isinternal())
 		{
@@ -379,7 +380,7 @@ bool	IComInternalSocket::send(IComPacketHandle &packet, IComSocketError &err)
 		return(false);
 	}
 
-	if (packet.get_rep() == 0)
+	if (!packet)
 	{
 		unlock();
 		err.errnr = ENOTCONN;		// Need to change this one
@@ -399,22 +400,22 @@ bool	IComInternalSocket::send(IComPacketHandle &packet, IComSocketError &err)
 
 	rsock->dolock();
 	rsock->packetlist_.push_back(packet);
-	rsock->waitpacket_.conditionSignal();
-    rsock->unlock();
+	rsock->waitpacket_.conditionBroadcast();
+  rsock->unlock();
 
 
 	// This one is here to make the code more robust
 	// If some decides to reuse a packet, there is one
 	// that is not coupled to the one just send
 	// otherwise efforts may interfere
-	packet = new IComPacket();
+	packet.reset(new IComPacket());
 
 	err.errnr = 0;
 	err.error = "";
 	return(true);
 }
 
-bool	IComInternalSocket::recv(IComPacketHandle &packet, IComSocketError &err)
+bool IComInternalSocket::recv(IComPacketHandle &packet, IComSocketError &err)
 {
 	dolock();
 	if (!connected_)
@@ -435,6 +436,7 @@ bool	IComInternalSocket::recv(IComPacketHandle &packet, IComSocketError &err)
 	}
 	else
 	{
+    UniqueLock lock(lock_.get());
 		waitpacket_.wait(lock);
 		if (packetlist_.size() > 0)
 		{

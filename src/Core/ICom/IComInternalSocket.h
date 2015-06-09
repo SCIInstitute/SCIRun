@@ -38,9 +38,7 @@
 #ifndef JGS_SCI_CORE_ICOM_INTERNALSOCKET_H
 #define JGS_SCI_CORE_ICOM_INTERNALSOCKET_H 1
 
-//#include <Core/ICom/IComBase.h>
-//#include <Core/ICom/IComPacket.h>
-//#include <Core/ICom/IComAddress.h>
+#include <Core/ICom/IComAddress.h>
 #include <Core/ICom/IComVirtualSocket.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
@@ -55,7 +53,7 @@
 
 #include <string>
 #include <map>
-#include <list>
+#include <deque>
 
 
 
@@ -72,24 +70,24 @@ namespace SCIRun {
 
   public:
 
-    bool    bind(IComAddress& address, IComSocketError &err);
-    bool    connect(IComAddress& address, conntype conn, IComSocketError &err);
+    virtual bool    bind(IComAddress& address, IComSocketError &err) override;
+    virtual bool    connect(IComAddress& address, conntype conn, IComSocketError &err) override;
 
-    bool    close(IComSocketError &err);                    // close the socket
+    virtual bool    close(IComSocketError &err) override;                    // close the socket
 
-    bool    getlocaladdress(IComAddress& address, IComSocketError &err);    // Get local address
-    bool    getremoteaddress(IComAddress& address, IComSocketError &err);   // Get remote address
+    virtual bool    getlocaladdress(IComAddress& address, IComSocketError &err) override;    // Get local address
+    virtual bool    getremoteaddress(IComAddress& address, IComSocketError &err) override;   // Get remote address
 
-    bool    settimeout(int secs, int microsecs, IComSocketError &err);      // set the time out of the socket
+    virtual bool    settimeout(int secs, int microsecs, IComSocketError &err) override;      // set the time out of the socket
 
-    bool    listen(IComSocketError &err);   // Listen for a connection
-    bool    accept(IComSocket& newsock, IComSocketError &err);      // Accept the connection and get a new socket object
+    virtual bool    listen(IComSocketError &err) override;   // Listen for a connection
+    virtual bool    accept(IComSocketHandle& newsock, IComSocketError &err) override;      // Accept the connection and get a new socket object
 
-    bool    poll(IComPacketHandle &packet, IComSocketError &err);                                           // Poll whether there is a packet waiting (non blocking)
-    bool    send(IComPacketHandle &packet, IComSocketError &err);                                           // Send a packet (blocking)
-    bool    recv(IComPacketHandle &packet, IComSocketError &err);                                           // Recv a packet (blocking)
+    virtual bool    poll(IComPacketHandle &packet, IComSocketError &err) override;                                           // Poll whether there is a packet waiting (non blocking)
+    virtual bool    send(IComPacketHandle &packet, IComSocketError &err) override;                                           // Send a packet (blocking)
+    virtual bool    recv(IComPacketHandle &packet, IComSocketError &err) override;                                           // Recv a packet (blocking)
 
-    bool    isconnected(IComSocketError &err);
+    virtual bool    isconnected(IComSocketError &err) override;
 
   private:
 
@@ -97,12 +95,12 @@ namespace SCIRun {
     bool                            connected_;
     bool                            registered_;
 
-    IComAddressHandle                     localaddress_;
-    IComAddressHandle                     remoteaddress_;
-    IComInternalSocket*             remotesocket_;
+    IComAddress                     localaddress_;
+    IComAddress                     remoteaddress_;
+    IComInternalSocket*            remotesocket_;
 
-    std::list<IComPacketHandle>     packetlist_;
-    std::list<IComSocketHandle>           connectionlist_;
+    std::deque<IComPacketHandle>     packetlist_;
+    std::deque<IComSocketHandle>           connectionlist_;
 
     Core::Thread::ConditionVariable               waitconnection_;
     Core::Thread::ConditionVariable               waitpacket_;

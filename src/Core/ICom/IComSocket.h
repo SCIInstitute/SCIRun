@@ -84,11 +84,8 @@ struct SCISHARE IComSocketError
 class SCISHARE IComSocket : public IComBase, boost::noncopyable {
 
 public:
-  // the public functions
-
-  // FUNCTIONS FOR CREATING/COPYING AND DELETING OBJECT
-  IComSocket(std::string protocol = "internal");	 // constructor
-  virtual ~IComSocket();			         // destructor
+  IComSocket(std::string protocol = "internal");
+  ~IComSocket();
 
   // THIS FUNCTION MUST BE CALLED TO CREATE SOCKET
   bool	create();
@@ -122,7 +119,7 @@ public:
   // Accept the connection and get a new socket object
   // The communication is over this socket
   // Verification is done here as well
-  bool    accept(IComSocket& sock);
+  bool    accept(IComSocketHandle& sock);
 
 
   // The three main functions for reading and writing data.

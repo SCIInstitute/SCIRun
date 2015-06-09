@@ -90,7 +90,7 @@ public:
 	// Once listen returns, use accept to create the other end of a connected socket pair
 	// sock needs to be an empty object. All other information stored will be cleared
 	// The return value will indicate whether a connection could be made
-	virtual bool    accept(IComSocket& newsock, IComSocketError &err);	// Accept the connection and get a new socket object
+	virtual bool    accept(IComSocketHandle& newsock, IComSocketError &err);	// Accept the connection and get a new socket object
 													// The communication is over this socket
 													// Verification is done here as well
 
@@ -106,7 +106,7 @@ public:
 
 	virtual bool	isconnected(IComSocketError &err);				// Test for connectivity
 
-private:
+protected:
   // Signal that a feature is not implemented yet
   bool		socket_not_implemented(IComSocketError &err);
   Core::Thread::Mutex lock_;

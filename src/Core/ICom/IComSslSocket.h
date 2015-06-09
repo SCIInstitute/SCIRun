@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,15 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
- 
+
 /*
- *  IComVirtualSocket.h 
+ *  IComVirtualSocket.h
  *
  *  Written by:
  *  Jeroen Stinstra
  *
  */
- 
+
 #ifndef JGS_SCI_CORE_ICOM_SSLSOCKET_H
 #define JGS_SCI_CORE_ICOM_SSLSOCKET_H 1
 
@@ -59,31 +59,31 @@ class IComSslSocket : public IComVirtualSocket {
   public:
 	IComSslSocket();
 	virtual ~IComSslSocket();
-	
+
   public:
-  
+
 	bool	bind(IComAddress& address, IComSocketError &err);
-	bool	connect(IComAddress& address, conntype conn, IComSocketError &err);	
-	
-	bool	close(IComSocketError &err);				// close the socket 
+	bool	connect(IComAddress& address, conntype conn, IComSocketError &err);
+
+	bool	close(IComSocketError &err);				// close the socket
 
 	bool	getlocaladdress(IComAddress &address, IComSocketError &err);	// Get local address
 	bool	getremoteaddress(IComAddress &address, IComSocketError &err);	// Get remote address
-	
-	bool	settimeout(int secs, int microsecs,IComSocketError &err);		// set the time out of the socket 
+
+	bool	settimeout(int secs, int microsecs,IComSocketError &err);		// set the time out of the socket
 
 	bool	listen(IComSocketError &err);						// Listen for a connection
-	bool    accept(IComSocket& newsock, IComSocketError &err);	// Accept the connection and get a new socket object
-	
+	bool    accept(IComSocketHandle& newsock, IComSocketError &err);	// Accept the connection and get a new socket object
+
 	bool	poll(IComPacketHandle &packet, IComSocketError &err);		// Poll whether there is a packet waiting (non blocking)
 	bool	send(IComPacketHandle &packet, IComSocketError &err);		// Send a packet (blocking)
-	bool	recv(IComPacketHandle &packet, IComSocketError &err);		// Recv a packet (blocking)	
+	bool	recv(IComPacketHandle &packet, IComSocketError &err);		// Recv a packet (blocking)
 
 	bool	isconnected(IComSocketError &err);
-	
+
   private:
     bool	socket_not_implemented(IComSocketError &err);
-  
+
 	// THIS FUNCTION NEEDS TO BE COMPLETED
 };
 

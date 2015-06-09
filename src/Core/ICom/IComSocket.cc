@@ -223,7 +223,7 @@ inline bool IComSocket::listen()
   }
 }
 
-inline bool IComSocket::accept(IComSocket& newsock)
+bool IComSocket::accept(IComSocketHandle& newsock)
 {
   if (socket_) {
     return(socket_->accept(newsock,error_));

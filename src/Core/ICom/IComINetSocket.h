@@ -81,7 +81,7 @@ class IComINetSocket : public IComVirtualSocket {
   virtual bool	settimeout(int secs, int microsecs, IComSocketError &err) override;;	// set the time out of the socket
 
   virtual bool	listen(IComSocketError &err) override;;					// Listen for a connection
-  virtual bool    accept(IComSocket& newsock, IComSocketError &err) override;;	// Accept the connection and get a new socket object
+  virtual bool    accept(IComSocketHandle& newsock, IComSocketError &err) override;;	// Accept the connection and get a new socket object
 
   virtual bool	poll(IComPacketHandle &packet, IComSocketError &err) override;;	// Poll whether there is a packet waiting (non blocking)
   virtual bool	send(IComPacketHandle &packet, IComSocketError &err) override;;	// Send a packet (blocking)
@@ -107,10 +107,6 @@ class IComINetSocket : public IComVirtualSocket {
 	std::string getaccepterror(int errnr);
 	std::string getsenderror(int errnr);
 	std::string getrecverror(int errnr);
-
-
-	int		bytesinbuffer_;
-	char	buffer_[32];
 
 	int		socketfd_;
 	bool	hassocket_;
