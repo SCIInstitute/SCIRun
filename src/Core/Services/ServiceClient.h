@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,11 +33,8 @@
 #define CORE_SERVICES_SERVICECLIENT_H 1
 
 #include <Core/ICom/IComFwd.h>
+#include <Core/Thread/Mutex.h>
 #include <Core/Services/ServiceBase.h>
-
-#include <iostream>
-#include <string>
-
 #include <Core/Services/share.h>
 
 namespace SCIRun {
@@ -45,10 +42,8 @@ namespace SCIRun {
 class SCISHARE ServiceClient : public ServiceBase
 {
   public:
-
-    // Constructor/destructor
     ServiceClient();
-    virtual ~ServiceClient();
+    ~ServiceClient();
 
     bool  open(IComAddressHandle address, std::string servicename,
                int session, std::string passwd);
@@ -58,13 +53,13 @@ class SCISHARE ServiceClient : public ServiceBase
                int timeout, std::string startcommand);
 
     bool  close();
-  
+
     ServiceClient* clone() const;
 
     ////////////////////////////////////////
-  
+
     IComSocketHandle  getsocket();
-    
+
     std::string geterror();
     std::string getremoteaddress();
     std::string getversion();
@@ -76,9 +71,9 @@ class SCISHARE ServiceClient : public ServiceBase
     bool    poll(IComPacketHandle &packet);
     void    seterror(std::string);
     void    clearerror();
-  
-  private:
 
+  private:
+    Core::Thread::Mutex lock_;
     int          session_;
     std::string  version_;
     std::string  error_;

@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,11 +29,14 @@
 // ServiceClient.cc
 
 #include <Core/Services/ServiceClient.h>
+#include <Core/ICom/IComPacket.h>
+#include <Core/ICom/IComSocket.h>
+#include <Core/ICom/IComAddress.h>
 
 namespace SCIRun {
 
 ServiceClient::ServiceClient() :
-  UsedWithLockingHandleAndMutex("service client lock"),
+  lock_("service client lock"),
   session_(0),
   errno_(0),
   need_send_end_stream_(false)
@@ -44,19 +47,19 @@ ServiceClient::~ServiceClient()
 {
   // Make sure we close the socket
   if (need_send_end_stream_)
-  {  
-    IComPacketHandle packet = new IComPacket();
+  {
+    IComPacketHandle packet(new IComPacket());
     packet->settag(TAG_END_STREAM);
     packet->setid(0);
-    socket_.send(packet);
+    socket_->send(packet);
     need_send_end_stream_ = false;
   }
 
-  socket_.close();
+  socket_->close();
 }
 
 
-ServiceClient*  ServiceClient::clone()
+ServiceClient*  ServiceClient::clone() const
 {
   ServiceClient* ptr = new ServiceClient();
   ptr->socket_= socket_;
@@ -67,19 +70,19 @@ ServiceClient*  ServiceClient::clone()
   return(ptr);
 }
 
-bool ServiceClient::open(IComAddress address, std::string servicename, int session, std::string passwd)
+bool ServiceClient::open(IComAddressHandle address, std::string servicename, int session, std::string passwd)
 {
   // record for debugging purposes
   session_ = session;
-  
+
   // reroute to internal address if possible
-  if (!address.isvalid())
+  if (!address->isvalid())
   {
     seterror("The address specified is not valid");
     return(false);
   }
-  
-  if (!(address.isinternal()))
+
+  if (!(address->isinternal()))
   {
     // If the address is local, the quickest is to make use of the
     // local internal server. Hence if the IP address matches the
@@ -87,169 +90,169 @@ bool ServiceClient::open(IComAddress address, std::string servicename, int sessi
     // true if someone specifies 'localhost'
     IComAddress localaddress;
     localaddress.setlocaladdress();
-    IComAddress localhost(address.getprotocol(),"localhost","any");
-    
-    if (address == localaddress) 
+    IComAddress localhost(address->getprotocol(),"localhost","any");
+
+    if (*address == localaddress)
     {
-      address.setaddress("internal","servicemanager");
+      address->setaddress("internal","servicemanager");
     }
-    if (address == localhost) 
+    if (*address == localhost)
     {
-      address.setaddress("internal","servicemanager");
+      address->setaddress("internal","servicemanager");
     }
   }
-  
-  
-  if (!( socket_.create(address.getprotocol())))
+
+
+  if (!( socket_->create(address->getprotocol())))
   {
-    std::string err = "ServiceClient: Could not create a socket to connect to service (" + socket_.geterror() + ")";
+    std::string err = "ServiceClient: Could not create a socket to connect to service (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
+    socket_->close();
     return(false);
   }
-  
-  if (!(socket_.settimeout(180,0)))
+
+  if (!(socket_->settimeout(180,0)))
   {
-    std::string err = "ServiceClient: Could not set timeout for socket (" + socket_.geterror() + ")";
+    std::string err = "ServiceClient: Could not set timeout for socket (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
+    socket_->close();
     return(false);
   }
-  
-  if (!( socket_.connect(address)))
+
+  if (!( socket_->connect(*address)))
   {
-    std::string err = "ServiceClient: Could not connect to service (" + socket_.geterror() + ")";
+    std::string err = "ServiceClient: Could not connect to service (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
+    socket_->close();
     return(false);
   }
-  
-  IComPacketHandle packet = new IComPacket();
-  
-  if (packet == 0)
+
+  IComPacketHandle packet(new IComPacket());
+
+  if (!packet)
   {
     std::string err = "ServiceClient: Could not create packet";
     seterror(err);
-    socket_.close();
-    return(false);    
+    socket_->close();
+    return(false);
   }
-  
+
   packet->settag(TAG_RQSV);
   packet->setid(session);
   packet->setstring(servicename);
-  
+
   // Wait no more than 20 seconds for a connection.  If this one
   // fails, that is no disaster, so we continue anyway.
-  socket_.settimeout(20,0);
-  
-  if (!(socket_.send(packet)))
+  socket_->settimeout(20,0);
+
+  if (!(socket_->send(packet)))
   {
-    std::string err = "ServiceClient: Could not send package to service (" + socket_.geterror() + ")";
+    std::string err = "ServiceClient: Could not send package to service (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
-    return(false);    
+    socket_->close();
+    return(false);
   }
-  
-  
-  if (!(socket_.recv(packet)))
+
+
+  if (!(socket_->recv(packet)))
   {
-    std::string err = "ServiceClient: Service did not respond to our request (" + socket_.geterror() + ")";
+    std::string err = "ServiceClient: Service did not respond to our request (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
-    return(false);    
+    socket_->close();
+    return(false);
   }
-  
+
   if ( packet->gettag() != TAG_RQSS)
   {
     if (packet->gettag() == TAG_RQFL)
     {
       std::string err = "Service request failed (" + packet->getstring() + ")";
       seterror(err);
-      socket_.close();
-      return(false);  
+      socket_->close();
+      return(false);
     }
-    
+
     std::string err = "Service request failed (No error returned from server)";
     seterror(err);
-    socket_.close();
-    return(false);  
+    socket_->close();
+    return(false);
   }
-  
+
   packet->clear();
-  
+
   packet->settag(TAG_AUTH);
   packet->setid(0);
   packet->setstring(passwd);
-  
-  if (!(socket_.send(packet)))
+
+  if (!(socket_->send(packet)))
   {
-    std::string err = "Could not send authentication data (" + socket_.geterror() + ")";
+    std::string err = "Could not send authentication data (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
-    return(false);    
-  }  
-  
-  if (!(socket_.recv(packet)))
-  {
-    std::string err = "Service did not respond to our request (" + socket_.geterror() + ")";
-    seterror(err);
-    socket_.close();
-    return(false);    
+    socket_->close();
+    return(false);
   }
-  
+
+  if (!(socket_->recv(packet)))
+  {
+    std::string err = "Service did not respond to our request (" + socket_->geterror() + ")";
+    seterror(err);
+    socket_->close();
+    return(false);
+  }
+
   if (packet->gettag() != TAG_AUSS)
   {
     if (packet->gettag() == TAG_AUFL)
     {
       std::string err = "Service authentication failed (" + packet->getstring() + ")";
       seterror(err);
-      socket_.close();
-      return(false);    
+      socket_->close();
+      return(false);
     }
     std::string err = "Service authentication failed (No error returned from server)";
     seterror(err);
-    socket_.close();
-    return(false);      
+    socket_->close();
+    return(false);
   }
-  
+
   packet->settag(TAG_STRT);
   packet->setid(0);
   packet->setstring("");
-  
-  if (!(socket_.send(packet)))
+
+  if (!(socket_->send(packet)))
   {
-    std::string err = "Could not send startcommand data (" + socket_.geterror() + ")";
+    std::string err = "Could not send startcommand data (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
-    return(false);    
-  }  
-  
-  if (!(socket_.recv(packet)))
-  {
-    std::string err = "Service did not respond to our request (" + socket_.geterror() + ")";
-    seterror(err);
-    socket_.close();
-    return(false);    
+    socket_->close();
+    return(false);
   }
-  
+
+  if (!(socket_->recv(packet)))
+  {
+    std::string err = "Service did not respond to our request (" + socket_->geterror() + ")";
+    seterror(err);
+    socket_->close();
+    return(false);
+  }
+
   if (packet->gettag() != TAG_STSS)
   {
     if (packet->gettag() == TAG_STFL)
     {
       std::string err = "Service startcommand failed (" + packet->getstring() + ")";
       seterror(err);
-      socket_.close();
-      return(false);    
+      socket_->close();
+      return(false);
     }
     std::string err = "Service startcommand failed (No error returned from server)";
     seterror(err);
-    socket_.close();
-    return(false);      
-  }  
-  
+    socket_->close();
+    return(false);
+  }
+
   version_ = packet->getstring();
   need_send_end_stream_ = true;
-  
+
   clearerror();
   return(true);
 }
@@ -258,21 +261,21 @@ bool ServiceClient::open(IComAddress address, std::string servicename, int sessi
 
 
 
-bool ServiceClient::open(IComAddress address, std::string servicename, 
+bool ServiceClient::open(IComAddressHandle address, std::string servicename,
                          int session, std::string passwd,
                          int timeout, std::string startcommand)
 {
   // record for debugging purposes
   session_ = session;
-  
+
   // reroute to internal address if possible
-  if (!address.isvalid())
+  if (!address->isvalid())
   {
     seterror("The address specified is not valid");
     return(false);
   }
-  
-  if (!(address.isinternal()))
+
+  if (!(address->isinternal()))
   {
     // If the address is local, the quickest is to make use of the
     // local internal server. Hence if the IP address matches the
@@ -280,169 +283,169 @@ bool ServiceClient::open(IComAddress address, std::string servicename,
     // true if someone specifies 'localhost'
     IComAddress localaddress;
     localaddress.setlocaladdress();
-    IComAddress localhost(address.getprotocol(),"localhost","any");
-    
-    if (address == localaddress) 
+    IComAddress localhost(address->getprotocol(),"localhost","any");
+
+    if (*address == localaddress)
     {
-      address.setaddress("internal","servicemanager");
+      address->setaddress("internal","servicemanager");
     }
-    if (address == localhost) 
+    if (*address == localhost)
     {
-      address.setaddress("internal","servicemanager");
+      address->setaddress("internal","servicemanager");
     }
   }
-  
-  
-  if (!( socket_.create(address.getprotocol())))
+
+
+  if (!( socket_->create(address->getprotocol())))
   {
-    std::string err = "ServiceClient: Could not create a socket to connect to service (" + socket_.geterror() + ")";
+    std::string err = "ServiceClient: Could not create a socket to connect to service (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
+    socket_->close();
     return(false);
   }
-  
-  if (!(socket_.settimeout(timeout,0)))
+
+  if (!(socket_->settimeout(timeout,0)))
   {
-    std::string err = "ServiceClient: Could not set timeout for socket (" + socket_.geterror() + ")";
+    std::string err = "ServiceClient: Could not set timeout for socket (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
+    socket_->close();
     return(false);
   }
-  
-  if (!( socket_.connect(address)))
+
+  if (!( socket_->connect(*address)))
   {
-    std::string err = "ServiceClient: Could not connect to service (" + socket_.geterror() + ")";
+    std::string err = "ServiceClient: Could not connect to service (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
+    socket_->close();
     return(false);
   }
-  
-  IComPacketHandle packet = new IComPacket();
-  
-  if (packet == 0)
+
+  IComPacketHandle packet(new IComPacket());
+
+  if (!packet)
   {
     std::string err = "ServiceClient: Could not create packet";
     seterror(err);
-    socket_.close();
-    return(false);    
+    socket_->close();
+    return(false);
   }
-  
+
   packet->settag(TAG_RQSV);
   packet->setid(session);
   packet->setstring(servicename);
-  
+
   // Wait no more than 20 seconds for a connection.  If this one
   // fails, that is no disaster, so we continue anyway.
-  socket_.settimeout(20,0);
-  
-  if (!(socket_.send(packet)))
+  socket_->settimeout(20,0);
+
+  if (!(socket_->send(packet)))
   {
-    std::string err = "ServiceClient: Could not send package to service (" + socket_.geterror() + ")";
+    std::string err = "ServiceClient: Could not send package to service (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
-    return(false);    
+    socket_->close();
+    return(false);
   }
-  
-  
-  if (!(socket_.recv(packet)))
+
+
+  if (!(socket_->recv(packet)))
   {
-    std::string err = "ServiceClient: Service did not respond to our request (" + socket_.geterror() + ")";
+    std::string err = "ServiceClient: Service did not respond to our request (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
-    return(false);    
+    socket_->close();
+    return(false);
   }
-  
+
   if ( packet->gettag() != TAG_RQSS)
   {
     if (packet->gettag() == TAG_RQFL)
     {
       std::string err = "Service request failed (" + packet->getstring() + ")";
       seterror(err);
-      socket_.close();
-      return(false);  
+      socket_->close();
+      return(false);
     }
-    
+
     std::string err = "Service request failed (No error returned from server)";
     seterror(err);
-    socket_.close();
-    return(false);  
+    socket_->close();
+    return(false);
   }
-  
+
   packet->clear();
-  
+
   packet->settag(TAG_AUTH);
   packet->setid(0);
   packet->setstring(passwd);
-  
-  if (!(socket_.send(packet)))
+
+  if (!(socket_->send(packet)))
   {
-    std::string err = "Could not send authentication data (" + socket_.geterror() + ")";
+    std::string err = "Could not send authentication data (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
-    return(false);    
-  }  
-  
-  if (!(socket_.recv(packet)))
-  {
-    std::string err = "Service did not respond to our request (" + socket_.geterror() + ")";
-    seterror(err);
-    socket_.close();
-    return(false);    
+    socket_->close();
+    return(false);
   }
-  
+
+  if (!(socket_->recv(packet)))
+  {
+    std::string err = "Service did not respond to our request (" + socket_->geterror() + ")";
+    seterror(err);
+    socket_->close();
+    return(false);
+  }
+
   if (packet->gettag() != TAG_AUSS)
   {
     if (packet->gettag() == TAG_AUFL)
     {
       std::string err = "Service authentication failed (" + packet->getstring() + ")";
       seterror(err);
-      socket_.close();
-      return(false);    
+      socket_->close();
+      return(false);
     }
     std::string err = "Service authentication failed (No error returned from server)";
     seterror(err);
-    socket_.close();
-    return(false);      
+    socket_->close();
+    return(false);
   }
 
   packet->settag(TAG_STRT);
   packet->setid(timeout);
   packet->setstring(startcommand);
-  
-  if (!(socket_.send(packet)))
+
+  if (!(socket_->send(packet)))
   {
-    std::string err = "Could not send startcommand data (" + socket_.geterror() + ")";
+    std::string err = "Could not send startcommand data (" + socket_->geterror() + ")";
     seterror(err);
-    socket_.close();
-    return(false);    
-  }  
-  
-  if (!(socket_.recv(packet)))
-  {
-    std::string err = "Service did not respond to our request (" + socket_.geterror() + ")";
-    seterror(err);
-    socket_.close();
-    return(false);    
+    socket_->close();
+    return(false);
   }
-  
+
+  if (!(socket_->recv(packet)))
+  {
+    std::string err = "Service did not respond to our request (" + socket_->geterror() + ")";
+    seterror(err);
+    socket_->close();
+    return(false);
+  }
+
   if (packet->gettag() != TAG_STSS)
   {
     if (packet->gettag() == TAG_STFL)
     {
       std::string err = "Service startcommand failed (" + packet->getstring() + ")";
       seterror(err);
-      socket_.close();
-      return(false);    
+      socket_->close();
+      return(false);
     }
     std::string err = "Service startcommand failed (No error returned from server)";
     seterror(err);
-    socket_.close();
-    return(false);      
+    socket_->close();
+    return(false);
   }
 
   version_ = packet->getstring();
   need_send_end_stream_ = true;
-  
+
   clearerror();
   return(true);
 }
@@ -454,95 +457,93 @@ bool ServiceClient::close()
 {
 
   if (need_send_end_stream_)
-  {  
-    IComPacketHandle packet = new IComPacket();
+  {
+    IComPacketHandle packet(new IComPacket());
     packet->settag(TAG_END_STREAM);
     packet->setid(0);
-    socket_.send(packet);
+    socket_->send(packet);
     need_send_end_stream_ = false;
   }
-  socket_.close();
+  socket_->close();
   clearerror();
   return(true);
 }
 
-}
-
-
-
-inline bool ServiceClient::send(IComPacketHandle &packet)
+bool ServiceClient::send(IComPacketHandle &packet)
 {
-  if (socket_.send(packet) == false)
+  if (!socket_->send(packet))
   {
-    seterror(socket_.geterror());
+    seterror(socket_->geterror());
     return(false);
   }
   clearerror();
   return(true);
 }
 
-inline bool ServiceClient::recv(IComPacketHandle &packet)
+bool ServiceClient::recv(IComPacketHandle &packet)
 {
-  if (socket_.recv(packet) == false)
+  if (!socket_->recv(packet))
   {
-    seterror(socket_.geterror());
+    seterror(socket_->geterror());
     return(false);
   }
   clearerror();
   return(true);
 }
 
-inline bool ServiceClient::poll(IComPacketHandle &packet)
+bool ServiceClient::poll(IComPacketHandle &packet)
 {
-  if (socket_.poll(packet) == false)
+  if (!socket_->poll(packet))
   {
-    seterror(socket_.geterror());
+    seterror(socket_->geterror());
     return(false);
   }
   clearerror();
   return(true);
 }
 
-inline std::string ServiceClient::geterror()
+std::string ServiceClient::geterror()
 {
   return(error_);
 }
 
-inline std::string ServiceClient::getversion()
+std::string ServiceClient::getversion()
 {
   return(version_);
 }
 
-inline void ServiceClient::seterror(std::string error)
+void ServiceClient::seterror(std::string error)
 {
   error_ = error;
 }
 
-inline void ServiceClient::clearerror()
+void ServiceClient::clearerror()
 {
   error_ = "";
 }
 
-inline std::string ServiceClient::getremoteaddress()
+std::string ServiceClient::getremoteaddress()
 {
   IComAddress address;
-  socket_.getremoteaddress(address);
+  socket_->getremoteaddress(address);
   return(address.geturl());
 }
 
-inline std::string ServiceClient::getsession()
+std::string ServiceClient::getsession()
 {
   std::ostringstream oss;
   oss << session_;
   return(oss.str());
 }
 
-inline IComSocket ServiceClient::getsocket()
+IComSocketHandle ServiceClient::getsocket()
 {
   return(socket_);
 }
 
-inline void ServiceClient::setsession(int session)
+void ServiceClient::setsession(int session)
 {
   session_ = session;
+}
+
 }

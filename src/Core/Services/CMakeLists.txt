@@ -34,7 +34,7 @@ SET(Core_Services_SRCS
   ServiceLog.cc
   #ServiceManager.cc
   #ServiceNode.cc
-  #ServiceClient.cc
+  ServiceClient.cc
   #SimpleService.cc
   #FileTransfer.cc
   #FileTransferClient.cc
