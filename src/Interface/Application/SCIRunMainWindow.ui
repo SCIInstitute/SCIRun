@@ -504,64 +504,7 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="dataflowPipelinesHorizontalLayout_">
-            <item>
-             <widget class="QLabel" name="pipelinesLabel_">
-              <property name="text">
-               <string>Dataflow Pipelines:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="manhattanPipesRadioButton_">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="whatsThis">
-               <string>Switch to classic dataflow pipelines.</string>
-              </property>
-              <property name="text">
-               <string>Manhattan</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="cubicPipesRadioButton_">
-              <property name="whatsThis">
-               <string>Switch to curved dataflow pipelines.</string>
-              </property>
-              <property name="text">
-               <string>Cubic Bézier</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="euclideanPipesRadioButton_">
-              <property name="whatsThis">
-               <string>Switch to straight, direct dataflow pipelines.</string>
-              </property>
-              <property name="text">
-               <string>Euclidean</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <layout class="QHBoxLayout" name="dataflowPipelinesHorizontalLayout_"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">

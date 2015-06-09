@@ -98,13 +98,13 @@ void SCIRunMainWindow::readSettings()
     switch (pipeType)
     {
     case MANHATTAN:
-      manhattanPipesRadioButton_->setChecked(true);
+      prefsWindow_->manhattanPipesRadioButton_->setChecked(true);
       break;
     case CUBIC:
-      cubicPipesRadioButton_->setChecked(true);
+      prefsWindow_->cubicPipesRadioButton_->setChecked(true);
       break;
     case EUCLIDEAN:
-      euclideanPipesRadioButton_->setChecked(true);
+      prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
       break;
     }
   }
