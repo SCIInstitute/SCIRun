@@ -394,10 +394,10 @@
   </widget>
   <widget class="QDockWidget" name="configurationDockWidget_">
    <property name="whatsThis">
-    <string>Configuration options and general application settings are found in this pane.</string>
+    <string>Access application logs here.</string>
    </property>
    <property name="windowTitle">
-    <string>Configuration</string>
+    <string>Logs</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -427,39 +427,12 @@
        <property name="currentIndex">
         <number>0</number>
        </property>
-       <widget class="QWidget" name="optionsTab_">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="whatsThis">
-         <string>Stored paths available for use in module I/O.</string>
-        </property>
-        <attribute name="title">
-         <string>Options</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
-          <layout class="QHBoxLayout" name="optionsTabHorizontalLayout_">
-           <item>
-            <widget class="QGroupBox" name="optionsGroupBox_">
-             <property name="title">
-              <string>SCIRun Options</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
        <widget class="QWidget" name="logTab">
         <property name="whatsThis">
          <string>The global network log. Events of general importance are logged here.</string>
         </property>
         <attribute name="title">
-         <string>Log</string>
+         <string>Main Log</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="0">
@@ -471,6 +444,16 @@
             </size>
            </property>
           </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Module Log</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QTextBrowser" name="textBrowser"/>
          </item>
         </layout>
        </widget>
@@ -575,10 +558,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Configuration</string>
+    <string>Log</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+C</string>
+    <string>Ctrl+Shift+L</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>

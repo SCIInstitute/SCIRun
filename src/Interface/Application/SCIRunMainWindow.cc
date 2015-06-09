@@ -1386,7 +1386,6 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     prefsWindow_->userDataLineEdit_ <<
     prefsWindow_->userDataPushButton_ <<
     prefsWindow_->dataSetGroupBox_ <<
-    optionsGroupBox_ <<
     networkEditorMiniViewLabel_ <<
     miniviewTextLabel_ <<
     prefsWindow_->scirunDataPathTextEdit_ <<
