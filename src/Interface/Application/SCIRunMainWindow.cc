@@ -117,6 +117,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 		);
 	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 	dialogErrorControl_.reset(new DialogErrorControl(this));
+  setupTagManagerWindow();
   setupNetworkEditor();
 
   setTipsAndWhatsThis();
@@ -174,6 +175,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   standardBar->addAction(actionResetNetworkZoom_);
   standardBar->addAction(actionDragMode_);
   standardBar->addAction(actionSelectMode_);
+  standardBar->addAction(actionToggleMetadataLayer_);
+  standardBar->addAction(actionToggleTagLayer_);
   //standardBar->setStyleSheet(styleSheet());
   //setUnifiedTitleAndToolBarOnMac(true);
 
@@ -253,7 +256,6 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   setupProvenanceWindow();
   setupDevConsole();
   setupPythonConsole();
-  setupTagManagerWindow();
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
@@ -286,6 +288,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
   connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
 
+	connect(actionToggleTagLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleTagLayer(bool)));
+  connect(actionToggleMetadataLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleMetadataLayer(bool)));
+
   connect(actionResetNetworkZoom_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
@@ -298,7 +303,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   actionForwardInverse_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png"));
   actionForwardInverse_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.zip"));
   actionForwardInverse_->setProperty(ToolkitFilename, QString("FwdInvToolkit_v1.zip"));
-  
+
 	connect(actionBrainStimulator_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
   actionBrainStimulator_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png"));
   actionBrainStimulator_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip"));
@@ -452,7 +457,8 @@ void SCIRunMainWindow::setupNetworkEditor()
   Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
-  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, scrollAreaWidgetContents_);
+  auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
+  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, tagColorFunc, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   //networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -689,6 +695,9 @@ void SCIRunMainWindow::setActionIcons()
   actionZoomBestFit_->setIcon(QPixmap(":/general/Resources/zoom_fit.png"));
   actionDragMode_->setIcon(QPixmap(":/general/Resources/cursor_hand_icon.png"));
   actionSelectMode_->setIcon(QPixmap(":/general/Resources/select.png"));
+
+  actionToggleMetadataLayer_->setIcon(QPixmap(":/general/Resources/metadataLayer.png"));
+  actionToggleTagLayer_->setIcon(QPixmap(":/general/Resources/tagLayer.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
@@ -1006,7 +1015,7 @@ namespace {
   void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
   {
     QTreeWidgetItem* faves = getFavoriteMenu(tree);
-    BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
+		for (const auto& package : moduleMap)
     {
       const std::string& packageName = package.first;
       auto packageItem = new QTreeWidgetItem();
@@ -1014,14 +1023,14 @@ namespace {
       packageItem->setForeground(0, packageColor());
       tree->addTopLevelItem(packageItem);
       size_t totalModules = 0;
-      BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
+      for (const auto& category : package.second)
       {
         const std::string& categoryName = category.first;
         auto categoryItem = new QTreeWidgetItem();
         categoryItem->setText(0, QString::fromStdString(categoryName));
         categoryItem->setForeground(0, categoryColor());
         packageItem->addChild(categoryItem);
-        BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
+				for (const auto& module : category.second)
         {
           const std::string& moduleName = module.first;
           auto moduleItem = new QTreeWidgetItem();
@@ -1405,26 +1414,43 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Shift)
 	{
-		statusBar()->showMessage("Network zoom active");
+		showStatusMessage("Network zoom active");
 	}
   else if (event->key() == MetadataShiftKey)
   {
     networkEditor_->metadataLayer(true);
-    statusBar()->showMessage("Metadata layer active");
+		showStatusMessage("Metadata layer active");
   }
   else if (event->key() == Qt::Key_Alt)
   {
-    networkEditor_->tagLayer(true, NoTag);
-    statusBar()->showMessage("Tag layer active: none");
+		if (!actionToggleTagLayer_->isChecked())
+		{
+	 		networkEditor_->tagLayer(true, NoTag);
+			showStatusMessage("Tag layer active: none");
+		}
   }
+	else if (event->key() == Qt::Key_A)
+	{
+		if (!actionToggleTagLayer_->isChecked())
+		{
+    	if (networkEditor_->tagLayerActive())
+    	{
+      	networkEditor_->tagLayer(true, AllTags);
+				showStatusMessage("Tag layer active: All");
+    	}
+		}
+	}
   else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
   {
-    if (networkEditor_->tagLayerActive())
-    {
-      auto key = event->key() - Qt::Key_0;
-      networkEditor_->tagLayer(true, key);
-      statusBar()->showMessage("Tag layer active: " + QString::number(key));
-    }
+		if (!actionToggleTagLayer_->isChecked())
+		{
+    	if (networkEditor_->tagLayerActive())
+    	{
+      	auto key = event->key() - Qt::Key_0;
+      	networkEditor_->tagLayer(true, key);
+				showStatusMessage("Tag layer active: " + QString::number(key));
+    	}
+		}
   }
 
   QMainWindow::keyPressEvent(event);
@@ -1434,17 +1460,20 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
 {
 	if (event->key() == Qt::Key_Shift)
 	{
-    statusBar()->showMessage("Network zoom inactive", 1000);
+		showStatusMessage("Network zoom inactive", 1000);
 	}
   else if (event->key() == MetadataShiftKey)
   {
     networkEditor_->metadataLayer(false);
-    statusBar()->showMessage("Metadata layer inactive", 1000);
+		showStatusMessage("Metadata layer inactive", 1000);
   }
   else if (event->key() == Qt::Key_Alt)
   {
-    networkEditor_->tagLayer(false, -1);
-    statusBar()->showMessage("Tag layer inactive", 1000);
+		if (!actionToggleTagLayer_->isChecked())
+		{
+    	networkEditor_->tagLayer(false, -1);
+			showStatusMessage("Tag layer inactive", 1000);
+		}
   }
 
   QMainWindow::keyPressEvent(event);
@@ -1481,50 +1510,40 @@ void SCIRunMainWindow::adjustExecuteButtonAppearance()
   }
 }
 
-namespace
-{
-  const char* tagIndexProperty = "tagIndex";
-  const int NUMBER_OF_TAGS = 10;
-}
-
 void SCIRunMainWindow::setupTagManagerWindow()
 {
   tagManagerWindow_ = new TagManagerWindow(this);
   connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
   connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
-
-  QLabel* tagLabels[] = { tagManagerWindow_->tagLabel_0, tagManagerWindow_->tagLabel_1, tagManagerWindow_->tagLabel_2,
-    tagManagerWindow_->tagLabel_3, tagManagerWindow_->tagLabel_4, tagManagerWindow_->tagLabel_5,
-    tagManagerWindow_->tagLabel_6, tagManagerWindow_->tagLabel_7, tagManagerWindow_->tagLabel_8, tagManagerWindow_->tagLabel_9 };
-  QLineEdit* tagLineEdits[] = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
-    tagManagerWindow_->taglineEdit_3, tagManagerWindow_->taglineEdit_4, tagManagerWindow_->taglineEdit_5,
-    tagManagerWindow_->taglineEdit_6, tagManagerWindow_->taglineEdit_7, tagManagerWindow_->taglineEdit_8, tagManagerWindow_->taglineEdit_9 };
-
-  for (int i = 0; i < NUMBER_OF_TAGS; ++i)
-  {
-    auto colorStr = colorToString(tagColor(i));
-    tagLabels[i]->setStyleSheet("QLabel { background-color : " + colorStr + "; }");
-    tagLineEdits[i]->setProperty(tagIndexProperty, i);
-    connect(tagLineEdits[i], SIGNAL(textChanged(const QString&)), this, SLOT(updateTagName(const QString&)));
-  }
-  tagNames_.resize(NUMBER_OF_TAGS);
 }
 
-void SCIRunMainWindow::updateTagName(const QString& name)
+void SCIRunMainWindow::toggleTagLayer(bool toggle)
 {
-  tagNames_[sender()->property(tagIndexProperty).toInt()] = name;
+	networkEditor_->tagLayer(toggle, AllTags);
+	if (toggle)
+		showStatusMessage("Tag layer active: all");
+	else
+		showStatusMessage("Tag layer inactive", 1000);
 }
 
-void SCIRunMainWindow::setTagNames(const QStringList& names)
+void SCIRunMainWindow::showStatusMessage(const QString& str)
 {
-  tagNames_ = names.toVector();
-  QLineEdit* tagLineEdits[] = { tagManagerWindow_->taglineEdit_0, tagManagerWindow_->taglineEdit_1, tagManagerWindow_->taglineEdit_2,
-    tagManagerWindow_->taglineEdit_3, tagManagerWindow_->taglineEdit_4, tagManagerWindow_->taglineEdit_5,
-    tagManagerWindow_->taglineEdit_6, tagManagerWindow_->taglineEdit_7, tagManagerWindow_->taglineEdit_8, tagManagerWindow_->taglineEdit_9 };
-  for (int i = 0; i < NUMBER_OF_TAGS; ++i)
-  {
-    tagLineEdits[i]->setText(tagNames_[i]);
-  }
+	statusBar()->showMessage(str);
+}
+
+void SCIRunMainWindow::showStatusMessage(const QString& str, int timeInMsec)
+{
+	statusBar()->showMessage(str, timeInMsec);
+}
+
+void SCIRunMainWindow::toggleMetadataLayer(bool toggle)
+{
+	networkEditor_->metadataLayer(toggle);
+	//TODO: extract methods
+	if (toggle)
+		showStatusMessage("Metadata layer active");
+	else
+		showStatusMessage("Metadata layer inactive", 1000);
 }
 
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent), reply_(0)
@@ -1555,7 +1574,8 @@ void SCIRunMainWindow::toolkitDownload()
 {
 	QAction* action = qobject_cast<QAction*>(sender());
 
-  auto downloader = new ToolkitDownloader(action, this);
+	static std::vector<ToolkitDownloader*> downloaders;
+	downloaders.push_back(new ToolkitDownloader(action, this));
 }
 
 ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QWidget* parent) : QObject(parent), iconDownloader_(0), zipDownloader_(0)
@@ -1617,7 +1637,7 @@ void ToolkitDownloader::saveToolkit()
 {
   if (!zipDownloader_)
     return;
-  
+
   QString fullFilename = toolkitDir_.filePath(filename_);
   qDebug() << "saving to " << fullFilename;
   QFile file(fullFilename);
