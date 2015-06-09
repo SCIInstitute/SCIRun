@@ -149,24 +149,24 @@ bool IComSocket::nosocketerror()
 }
 
 // Get a string with the last error description
-inline	std::string IComSocket::geterror()
+std::string IComSocket::geterror()
 {
   return(error_.error);
 }
 
 // Get the last reported errno
-inline int IComSocket::geterrno()
+int IComSocket::geterrno()
 {
   return(error_.errnr);
 }
 
-inline	bool IComSocket::haserror()
+bool IComSocket::haserror()
 {
   return(error_.errnr != 0);
 }
 
 // Get the protocol used in this socket
-inline	std::string IComSocket::getsocketprotocol()
+std::string IComSocket::getsocketprotocol()
 {
   return(protocol_);
 }
@@ -177,7 +177,7 @@ IComVirtualSocketHandle IComSocket::getsocketptr()
   return(socket_);
 }
 
-inline bool IComSocket::close()
+bool IComSocket::close()
 {
   // Currently closing the socket will completely close the socket and
   // it will even remove any error messages. Hence it will always return
@@ -196,7 +196,7 @@ inline bool IComSocket::getremoteaddress(IComAddress &address)
   }
 }
 
-inline bool IComSocket::getlocaladdress(IComAddress &address)
+bool IComSocket::getlocaladdress(IComAddress &address)
 {
   if (socket_) {
     return(socket_->getlocaladdress(address,error_));
@@ -205,7 +205,7 @@ inline bool IComSocket::getlocaladdress(IComAddress &address)
   }
 }
 
-inline bool IComSocket::settimeout(int secs, int microsecs)
+bool IComSocket::settimeout(int secs, int microsecs)
 {
   if (socket_) {
     return(socket_->settimeout(secs,microsecs,error_));
@@ -214,7 +214,7 @@ inline bool IComSocket::settimeout(int secs, int microsecs)
   }
 }
 
-inline bool IComSocket::listen()
+bool IComSocket::listen()
 {
   if (socket_) {
     return(socket_->listen(error_));
@@ -232,7 +232,7 @@ bool IComSocket::accept(IComSocketHandle& newsock)
   }
 }
 
-inline bool IComSocket::poll(IComPacketHandle& packet)
+bool IComSocket::poll(IComPacketHandle& packet)
 {
   if (socket_) {
     return(socket_->poll(packet,error_));
@@ -241,7 +241,7 @@ inline bool IComSocket::poll(IComPacketHandle& packet)
   }
 }
 
-inline bool IComSocket::send(IComPacketHandle& packet)
+bool IComSocket::send(IComPacketHandle& packet)
 {
   if (socket_) {
     return(socket_->send(packet,error_));
@@ -250,7 +250,7 @@ inline bool IComSocket::send(IComPacketHandle& packet)
   }
 }
 
-inline bool IComSocket::recv(IComPacketHandle& packet)
+bool IComSocket::recv(IComPacketHandle& packet)
 {
   if (socket_) {
     return(socket_->recv(packet,error_));
@@ -259,7 +259,7 @@ inline bool IComSocket::recv(IComPacketHandle& packet)
   }
 }
 
-inline bool IComSocket::connect(IComAddress& address, conntype conn)
+bool IComSocket::connect(IComAddress& address, conntype conn)
 {
   if (socket_) {
     return(socket_->connect(address,conn,error_));
@@ -268,7 +268,7 @@ inline bool IComSocket::connect(IComAddress& address, conntype conn)
   }
 }
 
-inline bool IComSocket::bind(IComAddress& address)
+bool IComSocket::bind(IComAddress& address)
 {
   if (socket_) {
     return(socket_->bind(address,error_));
@@ -277,7 +277,7 @@ inline bool IComSocket::bind(IComAddress& address)
   }
 }
 
-inline bool IComSocket::isconnected()
+bool IComSocket::isconnected()
 {
   if (socket_) {
     return(socket_->isconnected(error_));

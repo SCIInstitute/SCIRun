@@ -29,9 +29,9 @@
 # Sources of Core/ICom classes
 SET(Core_ICom_SRCS
   IComAddress.cc
-  #IComPacket.cc
+  IComPacket.cc
   IComSocket.cc
-  #IComVirtualSocket.cc
+  IComVirtualSocket.cc
   IComINetSocket.cc
   IComInternalSocket.cc
   #IComSslSocket.cc

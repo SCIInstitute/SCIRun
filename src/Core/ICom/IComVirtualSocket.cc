@@ -30,8 +30,7 @@
 
 namespace SCIRun {
 
-IComVirtualSocket::IComVirtualSocket() :
-    UsedWithLockingHandleAndMutex("virtual_socket_lock")
+IComVirtualSocket::IComVirtualSocket() : lock_("virtual_socket_lock")
 {
 }
 
@@ -82,7 +81,7 @@ bool	IComVirtualSocket::listen(IComSocketError &err)
 	return(socket_not_implemented(err));
 }
 
-bool    IComVirtualSocket::accept(IComSocket& /*newsock*/, IComSocketError &err)
+bool    IComVirtualSocket::accept(IComSocketHandle& /*newsock*/, IComSocketError &err)
 {
 	return(socket_not_implemented(err));
 }
@@ -109,12 +108,12 @@ bool	IComVirtualSocket::isconnected(IComSocketError &err)
 
 // For locking the structure so it will be thread safe
 
-inline void IComVirtualSocket::dolock()
+void IComVirtualSocket::dolock()
 {
 	lock_.lock();
 }
 
-inline void IComVirtualSocket::unlock()
+void IComVirtualSocket::unlock()
 {
 	lock_.unlock();
 }
