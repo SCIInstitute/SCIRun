@@ -96,7 +96,7 @@ void ModuleLogger::error(const std::string& msg) const
   logSignal("<b>ERROR: " + qmsg + "</b>", red);
   alert(red);
   popup(qmsg);
-  Log::get() << ERROR_LOG << formatWithColor("[" + moduleName_ + "] " + msg, std::string("red")) << std::endl;
+  Log::get("Modules") << ERROR_LOG << formatWithColor("[" + moduleName_ + "] " + msg, std::string("red")) << std::endl;
 }
 
 void ModuleLogger::warning(const std::string& msg) const
@@ -104,7 +104,7 @@ void ModuleLogger::warning(const std::string& msg) const
   const QColor yellow = Qt::yellow;
   logSignal("WARNING: " + QString::fromStdString(msg), yellow);
   alert(yellow);
-  Log::get() << WARN << formatWithColor("[" + moduleName_ + "] " + msg, std::string("yellow")) << std::endl;
+  Log::get("Modules") << WARN << formatWithColor("[" + moduleName_ + "] " + msg, std::string("yellow")) << std::endl;
 }
 
 void ModuleLogger::remark(const std::string& msg) const
@@ -112,11 +112,11 @@ void ModuleLogger::remark(const std::string& msg) const
   const QColor blue = Qt::blue;
   logSignal("REMARK: " + QString::fromStdString(msg), blue);
   alert(blue);
-  Log::get() << NOTICE << formatWithColor("[" + moduleName_ + "] " + msg, std::string("blue")) << std::endl;
+  Log::get("Modules") << NOTICE << formatWithColor("[" + moduleName_ + "] " + msg, std::string("blue")) << std::endl;
 }
 
 void ModuleLogger::status(const std::string& msg) const
 {
   logSignal(QString::fromStdString(msg), Qt::black);
-  Log::get() << INFO << formatWithColor("[" + moduleName_ + "] " + msg, std::string("black")) << std::endl;
+  Log::get("Modules") << INFO << formatWithColor("[" + moduleName_ + "] " + msg, std::string("black")) << std::endl;
 }

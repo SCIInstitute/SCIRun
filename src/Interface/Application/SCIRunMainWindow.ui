@@ -466,7 +466,7 @@
         </attribute>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
-          <widget class="QTextBrowser" name="textBrowser"/>
+          <widget class="QTextBrowser" name="moduleLogTextBrowser_"/>
          </item>
         </layout>
        </widget>
