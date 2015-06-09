@@ -123,7 +123,7 @@ void SCIRunMainWindow::readSettings()
   {
     auto value = settings.value(portHighlight).toBool();
     prefs.highlightPorts.setValue(value);
-    portSizeEffectsCheckBox_->setChecked(value);
+    prefsWindow_->portSizeEffectsCheckBox_->setChecked(value);
     GuiLogger::Instance().log("Setting read: highlight ports on hover = " + QString::number(prefs.highlightPorts));
   }
 

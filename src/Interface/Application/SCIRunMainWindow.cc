@@ -260,14 +260,19 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
 
+#if 0 //TODO: decide on modifiable background color
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
+#endif
+  prefsWindow_->chooseBackgroundColorButton_->setHidden(true);
+  prefsWindow_->resetBackgroundColorButton_->setHidden(true);
+  prefsWindow_->backgroundColorLabel_->setHidden(true);
 
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
-  connect(portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(highlightPortsChanged()));
-  connect(portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(highlightPorts(int)));
+  connect(prefsWindow_->portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(highlightPortsChanged()));
+  connect(prefsWindow_->portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(highlightPorts(int)));
 
   connect(prefsWindow_->dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
 
@@ -315,8 +320,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
-  connect(actionTextIconCheckBox_, SIGNAL(clicked()), this, SLOT(adjustExecuteButtonAppearance()));
-	actionTextIconCheckBox_->setCheckState(Qt::PartiallyChecked);
+  connect(prefsWindow_->actionTextIconCheckBox_, SIGNAL(clicked()), this, SLOT(adjustExecuteButtonAppearance()));
+  prefsWindow_->actionTextIconCheckBox_->setCheckState(Qt::PartiallyChecked);
   adjustExecuteButtonAppearance();
 
   setupInputWidgets();
@@ -1343,7 +1348,7 @@ void SCIRunMainWindow::modulesSnapToChanged()
 
 void SCIRunMainWindow::highlightPortsChanged()
 {
-  bool val = portSizeEffectsCheckBox_->isChecked();
+  bool val = prefsWindow_->portSizeEffectsCheckBox_->isChecked();
   Preferences::Instance().highlightPorts.setValue(val);
 }
 
@@ -1491,18 +1496,18 @@ void SCIRunMainWindow::changeExecuteActionIconToPlay()
 
 void SCIRunMainWindow::adjustExecuteButtonAppearance()
 {
-  switch (actionTextIconCheckBox_->checkState())
+  switch (prefsWindow_->actionTextIconCheckBox_->checkState())
   {
   case 0:
-    actionTextIconCheckBox_->setText("Execute Button Text");
+    prefsWindow_->actionTextIconCheckBox_->setText("Execute Button Text");
 		executeButton_->setToolButtonStyle(Qt::ToolButtonTextOnly);
     break;
   case 1:
-    actionTextIconCheckBox_->setText("Execute Button Icon");
+    prefsWindow_->actionTextIconCheckBox_->setText("Execute Button Icon");
 		executeButton_->setToolButtonStyle(Qt::ToolButtonIconOnly);
     break;
   case 2:
-    actionTextIconCheckBox_->setText("Execute Button Text+Icon");
+    prefsWindow_->actionTextIconCheckBox_->setText("Execute Button Text+Icon");
 		executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     break;
   }
