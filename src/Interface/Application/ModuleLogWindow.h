@@ -46,6 +46,7 @@ class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
 	
 public:
   explicit ModuleLogWindow(const QString& moduleName, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
+  QString name() const { return moduleName_; }
 public Q_SLOTS:
   void appendMessage(const QString& message, const QColor& color = Qt::black);
   void popupMessageBox(const QString& message);
@@ -73,6 +74,8 @@ Q_SIGNALS:
   void logSignal(const QString& message, const QColor& color) const;
   void alert(const QColor& color) const;
   void popup(const QString& message) const;
+private:
+  std::string moduleName_;
 };
 
 }

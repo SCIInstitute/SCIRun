@@ -37,6 +37,7 @@ using namespace SCIRun::Core::Logging;
 void TextEditAppender::log(const QString& message) const
 {
   text_->append(message);
+  text_->verticalScrollBar()->setValue(text_->verticalScrollBar()->maximum());
 }
 
 void TextEditAppender::error(const std::string& msg) const
