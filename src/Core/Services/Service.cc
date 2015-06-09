@@ -36,7 +36,7 @@
 namespace SCIRun {
 
 
-Service::Service(const ServiceContext &ctx) :
+Service::Service(const ServiceContext &ctx) : lock_("Service"),
 	ctx_(ctx)
 {
 }
@@ -177,5 +177,112 @@ bool Service::updateparameters()
   return (true);
 }
 
+typedef	Service*  (*ServiceMaker)(ServiceContext &ctx);
+
+ void	Service::dolock()
+{
+  lock_.lock();
+}
+
+ void	Service::unlock()
+{
+  lock_.unlock();
+}
+
+ void Service::putmsg(std::string line)
+{
+  ctx_.log->putmsg(line);
+}
+
+ std::string Service::geterror()
+{
+  return(ctx_.socket->geterror());
+}
+
+ int Service::geterrno()
+{
+  return(ctx_.socket->geterrno());
+}
+
+ bool Service::haserror()
+{
+  return(ctx_.socket->haserror());
+}
+
+ int Service::getsession()
+{
+  return(ctx_.session);
+}
+
+ void Service::setsession(int session)
+{
+  ctx_.session = session;
+}
+
+ std::string Service::getservicename()
+{
+  return(ctx_.servicename);
+}
+
+ std::string Service::getpackagename()
+{
+  return(ctx_.packagename);
+}
+
+ std::string Service::getparameter(std::string name)
+{
+  return(ctx_.parameters[name]);
+}
+
+ std::string Service::getstartcommand()
+{
+  return(ctx_.startcommand);
+}
+
+ int Service::gettimeout()
+{
+  return(ctx_.timeout);
+}
+
+ IComSocketHandle Service::getsocket()
+{
+  return(ctx_.socket);
+}
+
+ ServiceLogHandle Service::getlog()
+{
+  return(ctx_.log);
+}
+
+
+ bool Service::send(IComPacketHandle &packet)
+{
+  return(ctx_.socket->send(packet));
+}
+
+ bool Service::recv(IComPacketHandle &packet)
+{
+  return(ctx_.socket->recv(packet));
+}
+
+ bool Service::poll(IComPacketHandle &packet)
+{
+  return(ctx_.socket->poll(packet));
+}
+
+ bool Service::getlocaladdress(IComAddress &address)
+{
+  return(ctx_.socket->getlocaladdress(address));
+}
+
+	bool Service::getremoteaddress(IComAddress &address)
+{
+  return(ctx_.socket->getremoteaddress(address));
+}
+
+	bool Service::isconnected()
+{
+  return(ctx_.socket->isconnected());
+}
 
 } // end namespace

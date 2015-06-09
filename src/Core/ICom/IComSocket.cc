@@ -187,7 +187,7 @@ bool IComSocket::close()
   return(true);
 }
 
-inline bool IComSocket::getremoteaddress(IComAddress &address)
+ bool IComSocket::getremoteaddress(IComAddress &address)
 {
   if (socket_) {
     return(socket_->getremoteaddress(address,error_));

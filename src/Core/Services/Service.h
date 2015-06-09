@@ -34,6 +34,7 @@
 
 #include <Core/ICom/IComFwd.h>
 #include <Core/Services/ServiceBase.h>
+#include <Core/Thread/Mutex.h>
 //#include <Core/Services/ServiceLog.h>
 #include <boost/shared_ptr.hpp>
 #include <map>
@@ -103,19 +104,19 @@ public:
   void					putmsg(std::string line);
   // Communication functions
 
-  inline bool			send(IComPacketHandle &packet);
-  inline bool			recv(IComPacketHandle &packet);
-  inline bool			poll(IComPacketHandle &packet);
+   bool			send(IComPacketHandle &packet);
+   bool			recv(IComPacketHandle &packet);
+   bool			poll(IComPacketHandle &packet);
 
-  inline bool			getlocaladdress(IComAddress &address);
-  inline bool			getremoteaddress(IComAddress &address);
-  inline bool			isconnected();
+   bool			getlocaladdress(IComAddress &address);
+   bool			getremoteaddress(IComAddress &address);
+   bool			isconnected();
 
   // Error retrieval mechanisms for communication errors
 
-  inline std::string	geterror();
-  inline int					geterrno();
-  inline bool					haserror();
+   std::string	geterror();
+   int					geterrno();
+   bool					haserror();
 
   // Error reporting, services log file
 
@@ -124,123 +125,13 @@ public:
 
 public:
   // Locking Handle needs Mutex to be called lock so we cannot reuse that name
-  inline void			dolock();
-  inline void			unlock();
+   void			dolock();
+   void			unlock();
 
 private:
-
+  Core::Thread::Mutex lock_;
   ServiceContext	ctx_;
 };
-
-#if 0 // move to cc file
-typedef	Service*  (*ServiceMaker)(ServiceContext &ctx);
-
-inline void	Service::dolock()
-{
-  lock.lock();
-}
-
-inline void	Service::unlock()
-{
-  lock.unlock();
-}
-
-inline void Service::putmsg(std::string line)
-{
-  ctx_.log->putmsg(line);
-}
-
-inline std::string Service::geterror()
-{
-  return(ctx_.socket.geterror());
-}
-
-inline int Service::geterrno()
-{
-  return(ctx_.socket.geterrno());
-}
-
-inline bool Service::haserror()
-{
-  return(ctx_.socket.haserror());
-}
-
-inline int Service::getsession()
-{
-  return(ctx_.session);
-}
-
-inline void Service::setsession(int session)
-{
-  ctx_.session = session;
-}
-
-inline std::string Service::getservicename()
-{
-  return(ctx_.servicename);
-}
-
-inline std::string Service::getpackagename()
-{
-  return(ctx_.packagename);
-}
-
-inline std::string Service::getparameter(std::string name)
-{
-  return(ctx_.parameters[name]);
-}
-
-inline std::string Service::getstartcommand()
-{
-  return(ctx_.startcommand);
-}
-
-inline int Service::gettimeout()
-{
-  return(ctx_.timeout);
-}
-
-inline IComSocket Service::getsocket()
-{
-  return(ctx_.socket);
-}
-
-inline ServiceLogHandle Service::getlog()
-{
-  return(ctx_.log);
-}
-
-
-inline bool Service::send(IComPacketHandle &packet)
-{
-  return(ctx_.socket.send(packet));
-}
-
-inline bool Service::recv(IComPacketHandle &packet)
-{
-  return(ctx_.socket.recv(packet));
-}
-
-inline bool Service::poll(IComPacketHandle &packet)
-{
-  return(ctx_.socket.poll(packet));
-}
-
-inline bool Service::getlocaladdress(IComAddress &address)
-{
-  return(ctx_.socket.getlocaladdress(address));
-}
-
-inline	bool Service::getremoteaddress(IComAddress &address)
-{
-  return(ctx_.socket.getremoteaddress(address));
-}
-
-inline	bool Service::isconnected()
-{
-  return(ctx_.socket.isconnected());
-}
-#endif
 
 } // namespace SCIRun
 
