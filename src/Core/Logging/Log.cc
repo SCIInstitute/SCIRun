@@ -155,43 +155,34 @@ namespace SCIRun
 
         void setAppenders()
         {
-          std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
-
           log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
-          auto layout1 = new log4cpp::PatternLayout();
-          std::string backupPattern1 = layout1->getConversionPattern();
-          try
-          {
-            layout1->setConversionPattern(pattern);
-          }
-          catch (log4cpp::ConfigureFailure& exception)
-          {
-            /// @todo: log?
-            std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
-              << "Restoring original pattern: (" << backupPattern1 << ")" << std::endl;
-            layout1->setConversionPattern(backupPattern1);
-          }
-          appender1->setLayout(layout1);
-
+          trySetPattern(appender1);
+         
           file_ = Log::logDirectory() / ("scirun5_" + name_ + ".log");
           log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", file_.string());
-          auto layout2 = new log4cpp::PatternLayout();
-          std::string backupPattern2 = layout1->getConversionPattern();
-          try
-          {
-            layout2->setConversionPattern(pattern);
-          }
-          catch (log4cpp::ConfigureFailure& exception)
-          {
-            /// @todo: log?
-            std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
-              << "Restoring original pattern: (" << backupPattern2 << ")" << std::endl;
-            layout2->setConversionPattern(backupPattern2);
-          }
-          appender2->setLayout(layout2);
+          trySetPattern(appender2);
 
           cppLogger_.addAppender(appender1);
           cppLogger_.addAppender(appender2);
+        }
+
+        void trySetPattern(log4cpp::Appender* appender)
+        {
+          static const std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
+          std::unique_ptr<log4cpp::PatternLayout> layout(new log4cpp::PatternLayout());
+          std::string backupPattern = layout->getConversionPattern();
+          try
+          {
+            layout->setConversionPattern(pattern);
+          }
+          catch (log4cpp::ConfigureFailure& exception)
+          {
+            /// @todo: log?
+            std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
+              << "Restoring original pattern: (" << backupPattern << ")" << std::endl;
+            layout->setConversionPattern(backupPattern);
+          }
+          appender->setLayout(layout.release());
         }
       };
     }
