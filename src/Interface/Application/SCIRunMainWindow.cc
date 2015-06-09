@@ -118,6 +118,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 	dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
+  setupPreferencesWindow();
   setupNetworkEditor();
 
   setTipsAndWhatsThis();
@@ -125,9 +126,6 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   connect(actionExecute_All_, SIGNAL(triggered()), this, SLOT(executeAll()));
   connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
-
-  connect(defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
-  connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), networkEditor_, SIGNAL(defaultNotePositionChanged(NotePosition)));
 
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
@@ -243,10 +241,12 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
     connect(recentFileActions_[i], SIGNAL(triggered()), this, SLOT(loadRecentNetwork()));
   }
 
-  setupPreferencesWindow();
   setupProvenanceWindow();
   setupDevConsole();
   setupPythonConsole();
+
+  connect(prefsWindow_->defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
+  connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), networkEditor_, SIGNAL(defaultNotePositionChanged(NotePosition)));
 
   connect(prefsWindow_->largeModuleSizeToolButton_, SIGNAL(clicked()), this, SLOT(makeModulesLargeSize()));
   connect(prefsWindow_->smallModuleSizeToolButton_, SIGNAL(clicked()), this, SLOT(makeModulesSmallSize()));
@@ -454,7 +454,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
   Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
-  defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
+  defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*prefsWindow_->defaultNotePositionComboBox_));
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
   networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, tagColorFunc, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));

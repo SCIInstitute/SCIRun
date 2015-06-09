@@ -36,6 +36,8 @@
 #include <Interface/Application/Note.h>
 #include "ui_SCIRunMainWindow.h"
 
+class QToolButton;
+
 namespace SCIRun {
   namespace Dataflow {
     namespace Engine {

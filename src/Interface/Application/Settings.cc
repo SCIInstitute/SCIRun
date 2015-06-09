@@ -85,7 +85,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(notePositionKey))
   {
     int notePositionIndex = settings.value(notePositionKey).toInt();
-    defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
+    prefsWindow_->defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
     GuiLogger::Instance().log("Setting read: default note position = " + QString::number(notePositionIndex));
   }
 
@@ -219,7 +219,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
   settings.setValue(qname(prefs.modulesAreDockable), prefs.modulesAreDockable.val());
   settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
-  settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
+  settings.setValue("defaultNotePositionIndex", prefsWindow_->defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefsWindow_->saveBeforeExecute());
