@@ -242,7 +242,7 @@ IComPacket* IComPacket::clone() const
 	ptr->packid_ = packid_;
 	ptr->param1_ = param1_;
 	ptr->param2_ = param2_;
-	::memcpy(ptr->databuffer_,databuffer_,datasize_*elsize_);
+	std::memcpy(ptr->databuffer_,databuffer_,datasize_*elsize_);
 	return(ptr);
 }
 

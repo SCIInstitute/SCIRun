@@ -1307,7 +1307,7 @@ struct addrinfo* IComAddress::ga_clone(struct addrinfo *ai)
 	nai->ai_addrlen = ai->ai_addrlen;
 	if ( (nai->ai_addr = reinterpret_cast<struct sockaddr *>(calloc(1,ai->ai_addrlen))) == NULL)
 		return(NULL);
-	::memcpy(nai->ai_addr, ai->ai_addr, ai->ai_addrlen);
+	std::memcpy(nai->ai_addr, ai->ai_addr, ai->ai_addrlen);
 
 	return(nai);
 }
