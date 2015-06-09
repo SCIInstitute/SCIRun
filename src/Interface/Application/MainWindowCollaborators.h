@@ -40,6 +40,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDir>
+#include <QMutex>
 
 class QTextEdit;
 class QTreeWidget;
@@ -63,6 +64,7 @@ namespace Gui {
     virtual void log4(const std::string& message) const;
   private:
     QTextEdit* text_;
+    mutable QMutex mutex_;
   };
 
   class TreeViewModuleGetter : public CurrentModuleSelection

@@ -118,5 +118,5 @@ void ModuleLogger::remark(const std::string& msg) const
 void ModuleLogger::status(const std::string& msg) const
 {
   logSignal(QString::fromStdString(msg), Qt::black);
-  Log::get("Modules") << INFO << formatWithColor("[" + moduleName_ + "] " + msg, std::string("black")) << std::endl;
+  Log::get("Modules") << INFO << formatWithColor("[" + moduleName_ + "] " + msg, std::string("white")) << std::endl;
 }

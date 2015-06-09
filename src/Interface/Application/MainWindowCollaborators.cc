@@ -36,6 +36,7 @@ using namespace SCIRun::Core::Logging;
 
 void TextEditAppender::log(const QString& message) const
 {
+  QMutexLocker locker(&mutex_);
   text_->append(message);
   text_->verticalScrollBar()->setValue(text_->verticalScrollBar()->maximum());
 }
