@@ -173,6 +173,7 @@ private Q_SLOTS:
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void highlightPortsChanged();
+  void openLogFolder();
   void resetWindowLayout();
   void zoomNetwork();
   void changeExecuteActionIconToStop();

@@ -324,6 +324,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   prefsWindow_->actionTextIconCheckBox_->setCheckState(Qt::PartiallyChecked);
   adjustExecuteButtonAppearance();
 
+  connect(openLogFolderButton_, SIGNAL(clicked()), this, SLOT(openLogFolder()));
+
   setupInputWidgets();
 
   readSettings();
@@ -1491,6 +1493,12 @@ void SCIRunMainWindow::changeExecuteActionIconToPlay()
 {
   actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
 	actionExecute_All_->setText("Execute All");
+}
+
+void SCIRunMainWindow::openLogFolder()
+{
+  auto logPath = QString::fromStdString(Application::Instance().logDirectory().string());
+  QDesktopServices::openUrl(QUrl::fromLocalFile(logPath));
 }
 
 void SCIRunMainWindow::adjustExecuteButtonAppearance()
