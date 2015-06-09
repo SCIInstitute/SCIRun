@@ -1551,21 +1551,21 @@ FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent)
  	QNetworkRequest request(imageUrl);
 	reply_ = webCtrl_.get(request);
   connect(reply_, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
-  qDebug() << "request filed: " << imageUrl;
+  //qDebug() << "request filed: " << imageUrl;
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply* reply)
 {
-  qDebug() << "slot called";
+  //qDebug() << "slot called";
   downloadedData_ = reply->readAll();
 	reply->deleteLater();
-	qDebug() << "file downloaded";
+	//qDebug() << "file downloaded";
   Q_EMIT downloaded();
 }
 
 void FileDownloader::downloadProgress(qint64 received, qint64 total)
 {
-  qDebug() << "File progress: " << received << " / " << total;
+  //qDebug() << "File progress: " << received << " / " << total;
 }
 
 void SCIRunMainWindow::toolkitDownload()
@@ -1581,11 +1581,11 @@ ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QWidget* parent) : QOb
   if (infoObject)
   {
     iconUrl_ = infoObject->property(ToolkitIconURL).toString();
-    qDebug() << "Toolkit info: \nIcon: " << iconUrl_;
+    //qDebug() << "Toolkit info: \nIcon: " << iconUrl_;
     fileUrl_ = infoObject->property(ToolkitURL).toString();
-    qDebug() << "File url: " << fileUrl_;
+    //qDebug() << "File url: " << fileUrl_;
     filename_ = infoObject->property(ToolkitFilename).toString();
-    qDebug() << "Filename: " << filename_;
+    //qDebug() << "Filename: " << filename_;
 
     downloadIcon();
   }
@@ -1623,7 +1623,7 @@ void ToolkitDownloader::showMessageBox()
     auto dir = QFileDialog::getExistingDirectory(qobject_cast<QWidget*>(parent()), "Select toolkit directory", ".");
     if (!dir.isEmpty())
     {
-      qDebug() << "directory selected " << dir;
+      //qDebug() << "directory selected " << dir;
       toolkitDir_ = dir;
       zipDownloader_ = new FileDownloader(fileUrl_, this);
       connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
@@ -1637,10 +1637,10 @@ void ToolkitDownloader::saveToolkit()
     return;
 
   QString fullFilename = toolkitDir_.filePath(filename_);
-  qDebug() << "saving to " << fullFilename;
+  //qDebug() << "saving to " << fullFilename;
   QFile file(fullFilename);
   file.open(QIODevice::WriteOnly);
   file.write(zipDownloader_->downloadedData());
   file.close();
-  qDebug() << "save done";
+  //qDebug() << "save done";
 }
