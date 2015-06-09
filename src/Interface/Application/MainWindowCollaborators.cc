@@ -41,26 +41,31 @@ void TextEditAppender::log(const QString& message) const
 
 void TextEditAppender::error(const std::string& msg) const
 {
-  log("Error: " + QString::fromStdString(msg));
+  //log("Error: " + QString::fromStdString(msg));
   Log::get() << ERROR_LOG << msg << std::endl;
 }
 
 void TextEditAppender::warning(const std::string& msg) const
 {
-  log("Warning: " + QString::fromStdString(msg));
+  //log("Warning: " + QString::fromStdString(msg));
   Log::get() << WARN << msg << std::endl;
 }
 
 void TextEditAppender::remark(const std::string& msg) const
 {
-  log("Remark: " + QString::fromStdString(msg));
+  //log("Remark: " + QString::fromStdString(msg));
   Log::get() << NOTICE << msg << std::endl;
 }
 
 void TextEditAppender::status(const std::string& msg) const
 {
-  log(QString::fromStdString(msg));
+  //log(QString::fromStdString(msg));
   Log::get() << INFO << msg << std::endl;
+}
+
+void TextEditAppender::log4(const std::string& message) const
+{
+  log(QString::fromStdString(message));
 }
 
 QString TreeViewModuleGetter::text() const
@@ -91,10 +96,8 @@ namespace
     void operator()( T* widget ) const
     {
       //TODO: investigate this Mac Qt bug in more detail. A better workaround probably exists. (Or just wait until Qt 5)
-//#ifdef WIN32
       if (widget)
         widget->setDisabled(flag_);
-//#endif
     }
     bool flag_;
   };

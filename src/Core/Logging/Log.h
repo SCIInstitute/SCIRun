@@ -62,7 +62,16 @@ namespace SCIRun
         NOTSET
       };
 
-      class SCISHARE Log /*final*/
+      class SCISHARE LogAppenderStrategy
+      {
+      public:
+        virtual ~LogAppenderStrategy() {}
+        virtual void log4(const std::string& message) const = 0;
+      };
+
+      typedef boost::shared_ptr<LogAppenderStrategy> LogAppenderStrategyPtr;
+
+      class SCISHARE Log final
       {
       public:
         static Log& get();
@@ -90,14 +99,15 @@ namespace SCIRun
         void setVerbose(bool v);
         bool verbose() const;
         void flush();
+        void addCustomAppender(LogAppenderStrategyPtr appender);
 
       private:
         Log();
         explicit Log(const std::string& name);
-        Log(const Log&)/* =delete*/;
-        Log(Log&&)/* =delete*/;
-        Log& operator=(const Log&)/* =delete*/;
-        Log& operator=(Log&&)/* =delete*/;
+        Log(const Log&) = delete;
+        Log(Log&&) = delete;
+        Log& operator=(const Log&) = delete;
+        Log& operator=(Log&&) = delete;
 
         static boost::filesystem::path directory_;
       private:

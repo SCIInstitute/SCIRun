@@ -73,6 +73,62 @@ namespace SCIRun
   {
     namespace Logging
     {
+      class Log4cppAppenderAdaptor : public log4cpp::Appender
+      {
+      public:
+        explicit Log4cppAppenderAdaptor(LogAppenderStrategyPtr appender, const std::string& name)
+          : log4cpp::Appender(name), appender_(appender)
+        {}
+
+        virtual void doAppend(const log4cpp::LoggingEvent& event) override
+        {
+          if (layout_)
+            appender_->log4(layout_->format(event));
+          else
+            appender_->log4(event.message);
+        }
+
+        virtual bool reopen() override
+        {
+          return true;
+        }
+
+        virtual void close() override
+        {
+        }
+
+        virtual bool requiresLayout() const override
+        {
+          return false;
+        }
+
+        virtual void setLayout(log4cpp::Layout* layout) override
+        {
+          layout_.reset(layout);
+        }
+
+        virtual void setThreshold(log4cpp::Priority::Value priority) override
+        {
+        }
+
+        virtual log4cpp::Priority::Value getThreshold() override
+        {
+          return log4cpp::Priority::INFO;
+        }
+
+        virtual void setFilter(log4cpp::Filter* filter) override
+        {
+        }
+
+        virtual log4cpp::Filter* getFilter() override
+        {
+          return nullptr;
+        }
+      private:
+        LogAppenderStrategyPtr appender_;
+        std::unique_ptr<log4cpp::Layout> layout_;
+      };
+
       class LogStreamImpl
       {
       public:
@@ -85,13 +141,13 @@ namespace SCIRun
       public:
         LogImpl() : name_("root"), cppLogger_(log4cpp::Category::getRoot()), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
-          setAppenders();
+          setBasicAppenders();
         }
 
         explicit LogImpl(const std::string& name) : name_(name), cppLogger_(log4cpp::Category::getInstance(name)), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
           /// @todo
-          setAppenders();
+          setBasicAppenders();
           cppLogger_.setAdditivity(false);
           cppLogger_.setPriority(log4cpp::Priority::INFO);  //?
         }
@@ -120,6 +176,12 @@ namespace SCIRun
         void flush()
         {
           latestStream_.flush();
+        }
+
+        void addCustomAppender(Log4cppAppenderAdaptor* appender)
+        {
+          trySetPattern(appender);
+          cppLogger_.addAppender(appender);
         }
 
         log4cpp::Priority::PriorityLevel translate(LogLevel level)
@@ -153,7 +215,7 @@ namespace SCIRun
         log4cpp::Category& cppLogger_;
         Log::Stream latestStream_;
 
-        void setAppenders()
+        void setBasicAppenders()
         {
           log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
           trySetPattern(appender1);
@@ -239,6 +301,11 @@ void Log::flush()
 void Log::log(LogLevel level, const std::string& msg)
 {
   impl_->log(level, msg);
+}
+
+void Log::addCustomAppender(boost::shared_ptr<LogAppenderStrategy> appender)
+{
+  impl_->addCustomAppender(new Log4cppAppenderAdaptor(appender, "custom"));
 }
 
 Log::Stream& SCIRun::Core::Logging::operator<<(Log& log, LogLevel level)

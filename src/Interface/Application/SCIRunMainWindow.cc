@@ -458,8 +458,9 @@ void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorCont
 void SCIRunMainWindow::setupNetworkEditor()
 {
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
-  Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
+  boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
+  Core::Logging::Log::get().addCustomAppender(logger);
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*prefsWindow_->defaultNotePositionComboBox_));
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
   networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, tagColorFunc, scrollAreaWidgetContents_);
