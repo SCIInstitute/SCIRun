@@ -438,7 +438,7 @@ void ShowFieldGlyphs::renderScalars(
     for (const auto& node : facade->nodes())
     {
       checkForInterruption();
-      Vector v;
+      double v;
       fld->get_value(v, node.index());
       Point p = node.point();
 
@@ -476,7 +476,7 @@ void ShowFieldGlyphs::renderScalars(
     for (const auto& cell : facade->cells())
     {
       checkForInterruption();
-      Vector v;
+      double v;
       fld->get_value(v, cell.index());
       Point p = cell.center();
 
