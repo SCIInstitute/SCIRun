@@ -80,7 +80,7 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(ShowVectors, false);
   state->setValue(VectorsTransparency, false);
   state->setValue(VectorsTransparencyValue, 0.65);
-  state->setValue(VectorsScale, 0.1);
+  state->setValue(VectorsScale, 1.0);
   state->setValue(VectorsResolution, 3);
   state->setValue(VectorsColoring, 0);
   state->setValue(VectorsDisplayType, 0);
@@ -269,9 +269,10 @@ void ShowFieldGlyphs::renderVectors(
   }
 
   auto my_state = get_state();
-  double radius = my_state->getValue(VectorsScale).toDouble();
+  double scale = my_state->getValue(VectorsScale).toDouble();
   double resolution = static_cast<double>(my_state->getValue(VectorsResolution).toInt());
-  if (radius < 0) radius = 0.1;
+  double secondaryScalar = 0.25; // to be replaced with data from secondary field.
+  if (scale < 0) scale = 1.0;
   if (resolution < 3) resolution = 5;  
 
   GlyphGeom glyphs;
@@ -284,12 +285,17 @@ void ShowFieldGlyphs::renderVectors(
       checkForInterruption();
       Vector v;
       fld->get_value(v, node.index());
+      double length = v.length();
+      double radius = length * secondaryScalar;
       Point p1 = node.point();
-      Point p2 = p1 + v;
+      Point p2 = p1 + (v * scale);
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
-        ColorMapHandle map = colorMap.get();
-        node_color = map->valueToColor(v);
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(length);
+        }
       }
       switch (state.mGlyphType)
       {
@@ -300,7 +306,8 @@ void ShowFieldGlyphs::renderVectors(
         glyphs.addNeedle(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::COMET_GLYPH:
-        THROW_ALGORITHM_INPUT_ERROR("Comet Geom is not supported yet.");
+        glyphs.addSphere(p2, radius, resolution, node_color);
+        glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::CONE_GLYPH:
         glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
@@ -334,12 +341,14 @@ void ShowFieldGlyphs::renderVectors(
       checkForInterruption();
       Vector v;
       fld->get_value(v, cell.index());
+      double length = v.length();
+      double radius = length * secondaryScalar;
       Point p1 = cell.center();
-      Point p2 = p1 + v;
+      Point p2 = p1 + (v * scale);
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
         ColorMapHandle map = colorMap.get();
-        node_color = map->valueToColor(v);
+        node_color = map->valueToColor(length);
       }
       switch (state.mGlyphType)
       {
@@ -350,7 +359,8 @@ void ShowFieldGlyphs::renderVectors(
         glyphs.addNeedle(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::COMET_GLYPH:
-        THROW_ALGORITHM_INPUT_ERROR("Comet Geom is not supported yet.");
+        glyphs.addSphere(p2, radius, resolution, node_color);
+        glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::CONE_GLYPH:
         glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
@@ -378,7 +388,7 @@ void ShowFieldGlyphs::renderVectors(
   }
 
   std::stringstream ss;
-  ss << state.mGlyphType << resolution << radius << colorScheme;
+  ss << state.mGlyphType << resolution << scale << colorScheme;
 
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
 
@@ -624,6 +634,7 @@ RenderState ShowFieldGlyphs::getVectorsRenderState(
   RenderState renState;
 
   bool useColorMap = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 2;
   renState.set(RenderState::USE_NORMALS, true);
   
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowVectors).toBool());
@@ -673,6 +684,10 @@ RenderState ShowFieldGlyphs::getVectorsRenderState(
   if (colorMap && useColorMap)
   {
     renState.set(RenderState::USE_COLORMAP, true);
+  }
+  else if (rgbConversion)
+  {
+    renState.set(RenderState::USE_COLOR_CONVERT, true);
   }
   else
   {

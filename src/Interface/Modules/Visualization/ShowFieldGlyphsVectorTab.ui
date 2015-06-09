@@ -99,7 +99,7 @@
    </widget>
    <widget class="QRadioButton" name="vectorsAsCometsRButton_">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -111,7 +111,7 @@
     </property>
     <property name="font">
      <font>
-      <strikeout>true</strikeout>
+      <strikeout>false</strikeout>
      </font>
     </property>
     <property name="text">

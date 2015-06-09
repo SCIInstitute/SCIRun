@@ -214,7 +214,7 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   connectButtonToExecuteSignal(vectorTab_->enableTransparencyVectorsCheckBox_);
   connectButtonToExecuteSignal(vectorTab_->vectorsAsLinesRButton_);
   connectButtonToExecuteSignal(vectorTab_->vectorsAsNeedlesRButton_);
-  //connectButtonToExecuteSignal(vectorTab_->vectorsAsCometsRButton_);
+  connectButtonToExecuteSignal(vectorTab_->vectorsAsCometsRButton_);
   connectButtonToExecuteSignal(vectorTab_->vectorsAsConesRButton_);
   connectButtonToExecuteSignal(vectorTab_->vectorsAsArrowsRButton_);
   //connectButtonToExecuteSignal(vectorTab_->vectorsAsDisksRButton_);
