@@ -27,6 +27,7 @@
 */
 
 #include <Core/ICom/IComPacket.h>
+#include <cstring>
 
 namespace SCIRun {
 
