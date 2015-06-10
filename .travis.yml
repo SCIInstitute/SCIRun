@@ -37,8 +37,7 @@ script:
   && cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../src
   && make -j8
   && make SCIRunTestData_external
- && ./Modules_Legacy_Inverse_Tests
-#  || ./Modules_Math_Tests
+ && ./Modules_Math_Tests
 #  || ./Modules_Fields_Tests
 
 #  || ./Core_Application_Tests
