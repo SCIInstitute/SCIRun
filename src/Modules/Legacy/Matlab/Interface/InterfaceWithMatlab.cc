@@ -52,6 +52,7 @@
 #include <Modules/Legacy/Matlab/Interface/Services/MatlabEngine.h>
 #include <boost/thread.hpp>
 #include <Core/Services/FileTransferClient.h>
+#include <Core/Datatypes/Matrix.h>
 
 #if 0
 
@@ -145,7 +146,7 @@ namespace MatlabImpl
       namespace Matlab {
         namespace Interface {
 
-          class InterfaceWithMatlabImpl //: public ServiceBase
+          class InterfaceWithMatlabImpl : public ServiceBase
           {
           public:
             explicit InterfaceWithMatlabImpl(InterfaceWithMatlab* module) : 
@@ -168,12 +169,11 @@ namespace MatlabImpl
             virtual void presave();
             virtual void tcl_command(GuiArgs& args, void* userdata);
 
-
+#endif
             static matlabarray::mitype	convertdataformat(const std::string& dataformat);
             static std::string totclstring(const std::string& instring);
             std::vector<std::string>	converttcllist(const std::string& str);
 
-#endif
             void	update_status(const std::string& text);
 
             bool	open_matlab_engine();
@@ -216,7 +216,7 @@ namespace MatlabImpl
             GuiString   output_string_name_;
             GuiString   configfile_;
 
-
+#endif
             // Fields per port
             std::vector<std::string>   input_matrix_name_list_;
             std::vector<std::string>   input_matrix_name_list_old_;
@@ -250,16 +250,16 @@ namespace MatlabImpl
             std::string	matlab_code_list_;
 
             // Ports for input and output
-            std::string		input_matrix_matfile_[NUM_MATRIX_PORTS];
-            std::string		input_field_matfile_[NUM_FIELD_PORTS];
-            std::string		input_nrrd_matfile_[NUM_NRRD_PORTS];
-            std::string		input_string_matfile_[NUM_STRING_PORTS];
+            std::vector<std::string>		input_matrix_matfile_;
+            std::vector<std::string>		input_field_matfile_;
+            std::vector<std::string>		input_nrrd_matfile_;
+            std::vector<std::string>		input_string_matfile_;
 
-            std::string		output_matrix_matfile_[NUM_MATRIX_PORTS];
-            std::string		output_field_matfile_[NUM_FIELD_PORTS];
-            std::string		output_nrrd_matfile_[NUM_NRRD_PORTS];
-            std::string		output_string_matfile_[NUM_STRING_PORTS];
-
+            std::vector<std::string>		output_matrix_matfile_;
+            std::vector<std::string>		output_field_matfile_;
+            std::vector<std::string>		output_nrrd_matfile_;
+            std::vector<std::string>		output_string_matfile_;
+#if 0
             // Internet connectivity stuff
             GuiString   inet_address_;
             GuiString   inet_port_;
@@ -465,7 +465,6 @@ namespace MatlabImpl
     start_matlab_(context->subVar("start-matlab")),
     matlab_timeout_(context->subVar("matlab-timeout")),
     matlab_timeout_old_(180),
-    need_file_transfer_(false)
   {
 #ifdef USE_MATLAB_ENGINE_LIBRARY
     engine_ = 0;
@@ -525,67 +524,63 @@ namespace MatlabImpl
     LOG_DEBUG(module_->get_id().id_ << " UpdateStatus \"" << text << "\"");
   }
 
+matlabarray::mitype InterfaceWithMatlabImpl::convertdataformat(const std::string& dataformat)
+{
+  matlabarray::mitype type = matlabarray::miUNKNOWN;
+  if (dataformat == "same as data")  { type = matlabarray::miSAMEASDATA; }
+  else if (dataformat == "double")   { type = matlabarray::miDOUBLE; }
+  else if (dataformat == "single")   { type = matlabarray::miSINGLE; }
+  else if (dataformat == "uint64")   { type = matlabarray::miUINT64; }
+  else if (dataformat == "int64")    { type = matlabarray::miINT64; }
+  else if (dataformat == "uint32")   { type = matlabarray::miUINT32; }
+  else if (dataformat == "int32")    { type = matlabarray::miINT32; }
+  else if (dataformat == "uint16")   { type = matlabarray::miUINT16; }
+  else if (dataformat == "int16")    { type = matlabarray::miINT16; }
+  else if (dataformat == "uint8")    { type = matlabarray::miUINT8; }
+  else if (dataformat == "int8")     { type = matlabarray::miINT8; }
+  return (type);
+}
+
+// converttcllist:
+// converts a TCL formatted list into a STL array
+// of strings
+
+std::vector<std::string> InterfaceWithMatlabImpl::converttcllist(const std::string& str)
+{
+  std::string result;
+  std::vector<std::string> list;
 #if 0
-  matlabarray::mitype InterfaceWithMatlab::convertdataformat(const std::string& dataformat)
+  int lengthlist = 0;
+
+  // Yeah, it is TCL dependent:
+  // TCL::llength determines the length of the list
+  TCLInterface::eval("llength { "+str + " }",result);
+  std::istringstream iss(result);
+  iss >> lengthlist;
+  if (lengthlist < 0) return(list);
+
+  list.resize(lengthlist);
+  for (int p = 0;p<lengthlist;p++)
   {
-    matlabarray::mitype type = matlabarray::miUNKNOWN;
-    if (dataformat == "same as data")  { type = matlabarray::miSAMEASDATA; }
-    else if (dataformat == "double")   { type = matlabarray::miDOUBLE; }
-    else if (dataformat == "single")   { type = matlabarray::miSINGLE; }
-    else if (dataformat == "uint64")   { type = matlabarray::miUINT64; }
-    else if (dataformat == "int64")    { type = matlabarray::miINT64; }
-    else if (dataformat == "uint32")   { type = matlabarray::miUINT32; }
-    else if (dataformat == "int32")    { type = matlabarray::miINT32; }
-    else if (dataformat == "uint16")   { type = matlabarray::miUINT16; }
-    else if (dataformat == "int16")    { type = matlabarray::miINT16; }
-    else if (dataformat == "uint8")    { type = matlabarray::miUINT8; }
-    else if (dataformat == "int8")     { type = matlabarray::miINT8; }
-    return (type);
-  }
-
-  // converttcllist:
-  // converts a TCL formatted list into a STL array
-  // of strings
-
-  std::vector<std::string> InterfaceWithMatlab::converttcllist(const std::string& str)
-  {
-    std::string result;
-    std::vector<std::string> list(0);
-    int lengthlist = 0;
-
-    // Yeah, it is TCL dependent:
-    // TCL::llength determines the length of the list
-    TCLInterface::eval("llength { "+str + " }",result);
-    std::istringstream iss(result);
-    iss >> lengthlist;
-    if (lengthlist < 0) return(list);
-
-    list.resize(lengthlist);
-    for (int p = 0;p<lengthlist;p++)
-    {
-      std::ostringstream oss;
-      // TCL dependency:
-      // TCL::lindex retrieves the p th element from the list
-      oss << "lindex { " << str <<  " } " << p;
-      TCLInterface::eval(oss.str(),result);
-      list[p] = result;
-    }
-    return(list);
+    std::ostringstream oss;
+    // TCL dependency:
+    // TCL::lindex retrieves the p th element from the list
+    oss << "lindex { " << str <<  " } " << p;
+    TCLInterface::eval(oss.str(),result);
+    list[p] = result;
   }
 #endif
+  return(list);
+}
 
 bool InterfaceWithMatlabImpl::synchronise_input()
 {
-#if 0
-  TCLInterface::execute(get_id()+" Synchronise");
-  get_ctx()->reset();
-
   std::string str;
   str = input_matrix_name_.get(); input_matrix_name_list_ = converttcllist(str);
   str = input_matrix_type_.get(); input_matrix_type_list_ = converttcllist(str);
   str = input_matrix_array_.get(); input_matrix_array_list_ = converttcllist(str);
   str = output_matrix_name_.get(); output_matrix_name_list_ = converttcllist(str);
-
+#if 0
   str = input_field_name_.get(); input_field_name_list_ = converttcllist(str);
   str = input_field_array_.get(); input_field_array_list_ = converttcllist(str);
   str = output_field_name_.get(); output_field_name_list_ = converttcllist(str);
@@ -597,10 +592,9 @@ bool InterfaceWithMatlabImpl::synchronise_input()
 
   str = input_string_name_.get(); input_string_name_list_ = converttcllist(str);
   str = output_string_name_.get(); output_string_name_list_ = converttcllist(str);
-
-  TCLInterface::execute(get_id() + " update_text"); // update matlab_code_ before use.
-  matlab_code_list_ = matlab_code_.get();
 #endif
+  matlab_code_list_ = matlab_code_.get();
+
   return(true);
 }
 
@@ -1042,17 +1036,17 @@ void InterfaceWithMatlab::execute()
       int sessionn = packet->getparam1();
       matlab_engine_->setsession(sessionn);
 
-      //std::string sharehomedir = "yes";
-      //if (need_file_transfer_) sharehomedir = "no";
+      std::string sharehomedir = "yes";
+      if (need_file_transfer_) sharehomedir = "no";
 
       std::ostringstream statusStr;
       statusStr << "Matlab engine running\n\nmatlabengine version: " << matlab_engine_->getversion()
         << "\nmatlabengine address: " << matlab_engine_->getremoteaddress()
-        << "\nmatlabengine session: " + matlab_engine_->getsession();
-        //<< "\nmatlabengine filetransfer version :" << file_transfer_->getversion()
-        //<< "\nshared home directory: " << sharehomedir
-        //<< "\nlocal temp directory: " << file_transfer_->local_file("")
-        //<< "\nremote temp directory: " << file_transfer_->remote_file("") + "\n";
+        << "\nmatlabengine session: " + matlab_engine_->getsession()
+        << "\nmatlabengine filetransfer version :" << file_transfer_->getversion()
+        << "\nshared home directory: " << sharehomedir
+        << "\nlocal temp directory: " << file_transfer_->local_file("")
+        << "\nremote temp directory: " << file_transfer_->remote_file("") + "\n";
       auto status = statusStr.str();
 #else
       std::string status = "InterfaceWithMatlab engine running\n";
@@ -1358,30 +1352,29 @@ void InterfaceWithMatlab::execute()
       std::ofstream m_file;
       std::string loadcmd;
 
-      mfile_ = std::string("scirun_code.m");
+      mfile_ = "scirun_code.m";
       std::string filename = file_transfer_->local_file(mfile_);
 
       m_file.open(filename.c_str(),std::ios::out);
 
-      for (int p = 0; p < NUM_MATRIX_PORTS; p++)
-      {
-        MatrixHandle	handle;
-        if(!(get_input_handle(port,handle,false))) { port++; continue; }
-        port++;
+      auto matrices = module_->getRequiredDynamicInputs(module_->InputMatrix);
+      input_matrix_matfile_.clear();
+      input_matrix_name_list_.resize(matrices.size());
+      input_matrix_type_list_.resize(matrices.size());
+      input_matrix_array_list_.resize(matrices.size());
+      input_matrix_name_list_old_.resize(matrices.size());
+      input_matrix_type_list_old_.resize(matrices.size());
+      input_matrix_array_list_old_.resize(matrices.size());
+      input_matrix_generation_old_.resize(matrices.size());
 
-        // if there is no data
-        if (handle.get_rep() == 0)
-        {
-          // we do not need the old file any more so delete it
-          input_matrix_matfile_[p] = "";
-          continue;
-        }
+      for (const auto& matrix : matrices)
+      {
         // if the data as the same before
         // do nothing
-        if ((input_matrix_name_list_[p]==input_matrix_name_list_old_[p])&&
-          (input_matrix_type_list_[p]==input_matrix_type_list_old_[p])&&
-          (input_matrix_array_list_[p]==input_matrix_array_list_old_[p])&&
-          (handle->generation == input_matrix_generation_old_[p]))
+        if ((input_matrix_name_list_[port] == input_matrix_name_list_old_[port]) &&
+          (input_matrix_type_list_[port] == input_matrix_type_list_old_[port]) &&
+          (input_matrix_array_list_[port] == input_matrix_array_list_old_[port]) &&
+          (matrix->id() == input_matrix_generation_old_[port]))
         {
           // this one was not created again
           // hence we do not need to translate it again
@@ -1393,21 +1386,21 @@ void InterfaceWithMatlab::execute()
 
         // Create a new filename for the input matrix
         std::ostringstream oss;
-        oss << "input_matrix" << p << ".mat";
-        input_matrix_matfile_[p] = oss.str();
+        oss << "input_matrix" << port << ".mat";
+        input_matrix_matfile_.push_back(oss.str());
 
         matlabfile mf;
         matlabarray ma;
 
-        mf.open(file_transfer_->local_file(input_matrix_matfile_[p]),"w");
+        mf.open(file_transfer_->local_file(input_matrix_matfile_[port]), "w");
         mf.setheadertext("InterfaceWithMatlab V5 compatible file generated by SCIRun [module InterfaceWithMatlab version 1.3]");
 
-        matlabconverter translate(dynamic_cast<SCIRun::ProgressReporter *>(this));
+        matlabconverter translate(module_->getLogger());
         translate.converttostructmatrix();
-        if (input_matrix_array_list_[p] == "numeric array")
+        if (input_matrix_array_list_[port] == "numeric array")
           translate.converttonumericmatrix();
-        translate.setdatatype(convertdataformat(input_matrix_type_list_[p]));
-        translate.sciMatrixTOmlArray(handle,ma);
+        translate.setdatatype(convertdataformat(input_matrix_type_list_[port]));
+        translate.sciMatrixTOmlArray(matrix, ma);
 
         mf.putmatlabarray(ma,input_matrix_name_list_[p]);
         mf.close();
@@ -1423,18 +1416,19 @@ void InterfaceWithMatlab::execute()
           {
             module_->error("InterfaceWithMatlab: Could not transfer file");
             std::string err = "Error :" + file_transfer_->geterror();
-            error(err);
+            module_->error(err);
             return(false);
           }
         }
 
-        input_matrix_type_list_old_[p] = input_matrix_type_list_[p];
-        input_matrix_array_list_old_[p] = input_matrix_array_list_[p];
-        input_matrix_name_list_old_[p] = input_matrix_name_list_[p];
-        input_matrix_generation_old_[p] = handle->generation;
+        input_matrix_type_list_old_[port] = input_matrix_type_list_[port];
+        input_matrix_array_list_old_[port] = input_matrix_array_list_[port];
+        input_matrix_name_list_old_[port] = input_matrix_name_list_[port];
+        input_matrix_generation_old_[port] = matrix->id();
 
+        port++;
       }
-
+#if 0
       for (int p = 0; p < NUM_FIELD_PORTS; p++)
       {
         FieldHandle	handle;
@@ -1505,7 +1499,8 @@ void InterfaceWithMatlab::execute()
         input_field_name_list_old_[p] = input_field_name_list_[p];
         input_field_generation_old_[p] = handle->generation;
       }
-
+#endif
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       for (int p = 0; p < NUM_NRRD_PORTS; p++)
       {
         NrrdDataHandle	handle;
@@ -1574,7 +1569,8 @@ void InterfaceWithMatlab::execute()
         input_nrrd_name_list_old_[p] = input_nrrd_name_list_[p];
         input_nrrd_generation_old_[p] = handle->generation;
       }
-
+#endif
+#if 0
       for (int p = 0; p < NUM_STRING_PORTS; p++)
       {
         StringHandle	handle;
@@ -1637,7 +1633,7 @@ void InterfaceWithMatlab::execute()
         input_string_name_list_old_[p] = input_string_name_list_[p];
         input_string_generation_old_[p] = handle->generation;
       }
-
+#endif
     }
     catch (matlabfile::could_not_open_file&)
     {   // Could not open the temporary file
