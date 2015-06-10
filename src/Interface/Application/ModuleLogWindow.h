@@ -65,6 +65,7 @@ class ModuleLogger : public QObject, public Core::Logging::LegacyLoggerInterface
   Q_OBJECT
 public:
   explicit ModuleLogger(ModuleLogWindow* window);
+  ~ModuleLogger();
   virtual void error(const std::string& msg) const;
   virtual void warning(const std::string& msg) const;
   virtual void remark(const std::string& msg) const;

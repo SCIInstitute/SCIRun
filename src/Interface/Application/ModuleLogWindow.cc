@@ -89,6 +89,11 @@ ModuleLogger::ModuleLogger(ModuleLogWindow* window) : moduleName_(window->name()
   connect(this, SIGNAL(popup(const QString&)), window, SLOT(popupMessageBox(const QString&)));
 }
 
+ModuleLogger::~ModuleLogger()
+{
+  Log::get("Modules").flush();
+}
+
 void ModuleLogger::error(const std::string& msg) const
 {
   const QColor red = Qt::red;
@@ -96,7 +101,7 @@ void ModuleLogger::error(const std::string& msg) const
   logSignal("<b>ERROR: " + qmsg + "</b>", red);
   alert(red);
   popup(qmsg);
-  Log::get("Modules") << ERROR_LOG << formatWithColor("[" + moduleName_ + "] " + msg, std::string("red")) << std::endl;
+  Log::get("Modules") << ERROR_LOG << formatWithColor("[" + moduleName_ + "] " + msg, std::string("red"));
 }
 
 void ModuleLogger::warning(const std::string& msg) const
@@ -104,7 +109,7 @@ void ModuleLogger::warning(const std::string& msg) const
   const QColor yellow = Qt::yellow;
   logSignal("WARNING: " + QString::fromStdString(msg), yellow);
   alert(yellow);
-  Log::get("Modules") << WARN << formatWithColor("[" + moduleName_ + "] " + msg, std::string("yellow")) << std::endl;
+  Log::get("Modules") << WARN << formatWithColor("[" + moduleName_ + "] " + msg, std::string("yellow"));
 }
 
 void ModuleLogger::remark(const std::string& msg) const
@@ -112,11 +117,11 @@ void ModuleLogger::remark(const std::string& msg) const
   const QColor blue = Qt::blue;
   logSignal("REMARK: " + QString::fromStdString(msg), blue);
   alert(blue);
-  Log::get("Modules") << NOTICE << formatWithColor("[" + moduleName_ + "] " + msg, std::string("blue")) << std::endl;
+  Log::get("Modules") << NOTICE << formatWithColor("[" + moduleName_ + "] " + msg, std::string("blue"));
 }
 
 void ModuleLogger::status(const std::string& msg) const
 {
   logSignal(QString::fromStdString(msg), Qt::black);
-  Log::get("Modules") << INFO << formatWithColor("[" + moduleName_ + "] " + msg, std::string("white")) << std::endl;
+  Log::get("Modules") << INFO << formatWithColor("[" + moduleName_ + "] " + msg, std::string("white"));
 }
