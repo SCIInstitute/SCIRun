@@ -45,6 +45,7 @@ namespace SCIRun
       namespace Render
       {
         ALGORITHM_PARAMETER_DECL(GeomData);
+        ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
       }
     }
   }
@@ -82,8 +83,10 @@ namespace Render {
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
   private:
+    void processViewSceneObjectFeedback();
     void updateTransientList();
     ActiveGeometryMap activeGeoms_;
+    Core::Algorithms::VariableList feedbackInfo_;
   };
 }}}
 

@@ -768,7 +768,6 @@ Screenshot::Screenshot(QGLWidget *glwidget, QObject *parent)
   QDir dir(filePath);
   if (!dir.exists())
   {
-    //qDebug() << "creating file directory" << filePath;
     dir.mkpath(filePath);
   }
 }
@@ -799,4 +798,9 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
 {
   qDebug() << "in VSD slot: " << x << y;
+  using namespace SCIRun::Core::Algorithms;
+  Variable::List coords;
+  coords.push_back(makeVariable("x", x));
+  coords.push_back(makeVariable("y", y));
+  state_->setValue(Parameters::GeometryFeedbackInfo, coords);
 }

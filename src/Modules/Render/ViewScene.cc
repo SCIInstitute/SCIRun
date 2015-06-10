@@ -49,10 +49,13 @@ ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
 Mutex ViewScene::mutex_("ViewScene");
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
+ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_)
 {
   INITIALIZE_PORT(GeneralGeom);
+
+  get_state()->connect_state_changed([this]() { processViewSceneObjectFeedback(); });
 }
 
 void ViewScene::setStateDefaults()
@@ -123,6 +126,18 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     updateTransientList();
   }
   get_state()->fireTransientStateChangeSignal();
+}
+
+void ViewScene::processViewSceneObjectFeedback()
+{
+  std::cout << "slot for state change in VS module" << std::endl;
+  auto state = get_state();
+  auto newInfo = state->getValue(Parameters::GeometryFeedbackInfo).toVector();
+  if (feedbackInfo_ != newInfo)
+  {
+    std::cout << "new feedback info: " << newInfo << std::endl;
+    feedbackInfo_ = newInfo;
+  }
 }
 
 SCIRun::Core::Algorithms::AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
