@@ -630,13 +630,13 @@ void InterfaceWithMatlab::execute()
   }
 
   update_state(Executing);
-#if 0
-  if (!(generate_matlab_code()))
+
+  if (!impl_->generate_matlab_code())
   {
     error("InterfaceWithMatlab: Could not create m-file code for matlabengine");
     return;
   }
-
+#if 0
   if (!send_matlab_job())
   {
     error("InterfaceWithMatlab: Matlab returned an error or Matlab could not be launched");
@@ -1236,94 +1236,87 @@ void InterfaceWithMatlab::execute()
     }
     return(true);
   }
+#endif
 
-  bool InterfaceWithMatlab::generate_matlab_code()
+bool InterfaceWithMatlabImpl::generate_matlab_code()
+{
+  std::ofstream m_file;
+
+  mfile_ = std::string("scirun_code.m");
+  std::string filename = file_transfer_->local_file(mfile_);
+  m_file.open(filename.c_str(), std::ios::app);
+
+  int port = 0;
+  m_file << matlab_code_list_ << "\n";
+  for (int p = 0; p < NUM_MATRIX_PORTS; p++)
   {
-    try
-    {
-      std::ofstream m_file;
+    // Test whether the matrix port exists
+    if (!oport_connected(port)) { port++; continue; }
+    port++;
+    if (output_matrix_name_list_[p] == "") continue;
 
-      mfile_ = std::string("scirun_code.m");
-      std::string filename = file_transfer_->local_file(mfile_);
-      m_file.open(filename.c_str(),std::ios::app);
-
-      int port = 0;
-      m_file << matlab_code_list_ << "\n";
-      for (int p = 0; p < NUM_MATRIX_PORTS; p++)
-      {
-        // Test whether the matrix port exists
-        if (!oport_connected(port)) { port++; continue; }
-        port++;
-        if (output_matrix_name_list_[p] == "") continue;
-
-        std::ostringstream oss;
-        oss << "output_matrix" << p << ".mat";
-        output_matrix_matfile_[p] = oss.str();
-        std::string cmd;
-        cmd = "if exist('" + output_matrix_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_matrix_matfile_[p]) + " " + output_matrix_name_list_[p] + "; end\n";
-        m_file << cmd;
-      }
-
-      for (int p = 0; p < NUM_FIELD_PORTS; p++)
-      {
-        // Test whether the matrix port exists
-        if (!oport_connected(port)) { port++; continue; }
-        port++;
-        if (output_field_name_list_[p] == "") continue;
-
-        std::ostringstream oss;
-        oss << "output_field" << p << ".mat";
-        output_field_matfile_[p] = oss.str();
-        std::string cmd;
-        cmd = "if exist('" + output_field_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_field_matfile_[p]) + " " + output_field_name_list_[p] + "; end\n";
-        m_file << cmd;
-      }
-
-      for (int p = 0; p < NUM_NRRD_PORTS; p++)
-      {
-        // Test whether the matrix port exists
-        if (!oport_connected(port)) { port++; continue; }
-        port++;
-        if (output_nrrd_name_list_[p] == "") continue;
-
-        std::ostringstream oss;
-
-        oss << "output_nrrd" << p << ".mat";
-        output_nrrd_matfile_[p] = oss.str();
-        std::string cmd;
-        cmd = "if exist('" + output_nrrd_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_nrrd_matfile_[p]) + " " + output_nrrd_name_list_[p] + "; end\n";
-        m_file << cmd;
-      }
-
-      for (int p = 0; p < NUM_STRING_PORTS; p++)
-      {
-        // Test whether the matrix port exists
-        if (!oport_connected(port)) { port++; continue; }
-        port++;
-        if (output_string_name_list_[p] == "") continue;
-
-        std::ostringstream oss;
-
-        oss << "output_string" << p << ".mat";
-        output_string_matfile_[p] = oss.str();
-        std::string cmd;
-        cmd = "if exist('" + output_string_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_string_matfile_[p]) + " " + output_string_name_list_[p] + "; end\n";
-        m_file << cmd;
-      }
-
-      m_file.close();
-
-      if (need_file_transfer_) file_transfer_->put_file(file_transfer_->local_file(mfile_),file_transfer_->remote_file(mfile_));
-    }
-    catch(...)
-    {
-      return(false);
-    }
-
-    return(true);
+    std::ostringstream oss;
+    oss << "output_matrix" << p << ".mat";
+    output_matrix_matfile_[p] = oss.str();
+    std::string cmd;
+    cmd = "if exist('" + output_matrix_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_matrix_matfile_[p]) + " " + output_matrix_name_list_[p] + "; end\n";
+    m_file << cmd;
   }
 
-#endif
+  for (int p = 0; p < NUM_FIELD_PORTS; p++)
+  {
+    // Test whether the matrix port exists
+    if (!oport_connected(port)) { port++; continue; }
+    port++;
+    if (output_field_name_list_[p] == "") continue;
+
+    std::ostringstream oss;
+    oss << "output_field" << p << ".mat";
+    output_field_matfile_[p] = oss.str();
+    std::string cmd;
+    cmd = "if exist('" + output_field_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_field_matfile_[p]) + " " + output_field_name_list_[p] + "; end\n";
+    m_file << cmd;
+  }
+
+  for (int p = 0; p < NUM_NRRD_PORTS; p++)
+  {
+    // Test whether the matrix port exists
+    if (!oport_connected(port)) { port++; continue; }
+    port++;
+    if (output_nrrd_name_list_[p] == "") continue;
+
+    std::ostringstream oss;
+
+    oss << "output_nrrd" << p << ".mat";
+    output_nrrd_matfile_[p] = oss.str();
+    std::string cmd;
+    cmd = "if exist('" + output_nrrd_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_nrrd_matfile_[p]) + " " + output_nrrd_name_list_[p] + "; end\n";
+    m_file << cmd;
+  }
+
+  for (int p = 0; p < NUM_STRING_PORTS; p++)
+  {
+    // Test whether the matrix port exists
+    if (!oport_connected(port)) { port++; continue; }
+    port++;
+    if (output_string_name_list_[p] == "") continue;
+
+    std::ostringstream oss;
+
+    oss << "output_string" << p << ".mat";
+    output_string_matfile_[p] = oss.str();
+    std::string cmd;
+    cmd = "if exist('" + output_string_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_string_matfile_[p]) + " " + output_string_name_list_[p] + "; end\n";
+    m_file << cmd;
+  }
+
+  m_file.close();
+
+  if (need_file_transfer_) file_transfer_->put_file(file_transfer_->local_file(mfile_), file_transfer_->remote_file(mfile_));
+
+  return(true);
+}
+
   bool InterfaceWithMatlabImpl::save_input_matrices()
   {
     try
