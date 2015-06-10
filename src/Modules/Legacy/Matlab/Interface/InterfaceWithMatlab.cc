@@ -53,6 +53,8 @@
 #include <boost/thread.hpp>
 #include <Core/Services/FileTransferClient.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 #if 0
 
@@ -168,23 +170,7 @@ namespace MatlabImpl
               output_nrrd_matfile_(NUM_OUTPUT_NRRDS),
               output_string_matfile_(NUM_OUTPUT_STRINGS)
               {}
-#if 0
 
-            // Constructor
-            InterfaceWithMatlab(GuiContext* ctx);
-
-            // Destructor
-            virtual ~InterfaceWithMatlab();
-
-            // Std functions for each module
-            // execute():
-            //   Execute the module and put data on the output port
-
-            virtual void execute();
-            virtual void presave();
-            virtual void tcl_command(GuiArgs& args, void* userdata);
-
-#endif
             static matlabarray::mitype	convertdataformat(const std::string& dataformat);
             static std::string totclstring(const std::string& instring);
             std::vector<std::string>	converttcllist(const Variable::List& str);
@@ -217,6 +203,9 @@ namespace MatlabImpl
             bool isMatrixOutputPortConnected(int index) const;
             bool isFieldOutputPortConnected(int index) const;
             bool isStringOutputPortConnected(int index) const;
+            void sendMatrixOutput(int index, MatrixHandle matrix) const;
+            void sendFieldOutput(int index, FieldHandle field) const;
+            void sendStringOutput(int index, StringHandle str) const;
 
             // GUI variables
 #if 0
@@ -295,7 +284,6 @@ namespace MatlabImpl
             TempFileManager tfmanager_;
             std::string		mfile_;
 #if 0
-            GuiString		matlab_code_;
             GuiString   matlab_code_file_;
             GuiString		matlab_var_;
 
@@ -1088,49 +1076,48 @@ bool InterfaceWithMatlabImpl::close_matlab_engine()
   return(true);
 }
 
-bool InterfaceWithMatlab::load_output_matrices()
+bool InterfaceWithMatlabImpl::load_output_matrices()
 {
-  int port = 0;
-  try
+  for (int p = 0; p < NUM_OUTPUT_MATRICES; p++)
   {
-    for (int p = 0; p < NUM_MATRIX_PORTS; p++)
+    if (!isMatrixOutputPortConnected(p))
+      continue;
+    if (output_matrix_name_list_[p].empty()) 
+      continue;
+    if (output_matrix_matfile_[p].empty()) 
+      continue;
+
+    matlabfile mf;
+    matlabarray ma;
+
+    try
     {
-      if (!oport_connected(port)) { port++; continue; }
-
-      // Test whether the matrix port exists
-      if (output_matrix_name_list_[p] == "") continue;
-      if (output_matrix_matfile_[p] == "") continue;
-
-      matlabfile mf;
-      matlabarray ma;
-
-      try
-      {
-        if (need_file_transfer_) file_transfer_->get_file(file_transfer_->remote_file(output_matrix_matfile_[p]),file_transfer_->local_file(output_matrix_matfile_[p]));
-        mf.open(file_transfer_->local_file(output_matrix_matfile_[p]),"r");
-        ma = mf.getmatlabarray(output_matrix_name_list_[p]);
-        mf.close();
-      }
-      catch(...)
-      {
-        error("InterfaceWithMatlab: Could not read output matrix");
-        continue;
-      }
-
-      if (ma.isempty())
-      {
-        error("InterfaceWithMatlab: Could not read output matrix");
-        continue;
-      }
-
-      MatrixHandle handle;
-      std::string info;
-      matlabconverter translate(dynamic_cast<SCIRun::ProgressReporter *>(this));
-      if (translate.sciMatrixCompatible(ma,info)) translate.mlArrayTOsciMatrix(ma,handle);
-      send_output_handle(port,handle,true); port++;
+      if (need_file_transfer_) file_transfer_->get_file(file_transfer_->remote_file(output_matrix_matfile_[p]),file_transfer_->local_file(output_matrix_matfile_[p]));
+      mf.open(file_transfer_->local_file(output_matrix_matfile_[p]),"r");
+      ma = mf.getmatlabarray(output_matrix_name_list_[p]);
+      mf.close();
+    }
+    catch(...)
+    {
+      module_->error("InterfaceWithMatlab: Could not read output matrix");
+      continue;
     }
 
+    if (ma.isempty())
+    {
+      module_->error("InterfaceWithMatlab: Could not read output matrix");
+      continue;
+    }
 
+    MatrixHandle handle;
+    std::string info;
+    matlabconverter translate(module_->getLogger());
+    if (translate.sciMatrixCompatible(ma,info)) 
+      translate.mlArrayTOsciMatrix(ma,handle);
+    sendMatrixOutput(p, handle);
+  }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     for (int p = 0; p < NUM_FIELD_PORTS; p++)
     {
       if (!oport_connected(port)) { port++; continue; }
@@ -1241,11 +1228,8 @@ bool InterfaceWithMatlab::load_output_matrices()
       if (translate.sciStringCompatible(ma,info)) translate.mlArrayTOsciString(ma,handle);
       send_output_handle(port,handle,true); port++;
     }
-  }
-  catch(...)
-  {
-    return(false);
-  }
+#endif
+  
   return(true);
 }
 
@@ -1365,6 +1349,39 @@ bool InterfaceWithMatlabImpl::isStringOutputPortConnected(int index) const
     return module_->oport_connected(module_->OutputString1);
   default:
     return false;
+  }
+}
+
+void InterfaceWithMatlabImpl::sendMatrixOutput(int index, MatrixHandle matrix) const
+{
+  switch (index)
+  {
+  case 0:
+    module_->sendOutput(module_->OutputMatrix0, matrix);
+  case 1:
+    module_->sendOutput(module_->OutputMatrix1, matrix);
+  }
+}
+
+void InterfaceWithMatlabImpl::sendFieldOutput(int index, FieldHandle field) const
+{
+  switch (index)
+  {
+  case 0:
+    module_->sendOutput(module_->OutputField0, field);
+  case 1:                              
+    module_->sendOutput(module_->OutputField1, field);
+  }
+}
+
+void InterfaceWithMatlabImpl::sendStringOutput(int index, StringHandle str) const
+{
+  switch (index)
+  {
+  case 0:
+    module_->sendOutput(module_->OutputString0, str);
+  case 1:                              
+    module_->sendOutput(module_->OutputString1, str);
   }
 }
 
@@ -1681,52 +1698,53 @@ bool InterfaceWithMatlabImpl::isStringOutputPortConnected(int index) const
     return(true);
   }
 
-  bool InterfaceWithMatlabImpl::create_temp_directory()
+bool InterfaceWithMatlabImpl::create_temp_directory()
+{
+  if (temp_directory_.empty())
   {
-    if (temp_directory_.empty())
-    {
-      return (tfmanager_.create_tempdir("matlab-engine.XXXXXX",temp_directory_));
-    }
-    return(true);
+    return (tfmanager_.create_tempdir("matlab-engine.XXXXXX",temp_directory_));
+  }
+  return(true);
+}
+
+
+bool InterfaceWithMatlabImpl::delete_temp_directory()
+{
+  if(temp_directory_ != "") tfmanager_.delete_tempdir(temp_directory_);
+  temp_directory_ = "";
+  return(true);
+}
+
+std::string InterfaceWithMatlabImpl::totclstring(const std::string &instring)
+{
+  size_t strsize = instring.size();
+  int specchar = 0;
+  for (int p = 0; p < strsize; p++)
+    if ((instring[p]=='\n')||(instring[p]=='\t')||(instring[p]=='\b')||(instring[p]=='\r')||(instring[p]=='{')||(instring[p]=='}')
+      ||(instring[p]=='[')||(instring[p]==']')||(instring[p]=='\\')||(instring[p]=='$')||(instring[p]=='"')) specchar++;
+
+  std::string newstring;
+  newstring.resize(strsize+specchar);
+  int q = 0;
+  for (int p = 0; p < strsize; p++)
+  {
+    if (instring[p]=='\n') { newstring[q++] = '\\'; newstring[q++] = 'n'; continue; }
+    if (instring[p]=='\t') { newstring[q++] = '\\'; newstring[q++] = 't'; continue; }
+    if (instring[p]=='\b') { newstring[q++] = '\\'; newstring[q++] = 'b'; continue; }
+    if (instring[p]=='\r') { newstring[q++] = '\\'; newstring[q++] = 'r'; continue; }
+    if (instring[p]=='{')  { newstring[q++] = '\\'; newstring[q++] = '{'; continue; }
+    if (instring[p]=='}')  { newstring[q++] = '\\'; newstring[q++] = '}'; continue; }
+    if (instring[p]=='[')  { newstring[q++] = '\\'; newstring[q++] = '['; continue; }
+    if (instring[p]==']')  { newstring[q++] = '\\'; newstring[q++] = ']'; continue; }
+    if (instring[p]=='\\') { newstring[q++] = '\\'; newstring[q++] = '\\'; continue; }
+    if (instring[p]=='$')  { newstring[q++] = '\\'; newstring[q++] = '$'; continue; }
+    if (instring[p]=='"')  { newstring[q++] = '\\'; newstring[q++] = '"'; continue; }
+    newstring[q++] = instring[p];
   }
 
+  return(newstring);
+}
 
-  bool InterfaceWithMatlabImpl::delete_temp_directory()
-  {
-    if(temp_directory_ != "") tfmanager_.delete_tempdir(temp_directory_);
-    temp_directory_ = "";
-    return(true);
-  }
-
-  std::string InterfaceWithMatlabImpl::totclstring(const std::string &instring)
-  {
-    size_t strsize = instring.size();
-    int specchar = 0;
-    for (int p = 0; p < strsize; p++)
-      if ((instring[p]=='\n')||(instring[p]=='\t')||(instring[p]=='\b')||(instring[p]=='\r')||(instring[p]=='{')||(instring[p]=='}')
-        ||(instring[p]=='[')||(instring[p]==']')||(instring[p]=='\\')||(instring[p]=='$')||(instring[p]=='"')) specchar++;
-
-    std::string newstring;
-    newstring.resize(strsize+specchar);
-    int q = 0;
-    for (int p = 0; p < strsize; p++)
-    {
-      if (instring[p]=='\n') { newstring[q++] = '\\'; newstring[q++] = 'n'; continue; }
-      if (instring[p]=='\t') { newstring[q++] = '\\'; newstring[q++] = 't'; continue; }
-      if (instring[p]=='\b') { newstring[q++] = '\\'; newstring[q++] = 'b'; continue; }
-      if (instring[p]=='\r') { newstring[q++] = '\\'; newstring[q++] = 'r'; continue; }
-      if (instring[p]=='{')  { newstring[q++] = '\\'; newstring[q++] = '{'; continue; }
-      if (instring[p]=='}')  { newstring[q++] = '\\'; newstring[q++] = '}'; continue; }
-      if (instring[p]=='[')  { newstring[q++] = '\\'; newstring[q++] = '['; continue; }
-      if (instring[p]==']')  { newstring[q++] = '\\'; newstring[q++] = ']'; continue; }
-      if (instring[p]=='\\') { newstring[q++] = '\\'; newstring[q++] = '\\'; continue; }
-      if (instring[p]=='$')  { newstring[q++] = '\\'; newstring[q++] = '$'; continue; }
-      if (instring[p]=='"')  { newstring[q++] = '\\'; newstring[q++] = '"'; continue; }
-      newstring[q++] = instring[p];
-    }
-
-    return(newstring);
-  }
 #if 0
   void InterfaceWithMatlab::tcl_command(GuiArgs& args, void* userdata)
   {
