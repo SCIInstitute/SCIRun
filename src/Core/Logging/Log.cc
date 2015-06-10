@@ -147,7 +147,7 @@ namespace SCIRun
         explicit LogImpl(const std::string& name) : name_(name), cppLogger_(log4cpp::Category::getInstance(name)), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
           /// @todo
-          setBasicAppenders();
+          //setBasicAppenders();
           cppLogger_.setAdditivity(false);
           cppLogger_.setPriority(log4cpp::Priority::INFO);  //?
         }
@@ -219,7 +219,7 @@ namespace SCIRun
         {
           log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
           trySetPattern(appender1);
-         
+
           file_ = Log::logDirectory() / ("scirun5_" + name_ + ".log");
           log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", file_.string());
           trySetPattern(appender2);
