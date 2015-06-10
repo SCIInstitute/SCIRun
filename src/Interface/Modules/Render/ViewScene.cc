@@ -69,6 +69,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
+  connect(mGLWidget, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int)), this, SLOT(sendGeometryFeedbackToState(int, int)));
 
   if (mGLWidget->isValid())
   {
@@ -793,4 +794,9 @@ QString Screenshot::screenshotFile() const
 void ViewSceneDialog::saveNewGeometryChanged(int state)
 {
   saveScreenshotOnNewGeometry_ = state != 0;
+}
+
+void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
+{
+  qDebug() << "in VSD slot: " << x << y;
 }

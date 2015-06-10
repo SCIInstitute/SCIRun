@@ -104,6 +104,7 @@ namespace SCIRun {
       void handleSelectedItem(const QString& name);
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
+      void sendGeometryFeedbackToState(int x, int y);
 
     protected:
       virtual void closeEvent(QCloseEvent* evt) override;
