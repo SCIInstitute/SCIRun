@@ -390,7 +390,7 @@ bool ApplicationHelper::get_user_desktop_directory( boost::filesystem::path& use
 
     if (! boost::filesystem::exists( user_desktop_dir ) )
     {
-      std::cerr << "Could not get user desktop directory.";
+      std::cerr << "Could not get user desktop directory, it doesn't exist: " << user_desktop_dir << std::endl;
       return false;
     }
 
@@ -399,7 +399,7 @@ bool ApplicationHelper::get_user_desktop_directory( boost::filesystem::path& use
   }
   else
   {
-    std::cerr << "Could not get user desktop directory.";
+    std::cerr << "Could not get user desktop directory, could not find HOME." << std::endl;
     return false;
   }
 #endif
