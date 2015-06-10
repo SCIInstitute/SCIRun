@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -41,7 +41,7 @@ class SCISHARE FileTransferClient : public ServiceClient
   public:
     FileTransferClient();
     ~FileTransferClient();
-    
+
     // open this service. This overloaded open function will deal as well with the first packet send
     // by the service, which is an information packet. Containing location and ID of the remote home
     // directory
@@ -51,16 +51,16 @@ class SCISHARE FileTransferClient : public ServiceClient
     // XXXXXX which will be replace by an uniquely generated string of numbers and letters
     bool create_remote_tempdir(std::string pattern,std::string &tempdir);
     bool create_local_tempdir(std::string pattern,std::string &tempdir);
-    
+
     // To identify the homedirectories, SCIRun will write a file with a hopefully unique key
     // that identifies that directory uniquely. Currently this is only done by the local clock
     // and a randomnumber generator. This needs to be replaced with the UUID code, which is
     // being included into SCIRun2, but does not have OSX support and still does not function
     // all the way. Currently id's are strings that can be replaced with any other object that
-    // can be written to a string such as UUIDs 
+    // can be written to a string such as UUIDs
     bool get_local_homedirid(std::string& homeid);
     bool get_remote_homedirid(std::string& homeid);
-    
+
     // Get the path to the local SCIRun temp directory and the remote one.
     // Although the directory may point to the same underlying shared drive
     // the paths may be different. The function translate_scirun_tempdir translates
@@ -68,36 +68,36 @@ class SCISHARE FileTransferClient : public ServiceClient
     bool get_local_scirun_tempdir(std::string& tempdir);
     bool get_remote_scirun_tempdir(std::string& tempdir);
     bool translate_scirun_tempdir(std::string& tempdir);
-    
+
     // These are the functions for transfering files forwards and backwards
     // between systems. These functions will do the transfer protocol.
     // They rely on the full filename (that includes the path)
     bool get_file(std::string localfilename,std::string remotefilename);
     bool put_file(std::string remotefilename,std::string localfilename);
-    
-    // The next set of functions are only local and are meant to simplify 
+
+    // The next set of functions are only local and are meant to simplify
     // the task of keeping track what the remote and local directory are called
     // set_local_dir sets the local temp directories path. This should preferably
     // be an absolute path. The set_remote_dir does the same for the remote directory
     // To generate filenames on both systems, local_file() will take the filename and
     // put the local_directory in front of it and remote_file() will put the remote
-    // directory path in front of the filename. 
-    inline bool set_local_dir(std::string dir);
-    inline bool set_remote_dir(std::string dir);
-    inline std::string local_file(std::string filename);
-    inline std::string remote_file(std::string filename);
-    
+    // directory path in front of the filename.
+    bool set_local_dir(std::string dir);
+    bool set_remote_dir(std::string dir);
+    std::string local_file(std::string filename);
+    std::string remote_file(std::string filename);
+
   private:
     std::string tempdir_;
-    
+
     std::string local_scirun_tempdir_;
     std::string remote_scirun_tempdir_;
     std::string local_homedirid_;
     std::string remote_homedirid_;
-    
+
     std::string remote_dir_;
     std::string local_dir_;
-    
+
     boost::shared_ptr<class TempFileManager> tfm_;
 
     int fileidcnt_;
@@ -108,7 +108,7 @@ class SCISHARE FileTransferClient : public ServiceClient
 typedef boost::shared_ptr<FileTransferClient> FileTransferClientHandle;
 
 
- 
+
 } // end namespace
- 
+
 #endif
