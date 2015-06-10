@@ -37,7 +37,7 @@ SET(Core_Services_SRCS
   ServiceClient.cc
   #SimpleService.cc
   #FileTransfer.cc
-  #FileTransferClient.cc
+  FileTransferClient.cc
 )
 
 SET(Core_Services_HEADERS

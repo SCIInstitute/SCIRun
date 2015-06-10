@@ -27,24 +27,29 @@
 */
 
 #include <Core/Services/FileTransferClient.h>
+#include <Core/Services/FileTransfer.h>
+#include <Core/SystemCall/TempFileManager.h>
+#include <Core/Services/Service.h>
+#include <Core/ICom/IComPacket.h>
 
 namespace SCIRun {
 
 
 FileTransferClient::FileTransferClient() :
-    fileidcnt_(1),
-    buffersize_(1000000)
+  tfm_(new TempFileManager),
+  fileidcnt_(1),
+  buffersize_(1000000)
 {
 }
 
 FileTransferClient::~FileTransferClient()
 {
-    if (tempdir_ != "") tfm_.delete_tempdir(tempdir_);
+    if (tempdir_ != "") tfm_->delete_tempdir(tempdir_);
     tempdir_ = "";
 }
     
 
-bool  FileTransferClient::open(IComAddress address, std::string servicename, int session, std::string passwd)
+bool FileTransferClient::open(IComAddressHandle address, std::string servicename, int session, std::string passwd)
 {
     if(!(ServiceClient::open(address,servicename,session,passwd)))
     {
@@ -73,8 +78,8 @@ bool  FileTransferClient::open(IComAddress address, std::string servicename, int
         remote_homedirid_ = data[0];
         remote_scirun_tempdir_ = data[1];
 
-        local_homedirid_ = tfm_.get_homedirID();
-        local_scirun_tempdir_ = tfm_.get_scirun_tmp_dir();
+        local_homedirid_ = tfm_->get_homedirID();
+        local_scirun_tempdir_ = tfm_->get_scirun_tmp_dir();
         return(true);
     }
     seterror("File transfer service returned an unknown packet");
@@ -85,8 +90,8 @@ bool  FileTransferClient::open(IComAddress address, std::string servicename, int
 
 bool FileTransferClient::create_remote_tempdir(std::string pattern,std::string &tempdir)
 {
-    IComPacketHandle packet = new IComPacket;
-    if (packet.get_rep() == 0)
+    IComPacketHandle packet(new IComPacket);
+    if (!packet)
     {
         seterror("Could not create IComPacket");
         tempdir = "";
@@ -124,7 +129,7 @@ bool FileTransferClient::create_remote_tempdir(std::string pattern,std::string &
 
 bool FileTransferClient::create_local_tempdir(std::string pattern,std::string &tempdir)
 {
-    return(tfm_.create_tempdir(pattern,tempdir));
+    return(tfm_->create_tempdir(pattern,tempdir));
 }
 
    
@@ -133,7 +138,7 @@ bool FileTransferClient::get_local_homedirid(std::string& homeid)
     homeid = local_homedirid_;
     if (homeid == "") 
     {
-        local_homedirid_ = tfm_.get_homedirID();
+        local_homedirid_ = tfm_->get_homedirID();
         homeid = local_homedirid_;
         if (homeid == "") return(false);
     }
@@ -152,7 +157,7 @@ bool FileTransferClient::get_local_scirun_tempdir(std::string& tempdir)
     tempdir = local_scirun_tempdir_;
     if (tempdir == "") 
     {
-        local_scirun_tempdir_ = tfm_.get_scirun_tmp_dir();
+        local_scirun_tempdir_ = tfm_->get_scirun_tmp_dir();
         tempdir = local_scirun_tempdir_;
         if (tempdir == "") return(false);
     }
@@ -219,8 +224,8 @@ bool FileTransferClient::get_file(std::string remotefilename,std::string localfi
         return(false);
     }
     
-    IComPacketHandle packet = new IComPacket;
-    if (packet.get_rep() == 0)
+    IComPacketHandle packet(new IComPacket);
+    if (!packet)
     {
         ::fclose(localfile);
         seterror("Could not create IComPacket");
@@ -322,8 +327,8 @@ bool FileTransferClient::put_file(std::string localfilename,std::string remotefi
         return(false);
     }
     
-    IComPacketHandle packet = new IComPacket;
-    if (packet.get_rep() == 0)
+    IComPacketHandle packet(new IComPacket);
+    if (!packet)
     {
         seterror("Could not create IComPacket");
         ::fclose(localfile);
@@ -376,7 +381,7 @@ bool FileTransferClient::put_file(std::string localfilename,std::string remotefi
         }
         
         int seekpos = packet->getparam1();
-        int bytesread = 0;
+        size_t bytesread = 0;
         
         packet->clear();
         packet->newbuffer(buffersize_);
@@ -384,16 +389,6 @@ bool FileTransferClient::put_file(std::string localfilename,std::string remotefi
         packet->setparam1(seekpos);
         
         bytesread = ::fread(packet->getbuffer(),1,buffersize_,localfile);
-        
-        if (bytesread < 0)
-        {
-            ::fclose(localfile);
-            packet->clear();
-            packet->settag(TAG_FRESET);
-            send(packet);
-            seterror("Error reading local file");
-            return(false);        
-        }
         
         if (bytesread < buffersize_)
         {
@@ -423,6 +418,29 @@ bool FileTransferClient::put_file(std::string localfilename,std::string remotefi
     
  
 
+bool FileTransferClient::set_local_dir(std::string dir)
+{
+  if (dir[dir.size() - 1] != '/') dir += '/';
+  local_dir_ = dir;
+  return(true);
+}
+
+bool FileTransferClient::set_remote_dir(std::string dir)
+{
+  if (dir[dir.size() - 1] != '/') dir += '/';
+  remote_dir_ = dir;
+  return(true);
+}
+
+std::string FileTransferClient::local_file(std::string filename)
+{
+  return(local_dir_ + filename);
+}
+
+std::string FileTransferClient::remote_file(std::string filename)
+{
+  return(remote_dir_ + filename);
+}
  
 } // end namespace
  

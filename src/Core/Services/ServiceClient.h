@@ -43,12 +43,12 @@ class SCISHARE ServiceClient : public ServiceBase
 {
   public:
     ServiceClient();
-    ~ServiceClient();
+    virtual ~ServiceClient();
 
-    bool  open(IComAddressHandle address, std::string servicename,
+    virtual bool  open(IComAddressHandle address, std::string servicename,
                int session, std::string passwd);
 
-    bool  open(IComAddressHandle address, std::string servicename,
+    virtual bool  open(IComAddressHandle address, std::string servicename,
                int session, std::string passwd,
                int timeout, std::string startcommand);
 

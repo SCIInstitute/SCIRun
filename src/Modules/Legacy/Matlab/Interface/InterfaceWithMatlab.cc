@@ -48,8 +48,10 @@
 
 #include <Core/Services/ServiceClient.h>
 #include <Core/ICom/IComPacket.h>
+#include <Core/ICom/IComAddress.h>
 #include <Modules/Legacy/Matlab/Interface/Services/MatlabEngine.h>
 #include <boost/thread.hpp>
+#include <Core/Services/FileTransferClient.h>
 
 #if 0
 
@@ -59,7 +61,7 @@
 
 #include <Core/Services/Service.h>
 #include <Core/Services/ServiceBase.h>
-#include <Core/Services/FileTransferClient.h>
+
 #include <Core/ICom/IComSocket.h>
 #include <Core/Thread/CleanupManager.h>
 #endif
@@ -146,7 +148,10 @@ namespace MatlabImpl
           class InterfaceWithMatlabImpl //: public ServiceBase
           {
           public:
-            explicit InterfaceWithMatlabImpl(InterfaceWithMatlab* module) : module_(module) {}
+            explicit InterfaceWithMatlabImpl(InterfaceWithMatlab* module) : 
+              module_(module), 
+              //matlab_timeout_old_(180),
+              need_file_transfer_(false)  {}
 #if 0
 
             // Constructor
@@ -289,12 +294,10 @@ namespace MatlabImpl
             char output_buffer_[51200];
 #endif
 
-#if 0
             FileTransferClientHandle      file_transfer_;
 
             bool            need_file_transfer_;
             std::string     remote_tempdir_;
-#endif
             std::string     inputstring_;
 
           public:
@@ -782,18 +785,19 @@ void InterfaceWithMatlab::execute()
   bool InterfaceWithMatlabImpl::open_matlab_engine()
   {
     std::string matlablibrary;
-    const std::string inetaddress;
+    const std::string inetaddress, inetport, passwd, session, startmatlab;
 #if 0
-    std::string inetaddress = inet_address_.get();
-    std::string inetport = inet_port_.get();
-    std::string passwd = inet_passwd_.get();
-    std::string session = inet_session_.get();
-    std::string startmatlab;
+    inetaddress = inet_address_.get();
+    inetport = inet_port_.get();
+    passwd = inet_passwd_.get();
+    session = inet_session_.get();
+    startmatlab;
 
     if ( sci_getenv("SCIRUN_STARTMATLAB") ) startmatlab = sci_getenv("SCIRUN_STARTMATLAB");
     if ( sci_getenv("SCIRUN_MATLABLIBRARY") ) matlablibrary = sci_getenv("SCIRUN_MATLABLIBRARY");
-
+#endif
     int timeout = 0;
+#if 0
     std::string timeout_str = sci_getenv("SCIRUN_MATLABTIMEOUT");
     from_string(timeout_str,timeout);
 
@@ -816,25 +820,22 @@ void InterfaceWithMatlab::execute()
     if (!engine_)
 #endif
     {
-#if 0
-      IComAddress address;
-      if (inetaddress == "")
+      IComAddressHandle address(new IComAddress);
+      if (inetaddress.empty())
       {
-        address.setaddress("internal","servicemanager");
+        address->setaddress("internal","servicemanager");
       }
       else
       {
-        address.setaddress("scirun",inetaddress,inetport);
+        address->setaddress("scirun",inetaddress,inetport);
       }
 
-      int sessionnum;
-      from_string(session,sessionnum);
-#endif
+      int sessionnum = boost::lexical_cast<int>(session);
+
       update_status("Please wait while launching matlab, this may take a few minutes ....\n");
 
 #ifndef USE_MATLAB_ENGINE_LIBRARY
-#if 0
-      matlab_engine_ = new ServiceClient();
+      matlab_engine_.reset(new ServiceClient());
       if(!(matlab_engine_->open(address,"matlabengine",sessionnum,passwd,timeout,startmatlab)))
       {
         module_->error(std::string("InterfaceWithMatlab: Could not open matlab engine (error=") + matlab_engine_->geterror() + std::string(")"));
@@ -845,7 +846,6 @@ void InterfaceWithMatlab::execute()
         matlab_engine_ = 0;
         return(false);
       }
-#endif
 #else
       if (engOpen == 0)
       {
@@ -918,8 +918,8 @@ void InterfaceWithMatlab::execute()
       engSetVisible(engine_, true);
 #endif
 
-#if 0
-      file_transfer_ = new FileTransferClient();
+
+      file_transfer_.reset(new FileTransferClient());
       if(!(file_transfer_->open(address,"matlabenginefiletransfer",sessionnum,passwd)))
       {
         std::string err;
@@ -978,7 +978,6 @@ void InterfaceWithMatlab::execute()
         file_transfer_->translate_scirun_tempdir(tempdir);
         file_transfer_->set_remote_dir(tempdir);
       }
-#endif
 
 #ifndef USE_MATLAB_ENGINE_LIBRARY
       IComPacketHandle packet;
@@ -1064,35 +1063,35 @@ void InterfaceWithMatlab::execute()
     return(true);
   }
 
-#if 0
-
-  bool InterfaceWithMatlab::close_matlab_engine()
+  
+  bool InterfaceWithMatlabImpl::close_matlab_engine()
   {
 #ifndef USE_MATLAB_ENGINE_LIBRARY
-    if (matlab_engine_.get_rep())
+    if (matlab_engine_)
     {
       matlab_engine_->close();
-      matlab_engine_ = 0;
+      matlab_engine_.reset();
     }
-    if (file_transfer_.get_rep())
+    if (file_transfer_)
     {
       file_transfer_->close();
-      file_transfer_ = 0;
+      file_transfer_.reset();
     }
 
-    if (thread_info_.get_rep())
+    if (thread_info_)
     {
       thread_info_->dolock();
-      if (thread_info_->exit_ == false)
+      if (!thread_info_->exit_)
       {
         thread_info_->exit_ = true;
         thread_info_->wait_exit_.conditionBroadcast();
       }
       thread_info_->unlock();
-      thread_info_ = 0;
+      thread_info_.reset();
     }
 #else
-    if (engine_) {
+    if (engine_) 
+    {
       engClose(engine_);
       engine_ = 0;
     }
@@ -1100,7 +1099,7 @@ void InterfaceWithMatlab::execute()
 
     return(true);
   }
-
+#if 0
 
   bool InterfaceWithMatlab::load_output_matrices()
   {

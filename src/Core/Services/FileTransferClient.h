@@ -29,12 +29,7 @@
 #ifndef CORE_SERVICES_FILETRANSFERCLIENT_H
 #define CORE_SERVICES_FILETRANSFERCLIENT_H 1
 
-#include <Core/Services/Service.h>
 #include <Core/Services/ServiceClient.h>
-#include <Core/Services/FileTransfer.h>
-#include <Core/SystemCall/TempFileManager.h>
-#include <stdio.h>
-
 #include <Core/Services/share.h>
 
 namespace SCIRun {
@@ -50,7 +45,7 @@ class SCISHARE FileTransferClient : public ServiceClient
     // open this service. This overloaded open function will deal as well with the first packet send
     // by the service, which is an information packet. Containing location and ID of the remote home
     // directory
-    bool  open(IComAddress address, std::string servicename, int session, std::string passwd);
+    virtual bool open(IComAddressHandle address, std::string servicename, int session, std::string passwd) override;
 
     // Create temp directories on the local and remote site. The pattern is a name ending with
     // XXXXXX which will be replace by an uniquely generated string of numbers and letters
@@ -103,39 +98,15 @@ class SCISHARE FileTransferClient : public ServiceClient
     std::string remote_dir_;
     std::string local_dir_;
     
-    TempFileManager tfm_;
+    boost::shared_ptr<class TempFileManager> tfm_;
 
     int fileidcnt_;
     int buffersize_;
 };
 
 
-typedef LockingHandle<FileTransferClient> FileTransferClientHandle;
+typedef boost::shared_ptr<FileTransferClient> FileTransferClientHandle;
 
-inline bool FileTransferClient::set_local_dir(std::string dir)
-{
-    if (dir[dir.size()-1] != '/') dir +='/';
-    local_dir_ = dir;
-    return(true);
-}
-
-inline bool FileTransferClient::set_remote_dir(std::string dir)
-{
-    if (dir[dir.size()-1] != '/') dir +='/';
-    remote_dir_ = dir;
-    return(true);
-}
-    
-inline std::string FileTransferClient::local_file(std::string filename)
-{
-    return(local_dir_+filename);
-}
-
-inline std::string FileTransferClient::remote_file(std::string filename)
-{
-    return(remote_dir_+filename);
-}
- 
 
  
 } // end namespace
