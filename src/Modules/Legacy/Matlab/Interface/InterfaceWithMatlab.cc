@@ -73,6 +73,8 @@
 using namespace SCIRun;
 using namespace SCIRun::Modules::Matlab::Interface;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Matlab;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Logging;
@@ -172,7 +174,7 @@ namespace MatlabImpl
 #endif
             static matlabarray::mitype	convertdataformat(const std::string& dataformat);
             static std::string totclstring(const std::string& instring);
-            std::vector<std::string>	converttcllist(const std::string& str);
+            std::vector<std::string>	converttcllist(const Variable::List& str);
 
             void	update_status(const std::string& text);
 
@@ -545,41 +547,20 @@ matlabarray::mitype InterfaceWithMatlabImpl::convertdataformat(const std::string
 // converts a TCL formatted list into a STL array
 // of strings
 
-std::vector<std::string> InterfaceWithMatlabImpl::converttcllist(const std::string& str)
+std::vector<std::string> InterfaceWithMatlabImpl::converttcllist(const Variable::List& vars)
 {
-  std::string result;
   std::vector<std::string> list;
-#if 0
-  int lengthlist = 0;
-
-  // Yeah, it is TCL dependent:
-  // TCL::llength determines the length of the list
-  TCLInterface::eval("llength { "+str + " }",result);
-  std::istringstream iss(result);
-  iss >> lengthlist;
-  if (lengthlist < 0) return(list);
-
-  list.resize(lengthlist);
-  for (int p = 0;p<lengthlist;p++)
-  {
-    std::ostringstream oss;
-    // TCL dependency:
-    // TCL::lindex retrieves the p th element from the list
-    oss << "lindex { " << str <<  " } " << p;
-    TCLInterface::eval(oss.str(),result);
-    list[p] = result;
-  }
-#endif
-  return(list);
+  std::transform(vars.begin(), vars.end(), std::back_inserter(list), [](const Variable& v) { return v.toString(); });
+  return list;
 }
 
 bool InterfaceWithMatlabImpl::synchronise_input()
 {
-  std::string str;
-  str = input_matrix_name_.get(); input_matrix_name_list_ = converttcllist(str);
-  str = input_matrix_type_.get(); input_matrix_type_list_ = converttcllist(str);
-  str = input_matrix_array_.get(); input_matrix_array_list_ = converttcllist(str);
-  str = output_matrix_name_.get(); output_matrix_name_list_ = converttcllist(str);
+  auto state = module_->get_state();
+  input_matrix_name_list_ = converttcllist(state->getValue(Parameters::InputMatrixNames).toVector());
+  input_matrix_type_list_ = converttcllist(state->getValue(Parameters::InputMatrixTypes).toVector());
+  input_matrix_array_list_ = converttcllist(state->getValue(Parameters::InputMatrixArrays).toVector());
+  output_matrix_name_list_ = converttcllist(state->getValue(Parameters::OutputMatrixNames).toVector());
 #if 0
   str = input_field_name_.get(); input_field_name_list_ = converttcllist(str);
   str = input_field_array_.get(); input_field_array_list_ = converttcllist(str);
@@ -593,7 +574,7 @@ bool InterfaceWithMatlabImpl::synchronise_input()
   str = input_string_name_.get(); input_string_name_list_ = converttcllist(str);
   str = output_string_name_.get(); output_string_name_list_ = converttcllist(str);
 #endif
-  matlab_code_list_ = matlab_code_.get();
+  matlab_code_list_ = state->getValue(Parameters::MatlabCode).toString();
 
   return(true);
 }
@@ -1379,7 +1360,7 @@ void InterfaceWithMatlab::execute()
           // this one was not created again
           // hence we do not need to translate it again
           // with big datasets this should improve performance
-          loadcmd = "load " + file_transfer_->remote_file(input_matrix_matfile_[p]) + ";\n";
+          loadcmd = "load " + file_transfer_->remote_file(input_matrix_matfile_[port]) + ";\n";
           m_file << loadcmd;
           continue;
         }
@@ -1402,17 +1383,17 @@ void InterfaceWithMatlab::execute()
         translate.setdatatype(convertdataformat(input_matrix_type_list_[port]));
         translate.sciMatrixTOmlArray(matrix, ma);
 
-        mf.putmatlabarray(ma,input_matrix_name_list_[p]);
+        mf.putmatlabarray(ma,input_matrix_name_list_[port]);
         mf.close();
 
-        loadcmd = "load " + file_transfer_->remote_file(input_matrix_matfile_[p]) + ";\n";
+        loadcmd = "load " + file_transfer_->remote_file(input_matrix_matfile_[port]) + ";\n";
         m_file << loadcmd;
 
         if (need_file_transfer_)
         {
           if(!(file_transfer_->put_file(
-            file_transfer_->local_file(input_matrix_matfile_[p]),
-            file_transfer_->remote_file(input_matrix_matfile_[p]))))
+            file_transfer_->local_file(input_matrix_matfile_[port]),
+            file_transfer_->remote_file(input_matrix_matfile_[port]))))
           {
             module_->error("InterfaceWithMatlab: Could not transfer file");
             std::string err = "Error :" + file_transfer_->geterror();
@@ -1827,3 +1808,9 @@ void InterfaceWithMatlab::execute()
     Module::tcl_command(args, userdata);
   }
 #endif
+
+ALGORITHM_PARAMETER_DEF(Matlab, MatlabCode);
+ALGORITHM_PARAMETER_DEF(Matlab, InputMatrixNames);
+ALGORITHM_PARAMETER_DEF(Matlab, InputMatrixTypes);
+ALGORITHM_PARAMETER_DEF(Matlab, InputMatrixArrays);
+ALGORITHM_PARAMETER_DEF(Matlab, OutputMatrixNames);

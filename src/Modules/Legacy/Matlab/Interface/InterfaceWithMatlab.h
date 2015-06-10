@@ -30,9 +30,24 @@
 #define MODULES_LEGACY_MATLAB_MATLABINTERFACE_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Legacy/Matlab/Interface/share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Algorithms
+    {
+      namespace Matlab
+      {
+        ALGORITHM_PARAMETER_DECL(MatlabCode);
+        ALGORITHM_PARAMETER_DECL(InputMatrixNames);
+        ALGORITHM_PARAMETER_DECL(InputMatrixTypes);
+        ALGORITHM_PARAMETER_DECL(InputMatrixArrays);
+        ALGORITHM_PARAMETER_DECL(OutputMatrixNames);
+      }
+    }
+  }
+
 namespace Modules {
 namespace Matlab {
 namespace Interface {
@@ -59,6 +74,7 @@ namespace Interface {
   private:
     boost::shared_ptr<class InterfaceWithMatlabImpl> impl_;
   };
+
 
 }}}}
 
