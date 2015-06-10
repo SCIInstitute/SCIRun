@@ -56,7 +56,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_MatlabInterface
   #Dataflow_TkExtensions
   Dataflow_Network
   #Core_XMLUtil
-  #Core_Matlab
+  Core_Matlab
   Core_Services
   Core_ICom
   Core_SystemCall

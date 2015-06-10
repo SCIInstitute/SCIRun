@@ -148,13 +148,26 @@ namespace MatlabImpl
       namespace Matlab {
         namespace Interface {
 
+          enum //TODO: keep this in sync with number of output ports
+          {
+            NUM_OUTPUT_MATRICES = 2,
+            NUM_OUTPUT_FIELDS = 2,
+            NUM_OUTPUT_NRRDS = 0,
+            NUM_OUTPUT_STRINGS = 2
+          };
+
           class InterfaceWithMatlabImpl : public ServiceBase
           {
           public:
             explicit InterfaceWithMatlabImpl(InterfaceWithMatlab* module) : 
               module_(module), 
               //matlab_timeout_old_(180),
-              need_file_transfer_(false)  {}
+              need_file_transfer_(false),
+              output_matrix_matfile_(NUM_OUTPUT_MATRICES),
+              output_field_matfile_(NUM_OUTPUT_FIELDS),
+              output_nrrd_matfile_(NUM_OUTPUT_NRRDS),
+              output_string_matfile_(NUM_OUTPUT_STRINGS)
+              {}
 #if 0
 
             // Constructor
@@ -199,6 +212,11 @@ namespace MatlabImpl
             // the matlab engine
 
             std::string temp_directory_;
+
+            //TODO: need a better solution for this one
+            bool isMatrixOutputPortConnected(int index) const;
+            bool isFieldOutputPortConnected(int index) const;
+            bool isStringOutputPortConnected(int index) const;
 
             // GUI variables
 #if 0
@@ -1242,18 +1260,19 @@ bool InterfaceWithMatlabImpl::generate_matlab_code()
 {
   std::ofstream m_file;
 
-  mfile_ = std::string("scirun_code.m");
+  mfile_ = "scirun_code.m";
   std::string filename = file_transfer_->local_file(mfile_);
   m_file.open(filename.c_str(), std::ios::app);
 
-  int port = 0;
   m_file << matlab_code_list_ << "\n";
-  for (int p = 0; p < NUM_MATRIX_PORTS; p++)
+
+  for (int p = 0; p < NUM_OUTPUT_MATRICES; p++)
   {
-    // Test whether the matrix port exists
-    if (!oport_connected(port)) { port++; continue; }
-    port++;
-    if (output_matrix_name_list_[p] == "") continue;
+    if (!isMatrixOutputPortConnected(p)) 
+      continue;
+
+    if (output_matrix_name_list_[p].empty()) 
+      continue;
 
     std::ostringstream oss;
     oss << "output_matrix" << p << ".mat";
@@ -1262,12 +1281,11 @@ bool InterfaceWithMatlabImpl::generate_matlab_code()
     cmd = "if exist('" + output_matrix_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_matrix_matfile_[p]) + " " + output_matrix_name_list_[p] + "; end\n";
     m_file << cmd;
   }
-
-  for (int p = 0; p < NUM_FIELD_PORTS; p++)
+  for (int p = 0; p < NUM_OUTPUT_FIELDS; p++)
   {
-    // Test whether the matrix port exists
-    if (!oport_connected(port)) { port++; continue; }
-    port++;
+    if (!isFieldOutputPortConnected(p))
+      continue;
+
     if (output_field_name_list_[p] == "") continue;
 
     std::ostringstream oss;
@@ -1277,7 +1295,7 @@ bool InterfaceWithMatlabImpl::generate_matlab_code()
     cmd = "if exist('" + output_field_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_field_matfile_[p]) + " " + output_field_name_list_[p] + "; end\n";
     m_file << cmd;
   }
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   for (int p = 0; p < NUM_NRRD_PORTS; p++)
   {
     // Test whether the matrix port exists
@@ -1293,12 +1311,12 @@ bool InterfaceWithMatlabImpl::generate_matlab_code()
     cmd = "if exist('" + output_nrrd_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_nrrd_matfile_[p]) + " " + output_nrrd_name_list_[p] + "; end\n";
     m_file << cmd;
   }
-
-  for (int p = 0; p < NUM_STRING_PORTS; p++)
+#endif
+  for (int p = 0; p < NUM_OUTPUT_STRINGS; p++)
   {
-    // Test whether the matrix port exists
-    if (!oport_connected(port)) { port++; continue; }
-    port++;
+    if (!isStringOutputPortConnected(p))
+      continue;
+
     if (output_string_name_list_[p] == "") continue;
 
     std::ostringstream oss;
@@ -1312,9 +1330,49 @@ bool InterfaceWithMatlabImpl::generate_matlab_code()
 
   m_file.close();
 
-  if (need_file_transfer_) file_transfer_->put_file(file_transfer_->local_file(mfile_), file_transfer_->remote_file(mfile_));
+  if (need_file_transfer_) 
+    file_transfer_->put_file(file_transfer_->local_file(mfile_), file_transfer_->remote_file(mfile_));
 
   return(true);
+}
+
+bool InterfaceWithMatlabImpl::isMatrixOutputPortConnected(int index) const
+{
+  switch (index)
+  {
+  case 0:
+    return module_->oport_connected(module_->OutputMatrix0);
+  case 1:                                          
+    return module_->oport_connected(module_->OutputMatrix1);
+  default:
+    return false;
+  }
+}
+
+bool InterfaceWithMatlabImpl::isFieldOutputPortConnected(int index) const
+{
+  switch (index)
+  {
+  case 0:
+    return module_->oport_connected(module_->OutputField0);
+  case 1:                                          
+    return module_->oport_connected(module_->OutputField1);
+  default:
+    return false;
+  }
+}
+
+bool InterfaceWithMatlabImpl::isStringOutputPortConnected(int index) const
+{
+  switch (index)
+  {
+  case 0:
+    return module_->oport_connected(module_->OutputString0);
+  case 1:                                          
+    return module_->oport_connected(module_->OutputString1);
+  default:
+    return false;
+  }
 }
 
   bool InterfaceWithMatlabImpl::save_input_matrices()
