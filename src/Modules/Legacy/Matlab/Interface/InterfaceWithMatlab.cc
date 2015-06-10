@@ -81,9 +81,9 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Thread;
 
 //TODO: temporary for compilation.
-//#ifdef _WIN32
-//#define USE_MATLAB_ENGINE_LIBRARY
-//#endif
+#ifdef _WIN32
+#define USE_MATLAB_ENGINE_LIBRARY
+#endif
 
 #ifdef USE_MATLAB_ENGINE_LIBRARY
 // symbols from the matlab engine library - import from the dll/so manually to not
@@ -730,10 +730,10 @@ bool InterfaceWithMatlabImpl::send_matlab_job()
   success = (engEvalString(engine_, command.c_str()) == 0);
 
   std::string output(output_buffer_);
-  std::string cmd = get_id()+" AddOutput \"" + InterfaceWithMatlab::totclstring(output) + "\"";
-  TCLInterface::lock();
+  std::string cmd = module_->get_id().id_ + " AddOutput \"" + totclstring(output) + "\"";
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   TCLInterface::execute(cmd);
-  TCLInterface::unlock();
+#endif
 
   std::cout << output_buffer_ << std::endl;
 
@@ -1693,17 +1693,17 @@ bool InterfaceWithMatlabImpl::isStringOutputPortConnected(int index) const
     return(true);
   }
 
-#if 0
-  bool InterfaceWithMatlab::delete_temp_directory()
+
+  bool InterfaceWithMatlabImpl::delete_temp_directory()
   {
     if(temp_directory_ != "") tfmanager_.delete_tempdir(temp_directory_);
     temp_directory_ = "";
     return(true);
   }
 
-  std::string InterfaceWithMatlab::totclstring(std::string &instring)
+  std::string InterfaceWithMatlabImpl::totclstring(const std::string &instring)
   {
-    int strsize = instring.size();
+    size_t strsize = instring.size();
     int specchar = 0;
     for (int p = 0; p < strsize; p++)
       if ((instring[p]=='\n')||(instring[p]=='\t')||(instring[p]=='\b')||(instring[p]=='\r')||(instring[p]=='{')||(instring[p]=='}')
@@ -1730,7 +1730,7 @@ bool InterfaceWithMatlabImpl::isStringOutputPortConnected(int index) const
 
     return(newstring);
   }
-
+#if 0
   void InterfaceWithMatlab::tcl_command(GuiArgs& args, void* userdata)
   {
     if (args.count() > 1)
