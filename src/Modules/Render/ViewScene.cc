@@ -31,6 +31,9 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Logging/Log.h>
 
+//TODO remove once method is extracted below
+#include <Dataflow/Network/Connection.h> 
+
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
 #ifdef Success
@@ -40,6 +43,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Render;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
@@ -137,7 +141,19 @@ void ViewScene::processViewSceneObjectFeedback()
   {
     std::cout << "new feedback info: " << newInfo << std::endl;
     feedbackInfo_ = newInfo;
+
+    //TODO: extract method in Module class
+    for (auto& inputPort : inputPorts())
+    {
+      std::cout << "checking input port: " << inputPort->get_portname() << " " << inputPort->nconnections() << std::endl;
+      if (inputPort->nconnections() > 0)
+      {
+        auto connection = inputPort->connection(0); // only one incoming connection for input ports
+        VariableHandle info(new Variable(Name(inputPort->id().toString()), feedbackInfo_));
+        connection->oport_->sendConnectionFeedback(info);
+      }
+    }
   }
 }
 
-SCIRun::Core::Algorithms::AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
