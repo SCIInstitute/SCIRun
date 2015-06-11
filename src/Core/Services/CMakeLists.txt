@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -26,30 +26,48 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Algorithms)
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(Basis)
-ADD_SUBDIRECTORY(Command)
-ADD_SUBDIRECTORY(CommandLine)
-ADD_SUBDIRECTORY(ConsoleApplication)
-ADD_SUBDIRECTORY(Containers)
-ADD_SUBDIRECTORY(DatabaseManager)
-ADD_SUBDIRECTORY(Datatypes)
-ADD_SUBDIRECTORY(Exceptions)
-ADD_SUBDIRECTORY(GeometryPrimitives)
-ADD_SUBDIRECTORY(ImportExport)
-ADD_SUBDIRECTORY(IEPlugin)
-ADD_SUBDIRECTORY(Logging)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Matlab)
-ADD_SUBDIRECTORY(Persistent)
-ADD_SUBDIRECTORY(Utils)
-ADD_SUBDIRECTORY(Thread)
-ADD_SUBDIRECTORY(Services)
-ADD_SUBDIRECTORY(ICom)
-ADD_SUBDIRECTORY(Parser)
-ADD_SUBDIRECTORY(SystemCall)
+# Sources of Core/Services classes
+SET(Core_Services_SRCS
+  Service.cc
+  #ServiceDB.cc
+  #ServiceFrame.cc
+  ServiceLog.cc
+  #ServiceManager.cc
+  #ServiceNode.cc
+  ServiceClient.cc
+  #SimpleService.cc
+  #FileTransfer.cc
+  FileTransferClient.cc
+)
 
-IF(BUILD_WITH_PYTHON)
-  ADD_SUBDIRECTORY(Python)
-ENDIF()
+SET(Core_Services_HEADERS
+  Service.h
+  ServiceDB.h
+  ServiceFrame.h
+  ServiceLog.h
+  ServiceManager.h
+  ServiceNode.h
+  ServiceClient.h
+  SimpleService.h
+  FileTransfer.h
+  FileTransferClient.h
+  ServiceBase.h
+  share.h
+)
+
+SCIRUN_ADD_LIBRARY(Core_Services ${Core_Services_SRCS} ${Core_Services_HEADERS})
+
+TARGET_LINK_LIBRARIES(Core_Services
+  #Core_Thread
+  #Core_Util
+  #Core_Exceptions
+  Core_ICom
+  Core_SystemCall
+  #Core_XMLUtil
+  #${SCI_BOOST_LIBRARY}
+  #${SCI_LIBXML2_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Services)
+ENDIF(BUILD_SHARED_LIBS)
