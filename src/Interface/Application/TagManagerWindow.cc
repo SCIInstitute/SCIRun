@@ -61,6 +61,8 @@ TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(pare
 
   tagNames_.resize(NumberOfTags);
   tagColors_.resize(NumberOfTags);
+
+  connect(helpPushButton_, SIGNAL(clicked()), this, SLOT(helpButtonClicked()));
 }
 
 void TagManagerWindow::editTagColor()
@@ -70,7 +72,6 @@ void TagManagerWindow::editTagColor()
   auto colorStr = colorToString(newColor);
   qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorStr + ";");
   tagColors_[tag] = colorStr;
-  //TODO next: propagate to tag color manager class. 
 }
 
 void TagManagerWindow::setTagNames(const QVector<QString>& names)
@@ -119,4 +120,15 @@ QColor TagManagerWindow::tagColor(int tag) const
     r = g = b = 155;
   }
   return QColor(r, g, b);
+}
+
+void TagManagerWindow::helpButtonClicked()
+{
+  QMessageBox::information(this, 
+    "Module Tag Layer Guide", 
+    "This layer allows the user to group modules in a network file by tag number. Ten tags are available, labeled 0 - 9. "
+    "Each tag's color can be chosen in the Tag Manager window, as well as a descriptive label. Tag colors are a global setting, while module tags are saved in the network file. \n\n"
+    "To use, while in the Network Editor, hold down the Alt / Option key. Then press A to see all module tag groups(each module will be colorized "
+    "according to the chosen colors). Or press 0 - 9 keys to see each tag group individually; other modules will be slightly blurred out. While in "
+    "the single - tag view, you can click a module to toggle it as tagged. There is also a button in the toolbar to view all tagged modules.");
 }

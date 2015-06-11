@@ -42,10 +42,3 @@ void NetworkGlobalSettings::setValue(const std::string& key, const std::string& 
 {
   settings_[key] = value;
 }
-
-NetworkPathSettings::NetworkPathSettings(const NetworkGlobalSettings& globalSettings) : settings_(globalSettings) {}
-
-boost::filesystem::path NetworkPathSettings::regressionTestDataDirectory() const
-{
-  return settings_.value("regressionTestDataDir");
-}

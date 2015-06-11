@@ -266,7 +266,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   setPositionObject(boost::make_shared<MidpointPositioner>(fromPort_->getPositionObject(), toPort_->getPositionObject()));
 
   trackNodes();
-  GuiLogger::Instance().log("Connection made.");
+  GuiLogger::Instance().logStd("Connection made: " + id_.id_);
 }
 
 ConnectionLine::~ConnectionLine()

@@ -73,6 +73,7 @@ public:
 
   boost::filesystem::path executablePath() const;
   boost::filesystem::path configDirectory() const;
+  boost::filesystem::path logDirectory() const { return configDirectory(); }
   bool get_user_directory( boost::filesystem::path& user_dir, bool config_path) const;
   bool get_config_directory( boost::filesystem::path& config_dir ) const;
   bool get_user_name( std::string& user_name ) const;
