@@ -193,6 +193,7 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
 
     std::string get_data_type() const;
     void        set_data_type(const std::string&);
+    void        set_data_type_by_string(const std::string& type);
     void        set_data_type(data_info_type);
 
     std::string get_container_type() const;

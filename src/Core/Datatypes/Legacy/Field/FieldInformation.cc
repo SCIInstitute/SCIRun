@@ -565,6 +565,65 @@ FieldInformation::set_data_type(const std::string& type1)
   data_type = type;
 }
 
+void
+FieldInformation::set_data_type_by_string(const std::string& type)
+{
+  data_info_type data_type;
+  if (type == "char")
+  {
+    data_type = CHAR_E;
+  }
+  else if (type == "unsigned char")
+  {
+    data_type = UNSIGNED_CHAR_E;
+  }
+  else if (type == "short")
+  {
+    data_type = SHORT_E;
+  }
+  else if (type == "unsigned short")
+  {
+    data_type = UNSIGNED_SHORT_E;
+  }
+  else if (type == "int")
+  {
+    data_type = INT_E;
+  }
+  else if (type == "unsigned int")
+  {
+    data_type = UNSIGNED_INT_E;
+  }
+  else if (type == "long long")
+  {
+    data_type = LONGLONG_E;
+  }
+  else if (type == "unsigned long long")
+  {
+    data_type = UNSIGNED_LONGLONG_E;
+  }
+  if (type == "float")
+  {
+    data_type = FLOAT_E;
+  }
+  else if (type == "double")
+  {
+    data_type = DOUBLE_E;
+  }
+  else if (type == "Vector")
+  {
+    data_type = VECTOR_E;
+  }
+  else if (type == "Tensor")
+  {
+    data_type = TENSOR_E;
+  }
+  else
+  {
+    // TODO: log this
+    data_type = NONE_E;
+  }
+  return set_data_type(data_type);
+}
 
 void
 FieldInformation::set_data_type(data_info_type type)
