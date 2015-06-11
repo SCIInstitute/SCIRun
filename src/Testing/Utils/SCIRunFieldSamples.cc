@@ -30,6 +30,7 @@
 
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 #include <boost/assign.hpp>
@@ -183,7 +184,8 @@ FieldHandle CubeTetVolConstantBasis(data_info_type type)
   FieldHandle field = CreateField(fi);
   
   tetCubeGeometry(field);
-  
+  field->vfield()->resize_values();
+
   return field;
 }
 
@@ -193,6 +195,7 @@ FieldHandle CubeTetVolLinearBasis(data_info_type type)
   FieldHandle field = CreateField(fi);
 
   tetCubeGeometry(field);
+  field->vfield()->resize_values();
 
   return field;
 }
@@ -203,6 +206,7 @@ FieldHandle TetrahedronTetVolConstantBasis(data_info_type type)
   FieldHandle field = CreateField(fi);
 
   tetTetrahedronGeometry(field);
+  field->vfield()->resize_values();
 
   return field;
 }
@@ -213,7 +217,8 @@ FieldHandle TetrahedronTetVolLinearBasis(data_info_type type)
   FieldHandle field = CreateField(fi);
   
   tetTetrahedronGeometry(field);
-  
+  field->vfield()->resize_values();
+
   return field;
 }
 
@@ -223,7 +228,8 @@ FieldHandle TriangleTriSurfConstantBasis(data_info_type type)
   FieldHandle field = CreateField(fi);
   
   triTriangleGeometry(field);
-  
+  field->vfield()->resize_values();
+
   return field;
 }
 
@@ -233,7 +239,8 @@ FieldHandle TriangleTriSurfLinearBasis(data_info_type type)
   FieldHandle field = CreateField(fi);
   
   triTriangleGeometry(field);
-  
+  field->vfield()->resize_values();
+
   return field;
 }
 
@@ -243,7 +250,8 @@ FieldHandle TetrahedronTriSurfConstantBasis(data_info_type type)
   FieldHandle field = CreateField(fi);
   
   triTetrahedronGeometry(field);
-  
+  field->vfield()->resize_values();
+
   return field;
 }
 
@@ -253,7 +261,8 @@ FieldHandle TetrahedronTriSurfLinearBasis(data_info_type type)
   FieldHandle field = CreateField(fi);
   
   triTetrahedronGeometry(field);
-  
+  field->vfield()->resize_values();
+
   return field;
 }
 
@@ -263,7 +272,8 @@ FieldHandle CubeTriSurfConstantBasis(data_info_type type)
   FieldHandle field = CreateField(fi);
   
   triCubeGeometry(field);
-  
+  field->vfield()->resize_values();
+
   return field;
 }
 
@@ -273,6 +283,7 @@ FieldHandle CubeTriSurfLinearBasis(data_info_type type)
   FieldHandle field = CreateField(fi);
   
   triCubeGeometry(field);
+  field->vfield()->resize_values();
   
   return field;
 }
