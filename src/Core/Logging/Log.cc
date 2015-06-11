@@ -361,50 +361,6 @@ bool ApplicationHelper::get_user_directory( boost::filesystem::path& user_dir, b
 #endif
 }
 
-
-bool ApplicationHelper::get_user_desktop_directory( boost::filesystem::path& user_desktop_dir )
-{
-#ifdef _WIN32
-  TCHAR dir[MAX_PATH];
-
-  // Try to create the local application directory
-  // If it already exists return the name of the directory.
-
-  if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_DESKTOPDIRECTORY, 0, 0, dir ) ) )
-  {
-    user_desktop_dir = boost::filesystem::path( dir );
-    return true;
-  }
-  else
-  {
-    std::cerr << "Could not get user desktop directory.";
-    return false;
-  }
-
-
-#else
-
-  if ( getenv( "HOME" ) )
-  {
-    user_desktop_dir = boost::filesystem::path( getenv( "HOME" ) ) / "Desktop" / "";
-
-    if (! boost::filesystem::exists( user_desktop_dir ) )
-    {
-      std::cerr << "Could not get user desktop directory, it doesn't exist: " << user_desktop_dir << std::endl;
-      return false;
-    }
-
-
-    return true;
-  }
-  else
-  {
-    std::cerr << "Could not get user desktop directory, could not find HOME." << std::endl;
-    return false;
-  }
-#endif
-}
-
 bool ApplicationHelper::get_config_directory( boost::filesystem::path& config_dir )
 {
   boost::filesystem::path user_dir;
