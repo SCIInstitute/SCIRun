@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
-<networkFile class_id="0" tracking_level="0" version="2">
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>11</count>
@@ -54,7 +54,7 @@
 									<name>MaxDistance</name>
 									<value>
 										<which>1</which>
-										<value>-1</value>
+										<value>-1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -198,7 +198,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -286,7 +286,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -342,7 +342,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>1.7320508075688774</value>
+										<value>1.73205080756887742e+00</value>
 									</value>
 								</second>
 							</item>
@@ -354,7 +354,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>1.1547005383792512</value>
+										<value>1.15470053837925124e+00</value>
 									</value>
 								</second>
 							</item>
@@ -746,78 +746,78 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ApplyMappingMatrix:5</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1596</first>
-				<second>-760</second>
+				<first>-1.59600000000000000e+03</first>
+				<second>-7.60000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>BuildMappingMatrix:4</first>
 			<second>
-				<first>-1672</first>
-				<second>-912</second>
+				<first>-1.67200000000000000e+03</first>
+				<second>-9.12000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ClipFieldByFunction:7</first>
 			<second>
-				<first>-1672</first>
-				<second>-1140</second>
+				<first>-1.67200000000000000e+03</first>
+				<second>-1.14000000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:8</first>
 			<second>
-				<first>-1672</first>
-				<second>-1292</second>
+				<first>-1.67200000000000000e+03</first>
+				<second>-1.29200000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-1672</first>
-				<second>-1368</second>
+				<first>-1.67200000000000000e+03</first>
+				<second>-1.36800000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:1</first>
 			<second>
-				<first>-1216</first>
-				<second>-760</second>
+				<first>-1.21600000000000000e+03</first>
+				<second>-7.60000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:6</first>
 			<second>
-				<first>-1292</first>
-				<second>-1064</second>
+				<first>-1.29200000000000000e+03</first>
+				<second>-1.06400000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>-1368</first>
-				<second>-608</second>
+				<first>-1.36800000000000000e+03</first>
+				<second>-6.08000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:2</first>
 			<second>
-				<first>-1672</first>
-				<second>-532</second>
+				<first>-1.67200000000000000e+03</first>
+				<second>-5.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:3</first>
 			<second>
-				<first>-1520</first>
-				<second>-456</second>
+				<first>-1.52000000000000000e+03</first>
+				<second>-4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>WriteMatrix:9</first>
 			<second>
-				<first>-1900</first>
-				<second>-760</second>
+				<first>-1.90000000000000000e+03</first>
+				<second>-7.60000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -842,6 +842,54 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
+	<moduleTags class_id="21" tracking_level="0" version="0">
+		<count>11</count>
+		<item_version>0</item_version>
+		<item class_id="22" tracking_level="0" version="0">
+			<first>ApplyMappingMatrix:5</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>BuildMappingMatrix:4</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ClipFieldByFunction:7</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateFieldData:8</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateLatVol:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldBoundary:6</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ShowField:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ViewScene:3</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>WriteMatrix:9</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
 </networkFile>
 </boost_serialization>
 
