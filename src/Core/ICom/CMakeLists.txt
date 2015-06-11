@@ -26,47 +26,50 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# CMakeLists.txt for Packages/MatlabInterface/Dataflow/Modules/Interface
-
-SET(Modules_Legacy_MatlabInterface_SRCS
-  InterfaceWithMatlab.cc
-  #InterfaceWithMatlabViaBundles.cc
+# Sources of Core/ICom classes
+SET(Core_ICom_SRCS
+  IComAddress.cc
+  IComPacket.cc
+  IComSocket.cc
+  IComVirtualSocket.cc
+  IComINetSocket.cc
+  IComInternalSocket.cc
+  #IComSslSocket.cc
+  #IComRHostList.cc
 )
 
-SET(Modules_Legacy_MatlabInterface_HEADERS
-  InterfaceWithMatlab.h
-  #InterfaceWithMatlabViaBundles.h
+SET(Core_ICom_HEADERS
+  IComAddress.h
+  IComPacket.h
+  IComSocket.h
+  IComVirtualSocket.h
+  IComINetSocket.h
+  IComInternalSocket.h
+  IComSslSocket.h
+  IComRHostList.h
+  IComBase.h
+  IComFwd.h
+  share.h
 )
 
-SCIRUN_ADD_LIBRARY(Modules_Legacy_MatlabInterface
-  ${Modules_Legacy_MatlabInterface_SRCS}
-  ${Modules_Legacy_MatlabInterface_HEADERS}
-  )
+SCIRUN_ADD_LIBRARY(Core_ICom ${Core_ICom_SRCS} ${Core_ICom_HEADERS})
 
-TARGET_LINK_LIBRARIES(Modules_Legacy_MatlabInterface
-  Core_Persistent
-  Core_Util_Legacy
+########################################################################
+# Socket library
+# DV Not sure if socket library needs to be defined for cygwin
+
+IF(WIN32 AND NOT CYGWIN)
+  SET(SOCKET_LIBRARY ws2_32 CACHE INTERNAL "Socket library ws2_32")
+  SET(THREAD_LIBRARY winmm CACHE INTERNAL "Time functionality library winmm")
+ENDIF(WIN32 AND NOT CYGWIN)
+
+TARGET_LINK_LIBRARIES(Core_ICom
+  Core_Thread
+  #Core_Util
   #Core_Exceptions
-  #Core_Thread
-  #Dataflow_GuiInterface
-  #Core_Geom
-  Core_Datatypes
-  #Core_Geometry
-  #Core_GeomInterface
-  #Dataflow_TkExtensions
-  Dataflow_Network
-  #Core_XMLUtil
-  Core_Matlab
-  Core_Services
-  Core_ICom
-  Core_SystemCall
-  ${SCI_TEEM_LIBRARY}
-  ${SCI_ZLIB_LIBRARY}
-  #${M_LIBRARY}
-  #${TK_LIBRARY}
-  #${GL_LIBRARY}
+  ${SOCKET_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_MatlabInterface)
+  ADD_DEFINITIONS(-DBUILD_Core_ICom)
 ENDIF(BUILD_SHARED_LIBS)
