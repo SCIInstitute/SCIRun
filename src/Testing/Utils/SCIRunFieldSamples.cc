@@ -148,7 +148,7 @@ void triCubeGeometry(FieldHandle field)
   vmesh->add_elem(vdata2);
   VMesh::Node::array_type vdata3;
   vdata3 += 1, 0, 2;
-  vmesh->add_elem(vdata2);
+  vmesh->add_elem(vdata3);
   VMesh::Node::array_type vdata4;
   vdata4 += 1, 3, 2;
   vmesh->add_elem(vdata4);
