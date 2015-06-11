@@ -80,7 +80,7 @@ namespace Gui {
     virtual void pull() final;
     void moduleSelected(bool selected);
     void toggleCollapse();
-    virtual void updateFromPortChange(int numPorts) {}
+    virtual void updateFromPortChange(int numPorts, const std::string& portName) {}
   Q_SIGNALS:
     void pullSignal();
     void executionTimeChanged(int time);

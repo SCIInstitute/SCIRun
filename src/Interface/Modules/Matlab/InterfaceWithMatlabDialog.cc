@@ -48,3 +48,8 @@ InterfaceWithMatlabDialog::InterfaceWithMatlabDialog(const std::string& name, Mo
   WidgetStyleMixin::tableHeaderStyle(matrixInputTableWidget_);
   addTextEditManager(matlabCodeTextEdit_, Variables::FunctionString);
 }
+
+void InterfaceWithMatlabDialog::updateFromPortChange(int numPorts, const std::string& portName)
+{
+  qDebug() << "ports:" << numPorts << "name: " << QString::fromStdString(portName);
+}

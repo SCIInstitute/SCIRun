@@ -46,6 +46,8 @@ public:
   InterfaceWithMatlabDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
+public Q_SLOTS:
+  virtual void updateFromPortChange(int numPorts, const std::string& portName) override;
 };
 
 }
