@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="12">
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -118,7 +118,7 @@
 									<name>PValue</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -130,7 +130,7 @@
 									<name>ccInv</name>
 									<value>
 										<which>1</which>
-										<value>3.01439546471671260e-003</value>
+										<value>3.01439546471671260e-03</value>
 									</value>
 								</second>
 							</item>
@@ -142,7 +142,7 @@
 									<name>rmsRel</name>
 									<value>
 										<which>1</which>
-										<value>3.24012855353730340e+001</value>
+										<value>3.24012855353730345e+01</value>
 									</value>
 								</second>
 							</item>
@@ -186,22 +186,22 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ReadMatrix:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-7.60000000000000000e+002</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>-7.60000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:1</first>
 			<second>
-				<first>-4.56000000000000000e+002</first>
-				<second>-2.20000000000000000e+002</second>
+				<first>-4.56000000000000000e+02</first>
+				<second>-2.20000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportColumnMatrixMisfit:0</first>
 			<second>
-				<first>-6.07000000000000000e+002</first>
-				<second>-3.80000000000000000e+001</second>
+				<first>-6.07000000000000000e+02</first>
+				<second>-3.80000000000000000e+01</second>
 			</second>
 		</item>
 	</modulePositions>
