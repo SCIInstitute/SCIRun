@@ -797,7 +797,6 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
 
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
 {
-  qDebug() << "in VSD slot: " << x << y;
   using namespace SCIRun::Core::Algorithms;
   Variable::List coords;
   coords.push_back(makeVariable("x", x));

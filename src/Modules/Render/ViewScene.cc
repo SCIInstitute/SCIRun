@@ -31,9 +31,6 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Logging/Log.h>
 
-//TODO remove once method is extracted below
-#include <Dataflow/Network/Connection.h>
-
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
 #ifdef Success
@@ -58,14 +55,19 @@ ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_)
 {
   INITIALIZE_PORT(GeneralGeom);
-
-  get_state()->connect_state_changed([this]() { processViewSceneObjectFeedback(); });
 }
 
 void ViewScene::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  postStateChangeInternalSignalHookup();
+}
+
+void ViewScene::postStateChangeInternalSignalHookup()
+{
+  std::cout << "view scene hooking up state change slot" << std::endl;
+  get_state()->connect_state_changed([this]() { processViewSceneObjectFeedback(); });
 }
 
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
@@ -134,24 +136,17 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 
 void ViewScene::processViewSceneObjectFeedback()
 {
-  std::cout << "slot for state change in VS module" << std::endl;
+  //TODO: match ID of touched geom object with port id, and send that info back too. 
+  //std::cout << "slot for state change in VS module" << std::endl;
   auto state = get_state();
   auto newInfo = state->getValue(Parameters::GeometryFeedbackInfo).toVector();
+  //std::cout << "feedback info: " << newInfo << std::endl;
   if (feedbackInfo_ != newInfo)
   {
-    std::cout << "new feedback info: " << newInfo << std::endl;
+    //std::cout << "new feedback info: " << newInfo << std::endl;
     feedbackInfo_ = newInfo;
 
-    //TODO: extract method in Module class
-    for (auto& inputPort : inputPorts())
-    {
-      if (inputPort->nconnections() > 0)
-      {
-        auto connection = inputPort->connection(0); // only one incoming connection for input ports
-        VariableHandle info(new Variable(Name(inputPort->id().toString()), feedbackInfo_));
-        connection->oport_->sendConnectionFeedback(info);
-      }
-    }
+    sendFeedbackUpstreamAlongIncomingConnections(feedbackInfo_);
   }
 }
 

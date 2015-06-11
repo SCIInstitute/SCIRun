@@ -82,6 +82,7 @@ namespace Render {
     typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryHandle> ActiveGeometryMap;
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
+    virtual void postStateChangeInternalSignalHookup() override;
   private:
     void processViewSceneObjectFeedback();
     void updateTransientList();
