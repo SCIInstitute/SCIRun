@@ -156,8 +156,44 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ShowScalarTab</name>
+								</first>
+								<second>
+									<name>ShowScalarTab</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowTensorTab</name>
+								</first>
+								<second>
+									<name>ShowTensorTab</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowVectorTab</name>
+								</first>
+								<second>
+									<name>ShowVectorTab</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
