@@ -43,5 +43,8 @@ InterfaceWithMatlabDialog::InterfaceWithMatlabDialog(const std::string& name, Mo
   fixSize();
 
   WidgetStyleMixin::tabStyle(matlabEngineTabWidget_);
+  WidgetStyleMixin::tabStyle(dataTabWidget_);
+  WidgetStyleMixin::tabStyle(matrixTabWidget_);
+  WidgetStyleMixin::tableHeaderStyle(matrixInputTableWidget_);
   addTextEditManager(matlabCodeTextEdit_, Variables::FunctionString);
 }
