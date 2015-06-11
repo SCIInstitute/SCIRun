@@ -40,6 +40,21 @@ last change: 04/10/2014
 
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
+
+TEST(GetFieldDataTest, NullInputThrowsException)
+{
+  GetFieldDataAlgo algo;
+  FieldHandle nullField;
+
+  ASSERT_THROW(algo.run(nullField), AlgorithmInputException);
+}
+
+TEST(GetFieldDataTest, DISABLED_FieldNoDataThrowsException)
+{
+  // TODO: test field with type set to nodata (should throw AlgorithmInputException)
+  FAIL() << "TODO";
+}
 
 TEST(GetFieldDataTest, TriSurfOnNodeScalar)
 {
