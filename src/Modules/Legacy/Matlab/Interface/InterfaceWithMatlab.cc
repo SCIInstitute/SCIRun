@@ -55,6 +55,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Thread/Legacy/CleanupManager.h>
 
 #if 0
 
@@ -66,7 +67,7 @@
 #include <Core/Services/ServiceBase.h>
 
 #include <Core/ICom/IComSocket.h>
-#include <Core/Thread/CleanupManager.h>
+
 #endif
 
 #include <iostream>
@@ -161,15 +162,8 @@ namespace MatlabImpl
           class InterfaceWithMatlabImpl : public ServiceBase
           {
           public:
-            explicit InterfaceWithMatlabImpl(InterfaceWithMatlab* module) : 
-              module_(module), 
-              //matlab_timeout_old_(180),
-              need_file_transfer_(false),
-              output_matrix_matfile_(NUM_OUTPUT_MATRICES),
-              output_field_matfile_(NUM_OUTPUT_FIELDS),
-              output_nrrd_matfile_(NUM_OUTPUT_NRRDS),
-              output_string_matfile_(NUM_OUTPUT_STRINGS)
-              {}
+            explicit InterfaceWithMatlabImpl(InterfaceWithMatlab* module);
+            ~InterfaceWithMatlabImpl();
 
             static matlabarray::mitype	convertdataformat(const std::string& dataformat);
             static std::string totclstring(const std::string& instring);
@@ -503,34 +497,45 @@ namespace MatlabImpl
     for (int p = 0; p<NUM_NRRD_PORTS; p++)  input_nrrd_generation_old_[p] = -1;
     input_string_generation_old_.resize(NUM_STRING_PORTS);
     for (int p = 0; p<NUM_STRING_PORTS; p++)  input_string_generation_old_[p] = -1;
-
-    CleanupManager::add_callback(InterfaceWithMatlab::cleanup_callback,reinterpret_cast<void *>(this));
   }
 
-
-  // Function for cleaning up
-  // matlab modules
-  void InterfaceWithMatlab::cleanup_callback(void *data)
-  {
-    InterfaceWithMatlab* ptr = reinterpret_cast<InterfaceWithMatlab *>(data);
-    // We just want to make sure that the matlab engine is released and
-    // any temp dirs are cleaned up
-    ptr->close_matlab_engine();
-    ptr->delete_temp_directory();
-  }
-
-  InterfaceWithMatlab::~InterfaceWithMatlab()
-  {
-    // Again if we registered a module for destruction and we are removing it
-    // we need to unregister
-    CleanupManager::invoke_remove_callback(InterfaceWithMatlab::cleanup_callback,reinterpret_cast<void *>(this));
-  }
 #endif
 
-  void InterfaceWithMatlabImpl::update_status(const std::string& text)
-  {
-    LOG_DEBUG(module_->get_id().id_ << " UpdateStatus \"" << text << "\"");
-  }
+InterfaceWithMatlabImpl::InterfaceWithMatlabImpl(InterfaceWithMatlab* module) :
+  module_(module),
+  //matlab_timeout_old_(180),
+  output_matrix_matfile_(NUM_OUTPUT_MATRICES),
+  output_field_matfile_(NUM_OUTPUT_FIELDS),
+  output_nrrd_matfile_(NUM_OUTPUT_NRRDS),
+  output_string_matfile_(NUM_OUTPUT_STRINGS),
+  need_file_transfer_(false)
+{
+  CleanupManager::add_callback(InterfaceWithMatlabImpl::cleanup_callback, reinterpret_cast<void*>(this));
+}
+
+// Function for cleaning up
+// matlab modules
+void InterfaceWithMatlabImpl::cleanup_callback(void* data)
+{
+  InterfaceWithMatlabImpl* ptr = reinterpret_cast<InterfaceWithMatlabImpl*>(data);
+  // We just want to make sure that the matlab engine is released and
+  // any temp dirs are cleaned up
+  ptr->close_matlab_engine();
+  ptr->delete_temp_directory();
+}
+
+InterfaceWithMatlabImpl::~InterfaceWithMatlabImpl()
+{
+  // Again if we registered a module for destruction and we are removing it
+  // we need to unregister
+  CleanupManager::invoke_remove_callback(InterfaceWithMatlabImpl::cleanup_callback, reinterpret_cast<void*>(this));
+}
+
+
+void InterfaceWithMatlabImpl::update_status(const std::string& text)
+{
+  LOG_DEBUG(module_->get_id().id_ << " UpdateStatus \"" << text << "\"");
+}
 
 matlabarray::mitype InterfaceWithMatlabImpl::convertdataformat(const std::string& dataformat)
 {
