@@ -102,6 +102,7 @@ namespace Fields {
     void createBoxWidget();
     void setBoxRestrictions();
     Core::Datatypes::GeometryHandle buildGeometryObject();
+    void processWidgetFeedback(SCIRun::Core::Algorithms::VariableHandle var);
     SCIRun::Core::Geometry::BBox bbox_;
 
     BoxWidgetPtr box_;

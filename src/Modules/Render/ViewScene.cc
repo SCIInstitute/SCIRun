@@ -32,7 +32,7 @@
 #include <Core/Logging/Log.h>
 
 //TODO remove once method is extracted below
-#include <Dataflow/Network/Connection.h> 
+#include <Dataflow/Network/Connection.h>
 
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
@@ -145,7 +145,6 @@ void ViewScene::processViewSceneObjectFeedback()
     //TODO: extract method in Module class
     for (auto& inputPort : inputPorts())
     {
-      std::cout << "checking input port: " << inputPort->get_portname() << " " << inputPort->nconnections() << std::endl;
       if (inputPort->nconnections() > 0)
       {
         auto connection = inputPort->connection(0); // only one incoming connection for input ports

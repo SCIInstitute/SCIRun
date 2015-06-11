@@ -163,6 +163,11 @@ EditMeshBoundingBox::EditMeshBoundingBox()
   INITIALIZE_PORT(Transformation_Matrix);
 }
 
+void EditMeshBoundingBox::processWidgetFeedback(VariableHandle var)
+{
+  std::cout << "finally we're in the actual module:\n\t" << var->value() << std::endl;
+}
+
 void EditMeshBoundingBox::createBoxWidget()
 {
   box_ = WidgetFactory::createBox();  //new BoxWidget(this, &widget_lock_, 1.0, false, false);
@@ -193,6 +198,8 @@ void EditMeshBoundingBox::setStateDefaults()
 
   createBoxWidget();
   setBoxRestrictions();
+
+  getOutputPort(Transformation_Widget)->connectConnectionFeedbackListener([this](VariableHandle var) { processWidgetFeedback(var); });
 }
 
 void EditMeshBoundingBox::execute()
@@ -276,7 +283,6 @@ bool EditMeshBoundingBox::isBoxEmpty() const
 Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
 {
   GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
-  int64_t numVBOElements = 0;
   std::vector<std::pair<Point,Point>> bounding_edges;
   //get all the bbox edges
   Point c,r,d,b;
@@ -316,7 +322,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
   {
     glyphs.addSphere(a, scale, num_strips, ColorRGB(1, 0, 0));
   }
-  
+
   std::stringstream ss;
   ss << scale;
   for (auto a : points) ss << a.x() << a.y() << a.z();
@@ -331,7 +337,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
   renState.defaultColor = ColorRGB(1, 1, 1);
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
   renState.set(RenderState::USE_NORMALS, true);
- 
+
   Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr, *this, "BoundingBox"));
 
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
