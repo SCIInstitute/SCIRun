@@ -37,7 +37,8 @@ script:
   && cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../src
   && make -j8
   && make SCIRunTestData_external
-  && make test
+  && ./Core_Application_Tests
+#&& make test
 
 notifications:
   slack: sciinstitute:lZnpQQXNd4Io5iGDPQDpJmI1
