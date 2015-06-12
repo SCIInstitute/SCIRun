@@ -869,7 +869,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     ports_->addPort(w);
     inputPortLayout_->addWidget(w);
 
-    Q_EMIT dynamicPortChanged(pid.name);
+    Q_EMIT dynamicPortChanged(pid.toString());
   }
 }
 
@@ -879,7 +879,7 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
   {
     if (ports_->removeDynamicPort(pid, inputPortLayout_))
     {
-      Q_EMIT dynamicPortChanged(pid.name);
+      Q_EMIT dynamicPortChanged(pid.toString());
     }
   }
 }
