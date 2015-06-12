@@ -565,64 +565,61 @@ FieldInformation::set_data_type(const std::string& type1)
   data_type = type;
 }
 
-void
+bool
 FieldInformation::set_data_type_by_string(const std::string& type)
 {
-  data_info_type data_type;
   if (type == "char")
   {
-    data_type = CHAR_E;
+    return make_char();
   }
   else if (type == "unsigned char")
   {
-    data_type = UNSIGNED_CHAR_E;
+    return make_unsigned_char();
   }
   else if (type == "short")
   {
-    data_type = SHORT_E;
+    return make_short();
   }
   else if (type == "unsigned short")
   {
-    data_type = UNSIGNED_SHORT_E;
+    return make_unsigned_short();
   }
   else if (type == "int")
   {
-    data_type = INT_E;
+    return make_int();
   }
   else if (type == "unsigned int")
   {
-    data_type = UNSIGNED_INT_E;
+    return make_unsigned_int();
   }
   else if (type == "long long")
   {
-    data_type = LONGLONG_E;
+    return make_long_long();
   }
   else if (type == "unsigned long long")
   {
-    data_type = UNSIGNED_LONGLONG_E;
+    return make_unsigned_long_long();
   }
-  if (type == "float")
+  else if (type == "float")
   {
-    data_type = FLOAT_E;
+    return make_float();
   }
   else if (type == "double")
   {
-    data_type = DOUBLE_E;
+    return make_double();
   }
   else if (type == "Vector")
   {
-    data_type = VECTOR_E;
+    return make_vector();
   }
   else if (type == "Tensor")
   {
-    data_type = TENSOR_E;
+    return make_tensor();
   }
   else
   {
-    // TODO: log this
-    data_type = NONE_E;
+    BOOST_THROW_EXCEPTION(UnknownMeshType() << Core::ErrorMessage("INTERNAL ERROR - unknown type"));
   }
-  return set_data_type(data_type);
 }
 
 void
