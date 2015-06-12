@@ -36,7 +36,8 @@ using namespace SCIRun::Core::Algorithms;
 
 InterfaceWithMatlabDialog::InterfaceWithMatlabDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogGeneric(state, parent),
+  numMatrixPorts_(0), numFieldPorts_(0), numStringPorts_(0)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -49,7 +50,132 @@ InterfaceWithMatlabDialog::InterfaceWithMatlabDialog(const std::string& name, Mo
   addTextEditManager(matlabCodeTextEdit_, Variables::FunctionString);
 }
 
+namespace TableColumns
+{
+  const int MinColumn = 0;
+
+  const int InputPortID = 0;
+  const int InputName = 1;
+  const int InputDataType = 2;
+  const int InputArrayType = 3;
+
+  const int MaxColumn = InputArrayType + 1;
+}
+
 void InterfaceWithMatlabDialog::updateFromPortChange(int numPorts, const std::string& portName)
 {
   qDebug() << "ports:" << numPorts << "name: " << QString::fromStdString(portName);
+
+  if (portName.find("Matrix") != std::string::npos)
+  {
+    qDebug() << "adjust matrix input table";
+    auto oldRowCount = matrixInputTableWidget_->rowCount();
+    if (numPorts > totalInputPorts())
+      numMatrixPorts_++;
+    else
+      numMatrixPorts_--;
+    auto newRowCount = numMatrixPorts_ - 1;
+    qDebug() << "oldRowCount" << oldRowCount << "newRowCount" << newRowCount;
+
+    matrixInputTableWidget_->setRowCount(newRowCount);
+    matrixInputTableWidget_->blockSignals(true);
+    for (int i = oldRowCount; i < matrixInputTableWidget_->rowCount(); ++i)
+    {
+      using namespace TableColumns;
+      matrixInputTableWidget_->setItem(i, InputPortID, new QTableWidgetItem(QString::fromStdString(portName) + QString::number(i+1)));
+      matrixInputTableWidget_->setItem(i, InputName, new QTableWidgetItem("i" + QString::number(i+1)));
+      matrixInputTableWidget_->setCellWidget(i, InputDataType, makeInputDataTypeComboBoxItem());
+      matrixInputTableWidget_->setCellWidget(i, InputArrayType, makeInputArrayTypeComboBoxItem());
+
+      // type is readonly
+      auto port = matrixInputTableWidget_->item(i, InputPortID);
+      port->setFlags(port->flags() & ~Qt::ItemIsEditable);
+      pushTableRow(i);
+    }
+    pull();
+    matrixInputTableWidget_->resizeColumnsToContents();
+    matrixInputTableWidget_->blockSignals(false);
+
+
+
+
+  }
+  else if (portName.find("Field") != std::string::npos)
+  {
+    qDebug() << "adjust field input table";
+    auto oldRowCount = matrixInputTableWidget_->rowCount();
+    if (numPorts > totalInputPorts())
+      numFieldPorts_++;
+    else
+      numFieldPorts_--;
+    auto newRowCount = numFieldPorts_ - 1;
+    qDebug() << "oldRowCount" << oldRowCount << "newRowCount" << newRowCount;
+  }
+  else if (portName.find("String") != std::string::npos)
+  {
+    qDebug() << "adjust string input table";
+    auto oldRowCount = matrixInputTableWidget_->rowCount();
+    if (numPorts > totalInputPorts())
+      numStringPorts_++;
+    else
+      numStringPorts_--;
+    auto newRowCount = numStringPorts_ - 1;
+    qDebug() << "oldRowCount" << oldRowCount << "newRowCount" << newRowCount;
+  }
+  else if (portName.find("Nrrd") != std::string::npos)
+  {
+    qDebug() << "adjust Nrrd input table";
+  }
+
+
+}
+
+QComboBox* InterfaceWithMatlabDialog::makeInputDataTypeComboBoxItem() const
+{
+  QStringList bcList;
+  bcList << "same as data" << "double" << "etc"; //TODO complete list
+  QComboBox* bcBox = new QComboBox();
+  bcBox->addItems(bcList);
+  bcBox->setCurrentIndex(0);
+  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushMatrixInput()));
+  return bcBox;
+}
+
+
+QComboBox* InterfaceWithMatlabDialog::makeInputArrayTypeComboBoxItem() const
+{
+  QStringList bcList;
+  bcList << "numeric array" << "struct array";
+  QComboBox* bcBox = new QComboBox();
+  bcBox->addItems(bcList);
+  bcBox->setCurrentIndex(0);
+  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushMatrixInput()));
+  return bcBox;
+}
+
+void InterfaceWithMatlabDialog::pushMatrixInput()
+{
+  qDebug() << "pushMatrixInput";
+}
+
+void InterfaceWithMatlabDialog::pushTableRow(int row)
+{
+  using namespace TableColumns;
+  for (int col = MinColumn; col < MaxColumn; ++col)
+    pushTable(row, col);
+}
+
+void InterfaceWithMatlabDialog::pushTable(int row, int col)
+{
+  qDebug() << "pushTable";
+  using namespace TableColumns;
+/*  if (FieldName == col)
+    pushNames();
+  else if (BoundaryCondition == col)
+    pushBoundaryConditions();
+  else if (InsideConductivity == col)
+    pushInsides();
+  else if (OutsideConductivity == col)
+    pushOutsides();
+    */
 }

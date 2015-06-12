@@ -45,7 +45,7 @@ namespace TableColumns
   const int OutsideConductivity = 4;
 
   const int MaxColumn = OutsideConductivity + 1;
-};
+}
 
 BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
