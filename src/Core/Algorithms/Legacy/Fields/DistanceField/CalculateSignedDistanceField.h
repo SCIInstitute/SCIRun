@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,6 +30,7 @@
 #define CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATESIGNEDDISTANCEFIELD_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -37,7 +38,7 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-class SCISHARE CalculateSignedDistanceFieldAlgo : public AlgorithmBase 
+class SCISHARE CalculateSignedDistanceFieldAlgo : public AlgorithmBase, public Thread::Interruptible
 {
   public:
     CalculateSignedDistanceFieldAlgo();
@@ -52,9 +53,9 @@ class SCISHARE CalculateSignedDistanceFieldAlgo : public AlgorithmBase
     static const AlgorithmOutputName SignedDistanceField;
     static const AlgorithmOutputName ValueField;
 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 };
 
 }}}}
 
-#endif 
+#endif

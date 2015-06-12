@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
-<networkFile class_id="0" tracking_level="0" version="2">
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>6</count>
@@ -51,488 +51,8 @@
 									<value>
 										<which>5</which>
 										<value class_id="12" tracking_level="0" version="0">
-											<count>6</count>
+											<count>0</count>
 											<item_version>0</item_version>
-											<item>
-												<name>row0</name>
-												<value>
-													<which>5</which>
-													<value>
-														<count>10</count>
-														<item_version>0</item_version>
-														<item>
-															<name>Input #</name>
-															<value>
-																<which>2</which>
-																<value>1</value>
-															</value>
-														</item>
-														<item>
-															<name>Type</name>
-															<value>
-																<which>2</which>
-																<value>2</value>
-															</value>
-														</item>
-														<item>
-															<name>X</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Y</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Z</name>
-															<value>
-																<which>2</which>
-																<value>15.653</value>
-															</value>
-														</item>
-														<item>
-															<name>Angle</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NX</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NY</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NZ</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>thickness</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>row1</name>
-												<value>
-													<which>5</which>
-													<value>
-														<count>10</count>
-														<item_version>0</item_version>
-														<item>
-															<name>Input #</name>
-															<value>
-																<which>2</which>
-																<value>1</value>
-															</value>
-														</item>
-														<item>
-															<name>Type</name>
-															<value>
-																<which>2</which>
-																<value>2</value>
-															</value>
-														</item>
-														<item>
-															<name>X</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Y</name>
-															<value>
-																<which>2</which>
-																<value>15.653</value>
-															</value>
-														</item>
-														<item>
-															<name>Z</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Angle</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NX</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NY</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NZ</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>thickness</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>row2</name>
-												<value>
-													<which>5</which>
-													<value>
-														<count>10</count>
-														<item_version>0</item_version>
-														<item>
-															<name>Input #</name>
-															<value>
-																<which>2</which>
-																<value>1</value>
-															</value>
-														</item>
-														<item>
-															<name>Type</name>
-															<value>
-																<which>2</which>
-																<value>2</value>
-															</value>
-														</item>
-														<item>
-															<name>X</name>
-															<value>
-																<which>2</which>
-																<value>15.653</value>
-															</value>
-														</item>
-														<item>
-															<name>Y</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Z</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Angle</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NX</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NY</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NZ</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>thickness</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>row3</name>
-												<value>
-													<which>5</which>
-													<value>
-														<count>10</count>
-														<item_version>0</item_version>
-														<item>
-															<name>Input #</name>
-															<value>
-																<which>2</which>
-																<value>1</value>
-															</value>
-														</item>
-														<item>
-															<name>Type</name>
-															<value>
-																<which>2</which>
-																<value>2</value>
-															</value>
-														</item>
-														<item>
-															<name>X</name>
-															<value>
-																<which>2</which>
-																<value>46.347</value>
-															</value>
-														</item>
-														<item>
-															<name>Y</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Z</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Angle</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NX</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NY</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NZ</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>thickness</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>row4</name>
-												<value>
-													<which>5</which>
-													<value>
-														<count>10</count>
-														<item_version>0</item_version>
-														<item>
-															<name>Input #</name>
-															<value>
-																<which>2</which>
-																<value>1</value>
-															</value>
-														</item>
-														<item>
-															<name>Type</name>
-															<value>
-																<which>2</which>
-																<value>2</value>
-															</value>
-														</item>
-														<item>
-															<name>X</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Y</name>
-															<value>
-																<which>2</which>
-																<value>46.347</value>
-															</value>
-														</item>
-														<item>
-															<name>Z</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Angle</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NX</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NY</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NZ</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>thickness</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>row5</name>
-												<value>
-													<which>5</which>
-													<value>
-														<count>10</count>
-														<item_version>0</item_version>
-														<item>
-															<name>Input #</name>
-															<value>
-																<which>2</which>
-																<value>1</value>
-															</value>
-														</item>
-														<item>
-															<name>Type</name>
-															<value>
-																<which>2</which>
-																<value>2</value>
-															</value>
-														</item>
-														<item>
-															<name>X</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Y</name>
-															<value>
-																<which>2</which>
-																<value>31.000</value>
-															</value>
-														</item>
-														<item>
-															<name>Z</name>
-															<value>
-																<which>2</which>
-																<value>46.347</value>
-															</value>
-														</item>
-														<item>
-															<name>Angle</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NX</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NY</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>NZ</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-														<item>
-															<name>thickness</name>
-															<value>
-																<which>2</which>
-																<value>???</value>
-															</value>
-														</item>
-													</value>
-												</value>
-											</item>
 										</value>
 									</value>
 								</second>
@@ -765,43 +285,43 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>ElectrodeCoilSetup:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-380</first>
-				<second>-228</second>
+				<first>-3.80000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:1</first>
 			<second>
-				<first>-684</first>
-				<second>-380</second>
+				<first>-6.84000000000000000e+02</first>
+				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:3</first>
 			<second>
-				<first>-76</first>
-				<second>-380</second>
+				<first>-7.60000000000000000e+01</first>
+				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:2</first>
 			<second>
-				<first>-380</first>
-				<second>-380</second>
+				<first>-3.80000000000000000e+02</first>
+				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:4</first>
 			<second>
-				<first>-304</first>
-				<second>-76</second>
+				<first>-3.04000000000000000e+02</first>
+				<second>-7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:5</first>
 			<second>
-				<first>-608</first>
-				<second>-76</second>
+				<first>-6.08000000000000000e+02</first>
+				<second>-7.60000000000000000e+01</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -813,6 +333,34 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
+	<moduleTags class_id="20" tracking_level="0" version="0">
+		<count>6</count>
+		<item_version>0</item_version>
+		<item class_id="21" tracking_level="0" version="0">
+			<first>ElectrodeCoilSetup:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:3</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadMatrix:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:4</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:5</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
 </networkFile>
 </boost_serialization>
 

@@ -36,6 +36,8 @@
 #include <Interface/Application/Note.h>
 #include "ui_SCIRunMainWindow.h"
 
+class QToolButton;
+
 namespace SCIRun {
   namespace Dataflow {
     namespace Engine {
@@ -51,6 +53,7 @@ class DeveloperConsole;
 class PreferencesWindow;
 class TagManagerWindow;
 class PythonConsoleWidget;
+class FileDownloader;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -90,14 +93,13 @@ private:
   ProvenanceWindow* provenanceWindow_;
   TagManagerWindow* tagManagerWindow_;
   DeveloperConsole* devConsole_;
-  PreferencesWindow* prefs_;
+  PreferencesWindow* prefsWindow_;
   PythonConsoleWidget* pythonConsole_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
   QToolButton* executeButton_;
 
-private:
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
@@ -118,14 +120,14 @@ private:
   void fillModuleSelector();
   void setupInputWidgets();
   void parseStyleXML();
-  void setTagNames(const QStringList& tagNames);
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
+  void showStatusMessage(const QString& str);
+  void showStatusMessage(const QString& str, int timeInMsec);
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
-  QVector<QString> tagNames_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
@@ -135,6 +137,7 @@ private:
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
+
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
@@ -162,6 +165,7 @@ private Q_SLOTS:
   void makeModulesLargeSize();
   void makeModulesSmallSize();
   void setDataDirectoryFromGUI();
+  void toolkitDownload();
   void addToPathFromGUI();
   void displayAcknowledgement();
   void setFocusOnFilterLine();
@@ -169,14 +173,16 @@ private Q_SLOTS:
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void highlightPortsChanged();
+  void openLogFolder();
   void resetWindowLayout();
-  void updateTagName(const QString& name);
   void zoomNetwork();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
+  void toggleTagLayer(bool toggle);
+  void toggleMetadataLayer(bool toggle);
   void adjustModuleDock(int state);
   void exitApplication(int code);
 };

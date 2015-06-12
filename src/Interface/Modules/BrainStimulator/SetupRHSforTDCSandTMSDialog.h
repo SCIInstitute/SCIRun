@@ -31,7 +31,6 @@
 
 #include "Interface/Modules/BrainStimulator/ui_SetupRHSforTDCSandTMSDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
@@ -47,7 +46,7 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
 protected:
-  virtual void pullSpecial() override;  
+  virtual void pullSpecial() override;
 private Q_SLOTS:
   void push();
 };

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -61,7 +61,7 @@ struct pointtype
   pointtype() : node(0), val1(0), val2(0), hasneighbor(false) {}
   VMesh::Node::index_type node;
   int val1;
-  int val2;      
+  int val2;
   bool hasneighbor;
 };
 
@@ -81,7 +81,7 @@ GetDomainBoundaryAlgo::GetDomainBoundaryAlgo()
   addParameter(DisconnectBoundaries,false);
 }
 
-bool 
+bool
 GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainlink, FieldHandle& output) const
 {
   typedef boost::unordered_multimap<index_type,pointtype> pointhash_map_type;
@@ -93,29 +93,29 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   int minval = get(MinRange).toInt();
   int maxval = get(MaxRange).toInt();
   const int domval = get(Domain).toInt();
-  
+
   const bool userange = get(UseRange).toBool();
-  
+
   if (!userange)
   {
-    minval = domval; 
+    minval = domval;
     maxval = domval;
   }
-  
+
   bool addouterboundary = get(AddOuterBoundary).toBool();
   bool innerboundaryonly = get(InnerBoundaryOnly).toBool();
   bool noinnerboundary = get(NoInnerBoundary).toBool();
   bool disconnect = get(DisconnectBoundaries).toBool();
-  
-  Log::get() << DEBUG_LOG << "GetDomainBoundaryAlgo parameters:" 
-    << "\n\tminval = " << minval 
-    << "\n\tmaxval = " << maxval 
-    << "\n\tdomval = " << domval 
-    << "\n\tuserange = " << userange 
-    << "\n\taddouterboundary = " << addouterboundary 
-    << "\n\tinnerboundaryonly = " << innerboundaryonly 
-    << "\n\tnoinnerboundary = " << noinnerboundary 
-    << "\n\tdisconnect = " << disconnect << std::endl; 
+
+  Log::get() << DEBUG_LOG << "GetDomainBoundaryAlgo parameters:"
+    << "\n\tminval = " << minval
+    << "\n\tmaxval = " << maxval
+    << "\n\tdomval = " << domval
+    << "\n\tuserange = " << userange
+    << "\n\taddouterboundary = " << addouterboundary
+    << "\n\tinnerboundaryonly = " << innerboundaryonly
+    << "\n\tnoinnerboundary = " << noinnerboundary
+    << "\n\tdisconnect = " << disconnect << std::endl;
 
   if (!input)
   {
@@ -125,19 +125,19 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
   FieldInformation fi(input);
   FieldInformation fo(input);
-  
+
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
     return false;
   }
-  
+
   if (!(fi.is_constantdata()))
   {
     error("This function needs a compartment definition on the elements (constant element data)");
-    return false;    
+    return false;
   }
-  
+
   if (!(fi.is_volume()||fi.is_surface()))
   {
     error("This function is only defined for surface and volume data");
@@ -169,14 +169,14 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   fo.make_constantdata();
   fo.make_int();
   output = CreateField(fo);
-  
-  
+
+
   if (!output)
   {
     error("Could not create output field");
     return false;
   }
-  
+
 
   VField *ifield = input->vfield();
   VField *ofield = output->vfield();
@@ -184,54 +184,56 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   VMesh  *omesh =  output->vmesh();
 
   imesh->synchronize(Mesh::DELEMS_E|Mesh::ELEM_NEIGHBORS_E|Mesh::NODE_NEIGHBORS_E);
-  
+
   VMesh::Node::size_type numnodes = imesh->num_nodes();
-  VMesh::Node::size_type numelems = imesh->num_elems();  
+  VMesh::Node::size_type numelems = imesh->num_elems();
   VMesh::DElem::size_type numdelems = imesh->num_delems();
 
   bool isdomlink = false;
   const index_type* domlinkrr = 0;
   const index_type* domlinkcc = 0;
-  
+
   std::vector<int> newvalues;
-  
+
   if (domainlink)
   {
     if ((numdelems != domainlink->nrows())&&(numdelems != domainlink->ncols()))
     {
       error("The Domain Link property is not of the right dimensions");
-      return false;        
+      return false;
     }
     domlinkrr = domainlink->get_rows();
     domlinkcc = domainlink->get_cols();
     isdomlink = true;
-  }  
-  
+  }
+
   if (disconnect)
   {
     pointhash_map_type node_map;
-    
+
     VMesh::Elem::index_type nci, ci;
-    VMesh::Elem::array_type elements; 
-    VMesh::DElem::array_type delems; 
-    VMesh::Node::array_type inodes; 
-    VMesh::Node::array_type onodes; 
+    VMesh::Elem::array_type elements;
+    VMesh::DElem::array_type delems;
+    VMesh::Node::array_type inodes;
+    VMesh::Node::array_type onodes;
     VMesh::Node::index_type a;
-    
+
     int val1, val2, newval;
 
     Point point;
 
     index_type cnt = 0;
 
-    for(VMesh::DElem::index_type delem = 0; delem < numdelems; delem++)       
+    for(VMesh::DElem::index_type delem = 0; delem < numdelems; delem++)
     {
+      checkForInterruption();
+
       bool neighborexist = false;
       bool includeface = false;
 
       imesh->get_elems(elements,delem);
       ci = elements[0];
-      if (elements.size() > 1) 
+      if (elements.size() > 1)
       {
         neighborexist = true;
         nci  = elements[1];
@@ -243,10 +245,10 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
         {
           VMesh::DElem::index_type idx = domlinkcc[rr];
           VMesh::Node::array_type nodes;
-          VMesh::Elem::array_type elems;           
-          VMesh::DElem::array_type delems2;           
+          VMesh::Elem::array_type elems;
+          VMesh::DElem::array_type delems2;
 
-          imesh->get_nodes(nodes,idx);       
+          imesh->get_nodes(nodes,idx);
           imesh->get_elems(elems,nodes[0]);
 
           for (size_t r=0; r<elems.size(); r++)
@@ -255,11 +257,11 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
             for (size_t s=0; s<delems2.size(); s++)
             {
-              if (delems2[s]==idx) 
-              { 
-                nci = elems[r]; 
-                neighborexist = true; 
-                break; 
+              if (delems2[s]==idx)
+              {
+                nci = elems[r];
+                neighborexist = true;
+                break;
               }
             }
             if (neighborexist) break;
@@ -269,7 +271,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
       }
 
       if (neighborexist)
-      {      
+      {
         ifield->value(val1,ci);
         ifield->value(val2,nci);
         if (!innerboundaryonly)
@@ -281,15 +283,15 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
                 (userange)))
             {
               newval = val1;
-              includeface = true;                         
+              includeface = true;
             }
             else if (((val2 >= minval)&&(val2 <= maxval)&&
                 (!((val1 >= minval)&&(val1 <= maxval))))&&
                 (userange))
             {
               newval = val2;
-              includeface = true;             
-            }              
+              includeface = true;
+            }
           }
           else
           {
@@ -297,9 +299,9 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
                 ((val2 >= minval)&&(val2 <= maxval)))||
                 (!userange))
             {
-              if (!(val1 == val2)) 
+              if (!(val1 == val2))
               {
-                includeface = true;             
+                includeface = true;
                 if((val1 >= minval)&&(val1 <= maxval)) newval = val1;
                 else newval = val2;
               }
@@ -312,19 +314,19 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
               ((val1 <= maxval)&&(val2 <= maxval)))||
               (!userange))
           {
-            if (!(val1 == val2)) 
+            if (!(val1 == val2))
             {
               includeface = true;
               newval = val1;
               if (val2 < newval) newval = val2;
             }
-          }          
+          }
         }
       }
       else if ((addouterboundary)&&(!innerboundaryonly))
       {
         ifield->value(val1,ci);
-        if (((val1 >= minval)&&(val1 <= maxval))||(!userange)) 
+        if (((val1 >= minval)&&(val1 <= maxval))||(!userange))
         {
           newval = val1;
           includeface = true;
@@ -337,15 +339,16 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
         onodes.resize(inodes.size());
         for (size_t q=0; q< onodes.size(); q++)
         {
+          checkForInterruption();
           a = inodes[q];
-          
+
           std::pair<pointhash_map_type::iterator,pointhash_map_type::iterator> lit;
           lit = node_map.equal_range(a);
-          
+
           VMesh::Node::index_type nodci;
           int v1, v2;
           bool hasneighbor;
-          
+
           if (neighborexist)
           {
             if (val1 < val2) { v1 = val1; v2 = val2; } else { v1 = val2; v2 = val1; }
@@ -356,7 +359,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
             v1 = val1; v2 = 0;
             hasneighbor = false;
           }
-          
+
           while (lit.first != lit.second)
           {
             if (((*(lit.first)).second.val1 == v1)&&
@@ -368,7 +371,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
             }
             ++(lit.first);
           }
-          
+
           if (lit.first == lit.second)
           {
             pointtype newpoint;
@@ -384,7 +387,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
           {
             onodes[q] = nodci;
           }
-          
+
         }
         omesh->add_elem(onodes);
         newvalues.push_back(newval);
@@ -395,12 +398,12 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   else
   {
     std::vector<VMesh::Node::index_type> node_map(imesh->num_nodes(),-1);
-    
+
     VMesh::Elem::index_type nci, ci;
-    VMesh::Elem::array_type elements; 
-    VMesh::DElem::array_type delems; 
-    VMesh::Node::array_type inodes; 
-    VMesh::Node::array_type onodes; 
+    VMesh::Elem::array_type elements;
+    VMesh::DElem::array_type delems;
+    VMesh::Node::array_type inodes;
+    VMesh::Node::array_type onodes;
     VMesh::Node::index_type a;
     int val1, val2, newval;
 
@@ -408,14 +411,16 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
     index_type cnt = 0;
 
-    for(VMesh::DElem::index_type delem = 0; delem < numdelems; delem++)       
+    for(VMesh::DElem::index_type delem = 0; delem < numdelems; delem++)
     {
+      checkForInterruption();
+      
       bool neighborexist = false;
       bool includeface = false;
 
       imesh->get_elems(elements,delem);
       ci = elements[0];
-      if (elements.size() > 1) 
+      if (elements.size() > 1)
       {
         neighborexist = true;
         nci  = elements[1];
@@ -427,10 +432,10 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
         {
           VMesh::DElem::index_type idx = domlinkcc[rr];
           VMesh::Node::array_type nodes;
-          VMesh::Elem::array_type elems;           
-          VMesh::DElem::array_type delems2;           
+          VMesh::Elem::array_type elems;
+          VMesh::DElem::array_type delems2;
 
-          imesh->get_nodes(nodes,idx);       
+          imesh->get_nodes(nodes,idx);
           imesh->get_elems(elems,nodes[0]);
 
           for (size_t r=0; r<elems.size(); r++)
@@ -460,15 +465,15 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
                 (userange))
             {
               newval = val1;
-              includeface = true;                         
-            }    
+              includeface = true;
+            }
             else if(((val2 >= minval)&&(val2 <= maxval)&&
                 (!((val1 >= minval)&&(val1 <= maxval))))&&
                 (userange))
             {
               newval = val2;
-              includeface = true;             
-            }              
+              includeface = true;
+            }
           }
           else
           {
@@ -476,9 +481,9 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
                 ((val2 >= minval)&&(val2 <= maxval)))||
                 (!userange))
             {
-              if (!(val1 == val2)) 
+              if (!(val1 == val2))
               {
-                includeface = true;             
+                includeface = true;
                 if((val1 >= minval)&&(val1 <= maxval)) newval = val1;
                 else newval = val2;
               }
@@ -491,20 +496,20 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
               ((val1 <= maxval)&&(val2 <= maxval)))||
               (!userange))
           {
-            if (!(val1 == val2)) 
+            if (!(val1 == val2))
             {
               includeface = true;
               newval = val1;
               if (val2 < newval) newval = val2;
             }
-          }          
+          }
         }
       }
       else if ((addouterboundary)&&(!innerboundaryonly))
       {
         ifield->value(val1,ci);
         if (((val1 >= minval)&&(val1 <= maxval))||
-            (!userange)) 
+            (!userange))
         {
           newval = val1;
           includeface = true;
@@ -515,10 +520,11 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
       {
         imesh->get_nodes(inodes,delem);
         onodes.resize(inodes.size());
-        
+
         for (size_t q=0; q< onodes.size(); q++)
         {
-          a = inodes[q];          
+          checkForInterruption();
+          a = inodes[q];
           if (node_map[a] == -1)
           {
             imesh->get_center(point,a);
@@ -529,7 +535,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
           {
             onodes[q] = node_map[a];
           }
-          
+
         }
         omesh->add_elem(onodes);
         newvalues.push_back(newval);
@@ -537,10 +543,10 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
       cnt++; if (cnt == 100) update_progress_max(delem,numdelems);
     }
   }
-  
+
   ofield->resize_values();
   ofield->set_values(newvalues);
-  
+
   CopyProperties(*input, *output);
   return true;
 }

@@ -59,7 +59,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
-  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent)
+  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, 
+  TagColorFunc tagColor,
+  QWidget* parent)
   : QGraphicsView(parent),
   deleteAction_(0),
   sendToBackAction_(0),
@@ -67,6 +69,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   modulesSelectedByCL_(false),
   currentScale_(1),
   tagLayerActive_(false),
+  tagColor_(tagColor),
   scene_(new QGraphicsScene(parent)),
   visibleItems_(true),
   lastModulePosition_(0,0),
@@ -348,7 +351,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
-  
+
   scene_->addItem(proxy);
   proxy->createStartupNote();
 
@@ -357,7 +360,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
   proxy->setVisible(visibleItems_);
 
-  GuiLogger::Instance().log("Module added.");
+  GuiLogger::Instance().logStd("Module added: " + module->getModuleId());
 }
 
 void NetworkEditor::setMouseAsDragMode()
@@ -970,11 +973,6 @@ void NetworkEditor::enableInputWidgets()
   deleteAction_->setEnabled(true);
 }
 
-void NetworkEditor::setRegressionTestDataDir(const QString& dir)
-{
-  controller_->getSettings().setValue("regressionTestDataDir", dir.toStdString());
-}
-
 void NetworkEditor::setBackground(const QBrush& brush)
 {
   scene_->setBackgroundBrush(brush);
@@ -1119,7 +1117,7 @@ void NetworkEditor::metadataLayer(bool active)
   }
 }
 
-QColor SCIRun::Gui::tagColor(int tag)
+QColor SCIRun::Gui::defaultTagColor(int tag)
 {
   switch (tag)
   {
@@ -1169,11 +1167,16 @@ void NetworkEditor::tagLayer(bool active, int tag)
     item->setData(CurrentTagKey, tag);
     if (active)
     {
-      if (tag != NoTag)
+      const auto itemTag = item->data(TagDataKey).toInt();
+      if (tag == AllTags)
       {
-        if (tag == item->data(TagDataKey).toInt())
+        highlightTaggedItem(item, itemTag);
+      }
+      else if (tag != NoTag)
+      {
+        if (tag == itemTag)
         {
-          highlightTaggedItem(item, tag);
+          highlightTaggedItem(item, itemTag);
         }
         else
           item->setGraphicsEffect(blurEffect());
@@ -1199,7 +1202,8 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
   else
   {
     auto colorize = new QGraphicsColorizeEffect;
-    colorize->setColor(tagColor(tagValue));
+    auto color = tagColor_(tagValue);
+    colorize->setColor(color);
     item->setGraphicsEffect(colorize);
   }
 }

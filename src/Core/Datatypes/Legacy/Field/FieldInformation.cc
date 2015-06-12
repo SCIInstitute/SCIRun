@@ -565,6 +565,62 @@ FieldInformation::set_data_type(const std::string& type1)
   data_type = type;
 }
 
+bool
+FieldInformation::set_data_type_by_string(const std::string& type)
+{
+  if (type == "char")
+  {
+    return make_char();
+  }
+  else if (type == "unsigned char")
+  {
+    return make_unsigned_char();
+  }
+  else if (type == "short")
+  {
+    return make_short();
+  }
+  else if (type == "unsigned short")
+  {
+    return make_unsigned_short();
+  }
+  else if (type == "int")
+  {
+    return make_int();
+  }
+  else if (type == "unsigned int")
+  {
+    return make_unsigned_int();
+  }
+  else if (type == "long long")
+  {
+    return make_long_long();
+  }
+  else if (type == "unsigned long long")
+  {
+    return make_unsigned_long_long();
+  }
+  else if (type == "float")
+  {
+    return make_float();
+  }
+  else if (type == "double")
+  {
+    return make_double();
+  }
+  else if (type == "Vector")
+  {
+    return make_vector();
+  }
+  else if (type == "Tensor")
+  {
+    return make_tensor();
+  }
+  else
+  {
+    BOOST_THROW_EXCEPTION(UnknownMeshType() << Core::ErrorMessage("INTERNAL ERROR - unknown type"));
+  }
+}
 
 void
 FieldInformation::set_data_type(data_info_type type)

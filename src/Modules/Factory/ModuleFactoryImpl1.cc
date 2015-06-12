@@ -56,6 +56,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/GetDomainBoundary.h>
+#include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Legacy/Fields/CreateFieldData.h>
@@ -89,6 +90,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
+#include <Modules/Legacy/Math/AddLinkedNodesToLinearSystem.h>
+#include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
@@ -112,6 +115,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Modules/Basic/AsyncPortTestModule.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
+#include <Modules/Legacy/Matlab/Interface/InterfaceWithMatlab.h>
 #include <Modules/Legacy/Converters/ConvertMatrixToString.h>
 //#include <Modules/Fields/@ModuleName@.h>
 
@@ -129,6 +133,7 @@ using namespace SCIRun::Modules::Matlab::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Render;
+using namespace SCIRun::Modules::Matlab::Interface;
 using namespace SCIRun::Modules::Converters;
 
 void ModuleDescriptionLookup::addEssentialModules()
@@ -166,6 +171,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CreateStandardColorMap>("In progress: four color maps available", "...");
   addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
+  addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
 	addModuleDesc<SwapFieldDataWithMatrixEntries>("SwapFieldDataWithMatrixEntires","...");
@@ -191,12 +197,16 @@ void ModuleDescriptionLookup::addEssentialModules()
 	addModuleDesc<RefineMesh>("RefineMesh","ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
 	addModuleDesc<BuildMatrixOfSurfaceNormals>("Real ported module", "...");
+  addModuleDesc<AddLinkedNodesToLinearSystem>("Real ported module", "...");
+  addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
   addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
   addModuleDesc<ComputeSVD>("ComputeSVD","Math","SCIRun","...","...");
 
+  addModuleDesc<InterfaceWithMatlab>("Real ported module", "...");
+  
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");

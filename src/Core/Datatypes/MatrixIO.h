@@ -39,6 +39,8 @@
 #include <vector>
 #include <ostream>
 #include <istream>
+#include <boost/algorithm/string/predicate.hpp>
+#include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
@@ -72,7 +74,7 @@ namespace Datatypes {
     if (!(in >> str))
       return in;
 
-    if (str == "NaN")
+    if (boost::iequals(str, "NaN"))
       f.value = std::numeric_limits<double>::quiet_NaN();
     else
       in.setstate(std::ios::badbit);

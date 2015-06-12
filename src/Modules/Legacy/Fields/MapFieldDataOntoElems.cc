@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -41,7 +41,7 @@ const ModuleLookupInfo MapFieldDataOntoElements::staticInfo_("MapFieldDataOntoEl
 
 /// @class MapFieldDataOntoElems
 /// @brief Maps data from one mesh to another mesh. The output mesh will have
-/// the data located on the elements. 
+/// the data located on the elements.
 
 MapFieldDataOntoElements::MapFieldDataOntoElements() : Module(staticInfo_)
 {
@@ -73,16 +73,16 @@ MapFieldDataOntoElements::execute()
     //----------
     // Backwards compatibility:
     // Weights port did not always exist
-    if (weights && *weights) 
+    if (weights && *weights)
       destination = weights;
-    else 
-    { 
-      error("No destination input field."); 
+    else
+    {
+      error("No destination input field.");
       return;
     }
     //----------
   }
-  
+
 //   if (inputs_changed_ || !oport_cached("Output") ||
 //     gui_quantity_.changed() || gui_value_.changed() ||
 //     gui_sample_points_.changed() || gui_sample_method_.changed() ||

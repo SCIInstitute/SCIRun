@@ -44,6 +44,7 @@
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Thread/Interruptible.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
@@ -104,6 +105,37 @@ namespace detail
     Mutex mapLock_;
     std::map<std::string, int> instanceCounts_;
   };
+
+  // basic int version to start. next hookup state machine
+  class ModuleExecutionStateImpl : public ModuleExecutionState
+  {
+  public:
+    virtual Value currentState() const override
+    {
+      return current_;
+    }
+    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) override
+    {
+      return signal_.connect(subscriber);
+    }
+    virtual bool transitionTo(Value state) override
+    {
+      if (current_ != state)
+      {
+        //std::cout << "Transitioning to " << state << std::endl;
+        signal_(static_cast<int>(state));
+      }
+      current_ = state;
+      return true;
+    }
+    virtual std::string currentColor() const override
+    {
+      return "dunno";
+    }
+  private:
+    Value current_;
+    ExecutionStateChangedSignalType signal_;
+  };
 }
 
 /*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
@@ -123,8 +155,8 @@ Module::Module(const ModuleLookupInfo& info,
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
   metadata_(state_),
-  executionState_(ModuleInterface::NotExecuted),
-  threadStopped_(false)
+  threadStopped_(false),
+  executionState_(new detail::ModuleExecutionStateImpl)
 {
   iports_.set_module(this);
   oports_.set_module(this);
@@ -146,6 +178,8 @@ Module::Module(const ModuleLookupInfo& info,
 
   if (reexFactory)
     setReexecutionStrategy(reexFactory->create(*this));
+
+  executionState_->transitionTo(ModuleExecutionState::NotExecuted);
 }
 
 void Module::set_id(const std::string& id)
@@ -223,7 +257,7 @@ bool Module::do_execute() throw()
   status("STARTING MODULE: " + id_.id_);
   /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
-  setExecutionState(ModuleInterface::Executing);
+  executionState_->transitionTo(ModuleExecutionState::Executing);
   bool returnCode = false;
   bool threadStopValue = false;
 
@@ -269,10 +303,6 @@ bool Module::do_execute() throw()
   }
   threadStopped_ = threadStopValue;
 
-  // Call finish on all ports.
-  //iports_.apply(boost::bind(&PortInterface::finish, _1));
-  //oports_.apply(boost::bind(&PortInterface::finish, _1));
-
   {
     double executionTime = executionTimer.elapsed();
     std::ostringstream ostr;
@@ -283,9 +313,11 @@ bool Module::do_execute() throw()
   status("MODULE FINISHED: " + id_.id_);
   /// @todo: need separate logger per module
   //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
-  setExecutionState(ModuleInterface::Completed);
+  //TODO: brittle dependency on Completed
+  //auto endState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
+  auto endState = ModuleExecutionState::Completed;
+  executionState_->transitionTo(endState);
   resetStateChanged();
-  //std::cout << id_ << " inputsChanged set to false post-execute" << std::endl;
   inputsChanged_ = false;
   executeEnds_(id_);
   return returnCode;
@@ -397,7 +429,7 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
 
-  metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? nullptr : options[0]));
+  metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? boost::none : options[0]));
 
   return options;
 }
@@ -549,11 +581,6 @@ boost::signals2::connection Module::connectErrorListener(const ErrorSignalType::
   return errorSignal_.connect(subscriber);
 }
 
-boost::signals2::connection Module::connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber)
-{
-  return executionStateChanged_.connect(subscriber);
-}
-
 void Module::setUiVisible(bool visible)
 {
   if (uiToggleFunc_)
@@ -638,17 +665,9 @@ void Module::setAlgoListFromState(const AlgorithmParameterName& name)
   algo().set(name, get_state()->getValue(name).toVector());
 }
 
-ModuleInterface::ExecutionState Module::executionState() const
+ModuleExecutionState& Module::executionState()
 {
-  return executionState_;
-}
-
-void Module::setExecutionState(ModuleInterface::ExecutionState state)
-{
-  //std::cout << get_id() << " setExecutionState old " << executionState_ << " new " << state << std::endl;
-  if (state != executionState_)
-    executionStateChanged_(state);
-  executionState_ = state;
+  return *executionState_;
 }
 
 bool Module::needToExecute() const
@@ -875,8 +894,6 @@ std::string ModuleLevelUniqueIDGenerator::generateModuleLevelUniqueID(const Modu
   }
   toHash << "}";
 
-  //std::cout << "trying to hash: " << toHash.str() << std::endl;
-
   ostr << hash_(toHash.str());
 
   return ostr.str();
@@ -889,4 +906,9 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 {
   ModuleLevelUniqueIDGenerator gen(*this, tag);
   return gen();
+}
+
+bool Module::isStoppable() const
+{
+  return dynamic_cast<const Core::Thread::Interruptible*>(this) != nullptr;
 }

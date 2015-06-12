@@ -31,7 +31,6 @@
 
 #include "Interface/Modules/Forward/ui_BuildBEMatrix.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Forward/share.h>
 
 namespace SCIRun {

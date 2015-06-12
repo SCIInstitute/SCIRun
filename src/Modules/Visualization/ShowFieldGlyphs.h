@@ -33,7 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/ColorMap.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Thread/Interruptible.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Modules/Visualization/share.h>
 
@@ -44,7 +44,8 @@ namespace SCIRun {
       class SCISHARE ShowFieldGlyphs : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         //public Has6InputPorts<FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag>,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
-        public Has1OutputPort < GeometryPortTag >
+        public Has1OutputPort < GeometryPortTag >,
+        public Core::Thread::Interruptible
       {
       public:
         ShowFieldGlyphs();

@@ -29,18 +29,19 @@
 #include <QtGui>
 #include <iostream>
 #include <Interface/Application/ModuleLogWindow.h>
-#include <Interface/Application/SCIRunMainWindow.h> 
-#include <Interface/Application/DialogErrorControl.h> 
+#include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Application/DialogErrorControl.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Logging;
 
-
-ModuleLogWindow::ModuleLogWindow(const QString& moduleName, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent) : QDialog(parent), moduleName_(moduleName), 
+ModuleLogWindow::ModuleLogWindow(const QString& moduleName, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent) : QDialog(parent), moduleName_(moduleName),
 		dialogErrorControl_(dialogErrorControl)
 {
 	setupUi(this);
-	setModal(false);  
+	setModal(false);
 	setWindowTitle("Log for " + moduleName);
   setVisible(false);
   buttonBox->button(QDialogButtonBox::Discard)->setText("Clear");
@@ -48,9 +49,19 @@ ModuleLogWindow::ModuleLogWindow(const QString& moduleName, boost::shared_ptr<SC
   logTextEdit_->setStyleSheet("background-color: lightgray;");
 }
 
+namespace
+{
+  template <class StringType>
+  StringType formatWithColor(const StringType& message, const StringType& colorName)
+  {
+    //"<span style=\"color: red\">" << "[" << moduleName_ << "] " << msg << "</span>"
+    return "<span style=\"color:" + colorName + "\">" + message + "</span><br>";
+  }
+}
+
 void ModuleLogWindow::appendMessage(const QString& message, const QColor& color /* = Qt::black */)
 {
-  logTextEdit_->insertHtml(QString("<p style=\"color:") + color.name() + "\">" + message + "</p><br>");
+  logTextEdit_->insertHtml(formatWithColor(message, color.name()));
 }
 
 void ModuleLogWindow::popupMessageBox(const QString& message)
@@ -71,11 +82,25 @@ void ModuleLogWindow::popupMessageBox(const QString& message)
   }
 }
 
-ModuleLogger::ModuleLogger(ModuleLogWindow* window)
+ModuleLogger::ModuleLogger(ModuleLogWindow* window) : moduleName_(window->name().toStdString())
 {
   connect(this, SIGNAL(logSignal(const QString&, const QColor&)), window, SLOT(appendMessage(const QString&, const QColor&)));
   connect(this, SIGNAL(alert(const QColor&)), window, SIGNAL(messageReceived(const QColor&)));
   connect(this, SIGNAL(popup(const QString&)), window, SLOT(popupMessageBox(const QString&)));
+
+#ifdef __APPLE__
+  static bool printTODOMessageOnce = true;
+  if (printTODOMessageOnce)
+  {
+    Log::get("Modules") << NOTICE << formatWithColor(std::string("Coming soon on Mac: module logs will be consolidated here"), std::string("blue")) << std::endl;
+	  printTODOMessageOnce = false;
+  }
+#endif
+}
+
+ModuleLogger::~ModuleLogger()
+{
+  Log::get("Modules").flush();
 }
 
 void ModuleLogger::error(const std::string& msg) const
@@ -85,6 +110,9 @@ void ModuleLogger::error(const std::string& msg) const
   logSignal("<b>ERROR: " + qmsg + "</b>", red);
   alert(red);
   popup(qmsg);
+#ifdef _WIN32 //again, unstable on Mac. Need a slicker way to avoid collisions.
+  Log::get("Modules") << ERROR_LOG << formatWithColor("[" + moduleName_ + "] " + msg, std::string("red"));
+#endif
 }
 
 void ModuleLogger::warning(const std::string& msg) const
@@ -92,6 +120,9 @@ void ModuleLogger::warning(const std::string& msg) const
   const QColor yellow = Qt::yellow;
   logSignal("WARNING: " + QString::fromStdString(msg), yellow);
   alert(yellow);
+#ifdef _WIN32 //again, unstable on Mac. Need a slicker way to avoid collisions.
+  Log::get("Modules") << WARN << formatWithColor("[" + moduleName_ + "] " + msg, std::string("yellow"));
+#endif
 }
 
 void ModuleLogger::remark(const std::string& msg) const
@@ -99,9 +130,15 @@ void ModuleLogger::remark(const std::string& msg) const
   const QColor blue = Qt::blue;
   logSignal("REMARK: " + QString::fromStdString(msg), blue);
   alert(blue);
+#ifdef _WIN32 //again, unstable on Mac. Need a slicker way to avoid collisions.
+  Log::get("Modules") << NOTICE << formatWithColor("[" + moduleName_ + "] " + msg, std::string("blue"));
+#endif
 }
 
 void ModuleLogger::status(const std::string& msg) const
 {
   logSignal(QString::fromStdString(msg), Qt::black);
+#ifdef _WIN32 //again, unstable on Mac. Need a slicker way to avoid collisions.
+  Log::get("Modules") << INFO << formatWithColor("[" + moduleName_ + "] " + msg, std::string("white"));
+#endif
 }

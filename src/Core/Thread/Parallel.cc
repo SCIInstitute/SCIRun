@@ -41,7 +41,16 @@ void Parallel::RunTasks(IndexedTask task, int numProcs)
   {
     threads.create_thread(boost::bind(task, i));
   }
-  threads.join_all();
+
+  try
+  {
+    threads.join_all();
+  }
+  catch (boost::thread_interrupted&)
+  {
+    threads.interrupt_all();
+    throw;
+  }
 }
 
 unsigned int Parallel::NumCores()

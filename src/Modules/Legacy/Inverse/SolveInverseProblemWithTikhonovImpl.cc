@@ -194,9 +194,14 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
   // DIMENSION CHECK!!
   const int M = forwardMatrix_->nrows();
   const int N = forwardMatrix_->ncols();
-  if (M != measuredData_->nrows())
+
+  if (M < N && M != measuredData_->nrows())
   {
-    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Input matrix dimensions must agree."));
+    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Input matrix dimensions must agree: Underdetermined case, rows are unequal."));
+  }
+  if (M >= N && N != measuredData_->nrows())
+  {
+    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Input matrix dimensions must agree: Overdetermined case, columns are unequal."));
   }
   if (1 != measuredData_->ncols())
   {
@@ -221,7 +226,6 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     DenseColumnMatrix solution(M);
     DenseColumnMatrix RRtrAtrsolution(N);
 
-    const DenseMatrixHandle measuredDataRef = measuredData_;
     if (!sourceWeighting_) //check if a Source Space Weighting Matrix exist?
     {
       regMat = DenseMatrix::Identity(N, N);
@@ -334,7 +338,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
 
         try
         {
-          LinearAlgebra::solve_lapack(regForMatrix, *measuredDataRef, solution);
+          LinearAlgebra::solve_lapack(regForMatrix, *measuredData_, solution);
         }
         catch (LinearAlgebra::LapackError&)
         {
@@ -393,7 +397,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         rho[j]=0; eta[j]=0;
         for (int k = 0; k < Ax.nrows(); k++)
         {
-          double T = Ax(k) - (*measuredDataRef)(k);
+          double T = Ax(k) - (*measuredData_)(k);
           rho[j] += T*T; //norm of the data fit term
         }
 
@@ -446,7 +450,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     {
       try
       {
-        LinearAlgebra::solve_lapack(regForMatrix, *measuredDataRef, solution);
+        LinearAlgebra::solve_lapack(regForMatrix, *measuredData_, solution);
       }
       catch (LinearAlgebra::LapackError&)
       {

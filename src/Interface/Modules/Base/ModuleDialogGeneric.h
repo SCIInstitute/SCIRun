@@ -29,13 +29,16 @@
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
-#include <Interface/Modules/Base/WidgetSlotManagers.h>
-#include <Core/Algorithms/Base/Name.h>
 #include <QtGui>
+#ifndef Q_MOC_RUN
+#include <Interface/Modules/Base/WidgetSlotManagers.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Algorithms/Base/Name.h>
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/bimap.hpp>
 #include <boost/signals2/connection.hpp>
+#endif
 #include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
@@ -92,6 +95,7 @@ namespace Gui {
     virtual void contextMenuEvent(QContextMenuEvent* e) override;
     void fixSize();
     void connectButtonToExecuteSignal(QAbstractButton* button);
+    void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
     void connectComboToExecuteSignal(QComboBox* box);
 
     void pullManagedWidgets();

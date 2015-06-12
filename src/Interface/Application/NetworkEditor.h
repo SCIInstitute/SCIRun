@@ -29,14 +29,17 @@
 #ifndef INTERFACE_APPLICATION_NETWORKEDITOR_H
 #define INTERFACE_APPLICATION_NETWORKEDITOR_H
 
-#include <boost/shared_ptr.hpp>
 #include <QGraphicsView>
+#ifndef Q_MOC_RUN
+#include <boost/shared_ptr.hpp>
 #include <map>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 #include <Interface/Application/Note.h>
+#include <Interface/Application/Utility.h>
+#endif
 
 class QMenu;
 class QToolBar;
@@ -111,7 +114,9 @@ Q_SIGNALS:
 
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
-				boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
+				boost::shared_ptr<DialogErrorControl> dialogErrorControl, 
+        TagColorFunc tagColor = defaultTagColor,
+        QWidget* parent = 0);
     ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -143,8 +148,7 @@ Q_SIGNALS:
     void enableInputWidgets();
 
     //TODO: this class is getting too big and messy, schedule refactoring
-    void setRegressionTestDataDir(const QString& dir);
-
+    
     void setBackground(const QBrush& brush);
     QBrush background() const;
 
@@ -248,6 +252,7 @@ Q_SIGNALS:
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
+    TagColorFunc tagColor_;
 
     QGraphicsScene* scene_;
 

@@ -30,6 +30,7 @@
 #define UTILITY_H
 
 #include <sstream>
+#include <QAction>
 
 namespace SCIRun {
 
@@ -45,7 +46,8 @@ namespace Gui
 {
   QColor to_color(const std::string& str, int alpha = 255);
 
-  QColor tagColor(int tag);
+  QColor defaultTagColor(int tag);
+  typedef std::function<QColor(int)> TagColorFunc;
 
   QString colorToString(const QColor& color);
 

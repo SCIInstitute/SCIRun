@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
-<networkFile class_id="0" tracking_level="0" version="2">
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>8</count>
@@ -142,7 +142,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -386,57 +386,57 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ClipFieldByFunction:5</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-760</first>
-				<second>152</second>
+				<first>-7.60000000000000000e+02</first>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:2</first>
 			<second>
-				<first>-1064</first>
-				<second>0</second>
+				<first>-1.06400000000000000e+03</first>
+				<second>0.00000000000000000e+00</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:1</first>
 			<second>
-				<first>-1064</first>
-				<second>-152</second>
+				<first>-1.06400000000000000e+03</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateString:5</first>
 			<second>
-				<first>-684</first>
-				<second>0</second>
+				<first>-6.84000000000000000e+02</first>
+				<second>0.00000000000000000e+00</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:3</first>
 			<second>
-				<first>-760</first>
-				<second>228</second>
+				<first>-7.60000000000000000e+02</first>
+				<second>2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:4</first>
 			<second>
-				<first>-1038</first>
-				<second>214</second>
+				<first>-1.03800000000000000e+03</first>
+				<second>2.14000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:6</first>
 			<second>
-				<first>-836</first>
-				<second>380</second>
+				<first>-8.36000000000000000e+02</first>
+				<second>3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>WriteMatrix:7</first>
 			<second>
-				<first>-988</first>
-				<second>456</second>
+				<first>-9.88000000000000000e+02</first>
+				<second>4.56000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -448,6 +448,42 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>8</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>ClipFieldByFunction:5</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateFieldData:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateLatVol:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateString:5</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:3</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:4</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:6</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>WriteMatrix:7</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
 </networkFile>
 </boost_serialization>
 

@@ -109,21 +109,21 @@ namespace SCIRun
 
       // structure definitions
     private:
-      struct mxdata 
+      struct mxdata
       {
         void	*dataptr_;	// Store the data to put in the matfile
         bool	owndata_;   // Do we own the data
         int	bytesize_;	// Size of the data in bytes
         mitype	type_;		// The type of the data
         int	ref_;		// reference counter
-      };  
+      };
 
       // data objects
       mxdata *m_;
       void *ptr_;
       void clearptr();
 
-      // functions  
+      // functions
     public:
       matfiledata();
       ~matfiledata();
@@ -630,48 +630,39 @@ namespace SCIRun
         break;
       case miUINT8: case miUTF8:
         { unsigned char *ptr = static_cast<unsigned char *>(databuffer());
-        int p,q,s;
-        s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<unsigned char>(dataptr[p][q]); }}
+        int s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<unsigned char>(dataptr[p][q]); }}
         break;
       case miINT16:
         { signed short *ptr = static_cast<signed short *>(databuffer());
-        int p,q,s;
-        s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<signed short>(dataptr[p][q]); }}
+        int s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<signed short>(dataptr[p][q]); }}
         break;
       case miUINT16: case miUTF16:
         { unsigned short *ptr = static_cast<unsigned short *>(databuffer());
-        int p,q,s;
-        s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<signed short>(dataptr[p][q]); }}
+        int s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<signed short>(dataptr[p][q]); }}
         break;
       case miINT32:
         { int32_t *ptr = static_cast<int32_t *>(databuffer());
-        int p,q,s;
-        s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<int32_t>(dataptr[p][q]); }}
+        int s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<int32_t>(dataptr[p][q]); }}
         break;
       case miUINT32: case miUTF32:
         { uint32_t *ptr = static_cast<uint32_t *>(databuffer());
-        int p,q,s;
-        s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<uint32_t>(dataptr[p][q]); }}
+        int s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<uint32_t>(dataptr[p][q]); }}
         break;
       case miINT64:
         { int64_t *ptr = static_cast<int64_t *>(databuffer());
-        int p,q,s;
-        s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<int64_t>(dataptr[p][q]); }}
+        int s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<int64_t>(dataptr[p][q]); }}
         break;
       case miUINT64:
         { uint64_t *ptr = static_cast<uint64_t *>(databuffer());
-        int p,q,s;
-        s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<uint64_t>(dataptr[p][q]); }}
+        int s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<uint64_t>(dataptr[p][q]); }}
         break;
       case miSINGLE:
         { float *ptr = static_cast<float *>(databuffer());
-        int p,q,s;
-        s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<signed char>(dataptr[p][q]); }}
+        int s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<signed char>(dataptr[p][q]); }}
         break;
       case miDOUBLE:
         { double *ptr = static_cast<double *>(databuffer());
-        int p,q,s;
-        s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<signed char>(dataptr[p][q]); }}
+        int s = 0; for(int p=0;p<dim2;p++) for(int q=0;q<dim1;q++) { ptr[s++] = static_cast<signed char>(dataptr[p][q]); }}
         break;
       default:
         throw unknown_type();
@@ -693,53 +684,43 @@ namespace SCIRun
       {
       case miINT8:
         { signed char *ptr = static_cast<signed char *>(databuffer());
-        int p,q,r,s;
-        s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed char>(dataptr[p][q][r]); }}
+        int s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed char>(dataptr[p][q][r]); }}
         break;
       case miUINT8: case miUTF8:
         { unsigned char *ptr = static_cast<unsigned char *>(databuffer());
-        int p,q,r,s;
-        s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<unsigned char>(dataptr[p][q][r]); }}
+        int s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<unsigned char>(dataptr[p][q][r]); }}
         break;
       case miINT16:
         { signed short *ptr = static_cast<signed short *>(databuffer());
-        int p,q,r,s;
-        s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed short>(dataptr[p][q][r]); }}
+        int s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed short>(dataptr[p][q][r]); }}
         break;
       case miUINT16: case miUTF16:
         { unsigned short *ptr = static_cast<unsigned short *>(databuffer());
-        int p,q,r,s;
-        s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<unsigned short>(dataptr[p][q][r]); }}
+        int s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<unsigned short>(dataptr[p][q][r]); }}
         break;
       case miINT32:
         { int32_t *ptr = static_cast<int32_t *>(databuffer());
-        int p,q,r,s;
-        s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<int32_t>(dataptr[p][q][r]); }}
+        int s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<int32_t>(dataptr[p][q][r]); }}
         break;
       case miUINT32: case miUTF32:
         { uint32_t *ptr = static_cast<uint32_t *>(databuffer());
-        int p,q,r,s;
-        s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<uint32_t>(dataptr[p][q][r]); }}
+        int s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<uint32_t>(dataptr[p][q][r]); }}
         break;
       case miINT64:
         { int64_t *ptr = static_cast<int64_t *>(databuffer());
-        int p,q,r,s;
-        s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed char>(dataptr[p][q][r]); }}
+        int s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed char>(dataptr[p][q][r]); }}
         break;
       case miUINT64:
         { uint64_t *ptr = static_cast<uint64_t *>(databuffer());
-        int p,q,r,s;
-        s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed char>(dataptr[p][q][r]); }}
+        int s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed char>(dataptr[p][q][r]); }}
         break;
       case miSINGLE:
         { float *ptr = static_cast<float *>(databuffer());
-        int p,q,r,s;
-        s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed char>(dataptr[p][q][r]); }}
+        int s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed char>(dataptr[p][q][r]); }}
         break;
       case miDOUBLE:
         { double *ptr = static_cast<double *>(databuffer());
-        int p,q,r,s;
-        s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed char>(dataptr[p][q][r]); }}
+        int s = 0; for(int p=0;p<dim3;p++) for(int q=0;q<dim2;q++) for(int r=0;r<dim2;r++) { ptr[s++] = static_cast<signed char>(dataptr[p][q][r]); }}
         break;
       default:
         throw unknown_type();

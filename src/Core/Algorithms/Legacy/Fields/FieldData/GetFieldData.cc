@@ -68,62 +68,38 @@ AlgorithmOutput GetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 /// Function call to convert data from Field into Matrix data
 DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
 {
-   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  algo_start("GetFieldData");
-  
-  /// Check whether we have a field.
-  if (input.get_rep() == 0)
+  if (!input_field)
   {
-    error("No input source field");
-    algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("No input field was provided");
   }
-  
-  /// Construct a class with all the type information of this field
-  FieldInformation fi(input);
 
-  /// Check whether we have data
-  if (fi.is_nodata())
-  {
-    error("Field does not contain any data");
-    algo_end(); return (false);
-  }
-  
-  /// Depending on the data type select a sub algorithm
-  if (fi.is_scalar())
-    return(GetScalarFieldDataV(this,input,output));
+  DenseMatrixHandle output;
 
-  else if (fi.is_vector())
-    return(GetVectorFieldDataV(this,input,output));
-
-  else if (fi.is_tensor())
-    return(GetTensorFieldDataV(this,input,output));
-
-  error("Unknown data type");
-  algo_end(); return (false);
- #endif
- 
-   DenseMatrixHandle output;
-    
   VField* vfield1 = input_field->vfield();
 
   /// Check whether we have data
-  if (!input_field || !vfield1)
+  if (! vfield1)
   {
-    THROW_ALGORITHM_INPUT_ERROR("Could not obtain input field");
+    THROW_ALGORITHM_INPUT_ERROR("Could not obtain VField interface");
   }
-  
-  if (vfield1->is_scalar()) 
-    return (GetScalarFieldDataV(input_field)); 
+
+  if (vfield1->is_nodata())
+  {
+    THROW_ALGORITHM_INPUT_ERROR("Invalid input field (no data)");
+  }
+
+  if (vfield1->is_scalar())
+    return (GetScalarFieldDataV(input_field));
   else
-    if (vfield1->is_vector())  
-      return (GetVectorFieldDataV(input_field)); 
+    if (vfield1->is_vector())
+      return (GetVectorFieldDataV(input_field));
     else
-       if (vfield1->is_tensor())
-        return (GetTensorFieldDataV(input_field));       
-       else
-        {
-         THROW_ALGORITHM_INPUT_ERROR("Unknown field data type!");
-        }
+      if (vfield1->is_tensor())
+        return (GetTensorFieldDataV(input_field));
+      else
+      {
+        THROW_ALGORITHM_INPUT_ERROR("Unknown field data type!");
+      }
 
 }
 
@@ -150,7 +126,7 @@ DenseMatrixHandle GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle& input) cons
   { 
      vfield->get_value((*output)(idx, 0),idx);
   }
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (vfield->basis_order() == 2)
   {
     vfield->vmesh()->synchronize(Mesh::EDGES_E);
@@ -159,7 +135,7 @@ DenseMatrixHandle GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle& input) cons
       vfield->get_evalue((*output)(idx, 0),idx);
     }
   } 
-  #endif
+#endif
   
   return output;
 }

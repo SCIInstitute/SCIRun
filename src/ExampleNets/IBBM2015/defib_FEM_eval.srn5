@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="12">
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>32</count>
+			<count>35</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AddKnownsToLinearSystem:0</first>
@@ -94,7 +94,7 @@
 									<name>TruncateDistance</name>
 									<value>
 										<which>1</which>
-										<value>0.050000000000000003</value>
+										<value>5.00000000000000028e-02</value>
 									</value>
 								</second>
 							</item>
@@ -386,7 +386,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -474,7 +474,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -647,7 +647,71 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateStandardColorMap:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ColorMapInvert</name>
+								</first>
+								<second>
+									<name>ColorMapInvert</name>
+									<value>
+										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapName</name>
+								</first>
+								<second>
+									<name>ColorMapName</name>
+									<value>
+										<which>2</which>
+										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapResolution</name>
+								</first>
+								<second>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -687,7 +751,7 @@
 									<name>FilterCutoff</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -699,7 +763,7 @@
 									<name>Lambda</name>
 									<value>
 										<which>1</which>
-										<value>0.63070000000000004</value>
+										<value>6.30700000000000038e-01</value>
 									</value>
 								</second>
 							</item>
@@ -864,6 +928,94 @@
 				</second>
 			</item>
 			<item>
+				<first>GetFieldsFromBundle:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Bundle</category_name_>
+						<module_name_>GetFieldsFromBundle</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>6</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>field1-name</name>
+								</first>
+								<second>
+									<name>field1-name</name>
+									<value>
+										<which>2</which>
+										<value>CAN ELECTRODE</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>field2-name</name>
+								</first>
+								<second>
+									<name>field2-name</name>
+									<value>
+										<which>2</which>
+										<value>WIRE ELECTRODE</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>field3-name</name>
+								</first>
+								<second>
+									<name>field3-name</name>
+									<value>
+										<which>2</which>
+										<value>field2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>field4-name</name>
+								</first>
+								<second>
+									<name>field4-name</name>
+									<value>
+										<which>2</which>
+										<value>field3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>field5-name</name>
+								</first>
+								<second>
+									<name>field5-name</name>
+									<value>
+										<which>2</which>
+										<value>field4</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>field6-name</name>
+								</first>
+								<second>
+									<name>field6-name</name>
+									<value>
+										<which>2</which>
+										<value>field5</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>JoinFields:0</first>
 				<second>
 					<module>
@@ -943,7 +1095,7 @@
 									<name>tolerance</name>
 									<value>
 										<which>1</which>
-										<value>9.9999999999999995e-07</value>
+										<value>9.99999999999999955e-07</value>
 									</value>
 								</second>
 							</item>
@@ -983,7 +1135,7 @@
 									<name>MaxDistance</name>
 									<value>
 										<which>1</which>
-										<value>1.7976931348623157e+308</value>
+										<value>1.79769313486231571e+308</value>
 									</value>
 								</second>
 							</item>
@@ -995,7 +1147,7 @@
 									<name>OutsideValue</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1071,7 +1223,7 @@
 									<name>MaxDistance</name>
 									<value>
 										<which>1</which>
-										<value>1.7976931348623157e+308</value>
+										<value>1.79769313486231571e+308</value>
 									</value>
 								</second>
 							</item>
@@ -1083,7 +1235,7 @@
 									<name>OutsideValue</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1159,7 +1311,7 @@
 									<name>MaxDistance</name>
 									<value>
 										<which>1</which>
-										<value>1.7976931348623157e+308</value>
+										<value>1.79769313486231571e+308</value>
 									</value>
 								</second>
 							</item>
@@ -1171,7 +1323,7 @@
 									<name>OutsideValue</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1223,7 +1375,7 @@
 									<name>MaxDistance</name>
 									<value>
 										<which>1</which>
-										<value>1.7976931348623157e+308</value>
+										<value>1.79769313486231571e+308</value>
 									</value>
 								</second>
 							</item>
@@ -1235,7 +1387,7 @@
 									<name>OutsideValue</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1248,6 +1400,46 @@
 									<value>
 										<which>2</which>
 										<value>gradientnorm</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReadBundle:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>ReadBundle</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Bundle File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/Fields/torso-defib/electrode_bundle.bdl</value>
 									</value>
 								</second>
 							</item>
@@ -1296,86 +1488,6 @@
 				</second>
 			</item>
 			<item>
-				<first>ReadField:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadField</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Field File</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/torso-defib/can_electrode.fld</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadField:2</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadField</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Field File</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/torso-defib/wire_electrode.fld</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
 				<first>RefineMesh:0</first>
 				<second>
 					<module>
@@ -1407,7 +1519,7 @@
 									<name>IsoValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -1459,7 +1571,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>273.76079399618862</value>
+										<value>8.37312744580968911e+01</value>
 									</value>
 								</second>
 							</item>
@@ -1471,7 +1583,71 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>-2.2749704078979874e-20</value>
+										<value>-3.86315020914680596e-12</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>RescaleColorMap:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>2.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1539,7 +1715,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1587,7 +1763,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1611,7 +1787,7 @@
 									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1623,7 +1799,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1659,7 +1835,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1707,7 +1883,203 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowField:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>15</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CylinderRadius</name>
+								</first>
+								<second>
+									<name>CylinderRadius</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000006e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CylinderResolution</name>
+								</first>
+								<second>
+									<name>CylinderResolution</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(0.5,0.5,0.5)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparency</name>
+								</first>
+								<second>
+									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparencyValue</name>
+								</first>
+								<second>
+									<name>EdgeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparencyValue</name>
+								</first>
+								<second>
+									<name>NodeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -1735,7 +2107,7 @@
 									<name>MaxIterations</name>
 									<value>
 										<which>1</which>
-										<value>500</value>
+										<value>5.00000000000000000e+02</value>
 									</value>
 								</second>
 							</item>
@@ -1771,7 +2143,7 @@
 									<name>TargetError</name>
 									<value>
 										<which>1</which>
-										<value>1.0000000000000001e-05</value>
+										<value>1.00000000000000008e-05</value>
 									</value>
 								</second>
 							</item>
@@ -1809,7 +2181,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>39</count>
+			<count>45</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>AddKnownsToLinearSystem:0</moduleId1_>
@@ -2016,6 +2388,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>CreateStandardColorMap:1</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:1</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>FairMesh:0</moduleId1_>
 				<port1_>
 					<name>Faired_Mesh</name>
@@ -2076,6 +2460,30 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>GetFieldsFromBundle:0</moduleId1_>
+				<port1_>
+					<name>field1</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CreateFieldData:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldsFromBundle:0</moduleId1_>
+				<port1_>
+					<name>field2</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CreateFieldData:1</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>JoinFields:0</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
@@ -2096,6 +2504,30 @@
 				<moduleId2_>MapFieldDataOntoNodes:0</moduleId2_>
 				<port2_>
 					<name>Source</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>JoinFields:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:1</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>JoinFields:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:1</moduleId2_>
+				<port2_>
+					<name>Field</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2132,6 +2564,18 @@
 				<moduleId2_>ConvertIndicesToFieldData:1</moduleId2_>
 				<port2_>
 					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadBundle:0</moduleId1_>
+				<port1_>
+					<name>Bundle</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetFieldsFromBundle:0</moduleId2_>
+				<port2_>
+					<name>InputBundle</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2184,30 +2628,6 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadField:1</moduleId1_>
-				<port1_>
-					<name>Field</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>CreateFieldData:0</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadField:2</moduleId1_>
-				<port1_>
-					<name>Field</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>CreateFieldData:1</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
 				<moduleId1_>RefineMesh:0</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
@@ -2226,6 +2646,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:0</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:1</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:1</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -2268,6 +2700,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>ShowField:1</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>1</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>SolveLinearSystem:0</moduleId1_>
 				<port1_>
 					<name>Solution</name>
@@ -2282,235 +2726,256 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>32</count>
+		<count>35</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-637.24662500000022</first>
-				<second>-538.38974999999982</second>
+				<first>-6.37246625000000222e+02</first>
+				<second>-5.38389749999999822e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>BuildFEMatrix:0</first>
 			<second>
-				<first>-620.51699999999994</first>
-				<second>-733.06174999999996</second>
+				<first>-6.20516999999999939e+02</first>
+				<second>-7.33061749999999961e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateDistanceToField:0</first>
 			<second>
-				<first>-580.10537499999987</first>
-				<second>-1361.0796250000001</second>
+				<first>-5.80105374999999867e+02</first>
+				<second>-1.36107962500000008e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>ClipFieldByFunction:0</first>
 			<second>
-				<first>-659.89462499999991</first>
-				<second>-1022.5806249999998</second>
+				<first>-6.59894624999999905e+02</first>
+				<second>-1.02258062499999983e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>ClipFieldByFunction:1</first>
 			<second>
-				<first>323.94637499999993</first>
-				<second>-506.45137499999987</second>
+				<first>3.23946374999999932e+02</first>
+				<second>-5.06451374999999871e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertIndicesToFieldData:0</first>
 			<second>
-				<first>-649.41362500000014</first>
-				<second>-860.81524999999988</second>
+				<first>-6.49413625000000138e+02</first>
+				<second>-8.60815249999999878e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertIndicesToFieldData:1</first>
 			<second>
-				<first>-106.46124999999998</first>
-				<second>-755.8748750000002</second>
+				<first>-1.06461249999999978e+02</first>
+				<second>-7.55874875000000202e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:0</first>
 			<second>
-				<first>-407.87475000000001</first>
-				<second>-1628.5150000000003</second>
+				<first>-4.24874749999999949e+02</first>
+				<second>-1.68251500000000033e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:1</first>
 			<second>
-				<first>-103.87475000000001</first>
-				<second>-1618.5150000000003</second>
+				<first>-1.09874750000000006e+02</first>
+				<second>-1.68651500000000033e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-691.87474999999995</first>
-				<second>-1671.5150000000003</second>
+				<first>-6.91874749999999949e+02</first>
+				<second>-1.67151500000000033e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:1</first>
 			<second>
-				<first>352.84299999999996</first>
-				<second>-745.22874999999965</second>
+				<first>3.52842999999999961e+02</first>
+				<second>-7.45228749999999650e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:0</first>
 			<second>
-				<first>-247.6003749999999</first>
-				<second>-1058.9981249999998</second>
+				<first>-2.47600374999999900e+02</first>
+				<second>-1.05899812499999985e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:1</first>
 			<second>
-				<first>170.27437499999991</first>
-				<second>-1107.7675000000002</second>
+				<first>1.70274374999999907e+02</first>
+				<second>-1.10776750000000015e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>-38.021874999999994</first>
-				<second>-167.29624999999999</second>
+				<first>-3.80218749999999943e+01</first>
+				<second>-1.67296249999999986e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:1</first>
+			<second>
+				<first>7.40000000000000000e+01</first>
+				<second>-1.55800000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>FairMesh:0</first>
 			<second>
-				<first>-684.39374999999973</first>
-				<second>-36.500999999999991</second>
+				<first>-6.84393749999999727e+02</first>
+				<second>-3.65009999999999906e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>GetDomainBoundary:0</first>
 			<second>
-				<first>368.05174999999997</first>
-				<second>-891.23274999999967</second>
+				<first>3.68051749999999970e+02</first>
+				<second>-8.91232749999999669e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:0</first>
 			<second>
-				<first>-687.43549999999971</first>
-				<second>-155.12924999999996</second>
+				<first>-6.87435499999999706e+02</first>
+				<second>-1.55129249999999956e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:0</first>
 			<second>
-				<first>-100.37774999999999</first>
-				<second>-649.41362499999991</second>
+				<first>-1.00377749999999992e+02</first>
+				<second>-6.49413624999999911e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>GetFieldsFromBundle:0</first>
+			<second>
+				<first>-2.95000000000000000e+02</first>
+				<second>-1.80300000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>JoinFields:0</first>
 			<second>
-				<first>-292.18687499999999</first>
-				<second>-1474.6621250000001</second>
+				<first>-2.61186874999999986e+02</first>
+				<second>-1.52766212499999983e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoElements:0</first>
 			<second>
-				<first>-609.26837499999988</first>
-				<second>-1141.4136249999999</second>
+				<first>-6.09268374999999878e+02</first>
+				<second>-1.14141362499999991e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoElements:1</first>
 			<second>
-				<first>323.94637500000005</first>
-				<second>-620.51699999999983</second>
+				<first>3.23946375000000046e+02</first>
+				<second>-6.20516999999999825e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoNodes:0</first>
 			<second>
-				<first>-103.41949999999994</first>
-				<second>-876.02399999999932</second>
+				<first>-1.03419499999999942e+02</first>
+				<second>-8.76023999999999319e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoNodes:1</first>
 			<second>
-				<first>372.61437499999994</first>
-				<second>-73.001999999999953</second>
+				<first>3.72614374999999939e+02</first>
+				<second>-7.30019999999999527e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReadBundle:0</first>
+			<second>
+				<first>-3.18000000000000000e+02</first>
+				<second>-1.90000000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>-693.87474999999995</first>
-				<second>-1777.5150000000003</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadField:1</first>
-			<second>
-				<first>-397.87475000000001</first>
-				<second>-1772.5150000000003</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadField:2</first>
-			<second>
-				<first>-107.87475000000001</first>
-				<second>-1769.5150000000003</second>
+				<first>-6.93874749999999949e+02</first>
+				<second>-1.77751500000000033e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>RefineMesh:0</first>
 			<second>
-				<first>-578.06162500000005</first>
-				<second>-1261.9344999999998</second>
+				<first>-5.78061625000000049e+02</first>
+				<second>-1.26193449999999984e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>-331.55074999999994</first>
-				<second>80.606374999999971</second>
+				<first>-3.31550749999999937e+02</first>
+				<second>8.06063749999999715e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:1</first>
+			<second>
+				<first>8.50000000000000000e+01</first>
+				<second>-1.41900000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:0</first>
 			<second>
-				<first>-687.43549999999971</first>
-				<second>-255.50700000000006</second>
+				<first>-6.87435499999999706e+02</first>
+				<second>-2.55507000000000062e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-687.43549999999971</first>
-				<second>228.13124999999997</second>
+				<first>-6.87435499999999706e+02</first>
+				<second>2.28131249999999966e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:1</first>
+			<second>
+				<first>8.90000000000000000e+01</first>
+				<second>-5.40000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>SolveLinearSystem:0</first>
 			<second>
-				<first>-637.24662499999999</first>
-				<second>-409.11537500000003</second>
+				<first>-6.37246624999999995e+02</first>
+				<second>-4.09115375000000029e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-687.43549999999971</first>
-				<second>360.44737499999997</second>
+				<first>-6.87435499999999706e+02</first>
+				<second>3.60447374999999965e+02</second>
 			</second>
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>3</count>
+		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="19" tracking_level="0" version="0">
 			<first>CreateMatrix:0</first>
@@ -2551,13 +3016,26 @@ p, li { white-space: pre-wrap; }
 				<fontSize>13</fontSize>
 			</second>
 		</item>
+		<item>
+			<first>ShowField:1</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>ID: 1</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="21" tracking_level="0" version="0">
-		<count>32</count>
+		<count>35</count>
 		<item_version>0</item_version>
 		<item class_id="22" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
@@ -2616,6 +3094,10 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
+			<first>CreateStandardColorMap:1</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>FairMesh:0</first>
 			<second>0</second>
 		</item>
@@ -2629,6 +3111,10 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>GetFieldData:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldsFromBundle:0</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -2652,15 +3138,11 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
+			<first>ReadBundle:0</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>ReadField:0</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReadField:1</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReadField:2</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -2672,11 +3154,19 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
+			<first>RescaleColorMap:1</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>SetFieldData:0</first>
 			<second>0</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ShowField:1</first>
 			<second>0</second>
 		</item>
 		<item>

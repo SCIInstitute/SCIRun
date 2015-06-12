@@ -449,17 +449,11 @@ void ModuleWidgetDisplayMini::adjustLayout(QLayout* layout)
 
 static const int UNSET = -1;
 static const int SELECTED = -50;
-static const int ERRORED = -100;
-static bool isUnsetOrSelected(int state)
-{
-  return UNSET == state || SELECTED == state;
-}
 
 typedef boost::bimap<QString, int> ColorStateLookup;
 typedef ColorStateLookup::value_type ColorStatePair;
 static ColorStateLookup colorStateLookup;
 void fillColorStateLookup(const QString& background);
-
 
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
@@ -505,7 +499,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   resize(currentWidget()->size());
 
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
-  theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
+  theModule_->executionState().connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
   theModule_->connectExecuteSelfRequest([this]() { executeAgain(); });
   connect(this, SIGNAL(executeAgain()), this, SLOT(executeButtonPushed()));
@@ -608,8 +602,10 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
 {
   if (color == Qt::red)
   {
+    //qDebug() << "errored set color";
     errored_ = true;
-    updateBackgroundColor(moduleRGBA(176, 23, 31));
+    //Q_EMIT backgroundColorUpdated(moduleRGBA(176, 23, 31));
+    updateBackgroundColor(colorStateLookup.right.at((int)ModuleExecutionState::Errored));
   }
   currentDisplay_->getLogButton()->setStyleSheet(
     QString("* { background-color: %1 }")
@@ -1001,38 +997,42 @@ void fillColorStateLookup(const QString& background)
 {
   if (colorStateLookup.empty())
   {
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(205,190,112), (int)ModuleInterface::Waiting));
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(170,204,170), (int)ModuleInterface::Executing));
-    colorStateLookup.insert(ColorStatePair(background, (int)ModuleInterface::Completed));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(205,190,112), (int)ModuleExecutionState::Waiting));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(170, 204, 170), (int)ModuleExecutionState::Executing));
+    colorStateLookup.insert(ColorStatePair(background, (int)ModuleExecutionState::Completed));
     colorStateLookup.insert(ColorStatePair(moduleRGBA(0,255,255), SELECTED));
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(176, 23, 31), ERRORED));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(176, 23, 31), (int)ModuleExecutionState::Errored));
   }
 }
 
-//primitive state machine: will be replaced next week.
-//TODO: slot should set previousModuleState_
+//primitive state machine--updateBackgroundColor slot needs the thread-safe state machine too
 void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
+  //qDebug() << "color slot: " << moduleState;
   switch (moduleState)
   {
-  case (int)ModuleInterface::Waiting:
-    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Completed)
+  case (int)ModuleExecutionState::Waiting:
+  {
+    //qDebug() << "waiting color";
+    Q_EMIT backgroundColorUpdated(colorStateLookup.right.at((int)ModuleExecutionState::Waiting));
+  }
+  break;
+  case (int)ModuleExecutionState::Executing:
+  {
+    //qDebug() << "executing color";
+    Q_EMIT backgroundColorUpdated(colorStateLookup.right.at((int)ModuleExecutionState::Executing));
+  }
+  break;
+  case (int)ModuleExecutionState::Completed:
+  {
+    if (!errored_)
     {
-      Q_EMIT backgroundColorUpdated(moduleRGBA(205,190,112));
+      //qDebug() << "completed color";
+      Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
     }
-    break;
-  case (int)ModuleInterface::Executing:
-    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Waiting)
-    {
-      Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
-    }
-    break;
-  case (int)ModuleInterface::Completed:
-    {
-      if (!errored_)
-        Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
-    }
-    break;
+    //else qDebug() << "errored color";
+  }
+  break;
   }
 }
 
@@ -1040,6 +1040,7 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 {
   if (!colorLocked_)
   {
+    //qDebug() << "color update: " << color;
     QString rounded;
     if (SCIRunMainWindow::Instance()->newInterface())
       rounded = "color: white; border-radius: 7px;";
@@ -1050,7 +1051,7 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 
 void ModuleWidget::setColorSelected()
 {
-  updateBackgroundColor(moduleRGBA(0,255,255));
+  updateBackgroundColor(colorStateLookup.right.at(SELECTED));
   Q_EMIT moduleSelected(true);
 }
 
@@ -1317,7 +1318,7 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
 void ModuleWidget::handleDialogFatalError(const QString& message)
 {
   qDebug() << "Dialog error: " << message;
-  updateBackgroundColor(moduleRGBA(176, 23, 31)); //TODO: will consolidate as part of state machine refactoring
+  updateBackgroundColor(colorStateLookup.right.at((int)ModuleExecutionState::Errored));
   colorLocked_ = true;
   setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nDelete and re-add to network for proper execution.");
 }
