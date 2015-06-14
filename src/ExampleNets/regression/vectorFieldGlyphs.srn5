@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="12">
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -102,7 +102,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -156,8 +156,44 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ShowScalarTab</name>
+								</first>
+								<second>
+									<name>ShowScalarTab</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowTensorTab</name>
+								</first>
+								<second>
+									<name>ShowTensorTab</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowVectorTab</name>
+								</first>
+								<second>
+									<name>ShowVectorTab</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -238,29 +274,29 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateFieldData:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-532</first>
-				<second>-912</second>
+				<first>-5.32000000000000000e+02</first>
+				<second>-9.12000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-608</first>
-				<second>-1064</second>
+				<first>-6.08000000000000000e+02</first>
+				<second>-1.06400000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowFieldGlyphs:0</first>
 			<second>
-				<first>-532</first>
-				<second>-760</second>
+				<first>-5.32000000000000000e+02</first>
+				<second>-7.60000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:6</first>
 			<second>
-				<first>-760</first>
-				<second>-532</second>
+				<first>-7.60000000000000000e+02</first>
+				<second>-5.32000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>

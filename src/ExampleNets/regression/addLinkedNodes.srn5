@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="12">
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -354,7 +354,7 @@
 									<name>TargetError</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-005</value>
+										<value>1.00000000000000008e-05</value>
 									</value>
 								</second>
 							</item>
@@ -518,78 +518,78 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-7.06000000000000000e+002</first>
-				<second>-7.74000000000000000e+002</second>
+				<first>-7.06000000000000000e+02</first>
+				<second>-7.74000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>AddLinkedNodesToLinearSystem:0</first>
 			<second>
-				<first>-6.34000000000000000e+002</first>
-				<second>-6.60000000000000000e+002</second>
+				<first>-6.34000000000000000e+02</first>
+				<second>-6.60000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertMatrixType:0</first>
 			<second>
-				<first>-6.08000000000000000e+002</first>
-				<second>-3.04000000000000000e+002</second>
+				<first>-6.08000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>EvaluateLinearAlgebraBinary:0</first>
 			<second>
-				<first>-6.84000000000000000e+002</first>
-				<second>-3.80000000000000000e+002</second>
+				<first>-6.84000000000000000e+02</first>
+				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:0</first>
 			<second>
-				<first>-2.28000000000000000e+002</first>
-				<second>-3.80000000000000000e+002</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:1</first>
 			<second>
-				<first>-9.12000000000000000e+002</first>
-				<second>-9.12000000000000000e+002</second>
+				<first>-9.12000000000000000e+02</first>
+				<second>-9.12000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:2</first>
 			<second>
-				<first>-5.32000000000000000e+002</first>
-				<second>-9.12000000000000000e+002</second>
+				<first>-5.32000000000000000e+02</first>
+				<second>-9.12000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:3</first>
 			<second>
-				<first>-2.07000000000000000e+002</first>
-				<second>-8.84000000000000000e+002</second>
+				<first>-2.07000000000000000e+02</first>
+				<second>-8.84000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:0</first>
 			<second>
-				<first>-6.08000000000000000e+002</first>
-				<second>-1.52000000000000000e+002</second>
+				<first>-6.08000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:1</first>
 			<second>
-				<first>-2.28000000000000000e+002</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SolveLinearSystem:0</first>
 			<second>
-				<first>-7.18000000000000000e+002</first>
-				<second>-5.44000000000000000e+002</second>
+				<first>-7.18000000000000000e+02</first>
+				<second>-5.44000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>

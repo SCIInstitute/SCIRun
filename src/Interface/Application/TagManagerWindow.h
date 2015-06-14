@@ -51,6 +51,8 @@ public:
 public Q_SLOTS:
 	void editTagColor();
   void updateTagName(const QString& name);
+private Q_SLOTS:
+  void helpButtonClicked();
 private:
   std::vector<QLineEdit*> tagLineEdits_;
   std::vector<QPushButton*> tagButtons_;
