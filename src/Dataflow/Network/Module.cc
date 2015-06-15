@@ -46,6 +46,9 @@
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/Interruptible.h>
 
+//TODO remove once method is extracted below
+#include <Dataflow/Network/Connection.h>
+
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
 using namespace SCIRun::Core::Logging;
@@ -292,7 +295,7 @@ bool Module::do_execute() throw()
   {
     error(std::string("MODULE ERROR: std::exception caught: ") + e.what());
   }
-  catch (const boost::thread_interrupted& e)
+  catch (const boost::thread_interrupted&)
   {
     error("MODULE ERROR: execution thread interrupted by user.");
     threadStopValue = true;
@@ -337,6 +340,7 @@ void Module::set_state(ModuleStateHandle state)
 {
   state_ = state;
   initStateObserver(state_.get());
+  postStateChangeInternalSignalHookup();
 }
 
 AlgorithmBase& Module::algo()
@@ -509,7 +513,9 @@ Module::Builder& Module::Builder::using_func(ModuleMaker create)
 Module::Builder& Module::Builder::setStateDefaults()
 {
   if (module_)
+  {
     module_->setStateDefaults();
+  }
   return *this;
 }
 
@@ -911,4 +917,18 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 bool Module::isStoppable() const
 {
   return dynamic_cast<const Core::Thread::Interruptible*>(this) != nullptr;
+}
+
+void Module::sendFeedbackUpstreamAlongIncomingConnections(const Variable::Value& info)
+{
+  for (auto& inputPort : inputPorts())
+  {
+    if (inputPort->nconnections() > 0)
+    {
+      auto connection = inputPort->connection(0); // only one incoming connection for input ports
+      VariableHandle feedback(new Variable(Name(inputPort->id().toString()), info));
+      //TODO: extract port method
+      connection->oport_->sendConnectionFeedback(feedback);
+    }
+  }
 }

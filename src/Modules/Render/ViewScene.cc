@@ -40,6 +40,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Render;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
@@ -49,6 +50,7 @@ ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
 Mutex ViewScene::mutex_("ViewScene");
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
+ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_)
 {
@@ -59,6 +61,13 @@ void ViewScene::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  postStateChangeInternalSignalHookup();
+}
+
+void ViewScene::postStateChangeInternalSignalHookup()
+{
+  std::cout << "view scene hooking up state change slot" << std::endl;
+  get_state()->connect_state_changed([this]() { processViewSceneObjectFeedback(); });
 }
 
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
@@ -125,4 +134,20 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   get_state()->fireTransientStateChangeSignal();
 }
 
-SCIRun::Core::Algorithms::AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+void ViewScene::processViewSceneObjectFeedback()
+{
+  //TODO: match ID of touched geom object with port id, and send that info back too. 
+  //std::cout << "slot for state change in VS module" << std::endl;
+  auto state = get_state();
+  auto newInfo = state->getValue(Parameters::GeometryFeedbackInfo).toVector();
+  //std::cout << "feedback info: " << newInfo << std::endl;
+  if (feedbackInfo_ != newInfo)
+  {
+    //std::cout << "new feedback info: " << newInfo << std::endl;
+    feedbackInfo_ = newInfo;
+
+    sendFeedbackUpstreamAlongIncomingConnections(feedbackInfo_);
+  }
+}
+
+AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
