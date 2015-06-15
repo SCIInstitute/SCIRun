@@ -165,7 +165,7 @@ EditMeshBoundingBox::EditMeshBoundingBox()
 
 void EditMeshBoundingBox::processWidgetFeedback(VariableHandle var)
 {
-  std::cout << "finally we're in the actual module:\n\t" << var->value() << std::endl;
+  std::cout << "EditMeshBoundingBox::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << var->value() << std::endl;
 }
 
 void EditMeshBoundingBox::createBoxWidget()
