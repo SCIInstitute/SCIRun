@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
-<networkFile class_id="0" tracking_level="0" version="2">
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>8</count>
@@ -66,7 +66,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -154,7 +154,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -242,7 +242,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -458,57 +458,57 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>AsyncPortTestModule:14</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-6.11000000000000000e+002</first>
-				<second>1.68000000000000000e+002</second>
+				<first>-6.11000000000000000e+02</first>
+				<second>1.68000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-5.40000000000000000e+002</first>
-				<second>-3.34000000000000000e+002</second>
+				<first>-5.40000000000000000e+02</first>
+				<second>-3.34000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:2</first>
 			<second>
-				<first>-8.42000000000000000e+002</first>
-				<second>-3.18000000000000000e+002</second>
+				<first>-8.42000000000000000e+02</first>
+				<second>-3.18000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:7</first>
 			<second>
-				<first>-1.05700000000000000e+003</first>
-				<second>3.50000000000000000e+001</second>
+				<first>-1.05700000000000000e+03</first>
+				<second>3.50000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:3</first>
 			<second>
-				<first>-8.48000000000000000e+002</first>
-				<second>-1.98000000000000000e+002</second>
+				<first>-8.48000000000000000e+02</first>
+				<second>-1.98000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:6</first>
 			<second>
-				<first>-5.37000000000000000e+002</first>
-				<second>-2.12000000000000000e+002</second>
+				<first>-5.37000000000000000e+02</first>
+				<second>-2.12000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:4</first>
 			<second>
-				<first>-8.18000000000000000e+002</first>
-				<second>-8.60000000000000000e+001</second>
+				<first>-8.18000000000000000e+02</first>
+				<second>-8.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:8</first>
 			<second>
-				<first>-5.21000000000000000e+002</first>
-				<second>-8.80000000000000000e+001</second>
+				<first>-5.21000000000000000e+02</first>
+				<second>-8.80000000000000000e+01</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -520,6 +520,42 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>8</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>AsyncPortTestModule:14</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateLatVol:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateLatVol:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateLatVol:7</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldBoundary:3</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldBoundary:6</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:4</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:8</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
 </networkFile>
 </boost_serialization>
 

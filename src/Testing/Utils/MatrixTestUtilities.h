@@ -214,6 +214,7 @@ struct SCISHARE ScopedTimer
   boost::timer t_;
 };
 
+// TODO: move to Field utils file
 SCISHARE FieldHandle loadFieldFromFile(const boost::filesystem::path& filename);
 
 }

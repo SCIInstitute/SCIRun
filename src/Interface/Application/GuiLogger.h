@@ -42,6 +42,7 @@ namespace Gui {
     CORE_SINGLETON(GuiLogger)
   public:
     void log(const QString& message) const;
+    void logStd(const std::string& message) const { log(QString::fromStdString(message)); }
     static void setInstance(Core::Logging::LoggerHandle logger);
   private:
     GuiLogger();
