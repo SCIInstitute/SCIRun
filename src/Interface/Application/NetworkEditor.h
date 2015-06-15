@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_NETWORKEDITOR_H
 
 #include <QGraphicsView>
+#include <QGraphicsTextItem>
 #ifndef Q_MOC_RUN
 #include <boost/shared_ptr.hpp>
 #include <map>
@@ -74,7 +75,16 @@ namespace Gui {
   {
   public:
     virtual ~ModuleErrorDisplayer() {}
-    virtual void displayError(const QString& msg) const = 0;
+    virtual void displayError(const QString& msg) = 0;
+  };
+
+  class ErrorItem : public QGraphicsTextItem
+  {
+    Q_OBJECT
+  public:
+    explicit ErrorItem(const QString& text, QGraphicsItem* parent = 0);
+  protected:
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
   };
 
   class ModuleEventProxy : public QObject
@@ -122,7 +132,7 @@ Q_SIGNALS:
 
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
-				boost::shared_ptr<DialogErrorControl> dialogErrorControl, 
+				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
         TagColorFunc tagColor = defaultTagColor,
         QWidget* parent = 0);
     ~NetworkEditor();
@@ -156,7 +166,7 @@ Q_SIGNALS:
     void enableInputWidgets();
 
     //TODO: this class is getting too big and messy, schedule refactoring
-    
+
     void setBackground(const QBrush& brush);
     QBrush background() const;
 
@@ -174,7 +184,7 @@ Q_SIGNALS:
     void tagLayer(bool active, int tag);
     bool tagLayerActive() const { return tagLayerActive_; }
 
-    virtual void displayError(const QString& msg) const override;
+    virtual void displayError(const QString& msg) override;
 
   protected:
     virtual void dropEvent(QDropEvent* event) override;
