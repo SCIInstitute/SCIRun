@@ -40,6 +40,21 @@ last change: 04/10/2014
 
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
+
+TEST(GetFieldDataTest, NullInputThrowsException)
+{
+  GetFieldDataAlgo algo;
+  FieldHandle nullField;
+
+  ASSERT_THROW(algo.run(nullField), AlgorithmInputException);
+}
+
+TEST(GetFieldDataTest, DISABLED_FieldNoDataThrowsException)
+{
+  // TODO: test field with type set to nodata (should throw AlgorithmInputException)
+  FAIL() << "TODO";
+}
 
 TEST(GetFieldDataTest, TriSurfOnNodeScalar)
 {
@@ -104,7 +119,7 @@ TEST(GetFieldDataTest, TetMeshOnNodeVector)
   EXPECT_MATRIX_EQ_TOLERANCE(*result, *expected_result, 1e-16);
 }
 
-TEST(GetFieldDataTest, TetMeshOnNodeTensor)
+TEST(GetFieldDataTest, DISABLED_TetMeshOnNodeTensor)
 {
   /*  Does not work since SCIRun5 ReadField cannot load in that files
 
@@ -115,10 +130,11 @@ TEST(GetFieldDataTest, TetMeshOnNodeTensor)
 
   EXPECT_MATRIX_EQ_TOLERANCE(*result, *expected_result, 1e-16);
   */
+  FAIL() << "TODO";
 }
 
 
-TEST(GetFieldDataTest, TetMeshOnElemScalar)
+TEST(GetFieldDataTest, DISABLED_TetMeshOnElemScalar)
 {
   GetFieldDataAlgo algo;
 
@@ -138,7 +154,7 @@ TEST(GetFieldDataTest, TetMeshOnElemVector)
   EXPECT_MATRIX_EQ_TOLERANCE(*result, *expected_result, 1e-16);
 }
 
-TEST(GetFieldDataTest, TetMeshOnElemTensor)
+TEST(GetFieldDataTest, DISABLED_TetMeshOnElemTensor)
 {
   /*
   GetFieldDataAlgo algo; 
@@ -154,6 +170,7 @@ TEST(GetFieldDataTest, TetMeshOnElemTensor)
 
   EXPECT_MATRIX_EQ_TOLERANCE(*result, *expected_result, 1e-16);
   */ 
+  FAIL() << "TODO";
 }
 
 
@@ -177,7 +194,7 @@ TEST(GetFieldDataTest, PointCloudOnNodeVector)
   EXPECT_MATRIX_EQ_TOLERANCE(*result, *expected_result, 1e-16);
 }
 
-TEST(GetFieldDataTest, PointCloudOnNodeTensor)
+TEST(GetFieldDataTest, DISABLED_PointCloudOnNodeTensor)
 {
   /*
   GetFieldDataAlgo algo;
@@ -187,6 +204,7 @@ TEST(GetFieldDataTest, PointCloudOnNodeTensor)
 
   EXPECT_MATRIX_EQ_TOLERANCE(*result, *expected_result, 1e-16);
   */
+  FAIL() << "TODO";
 }
 
 

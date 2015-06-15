@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1093</width>
-         <height>482</height>
+         <width>1081</width>
+         <height>443</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -150,21 +150,6 @@
     <addaction name="actionDevConsole_"/>
     <addaction name="actionPreferences_"/>
     <addaction name="separator"/>
-    <addaction name="actionPinAllModuleUIs_"/>
-    <addaction name="actionHideAllModuleUIs_"/>
-    <addaction name="actionRestoreAllModuleUIs_"/>
-    <addaction name="separator"/>
-    <addaction name="actionCenterNetworkViewer_"/>
-    <addaction name="actionZoomIn_"/>
-    <addaction name="actionZoomOut_"/>
-    <addaction name="actionZoomBestFit_"/>
-    <addaction name="actionResetNetworkZoom_"/>
-    <addaction name="actionDragMode_"/>
-    <addaction name="actionSelectMode_"/>
-    <addaction name="separator"/>
-    <addaction name="actionToggleMetadataLayer_"/>
-    <addaction name="actionToggleTagLayer_"/>
-    <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -180,9 +165,30 @@
     <addaction name="actionDelete_"/>
     <addaction name="actionSelectAll_"/>
    </widget>
+   <widget class="QMenu" name="menuNetwork">
+    <property name="title">
+     <string>Network</string>
+    </property>
+    <addaction name="actionPinAllModuleUIs_"/>
+    <addaction name="actionHideAllModuleUIs_"/>
+    <addaction name="actionRestoreAllModuleUIs_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCenterNetworkViewer_"/>
+    <addaction name="actionZoomIn_"/>
+    <addaction name="actionZoomOut_"/>
+    <addaction name="actionZoomBestFit_"/>
+    <addaction name="actionResetNetworkZoom_"/>
+    <addaction name="separator"/>
+    <addaction name="actionDragMode_"/>
+    <addaction name="actionSelectMode_"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggleMetadataLayer_"/>
+    <addaction name="actionToggleTagLayer_"/>
+   </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
    <addaction name="menuModules_"/>
+   <addaction name="menuNetwork"/>
    <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
    <addaction name="menuWindow"/>
@@ -388,10 +394,10 @@
   </widget>
   <widget class="QDockWidget" name="configurationDockWidget_">
    <property name="whatsThis">
-    <string>Configuration options and general application settings are found in this pane.</string>
+    <string>Access application logs here.</string>
    </property>
    <property name="windowTitle">
-    <string>Configuration</string>
+    <string>Logs</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -421,490 +427,15 @@
        <property name="currentIndex">
         <number>0</number>
        </property>
-       <widget class="QWidget" name="networkEditorTab_">
-        <property name="whatsThis">
-         <string>Display options for the network editor.</string>
-        </property>
-        <attribute name="title">
-         <string>Network Editor</string>
-        </attribute>
-        <widget class="QGroupBox" name="layoutOptionsGroupBox_">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>0</y>
-           <width>531</width>
-           <height>231</height>
-          </rect>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>531</width>
-           <height>231</height>
-          </size>
-         </property>
-         <property name="title">
-          <string>Display Options</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <layout class="QHBoxLayout" name="moduleSizeHorizontalLayout_">
-            <item>
-             <widget class="QLabel" name="moduleSizeLabel_">
-              <property name="text">
-               <string>Module Size:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QToolButton" name="largeModuleSizeToolButton_">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="text">
-               <string>All Large</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="smallModuleSizeToolButton_">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="text">
-               <string>All Small</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="dataflowPipelinesHorizontalLayout_">
-            <item>
-             <widget class="QLabel" name="pipelinesLabel_">
-              <property name="text">
-               <string>Dataflow Pipelines:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="manhattanPipesRadioButton_">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="whatsThis">
-               <string>Switch to classic dataflow pipelines.</string>
-              </property>
-              <property name="text">
-               <string>Manhattan</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="cubicPipesRadioButton_">
-              <property name="whatsThis">
-               <string>Switch to curved dataflow pipelines.</string>
-              </property>
-              <property name="text">
-               <string>Cubic Bézier</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="euclideanPipesRadioButton_">
-              <property name="whatsThis">
-               <string>Switch to straight, direct dataflow pipelines.</string>
-              </property>
-              <property name="text">
-               <string>Euclidean</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>Default Note Position:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QComboBox" name="defaultNotePositionComboBox_">
-              <property name="currentIndex">
-               <number>4</number>
-              </property>
-              <item>
-               <property name="text">
-                <string>None</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Tooltip</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Top</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Left</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Right</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Bottom</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLabel" name="backgroundColorLabel_">
-              <property name="text">
-               <string>Background color:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="chooseBackgroundColorButton_">
-              <property name="text">
-               <string>Choose...</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="resetBackgroundColorButton_">
-              <property name="text">
-               <string>Revert to Default</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="1">
-             <widget class="QCheckBox" name="dockableModulesCheckBox_">
-              <property name="text">
-               <string>Enable Module Dock</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QCheckBox" name="modulesSnapToCheckBox_">
-              <property name="maximumSize">
-               <size>
-                <width>200</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Modules Snap To Grid</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QCheckBox" name="portSizeEffectsCheckBox_">
-              <property name="text">
-               <string>Highlight Ports on Hover</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QCheckBox" name="actionTextIconCheckBox_">
-              <property name="text">
-               <string>Execute Button State</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-              <property name="tristate">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="optionsTab_">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="whatsThis">
-         <string>Stored paths available for use in module I/O.</string>
-        </property>
-        <attribute name="title">
-         <string>Options</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
-          <layout class="QHBoxLayout" name="optionsTabHorizontalLayout_">
-           <item>
-            <widget class="QGroupBox" name="pathSettingsGroupBox_">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="title">
-              <string>SCIRun Path Settings</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <widget class="QWidget" name="layoutWidget">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>30</y>
-                <width>421</width>
-                <height>198</height>
-               </rect>
-              </property>
-              <layout class="QGridLayout" name="pathSettingsGridLayout_">
-               <item row="0" column="0">
-                <widget class="QLabel" name="scirunDataLabel_">
-                 <property name="text">
-                  <string>SCIRun Data</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLineEdit" name="scirunDataLineEdit_">
-                 <property name="enabled">
-                  <bool>true</bool>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QPushButton" name="scirunDataPushButton_">
-                 <property name="enabled">
-                  <bool>true</bool>
-                 </property>
-                 <property name="text">
-                  <string>Set...</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="scirunNetsLabel_">
-                 <property name="text">
-                  <string>SCIRun Nets</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QLineEdit" name="scirunNetsLineEdit_">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="2">
-                <widget class="QPushButton" name="scirunNetsPushButton_">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Set</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="userDataLabel_">
-                 <property name="text">
-                  <string>User Data</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QLineEdit" name="userDataLineEdit_">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="2">
-                <widget class="QPushButton" name="userDataPushButton_">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Set</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="addToPathButton_">
-                 <property name="text">
-                  <string>Add to Path...</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QTextEdit" name="scirunDataPathTextEdit_">
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="dataSetGroupBox_">
-             <property name="title">
-              <string>SCIRun Data Set*</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <widget class="QWidget" name="layoutWidget1">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>30</y>
-                <width>241</width>
-                <height>34</height>
-               </rect>
-              </property>
-              <layout class="QHBoxLayout" name="dataSetHorizontalLayout_">
-               <item>
-                <widget class="QLabel" name="dataSetLabel_">
-                 <property name="text">
-                  <string>Data Set</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="dataSetLineEdit_">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="dataSetPushButton_">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Set</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="optionsGroupBox_">
-             <property name="title">
-              <string>SCIRun Options</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
        <widget class="QWidget" name="logTab">
         <property name="whatsThis">
          <string>The global network log. Events of general importance are logged here.</string>
         </property>
         <attribute name="title">
-         <string>Log</string>
+         <string>Main Log</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
+         <item row="1" column="0">
           <widget class="QTextBrowser" name="logTextBrowser_">
            <property name="minimumSize">
             <size>
@@ -913,6 +444,29 @@
             </size>
            </property>
           </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QPushButton" name="openLogFolderButton_">
+           <property name="maximumSize">
+            <size>
+             <width>140</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Open Log Folder</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Module Log</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QTextBrowser" name="moduleLogTextBrowser_"/>
          </item>
         </layout>
        </widget>
@@ -1017,10 +571,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Configuration</string>
+    <string>Log</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+C</string>
+    <string>Ctrl+Shift+L</string>
    </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
@@ -1156,6 +710,9 @@
    </property>
    <property name="text">
     <string>Preferences</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
    </property>
   </action>
   <action name="actionPythonConsole_">
@@ -1305,7 +862,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Toggle Metadata Layer</string>
+    <string>Metadata Layer</string>
    </property>
   </action>
   <action name="actionToggleTagLayer_">
@@ -1313,7 +870,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Toggle Tag Layer</string>
+    <string>Tag Layer</string>
    </property>
   </action>
  </widget>

@@ -51,14 +51,15 @@ namespace Networks {
     std::map<std::string,std::string> settings_;
   };
 
-  class SCISHARE NetworkPathSettings
-  {
-  public:
-    explicit NetworkPathSettings(const NetworkGlobalSettings& globalSettings);
-    boost::filesystem::path regressionTestDataDirectory() const;
-  private:
-    const NetworkGlobalSettings& settings_;
-  };
+  //TODO: class may be useful later--keep as a reminder to extract this functionality when we add more path settings.
+  //class SCISHARE NetworkPathSettings
+  //{
+  //public:
+  //  explicit NetworkPathSettings(const NetworkGlobalSettings& globalSettings);
+  //  boost::filesystem::path regressionTestDataDirectory() const;
+  //private:
+  //  const NetworkGlobalSettings& settings_;
+  //};
 
 }}}
 
