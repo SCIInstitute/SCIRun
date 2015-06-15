@@ -30,6 +30,7 @@
 #include <iostream>
 #include <Interface/Application/ModuleLogWindow.h>
 #include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/DialogErrorControl.h>
 #include <Core/Logging/Log.h>
 
@@ -37,8 +38,9 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-ModuleLogWindow::ModuleLogWindow(const QString& moduleName, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent) : QDialog(parent), moduleName_(moduleName),
-		dialogErrorControl_(dialogErrorControl)
+ModuleLogWindow::ModuleLogWindow(const QString& moduleName, ModuleErrorDisplayer* displayer, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent) : QDialog(parent), moduleName_(moduleName),
+  displayer_(displayer),
+	dialogErrorControl_(dialogErrorControl)
 {
 	setupUi(this);
 	setModal(false);
@@ -67,6 +69,7 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
 void ModuleLogWindow::popupMessageBox(const QString& message)
 {
   dialogErrorControl_->increaseCounter();
+  auto errorText = "Error in " + moduleName_ + "\n" + message;
   if (dialogErrorControl_->showDialog())
   {
     QMessageBox* msgBox = new QMessageBox(parentWidget());
@@ -76,10 +79,13 @@ void ModuleLogWindow::popupMessageBox(const QString& message)
     auto showButton = msgBox->addButton("Show Module", QMessageBox::ApplyRole);
     connect(showButton, SIGNAL(clicked()), this, SIGNAL(requestModuleVisible()));
     msgBox->setWindowTitle(windowTitle());
-    msgBox->setText("Error in " + moduleName_ + "\n" + message);
+    msgBox->setText(errorText);
     msgBox->setModal(false);
     msgBox->show();
   }
+
+  //TODO: need another limit on these?
+  displayer_->displayError(errorText);
 }
 
 ModuleLogger::ModuleLogger(ModuleLogWindow* window) : moduleName_(window->name().toStdString())

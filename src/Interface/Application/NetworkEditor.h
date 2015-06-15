@@ -70,6 +70,13 @@ namespace Gui {
     virtual NotePosition position() const = 0;
   };
 
+  class ModuleErrorDisplayer
+  {
+  public:
+    virtual ~ModuleErrorDisplayer() {}
+    virtual void displayError(const QString& msg) const = 0;
+  };
+
   class ModuleEventProxy : public QObject
   {
     Q_OBJECT
@@ -108,7 +115,8 @@ Q_SIGNALS:
     public SCIRun::Dataflow::Networks::ExecutableLookup,
     public SCIRun::Dataflow::Networks::NetworkEditorSerializationManager,
     public SCIRun::Dataflow::Engine::NetworkIOInterface<SCIRun::Dataflow::Networks::NetworkFileHandle>,
-    public SCIRun::Dataflow::Networks::ConnectionMakerService
+    public SCIRun::Dataflow::Networks::ConnectionMakerService,
+    public ModuleErrorDisplayer
   {
 	  Q_OBJECT
 
@@ -165,6 +173,8 @@ Q_SIGNALS:
     void metadataLayer(bool active);
     void tagLayer(bool active, int tag);
     bool tagLayerActive() const { return tagLayerActive_; }
+
+    virtual void displayError(const QString& msg) const override;
 
   protected:
     virtual void dropEvent(QDropEvent* event) override;

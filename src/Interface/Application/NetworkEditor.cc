@@ -1208,6 +1208,12 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
   }
 }
 
+void NetworkEditor::displayError(const QString& msg) const
+{
+  qDebug() << "displaying" << msg;
+  auto errorItem = scene()->addText(msg);
+}
+
 NetworkEditor::~NetworkEditor()
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
