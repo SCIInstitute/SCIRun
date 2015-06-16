@@ -1243,7 +1243,7 @@ void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void ErrorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-  timeLine_->setCurrentTime(0);  
+  timeLine_->setCurrentTime(0);
 }
 
 void ErrorItem::animate(qreal val)
@@ -1260,13 +1260,19 @@ void NetworkEditor::displayError(const QString& msg, std::function<void()> showM
   auto errorItem = new ErrorItem(msg, showModule);
   scene()->addItem(errorItem);
 
-  auto rect = mapToScene(viewport()->geometry()).boundingRect();
+  QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
+  QPointF br = tl + viewport()->rect().bottomRight();
+  QMatrix mat = matrix().inverted();
+  auto rect = mat.mapRect(QRectF(tl,br));
+
+  //auto rectOld = mapToScene(viewport()->geometry()).boundingRect();
   //qDebug() << "scene rect:" << rect;
+  //qDebug() << "scene rectOld:" << rectOld;
 
   auto corner = rect.bottomLeft();
   //qDebug() << corner;
 
-  errorItem->setPos(corner + QPointF(50, -(40*errorItem->num() + 100)));
+  errorItem->setPos(corner + QPointF(-300, -(40*errorItem->num() + 200)));
 }
 
 NetworkEditor::~NetworkEditor()
