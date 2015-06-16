@@ -817,7 +817,15 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
       address->setaddress("scirun", inetaddress, inetport);
     }
 
-    int sessionnum = boost::lexical_cast<int>(session);
+    int sessionnum;
+    try
+    {
+      sessionnum = boost::lexical_cast<int>(session);
+    }
+    catch (boost::bad_lexical_cast&)
+    {
+      sessionnum = 1;
+    }
 
     update_status("Please wait while launching matlab, this may take a few minutes ....\n");
 
