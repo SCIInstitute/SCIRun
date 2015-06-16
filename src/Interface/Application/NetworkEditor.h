@@ -76,20 +76,25 @@ namespace Gui {
   {
   public:
     virtual ~ModuleErrorDisplayer() {}
-    virtual void displayError(const QString& msg) = 0;
+    virtual void displayError(const QString& msg, std::function<void()> showModule) = 0;
   };
 
   class ErrorItem : public QGraphicsTextItem
   {
     Q_OBJECT
   public:
-    explicit ErrorItem(const QString& text, QGraphicsItem* parent = 0);
+    explicit ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent = 0);
+    ~ErrorItem();
+    int num() const { return counter_; }
   protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
   private Q_SLOTS:
     void animate(qreal val);
   private:
     QTimeLine* timeLine_;
+    std::function<void()> showModule_;
+    const int counter_;
+    static std::atomic<int> instanceCounter_;
   };
 
   class ModuleEventProxy : public QObject
@@ -189,7 +194,7 @@ Q_SIGNALS:
     void tagLayer(bool active, int tag);
     bool tagLayerActive() const { return tagLayerActive_; }
 
-    virtual void displayError(const QString& msg) override;
+    virtual void displayError(const QString& msg, std::function<void()> showModule) override;
 
   protected:
     virtual void dropEvent(QDropEvent* event) override;
