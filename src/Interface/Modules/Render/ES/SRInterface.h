@@ -47,6 +47,8 @@
 #include <es-render/comp/CommonUniforms.hpp>
 #include <glm/glm.hpp>
 
+#include <Interface/Modules/Render/share.h>
+
 namespace SCIRun {
     namespace Render {
         
@@ -62,14 +64,14 @@ namespace SCIRun {
         // structures. The view scene dialog on qt widgets only serve one purpose:
         // to relay information to this thread so that rendering can take place.
         // Information such as mouse clicks and user settings.
-        class SRInterface
+        class SCISHARE SRInterface
         {
             friend class AssetBootstrap;  ///< For assigning asset entity ids.
             ///< This can be removed if we use a static
             ///< component for assigning entity IDs.
         public:
             SRInterface(std::shared_ptr<Gui::GLContext> context,
-                        const std::vector<std::string>& shaderDirs, int frameInitLimit);
+                        const std::vector<std::string>& shaderDirs, int frameInitLimit = 100);
             ~SRInterface();
             
             /// Call this whenever the window is resized. This will modify the viewport

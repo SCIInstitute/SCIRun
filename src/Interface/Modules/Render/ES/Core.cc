@@ -113,8 +113,10 @@ void ESCore::execute(double currentTime, double constantFrameTime)
 
   // Only perform OpenGL initialization steps if we have a valid and complete
   // frame buffer. We need to ensure that the core executes every frame however.
+  std::cout << "before glCheck" << std::endl;
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
   {
+    std::cout << "in glCheck" << std::endl;
     // Reset the GL state (we shouldn't really need to do this, but we will anyways).
     mDefaultGLState.apply();
 
@@ -122,6 +124,7 @@ void ESCore::execute(double currentTime, double constantFrameTime)
     glClearColor(r_, g_, b_, a_);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
+  std::cout << "after glCheck" << std::endl;
 
   // Perform execution of systems.
   uint64_t timeInMS = static_cast<uint64_t>(mCurrentTime * 1000.0);
