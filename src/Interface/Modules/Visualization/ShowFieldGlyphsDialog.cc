@@ -187,6 +187,9 @@ void ShowFieldGlyphsDialog::setupScalarsTab()
 
   connectButtonToExecuteSignal(scalarTab_->showScalarsCheckBox_);
   connectButtonToExecuteSignal(scalarTab_->enableTransparencyScalarsCheckBox_);
+  connectButtonToExecuteSignal(scalarTab_->defaultScalarsColoringRButton_);
+  connectButtonToExecuteSignal(scalarTab_->colormapLookupScalarsColoringRButton_);
+  connectButtonToExecuteSignal(scalarTab_->conversionRGBScalarsColoringRButton_);
   connectButtonToExecuteSignal(scalarTab_->scalarsAsPointsRButton_);
   connectButtonToExecuteSignal(scalarTab_->scalarsAsSpheresRButton_);
   //connectButtonToExecuteSignal(scalarTab_->scalarsAsBoxesRButton_);
@@ -212,6 +215,9 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
 
   connectButtonToExecuteSignal(vectorTab_->showVectorsCheckBox_);
   connectButtonToExecuteSignal(vectorTab_->enableTransparencyVectorsCheckBox_);
+  connectButtonToExecuteSignal(vectorTab_->defaultVectorsColoringRButton_);
+  connectButtonToExecuteSignal(vectorTab_->colormapLookupVectorsColoringRButton_);
+  connectButtonToExecuteSignal(vectorTab_->conversionRGBVectorsColoringRButton_);
   connectButtonToExecuteSignal(vectorTab_->vectorsAsLinesRButton_);
   connectButtonToExecuteSignal(vectorTab_->vectorsAsNeedlesRButton_);
   connectButtonToExecuteSignal(vectorTab_->vectorsAsCometsRButton_);

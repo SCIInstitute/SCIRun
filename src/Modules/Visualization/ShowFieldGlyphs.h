@@ -151,6 +151,8 @@ namespace SCIRun {
         RenderState getTensorsRenderState(
           Dataflow::Networks::ModuleStateHandle state,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+
+        double tool(double v);
       };
     } // Visualization
   } // Modules

@@ -173,7 +173,8 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string uniqueNodeID,
       vboBuffer->write(static_cast<float>(colors_.at(i).r()));
       vboBuffer->write(static_cast<float>(colors_.at(i).g()));
       vboBuffer->write(static_cast<float>(colors_.at(i).b()));
-      vboBuffer->write(static_cast<float>(1.f));
+      vboBuffer->write(static_cast<float>(colors_.at(i).a()));
+      //vboBuffer->write(static_cast<float>(1.f));
     } // no color writing otherwise
   }
 
@@ -205,7 +206,7 @@ void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double
 
   Point mid(ratio * (p1.x() + p2.x()), ratio * (p1.y() + p2.y()), ratio * (p1.z() + p2.z()));
 
-  generateCylinder(p1, mid, radius / 3.0, radius / 3.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
+  generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
   generateCylinder(mid, p2, radius, 0.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
 }
 
@@ -233,7 +234,10 @@ void GlyphGeom::addCone(const Point p1, const Point& p2, double radius, double r
 
 void GlyphGeom::addNeedle(Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {
-  generateLine(p1, p2, color1, color2, numVBOElements_, points_, indices_, colors_);
+  Point mid(0.5 * (p1.x() + p2.x()), 0.5 * (p1.y() + p2.y()), 0.5 * (p1.z() + p2.z()));
+  ColorRGB endColor(color2.r(), color2.g(), color2.b(), 0.5);
+  generateLine(p1, mid, color1, endColor, numVBOElements_, points_, indices_, colors_);
+  generateLine(mid, p2, color1, endColor, numVBOElements_, points_, indices_, colors_);
 }
 
 void GlyphGeom::addPoint(const Point& p, const ColorRGB& color)
