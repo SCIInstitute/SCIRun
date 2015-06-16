@@ -59,7 +59,7 @@ NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidg
   alignmentComboBox_->setHidden(true);
 
   //TODO: settable notes
-  previousColor_ = Qt::black;
+  previousColor_ = Qt::white;
   position_ = Default;
 }
 

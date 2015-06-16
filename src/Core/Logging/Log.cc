@@ -73,6 +73,62 @@ namespace SCIRun
   {
     namespace Logging
     {
+      class Log4cppAppenderAdaptor : public log4cpp::Appender
+      {
+      public:
+        explicit Log4cppAppenderAdaptor(LogAppenderStrategyPtr appender, const std::string& name)
+          : log4cpp::Appender(name), appender_(appender)
+        {}
+
+        virtual void doAppend(const log4cpp::LoggingEvent& event) override
+        {
+          if (layout_)
+            appender_->log4(layout_->format(event));
+          else
+            appender_->log4(event.message);
+        }
+
+        virtual bool reopen() override
+        {
+          return true;
+        }
+
+        virtual void close() override
+        {
+        }
+
+        virtual bool requiresLayout() const override
+        {
+          return false;
+        }
+
+        virtual void setLayout(log4cpp::Layout* layout) override
+        {
+          layout_.reset(layout);
+        }
+
+        virtual void setThreshold(log4cpp::Priority::Value priority) override
+        {
+        }
+
+        virtual log4cpp::Priority::Value getThreshold() override
+        {
+          return log4cpp::Priority::INFO;
+        }
+
+        virtual void setFilter(log4cpp::Filter* filter) override
+        {
+        }
+
+        virtual log4cpp::Filter* getFilter() override
+        {
+          return nullptr;
+        }
+      private:
+        LogAppenderStrategyPtr appender_;
+        std::unique_ptr<log4cpp::Layout> layout_;
+      };
+
       class LogStreamImpl
       {
       public:
@@ -85,13 +141,13 @@ namespace SCIRun
       public:
         LogImpl() : name_("root"), cppLogger_(log4cpp::Category::getRoot()), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
-          setAppenders();
+          setBasicAppenders();
         }
 
         explicit LogImpl(const std::string& name) : name_(name), cppLogger_(log4cpp::Category::getInstance(name)), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
           /// @todo
-          setAppenders();
+          //setBasicAppenders();
           cppLogger_.setAdditivity(false);
           cppLogger_.setPriority(log4cpp::Priority::INFO);  //?
         }
@@ -120,6 +176,12 @@ namespace SCIRun
         void flush()
         {
           latestStream_.flush();
+        }
+
+        void addCustomAppender(Log4cppAppenderAdaptor* appender)
+        {
+          trySetPattern(appender);
+          cppLogger_.addAppender(appender);
         }
 
         log4cpp::Priority::PriorityLevel translate(LogLevel level)
@@ -153,45 +215,36 @@ namespace SCIRun
         log4cpp::Category& cppLogger_;
         Log::Stream latestStream_;
 
-        void setAppenders()
+        void setBasicAppenders()
         {
-          std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
-
           log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
-          auto layout1 = new log4cpp::PatternLayout();
-          std::string backupPattern1 = layout1->getConversionPattern();
-          try
-          {
-            layout1->setConversionPattern(pattern);
-          }
-          catch (log4cpp::ConfigureFailure& exception)
-          {
-            /// @todo: log?
-            std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
-              << "Restoring original pattern: (" << backupPattern1 << ")" << std::endl;
-            layout1->setConversionPattern(backupPattern1);
-          }
-          appender1->setLayout(layout1);
+          trySetPattern(appender1);
 
           file_ = Log::logDirectory() / ("scirun5_" + name_ + ".log");
           log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", file_.string());
-          auto layout2 = new log4cpp::PatternLayout();
-          std::string backupPattern2 = layout1->getConversionPattern();
+          trySetPattern(appender2);
+
+          cppLogger_.addAppender(appender1);
+          cppLogger_.addAppender(appender2);
+        }
+
+        void trySetPattern(log4cpp::Appender* appender)
+        {
+          static const std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
+          std::unique_ptr<log4cpp::PatternLayout> layout(new log4cpp::PatternLayout());
+          std::string backupPattern = layout->getConversionPattern();
           try
           {
-            layout2->setConversionPattern(pattern);
+            layout->setConversionPattern(pattern);
           }
           catch (log4cpp::ConfigureFailure& exception)
           {
             /// @todo: log?
             std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
-              << "Restoring original pattern: (" << backupPattern2 << ")" << std::endl;
-            layout2->setConversionPattern(backupPattern2);
+              << "Restoring original pattern: (" << backupPattern << ")" << std::endl;
+            layout->setConversionPattern(backupPattern);
           }
-          appender2->setLayout(layout2);
-
-          cppLogger_.addAppender(appender1);
-          cppLogger_.addAppender(appender2);
+          appender->setLayout(layout.release());
         }
       };
     }
@@ -248,6 +301,11 @@ void Log::flush()
 void Log::log(LogLevel level, const std::string& msg)
 {
   impl_->log(level, msg);
+}
+
+void Log::addCustomAppender(boost::shared_ptr<LogAppenderStrategy> appender)
+{
+  impl_->addCustomAppender(new Log4cppAppenderAdaptor(appender, "custom"));
 }
 
 Log::Stream& SCIRun::Core::Logging::operator<<(Log& log, LogLevel level)
@@ -356,50 +414,6 @@ bool ApplicationHelper::get_user_directory( boost::filesystem::path& user_dir, b
   else
   {
     std::cerr << "Could not get user directory.";
-    return false;
-  }
-#endif
-}
-
-
-bool ApplicationHelper::get_user_desktop_directory( boost::filesystem::path& user_desktop_dir )
-{
-#ifdef _WIN32
-  TCHAR dir[MAX_PATH];
-
-  // Try to create the local application directory
-  // If it already exists return the name of the directory.
-
-  if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_DESKTOPDIRECTORY, 0, 0, dir ) ) )
-  {
-    user_desktop_dir = boost::filesystem::path( dir );
-    return true;
-  }
-  else
-  {
-    std::cerr << "Could not get user desktop directory.";
-    return false;
-  }
-
-
-#else
-
-  if ( getenv( "HOME" ) )
-  {
-    user_desktop_dir = boost::filesystem::path( getenv( "HOME" ) ) / "Desktop" / "";
-
-    if (! boost::filesystem::exists( user_desktop_dir ) )
-    {
-      std::cerr << "Could not get user desktop directory.";
-      return false;
-    }
-
-
-    return true;
-  }
-  else
-  {
-    std::cerr << "Could not get user desktop directory.";
     return false;
   }
 #endif

@@ -30,7 +30,7 @@
 
 
 #ifndef DATAFLOW_NETWORK_PORT_H
-#define DATAFLOW_NETWORK_PORT_H 
+#define DATAFLOW_NETWORK_PORT_H
 
 #include <string>
 #include <vector>
@@ -43,7 +43,7 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
-  
+
 class SCISHARE Port : virtual public PortInterface, boost::noncopyable
 {
 public:
@@ -125,8 +125,11 @@ public:
   virtual bool hasData() const override;
   virtual void attach(Connection* conn) override;
   virtual PortDataDescriber getPortDataDescriber() const override;
+  virtual boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) override;
+  virtual void sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info) override;
 private:
   DatatypeSourceInterfaceHandle source_;
+  ConnectionFeedbackSignalType cxnFeedback_;
 };
 
 #ifdef WIN32

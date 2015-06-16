@@ -30,13 +30,29 @@
 #define MODULES_LEGACY_MATLAB_MATLABINTERFACE_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Legacy/Matlab/Interface/share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Algorithms
+    {
+      namespace Matlab
+      {
+        ALGORITHM_PARAMETER_DECL(MatlabCode);
+        ALGORITHM_PARAMETER_DECL(MatlabPath);
+        ALGORITHM_PARAMETER_DECL(InputMatrixNames);
+        ALGORITHM_PARAMETER_DECL(InputMatrixTypes);
+        ALGORITHM_PARAMETER_DECL(InputMatrixArrays);
+        ALGORITHM_PARAMETER_DECL(OutputMatrixNames);
+      }
+    }
+  }
+
 namespace Modules {
 namespace Matlab {
 namespace Interface {
-  
+
   class SCISHARE InterfaceWithMatlab : public SCIRun::Dataflow::Networks::Module,
     public Has3InputPorts<DynamicPortTag<MatrixPortTag>, DynamicPortTag<FieldPortTag>, DynamicPortTag<StringPortTag>>,
     public Has6OutputPorts<FieldPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag, StringPortTag, StringPortTag>
@@ -45,6 +61,7 @@ namespace Interface {
     InterfaceWithMatlab();
     virtual void execute();
     virtual void setStateDefaults();
+    virtual bool hasDynamicPorts() const override { return true; }
     INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
     INPUT_PORT_DYNAMIC(1, InputField, LegacyField);
     INPUT_PORT_DYNAMIC(2, InputString, String);
@@ -59,6 +76,7 @@ namespace Interface {
   private:
     boost::shared_ptr<class InterfaceWithMatlabImpl> impl_;
   };
+
 
 }}}}
 

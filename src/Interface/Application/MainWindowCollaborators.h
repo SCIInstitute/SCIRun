@@ -31,6 +31,7 @@
 
 #ifndef Q_MOC_RUN
 #include <Core/Logging/LoggerInterface.h>
+#include <Core/Logging/Log.h>
 #include <Core/Utils/Singleton.h>
 #include <set>
 #include <Interface/Application/NetworkEditor.h>  //TODO
@@ -39,6 +40,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDir>
+#include <QMutex>
 
 class QTextEdit;
 class QTreeWidget;
@@ -47,7 +49,7 @@ class QComboBox;
 namespace SCIRun {
 namespace Gui {
 
-  class TextEditAppender : public Core::Logging::LegacyLoggerInterface
+  class TextEditAppender : public Core::Logging::LegacyLoggerInterface, public Core::Logging::LogAppenderStrategy
   {
   public:
     explicit TextEditAppender(QTextEdit* text) : text_(text) {}
@@ -58,8 +60,11 @@ namespace Gui {
     virtual void warning(const std::string& msg) const;
     virtual void remark(const std::string& msg) const;
     virtual void status(const std::string& msg) const;
+
+    virtual void log4(const std::string& message) const;
   private:
     QTextEdit* text_;
+    mutable QMutex mutex_;
   };
 
   class TreeViewModuleGetter : public CurrentModuleSelection

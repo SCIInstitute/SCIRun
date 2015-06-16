@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
-<networkFile class_id="0" tracking_level="0" version="2">
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>5</count>
@@ -50,7 +50,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -130,7 +130,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>4.1057724099478392</value>
+										<value>4.10577240994783921e+00</value>
 									</value>
 								</second>
 							</item>
@@ -142,7 +142,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>-4.9534940084085388</value>
+										<value>-4.95349400840853882e+00</value>
 									</value>
 								</second>
 							</item>
@@ -206,7 +206,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.69999999999999996</value>
+										<value>6.99999999999999956e-01</value>
 									</value>
 								</second>
 							</item>
@@ -254,7 +254,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.5</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -422,36 +422,36 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateStandardColorMap:3</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-304</first>
-				<second>-608</second>
+				<first>-3.04000000000000000e+02</first>
+				<second>-6.08000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:2</first>
 			<second>
-				<first>-608</first>
-				<second>-684</second>
+				<first>-6.08000000000000000e+02</first>
+				<second>-6.84000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>-228</first>
-				<second>-456</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>-4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-456</first>
-				<second>-304</second>
+				<first>-4.56000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:1</first>
 			<second>
-				<first>-456</first>
-				<second>-152</second>
+				<first>-4.56000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -476,6 +476,30 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
+	<moduleTags class_id="21" tracking_level="0" version="0">
+		<count>5</count>
+		<item_version>0</item_version>
+		<item class_id="22" tracking_level="0" version="0">
+			<first>CreateStandardColorMap:3</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ShowField:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ViewScene:1</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
 </networkFile>
 </boost_serialization>
 
