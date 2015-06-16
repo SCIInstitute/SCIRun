@@ -337,7 +337,7 @@ TempFileManager::get_scirun_tmp_dir(std::string subdir)
 
   auto dirname = homeDir / "SCIRun";
 
-  if (boost::filesystem::exists(dirname))
+  if (!boost::filesystem::exists(dirname))
   {
     direxists = boost::filesystem::create_directory(dirname);
   }
@@ -351,7 +351,7 @@ TempFileManager::get_scirun_tmp_dir(std::string subdir)
   direxists = false;
   dirname = homeDir / "SCIRun" / "tmp";
 
-  if (boost::filesystem::exists(dirname))
+  if (!boost::filesystem::exists(dirname))
   {
     direxists = boost::filesystem::create_directory(dirname);
   }
@@ -367,7 +367,7 @@ TempFileManager::get_scirun_tmp_dir(std::string subdir)
     direxists = false;
     dirname = homeDir / "SCIRun" / "tmp" / subdir;
 
-    if (boost::filesystem::exists(dirname))
+    if (!boost::filesystem::exists(dirname))
     {
       direxists = boost::filesystem::create_directory(dirname);
     }
