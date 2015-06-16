@@ -47,6 +47,7 @@ class QToolBar;
 class QAction;
 class QGraphicsScene;
 class DialogErrorControl;
+class QTimeLine;
 Q_DECLARE_METATYPE (std::string)
 
 namespace SCIRun {
@@ -85,6 +86,10 @@ namespace Gui {
     explicit ErrorItem(const QString& text, QGraphicsItem* parent = 0);
   protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+  private Q_SLOTS:
+    void animate(qreal val);
+  private:
+    QTimeLine* timeLine_;
   };
 
   class ModuleEventProxy : public QObject

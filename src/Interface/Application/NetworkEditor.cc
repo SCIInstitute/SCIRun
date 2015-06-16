@@ -1211,6 +1211,12 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
 ErrorItem::ErrorItem(const QString& text, QGraphicsItem* parent) : QGraphicsTextItem(text, parent)
 {
   setDefaultTextColor(Qt::red);
+
+  {
+    timeLine_ = new QTimeLine(10000, this);
+    connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(animate(qreal)));
+  }
+  timeLine_->start();
 }
 
 void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -1225,6 +1231,15 @@ void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
   }
 }
 
+void ErrorItem::animate(qreal val)
+{
+  if (val < 1)
+    show();
+  else
+    scene()->removeItem(this);
+  setOpacity(val < 0.5 ? 1 : 2 - 2*val);
+}
+
 void NetworkEditor::displayError(const QString& msg)
 {
   auto errorItem = new ErrorItem(msg);
@@ -1232,9 +1247,16 @@ void NetworkEditor::displayError(const QString& msg)
   qDebug() << "TODO: get visible view, display relative to lower left corner.";
   qDebug() << "TODO: set timer to fade out after X seconds";
 
-  auto rect = sceneRect();
+  //auto rect1 = mapToScene(rect()).boundingRect();
+  //qDebug() << "scene rect1:" << rect1;
+
+  auto rect = mapToScene(viewport()->geometry()).boundingRect();
   qDebug() << "scene rect:" << rect;
-  errorItem->setPos(-100, -100);
+
+  auto corner = rect.bottomLeft();
+  qDebug() << corner;
+
+  errorItem->setPos(corner + QPointF(50,-100));
   //ensureVisible(errorItem);
 
   //rotate(90);
