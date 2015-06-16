@@ -89,6 +89,7 @@ namespace Gui {
     int num() const { return counter_; }
   protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
   private Q_SLOTS:
     void animate(qreal val);
   private:

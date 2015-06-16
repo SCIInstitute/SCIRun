@@ -1241,13 +1241,17 @@ void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
   }
 }
 
+void ErrorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+  timeLine_->setCurrentTime(0);  
+}
+
 void ErrorItem::animate(qreal val)
 {
   if (val < 1)
     show();
   else
     hide();
-    //scene()->removeItem(this);
   setOpacity(val < 0.5 ? 1 : 2 - 2*val);
 }
 
