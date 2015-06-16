@@ -34,6 +34,7 @@
 #ifndef Q_MOC_RUN
 #include <boost/shared_ptr.hpp>
 #include <map>
+#include <atomic>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
