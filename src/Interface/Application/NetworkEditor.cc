@@ -1208,6 +1208,38 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
   }
 }
 
+ErrorItem::ErrorItem(const QString& text, QGraphicsItem* parent) : QGraphicsTextItem(text, parent)
+{
+  setDefaultTextColor(Qt::red);
+}
+
+void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+  if (event->buttons() & Qt::LeftButton)
+  {
+    qDebug() << "TODO: go to errored module";
+  }
+  else if (event->buttons() & Qt::RightButton)
+  {
+    scene()->removeItem(this);
+  }
+}
+
+void NetworkEditor::displayError(const QString& msg)
+{
+  auto errorItem = new ErrorItem(msg);
+  scene()->addItem(errorItem);
+  qDebug() << "TODO: get visible view, display relative to lower left corner.";
+  qDebug() << "TODO: set timer to fade out after X seconds";
+
+  auto rect = sceneRect();
+  qDebug() << "scene rect:" << rect;
+  errorItem->setPos(-100, -100);
+  //ensureVisible(errorItem);
+
+  //rotate(90);
+}
+
 NetworkEditor::~NetworkEditor()
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
