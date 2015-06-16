@@ -88,7 +88,7 @@ bool FileTransferClient::open(IComAddressHandle address, std::string servicename
 }
 
 
-bool FileTransferClient::create_remote_tempdir(std::string pattern,std::string &tempdir)
+bool FileTransferClient::create_remote_tempdir(std::string pattern, boost::filesystem::path& tempdir)
 {
     IComPacketHandle packet(new IComPacket);
     if (!packet)
@@ -127,7 +127,7 @@ bool FileTransferClient::create_remote_tempdir(std::string pattern,std::string &
     return(false);
 }
 
-bool FileTransferClient::create_local_tempdir(std::string pattern,std::string &tempdir)
+bool FileTransferClient::create_local_tempdir(std::string pattern, boost::filesystem::path& tempdir)
 {
     return(tfm_->create_tempdir(pattern,tempdir));
 }
@@ -152,72 +152,71 @@ bool FileTransferClient::get_remote_homedirid(std::string& homeid)
     return(true);
 }
 
-bool FileTransferClient::get_local_scirun_tempdir(std::string& tempdir)
+bool FileTransferClient::get_local_scirun_tempdir(boost::filesystem::path& tempdir)
 {
     tempdir = local_scirun_tempdir_;
-    if (tempdir == "")
+    if (tempdir.empty())
     {
         local_scirun_tempdir_ = tfm_->get_scirun_tmp_dir();
         tempdir = local_scirun_tempdir_;
-        if (tempdir == "") return(false);
+        if (tempdir.empty()) return(false);
     }
     return(true);
 }
 
-bool FileTransferClient::get_remote_scirun_tempdir(std::string& tempdir)
+bool FileTransferClient::get_remote_scirun_tempdir(boost::filesystem::path& tempdir)
 {
     tempdir = remote_scirun_tempdir_;
-    if (tempdir == "") return(false);
-    return(true);
+    return !tempdir.empty();
 }
 
-bool FileTransferClient::translate_scirun_tempdir(std::string& tempdir)
+bool FileTransferClient::translate_scirun_tempdir(boost::filesystem::path& tempdir)
 {
-    if (remote_scirun_tempdir_ != local_scirun_tempdir_)
-    {
-        size_t rt = remote_scirun_tempdir_.size();
-        size_t lt = local_scirun_tempdir_.size();
+  if (remote_scirun_tempdir_ != local_scirun_tempdir_)
+  {
+    size_t rt = remote_scirun_tempdir_.string().size();
+    size_t lt = local_scirun_tempdir_.string().size();
 
-        if (rt > lt)
-        {
-            if (tempdir.substr(0,rt) == remote_scirun_tempdir_)
-            {
-                tempdir = local_scirun_tempdir_ + tempdir.substr(rt);
-                return(true);
-            }
-            if (tempdir.substr(0,lt) == local_scirun_tempdir_)
-            {
-                tempdir = remote_scirun_tempdir_ + tempdir.substr(lt);
-                return(true);
-            }
-        }
-        else
-        {
-            if (tempdir.substr(0,lt) == local_scirun_tempdir_)
-            {
-                tempdir = remote_scirun_tempdir_ + tempdir.substr(lt);
-                return(true);
-            }
-            if (tempdir.substr(0,rt) == remote_scirun_tempdir_)
-            {
-                tempdir = local_scirun_tempdir_ + tempdir.substr(rt);
-                return(true);
-            }
-        }
-        return(false);
+    if (rt > lt)
+    {
+      if (tempdir.string().substr(0, rt) == remote_scirun_tempdir_)
+      {
+        tempdir = local_scirun_tempdir_ / tempdir.string().substr(rt);
+        return(true);
+      }
+      if (tempdir.string().substr(0, lt) == local_scirun_tempdir_)
+      {
+        tempdir = remote_scirun_tempdir_ / tempdir.string().substr(lt);
+        return(true);
+      }
     }
     else
     {
+      if (tempdir.string().substr(0, lt) == local_scirun_tempdir_)
+      {
+        tempdir = remote_scirun_tempdir_ / tempdir.string().substr(lt);
         return(true);
+      }
+      if (tempdir.string().substr(0, rt) == remote_scirun_tempdir_)
+      {
+        tempdir = local_scirun_tempdir_ / tempdir.string().substr(rt);
+        return(true);
+      }
     }
+    return(false);
+  }
+  else
+  {
+    return(true);
+  }
 }
 
-bool FileTransferClient::get_file(std::string remotefilename,std::string localfilename)
+bool FileTransferClient::get_file(const boost::filesystem::path& remotefilename, const boost::filesystem::path& localfilename)
 {
     FILE* localfile;
     int fileid = fileidcnt_++;
 
-    localfile = ::fopen(localfilename.c_str(),"w");
+    localfile = ::fopen(localfilename.string().c_str(),"w");
     if (localfile == 0)
     {
         seterror("Could not open local filename");
@@ -234,7 +233,7 @@ bool FileTransferClient::get_file(std::string remotefilename,std::string localfi
 
     packet->settag(TAG_FGET);
     packet->setid(fileid);
-    packet->setstring(remotefilename);
+    packet->setstring(remotefilename.string());
     if (!(send(packet)))
     {
         ::fclose(localfile);
@@ -314,13 +313,13 @@ bool FileTransferClient::get_file(std::string remotefilename,std::string localfi
 }
 
 
-bool FileTransferClient::put_file(std::string localfilename,std::string remotefilename)
+bool FileTransferClient::put_file(const boost::filesystem::path& localfilename, const boost::filesystem::path& remotefilename)
 {
 
     FILE* localfile;
     int fileid = fileidcnt_++;
 
-    localfile = ::fopen(localfilename.c_str(),"r");
+    localfile = ::fopen(localfilename.string().c_str(), "r");
     if (localfile == 0)
     {
         seterror("Could not open local filename");
@@ -337,7 +336,7 @@ bool FileTransferClient::put_file(std::string localfilename,std::string remotefi
 
     packet->settag(TAG_FPUT);
     packet->setid(fileid);
-    packet->setstring(remotefilename);
+    packet->setstring(remotefilename.string());
     if (!(send(packet)))
     {
         ::fclose(localfile);
@@ -416,30 +415,35 @@ bool FileTransferClient::put_file(std::string localfilename,std::string remotefi
     return(true);
 }
 
-
-
-bool FileTransferClient::set_local_dir(std::string dir)
+static void addPathSeparatorIfNeeded(boost::filesystem::path& dir)
 {
-  if (dir[dir.size() - 1] != '/') dir += '/';
+  auto dirStr = dir.string();
+  if (dirStr.back() != boost::filesystem::path::preferred_separator) 
+    dir += boost::filesystem::path::preferred_separator;
+}
+
+bool FileTransferClient::set_local_dir(const boost::filesystem::path& dir)
+{
   local_dir_ = dir;
+  addPathSeparatorIfNeeded(local_dir_);
   return(true);
 }
 
-bool FileTransferClient::set_remote_dir(std::string dir)
+bool FileTransferClient::set_remote_dir(const boost::filesystem::path& dir)
 {
-  if (dir[dir.size() - 1] != '/') dir += '/';
   remote_dir_ = dir;
+  addPathSeparatorIfNeeded(remote_dir_);
   return(true);
 }
 
-std::string FileTransferClient::local_file(std::string filename)
+boost::filesystem::path FileTransferClient::local_file(const boost::filesystem::path& filename)
 {
-  return(local_dir_ + filename);
+  return local_dir_ / filename;
 }
 
-std::string FileTransferClient::remote_file(std::string filename)
+boost::filesystem::path FileTransferClient::remote_file(const boost::filesystem::path& filename)
 {
-  return(remote_dir_ + filename);
+  return remote_dir_ / filename;
 }
 
 } // end namespace

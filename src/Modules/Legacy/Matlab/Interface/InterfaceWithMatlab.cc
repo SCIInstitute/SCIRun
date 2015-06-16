@@ -167,7 +167,7 @@ namespace MatlabImpl
 
             static matlabarray::mitype	convertdataformat(const std::string& dataformat);
             static std::string totclstring(const std::string& instring);
-            std::vector<std::string>	converttcllist(const Variable::List& str);
+            std::vector<std::string> converttcllist(const Variable::List& str);
 
             void	update_status(const std::string& text);
 
@@ -191,7 +191,7 @@ namespace MatlabImpl
             // Temp directory for writing files coming from the
             // the matlab engine
 
-            std::string temp_directory_;
+            boost::filesystem::path temp_directory_;
 
             //TODO: need a better solution for this one
             bool isMatrixOutputPortConnected(int index) const;
@@ -299,7 +299,7 @@ namespace MatlabImpl
             FileTransferClientHandle      file_transfer_;
 
             bool            need_file_transfer_;
-            std::string     remote_tempdir_;
+            boost::filesystem::path remote_tempdir_;
             std::string     inputstring_;
 
           public:
@@ -664,7 +664,7 @@ void InterfaceWithMatlab::execute()
 bool InterfaceWithMatlabImpl::send_matlab_job()
 {
   std::string mfilename = mfile_.substr(0,mfile_.size()-2); // strip the .m
-  std::string remotefile = file_transfer_->remote_file(mfilename);
+  auto remotefile = file_transfer_->remote_file(mfilename);
 #ifndef USE_MATLAB_ENGINE_LIBRARY
   IComPacketHandle packet(new IComPacket);
 
@@ -715,7 +715,7 @@ bool InterfaceWithMatlabImpl::send_matlab_job()
   thread_info_->unlock();
 
 #else
-  std::string command = std::string("addpath('") + remotefile.substr(0,remotefile.size()-12) +"');";
+  std::string command = std::string("addpath('") + remotefile.string().substr(0, remotefile.string().size() - 12) + "');";
   bool success = (engEvalString(engine_, command.c_str()) == 0);
 
   command = "scirun_code;";
@@ -955,7 +955,7 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
       // Hence we translate between both. InterfaceWithMatlab does not like
       // the use of $HOME
       file_transfer_->set_local_dir(temp_directory_);
-      std::string tempdir = temp_directory_;
+      auto tempdir = temp_directory_;
       file_transfer_->translate_scirun_tempdir(tempdir);
       file_transfer_->set_remote_dir(tempdir);
     }
@@ -1098,7 +1098,7 @@ bool InterfaceWithMatlabImpl::load_output_matrices()
     try
     {
       if (need_file_transfer_) file_transfer_->get_file(file_transfer_->remote_file(output_matrix_matfile_[p]),file_transfer_->local_file(output_matrix_matfile_[p]));
-      mf.open(file_transfer_->local_file(output_matrix_matfile_[p]),"r");
+      mf.open(file_transfer_->local_file(output_matrix_matfile_[p]).string(),"r");
       ma = mf.getmatlabarray(output_matrix_name_list_[p]);
       mf.close();
     }
@@ -1243,8 +1243,8 @@ bool InterfaceWithMatlabImpl::generate_matlab_code()
   std::ofstream m_file;
 
   mfile_ = "scirun_code.m";
-  std::string filename = file_transfer_->local_file(mfile_);
-  m_file.open(filename.c_str(), std::ios::app);
+  auto filename = file_transfer_->local_file(mfile_);
+  m_file.open(filename.string(), std::ios::app);
 
   m_file << matlab_code_list_ << "\n";
 
@@ -1260,7 +1260,7 @@ bool InterfaceWithMatlabImpl::generate_matlab_code()
     oss << "output_matrix" << p << ".mat";
     output_matrix_matfile_[p] = oss.str();
     std::string cmd;
-    cmd = "if exist('" + output_matrix_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_matrix_matfile_[p]) + " " + output_matrix_name_list_[p] + "; end\n";
+    cmd = "if exist('" + output_matrix_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_matrix_matfile_[p]).string() + " " + output_matrix_name_list_[p] + "; end\n";
     m_file << cmd;
   }
   for (int p = 0; p < NUM_OUTPUT_FIELDS; p++)
@@ -1274,7 +1274,7 @@ bool InterfaceWithMatlabImpl::generate_matlab_code()
     oss << "output_field" << p << ".mat";
     output_field_matfile_[p] = oss.str();
     std::string cmd;
-    cmd = "if exist('" + output_field_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_field_matfile_[p]) + " " + output_field_name_list_[p] + "; end\n";
+    cmd = "if exist('" + output_field_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_field_matfile_[p]).string() + " " + output_field_name_list_[p] + "; end\n";
     m_file << cmd;
   }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -1306,7 +1306,7 @@ bool InterfaceWithMatlabImpl::generate_matlab_code()
     oss << "output_string" << p << ".mat";
     output_string_matfile_[p] = oss.str();
     std::string cmd;
-    cmd = "if exist('" + output_string_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_string_matfile_[p]) + " " + output_string_name_list_[p] + "; end\n";
+    cmd = "if exist('" + output_string_name_list_[p] + "','var'), save " + file_transfer_->remote_file(output_string_matfile_[p]).string() + " " + output_string_name_list_[p] + "; end\n";
     m_file << cmd;
   }
 
@@ -1400,9 +1400,9 @@ void InterfaceWithMatlabImpl::sendStringOutput(int index, StringHandle str) cons
       std::string loadcmd;
 
       mfile_ = "scirun_code.m";
-      std::string filename = file_transfer_->local_file(mfile_);
+      auto filename = file_transfer_->local_file(mfile_);
 
-      m_file.open(filename.c_str(),std::ios::out);
+      m_file.open(filename.string(), std::ios::out);
 
       auto matrices = module_->getRequiredDynamicInputs(module_->InputMatrix);
       input_matrix_matfile_.clear();
@@ -1426,7 +1426,7 @@ void InterfaceWithMatlabImpl::sendStringOutput(int index, StringHandle str) cons
           // this one was not created again
           // hence we do not need to translate it again
           // with big datasets this should improve performance
-          loadcmd = "load " + file_transfer_->remote_file(input_matrix_matfile_[port]) + ";\n";
+          loadcmd = "load " + file_transfer_->remote_file(input_matrix_matfile_[port]).string() + ";\n";
           m_file << loadcmd;
           continue;
         }
@@ -1439,7 +1439,7 @@ void InterfaceWithMatlabImpl::sendStringOutput(int index, StringHandle str) cons
         matlabfile mf;
         matlabarray ma;
 
-        mf.open(file_transfer_->local_file(input_matrix_matfile_[port]), "w");
+        mf.open(file_transfer_->local_file(input_matrix_matfile_[port]).string(), "w");
         mf.setheadertext("InterfaceWithMatlab V5 compatible file generated by SCIRun [module InterfaceWithMatlab version 1.3]");
 
         matlabconverter translate(module_->getLogger());
@@ -1452,7 +1452,7 @@ void InterfaceWithMatlabImpl::sendStringOutput(int index, StringHandle str) cons
         mf.putmatlabarray(ma,input_matrix_name_list_[port]);
         mf.close();
 
-        loadcmd = "load " + file_transfer_->remote_file(input_matrix_matfile_[port]) + ";\n";
+        loadcmd = "load " + file_transfer_->remote_file(input_matrix_matfile_[port]).string() + ";\n";
         m_file << loadcmd;
 
         if (need_file_transfer_)

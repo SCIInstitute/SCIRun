@@ -179,7 +179,17 @@
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>TODO</string>
+         <string>Path to Matlab executable:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="matlabPathLineEdit_"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="findMatlabPushButton_">
+        <property name="text">
+         <string>Find...</string>
         </property>
        </widget>
       </item>

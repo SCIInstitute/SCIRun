@@ -86,11 +86,11 @@ TempFileManager::create_randname(std::string str)
 
 
 bool
-TempFileManager::create_tempdir(std::string pattern, std::string &dirname)
+TempFileManager::create_tempdir(const std::string& pattern, boost::filesystem::path& dirname)
 {
   // Try to create or obtain the SCIRun/tmp directory in the HOME directory
   // If we cannot create this one or not obtain it fail and return to user code
-  std::string tempdir = get_scirun_tmp_dir();
+  auto tempdir = get_scirun_tmp_dir();
   if (tempdir.empty())
   {
     std::cerr << "Could not find/create $HOME/SCIRun/tmp directory" << std::endl;
@@ -100,12 +100,12 @@ TempFileManager::create_tempdir(std::string pattern, std::string &dirname)
 
   bool done = false;
   int attempts = 0;
-  std::string newtempdir;
+  boost::filesystem::path newtempdir;
 
   while (!done)
   {
     std::string ranfilename = create_randname(pattern);
-    newtempdir = tempdir + ranfilename;
+    newtempdir = tempdir / ranfilename;
 
     if (!boost::filesystem::exists(newtempdir))
     {
@@ -256,13 +256,13 @@ bool TempFileManager::create_tempfifo(std::string dir, std::string pattern, std:
 #endif
 
 bool
-TempFileManager::delete_tempdir(std::string dirname)
+TempFileManager::delete_tempdir(const boost::filesystem::path& dirname)
 {
   return boost::filesystem::remove(dirname);
 }
 
 bool
-TempFileManager::delete_tempfile(std::string filename)
+TempFileManager::delete_tempfile(const boost::filesystem::path& filename)
 {
   return boost::filesystem::remove(filename);
 }
@@ -281,7 +281,7 @@ TempFileManager::delete_tempfifo(std::string fifoname)
 }
 
 
-std::string
+boost::filesystem::path
 TempFileManager::get_scirun_tmp_dir(std::string subdir)
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -328,7 +328,7 @@ TempFileManager::get_scirun_tmp_dir(std::string subdir)
   char *HOME = getenv("HOME");
   if (!HOME)
   {
-    return(std::string(""));
+    return "";
   }
 
   boost::filesystem::path homeDir(HOME);
@@ -346,7 +346,7 @@ TempFileManager::get_scirun_tmp_dir(std::string subdir)
     direxists = true;
   }
 
-  if (!direxists) return(std::string(""));
+  if (!direxists) return "";
 
   direxists = false;
   dirname = homeDir / "SCIRun" / "tmp";
@@ -360,7 +360,7 @@ TempFileManager::get_scirun_tmp_dir(std::string subdir)
     direxists = true;
   }
 
-  if (!direxists) return(std::string(""));
+  if (!direxists) return "";
 
   if (!subdir.empty())
   {
@@ -376,19 +376,19 @@ TempFileManager::get_scirun_tmp_dir(std::string subdir)
       direxists = true;
     }
 
-    if (!direxists) return(std::string(""));
+    if (!direxists) return "";
 
   }
 
-  return dirname.string();
+  return dirname;
 }
 
 std::string
 TempFileManager::get_homedirID()
 {
-  std::string tempdir = get_scirun_tmp_dir();
+  auto tempdir = get_scirun_tmp_dir();
 
-  auto filename = boost::filesystem::path(tempdir) / "homeid";
+  auto filename = tempdir / "homeid";
 
   if (boost::filesystem::exists(filename))
   {
@@ -401,5 +401,5 @@ TempFileManager::get_homedirID()
   std::ifstream homeid(filename.string());
   homeid >> homeidstring;
   homeidstring = homeidstring.substr(7);
-  return(homeidstring);
+  return homeidstring;
 }
