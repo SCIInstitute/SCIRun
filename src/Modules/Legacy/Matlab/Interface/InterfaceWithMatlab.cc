@@ -685,7 +685,7 @@ bool InterfaceWithMatlabImpl::send_matlab_job()
   thread_info_->unlock();
 
   packet->settag(TAG_MCODE);
-  packet->setstring(remotefile);
+  packet->setstring(remotefile.string());
   matlab_engine_->send(packet);
 
   thread_info_->dolock();
@@ -1047,7 +1047,7 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
       << "\nmatlabengine filetransfer version :" << file_transfer_->getversion()
       << "\nshared home directory: " << sharehomedir
       << "\nlocal temp directory: " << file_transfer_->local_file("")
-      << "\nremote temp directory: " << file_transfer_->remote_file("") + "\n";
+      << "\nremote temp directory: " << file_transfer_->remote_file("") << "\n";
     auto status = statusStr.str();
 #else
     std::string status = "InterfaceWithMatlab engine running\n";
