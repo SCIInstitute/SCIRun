@@ -40,6 +40,7 @@ namespace SCIRun {
       namespace Matlab
       {
         ALGORITHM_PARAMETER_DECL(MatlabCode);
+        ALGORITHM_PARAMETER_DECL(MatlabPath);
         ALGORITHM_PARAMETER_DECL(InputMatrixNames);
         ALGORITHM_PARAMETER_DECL(InputMatrixTypes);
         ALGORITHM_PARAMETER_DECL(InputMatrixArrays);

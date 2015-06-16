@@ -28,6 +28,7 @@
 
 #include <Interface/Modules/Matlab/InterfaceWithMatlabDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Modules/Legacy/Matlab/Interface/InterfaceWithMatlab.h>
 #include <QFileDialog>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -35,6 +36,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Matlab;
 
 InterfaceWithMatlabDialog::InterfaceWithMatlabDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -50,6 +52,7 @@ InterfaceWithMatlabDialog::InterfaceWithMatlabDialog(const std::string& name, Mo
   WidgetStyleMixin::tabStyle(matrixTabWidget_);
   WidgetStyleMixin::tableHeaderStyle(matrixInputTableWidget_);
   addTextEditManager(matlabCodeTextEdit_, Variables::FunctionString);
+  addLineEditManager(matlabPathLineEdit_, Parameters::MatlabPath);
 }
 
 namespace TableColumns
