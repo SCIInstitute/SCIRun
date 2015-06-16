@@ -511,7 +511,9 @@ output_matrix_matfile_(NUM_OUTPUT_MATRICES),
 output_field_matfile_(NUM_OUTPUT_FIELDS),
 output_nrrd_matfile_(NUM_OUTPUT_NRRDS),
 output_string_matfile_(NUM_OUTPUT_STRINGS),
+#ifdef USE_MATLAB_ENGINE_LIBRARY
 engine_(0),
+#endif
 need_file_transfer_(false)
 {
   CleanupManager::add_callback(InterfaceWithMatlabImpl::cleanup_callback, reinterpret_cast<void*>(this));
