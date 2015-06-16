@@ -40,6 +40,7 @@ namespace SCIRun {
       namespace Matlab
       {
         ALGORITHM_PARAMETER_DECL(MatlabCode);
+        ALGORITHM_PARAMETER_DECL(MatlabPath);
         ALGORITHM_PARAMETER_DECL(InputMatrixNames);
         ALGORITHM_PARAMETER_DECL(InputMatrixTypes);
         ALGORITHM_PARAMETER_DECL(InputMatrixArrays);
@@ -51,7 +52,7 @@ namespace SCIRun {
 namespace Modules {
 namespace Matlab {
 namespace Interface {
-  
+
   class SCISHARE InterfaceWithMatlab : public SCIRun::Dataflow::Networks::Module,
     public Has3InputPorts<DynamicPortTag<MatrixPortTag>, DynamicPortTag<FieldPortTag>, DynamicPortTag<StringPortTag>>,
     public Has6OutputPorts<FieldPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag, StringPortTag, StringPortTag>
@@ -60,6 +61,7 @@ namespace Interface {
     InterfaceWithMatlab();
     virtual void execute();
     virtual void setStateDefaults();
+    virtual bool hasDynamicPorts() const override { return true; }
     INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
     INPUT_PORT_DYNAMIC(1, InputField, LegacyField);
     INPUT_PORT_DYNAMIC(2, InputString, String);
