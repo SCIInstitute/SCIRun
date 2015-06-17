@@ -1272,7 +1272,7 @@ void NetworkEditor::displayError(const QString& msg, std::function<void()> showM
   auto corner = rect.bottomLeft();
   //qDebug() << corner;
 
-  errorItem->setPos(corner + QPointF(-300, -(40*errorItem->num() + 200)));
+  errorItem->setPos(corner + QPointF(-300, -(40*errorItem->num() + 500)));
 }
 
 NetworkEditor::~NetworkEditor()
