@@ -887,12 +887,12 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
 
       if (!engOpen || !engClose || !engSetVisible || !engEvalString || !engOutputBuffer)
       {
-        if (!engOpen) module_->error(std::string("Cannot find engOpen"));
-        if (!engClose) module_->error(std::string("Cannot find engClose"));
-        if (!engSetVisible) module_->error(std::string("Cannot find engSetVisible"));
-        if (!engEvalString) module_->error(std::string("Cannot find engEvalString"));
-        if (!engOutputBuffer) module_->error(std::string("Cannot find engOutputBuffer"));
-        module_->error(std::string("Could not open matlab engine functions from matlab library"));
+        if (!engOpen) module_->error("Cannot find engOpen");
+        if (!engClose) module_->error("Cannot find engClose");
+        if (!engSetVisible) module_->error("Cannot find engSetVisible");
+        if (!engEvalString) module_->error("Cannot find engEvalString");
+        if (!engOutputBuffer) module_->error("Cannot find engOutputBuffer");
+        module_->error("Could not open matlab engine functions from matlab library");
         return false;
       }
     }
@@ -915,8 +915,7 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
 
     if (!engine_)
     {
-      module_->error(std::string("InterfaceWithMatlab: Could not open matlab engine"));
-      module_->error(std::string("InterfaceWithMatlab: Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine"));
+      module_->error("InterfaceWithMatlab: Could not open matlab engine. Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine.");
       return false;
     }
 
@@ -926,24 +925,24 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
 
 
     file_transfer_.reset(new FileTransferClient());
-    if (!(file_transfer_->open(address, "matlabenginefiletransfer", sessionnum, passwd)))
+    if (!file_transfer_->open(address, "matlabenginefiletransfer", sessionnum, passwd))
     {
       std::string err;
 #ifndef USE_MATLAB_ENGINE_LIBRARY
       err = matlab_engine_->geterror();
       matlab_engine_->close();
-      matlab_engine_ = 0;
+      matlab_engine_.reset();
 #else
       engClose(engine_);
       engine_ = 0;
 #endif
-      std::cout << "ERROR" << file_transfer_->geterror() << std::endl;
-      module_->error(std::string("InterfaceWithMatlab: Could not open matlab engine file transfer service (error=") + err + std::string(")"));
-      module_->error(std::string("InterfaceWithMatlab: Make sure the matlab engine file transfer service has not been disabled in [MATLAB_DIRECTPRY]/services/matlabengine.rc"));
-      module_->error(std::string("InterfaceWithMatlab: Press the 'Edit Local Config of Matlab Engine' to change the configuration"));
-      module_->error(std::string("InterfaceWithMatlab: Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine"));
-
-      file_transfer_ = 0;
+      std::ostringstream ostr;
+      ostr << "InterfaceWithMatlab: Could not open matlab engine file transfer service (error=" << err << ")" <<
+        ".\n  Make sure the matlab engine file transfer service has not been disabled in [MATLAB_DIRECTPRY]/services/matlabengine.rc.\n" <<
+        " Press the 'Edit Local Config of Matlab Engine' to change the configuration." <<
+        " Check remote address information, or leave all fields except 'session' blank to connect to local matlab engine.";
+      module_->error(ostr.str());
+      file_transfer_.reset();
       return(false);
     }
 
@@ -960,14 +959,14 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
       {
 #ifndef USE_MATLAB_ENGINE_LIBRARY
         matlab_engine_->close();
-        matlab_engine_ = 0;
+        matlab_engine_.reset();
 #else
         engClose(engine_);
         engine_ = 0;
 #endif
-        module_->error(std::string("InterfaceWithMatlab: Could not create remote temporary directory"));
+        module_->error("InterfaceWithMatlab: Could not create remote temporary directory.");
         file_transfer_->close();
-        file_transfer_ = 0;
+        file_transfer_.reset();
         return(false);
       }
       file_transfer_->set_local_dir(temp_directory_);
@@ -991,9 +990,11 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
     {
       matlab_engine_->close();
       file_transfer_->close();
-      module_->error(std::string("InterfaceWithMatlab: Could not get answer from matlab engine (error=") + matlab_engine_->geterror() + std::string(")"));
-      module_->error(std::string("InterfaceWithMatlab: This is an internal communication error, make sure that the portnumber is correct"));
-      module_->error(std::string("InterfaceWithMatlab: If address information is correct, this most probably points to a bug in the SCIRun software"));
+      std::ostringstream ostr;
+      ostr << "Could not get answer from matlab engine (error=" << matlab_engine_->geterror() << ").\n " <<
+        " This is an internal communication error, make sure that the portnumber is correct. \n" <<
+        " If address information is correct, this most probably points to a bug in the SCIRun software.";
+      module_->error(ostr.str());
 
       matlab_engine_.reset();
       file_transfer_.reset();
@@ -1007,11 +1008,13 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
       matlab_engine_->close();
       file_transfer_->close();
 
-      module_->error(std::string("InterfaceWithMatlab: InterfaceWithMatlab engine returned an error (error=") + packet->getstring() + std::string(")"));
-      module_->error(std::string("InterfaceWithMatlab: Please check whether '[MATLAB_DIRECTORY]/services/matlabengine.rc' has been setup properly"));
-      module_->error(std::string("InterfaceWithMatlab: Press the 'Edit Local Config of Matlab Engine' to change the configuration"));
-      module_->error(std::string("InterfaceWithMatlab: Edit the 'startmatlab=' line to start matlab properly"));
-      module_->error(std::string("InterfaceWithMatlab: If you running matlab remotely, this file must be edited on the machine running matlab"));
+      std::ostringstream ostr;
+      ostr << "InterfaceWithMatlab engine returned an error (error=" << packet->getstring() << ")" <<
+        "\n Please check whether '[MATLAB_DIRECTORY]/services/matlabengine.rc' has been setup properly." <<
+        "\n Press the 'Edit Local Config of Matlab Engine' to change the configuration." <<
+        "\n Edit the 'startmatlab=' line to start matlab properly. " <<
+        "\n If you running matlab remotely, this file must be edited on the machine running matlab.";
+      module_->error(ostr.str());
 
       matlab_engine_.reset();
       file_transfer_.reset();
