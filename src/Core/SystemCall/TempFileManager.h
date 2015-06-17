@@ -46,6 +46,7 @@
 
 #include <string>
 #include <Core/Math/MusilRNG.h>
+#include <boost/filesystem/path.hpp>
 #include <Core/SystemCall/share.h>
 
 namespace SCIRun {
@@ -70,21 +71,21 @@ class SCISHARE TempFileManager {
     // This is done to prevent other SCIRun threads are other instances of SCIRun to use the
     // same filename
 
-    bool    create_tempdir(std::string dirname_pattern, std::string &dirname);
+    bool    create_tempdir(const std::string& pattern, boost::filesystem::path& dirname);
     bool    create_tempfile(std::string dir, std::string filename_pattern, std::string &filename);
     bool    create_tempfilename(std::string dir, std::string filename_pattern, std::string &filename);
     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     bool    create_tempfifo(std::string dir, std::string filename_pattern, std::string &fifoname);
     #endif
 
-    bool    delete_tempdir(std::string dirname);
-    bool    delete_tempfile(std::string filename);
+    bool    delete_tempdir(const boost::filesystem::path& dirname);
+    bool    delete_tempfile(const boost::filesystem::path& filename);
     bool    delete_tempfifo(std::string fifoname);
 
     // some other useful functions
 
     // Get the local of the SCIRun temp directory
-    std::string get_scirun_tmp_dir(std::string subdir = "");
+    boost::filesystem::path get_scirun_tmp_dir(std::string subdir = "");
 
     // This writes an unique file in SCIRun's temp directory in the current homedirectory
     // It will use this to ID this directory.

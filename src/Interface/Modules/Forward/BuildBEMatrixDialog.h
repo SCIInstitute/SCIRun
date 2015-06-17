@@ -46,7 +46,7 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
 public Q_SLOTS:
-  virtual void updateFromPortChange(int numPorts) override;
+  virtual void updateFromPortChange(int numPorts, const std::string&) override;
 protected:
   virtual void pullSpecial() override;
 private Q_SLOTS:
