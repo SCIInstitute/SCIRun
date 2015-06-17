@@ -45,9 +45,9 @@ public:
     // have access to all of the rendering subsystems.
 
     // Will need to replace this with a static entity in the future.
-    SRInterface* iface = core.getStaticComponent<StaticSRInterface>()->interface_;
-    ren::GeomMan* geomMan = core.getStaticComponent<ren::StaticGeomMan>()->instance_;
-    ren::ShaderMan* shaderMan = core.getStaticComponent<ren::StaticShaderMan>()->instance_;
+    std::shared_ptr<SRInterface> iface = core.getStaticComponent<StaticSRInterface>()->instance_;
+    std::shared_ptr<ren::GeomMan> geomMan = core.getStaticComponent<ren::StaticGeomMan>()->instance_;
+    std::shared_ptr<ren::ShaderMan> shaderMan = core.getStaticComponent<ren::StaticShaderMan>()->instance_;
 
     // A cached entity so that our VBOs and IBOs will not get garbage collected.
     uint64_t cachedEntity = 0;

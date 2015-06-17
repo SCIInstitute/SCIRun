@@ -478,7 +478,7 @@ namespace SCIRun {
             mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap, port));
             SRObject& elem = mSRObjects.back();
             
-            ren::ShaderMan* shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
+            std::shared_ptr<ren::ShaderMan> shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
             
             // Add passes
             for (auto it = obj->mPasses.begin(); it != obj->mPasses.end(); ++it)
@@ -700,7 +700,7 @@ namespace SCIRun {
         //------------------------------------------------------------------------------
         void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shaderName)
         {
-            ren::ShaderMan* shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
+            std::shared_ptr<ren::ShaderMan> shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
             ren::Shader shader;
             
             shader.glid = shaderMan->getIDForAsset(shaderName.c_str());
@@ -840,7 +840,7 @@ namespace SCIRun {
             // system to optimize the rendering of a large amount of objects.
             ren::VBOMan *vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
             ren::IBOMan *iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
-            ren::ShaderMan* shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
+            std::shared_ptr<ren::ShaderMan> shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
             
             GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
             GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
