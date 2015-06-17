@@ -250,7 +250,7 @@ void ShowFieldGlyphs::renderVectors(
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   ColorRGB node_color;  
 
-  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
+  if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
   {
     colorScheme = GeometryObject::COLOR_UNIFORM;
   }
@@ -280,12 +280,17 @@ void ShowFieldGlyphs::renderVectors(
   double secondaryScalar = 0.25; // to be replaced with data from secondary field.
   if (scale < 0) scale = 1.0;
   if (resolution < 3) resolution = 5;  
-
+  
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
   // Render linear data
   if (finfo.is_linear())
   {
+    if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
+    {
+      colorScheme = GeometryObject::COLOR_UNIFORM;
+    }
+
     for (const auto& node : facade->nodes())
     {
       checkForInterruption();
@@ -359,7 +364,7 @@ void ShowFieldGlyphs::renderVectors(
       v = inputVector * scale;
       double radius = v.length() * secondaryScalar;
       Point p1 = cell.center();
-      Point p2 = p1 + (v * scale);
+      Point p2 = p1 + v;
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
         if (colorScheme == GeometryObject::COLOR_MAP)
@@ -434,7 +439,7 @@ void ShowFieldGlyphs::renderScalars(
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   ColorRGB node_color;
 
-  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
+  if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
   {
     colorScheme = GeometryObject::COLOR_UNIFORM;
   }
@@ -474,6 +479,11 @@ void ShowFieldGlyphs::renderScalars(
   // Render linear data
   if (finfo.is_linear())
   {
+    if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
+    {
+      colorScheme = GeometryObject::COLOR_UNIFORM;
+    }
+
     for (const auto& node : facade->nodes())
     {
       checkForInterruption();
@@ -495,7 +505,6 @@ void ShowFieldGlyphs::renderScalars(
           node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
         }
       }
-      //std::cout << node_color << std::endl;
       switch (state.mGlyphType)
       {
       case RenderState::GlyphType::POINT_GLYPH:

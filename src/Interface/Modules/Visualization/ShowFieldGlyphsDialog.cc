@@ -168,6 +168,8 @@ void ShowFieldGlyphsDialog::checkTabs()
       tensorTabIndex_ = -1;
     }
   }
+
+  displayOptionsTabs_->setCurrentIndex(displayOptionsTabs_->count() - 1);
 }
 
 void ShowFieldGlyphsDialog::setupScalarsTab()
