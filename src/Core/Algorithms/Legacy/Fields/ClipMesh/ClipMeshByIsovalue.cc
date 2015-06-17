@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <boost/unordered_map.hpp>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
  #include <sci_hash_map.h>
@@ -49,6 +50,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace boost::unordered;
 
 int tet_permute_table[15][4] = {
   { 0, 0, 0, 0 }, // 0x0
@@ -118,6 +120,20 @@ class ClipMeshByIsovalueAlgoTet {
       }
     };
 
+   struct edgepairhash
+   {
+    size_t operator()(const edgepair_t &a) const
+     {
+
+      std::hash<unsigned int> h;
+
+       return h(a.first ^ a.second);
+     }
+
+   };
+
+    typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
+    
 #ifdef HAVE_HASH_MAP
     struct edgepairhash
     {
@@ -221,11 +237,11 @@ class ClipMeshByIsovalueAlgoTet {
     typedef std::map<index_type,
           VMesh::Node::index_type,
           std::less<unsigned int> > node_hash_type;
-
+/*
     typedef std::map<edgepair_t,
           VMesh::Node::index_type,
           edgepairless> edge_hash_type;
-
+*/
     typedef std::map<facetriple_t,
           VMesh::Node::index_type,
           facetripleless> face_hash_type;
@@ -241,26 +257,38 @@ class ClipMeshByIsovalueAlgoTet {
           const Point &p, face_hash_type &facemap,
           VMesh *clipped) const;
 
-};
+ };
 
 VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::edge_lookup(VField::index_type u0, VField::index_type u1, double d0, const Point &p, edge_hash_type &edgemap, VMesh *clipped) const
 {
   edgepair_t np;
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  const edge_hash_type::iterator loc = edgemap.find(np);
-  if (loc == edgemap.end())
+
+  const boost::unordered::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash>::iterator loc;
+      
+  if (loc == edgemap.end()) // this is always true ???
   {
     const VMesh::Node::index_type nodeindex = clipped->add_point(p);
-    edgemap[np] = nodeindex;
+    
+    //edgemap[np] = nodeindex; //does not compile with this instruction
+    /* if I use it this happens:
+    /usr/bin/../lib/c++/v1/functional:521:21: error: invalid operands to binary expression ('const
+      ClipMeshByIsovalueAlgoTet::edgepair_t' and 'const ClipMeshByIsovalueAlgoTet::edgepair_t')
+        {return __x == __y;}
+                ~~~ ^  ~~~
+     /Users/moritz/Desktop/work/SCIRun5_myfork/src/Externals/boost/boost/unordered/detail/unique.hpp:245:25: note: in instantiation of
+      member function 'std::__1::equal_to<ClipMeshByIsovalueAlgoTet::edgepair_t>::operator()' requested here
+                    if (eq(k, this->get_key(*n)))
+    
+    */
+    
     return nodeindex;
   }
   else
   {
-    return (*loc).second;
+   return (*loc).second;
   }
-  #endif
 }
 
 VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::face_lookup(VField::index_type u0, VField::index_type u1, VField::index_type u2, double d1, double d2, const Point &p, face_hash_type &facemap, VMesh *clipped) const
@@ -331,14 +359,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
   
   double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
   
-  std::cout << "iso:" << isoval << std::endl;
-  
   bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
-  
-  if(lte)
-    std::cout << "lte" << std::endl;    
-  else
-    std::cout << "not lte " << std::endl;
   
   VMesh::size_type num_elems = mesh->num_elems();
   
@@ -371,7 +392,6 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
     {
         // Add this element to the new mesh.
       VMesh::Node::array_type nnodes(onodes.size());
-      
       for (size_t i = 0; i<onodes.size(); i++)
       {
         if (nodemap.find((VField::index_type)onodes[i]) == nodemap.end())
@@ -379,6 +399,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
           const VMesh::Node::index_type nodeindex = clipped->add_point(p[i]);
           nodemap[(VField::index_type)onodes[i]] = nodeindex;
           nnodes[i] = nodeindex;
+	  std::cout << "a:"  << std::endl;
         }
         else
         {
@@ -399,6 +420,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
         const VMesh::Node::index_type nodeindex = clipped->add_point(p[perm[0]]);
         nodemap[(VField::index_type)onodes[perm[0]]] = nodeindex;
         nnodes[0] = nodeindex;
+	std::cout << "b:"  << std::endl;
       }
       else
       {
@@ -443,6 +465,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
           const VMesh::Node::index_type nodeindex = clipped->add_point(p[perm[i]]);
           nodemap[(VField::index_type)onodes[perm[i]]] = nodeindex;
           inodes[i-1] = nodeindex;
+	  std::cout << "c:" << std::endl;
         }
         else
         {
@@ -549,6 +572,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
           const VMesh::Node::index_type nodeindex = clipped->add_point(p[perm[i]]);
           nodemap[(VField::index_type)onodes[perm[i]]] = nodeindex;
           inodes[i-2] = nodeindex;
+	  std::cout << "d:" << std::endl;
         }
         else
         {
