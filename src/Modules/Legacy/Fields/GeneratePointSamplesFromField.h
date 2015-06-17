@@ -26,36 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_GETDOMAINBOUNDARY_H__
-#define MODULES_LEGACY_FIELDS_GETDOMAINBOUNDARY_H__
+#ifndef MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
+#define MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Thread/Interruptible.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-	/// @class GetDomainBoundary
-	/// @brief This module extracts the boundaries of the different regions in a label map.
-
-      class SCISHARE GetDomainBoundary : public Dataflow::Networks::Module,
-        public Has4InputPorts<FieldPortTag, ScalarPortTag, ScalarPortTag, MatrixPortTag>,
-        public Has1OutputPort<FieldPortTag>,
-        public Core::Thread::Interruptible
+      class SCISHARE GeneratePointSamplesFromField : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has2OutputPorts<GeometryPortTag, FieldPortTag>
       {
       public:
-        GetDomainBoundary();
+        GeneratePointSamplesFromField();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, LegacyField);
-        INPUT_PORT(1, MinValue, Double);
-        INPUT_PORT(2, MaxValue, Double);
-        INPUT_PORT(3, ElemLink, SparseRowMatrix);
-        OUTPUT_PORT(0, BoundaryField, LegacyField);
+        OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
+        OUTPUT_PORT(1, GeneratedPoint, LegacyField);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };

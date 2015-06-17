@@ -26,24 +26,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
+//#include <Core/Datatypes/Field.h>
+//#include <Core/Datatypes/Mesh.h>
+//#include <Core/Datatypes/DenseMatrix.h>
+//#include <Core/Datatypes/Matrix.h>
+//#include <Core/Datatypes/FieldInformation.h>
+//
+//#include <Core/Thread/CrowdMonitor.h>
+//
+//#include <Dataflow/Widgets/PointWidget.h>
+//
+//#include <iostream>
+//#include <stack>
 
-#include <Core/Thread/CrowdMonitor.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/GeometryPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
+const ModuleLookupInfo GenerateSinglePointProbeFromField::staticInfo_("GenerateSinglePointProbeFromField", "NewField", "SCIRun");
 
-#include <Dataflow/Widgets/PointWidget.h>
+GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
+  : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(GeneratedWidget);
+  INITIALIZE_PORT(GeneratedPoint);
+  INITIALIZE_PORT(ElementIndex);
+}
 
-#include <iostream>
-#include <stack>
+void GenerateSinglePointProbeFromField::setStateDefaults()
+{
+  //TODO
+}
 
+void GenerateSinglePointProbeFromField::execute()
+{
+  //TODO
+}
+
+#if 0
 namespace SCIRun {
 
 using std::stack;
@@ -454,5 +477,5 @@ GenerateSinglePointProbeFromField::tcl_command(GuiArgs& args, void* userdata)
 
 
 } // End namespace SCIRun
-
+#endif
 

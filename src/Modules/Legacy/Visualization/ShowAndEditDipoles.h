@@ -26,30 +26,28 @@
    DEALINGS IN THE SOFTWARE.
    */
 
-#ifndef MODULES_LEGACY_VISUALIZATION_GENERATESTREAMLINES_H_
-#define MODULES_LEGACY_VISUALIZATION_GENERATESTREAMLINES_H_
+#ifndef MODULES_LEGACY_VISUALIZATION_ShowAndEditDipoles_H_
+#define MODULES_LEGACY_VISUALIZATION_ShowAndEditDipoles_H_
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Thread/Interruptible.h>
 #include <Modules/Legacy/Visualization/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE GenerateStreamLines : public Dataflow::Networks::Module,
-        public Has2InputPorts<FieldPortTag, FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>,
-        public Core::Thread::Interruptible
+      class SCISHARE ShowAndEditDipoles : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has2OutputPorts<FieldPortTag, GeometryPortTag>
       {
       public:
-        GenerateStreamLines();
+        ShowAndEditDipoles();
         virtual void setStateDefaults() override;
         virtual void execute() override;
 
-        INPUT_PORT(0, Vector_Field, LegacyField);
-        INPUT_PORT(1, Seed_Points, LegacyField);
-        OUTPUT_PORT(0, Streamlines, LegacyField);
+        INPUT_PORT(0, DipoleInputField, LegacyField);
+        OUTPUT_PORT(0, DipoleOutputField, LegacyField);
+        OUTPUT_PORT(1, DipoleWidget, GeometryObject);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
