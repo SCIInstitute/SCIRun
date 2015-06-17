@@ -235,36 +235,6 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
   return geom;
 }
 
-double ShowFieldGlyphs::tool(double f)
-{
-  /////////////////////////////////////////////////
-  //TODO: this seemingly useless code fixes a nasty crash bug on Windows. Don't delete it until a proper fix is implemented!
-  static bool x = true;
-  if (x)
-  {
-    std::cout << "";// this;// << " " << name_ << " " << resolution_ << " " << shift_ << " " << invert_ << std::endl;
-    x = false;
-  }
-  /////////////////////////////////////////////////
-
-  const double rescaled01 = f;
-
-  double v = std::min(std::max(0., rescaled01), 1.);
-  double shift = .4;
-  
-  //apply the resolution
-  v = static_cast<double>((static_cast<int>(v *
-    static_cast<double>(12)))) /
-    static_cast<double>(12 - 1);
-  // the shift is a gamma.
-  double denom = std::tan(M_PI_2 * (0.5 - std::min(std::max(shift, -0.99), 0.99) * 0.5));
-  // make sure we don't hit divide by zero
-  if (std::isnan(denom)) denom = 0.f;
-  denom = std::max(denom, 0.001);
-  v = std::pow(v, (1. / denom));
-  return std::min(std::max(0., v), 1.);
-}
-
 void ShowFieldGlyphs::renderVectors(
   boost::shared_ptr<SCIRun::Field> field,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
@@ -329,17 +299,13 @@ void ShowFieldGlyphs::renderVectors(
         if (colorScheme == GeometryObject::COLOR_IN_SITU)
         {
           Vector colorVector = inputVector.normal();
-          std::cout << inputVector << std::endl;
-          //node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
-          ColorRGB(tool(fabs(v.x())), tool(fabs(v.y())), tool(fabs(v.z())));
+          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
         }
       }
       else
       {
         node_color = state.defaultColor;
-        node_color = ColorRGB(0.5, 0.3, 0);
       }
-      std::cout << node_color << std::endl;
       switch (state.mGlyphType)
       {
       case RenderState::GlyphType::LINE_GLYPH:
