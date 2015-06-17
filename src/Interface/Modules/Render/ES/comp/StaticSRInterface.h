@@ -41,11 +41,11 @@ namespace Render {
 struct StaticSRInterface
 {
     // -- Data --
-    std::shared_ptr<SRInterface> instance_;
+    SRInterface* instance_;
 
     // -- Functions --
     StaticSRInterface() : instance_(nullptr) {}
-    StaticSRInterface(SRInterface* s) : instance_(std::shared_ptr<SRInterface>(s)) {}
+    StaticSRInterface(SRInterface* s) : instance_(s) {}
 
     static const char* getName() {return "scirun:StaticSRInterface";}
 

@@ -282,8 +282,8 @@ namespace SCIRun {
                                                     return false;
                                             });
             
-            ren::VBOMan* vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
-            ren::IBOMan* iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
+            std::shared_ptr<ren::VBOMan> vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
+            std::shared_ptr<ren::IBOMan> iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
             if (foundObject != mSRObjects.end())
             {
                 // Iterate through each of the passes and remove their associated
@@ -624,7 +624,7 @@ namespace SCIRun {
         //------------------------------------------------------------------------------
         void SRInterface::addVBOToEntity(uint64_t entityID, const std::string& vboName)
         {
-            ren::VBOMan* vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
+            std::shared_ptr<ren::VBOMan> vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
             ren::VBO vbo;
             
             vbo.glid = vboMan->hasVBO(vboName);
@@ -635,7 +635,7 @@ namespace SCIRun {
         //------------------------------------------------------------------------------
         void SRInterface::addIBOToEntity(uint64_t entityID, const std::string& iboName)
         {
-            ren::IBOMan *iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
+            std::shared_ptr<ren::IBOMan> iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
             ren::IBO ibo;
             
             auto iboData = iboMan->getIBOData(iboName);
@@ -838,8 +838,8 @@ namespace SCIRun {
             
             // This rendering algorithm is fairly inefficient. Use the entity component
             // system to optimize the rendering of a large amount of objects.
-            ren::VBOMan *vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
-            ren::IBOMan *iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
+            std::shared_ptr<ren::VBOMan> vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
+            std::shared_ptr<ren::IBOMan> iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
             std::shared_ptr<ren::ShaderMan> shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
             
             GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");

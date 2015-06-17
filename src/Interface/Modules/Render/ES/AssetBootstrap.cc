@@ -45,7 +45,7 @@ public:
     // have access to all of the rendering subsystems.
 
     // Will need to replace this with a static entity in the future.
-    std::shared_ptr<SRInterface> iface = core.getStaticComponent<StaticSRInterface>()->instance_;
+    SRInterface * iface = core.getStaticComponent<StaticSRInterface>()->instance_;
     std::shared_ptr<ren::GeomMan> geomMan = core.getStaticComponent<ren::StaticGeomMan>()->instance_;
     std::shared_ptr<ren::ShaderMan> shaderMan = core.getStaticComponent<ren::StaticShaderMan>()->instance_;
 
