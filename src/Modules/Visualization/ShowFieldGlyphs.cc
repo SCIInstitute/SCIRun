@@ -634,14 +634,24 @@ void ShowFieldGlyphs::renderTensors(
     for (const auto& node : facade->nodes())
     {
       checkForInterruption();
-      Vector v;
-      fld->get_value(v, node.index());
+      Tensor t;
+      fld->get_value(t, node.index());
       Point p = node.point();
+      double eigen1, eigen2, eigen3;
+      t.get_eigenvalues(eigen1, eigen2, eigen3);
 
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
-        ColorMapHandle map = colorMap.get();
-        node_color = map->valueToColor(v);
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(t);
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = t.get_eigenvector1().normal();
+          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+        }        
       }
       switch (state.mGlyphType)
       {
@@ -663,14 +673,24 @@ void ShowFieldGlyphs::renderTensors(
     for (const auto& cell : facade->cells())
     {
       checkForInterruption();
-      Vector v;
-      fld->get_value(v, cell.index());
+      Tensor t;
+      fld->get_value(t, cell.index());
       Point p = cell.center();
+      double eigen1, eigen2, eigen3;
+      t.get_eigenvalues(eigen1, eigen2, eigen3);
 
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
-        ColorMapHandle map = colorMap.get();
-        node_color = map->valueToColor(v);
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(t);
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = t.get_eigenvector1().normal();
+          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+        }
       }
       switch (state.mGlyphType)
       {
