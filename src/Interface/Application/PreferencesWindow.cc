@@ -39,25 +39,8 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* =
   regressionMode_(false)
 {
   setupUi(this);
-  connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
   connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateSaveBeforeExecuteOption(int)));
   connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
-}
-
-void PreferencesWindow::updateRegressionTestDataDir()
-{
-  auto newDir = QFileDialog::getExistingDirectory(this, "Select regression data directory", ".");
-  if (!newDir.isEmpty())
-  {
-    regressionTestDataDir_ = newDir;
-    setRegressionTestDataDir();
-  }
-}
-
-void PreferencesWindow::setRegressionTestDataDir()
-{
-  regressionTestDataDirLineEdit_->setText(regressionTestDataDir_);
-  networkEditor_->setRegressionTestDataDir(regressionTestDataDir_);
 }
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)

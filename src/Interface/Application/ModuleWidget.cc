@@ -30,7 +30,6 @@
 #include <QtGui>
 #include "ui_Module.h"
 #include "ui_ModuleMini.h"
-#include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
@@ -532,7 +531,7 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
 
 void ModuleWidget::setupLogging()
 {
-  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), dialogErrorControl_, SCIRunMainWindow::Instance());
+  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), editor_, dialogErrorControl_, SCIRunMainWindow::Instance());
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
@@ -695,7 +694,7 @@ void ModuleWidget::createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfo
 {
   const ModuleId moduleId = moduleInfoProvider.get_id();
   size_t i = 0;
-  BOOST_FOREACH(InputPortHandle port, moduleInfoProvider.inputPorts())
+  for (const auto& port : moduleInfoProvider.inputPorts())
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
@@ -711,7 +710,7 @@ void ModuleWidget::createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfo
     ports_->addPort(w);
     ++i;
     if (dialog_)
-      dialog_->updateFromPortChange(i);
+      dialog_->updateFromPortChange(i, port->id().name);
   }
 }
 
@@ -720,7 +719,7 @@ void ModuleWidget::printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoP
   const ModuleId moduleId = moduleInfoProvider.get_id();
   std::cout << "Module input ports: " << moduleId << std::endl;
   size_t i = 0;
-  BOOST_FOREACH(InputPortHandle port, moduleInfoProvider.inputPorts())
+  for (const auto& port : moduleInfoProvider.inputPorts())
   {
     auto type = port->get_typename();
     std::cout << "\t" << i << " : " << port->get_portname() << " : " << type << " dyn = " << port->isDynamic() << std::endl;
@@ -732,7 +731,7 @@ void ModuleWidget::createOutputPorts(const SCIRun::Dataflow::Networks::ModuleInf
 {
   const ModuleId moduleId = moduleInfoProvider.get_id();
   size_t i = 0;
-  BOOST_FOREACH(OutputPortHandle port, moduleInfoProvider.outputPorts())
+  for (const auto& port : moduleInfoProvider.outputPorts())
   {
     auto type = port->get_typename();
     OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
@@ -870,7 +869,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     ports_->addPort(w);
     inputPortLayout_->addWidget(w);
 
-    Q_EMIT dynamicPortChanged();
+    Q_EMIT dynamicPortChanged(pid.toString());
   }
 }
 
@@ -880,7 +879,7 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
   {
     if (ports_->removeDynamicPort(pid, inputPortLayout_))
     {
-      Q_EMIT dynamicPortChanged();
+      Q_EMIT dynamicPortChanged(pid.toString());
     }
   }
 }
@@ -1077,7 +1076,7 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
-      connect(this, SIGNAL(dynamicPortChanged()), this, SLOT(updateDialogWithPortCount()));
+      connect(this, SIGNAL(dynamicPortChanged(const std::string&)), this, SLOT(updateDialogWithPortCount(const std::string&)));
       connect(dialog_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
       connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
       connect(dialog_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
@@ -1100,10 +1099,10 @@ void ModuleWidget::makeOptionsDialog()
   }
 }
 
-void ModuleWidget::updateDialogWithPortCount()
+void ModuleWidget::updateDialogWithPortCount(const std::string& portName)
 {
   if (dialog_)
-    dialog_->updateFromPortChange(numInputPorts());
+    dialog_->updateFromPortChange(numInputPorts(), portName);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const

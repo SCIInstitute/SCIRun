@@ -71,10 +71,6 @@ void SCIRunMainWindow::readSettings()
   updateRecentFileActions();
   GuiLogger::Instance().log("Setting read: recent network file list");
 
-  QString regressionTestDataDir = settings.value("regressionTestDataDirectory").toString();
-  GuiLogger::Instance().log("Setting read: regression test data directory = " + regressionTestDataDir);
-  prefs_->setRegressionTestDataDir(regressionTestDataDir);
-
   //TODO: make a separate class for these keys, bad duplication.
   const QString colorKey = qname(prefs.networkBackgroundColor);
   if (settings.contains(colorKey))
@@ -89,7 +85,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(notePositionKey))
   {
     int notePositionIndex = settings.value(notePositionKey).toInt();
-    defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
+    prefsWindow_->defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
     GuiLogger::Instance().log("Setting read: default note position = " + QString::number(notePositionIndex));
   }
 
@@ -102,13 +98,13 @@ void SCIRunMainWindow::readSettings()
     switch (pipeType)
     {
     case MANHATTAN:
-      manhattanPipesRadioButton_->setChecked(true);
+      prefsWindow_->manhattanPipesRadioButton_->setChecked(true);
       break;
     case CUBIC:
-      cubicPipesRadioButton_->setChecked(true);
+      prefsWindow_->cubicPipesRadioButton_->setChecked(true);
       break;
     case EUCLIDEAN:
-      euclideanPipesRadioButton_->setChecked(true);
+      prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
       break;
     }
   }
@@ -118,7 +114,7 @@ void SCIRunMainWindow::readSettings()
   {
     auto value = settings.value(snapTo).toBool();
     prefs.modulesSnapToGrid.setValue(value);
-    modulesSnapToCheckBox_->setChecked(value);
+    prefsWindow_->modulesSnapToCheckBox_->setChecked(value);
     GuiLogger::Instance().log("Setting read: modules snap to grid = " + QString::number(prefs.modulesSnapToGrid));
   }
 
@@ -127,7 +123,7 @@ void SCIRunMainWindow::readSettings()
   {
     auto value = settings.value(portHighlight).toBool();
     prefs.highlightPorts.setValue(value);
-    portSizeEffectsCheckBox_->setChecked(value);
+    prefsWindow_->portSizeEffectsCheckBox_->setChecked(value);
     GuiLogger::Instance().log("Setting read: highlight ports on hover = " + QString::number(prefs.highlightPorts));
   }
 
@@ -136,7 +132,7 @@ void SCIRunMainWindow::readSettings()
   {
     auto value = settings.value(dockable).toBool();
     prefs.modulesAreDockable.setValue(value);
-    dockableModulesCheckBox_->setChecked(value);
+    prefsWindow_->dockableModulesCheckBox_->setChecked(value);
     GuiLogger::Instance().log("Setting read: modules are dockable = " + QString::number(prefs.modulesAreDockable));
   }
 
@@ -145,7 +141,7 @@ void SCIRunMainWindow::readSettings()
   {
     bool disableModuleErrorDialogs = settings.value(disableModuleErrorDialogsKey).toBool();
     GuiLogger::Instance().log("Setting read: disable module error dialogs = " + QString::number(disableModuleErrorDialogs));
-    prefs_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
+    prefsWindow_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
   }
 
   const QString saveBeforeExecute = "saveBeforeExecute";
@@ -153,7 +149,7 @@ void SCIRunMainWindow::readSettings()
   {
     bool mode = settings.value(saveBeforeExecute).toBool();
     GuiLogger::Instance().log("Setting read: save before execute = " + QString::number(mode));
-    prefs_->setSaveBeforeExecute(mode);
+    prefsWindow_->setSaveBeforeExecute(mode);
   }
 
   const QString newViewSceneMouseControls = "newViewSceneMouseControls";
@@ -219,15 +215,14 @@ void SCIRunMainWindow::writeSettings()
 
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
-  settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
   settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
   settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
   settings.setValue(qname(prefs.modulesAreDockable), prefs.modulesAreDockable.val());
   settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
-  settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
+  settings.setValue("defaultNotePositionIndex", prefsWindow_->defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
-  settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
-  settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
+  settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());
+  settings.setValue("saveBeforeExecute", prefsWindow_->saveBeforeExecute());
   settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
   settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));

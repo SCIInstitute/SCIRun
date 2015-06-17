@@ -245,6 +245,7 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
     return;
   }
+  ensureVisible();
   QGraphicsItem::mouseMoveEvent(event);
 }
 

@@ -59,7 +59,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
-  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, 
+  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   TagColorFunc tagColor,
   QWidget* parent)
   : QGraphicsView(parent),
@@ -320,7 +320,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   {
     connect(controller_.get(), SIGNAL(portAdded(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)), module, SLOT(addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)));
     connect(controller_.get(), SIGNAL(portRemoved(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)), module, SLOT(removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)));
-    connect(module, SIGNAL(dynamicPortChanged()), proxy, SLOT(createPortPositionProviders()));
+    connect(module, SIGNAL(dynamicPortChanged(const std::string&)), proxy, SLOT(createPortPositionProviders()));
   }
 
   LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
@@ -360,7 +360,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
   proxy->setVisible(visibleItems_);
 
-  GuiLogger::Instance().log("Module added.");
+  GuiLogger::Instance().logStd("Module added: " + module->getModuleId());
 }
 
 void NetworkEditor::setMouseAsDragMode()
@@ -973,11 +973,6 @@ void NetworkEditor::enableInputWidgets()
   deleteAction_->setEnabled(true);
 }
 
-void NetworkEditor::setRegressionTestDataDir(const QString& dir)
-{
-  controller_->getSettings().setValue("regressionTestDataDir", dir.toStdString());
-}
-
 void NetworkEditor::setBackground(const QBrush& brush)
 {
   scene_->setBackgroundBrush(brush);
@@ -1211,6 +1206,73 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
     colorize->setColor(color);
     item->setGraphicsEffect(colorize);
   }
+}
+
+std::atomic<int> ErrorItem::instanceCounter_(0);
+
+ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent) : QGraphicsTextItem(text, parent),
+  showModule_(showModule), counter_(instanceCounter_)
+{
+  instanceCounter_++;
+  setDefaultTextColor(Qt::red);
+
+  {
+    timeLine_ = new QTimeLine(10000, this);
+    connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(animate(qreal)));
+    connect(timeLine_, SIGNAL(finished()), this, SLOT(deleteLater()));
+  }
+  timeLine_->start();
+}
+
+ErrorItem::~ErrorItem()
+{
+  instanceCounter_--;
+}
+
+void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+  if (event->buttons() & Qt::LeftButton)
+  {
+    showModule_();
+  }
+  else if (event->buttons() & Qt::RightButton)
+  {
+    scene()->removeItem(this);
+  }
+}
+
+void ErrorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+  timeLine_->setCurrentTime(0);
+}
+
+void ErrorItem::animate(qreal val)
+{
+  if (val < 1)
+    show();
+  else
+    hide();
+  setOpacity(val < 0.5 ? 1 : 2 - 2*val);
+}
+
+void NetworkEditor::displayError(const QString& msg, std::function<void()> showModule)
+{
+  auto errorItem = new ErrorItem(msg, showModule);
+  scene()->addItem(errorItem);
+
+  QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
+  QPointF br = tl + viewport()->rect().bottomRight();
+  QMatrix mat = matrix().inverted();
+  auto rect = mat.mapRect(QRectF(tl,br));
+
+  //auto rectOld = mapToScene(viewport()->geometry()).boundingRect();
+  //qDebug() << "scene rect:" << rect;
+  //qDebug() << "scene rectOld:" << rectOld;
+
+  auto corner = rect.bottomLeft();
+  //qDebug() << corner;
+
+  errorItem->setPos(corner + QPointF(-300, -(40*errorItem->num() + 200)));
 }
 
 NetworkEditor::~NetworkEditor()

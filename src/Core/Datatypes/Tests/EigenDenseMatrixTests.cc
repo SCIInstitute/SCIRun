@@ -89,8 +89,9 @@ TEST(EigenDenseMatrixTest, CanCopyConstruct)
 TEST(EigenDenseMatrixTest, CanAssign)
 {
   DenseMatrix m(matrixNonSquare());
-  
+
   DenseMatrix m2(3,4);
+  m2.setZero();
   EXPECT_NE(m, m2);
   m2 = m;
   EXPECT_EQ(m, m2);

@@ -55,6 +55,31 @@
       </property>
      </widget>
     </item>
+    <item row="7" column="0">
+     <widget class="QPushButton" name="tagPushButton7_">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>9999</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Tag 7</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="1">
      <widget class="QLineEdit" name="taglineEdit_0">
       <property name="text">
@@ -230,31 +255,6 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="0">
-     <widget class="QPushButton" name="tagPushButton7_">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>9999</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Tag 7</string>
-      </property>
-     </widget>
-    </item>
     <item row="7" column="1">
      <widget class="QLineEdit" name="taglineEdit_7">
       <property name="text">
@@ -311,6 +311,19 @@
      <widget class="QLineEdit" name="taglineEdit_9">
       <property name="text">
        <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="1" alignment="Qt::AlignHCenter">
+     <widget class="QPushButton" name="helpPushButton_">
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Help</string>
       </property>
      </widget>
     </item>
