@@ -94,7 +94,11 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
 
   updateActions();
-  ensureVisible(0,0,0,0);
+
+  setSceneRect(QRectF(-1000, -1000, 2000, 2000));
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  centerOn(100, 100);
 
   setMouseAsDragMode();
 
@@ -353,6 +357,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
   scene_->addItem(proxy);
+  ensureVisible(proxy);
   proxy->createStartupNote();
 
   scene_->clearSelection();
@@ -815,7 +820,10 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
     {
       auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
       if (posIter != modulePositions.modulePositions.end())
+      {
         w->setPos(posIter->second.first, posIter->second.second);
+        ensureVisible(w);
+      }
     }
   }
 }
@@ -925,6 +933,8 @@ void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHan
   //TODO: duplication
   const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";
   controller_->getSettings().setValue("networkStateUpdateThread", value);
+
+  setSceneRect(QRectF());
 }
 
 size_t NetworkEditor::numModules() const
@@ -1261,8 +1271,11 @@ void NetworkEditor::displayError(const QString& msg, std::function<void()> showM
   scene()->addItem(errorItem);
 
   QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
+  //qDebug() << "tl" << tl;
   QPointF br = tl + viewport()->rect().bottomRight();
+  //qDebug() << "br" << br;
   QMatrix mat = matrix().inverted();
+  //qDebug() << "mat" << mat;
   auto rect = mat.mapRect(QRectF(tl,br));
 
   //auto rectOld = mapToScene(viewport()->geometry()).boundingRect();
@@ -1272,7 +1285,22 @@ void NetworkEditor::displayError(const QString& msg, std::function<void()> showM
   auto corner = rect.bottomLeft();
   //qDebug() << corner;
 
-  errorItem->setPos(corner + QPointF(-300, -(40*errorItem->num() + 500)));
+  errorItem->setPos(corner + QPointF(100, -(40*errorItem->num() + 100)));
+
+#if 0
+  auto xMin = rect.topLeft().x();
+  auto xMax = rect.topRight().x();
+  auto yMin = rect.topLeft().y();
+  auto yMax = rect.bottomLeft().y();
+  for (double x = xMin; x < xMax; x += 100)
+    for (double y = yMin; y < yMax; y += 100)
+      {
+        QString xy = QString::number(x) + "," + QString::number(y);
+        auto item = scene()->addText(xy);
+        item->setDefaultTextColor(Qt::white);
+        item->setPos(x, y);
+      }
+#endif
 }
 
 NetworkEditor::~NetworkEditor()
