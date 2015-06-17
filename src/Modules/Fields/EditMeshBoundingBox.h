@@ -91,7 +91,6 @@ namespace Fields {
     OUTPUT_PORT(2, Transformation_Matrix, Matrix);
 
 	static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
   private:
     void executeImpl(FieldHandle f);
     void clear_vals();
@@ -102,6 +101,7 @@ namespace Fields {
     void createBoxWidget();
     void setBoxRestrictions();
     Core::Datatypes::GeometryHandle buildGeometryObject();
+    void processWidgetFeedback(SCIRun::Core::Algorithms::VariableHandle var);
     SCIRun::Core::Geometry::BBox bbox_;
 
     BoxWidgetPtr box_;

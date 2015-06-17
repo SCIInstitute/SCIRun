@@ -118,9 +118,10 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 	dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
+  tagManagerWindow_->hide();
   setupPreferencesWindow();
   setupNetworkEditor();
-
+  
   setTipsAndWhatsThis();
 
   connect(actionExecute_All_, SIGNAL(triggered()), this, SLOT(executeAll()));
@@ -240,6 +241,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   }
 
   setupProvenanceWindow();
+  provenanceWindow_->hide();
   setupDevConsole();
   setupPythonConsole();
 
@@ -340,9 +342,6 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
 		"QHeaderView::section { background: rgb(66,66,69);} "
 		);
-
-  provenanceWindow_->hide();
-  tagManagerWindow_->hide();
 
   hideNonfunctioningWidgets();
 

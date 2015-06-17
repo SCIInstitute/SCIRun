@@ -39,6 +39,7 @@ ServiceClient::ServiceClient() :
   lock_("service client lock"),
   session_(0),
   errno_(0),
+  socket_(new IComSocket),
   need_send_end_stream_(false)
 {
 }

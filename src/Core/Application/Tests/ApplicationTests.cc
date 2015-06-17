@@ -87,12 +87,4 @@ TEST(ApplicationTest, GetUserName)
   std::cout << user << std::endl;
 }
 
-TEST(ApplicationTest, GetUserDesktopDirectory)
-{
-  Application& app = Application::Instance();
-  boost::filesystem::path desktop;
-  ASSERT_TRUE(app.get_user_desktop_directory(desktop));
-  std::cout << desktop << std::endl;
-}
-
 #endif

@@ -84,12 +84,12 @@ size_t Port::nconnections() const
   return connections_.size();
 }
 
-ModuleId Port::getUnderlyingModuleId() const 
+ModuleId Port::getUnderlyingModuleId() const
 {
   return module_->get_id();
 }
 
-size_t Port::getIndex() const 
+size_t Port::getIndex() const
 {
   return index_;
 }
@@ -148,9 +148,9 @@ bool InputPort::hasChanged() const
 
 boost::signals2::connection InputPort::connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber)
 {
-  return sink()->connectDataHasChanged([this, subscriber] (DatatypeHandle data) 
-  { 
-    subscriber(this->id(), data); 
+  return sink()->connectDataHasChanged([this, subscriber] (DatatypeHandle data)
+  {
+    subscriber(this->id(), data);
   });
 }
 
@@ -199,4 +199,14 @@ void OutputPort::attach(Connection* conn)
 PortDataDescriber OutputPort::getPortDataDescriber() const
 {
   return [this]() { return source_->describeData(); };
+}
+
+boost::signals2::connection OutputPort::connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber)
+{
+  return cxnFeedback_.connect(subscriber);
+}
+
+void OutputPort::sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info)
+{
+  cxnFeedback_(info);
 }
