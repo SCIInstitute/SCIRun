@@ -46,8 +46,8 @@ public:
 
     // Will need to replace this with a static entity in the future.
     SRInterface* iface = core.getStaticComponent<StaticSRInterface>()->interface_;
-    ren::GeomMan* geomMan = core.getStaticComponent<ren::StaticGeomMan>()->instance.get();
-    ren::ShaderMan* shaderMan = core.getStaticComponent<ren::StaticShaderMan>()->instance.get();
+    ren::GeomMan* geomMan = core.getStaticComponent<ren::StaticGeomMan>()->instance_;
+    ren::ShaderMan* shaderMan = core.getStaticComponent<ren::StaticShaderMan>()->instance_;
 
     // A cached entity so that our VBOs and IBOs will not get garbage collected.
     uint64_t cachedEntity = 0;

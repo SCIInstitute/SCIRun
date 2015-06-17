@@ -282,8 +282,8 @@ namespace SCIRun {
                                                     return false;
                                             });
             
-            ren::VBOMan& vboMan = *mCore.getStaticComponent<ren::StaticVBOMan>()->instance;
-            ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
+            ren::VBOMan* vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
+            ren::IBOMan* iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
             if (foundObject != mSRObjects.end())
             {
                 // Iterate through each of the passes and remove their associated
@@ -301,8 +301,8 @@ namespace SCIRun {
                 
                 // Run a garbage collection cycle for the VBOs and IBOs. We will likely
                 // be using similar VBO and IBO names.
-                vboMan.runGCCycle(mCore);
-                iboMan.runGCCycle(mCore);
+                vboMan->runGCCycle(mCore);
+                iboMan->runGCCycle(mCore);
                 
                 // Remove the object from the entity system.
                 mSRObjects.erase(foundObject);
@@ -327,7 +327,7 @@ namespace SCIRun {
                         attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
                     }
                     
-                    GLuint vboID = vboMan.addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(),
+                    GLuint vboID = vboMan->addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(),
                                                          attributeData, vbo.name);
                 }
                 
@@ -397,7 +397,7 @@ namespace SCIRun {
                         if (i == 0)
                         {
                             int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-                            iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+                            iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
                         }
                         if (i == 1)
                         {
@@ -461,7 +461,7 @@ namespace SCIRun {
                                 {
                                     memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
                                 }
-                                iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
+                                iboMan->addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
                             }
                         }
                     }
@@ -469,7 +469,7 @@ namespace SCIRun {
                 else
                 {
                     int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-                    iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+                    iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
                 }
             }
             
@@ -478,7 +478,7 @@ namespace SCIRun {
             mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap, port));
             SRObject& elem = mSRObjects.back();
             
-            ren::ShaderMan& shaderMan = *mCore.getStaticComponent<ren::StaticShaderMan>()->instance;
+            ren::ShaderMan* shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
             
             // Add passes
             for (auto it = obj->mPasses.begin(); it != obj->mPasses.end(); ++it)
@@ -555,7 +555,7 @@ namespace SCIRun {
                 
                 // Load vertex and fragment shader will use an already loaded program.
                 //addShaderToEntity(entityID, pass.programName);
-                shaderMan.loadVertexAndFragmentShader(mCore, entityID, pass.programName);
+                shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
                 
                 // Add transformation
                 gen::Transform trafo;
@@ -624,10 +624,10 @@ namespace SCIRun {
         //------------------------------------------------------------------------------
         void SRInterface::addVBOToEntity(uint64_t entityID, const std::string& vboName)
         {
-            ren::VBOMan& vboMan = *mCore.getStaticComponent<ren::StaticVBOMan>()->instance;
+            ren::VBOMan* vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
             ren::VBO vbo;
             
-            vbo.glid = vboMan.hasVBO(vboName);
+            vbo.glid = vboMan->hasVBO(vboName);
             
             mCore.addComponent(entityID, vbo);
         }
@@ -635,12 +635,12 @@ namespace SCIRun {
         //------------------------------------------------------------------------------
         void SRInterface::addIBOToEntity(uint64_t entityID, const std::string& iboName)
         {
-            ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
+            ren::IBOMan *iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
             ren::IBO ibo;
             
-            auto iboData = iboMan.getIBOData(iboName);
+            auto iboData = iboMan->getIBOData(iboName);
             
-            ibo.glid = iboMan.hasIBO(iboName);
+            ibo.glid = iboMan->hasIBO(iboName);
             ibo.primType = iboData.primType;
             ibo.primMode = iboData.primMode;
             ibo.numPrims = iboData.numPrims;
@@ -700,10 +700,10 @@ namespace SCIRun {
         //------------------------------------------------------------------------------
         void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shaderName)
         {
-            ren::ShaderMan& shaderMan = *mCore.getStaticComponent<ren::StaticShaderMan>()->instance;
+            ren::ShaderMan* shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
             ren::Shader shader;
             
-            shader.glid = shaderMan.getIDForAsset(shaderName.c_str());
+            shader.glid = shaderMan->getIDForAsset(shaderName.c_str());
             
             mCore.addComponent(entityID, shader);
         }
@@ -838,13 +838,13 @@ namespace SCIRun {
             
             // This rendering algorithm is fairly inefficient. Use the entity component
             // system to optimize the rendering of a large amount of objects.
-            ren::VBOMan& vboMan = *mCore.getStaticComponent<ren::StaticVBOMan>()->instance;
-            ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
-            ren::ShaderMan& shaderMan = *mCore.getStaticComponent<ren::StaticShaderMan>()->instance;
+            ren::VBOMan *vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
+            ren::IBOMan *iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
+            ren::ShaderMan* shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
             
-            GLuint arrowVBO = vboMan.hasVBO("Assets/arrow.geom");
-            GLuint arrowIBO = iboMan.hasIBO("Assets/arrow.geom");
-            GLuint shader = shaderMan.getIDForAsset("Shaders/DirPhong");
+            GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
+            GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
+            GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhong");
             
             // Bail if assets have not been loaded yet (asynchronous loading may take a
             // few frames).
@@ -859,7 +859,7 @@ namespace SCIRun {
             const ren::IBOMan::IBOData* iboData;
             try
             {
-                iboData = &iboMan.getIBOData("Assets/arrow.geom");
+                iboData = &iboMan->getIBOData("Assets/arrow.geom");
             }
             catch (...)
             {
@@ -868,7 +868,7 @@ namespace SCIRun {
             }
             
             // Ensure shader attributes are setup appropriately.
-            mArrowAttribs.setup(arrowVBO, shader, vboMan);
+            mArrowAttribs.setup(arrowVBO, shader, *vboMan);
             
             glm::mat4 trafo;
             
