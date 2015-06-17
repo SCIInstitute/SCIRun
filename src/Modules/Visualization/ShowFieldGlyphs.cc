@@ -251,11 +251,17 @@ void ShowFieldGlyphs::renderVectors(
   ColorRGB node_color;  
 
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
+  {
     colorScheme = GeometryObject::COLOR_UNIFORM;
+  }
   else if (state.get(RenderState::USE_COLORMAP))
+  {
     colorScheme = GeometryObject::COLOR_MAP;
+  }
   else
+  {
     colorScheme = GeometryObject::COLOR_IN_SITU;
+  }
 
   mesh->synchronize(Mesh::EDGES_E);
 
@@ -363,7 +369,7 @@ void ShowFieldGlyphs::renderVectors(
         }
         if (colorScheme == GeometryObject::COLOR_IN_SITU)
         {
-          Vector colorVector = Vector(1,0,0);
+          Vector colorVector = inputVector.normal();
           node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
         }
       }
@@ -429,11 +435,17 @@ void ShowFieldGlyphs::renderScalars(
   ColorRGB node_color;
 
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
+  {
     colorScheme = GeometryObject::COLOR_UNIFORM;
+  }
   else if (state.get(RenderState::USE_COLORMAP))
+  {
     colorScheme = GeometryObject::COLOR_MAP;
+  }
   else
+  {
     colorScheme = GeometryObject::COLOR_IN_SITU;
+  }
 
   mesh->synchronize(Mesh::NODES_E);
 
@@ -483,6 +495,7 @@ void ShowFieldGlyphs::renderScalars(
           node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
         }
       }
+      //std::cout << node_color << std::endl;
       switch (state.mGlyphType)
       {
       case RenderState::GlyphType::POINT_GLYPH:
@@ -575,11 +588,17 @@ void ShowFieldGlyphs::renderTensors(
   ColorRGB node_color;
 
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
+  {
     colorScheme = GeometryObject::COLOR_UNIFORM;
+  }
   else if (state.get(RenderState::USE_COLORMAP))
+  {
     colorScheme = GeometryObject::COLOR_MAP;
+  }
   else
+  {
     colorScheme = GeometryObject::COLOR_IN_SITU;
+  }
 
   mesh->synchronize(Mesh::NODES_E);
 
@@ -738,7 +757,7 @@ RenderState ShowFieldGlyphs::getScalarsRenderState(
   RenderState renState;
 
   bool useColorMap = state->getValue(ShowFieldGlyphs::ScalarsColoring).toInt() == 1;
-  bool rgbConversion = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 2;
+  bool rgbConversion = state->getValue(ShowFieldGlyphs::ScalarsColoring).toInt() == 2;
   renState.set(RenderState::USE_NORMALS, true);
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowScalars).toBool());

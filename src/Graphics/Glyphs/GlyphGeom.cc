@@ -91,7 +91,7 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string uniqueNodeID,
   }
   else if (colorScheme == GeometryObject::COLOR_IN_SITU)
   {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
     if (useTriangles)
     {
       shader = "Shaders/DirPhongInSitu";
