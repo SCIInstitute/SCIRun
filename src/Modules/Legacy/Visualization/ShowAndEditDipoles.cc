@@ -36,6 +36,46 @@
  *
  */
 
+#include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
+//#include <Core/Datatypes/Field.h>
+//#include <Core/Datatypes/Mesh.h>
+//#include <Core/Datatypes/DenseMatrix.h>
+//#include <Core/Datatypes/Matrix.h>
+//#include <Core/Datatypes/FieldInformation.h>
+//
+//#include <Core/Thread/CrowdMonitor.h>
+//
+//#include <Dataflow/Widgets/PointWidget.h>
+//
+//#include <iostream>
+//#include <stack>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Visualization;
+
+const ModuleLookupInfo ShowAndEditDipoles::staticInfo_("ShowAndEditDipoles", "Visualization", "SCIRun");
+
+ShowAndEditDipoles::ShowAndEditDipoles()
+  : Module(staticInfo_)
+{
+  INITIALIZE_PORT(DipoleInputField);
+  INITIALIZE_PORT(DipoleOutputField);
+  INITIALIZE_PORT(DipoleWidget);
+}
+
+void ShowAndEditDipoles::setStateDefaults()
+{
+  //TODO
+}
+
+void ShowAndEditDipoles::execute()
+{
+  //TODO
+}
+
+#if 0
 #include <Dataflow/Network/Module.h>
 #include <Core/Util/StringUtil.h>
 #include <Dataflow/Network/Ports/GeometryPort.h>
@@ -650,3 +690,4 @@ ShowAndEditDipoles::tcl_command(GuiArgs& args, void* userdata)
 
  
 } // End namespace BioPSE
+#endif

@@ -36,6 +36,34 @@
 ///@date  November 2004
 ///
 
+#include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
+
+const ModuleLookupInfo GeneratePointSamplesFromField::staticInfo_("GeneratePointSamplesFromField", "NewField", "SCIRun");
+
+GeneratePointSamplesFromField::GeneratePointSamplesFromField()
+  : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(GeneratedWidget);
+  INITIALIZE_PORT(GeneratedPoint);
+}
+
+void GeneratePointSamplesFromField::setStateDefaults()
+{
+  //TODO
+}
+
+void GeneratePointSamplesFromField::execute()
+{
+  //TODO
+}
+
+#if 0
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
@@ -452,3 +480,4 @@ GeneratePointSamplesFromField::widget_moved(bool last, BaseWidget*)
 } // End namespace SCIRun
 
 
+#endif
