@@ -54,6 +54,7 @@ SET(Interface_Modules_Fields_FORMS
   ConvertIndicesToFieldData.ui
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
+  GenerateSinglePointProbeFromField.ui
   RefineMesh.ui
   ConvertFieldBasis.ui
   swapfielddatawithmatrixentries.ui
@@ -86,6 +87,7 @@ SET(Interface_Modules_Fields_HEADERS
   GetSliceFromStructuredFieldByIndicesDialog.h
   MapFieldDataOntoElemsDialog.h
   MapFieldDataOntoNodesDialog.h
+  GenerateSinglePointProbeFromFieldDialog.h
   ClipFieldByFunctionDialog.h
   RefineMeshDialog.h
   ConvertFieldBasisDialog.h
@@ -118,6 +120,7 @@ SET(Interface_Modules_Fields_SOURCES
   ResampleRegularMeshDialog.cc
   GetSliceFromStructuredFieldByIndicesDialog.cc
   ProjectPointsOntoMeshDialog.cc
+  GenerateSinglePointProbeFromFieldDialog.cc
   CalculateDistanceToFieldDialog.cc
   CalculateDistanceToFieldBoundaryDialog.cc
   MapFieldDataOntoElemsDialog.cc
