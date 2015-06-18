@@ -51,16 +51,25 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::TestUtils;
+using namespace SCIRun::Modules::Inverse;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
+using ::testing::Values;
+using ::testing::Combine;
+using ::testing::Range;
 
 
 class TikhonovFunctionalTest : public ModuleTest
 {
 };
 
+namespace  {
+    const double abs_error = 0.000001;
+}
+
+/// -------- INPUTS TESTS ------------ ///
 
 // NULL fwd matrix + NULL measure data
 TEST_F(TikhonovFunctionalTest, loadNullFwdMatrixANDNullData)
@@ -108,7 +117,7 @@ TEST_F(TikhonovFunctionalTest, loadNullFwdMatrixANDRandData)
 
 }
 
-// ID fwd matrix + RAND measured data
+// ID squared fwd matrix + RAND measured data
 TEST_F(TikhonovFunctionalTest, loadIDFwdMatrixANDRandData)
 {
   // create inputs
@@ -171,7 +180,7 @@ TEST_F(TikhonovFunctionalTest, loadIDSquareFwdMatrixANDRandDataDiffSizes)
 }
 
 // ID non-square fwd matrix + RAND measured data  - different sizes
-// TODO: FAILS TEST: does not fail test when it shouldn't. The sizes of forward matrix and data are the different (note that this is only for size(fwd,2) < size(data,1) )!
+// TODO: FAILS TEST: does not fail test when it should. The sizes of forward matrix and data are the different (note that this is only for size(fwd,2) < size(data,1) )!
 TEST_F(TikhonovFunctionalTest, DISABLED_loadIDNonSquareFwdMatrixANDRandDataDiffSizes)
 {
   // create inputs
@@ -185,3 +194,33 @@ TEST_F(TikhonovFunctionalTest, DISABLED_loadIDNonSquareFwdMatrixANDRandDataDiffS
   // check result
   EXPECT_THROW(tikAlgImp->execute(), SCIRun::Core::DimensionMismatch);
 }
+
+
+/// -------- BASIC FUNCTIONS TESTS ------------ ///
+
+// ID square forward matrix with ZERO regularization, RAND input
+//TEST_F(TikhonovFunctionalTest, functionTestIDFwdMatrixANDRandData)
+//{
+//    // create inputs
+//    auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
+//    MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(3, 3)));    // forward matrix (IDentityt)
+//    MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(3, 1)));   // measurement data (rand)
+//    
+//    // input data
+//    stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
+//    stubPortNWithThisData(tikAlgImp, 2, measuredData);
+//    
+//    // change params
+//    tikAlgImp->setStateDefaults();                                                  // set default params
+//    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::RegularizationMethod, std::string("single"));  // select single lambda
+//    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::LambdaFromDirectEntry, 0 );                    // change lambda
+//    
+//    // execute
+//    tikAlgImp->execute();
+//    
+//    MatrixHandle inverseSolution = tikAlgImp->outputPorts()[0];//getDataOnThisOutputPort(tikAlgImp, 0);
+//    
+//    // check result
+//    ASSERT_NEAR( inverseSolution.norm(), measuredData.norm(),  abs_error );
+//}
+
