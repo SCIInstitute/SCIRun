@@ -4,27 +4,79 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>7</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>CreateLatVol:0</first>
+				<first>CreateFieldData:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CreateFieldData</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>3</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>BasisString</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>BasisString</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>Linear</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = X+Y+Z;</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateLatVol:0</first>
+				<second>
+					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>NewField</category_name_>
 						<module_name_>CreateLatVol</module_name_>
 					</module>
-					<state class_id="6" tracking_level="0" version="0">
-						<stateMap class_id="7" tracking_level="0" version="0">
+					<state>
+						<stateMap>
 							<count>6</count>
 							<item_version>0</item_version>
-							<item class_id="8" tracking_level="0" version="0">
-								<first class_id="9" tracking_level="0" version="0">
+							<item>
+								<first>
 									<name>DataAtLocation</name>
 								</first>
-								<second class_id="10" tracking_level="0" version="0">
+								<second>
 									<name>DataAtLocation</name>
-									<value class_id="11" tracking_level="0" version="0">
+									<value>
 										<which>0</which>
 										<value>0</value>
 									</value>
@@ -150,7 +202,7 @@
 									<name>FieldElem</name>
 									<value>
 										<which>0</which>
-										<value>31</value>
+										<value>26</value>
 									</value>
 								</second>
 							</item>
@@ -162,7 +214,7 @@
 									<name>FieldNode</name>
 									<value>
 										<which>0</which>
-										<value>82</value>
+										<value>50</value>
 									</value>
 								</second>
 							</item>
@@ -174,7 +226,7 @@
 									<name>FieldValue</name>
 									<value>
 										<which>2</which>
-										<value>0</value>
+										<value>-0.866667</value>
 									</value>
 								</second>
 							</item>
@@ -186,7 +238,7 @@
 									<name>MoveMethod</name>
 									<value>
 										<which>2</which>
-										<value>Center</value>
+										<value>Node</value>
 									</value>
 								</second>
 							</item>
@@ -234,7 +286,7 @@
 									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>3.33333333333333259e-01</value>
 									</value>
 								</second>
 							</item>
@@ -246,7 +298,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>-1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -258,7 +310,7 @@
 									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>-1.99999999999999956e-01</value>
 									</value>
 								</second>
 							</item>
@@ -286,7 +338,7 @@
 									<name>ReceivedValue</name>
 									<value>
 										<which>0</which>
-										<value>82</value>
+										<value>50</value>
 									</value>
 								</second>
 							</item>
@@ -741,14 +793,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>261</value>
+													<value>355</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>413</value>
+													<value>385</value>
 												</value>
 											</item>
 										</value>
@@ -761,10 +813,10 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>7</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
-				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
 				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>OutputField</name>
 					<id>0</id>
@@ -776,7 +828,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
@@ -784,6 +836,18 @@
 				<moduleId2_>ShowField:0</moduleId2_>
 				<port2_>
 					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CreateFieldData:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -850,13 +914,20 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>7</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
-			<first>CreateLatVol:0</first>
+			<first>CreateFieldData:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>1.97000000000000000e+02</first>
-				<second>-2.94000000000000000e+02</second>
+				<first>1.70000000000000000e+02</first>
+				<second>-2.22000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateLatVol:0</first>
+			<second>
+				<first>1.52000000000000000e+02</first>
+				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -937,9 +1008,13 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="22" tracking_level="0" version="0">
-		<count>7</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="23" tracking_level="0" version="0">
+			<first>CreateFieldData:0</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>CreateLatVol:0</first>
 			<second>0</second>
 		</item>

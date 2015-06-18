@@ -69,11 +69,24 @@ namespace SCIRun
   {
     namespace Fields
     {
+      class PointWidgetStub
+      {
+      public:
+        Point position() const { return pos_; }
+        void setPosition(const Point& p) { pos_ = p; }
+      private:
+        Point pos_;
+      };
+
+      typedef boost::shared_ptr<PointWidgetStub> PointWidgetPtr;
+
       class GenerateSinglePointProbeFromFieldImpl
       {
       public:
-        GenerateSinglePointProbeFromFieldImpl() : widgetid_(0), l2norm_(0), color_changed_(false) {}
-        //PointWidget *widget_;
+        GenerateSinglePointProbeFromFieldImpl() :
+          widget_(new PointWidgetStub),
+          widgetid_(0), l2norm_(0), color_changed_(false) {}
+        PointWidgetPtr widget_;
         //CrowdMonitor widget_lock_;
         //int  last_input_generation_;
         BBox last_bounds_;
@@ -196,17 +209,17 @@ void GenerateSinglePointProbeFromField::execute()
 
     // Invalidate current position if it's outside of our field.
     // Leave it alone if there was no field, as our bbox is arbitrary anyway.
-    if (curloc.x() >= bmin.x() && curloc.x() <= bmax.x() &&
+    if (!ifieldOption ||
+      (curloc.x() >= bmin.x() && curloc.x() <= bmax.x() &&
         curloc.y() >= bmin.y() && curloc.y() <= bmax.y() &&
-        curloc.z() >= bmin.z() && curloc.z() <= bmax.z() ||
-        !ifieldOption)
+        curloc.z() >= bmin.z() && curloc.z() <= bmax.z()))
     {
       center = curloc;
     }
 
-#if SCIRUN4_TO_BE_ENABLED_LATER
-    widget_->SetPosition(center);
+    impl_->widget_->setPosition(center);
 
+#if SCIRUN4_TO_BE_ENABLED_LATER
     GeomGroup *widget_group = new GeomGroup;
     widget_group->add(widget_->GetWidget());
 
@@ -230,10 +243,7 @@ void GenerateSinglePointProbeFromField::execute()
   if (moveto == "Location")
   {
     const Point newloc = currentLocation();
-#if SCIRUN4_TO_BE_ENABLED_LATER
-    widget_->SetPosition(newloc);
-#endif
-
+    impl_->widget_->setPosition(newloc);
     moved_p = true;
   }
   else if (moveto == "Center")
@@ -260,11 +270,13 @@ void GenerateSinglePointProbeFromField::execute()
     }
 
     Point center = bmin + Vector(bmax - bmin) * 0.5;
+
 #if SCIRUN4_TO_BE_ENABLED_LATER
     widget_->SetColor(Color(gui_color_r_.get(),gui_color_g_.get(),gui_color_b_.get()));
     widget_->SetLabel(gui_label_.get());
-    widget_->SetPosition(center);
 #endif
+
+    impl_->widget_->setPosition(center);
     moved_p = true;
   }
   else if (!moveto.empty() && ifieldOption)
@@ -276,9 +288,7 @@ void GenerateSinglePointProbeFromField::execute()
       {
         Point p;
         ifield->vmesh()->get_center(p, VMesh::Node::index_type(idx));
-#if SCIRUN4_TO_BE_ENABLED_LATER
-        widget_->SetPosition(p);
-#endif
+        impl_->widget_->setPosition(p);
         moved_p = true;
       }
     }
@@ -289,9 +299,7 @@ void GenerateSinglePointProbeFromField::execute()
       {
         Point p;
         ifield->vmesh()->get_center(p,VMesh::Elem::index_type(idx));
-#if SCIRUN4_TO_BE_ENABLED_LATER
-        widget_->SetPosition(p);
-#endif
+        impl_->widget_->setPosition(p);
         moved_p = true;
       }
     }
@@ -306,10 +314,7 @@ void GenerateSinglePointProbeFromField::execute()
 #endif
   }
 
-  const Point location;
-#ifdef SCIRUN4_TO_BE_ENABLED_LATER
-    = widget_->GetPosition();
-#endif
+  const Point location = impl_->widget_->position();
 
   FieldInformation fi("PointCloudMesh",0,"double");
   MeshHandle mesh = CreateMesh(fi);
