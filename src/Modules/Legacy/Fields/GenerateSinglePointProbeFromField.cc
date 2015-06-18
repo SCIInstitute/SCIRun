@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -99,7 +99,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(XLocation, 0.0);
   state->setValue(YLocation, 0.0);
   state->setValue(ZLocation, 0.0);
-  state->setValue(MoveMethod, std::string("location"));
+  state->setValue(MoveMethod, std::string("Location"));
   state->setValue(DisplayValue, true);
   state->setValue(DisplayNode, true);
   state->setValue(DisplayElem, true);
@@ -112,13 +112,6 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
 }
 
 #if 0
-namespace SCIRun {
-
-using std::stack;
-
-/// @class GenerateSinglePointProbeFromField
-/// @brief This module generates a single probe. 
-
 
 GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField(GuiContext* ctx)
   : Module("GenerateSinglePointProbeFromField", ctx, Filter, "NewField", "SCIRun"),
@@ -203,17 +196,17 @@ void GenerateSinglePointProbeFromField::execute()
 
     // Invalidate current position if it's outside of our field.
     // Leave it alone if there was no field, as our bbox is arbitrary anyway.
-    if (curloc.x() >= bmin.x() && curloc.x() <= bmax.x() && 
-        curloc.y() >= bmin.y() && curloc.y() <= bmax.y() && 
+    if (curloc.x() >= bmin.x() && curloc.x() <= bmax.x() &&
+        curloc.y() >= bmin.y() && curloc.y() <= bmax.y() &&
         curloc.z() >= bmin.z() && curloc.z() <= bmax.z() ||
         !ifieldOption)
     {
       center = curloc;
     }
-    
+
 #if SCIRUN4_TO_BE_ENABLED_LATER
     widget_->SetPosition(center);
-    
+
     GeomGroup *widget_group = new GeomGroup;
     widget_group->add(widget_->GetWidget());
 
@@ -286,7 +279,7 @@ void GenerateSinglePointProbeFromField::execute()
 #if SCIRUN4_TO_BE_ENABLED_LATER
         widget_->SetPosition(p);
 #endif
-        moved_p = true;        
+        moved_p = true;
       }
     }
     else if (moveto == "Element")
@@ -299,7 +292,7 @@ void GenerateSinglePointProbeFromField::execute()
 #if SCIRUN4_TO_BE_ENABLED_LATER
         widget_->SetPosition(p);
 #endif
-        moved_p = true;        
+        moved_p = true;
       }
     }
   }
@@ -313,15 +306,15 @@ void GenerateSinglePointProbeFromField::execute()
 #endif
   }
 
-  const Point location; 
+  const Point location;
 #ifdef SCIRUN4_TO_BE_ENABLED_LATER
     = widget_->GetPosition();
 #endif
-  
+
   FieldInformation fi("PointCloudMesh",0,"double");
   MeshHandle mesh = CreateMesh(fi);
   mesh->vmesh()->add_point(location);
-  
+
   FieldHandle ofield;
 
   if (ifieldOption)
@@ -353,7 +346,7 @@ void GenerateSinglePointProbeFromField::execute()
     vfield = ifield->vfield();
     vmesh = ifield->vmesh();
   }
-  
+
   if (!ifieldOption || ifield->basis_order() == -1 || !state->getValue(DisplayValue).toBool())
   {
     fi.make_double();
@@ -412,13 +405,13 @@ void GenerateSinglePointProbeFromField::execute()
     ofield = CreateField(fi,mesh);
     ofield->vfield()->set_value(result, VMesh::index_type(0));
   }
-  
+
   state->setValue(XLocation, location.x());
   state->setValue(YLocation, location.y());
   state->setValue(ZLocation, location.z());
-  if (state->getValue(DisplayValue).toBool()) 
-  { 
-    state->setValue(FieldValue, valstr.str()); 
+  if (state->getValue(DisplayValue).toBool())
+  {
+    state->setValue(FieldValue, valstr.str());
   }
 
   sendOutput(GeneratedPoint, ofield);
@@ -435,7 +428,7 @@ void GenerateSinglePointProbeFromField::execute()
     {
       index = state->getValue(FieldElem).toInt();
     }
-    
+
     sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
   }
 }
@@ -453,23 +446,22 @@ GenerateSinglePointProbeFromField::widget_moved(bool last, BaseWidget*)
 
 
 
-void 
+void
 GenerateSinglePointProbeFromField::tcl_command(GuiArgs& args, void* userdata)
 {
-  if(args.count() < 2) 
+  if(args.count() < 2)
   {
     args.error("ShowString needs a minor command");
     return;
   }
 
-  if (args[1] == "color_change") 
+  if (args[1] == "color_change")
   {
     color_changed_ = true;
-  } 
-  else 
+  }
+  else
   {
     Module::tcl_command(args, userdata);
   }
 }
 #endif
-

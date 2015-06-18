@@ -42,4 +42,11 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  addComboBoxManager(moveToComboBox_, Parameters::MoveMethod);
+  addDoubleSpinBoxManager(xLocationDoubleSpinBox_, Parameters::XLocation);
+  addDoubleSpinBoxManager(yLocationDoubleSpinBox_, Parameters::YLocation);
+  addDoubleSpinBoxManager(zLocationDoubleSpinBox_, Parameters::ZLocation);
+  addLineEditManager(fieldValueLineEdit_, Parameters::FieldValue);
+  addSpinBoxManager(fieldNodeSpinBox_, Parameters::FieldNode);
+  addSpinBoxManager(fieldElemSpinBox_, Parameters::FieldElem);  
 }
