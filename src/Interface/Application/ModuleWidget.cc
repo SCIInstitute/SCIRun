@@ -89,7 +89,7 @@ namespace Gui {
         << new QAction("Replace With", parent)
         << new QAction("Collapse", parent)
         << new QAction("Show Log", parent)
-        << disabled(new QAction("Make Sub-Network", parent))
+        //<< disabled(new QAction("Make Sub-Network", parent))  // Issue #287
         << separatorAction(parent)
         << new QAction("Destroy", parent));
     }
@@ -642,8 +642,8 @@ void ModuleWidget::setupModuleActions()
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
   connect(actionsMenu_->getAction("Collapse"), SIGNAL(triggered()), this, SLOT(collapseToMiniMode()));
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
-  if (isViewScene_)
-    actionsMenu_->getAction("Duplicate")->setDisabled(true);
+  if (isViewScene_ || theModule_->hasDynamicPorts()) //TODO: buggy combination, will disable for now. Fix is #1035
+    actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Duplicate"));
 
   connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
   connectUpdateNote(this);
