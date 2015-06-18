@@ -33,6 +33,18 @@
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
+
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Fields
+      {
+        ALGORITHM_PARAMETER_DECL(NumSeeds);
+      }
+    }
+  }
+
   namespace Modules {
     namespace Fields {
 
@@ -51,6 +63,8 @@ namespace SCIRun {
         OUTPUT_PORT(1, GeneratedPoint, LegacyField);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
       };
 
     }
