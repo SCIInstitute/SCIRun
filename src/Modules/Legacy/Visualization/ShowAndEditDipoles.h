@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,37 +24,35 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#include <Modules/Legacy/Fields/GetFieldBoundary.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
+#ifndef MODULES_LEGACY_VISUALIZATION_ShowAndEditDipoles_H_
+#define MODULES_LEGACY_VISUALIZATION_ShowAndEditDipoles_H_
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Fields;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Visualization/share.h>
 
-GetFieldBoundary::GetFieldBoundary()
-  : Module(ModuleLookupInfo("GetFieldBoundary", "NewField", "SCIRun"), false)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(BoundaryField);
-  INITIALIZE_PORT(Mapping);
-}
+namespace SCIRun {
+  namespace Modules {
+    namespace Visualization {
 
-void
-GetFieldBoundary::execute()
-{
-  auto field = getRequiredInput(InputField);
-  
-  if (needToExecute())
-  {
-    update_state(Executing);
+      class SCISHARE ShowAndEditDipoles : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has2OutputPorts<FieldPortTag, GeometryPortTag>
+      {
+      public:
+        ShowAndEditDipoles();
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
 
-    auto output = algo().run_generic(withInputData((InputField, field)));
+        INPUT_PORT(0, DipoleInputField, LegacyField);
+        OUTPUT_PORT(0, DipoleOutputField, LegacyField);
+        OUTPUT_PORT(1, DipoleWidget, GeometryObject);
 
-    sendOutputFromAlgorithm(BoundaryField, output);
-    sendOutputFromAlgorithm(Mapping, output);
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+    }
   }
-}
+};
+
+#endif
