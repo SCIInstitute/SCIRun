@@ -36,7 +36,9 @@
 
 varying vec4	fColor;
 
+uniform float uTransparency;
+
 void main()
 {
-	gl_FragColor 		= fColor;
+	gl_FragColor 		= vec4(fColor.xyz,uTransparency);
 }

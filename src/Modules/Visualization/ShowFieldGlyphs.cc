@@ -80,8 +80,8 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(ShowVectors, false);
   state->setValue(VectorsTransparency, false);
   state->setValue(VectorsTransparencyValue, 0.65);
-  state->setValue(VectorsScale, 0.1);
-  state->setValue(VectorsResolution, 3);
+  state->setValue(VectorsScale, 1.0);
+  state->setValue(VectorsResolution, 5);
   state->setValue(VectorsColoring, 0);
   state->setValue(VectorsDisplayType, 0);
   state->setValue(ShowVectorTab, false);
@@ -90,7 +90,7 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(ShowScalars, false);
   state->setValue(ScalarsTransparency, false);
   state->setValue(ScalarsTransparencyValue, 0.65);
-  state->setValue(ScalarsScale, 0.1);
+  state->setValue(ScalarsScale, 1.0);
   state->setValue(ScalarsResolution, 10);
   state->setValue(ScalarsColoring, 0);
   state->setValue(ScalarsDisplayType, 0);
@@ -250,12 +250,18 @@ void ShowFieldGlyphs::renderVectors(
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   ColorRGB node_color;  
 
-  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
+  if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
+  {
     colorScheme = GeometryObject::COLOR_UNIFORM;
+  }
   else if (state.get(RenderState::USE_COLORMAP))
+  {
     colorScheme = GeometryObject::COLOR_MAP;
+  }
   else
+  {
     colorScheme = GeometryObject::COLOR_IN_SITU;
+  }
 
   mesh->synchronize(Mesh::EDGES_E);
 
@@ -269,27 +275,47 @@ void ShowFieldGlyphs::renderVectors(
   }
 
   auto my_state = get_state();
-  double radius = my_state->getValue(VectorsScale).toDouble();
+  double scale = my_state->getValue(VectorsScale).toDouble();
   double resolution = static_cast<double>(my_state->getValue(VectorsResolution).toInt());
-  if (radius < 0) radius = 0.1;
+  double secondaryScalar = 0.25; // to be replaced with data from secondary field.
+  if (scale < 0) scale = 1.0;
   if (resolution < 3) resolution = 5;  
-
+  
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
   // Render linear data
   if (finfo.is_linear())
   {
+    if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
+    {
+      colorScheme = GeometryObject::COLOR_UNIFORM;
+    }
+
     for (const auto& node : facade->nodes())
     {
       checkForInterruption();
-      Vector v;
-      fld->get_value(v, node.index());
+      Vector v, inputVector;
+      fld->get_value(inputVector, node.index());
+      v = inputVector * scale;
+      double radius = v.length() * secondaryScalar;
       Point p1 = node.point();
       Point p2 = p1 + v;
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
-        ColorMapHandle map = colorMap.get();
-        node_color = map->valueToColor(v);
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(v.length());
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = inputVector.normal();
+          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+        }
+      }
+      else
+      {
+        node_color = state.defaultColor;
       }
       switch (state.mGlyphType)
       {
@@ -300,7 +326,8 @@ void ShowFieldGlyphs::renderVectors(
         glyphs.addNeedle(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::COMET_GLYPH:
-        THROW_ALGORITHM_INPUT_ERROR("Comet Geom is not supported yet.");
+        glyphs.addSphere(p2, radius, resolution, node_color);
+        glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::CONE_GLYPH:
         glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
@@ -332,14 +359,24 @@ void ShowFieldGlyphs::renderVectors(
     for (const auto& cell : facade->cells())
     {
       checkForInterruption();
-      Vector v;
-      fld->get_value(v, cell.index());
+      Vector v, inputVector;
+      fld->get_value(inputVector, cell.index()); 
+      v = inputVector * scale;
+      double radius = v.length() * secondaryScalar;
       Point p1 = cell.center();
       Point p2 = p1 + v;
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
-        ColorMapHandle map = colorMap.get();
-        node_color = map->valueToColor(v);
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(v.length());
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = inputVector.normal();
+          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+        }
       }
       switch (state.mGlyphType)
       {
@@ -350,7 +387,8 @@ void ShowFieldGlyphs::renderVectors(
         glyphs.addNeedle(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::COMET_GLYPH:
-        THROW_ALGORITHM_INPUT_ERROR("Comet Geom is not supported yet.");
+        glyphs.addSphere(p2, radius, resolution, node_color);
+        glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::CONE_GLYPH:
         glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
@@ -378,7 +416,7 @@ void ShowFieldGlyphs::renderVectors(
   }
 
   std::stringstream ss;
-  ss << state.mGlyphType << resolution << radius << colorScheme;
+  ss << state.mGlyphType << resolution << scale << colorScheme;
 
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
 
@@ -401,23 +439,29 @@ void ShowFieldGlyphs::renderScalars(
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   ColorRGB node_color;
 
-  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
+  if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
+  {
     colorScheme = GeometryObject::COLOR_UNIFORM;
+  }
   else if (state.get(RenderState::USE_COLORMAP))
+  {
     colorScheme = GeometryObject::COLOR_MAP;
+  }
   else
+  {
     colorScheme = GeometryObject::COLOR_IN_SITU;
+  }
 
   mesh->synchronize(Mesh::NODES_E);
 
   auto my_state = get_state();
-  double radius = my_state->getValue(ScalarsScale).toDouble();
+  double scale = my_state->getValue(ScalarsScale).toDouble();
   double resolution = static_cast<double>(my_state->getValue(ScalarsResolution).toInt());
-  if (radius < 0) radius = 0.1;
+  if (scale < 0) scale = 1.0;
   if (resolution < 3) resolution = 5;
 
   std::stringstream ss;
-  ss << state.mGlyphType << resolution << radius << colorScheme;
+  ss << state.mGlyphType << resolution << scale << colorScheme;
 
   std::string uniqueNodeID = id + "scalar_glyphs" + ss.str();
  
@@ -435,17 +479,31 @@ void ShowFieldGlyphs::renderScalars(
   // Render linear data
   if (finfo.is_linear())
   {
+    if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
+    {
+      colorScheme = GeometryObject::COLOR_UNIFORM;
+    }
+
     for (const auto& node : facade->nodes())
     {
       checkForInterruption();
-      Vector v;
+      double v;
       fld->get_value(v, node.index());
       Point p = node.point();
+      double radius = v * scale;
 
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
-        ColorMapHandle map = colorMap.get();
-        node_color = map->valueToColor(v);
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(v);
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
+          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+        }
       }
       switch (state.mGlyphType)
       {
@@ -456,6 +514,7 @@ void ShowFieldGlyphs::renderScalars(
         glyphs.addSphere(p, radius, resolution, node_color);
         break;
       case RenderState::GlyphType::BOX_GLYPH:
+        //glyphs.addEllipsoid(p, radius, 2*radius, resolution, node_color);
         THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
         break;
       case RenderState::GlyphType::AXIS_GLYPH:
@@ -476,14 +535,23 @@ void ShowFieldGlyphs::renderScalars(
     for (const auto& cell : facade->cells())
     {
       checkForInterruption();
-      Vector v;
+      double v;
       fld->get_value(v, cell.index());
       Point p = cell.center();
+      double radius = v * scale;
 
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
-        ColorMapHandle map = colorMap.get();
-        node_color = map->valueToColor(v);
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(v);
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
+          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+        }
       }
       switch (state.mGlyphType)
       {
@@ -529,11 +597,17 @@ void ShowFieldGlyphs::renderTensors(
   ColorRGB node_color;
 
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
+  {
     colorScheme = GeometryObject::COLOR_UNIFORM;
+  }
   else if (state.get(RenderState::USE_COLORMAP))
+  {
     colorScheme = GeometryObject::COLOR_MAP;
+  }
   else
+  {
     colorScheme = GeometryObject::COLOR_IN_SITU;
+  }
 
   mesh->synchronize(Mesh::NODES_E);
 
@@ -560,14 +634,24 @@ void ShowFieldGlyphs::renderTensors(
     for (const auto& node : facade->nodes())
     {
       checkForInterruption();
-      Vector v;
-      fld->get_value(v, node.index());
+      Tensor t;
+      fld->get_value(t, node.index());
       Point p = node.point();
+      double eigen1, eigen2, eigen3;
+      t.get_eigenvalues(eigen1, eigen2, eigen3);
 
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
-        ColorMapHandle map = colorMap.get();
-        node_color = map->valueToColor(v);
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(t);
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = t.get_eigenvector1().normal();
+          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+        }        
       }
       switch (state.mGlyphType)
       {
@@ -589,14 +673,24 @@ void ShowFieldGlyphs::renderTensors(
     for (const auto& cell : facade->cells())
     {
       checkForInterruption();
-      Vector v;
-      fld->get_value(v, cell.index());
+      Tensor t;
+      fld->get_value(t, cell.index());
       Point p = cell.center();
+      double eigen1, eigen2, eigen3;
+      t.get_eigenvalues(eigen1, eigen2, eigen3);
 
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
-        ColorMapHandle map = colorMap.get();
-        node_color = map->valueToColor(v);
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(t);
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = t.get_eigenvector1().normal();
+          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+        }
       }
       switch (state.mGlyphType)
       {
@@ -624,6 +718,7 @@ RenderState ShowFieldGlyphs::getVectorsRenderState(
   RenderState renState;
 
   bool useColorMap = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 2;
   renState.set(RenderState::USE_NORMALS, true);
   
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowVectors).toBool());
@@ -662,17 +757,19 @@ RenderState ShowFieldGlyphs::getVectorsRenderState(
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldGlyphs::DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
-    renState.defaultColor.g() > 1.0 ||
-    renState.defaultColor.b() > 1.0) ?
-    ColorRGB(
-    renState.defaultColor.r() / 255.,
-    renState.defaultColor.g() / 255.,
-    renState.defaultColor.b() / 255.)
-    : renState.defaultColor;
+                           renState.defaultColor.g() > 1.0 ||
+                           renState.defaultColor.b() > 1.0) ?
+                  ColorRGB(renState.defaultColor.r() / 255.,
+                           renState.defaultColor.g() / 255.,
+                           renState.defaultColor.b() / 255.) : renState.defaultColor;
   
   if (colorMap && useColorMap)
   {
     renState.set(RenderState::USE_COLORMAP, true);
+  }
+  else if (rgbConversion)
+  {
+    renState.set(RenderState::USE_COLOR_CONVERT, true);
   }
   else
   {
@@ -689,6 +786,7 @@ RenderState ShowFieldGlyphs::getScalarsRenderState(
   RenderState renState;
 
   bool useColorMap = state->getValue(ShowFieldGlyphs::ScalarsColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowFieldGlyphs::ScalarsColoring).toInt() == 2;
   renState.set(RenderState::USE_NORMALS, true);
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowScalars).toBool());
@@ -726,6 +824,10 @@ RenderState ShowFieldGlyphs::getScalarsRenderState(
   if (colorMap && useColorMap)
   {
     renState.set(RenderState::USE_COLORMAP, true);
+  }
+  else if (rgbConversion)
+  {
+    renState.set(RenderState::USE_COLOR_CONVERT, true);
   }
   else
   {

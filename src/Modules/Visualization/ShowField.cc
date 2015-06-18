@@ -1073,9 +1073,7 @@ void ShowFieldModule::renderNodes(
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   ColorRGB node_color;
 
-  if (fld->basis_order() < 0 ||
-    (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
-    state.get(RenderState::USE_DEFAULT_COLOR))
+  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
     colorScheme = GeometryObject::COLOR_UNIFORM;
   else if (state.get(RenderState::USE_COLORMAP))
     colorScheme = GeometryObject::COLOR_MAP;
