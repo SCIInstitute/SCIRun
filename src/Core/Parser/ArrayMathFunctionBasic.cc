@@ -41,8 +41,14 @@ bool add_ss(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
-  
+
   while (data0 != data0_end) 
   {
     *data0 = *data1 + *data2; data0++; data1++; data2++;
@@ -57,6 +63,12 @@ bool add_vs(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+  
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + pc.get_size();
 
   while (data2 != data2_end)
@@ -75,6 +87,12 @@ bool add_vv(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+  
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+  
   double* data0_end = data0 + 3*(pc.get_size());
   
   while (data0 != data0_end) 
@@ -90,7 +108,13 @@ bool add_ts(SCIRun::ArrayMathProgramCode& pc)
 { 
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
-  double* data2 = pc.get_variable(2); 
+  double* data2 = pc.get_variable(2);
+  
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+  
   double* data2_end = data2 + pc.get_size();
 
   while (data2 != data2_end)
@@ -112,6 +136,12 @@ bool add_tt(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + 6*(pc.get_size());
   
   while (data0 != data0_end) 
@@ -132,6 +162,12 @@ bool sub_ss(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
 
   while (data0 != data0_end) 
@@ -148,6 +184,12 @@ bool sub_vs(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + pc.get_size();
 
   while (data2 != data2_end) 
@@ -166,6 +208,11 @@ bool sub_sv(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
   double* data1_end = data1 + pc.get_size();
   
   while (data1 != data1_end) 
@@ -184,6 +231,12 @@ bool sub_vv(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + 3*pc.get_size();
   
   while (data2 != data2_end)  
@@ -200,6 +253,12 @@ bool sub_ts(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + pc.get_size();
   
   while (data2 != data2_end)  
@@ -221,6 +280,12 @@ bool sub_st(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data1_end = data1 + pc.get_size();
   
   while (data1 != data1_end)
@@ -242,6 +307,11 @@ bool sub_tt(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
   double* data1_end = data1 + 6*pc.get_size();
 
   while (data1 != data1_end)
@@ -261,6 +331,11 @@ bool neg_s(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1);
   double* data1_end = data1 + pc.get_size();
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
   
   while(data1 != data1_end)
   {
@@ -275,6 +350,12 @@ bool neg_v(SCIRun::ArrayMathProgramCode& pc)
 {
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data1_end = data1 + 3*pc.get_size();
   
   while(data1 != data1_end)
@@ -290,6 +371,12 @@ bool neg_t(SCIRun::ArrayMathProgramCode& pc)
 {
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data1_end = data1 + 6*pc.get_size();
   
   while(data1 != data1_end)
@@ -309,6 +396,12 @@ bool mult_ss(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
 
   while (data0 != data0_end) 
@@ -325,6 +418,12 @@ bool mult_vs(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + pc.get_size();
 
   while (data2 != data2_end) 
@@ -343,6 +442,12 @@ bool mult_ts(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + pc.get_size();
 
   while (data2 != data2_end) 
@@ -369,6 +474,11 @@ bool mult_vt(SCIRun::ArrayMathProgramCode& pc)
   double* outputVector = pc.get_variable(0); 
   double* inputVector = pc.get_variable(1);  
   double* inputTensor = pc.get_variable(2); 
+
+  if (!outputVector || !inputVector || !inputTensor)
+  {
+    return false;
+  }
   
   double* inputVectorEnd = inputVector + VECTOR_LENGTH*pc.get_size();
 
@@ -390,6 +500,12 @@ bool mult_tt(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + TENSOR_LENGTH*pc.get_size();
 
   while (data2 != data2_end) 
@@ -416,6 +532,12 @@ bool div_ss(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
 
   while (data0 != data0_end) 
@@ -432,6 +554,12 @@ bool div_vs(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + pc.get_size();
 
   while (data2 != data2_end) 
@@ -451,6 +579,12 @@ bool div_ts(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + pc.get_size();
 
   while (data2 != data2_end) 
@@ -476,6 +610,12 @@ bool rem_ss(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
 
   while (data0 != data0_end) 
@@ -492,6 +632,12 @@ bool rem_vs(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + pc.get_size();
 
   while (data2 != data2_end) 
@@ -510,6 +656,12 @@ bool rem_ts(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data2_end = data2 + pc.get_size();
 
   while (data2 != data2_end) 
@@ -535,6 +687,12 @@ bool seq_s(SCIRun::ArrayMathProgramCode& pc)
 {
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
 
   double val = data1[0];
@@ -551,6 +709,12 @@ bool seq_v(SCIRun::ArrayMathProgramCode& pc)
 {
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + 3*pc.get_size();
 
   double val1 = data1[0];
@@ -572,6 +736,12 @@ bool seq_t(SCIRun::ArrayMathProgramCode& pc)
 {
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + 6*pc.get_size();
 
   double val1 = data1[0];
@@ -605,6 +775,12 @@ bool assign_sss(SCIRun::ArrayMathProgramCode& pc)
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
   double* data3 = pc.get_variable(3); 
+
+  if (!data0 || !data1 || !data2 || !data3)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
   
   while (data0 != data0_end) 
@@ -623,6 +799,12 @@ bool assign_vss(SCIRun::ArrayMathProgramCode& pc)
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
   double* data3 = pc.get_variable(3); 
+
+  if (!data0 || !data1 || !data2 || !data3)
+  {
+    return false;
+  }
+
   double* data3_end = data3 + pc.get_size();
   
   while (data3 != data3_end) 
@@ -644,6 +826,12 @@ bool assign_tss(SCIRun::ArrayMathProgramCode& pc)
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
   double* data3 = pc.get_variable(3); 
+
+  if (!data0 || !data1 || !data2 || !data3)
+  {
+    return false;
+  }
+
   double* data3_end = data3 + pc.get_size();
   
   while (data3 != data3_end) 
@@ -669,6 +857,12 @@ bool assign_tsss(SCIRun::ArrayMathProgramCode& pc)
   double* data2 = pc.get_variable(2); 
   double* data3 = pc.get_variable(3); 
   double* data4 = pc.get_variable(4); 
+
+  if (!data0 || !data1 || !data2 || !data3 || !data4)
+  {
+    return false;
+  }
+
   double* data3_end = data0 + pc.get_size();
   
   const int ic[9] =  { 0, 1, 2, 1, 3, 4, 2, 4, 5 };
@@ -697,6 +891,12 @@ bool subs_ss(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
   
   while (data0 != data0_end) 
@@ -714,6 +914,12 @@ bool subs_vs(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
   
   while (data0 != data0_end) 
@@ -731,6 +937,12 @@ bool subs_ts(SCIRun::ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
+
+  if (!data0 || !data1 || !data2)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
   
   while (data0 != data0_end) 
@@ -749,6 +961,12 @@ bool subs_tss(SCIRun::ArrayMathProgramCode& pc)
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
   double* data3 = pc.get_variable(3); 
+
+  if (!data0 || !data1 || !data2 || !data3)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
   
   const int ic[9] =  { 0, 1, 2, 1, 3, 4, 2, 4, 5 };
@@ -774,6 +992,12 @@ bool select_sss(SCIRun::ArrayMathProgramCode& pc)
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
   double* data3 = pc.get_variable(3); 
+
+  if (!data0 || !data1 || !data2 || !data3)
+  {
+    return false;
+  }
+
   double* data1_end = data1 + pc.get_size();
 
   while (data1 != data1_end) 
@@ -791,6 +1015,12 @@ bool select_svv(SCIRun::ArrayMathProgramCode& pc)
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
   double* data3 = pc.get_variable(3); 
+
+  if (!data0 || !data1 || !data2 || !data3)
+  {
+    return false;
+  }
+
   double* data1_end = data1 + pc.get_size();
 
   while (data1 != data1_end) 
@@ -819,6 +1049,12 @@ bool select_stt(SCIRun::ArrayMathProgramCode& pc)
   double* data1 = pc.get_variable(1); 
   double* data2 = pc.get_variable(2); 
   double* data3 = pc.get_variable(3); 
+
+  if (!data0 || !data1 || !data2 || !data3)
+  {
+    return false;
+  }
+
   double* data1_end = data1 + pc.get_size();
 
   while (data1 != data1_end) 

@@ -56,6 +56,11 @@ bool get_scalar_fd(ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   // Get the field where the data is coming from
   VField* data1 = pc.get_vfield(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
   
   // Safety check (this one is inline, hence it should be fast)
   if (!(data1->is_scalar())) return (false); 
@@ -79,6 +84,11 @@ bool get_vector_fd(ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   // Get the field where the data is coming from
   VField* data1 = pc.get_vfield(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
 
   // Safety check (this one is inline, hence it should be fast)
   if (!(data1->is_vector())) return (false); 
@@ -105,6 +115,11 @@ bool get_tensor_fd(ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   // Get the field where the data is coming from
   VField* data1 = pc.get_vfield(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
 
   // Safety check (this one is inline, hence it should be fast)
   if (!(data1->is_tensor())) return (false); 
@@ -134,6 +149,11 @@ bool get_node_location_fm(ArrayMathProgramCode& pc)
   // Get where the data needs to be stored
   VMesh*  data1 = pc.get_vmesh(1);
 
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + 3*pc.get_size();
   VMesh::Node::index_type idx = pc.get_index();
 
@@ -156,6 +176,11 @@ bool get_node_x_fm(ArrayMathProgramCode& pc)
   // Get where the data needs to be stored
   VMesh*  data1 = pc.get_vmesh(1);
 
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
   VMesh::Node::index_type idx = pc.get_index();
 
@@ -175,6 +200,11 @@ bool get_node_y_fm(ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   // Get where the data needs to be stored
   VMesh*  data1 = pc.get_vmesh(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
 
   double* data0_end = data0 + pc.get_size();
   VMesh::Node::index_type idx = pc.get_index();
@@ -196,6 +226,11 @@ bool get_node_z_fm(ArrayMathProgramCode& pc)
   // Get where the data needs to be stored
   VMesh*  data1 = pc.get_vmesh(1);
 
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
   VMesh::Node::index_type idx = pc.get_index();
 
@@ -213,6 +248,11 @@ bool get_element_location_fm(ArrayMathProgramCode& pc)
 { 
   double* data0 = pc.get_variable(0); 
   VMesh*  data1 = pc.get_vmesh(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
 
   double* data0_end = data0 + 3*pc.get_size();
   VMesh::Elem::index_type idx = pc.get_index();
@@ -234,6 +274,11 @@ bool get_element_x_fm(ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   VMesh*  data1 = pc.get_vmesh(1);
 
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
   VMesh::Elem::index_type idx = pc.get_index();
 
@@ -252,6 +297,11 @@ bool get_element_y_fm(ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   VMesh*  data1 = pc.get_vmesh(1);
 
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + pc.get_size();
   VMesh::Elem::index_type idx = pc.get_index();
 
@@ -269,6 +319,11 @@ bool get_element_z_fm(ArrayMathProgramCode& pc)
 { 
   double* data0 = pc.get_variable(0); 
   VMesh*  data1 = pc.get_vmesh(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
 
   double* data0_end = data0 + pc.get_size();
   VMesh::Elem::index_type idx = pc.get_index();
@@ -295,6 +350,11 @@ bool get_scalar_m(ArrayMathProgramCode& pc)
   // One virtual call to get the data
   double* data1 = matrix_cast::as_dense(matrix)->data();
 
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   // Safety check
   if (matrix->ncols() != 1) return (false);
 
@@ -314,9 +374,15 @@ bool get_scalar_m(ArrayMathProgramCode& pc)
 bool get_scalar_ab(ArrayMathProgramCode& pc)
 { 
   double* data0 = pc.get_variable(0); 
-  
+  auto data1 = pc.get_bool_array(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   // We store the matrix pointer so we can get other properties as well
-  std::vector<bool>& array(*(pc.get_bool_array(1)));
+  std::vector<bool>& array(*data1);
   // One virtual call to get the data
 
   double* data0_end = data0 + pc.get_size();
@@ -333,9 +399,15 @@ bool get_scalar_ab(ArrayMathProgramCode& pc)
 bool get_scalar_ai(ArrayMathProgramCode& pc)
 { 
   double* data0 = pc.get_variable(0); 
+  auto data1 = pc.get_int_array(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
   
   // We store the matrix pointer so we can get other properties as well
-  std::vector<int>& array(*(pc.get_int_array(1)));
+  std::vector<int>& array(*data1);
   // One virtual call to get the data
 
   double* data0_end = data0 + pc.get_size();
@@ -351,9 +423,15 @@ bool get_scalar_ai(ArrayMathProgramCode& pc)
 bool get_scalar_ad(ArrayMathProgramCode& pc)
 { 
   double* data0 = pc.get_variable(0); 
+  auto data1 = pc.get_double_array(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
   
   // We store the matrix pointer so we can get other properties as well
-  std::vector<double>& array(*(pc.get_double_array(1)));
+  std::vector<double>& array(*data1);
   // One virtual call to get the data
 
   double* data0_end = data0 + pc.get_size();
@@ -378,6 +456,11 @@ bool get_vector_m(ArrayMathProgramCode& pc)
     return false;
   // One virtual call to get the data
   double* data1 = matrix_cast::as_dense(matrix)->data();
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
 
   // Safety check
   if (matrix->ncols() != 3) return (false);
@@ -407,6 +490,11 @@ bool get_tensor_m(ArrayMathProgramCode& pc)
     return false;
   // One virtual call to get the data
   double* data1 = matrix_cast::as_dense(matrix)->data();
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
   
   // The different tensor storages invoke a different piece of code
   if (matrix->ncols() == 6)
@@ -459,6 +547,11 @@ bool to_fielddata_s(ArrayMathProgramCode& pc)
   VField* data0 = pc.get_vfield(0);
   double* data1 = pc.get_variable(1); 
 
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   // Safety check to see whether the output format is OK
   if (!(data0->is_scalar())) return (false);
 
@@ -477,6 +570,11 @@ bool to_fielddata_v(ArrayMathProgramCode& pc)
 { 
   VField* data0 = pc.get_vfield(0);
   double* data1 = pc.get_variable(1); 
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
 
   // Safety check to see whether the output format is OK
   if (!(data0->is_vector())) return (false);
@@ -498,6 +596,11 @@ bool to_fielddata_t(ArrayMathProgramCode& pc)
   VField* data0 = pc.get_vfield(0);
   double* data1 = pc.get_variable(1); 
 
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   // Safety check to see whether the output format is OK
   if (!(data0->is_tensor())) return (false);
 
@@ -517,6 +620,11 @@ bool to_fieldnode_v(ArrayMathProgramCode& pc)
 { 
   VMesh* data0 = pc.get_vmesh(0);
   double* data1 = pc.get_variable(1); 
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
 
   double* data1_end = data1 + 3*(pc.get_size());
   VMesh::Node::index_type idx = pc.get_index();
@@ -541,6 +649,11 @@ bool to_matrix_s(ArrayMathProgramCode& pc)
   double* data0 = matrix_cast::as_dense(matrix)->data();
   double* data1 = pc.get_variable(1); 
 
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   if (matrix->ncols() != 1) return (false);
   
   double* data1_end = data1 + (pc.get_size());
@@ -564,6 +677,11 @@ bool to_matrix_v(ArrayMathProgramCode& pc)
     return false;
   double* data0 = matrix_cast::as_dense(matrix)->data();
   double* data1 = pc.get_variable(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
 
   if (matrix->ncols() != 3) return (false);
 
@@ -590,6 +708,11 @@ bool to_matrix_t(ArrayMathProgramCode& pc)
     return false;
   double* data0 = matrix_cast::as_dense(matrix)->data();
   double* data1 = pc.get_variable(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
 
   if (matrix->ncols() == 6)
   {
@@ -640,6 +763,12 @@ bool index_(ArrayMathProgramCode& pc)
 { 
   // Get the pointer to the matrix object where we need to store the data
   double* data0 = pc.get_variable(0);
+
+  if (!data0)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + (pc.get_size());
 
   index_type idx = pc.get_index();
@@ -656,11 +785,16 @@ bool index_(ArrayMathProgramCode& pc)
 bool get_matrix_element_m(ArrayMathProgramCode& pc)
 {
   double* data0 = pc.get_variable(0);
+  auto data1 = pc.get_matrix(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
+
   double* data0_end = data0 + (pc.get_size());
   
-  auto data1 = pc.get_matrix(1);
   index_type   idx = pc.get_index();
- 
   size_type    m = data1->nrows();
   
   if (m > 0)
@@ -680,14 +814,17 @@ bool get_matrix_element_m(ArrayMathProgramCode& pc)
 
 bool set_matrix_element_s(ArrayMathProgramCode& pc)
 {
+  auto data0 = pc.get_matrix(0);
   double* data1 = pc.get_variable(1);
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
   double* data1_end = data1 + (pc.get_size());
   
-  auto data0 = pc.get_matrix(0);
   index_type   idx = pc.get_index();
- 
   static Mutex sparseAccessMutex("sparseAccessMutex");
-
   size_type m = data0->nrows();
   
   if (m > 0)
@@ -710,15 +847,23 @@ bool set_matrix_element_s(ArrayMathProgramCode& pc)
 bool to_bool_array_s(ArrayMathProgramCode& pc)
 { 
   // Get the pointer to the matrix object where we need to store the data
-  std::vector<bool>& array(*(pc.get_bool_array(0)));
+  auto data0 = pc.get_bool_array(0);
   double* data1 = pc.get_variable(1); 
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
   
   double* data1_end = data1 + (pc.get_size());
   index_type idx = pc.get_index();
-  
+  std::vector<bool>& array(*data0);
+
   while (data1 != data1_end) 
   {
-    array[idx] = static_cast<bool>(*data1); idx++; data1++;
+    array[idx] = *data1 != 0; 
+    idx++; 
+    data1++;
   }
   
   return (true);
@@ -727,11 +872,17 @@ bool to_bool_array_s(ArrayMathProgramCode& pc)
 bool to_int_array_s(ArrayMathProgramCode& pc)
 { 
   // Get the pointer to the matrix object where we need to store the data
-  std::vector<int>& array(*(pc.get_int_array(0)));
+  auto data0 = pc.get_int_array(0);
   double* data1 = pc.get_variable(1); 
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
   
   double* data1_end = data1 + (pc.get_size());
   index_type idx = pc.get_index();
+  std::vector<int>& array(*data0);
   
   while (data1 != data1_end) 
   {
@@ -744,12 +895,18 @@ bool to_int_array_s(ArrayMathProgramCode& pc)
 bool to_double_array_s(ArrayMathProgramCode& pc)
 { 
   // Get the pointer to the matrix object where we need to store the data
-  std::vector<double>& array(*(pc.get_double_array(0)));
+  auto data0 = pc.get_double_array(0);
   double* data1 = pc.get_variable(1); 
+
+  if (!data0 || !data1)
+  {
+    return false;
+  }
   
   double* data1_end = data1 + (pc.get_size());
   index_type idx = pc.get_index();
   
+  std::vector<double>& array(*data0);
   while (data1 != data1_end) 
   {
     array[idx] = *data1; idx++; data1++;
