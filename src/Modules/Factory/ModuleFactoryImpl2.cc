@@ -94,5 +94,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
   addModuleDesc<ExtractSimpleIsosurfaceModule>("ExtractSimpleIsosurface","NewField","SCIRun","...","...");
-  addModuleDesc<EvaluateLinearAlgebraGeneral>("Real ported module", "...");
+  addModuleDesc<EvaluateLinearAlgebraGeneral>("Real ported module", "BUGGY--DO NOT USE");
 }

@@ -30,6 +30,7 @@
 #define CORE_SERVICES_FILETRANSFERCLIENT_H 1
 
 #include <Core/Services/ServiceClient.h>
+#include <boost/filesystem/path.hpp>
 #include <Core/Services/share.h>
 
 namespace SCIRun {
@@ -49,8 +50,8 @@ class SCISHARE FileTransferClient : public ServiceClient
 
     // Create temp directories on the local and remote site. The pattern is a name ending with
     // XXXXXX which will be replace by an uniquely generated string of numbers and letters
-    bool create_remote_tempdir(std::string pattern,std::string &tempdir);
-    bool create_local_tempdir(std::string pattern,std::string &tempdir);
+    bool create_remote_tempdir(std::string pattern, boost::filesystem::path& tempdir);
+    bool create_local_tempdir(std::string pattern, boost::filesystem::path& tempdir);
 
     // To identify the homedirectories, SCIRun will write a file with a hopefully unique key
     // that identifies that directory uniquely. Currently this is only done by the local clock
@@ -65,15 +66,15 @@ class SCISHARE FileTransferClient : public ServiceClient
     // Although the directory may point to the same underlying shared drive
     // the paths may be different. The function translate_scirun_tempdir translates
     // local filenames to remote filenames.
-    bool get_local_scirun_tempdir(std::string& tempdir);
-    bool get_remote_scirun_tempdir(std::string& tempdir);
-    bool translate_scirun_tempdir(std::string& tempdir);
+    bool get_local_scirun_tempdir(boost::filesystem::path& tempdir);
+    bool get_remote_scirun_tempdir(boost::filesystem::path& tempdir);
+    bool translate_scirun_tempdir(boost::filesystem::path& tempdir);
 
     // These are the functions for transfering files forwards and backwards
     // between systems. These functions will do the transfer protocol.
     // They rely on the full filename (that includes the path)
-    bool get_file(std::string localfilename,std::string remotefilename);
-    bool put_file(std::string remotefilename,std::string localfilename);
+    bool get_file(const boost::filesystem::path& localfilename, const boost::filesystem::path& remotefilename);
+    bool put_file(const boost::filesystem::path& remotefilename, const boost::filesystem::path& localfilename);
 
     // The next set of functions are only local and are meant to simplify
     // the task of keeping track what the remote and local directory are called
@@ -82,21 +83,21 @@ class SCISHARE FileTransferClient : public ServiceClient
     // To generate filenames on both systems, local_file() will take the filename and
     // put the local_directory in front of it and remote_file() will put the remote
     // directory path in front of the filename.
-    bool set_local_dir(std::string dir);
-    bool set_remote_dir(std::string dir);
-    std::string local_file(std::string filename);
-    std::string remote_file(std::string filename);
+    bool set_local_dir(const boost::filesystem::path& dir);
+    bool set_remote_dir(const boost::filesystem::path& dir);
+    boost::filesystem::path local_file(const boost::filesystem::path& filename);
+    boost::filesystem::path remote_file(const boost::filesystem::path& filename);
 
   private:
-    std::string tempdir_;
+    boost::filesystem::path tempdir_;
 
-    std::string local_scirun_tempdir_;
-    std::string remote_scirun_tempdir_;
+    boost::filesystem::path local_scirun_tempdir_;
+    boost::filesystem::path remote_scirun_tempdir_;
     std::string local_homedirid_;
     std::string remote_homedirid_;
 
-    std::string remote_dir_;
-    std::string local_dir_;
+    boost::filesystem::path remote_dir_;
+    boost::filesystem::path local_dir_;
 
     boost::shared_ptr<class TempFileManager> tfm_;
 

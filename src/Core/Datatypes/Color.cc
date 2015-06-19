@@ -36,16 +36,21 @@
 using namespace SCIRun::Core::Datatypes;
 
 ColorRGB::ColorRGB()
-  : r_(1.0), g_(1.0), b_(1.0)
+  : r_(1.0), g_(1.0), b_(1.0), a_(1.0)
 {
 }
 
 ColorRGB::ColorRGB(double r, double g, double b)
-  : r_(r), g_(g), b_(b)
+  : r_(r), g_(g), b_(b), a_(1.0)
 {
 }
 
-ColorRGB::ColorRGB(const std::string& rgb) : r_(1.0), g_(1.0), b_(1.0)
+ColorRGB::ColorRGB(double r, double g, double b, double a)
+  : r_(r), g_(g), b_(b), a_(a)
+{
+}
+
+ColorRGB::ColorRGB(const std::string& rgb) : r_(1.0), g_(1.0), b_(1.0), a_(1.0)
 {
   try
   {

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/GetFieldBoundary.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
+#ifndef MODULES_LEGACY_FIELDS_GenerateSinglePointProbeFromField_H__
+#define MODULES_LEGACY_FIELDS_GenerateSinglePointProbeFromField_H__
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Fields;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-GetFieldBoundary::GetFieldBoundary()
-  : Module(ModuleLookupInfo("GetFieldBoundary", "NewField", "SCIRun"), false)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(BoundaryField);
-  INITIALIZE_PORT(Mapping);
-}
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-void
-GetFieldBoundary::execute()
-{
-  auto field = getRequiredInput(InputField);
-  
-  if (needToExecute())
-  {
-    update_state(Executing);
+      class SCISHARE GenerateSinglePointProbeFromField : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has3OutputPorts<GeometryPortTag, FieldPortTag, ScalarPortTag>
+      {
+      public:
+        GenerateSinglePointProbeFromField();
 
-    auto output = algo().run_generic(withInputData((InputField, field)));
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
-    sendOutputFromAlgorithm(BoundaryField, output);
-    sendOutputFromAlgorithm(Mapping, output);
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
+        OUTPUT_PORT(1, GeneratedPoint, LegacyField);
+        OUTPUT_PORT(2, ElementIndex, Int32);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+
+    }
   }
 }
+
+#endif

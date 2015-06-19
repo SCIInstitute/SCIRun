@@ -47,7 +47,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_MatlabInterface
   Core_Persistent
   Core_Util_Legacy
   #Core_Exceptions
-  #Core_Thread
+  Core_Thread_Legacy
   #Dataflow_GuiInterface
   #Core_Geom
   Core_Datatypes
