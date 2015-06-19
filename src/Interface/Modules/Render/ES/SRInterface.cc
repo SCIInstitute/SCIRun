@@ -282,194 +282,197 @@ namespace SCIRun {
                                                     return false;
                                             });
             
-            std::shared_ptr<ren::VBOMan> vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
-            std::shared_ptr<ren::IBOMan> iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
-            if (foundObject != mSRObjects.end())
-            {
-                // Iterate through each of the passes and remove their associated
-                // entity ID.
-                for (const auto& pass : foundObject->mPasses)
-                {
-                    uint64_t entityID = getEntityIDForName(pass.passName, port);
-                    mCore.removeEntity(entityID);
-                }
-                
-                // We need to renormalize the core after removing entities. We don't need
-                // to run a new pass however. Renormalization is enough to remove
-                // old entities from the system.
-                mCore.renormalize(true);
-                
-                // Run a garbage collection cycle for the VBOs and IBOs. We will likely
-                // be using similar VBO and IBO names.
-                vboMan->runGCCycle(mCore);
-                iboMan->runGCCycle(mCore);
-                
-                // Remove the object from the entity system.
-                mSRObjects.erase(foundObject);
-                
-            }
-            
-            // Add vertex buffer objects.
-            std::vector<char*> vbo_buffer;
-            std::vector<size_t> stride_vbo;
-            
-            int nameIndex = 0;
-            for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
-            {
-                const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
-                
-                if (vbo.onGPU)
-                {
-                    // Generate vector of attributes to pass into the entity system.
-                    std::vector<std::tuple<std::string, size_t, bool>> attributeData;
-                    for (const auto& attribData : vbo.attributes)
+            std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
+            std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
+            if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) {
+                if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) {
+                    if (foundObject != mSRObjects.end())
                     {
-                        attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
+                        // Iterate through each of the passes and remove their associated
+                        // entity ID.
+                        for (const auto& pass : foundObject->mPasses)
+                        {
+                            uint64_t entityID = getEntityIDForName(pass.passName, port);
+                            mCore.removeEntity(entityID);
+                        }
+
+                        // We need to renormalize the core after removing entities. We don't need
+                        // to run a new pass however. Renormalization is enough to remove
+                        // old entities from the system.
+                        mCore.renormalize(true);
+
+                        // Run a garbage collection cycle for the VBOs and IBOs. We will likely
+                        // be using similar VBO and IBO names.
+                        vboMan->runGCCycle(mCore);
+                        iboMan->runGCCycle(mCore);
+
+                        // Remove the object from the entity system.
+                        mSRObjects.erase(foundObject);
+
                     }
-                    
-                    GLuint vboID = vboMan->addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(),
-                                                         attributeData, vbo.name);
-                }
-                
-                vbo_buffer.push_back(reinterpret_cast<char*>(vbo.data->getBuffer()));
-                size_t stride = 0;
-                for (auto a : vbo.attributes)
-                    stride += a.sizeInBytes;
-                stride_vbo.push_back(stride);
-                
-                bbox.extend(vbo.boundingBox);
-            }
-            
-            // Add index buffer objects.
-            nameIndex = 0;
-            for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
-            {
-                const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
-                GLenum primType = GL_UNSIGNED_SHORT;
-                switch (ibo.indexSize)
-                {
-                    case 1: // 8-bit
-                        primType = GL_UNSIGNED_BYTE;
-                        break;
-                        
-                    case 2: // 16-bit
-                        primType = GL_UNSIGNED_SHORT;
-                        break;
-                        
-                    case 4: // 32-bit
-                        primType = GL_UNSIGNED_INT;
-                        break;
-                        
-                    default:
-                        primType = GL_UNSIGNED_INT;
-                        throw std::invalid_argument("Unable to determine index buffer depth.");
-                        break;
-                }
-                
-                GLenum primitive = GL_TRIANGLES;
-                switch (ibo.prim)
-                {
-                    case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
-                        primitive = GL_POINTS;
-                        break;
-                        
-                    case Core::Datatypes::GeometryObject::SpireIBO::LINES:
-                        primitive = GL_LINES;
-                        break;
-                        
-                    case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
-                    default:
-                        primitive = GL_TRIANGLES;
-                        break;
-                }
-                
-                if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
-                {
-                    /// Create sorted lists of Buffers for transparency in each direction of the axis
-                    uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
-                    size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
-                    Core::Geometry::Vector dir(0.0, 0.0, 0.0);
-                    
-                    std::vector<DepthIndex> rel_depth(num_triangles);
-                    for (int i = 0; i <= 6; ++i)
+
+                    // Add vertex buffer objects.
+                    std::vector<char*> vbo_buffer;
+                    std::vector<size_t> stride_vbo;
+
+                    int nameIndex = 0;
+                    for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
                     {
-                        std::string name = ibo.name;
-                        if (i == 0)
+                        const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
+
+                        if (vbo.onGPU)
                         {
-                            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-                            iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
-                        }
-                        if (i == 1)
-                        {
-                            dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
-                            name += "X";
-                        }
-                        if (i == 2)
-                        {
-                            dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
-                            name += "Y";
-                        }
-                        if (i == 3)
-                        {
-                            dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
-                            name += "Z";
-                        }
-                        if (i == 4)
-                        {
-                            dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
-                            name += "NegX";
-                        }
-                        if (i == 5)
-                        {
-                            dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
-                            name += "NegY";
-                        }
-                        if (i == 6)
-                        {
-                            dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
-                            name += "NegZ";
-                        }
-                        if (i > 0)
-                        {
-                            for (size_t j = 0; j < num_triangles; j++)
+                            // Generate vector of attributes to pass into the entity system.
+                            std::vector<std::tuple<std::string, size_t, bool>> attributeData;
+                            for (const auto& attribData : vbo.attributes)
                             {
-                                float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
-                                Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
-                                
-                                float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
-                                Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
-                                
-                                float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
-                                Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
-                                
-                                rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
-                                rel_depth[j].mIndex = j;
+                                attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
                             }
-                            
-                            std::sort(rel_depth.begin(), rel_depth.end());
-                            
-                            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-                            
-                            std::vector<char> sorted_buffer(ibo.data->getBufferSize());
-                            char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
-                            char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
-                            
-                            if (sbuffer && num_triangles > 0)
+
+                            vboMan->addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(),
+                                                                 attributeData, vbo.name);
+                        }
+
+                        vbo_buffer.push_back(reinterpret_cast<char*>(vbo.data->getBuffer()));
+                        size_t stride = 0;
+                        for (auto a : vbo.attributes)
+                            stride += a.sizeInBytes;
+                        stride_vbo.push_back(stride);
+
+                        bbox.extend(vbo.boundingBox);
+                        // Add index buffer objects.
+                        nameIndex = 0;
+                        for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
+                        {
+                            const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
+                            GLenum primType = GL_UNSIGNED_SHORT;
+                            switch (ibo.indexSize)
                             {
-                                size_t tri_size = ibo.data->getBufferSize() / num_triangles;
-                                for (size_t j = 0; j < num_triangles; j++)
+                                case 1: // 8-bit
+                                    primType = GL_UNSIGNED_BYTE;
+                                    break;
+
+                                case 2: // 16-bit
+                                    primType = GL_UNSIGNED_SHORT;
+                                    break;
+
+                                case 4: // 32-bit
+                                    primType = GL_UNSIGNED_INT;
+                                    break;
+
+                                default:
+                                    primType = GL_UNSIGNED_INT;
+                                    throw std::invalid_argument("Unable to determine index buffer depth.");
+                                    break;
+                            }
+
+                            GLenum primitive = GL_TRIANGLES;
+                            switch (ibo.prim)
+                            {
+                                case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
+                                    primitive = GL_POINTS;
+                                    break;
+
+                                case Core::Datatypes::GeometryObject::SpireIBO::LINES:
+                                    primitive = GL_LINES;
+                                    break;
+
+                                case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
+                                default:
+                                    primitive = GL_TRIANGLES;
+                                    break;
+                            }
+
+                            if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
+                            {
+                                /// Create sorted lists of Buffers for transparency in each direction of the axis
+                                uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
+                                size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+                                Core::Geometry::Vector dir(0.0, 0.0, 0.0);
+
+                                std::vector<DepthIndex> rel_depth(num_triangles);
+                                for (int i = 0; i <= 6; ++i)
                                 {
-                                    memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+                                    std::string name = ibo.name;
+                                    if (i == 0)
+                                    {
+                                        int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+                                        iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+                                    }
+                                    if (i == 1)
+                                    {
+                                        dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
+                                        name += "X";
+                                    }
+                                    if (i == 2)
+                                    {
+                                        dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
+                                        name += "Y";
+                                    }
+                                    if (i == 3)
+                                    {
+                                        dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
+                                        name += "Z";
+                                    }
+                                    if (i == 4)
+                                    {
+                                        dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
+                                        name += "NegX";
+                                    }
+                                    if (i == 5)
+                                    {
+                                        dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
+                                        name += "NegY";
+                                    }
+                                    if (i == 6)
+                                    {
+                                        dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
+                                        name += "NegZ";
+                                    }
+                                    if (i > 0)
+                                    {
+                                        for (size_t j = 0; j < num_triangles; j++)
+                                        {
+                                            float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
+                                            Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+
+                                            float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
+                                            Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+
+                                            float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
+                                            Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+
+                                            rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+                                            rel_depth[j].mIndex = j;
+                                        }
+
+                                        std::sort(rel_depth.begin(), rel_depth.end());
+
+                                        int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+
+                                        std::vector<char> sorted_buffer(ibo.data->getBufferSize());
+                                        char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
+                                        char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
+
+                                        if (sbuffer && num_triangles > 0)
+                                        {
+                                            size_t tri_size = ibo.data->getBufferSize() / num_triangles;
+                                            for (size_t j = 0; j < num_triangles; j++)
+                                            {
+                                                memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+                                            }
+                                            iboMan->addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
+                                        }
+                                    }
                                 }
-                                iboMan->addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
+                            }
+                            else
+                            {
+                                int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+                                iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
                             }
                         }
                     }
-                }
-                else
-                {
-                    int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-                    iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
                 }
             }
             
@@ -478,145 +481,147 @@ namespace SCIRun {
             mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap, port));
             SRObject& elem = mSRObjects.back();
             
-            std::shared_ptr<ren::ShaderMan> shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
-            
-            // Add passes
-            for (auto it = obj->mPasses.begin(); it != obj->mPasses.end(); ++it)
-            {
-                Core::Datatypes::GeometryObject::SpireSubPass& pass = *it;
-                
-                uint64_t entityID = getEntityIDForName(pass.passName, port);
-                
-                if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_VBO_IBO)
+            std::weak_ptr<ren::ShaderMan> sm =
+                    mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
+            if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) {
+                // Add passes
+                for (auto it = obj->mPasses.begin(); it != obj->mPasses.end(); ++it)
                 {
-                    addVBOToEntity(entityID, pass.vboName);
-                    if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
+                    Core::Datatypes::GeometryObject::SpireSubPass& pass = *it;
+
+                    uint64_t entityID = getEntityIDForName(pass.passName, port);
+
+                    if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_VBO_IBO)
                     {
-                        for (int i = 0; i <= 6; ++i)
+                        addVBOToEntity(entityID, pass.vboName);
+                        if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
                         {
-                            std::string name = pass.iboName;
-                            if (i == 1)
-                                name += "X";
-                            if (i == 2)
-                                name += "Y";
-                            if (i == 3)
-                                name += "Z";
-                            if (i == 4)
-                                name += "NegX";
-                            if (i == 5)
-                                name += "NegY";
-                            if (i == 6)
-                                name += "NegZ";
-                            
-                            addIBOToEntity(entityID, name);
+                            for (int i = 0; i <= 6; ++i)
+                            {
+                                std::string name = pass.iboName;
+                                if (i == 1)
+                                    name += "X";
+                                if (i == 2)
+                                    name += "Y";
+                                if (i == 3)
+                                    name += "Z";
+                                if (i == 4)
+                                    name += "NegX";
+                                if (i == 5)
+                                    name += "NegY";
+                                if (i == 6)
+                                    name += "NegZ";
+
+                                addIBOToEntity(entityID, name);
+                            }
+                        }
+                        else
+                        {
+                            addIBOToEntity(entityID, pass.iboName);
                         }
                     }
                     else
                     {
-                        addIBOToEntity(entityID, pass.iboName);
-                    }
-                }
-                else
-                {
-                    // We will be constructing a render list from the VBO and IBO.
-                    RenderList list;
-                    
-                    for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
-                    {
-                        const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
-                        if (vbo.name == pass.vboName)
+                        // We will be constructing a render list from the VBO and IBO.
+                        RenderList list;
+
+                        for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
                         {
-                            list.data = vbo.data;
-                            list.attributes = vbo.attributes;
-                            list.renderType = pass.renderType;
-                            list.numElements = vbo.numElements;
-                            mCore.addComponent(entityID, list);
-                            break;
+                            const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
+                            if (vbo.name == pass.vboName)
+                            {
+                                list.data = vbo.data;
+                                list.attributes = vbo.attributes;
+                                list.renderType = pass.renderType;
+                                list.numElements = vbo.numElements;
+                                mCore.addComponent(entityID, list);
+                                break;
+                            }
                         }
+
+                        // Lookup the VBOs and IBOs associated with this particular draw list
+                        // and add them to our entity in question.
+                        std::string assetName = "Assets/sphere.geom";
+
+                        if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
+                        {
+                            assetName = "Assets/sphere.geom";
+                        }
+
+                        if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_CYLINDER)
+                        {
+                            assetName = "Assests/arrow.geom";
+                        }
+
+                        addVBOToEntity(entityID, assetName);
+                        addIBOToEntity(entityID, assetName);
                     }
-                    
-                    // Lookup the VBOs and IBOs associated with this particular draw list
-                    // and add them to our entity in question.
-                    std::string assetName = "Assets/sphere.geom";
-                    
+
+                    // Load vertex and fragment shader will use an already loaded program.
+                    //addShaderToEntity(entityID, pass.programName);
+                    shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
+
+                    // Add transformation
+                    gen::Transform trafo;
+
                     if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
                     {
-                        assetName = "Assets/sphere.geom";
+                        double scale = pass.scalar;
+                        trafo.transform[0].x = scale;
+                        trafo.transform[1].y = scale;
+                        trafo.transform[2].z = scale;
                     }
-                    
-                    if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_CYLINDER)
+                    mCore.addComponent(entityID, trafo);
+
+                    // Add lighting uniform checks
+                    LightingUniforms lightUniforms;
+                    mCore.addComponent(entityID, lightUniforms);
+
+                    // Add SCIRun render state.
+                    SRRenderState state;
+                    state.state = pass.renderState;
+                    mCore.addComponent(entityID, state);
+                    RenderBasicGeom geom;
+                    mCore.addComponent(entityID, geom);
+                    if (pass.passName.find("TextFont") != std::string::npos) { //this is a font texture
+                        // Construct texture component and add it to our entity for rendering.
+                        ren::Texture component;
+                        component.textureUnit = 0;
+                        component.setUniformName("uTX0");
+                        component.textureType = GL_TEXTURE_2D;
+                        component.glid = mFontTexture;
+                        mCore.addComponent(entityID, component);
+                    }
+                    // Ensure common uniforms are covered.
+                    ren::CommonUniforms commonUniforms;
+                    mCore.addComponent(entityID, commonUniforms);
+
+                    for (const auto& uniform : pass.mUniforms)
                     {
-                        assetName = "Assests/arrow.geom";
+                        applyUniform(entityID, uniform);
                     }
-                    
-                    addVBOToEntity(entityID, assetName);
-                    addIBOToEntity(entityID, assetName);
+
+                    // Add components associated with entity. We just need a base class which
+                    // we can pass in an entity ID, then a derived class which bundles
+                    // all associated components (including types) together. We can use
+                    // a variadic template for this. This will allow us to place any components
+                    // we want on the objects in question in show field. This could lead to
+                    // much simpler customization.
+
+                    // Add a pass to our local object.
+                    elem.mPasses.emplace_back(pass.passName, pass.renderType);
+                    pass.renderState.mSortType = mRenderSortType;
+                    mCore.addComponent(entityID, pass);
                 }
-                
-                // Load vertex and fragment shader will use an already loaded program.
-                //addShaderToEntity(entityID, pass.programName);
-                shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
-                
-                // Add transformation
-                gen::Transform trafo;
-                
-                if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
+
+                // Recalculate scene bounding box. Should only be done when an object is added.
+                mSceneBBox.reset();
+                for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
                 {
-                    double scale = pass.scalar;
-                    trafo.transform[0].x = scale;
-                    trafo.transform[1].y = scale;
-                    trafo.transform[2].z = scale;
-                }
-                mCore.addComponent(entityID, trafo);
-                
-                // Add lighting uniform checks
-                LightingUniforms lightUniforms;
-                mCore.addComponent(entityID, lightUniforms);
-                
-                // Add SCIRun render state.
-                SRRenderState state;
-                state.state = pass.renderState;
-                mCore.addComponent(entityID, state);
-                RenderBasicGeom geom;
-                mCore.addComponent(entityID, geom);
-                if (pass.passName.find("TextFont") != std::string::npos) { //this is a font texture
-                    // Construct texture component and add it to our entity for rendering.
-                    ren::Texture component;
-                    component.textureUnit = 0;
-                    component.setUniformName("uTX0");
-                    component.textureType = GL_TEXTURE_2D;
-                    component.glid = mFontTexture;
-                    mCore.addComponent(entityID, component);
-                }
-                // Ensure common uniforms are covered.
-                ren::CommonUniforms commonUniforms;
-                mCore.addComponent(entityID, commonUniforms);
-                
-                for (const auto& uniform : pass.mUniforms)
-                {
-                    applyUniform(entityID, uniform);
-                }
-                
-                // Add components associated with entity. We just need a base class which
-                // we can pass in an entity ID, then a derived class which bundles
-                // all associated components (including types) together. We can use
-                // a variadic template for this. This will allow us to place any components
-                // we want on the objects in question in show field. This could lead to
-                // much simpler customization.
-                
-                // Add a pass to our local object.
-                elem.mPasses.emplace_back(pass.passName, pass.renderType);
-                pass.renderState.mSortType = mRenderSortType;
-                mCore.addComponent(entityID, pass);
-            }
-            
-            // Recalculate scene bounding box. Should only be done when an object is added.
-            mSceneBBox.reset();
-            for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
-            {
-                if (it->mBBox.valid())
-                {
-                    mSceneBBox.extend(it->mBBox);
+                    if (it->mBBox.valid())
+                    {
+                        mSceneBBox.extend(it->mBBox);
+                    }
                 }
             }
         }
@@ -624,28 +629,30 @@ namespace SCIRun {
         //------------------------------------------------------------------------------
         void SRInterface::addVBOToEntity(uint64_t entityID, const std::string& vboName)
         {
-            std::shared_ptr<ren::VBOMan> vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
-            ren::VBO vbo;
-            
-            vbo.glid = vboMan->hasVBO(vboName);
-            
-            mCore.addComponent(entityID, vbo);
+            std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
+            if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) {
+                ren::VBO vbo;
+                vbo.glid = vboMan->hasVBO(vboName);
+                mCore.addComponent(entityID, vbo);
+            }
         }
         
         //------------------------------------------------------------------------------
         void SRInterface::addIBOToEntity(uint64_t entityID, const std::string& iboName)
         {
-            std::shared_ptr<ren::IBOMan> iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
-            ren::IBO ibo;
-            
-            auto iboData = iboMan->getIBOData(iboName);
-            
-            ibo.glid = iboMan->hasIBO(iboName);
-            ibo.primType = iboData.primType;
-            ibo.primMode = iboData.primMode;
-            ibo.numPrims = iboData.numPrims;
-            
-            mCore.addComponent(entityID, ibo);
+            std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
+            if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) {
+                ren::IBO ibo;
+
+                auto iboData = iboMan->getIBOData(iboName);
+
+                ibo.glid = iboMan->hasIBO(iboName);
+                ibo.primType = iboData.primType;
+                ibo.primMode = iboData.primMode;
+                ibo.numPrims = iboData.numPrims;
+
+                mCore.addComponent(entityID, ibo);
+            }
         }
         
         //------------------------------------------------------------------------------
@@ -678,10 +685,10 @@ namespace SCIRun {
             
             std::sort(rel_depth.begin(), rel_depth.end());
             
-            int numPrimitives = pass.ibo.data->getBufferSize() / pass.ibo.indexSize;
+            //int numPrimitives = pass.ibo.data->getBufferSize() / pass.ibo.indexSize;
             
             std::vector<char> sorted_buffer(pass.ibo.data->getBufferSize());
-            char* ibuffer = reinterpret_cast<char*>(pass.ibo.data->getBuffer());
+            //char* ibuffer = reinterpret_cast<char*>(pass.ibo.data->getBuffer());
             char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
             size_t tri_size = pass.ibo.data->getBufferSize() / num_triangles;
             
@@ -700,12 +707,13 @@ namespace SCIRun {
         //------------------------------------------------------------------------------
         void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shaderName)
         {
-            std::shared_ptr<ren::ShaderMan> shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
-            ren::Shader shader;
-            
-            shader.glid = shaderMan->getIDForAsset(shaderName.c_str());
-            
-            mCore.addComponent(entityID, shader);
+            std::weak_ptr<ren::ShaderMan> sm =
+                    mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
+            if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) {
+                ren::Shader shader;
+                shader.glid = shaderMan->getIDForAsset(shaderName.c_str());
+                mCore.addComponent(entityID, shader);
+            }
         }
         
         //------------------------------------------------------------------------------
@@ -838,228 +846,234 @@ namespace SCIRun {
             
             // This rendering algorithm is fairly inefficient. Use the entity component
             // system to optimize the rendering of a large amount of objects.
-            std::shared_ptr<ren::VBOMan> vboMan = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
-            std::shared_ptr<ren::IBOMan> iboMan = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
-            std::shared_ptr<ren::ShaderMan> shaderMan = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
-            
-            GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
-            GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
-            GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhong");
-            
-            // Bail if assets have not been loaded yet (asynchronous loading may take a
-            // few frames).
-            if (arrowVBO == 0 || arrowIBO == 0 || shader == 0)
-            {
-                axesFailCount_++;
-                if (axesFailCount_ > frameInitLimit_)
-                    throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
-                return;
-            }
-            
-            const ren::IBOMan::IBOData* iboData;
-            try
-            {
-                iboData = &iboMan->getIBOData("Assets/arrow.geom");
-            }
-            catch (...)
-            {
-                // Return if IBO data not available.
-                return;
-            }
-            
-            // Ensure shader attributes are setup appropriately.
-            mArrowAttribs.setup(arrowVBO, shader, *vboMan);
-            
-            glm::mat4 trafo;
-            
-            GL(glUseProgram(shader));
-            
-            GL(glBindBuffer(GL_ARRAY_BUFFER, arrowVBO));
-            GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, arrowIBO));
-            
-            bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
-            bool cullFace = glIsEnabled(GL_CULL_FACE);
-            bool blend = glIsEnabled(GL_BLEND);
-            
-            GL(glDepthMask(GL_TRUE));
-            GL(glDisable(GL_CULL_FACE));
-            GL(glDisable(GL_BLEND));
-            
-            // Note that we can pull aspect ratio from the screen dimensions static
-            // variable.
-            gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
-            float aspect = static_cast<float>(dims->width) / static_cast<float>(dims->height);
-            glm::mat4 projection = glm::perspective(0.59f, aspect, 1.0f, 2000.0f);
-            
-            // Build world transform for all axes. Rotates about uninverted camera's
-            // view, then translates to a specified corner on the screen.
-            glm::mat4 axesRot = mCamera->getWorldToView();
-            axesRot[3][0] = 0.0f;
-            axesRot[3][1] = 0.0f;
-            axesRot[3][2] = 0.0f;
-            glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.375f * aspect, 0.37f, -1.5f));
-            glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f));
-            glm::mat4 axesTransform = axesScale * axesRot;
-            
-            GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
-            GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
-            
-            GLint locAmbientColor = glGetUniformLocation(shader, "uAmbientColor");
-            GLint locDiffuseColor = glGetUniformLocation(shader, "uDiffuseColor");
-            GLint locSpecularColor = glGetUniformLocation(shader, "uSpecularColor");
-            GLint locSpecularPower = glGetUniformLocation(shader, "uSpecularPower");
-            
-            GLint locProjIVObject = glGetUniformLocation(shader, "uProjIVObject");
-            GLint locObject = glGetUniformLocation(shader, "uObject");
-            
-            GL(glUniform3f(locCamViewVec, 0.0f, 0.0f, -1.0f));
-            GL(glUniform3f(locLightDirWorld, 0.0f, 0.0f, -1.0f));
-            
-            // Build projection for the axes to use on the screen. The arrors will not
-            // use the camera, but will use the camera's transformation matrix.
-            
-            mArrowAttribs.bind();
-            
-            // X Axis (dark)
-            {
-                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
-                glm::mat4 finalTrafo = axesTransform * xform;
-                
-                GL(glUniform4f(locAmbientColor, 0.1f, 0.01f, 0.01f, 1.0f));
-                GL(glUniform4f(locDiffuseColor, 0.25f, 0.0f, 0.0f, 1.0f));
-                GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-                GL(glUniform1f(locSpecularPower, 16.0f));
-                
-                glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                const GLfloat* ptr = glm::value_ptr(worldToProj);
-                GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
-                
-                glm::mat4 objectSpace = finalTrafo;
-                ptr = glm::value_ptr(objectSpace);
-                GL(glUniformMatrix4fv(locObject, 1, false, ptr));
-                
-                GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-            }
-            
-            // X Axis
-            {
-                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
-                glm::mat4 finalTrafo = axesTransform * xform;
+            std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
+            std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
+            std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
 
-                GL(glUniform4f(locAmbientColor, 0.5f, 0.01f, 0.01f, 1.0f));
-                GL(glUniform4f(locDiffuseColor, 1.0f, 0.0f, 0.0f, 1.0f));
-                GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-                GL(glUniform1f(locSpecularPower, 16.0f));
-                
-                glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                const GLfloat* ptr = glm::value_ptr(worldToProj);
-                GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
-                
-                glm::mat4 objectSpace = finalTrafo;
-                ptr = glm::value_ptr(objectSpace);
-                GL(glUniformMatrix4fv(locObject, 1, false, ptr));
-                
-                GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-            }
-            
-            // Y Axis (dark)
-            {
-                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
-                glm::mat4 finalTrafo = axesTransform * xform;
+            if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) {
+                if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) {
+                    if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) {
+                        GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
+                        GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
+                        GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhong");
 
-                GL(glUniform4f(locAmbientColor, 0.01f, 0.1f, 0.01f, 1.0f));
-                GL(glUniform4f(locDiffuseColor, 0.0f, 0.25f, 0.0f, 1.0f));
-                GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-                GL(glUniform1f(locSpecularPower, 16.0f));
-                
-                glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                const GLfloat* ptr = glm::value_ptr(worldToProj);
-                GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
-                
-                glm::mat4 objectSpace = finalTrafo;
-                ptr = glm::value_ptr(objectSpace);
-                GL(glUniformMatrix4fv(locObject, 1, false, ptr));
-                
-                GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-            }
-            
-            // Y Axis
-            {
-                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
-                glm::mat4 finalTrafo = axesTransform * xform;
+                        // Bail if assets have not been loaded yet (asynchronous loading may take a
+                        // few frames).
+                        if (arrowVBO == 0 || arrowIBO == 0 || shader == 0)
+                        {
+                            axesFailCount_++;
+                            if (axesFailCount_ > frameInitLimit_)
+                                throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
+                            return;
+                        }
 
-                GL(glUniform4f(locAmbientColor, 0.01f, 0.5f, 0.01f, 1.0f));
-                GL(glUniform4f(locDiffuseColor, 0.0f, 1.0f, 0.0f, 1.0f));
-                GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-                GL(glUniform1f(locSpecularPower, 16.0f));
-                
-                glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                const GLfloat* ptr = glm::value_ptr(worldToProj);
-                GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
-                
-                glm::mat4 objectSpace = finalTrafo;
-                ptr = glm::value_ptr(objectSpace);
-                GL(glUniformMatrix4fv(locObject, 1, false, ptr));
-                
-                GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-            }
-            
-            // Z Axis (dark)
-            {
-                // No rotation at all
-                glm::mat4 finalTrafo = axesTransform;
+                        const ren::IBOMan::IBOData* iboData;
+                        try
+                        {
+                            iboData = &iboMan->getIBOData("Assets/arrow.geom");
+                        }
+                        catch (...)
+                        {
+                            // Return if IBO data not available.
+                            return;
+                        }
 
-                GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.1f, 1.0f));
-                GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 0.25f, 1.0f));
-                GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-                GL(glUniform1f(locSpecularPower, 16.0f));
-                
-                glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                const GLfloat* ptr = glm::value_ptr(worldToProj);
-                GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
-                
-                glm::mat4 objectSpace = finalTrafo;
-                ptr = glm::value_ptr(objectSpace);
-                GL(glUniformMatrix4fv(locObject, 1, false, ptr));
-                
-                GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-            }
-            
-            // Z Axis
-            {
-                // No rotation at all
-                glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
-                glm::mat4 finalTrafo = axesTransform * xform;
+                        // Ensure shader attributes are setup appropriately.
+                        mArrowAttribs.setup(arrowVBO, shader, *vboMan);
 
-                GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.5f, 1.0f));
-                GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 1.0f, 1.0f));
-                GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-                GL(glUniform1f(locSpecularPower, 16.0f));
-                
-                glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                const GLfloat* ptr = glm::value_ptr(worldToProj);
-                GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
-                
-                glm::mat4 objectSpace = finalTrafo;
-                ptr = glm::value_ptr(objectSpace);
-                GL(glUniformMatrix4fv(locObject, 1, false, ptr));
-                
-                GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-            }
-            
-            mArrowAttribs.unbind();
-            
-            if (!depthMask)
-            {
-                GL(glDepthMask(GL_FALSE));
-            }
-            if (cullFace)
-            {
-                GL(glEnable(GL_CULL_FACE));
-            }
-            if (blend)
-            {
-                GL(glEnable(GL_BLEND));
+                        glm::mat4 trafo;
+
+                        GL(glUseProgram(shader));
+
+                        GL(glBindBuffer(GL_ARRAY_BUFFER, arrowVBO));
+                        GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, arrowIBO));
+
+                        bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
+                        bool cullFace = glIsEnabled(GL_CULL_FACE);
+                        bool blend = glIsEnabled(GL_BLEND);
+
+                        GL(glDepthMask(GL_TRUE));
+                        GL(glDisable(GL_CULL_FACE));
+                        GL(glDisable(GL_BLEND));
+
+                        // Note that we can pull aspect ratio from the screen dimensions static
+                        // variable.
+                        gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
+                        float aspect = static_cast<float>(dims->width) / static_cast<float>(dims->height);
+                        glm::mat4 projection = glm::perspective(0.59f, aspect, 1.0f, 2000.0f);
+
+                        // Build world transform for all axes. Rotates about uninverted camera's
+                        // view, then translates to a specified corner on the screen.
+                        glm::mat4 axesRot = mCamera->getWorldToView();
+                        axesRot[3][0] = 0.0f;
+                        axesRot[3][1] = 0.0f;
+                        axesRot[3][2] = 0.0f;
+                        glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.375f * aspect, 0.37f, -1.5f));
+                        glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f));
+                        glm::mat4 axesTransform = axesScale * axesRot;
+
+                        GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
+                        GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
+
+                        GLint locAmbientColor = glGetUniformLocation(shader, "uAmbientColor");
+                        GLint locDiffuseColor = glGetUniformLocation(shader, "uDiffuseColor");
+                        GLint locSpecularColor = glGetUniformLocation(shader, "uSpecularColor");
+                        GLint locSpecularPower = glGetUniformLocation(shader, "uSpecularPower");
+
+                        GLint locProjIVObject = glGetUniformLocation(shader, "uProjIVObject");
+                        GLint locObject = glGetUniformLocation(shader, "uObject");
+
+                        GL(glUniform3f(locCamViewVec, 0.0f, 0.0f, -1.0f));
+                        GL(glUniform3f(locLightDirWorld, 0.0f, 0.0f, -1.0f));
+
+                        // Build projection for the axes to use on the screen. The arrors will not
+                        // use the camera, but will use the camera's transformation matrix.
+
+                        mArrowAttribs.bind();
+
+                        // X Axis (dark)
+                        {
+                            glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+                            glm::mat4 finalTrafo = axesTransform * xform;
+
+                            GL(glUniform4f(locAmbientColor, 0.1f, 0.01f, 0.01f, 1.0f));
+                            GL(glUniform4f(locDiffuseColor, 0.25f, 0.0f, 0.0f, 1.0f));
+                            GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
+                            GL(glUniform1f(locSpecularPower, 16.0f));
+
+                            glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+                            const GLfloat* ptr = glm::value_ptr(worldToProj);
+                            GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+                            glm::mat4 objectSpace = finalTrafo;
+                            ptr = glm::value_ptr(objectSpace);
+                            GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+                            GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+                        }
+
+                        // X Axis
+                        {
+                            glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+                            glm::mat4 finalTrafo = axesTransform * xform;
+
+                            GL(glUniform4f(locAmbientColor, 0.5f, 0.01f, 0.01f, 1.0f));
+                            GL(glUniform4f(locDiffuseColor, 1.0f, 0.0f, 0.0f, 1.0f));
+                            GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
+                            GL(glUniform1f(locSpecularPower, 16.0f));
+
+                            glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+                            const GLfloat* ptr = glm::value_ptr(worldToProj);
+                            GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+                            glm::mat4 objectSpace = finalTrafo;
+                            ptr = glm::value_ptr(objectSpace);
+                            GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+                            GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+                        }
+
+                        // Y Axis (dark)
+                        {
+                            glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+                            glm::mat4 finalTrafo = axesTransform * xform;
+
+                            GL(glUniform4f(locAmbientColor, 0.01f, 0.1f, 0.01f, 1.0f));
+                            GL(glUniform4f(locDiffuseColor, 0.0f, 0.25f, 0.0f, 1.0f));
+                            GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
+                            GL(glUniform1f(locSpecularPower, 16.0f));
+
+                            glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+                            const GLfloat* ptr = glm::value_ptr(worldToProj);
+                            GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+                            glm::mat4 objectSpace = finalTrafo;
+                            ptr = glm::value_ptr(objectSpace);
+                            GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+                            GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+                        }
+
+                        // Y Axis
+                        {
+                            glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+                            glm::mat4 finalTrafo = axesTransform * xform;
+
+                            GL(glUniform4f(locAmbientColor, 0.01f, 0.5f, 0.01f, 1.0f));
+                            GL(glUniform4f(locDiffuseColor, 0.0f, 1.0f, 0.0f, 1.0f));
+                            GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
+                            GL(glUniform1f(locSpecularPower, 16.0f));
+
+                            glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+                            const GLfloat* ptr = glm::value_ptr(worldToProj);
+                            GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+                            glm::mat4 objectSpace = finalTrafo;
+                            ptr = glm::value_ptr(objectSpace);
+                            GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+                            GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+                        }
+
+                        // Z Axis (dark)
+                        {
+                            // No rotation at all
+                            glm::mat4 finalTrafo = axesTransform;
+
+                            GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.1f, 1.0f));
+                            GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 0.25f, 1.0f));
+                            GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
+                            GL(glUniform1f(locSpecularPower, 16.0f));
+
+                            glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+                            const GLfloat* ptr = glm::value_ptr(worldToProj);
+                            GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+                            glm::mat4 objectSpace = finalTrafo;
+                            ptr = glm::value_ptr(objectSpace);
+                            GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+                            GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+                        }
+
+                        // Z Axis
+                        {
+                            // No rotation at all
+                            glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
+                            glm::mat4 finalTrafo = axesTransform * xform;
+
+                            GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.5f, 1.0f));
+                            GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 1.0f, 1.0f));
+                            GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
+                            GL(glUniform1f(locSpecularPower, 16.0f));
+
+                            glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+                            const GLfloat* ptr = glm::value_ptr(worldToProj);
+                            GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+                            glm::mat4 objectSpace = finalTrafo;
+                            ptr = glm::value_ptr(objectSpace);
+                            GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+                            GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+                        }
+
+                        mArrowAttribs.unbind();
+
+                        if (!depthMask)
+                        {
+                            GL(glDepthMask(GL_FALSE));
+                        }
+                        if (cullFace)
+                        {
+                            GL(glEnable(GL_CULL_FACE));
+                        }
+                        if (blend)
+                        {
+                            GL(glEnable(GL_BLEND));
+                        }
+                    }
+                }
             }
         }
         

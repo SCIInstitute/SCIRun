@@ -44,21 +44,23 @@ public:
     // We are guaranteed that CoreBootstrap ran one frame prior. So we will
     // have access to all of the rendering subsystems.
 
-    // Will need to replace this with a static entity in the future.
-    SRInterface * iface = core.getStaticComponent<StaticSRInterface>()->instance_;
-    std::shared_ptr<ren::GeomMan> geomMan = core.getStaticComponent<ren::StaticGeomMan>()->instance_;
-    std::shared_ptr<ren::ShaderMan> shaderMan = core.getStaticComponent<ren::StaticShaderMan>()->instance_;
+    std::weak_ptr<ren::GeomMan> gm =
+            core.getStaticComponent<ren::StaticGeomMan>()->instance_;
+    std::weak_ptr<ren::ShaderMan> sm =
+            core.getStaticComponent<ren::StaticShaderMan>()->instance_;
 
     // A cached entity so that our VBOs and IBOs will not get garbage collected.
     uint64_t cachedEntity = 0;
     cachedEntity = gen::StaticObjRefID::getNewObjectID(core);
-
-    // Load geometry and associated vertex and fragment shaders.
-    geomMan->loadGeometry(core, cachedEntity, "Assets/arrow.geom");
-    geomMan->loadGeometry(core, cachedEntity, "Assets/sphere.geom");
-
-    // Load shader we will use with the coordinate axes.
-    shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/DirPhong");
+    if (std::shared_ptr<ren::GeomMan> geomMan = gm.lock()) {
+        // Load geometry and associated vertex and fragment shaders.
+        geomMan->loadGeometry(core, cachedEntity, "Assets/arrow.geom");
+        geomMan->loadGeometry(core, cachedEntity, "Assets/sphere.geom");
+    }
+    if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) {
+        // Load shader we will use with the coordinate axes.
+        shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/DirPhong");
+    }
 
     // Note: We don't need to strictly store the coordinate axes entity.
     // We are really only after its VBO / IBO.
