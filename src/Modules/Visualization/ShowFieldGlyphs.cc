@@ -305,12 +305,12 @@ void ShowFieldGlyphs::renderVectors(
         if (colorScheme == GeometryObject::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(v.length());
+          node_color = map->valueToColor(inputVector);
         }
         if (colorScheme == GeometryObject::COLOR_IN_SITU)
         {
           Vector colorVector = inputVector.normal();
-          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
       }
       else
@@ -370,12 +370,12 @@ void ShowFieldGlyphs::renderVectors(
         if (colorScheme == GeometryObject::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(v.length());
+          node_color = map->valueToColor(inputVector);
         }
         if (colorScheme == GeometryObject::COLOR_IN_SITU)
         {
           Vector colorVector = inputVector.normal();
-          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
       }
       switch (state.mGlyphType)
@@ -490,7 +490,7 @@ void ShowFieldGlyphs::renderScalars(
       double v;
       fld->get_value(v, node.index());
       Point p = node.point();
-      double radius = v * scale;
+      double radius = std::abs(v) * scale;
 
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
@@ -502,7 +502,7 @@ void ShowFieldGlyphs::renderScalars(
         if (colorScheme == GeometryObject::COLOR_IN_SITU)
         {
           Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
-          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
       }
       switch (state.mGlyphType)
@@ -538,7 +538,7 @@ void ShowFieldGlyphs::renderScalars(
       double v;
       fld->get_value(v, cell.index());
       Point p = cell.center();
-      double radius = v * scale;
+      double radius = std::abs(v) * scale;
 
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
@@ -550,7 +550,7 @@ void ShowFieldGlyphs::renderScalars(
         if (colorScheme == GeometryObject::COLOR_IN_SITU)
         {
           Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
-          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
       }
       switch (state.mGlyphType)
@@ -650,7 +650,7 @@ void ShowFieldGlyphs::renderTensors(
         if (colorScheme == GeometryObject::COLOR_IN_SITU)
         {
           Vector colorVector = t.get_eigenvector1().normal();
-          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }        
       }
       switch (state.mGlyphType)
@@ -689,7 +689,7 @@ void ShowFieldGlyphs::renderTensors(
         if (colorScheme == GeometryObject::COLOR_IN_SITU)
         {
           Vector colorVector = t.get_eigenvector1().normal();
-          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
       }
       switch (state.mGlyphType)
