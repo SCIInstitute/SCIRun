@@ -48,5 +48,16 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   addDoubleSpinBoxManager(zLocationDoubleSpinBox_, Parameters::ZLocation);
   addLineEditManager(fieldValueLineEdit_, Parameters::FieldValue);
   addSpinBoxManager(fieldNodeSpinBox_, Parameters::FieldNode);
-  addSpinBoxManager(fieldElemSpinBox_, Parameters::FieldElem);  
+  addSpinBoxManager(fieldElemSpinBox_, Parameters::FieldElem);
+
+  connect(moveToComboBox_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
+}
+
+void GenerateSinglePointProbeFromFieldDialog::enableWidgets(const QString& mode)
+{
+  xLocationDoubleSpinBox_->setReadOnly(mode != "Location");
+  yLocationDoubleSpinBox_->setReadOnly(mode != "Location");
+  zLocationDoubleSpinBox_->setReadOnly(mode != "Location");
+  fieldNodeSpinBox_->setReadOnly(mode != "Node");
+  fieldElemSpinBox_->setReadOnly(mode != "Element");
 }
