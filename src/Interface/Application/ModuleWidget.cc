@@ -1093,9 +1093,19 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
+      connect(dockable_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
 
       dialog_->pull();
     }
+  }
+}
+
+void ModuleWidget::updateDockWidgetProperties(bool isFloating)
+{
+  if (isFloating)
+  {
+    dockable_->setWindowFlags(Qt::Window);
+    dockable_->show();
   }
 }
 
