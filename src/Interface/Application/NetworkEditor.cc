@@ -1221,8 +1221,10 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
 std::atomic<int> ErrorItem::instanceCounter_(0);
 
 ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent) : QGraphicsTextItem(text, parent),
-  showModule_(showModule), counter_(instanceCounter_)
+  showModule_(showModule), counter_(instanceCounter_), rect_(0)
 {
+  setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
+  setZValue(10000);
   instanceCounter_++;
   setDefaultTextColor(Qt::red);
 
@@ -1237,6 +1239,7 @@ ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGra
 ErrorItem::~ErrorItem()
 {
   instanceCounter_--;
+  delete rect_;
 }
 
 void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -1247,13 +1250,47 @@ void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
   }
   else if (event->buttons() & Qt::RightButton)
   {
+    if (rect_)
+    {
+      scene()->removeItem(rect_);
+      rect_ = 0;
+    }
     scene()->removeItem(this);
   }
+  QGraphicsTextItem::mousePressEvent(event);
 }
 
 void ErrorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
   timeLine_->setCurrentTime(0);
+  QGraphicsTextItem::hoverEnterEvent(event);
+}
+
+void ErrorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+  if (!rect_)
+  {
+    timeLine_->stop();
+    timeLine_->setCurrentTime(0);
+    auto f = font();
+    f.setBold(true);
+    setFont(f);
+    setFlags(flags() ^ ItemIsMovable);
+    rect_ = scene()->addRect(boundingRect(), QPen(Qt::red, 2, Qt::DotLine));
+    rect_->setPos(pos());
+  }
+  else
+  {
+    auto f = font();
+    f.setBold(false);
+    setFont(f);
+    setFlags(flags() & ItemIsMovable);
+    scene()->removeItem(rect_);
+    rect_ = 0;
+    timeLine_->start();
+  }
+
+  QGraphicsTextItem::mouseDoubleClickEvent(event);
 }
 
 void ErrorItem::animate(qreal val)
@@ -1271,20 +1308,11 @@ void NetworkEditor::displayError(const QString& msg, std::function<void()> showM
   scene()->addItem(errorItem);
 
   QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
-  //qDebug() << "tl" << tl;
   QPointF br = tl + viewport()->rect().bottomRight();
-  //qDebug() << "br" << br;
   QMatrix mat = matrix().inverted();
-  //qDebug() << "mat" << mat;
   auto rect = mat.mapRect(QRectF(tl,br));
 
-  //auto rectOld = mapToScene(viewport()->geometry()).boundingRect();
-  //qDebug() << "scene rect:" << rect;
-  //qDebug() << "scene rectOld:" << rectOld;
-
   auto corner = rect.bottomLeft();
-  //qDebug() << corner;
-
   errorItem->setPos(corner + QPointF(100, -(40*errorItem->num() + 100)));
 
 #if 0
