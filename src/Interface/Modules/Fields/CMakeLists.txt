@@ -55,6 +55,7 @@ SET(Interface_Modules_Fields_FORMS
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
   GenerateSinglePointProbeFromField.ui
+  GeneratePointSamplesFromField.ui
   RefineMesh.ui
   ConvertFieldBasis.ui
   swapfielddatawithmatrixentries.ui
@@ -97,6 +98,7 @@ SET(Interface_Modules_Fields_HEADERS
   ConvertIndicesToFieldDataDialog.h
   ExtractSimpleIsosurfaceDialog.h
   RegisterWithCorrespondencesDialog.h
+  GeneratePointSamplesFromFieldDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -132,6 +134,7 @@ SET(Interface_Modules_Fields_SOURCES
   ConvertIndicesToFieldDataDialog.cc
   ExtractSimpleIsosurfaceDialog.cc
   RegisterWithCorrespondencesDialog.cc
+  GeneratePointSamplesFromFieldDialog.cc
 )
 
 IF(WITH_TETGEN)
