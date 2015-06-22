@@ -136,6 +136,15 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().logInfo("Setting read: modules are dockable = " + QString::number(prefs.modulesAreDockable));
   }
 
+  const QString autoNotes = qname(prefs.autoNotes);
+  if (settings.contains(autoNotes))
+  {
+    auto value = settings.value(autoNotes).toBool();
+    prefs.autoNotes.setValue(value);
+    prefsWindow_->autoModuleNoteCheckbox_->setChecked(value);
+    GuiLogger::Instance().logInfo("Setting read: automatic module notes = " + QString::number(prefs.autoNotes));
+  }
+
   const QString disableModuleErrorDialogsKey = "disableModuleErrorDialogs";
   if (settings.contains(disableModuleErrorDialogsKey))
   {
@@ -218,6 +227,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
   settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
   settings.setValue(qname(prefs.modulesAreDockable), prefs.modulesAreDockable.val());
+  settings.setValue(qname(prefs.autoNotes), prefs.autoNotes.val());
   settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
   settings.setValue("defaultNotePositionIndex", prefsWindow_->defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());

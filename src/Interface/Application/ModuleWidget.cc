@@ -1201,10 +1201,13 @@ void ModuleWidget::launchDocumentation()
 
 void ModuleWidget::setStartupNote(const QString& text)
 {
-  auto note = getCurrentNote();
-  note.plainText_ = text;
-  note.html_ = "<p style=\"color:white\">" + text;
-  updateNoteFromFile(note);
+  if (isViewScene_ || Core::Preferences::Instance().autoNotes)
+  {
+    auto note = getCurrentNote();
+    note.plainText_ = text;
+    note.html_ = "<p style=\"color:white\">" + text;
+    updateNoteFromFile(note);
+  }
 }
 
 void ModuleWidget::createStartupNote()
