@@ -41,6 +41,7 @@ namespace SCIRun {
       namespace Fields
       {
         ALGORITHM_PARAMETER_DECL(NumSeeds);
+        ALGORITHM_PARAMETER_DECL(ProbeScale);
       }
     }
   }
@@ -60,7 +61,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
-        OUTPUT_PORT(1, GeneratedPoint, LegacyField);
+        OUTPUT_PORT(1, GeneratedPoints, LegacyField);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:

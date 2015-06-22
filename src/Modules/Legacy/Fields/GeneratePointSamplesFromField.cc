@@ -37,8 +37,10 @@
 ///
 
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
+#include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -54,6 +56,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 
 ALGORITHM_PARAMETER_DEF(Fields, NumSeeds);
+ALGORITHM_PARAMETER_DEF(Fields, ProbeScale);
 
 const ModuleLookupInfo GeneratePointSamplesFromField::staticInfo_("GeneratePointSamplesFromField", "NewField", "SCIRun");
 
@@ -100,9 +103,9 @@ public:
     //CrowdMonitor widget_lock_;
     BBox last_bounds_;
 
-    std::vector<int>              widget_id_;
+    std::vector<size_t>              widget_id_;
     //std::vector<GeomHandle>       widget_switch_;
-    //std::vector<PointWidget*>     widget_;
+    std::vector<PointWidgetPtr>     pointWidgets_;
     //std::vector<ArrowWidget*>     widget_vec_;
     //std::vector<RingWidget*>      widget_ring_;
     double l2norm_;
@@ -116,12 +119,15 @@ GeneratePointSamplesFromField::GeneratePointSamplesFromField()
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeneratedWidget);
-  INITIALIZE_PORT(GeneratedPoint);
+  INITIALIZE_PORT(GeneratedPoints);
 }
 
 void GeneratePointSamplesFromField::setStateDefaults()
 {
   //TODO
+  auto state = get_state();
+  state->setValue(Parameters::NumSeeds, 1);
+  state->setValue(Parameters::ProbeScale, 5.0);
 }
 
 #if 0
@@ -208,20 +214,23 @@ void GeneratePointSamplesFromField::execute()
   }
 
   auto state = get_state();
-  int numSeeds = state->getValue(Parameters::NumSeeds).toInt();
-#if 0
-  if ((int)widget_id_.size() != numSeeds)
+  size_t numSeeds = state->getValue(Parameters::NumSeeds).toInt();
+  auto scale = state->getValue(Parameters::ProbeScale).toDouble();
+  
+  if (impl_->widget_id_.size() != numSeeds)
   {
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     GeometryOPortHandle ogport;
     if (!(get_oport_handle("GeneratePointSamplesFromField Widget",ogport)))
     {
       error("Unable to initialize " + module_name_ + "'s oport.");
       return;
     }
+#endif
 
-    if(numSeeds < (int)widget_id_.size())
+    if (numSeeds < impl_->widget_id_.size())
     {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       for (int i = numSeeds; i < (int)widget_id_.size(); i++)
       {
         ((GeomSwitch *)(widget_switch_[i].get_rep()))->set_state(0);
@@ -232,35 +241,41 @@ void GeneratePointSamplesFromField::execute()
         ostringstream str;
         str << i;
         TCLInterface::execute(get_id().c_str() + std::string(" clear_seed " + str.str()));
-
       }
-      widget_switch_.resize(numSeeds);
-      widget_id_.resize(numSeeds);
-      if (gui_widget_.get() == 0)
-      	widget_vec_.resize(numSeeds);
+#endif
+      //widget_switch_.resize(numSeeds);
+      impl_->widget_id_.resize(numSeeds);
+      if (true) //gui_widget_.get() == 0)
+        impl_->pointWidgets_.resize(numSeeds);
       else
-      	widget_ring_.resize(numSeeds);
+      {
+        //widget_ring_.resize(numSeeds);
+      }
+
     }
     else
     {
-      for (int i=widget_id_.size(); i <numSeeds; i++)
+      for (size_t i = impl_->widget_id_.size(); i < numSeeds; i++)
       {
-        if (gui_widget_.get() == 0)
+        if (true) //gui_widget_.get() == 0)
         {
-          PointWidget *seed = new PointWidget(this, &widget_lock_, 1.0);
+          PointWidgetPtr seed(new PointWidgetStub()); //this, &widget_lock_, 1.0);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
           MaterialHandle redMatl = new Material(Color(red_.get(), green_.get(), blue_.get()));
           seed->SetMaterial(0,redMatl);
           seed->Connect(ogport.get_rep());
-          widget_.push_back(seed);
+#endif
+          impl_->pointWidgets_.push_back(seed);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
           widget_switch_.push_back(widget_[i]->GetWidget());
           ((GeomSwitch *)(widget_switch_[i].get_rep()))->set_state(1);
+#endif
+          impl_->widget_id_.push_back(i);  //ogport->addObj(widget_switch_[i], "SeedPoint" + to_string((int)i), &widget_lock_));
 
-          widget_id_.push_back(ogport->addObj(widget_switch_[i], "SeedPoint" + to_string((int)i),
-                      &widget_lock_));
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
           // input saved out positions
-          ostringstream strX, strY, strZ;
+          std::ostringstream strX, strY, strZ;
 
           strX << "seedX" << i;
           GuiDouble* gui_locx = new GuiDouble(get_ctx()->subVar(strX.str()));
@@ -289,12 +304,13 @@ void GeneratePointSamplesFromField::execute()
           }
 
           TCLInterface::execute(get_id().c_str() + std::string(" set_seed " + to_string((int)i) + " " + to_string((double)center.x()) + " " + to_string((double)center.y()) + " " + to_string((double)center.z())));
-
-          seed->SetPosition(center);
-          seed->SetScale(gui_probe_scale_.get() * l2norm_ * 0.003);
+#endif
+          seed->setPosition(center);
+          seed->setScale(scale * impl_->l2norm_ * 0.003);
         }
         else
         {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
           RingWidget *seed = new RingWidget(this, &widget_lock_, gui_probe_scale_.get(), false);
 
           MaterialHandle redMatl = new Material(Color(red_.get(), green_.get(), blue_.get()));
@@ -356,6 +372,7 @@ void GeneratePointSamplesFromField::execute()
           seed->SetScale(gui_probe_scale_.get() * l2norm_ * 0.003);
           seed->SetRadius(r);
           seed->SetCurrentMode(3);
+#endif
         }
       }
     }
@@ -363,7 +380,7 @@ void GeneratePointSamplesFromField::execute()
 
   // Find magnitude and base ring scale on that
   const BBox ibox = ifieldhandle->vmesh()->get_bounding_box();
-  Vector mag = ibox.max() - ibox.min();
+  Vector mag = ibox.get_max() - ibox.get_min();
   double max = 0.0;
   if (mag.x() > max) max = mag.x();
   if (mag.y() > max) max = mag.y();
@@ -371,18 +388,20 @@ void GeneratePointSamplesFromField::execute()
 
   for (int i=0; i <numSeeds; i++)
   {
-    if (gui_widget_.get() == 0)
+    if (true) //gui_widget_.get() == 0)
     {
-      widget_[i]->SetScale(gui_probe_scale_.get() * l2norm_ * 0.003);
-      const Point location = widget_[i]->GetPosition();
+      impl_->pointWidgets_[i]->setScale(scale * impl_->l2norm_ * 0.003);
+      const Point location = impl_->pointWidgets_[i]->position();
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //@cbrightsci
       TCLInterface::execute(get_id().c_str() + std::string(" set_seed " +
         to_string((int)i) + " " + to_string((double)location.x()) + " " +
         to_string((double)location.y()) + " " + to_string((double)location.z())));
+#endif
     }
     else
     {
-      //Point location;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       double r;
       Vector normal;
       widget_ring_[i]->GetPosition(center, normal, r);
@@ -392,24 +411,23 @@ void GeneratePointSamplesFromField::execute()
       TCLInterface::execute(get_id().c_str() + std::string(" set_seed " +
         to_string((int)i) + " " + to_string(135) + " " +
         to_string(293) + " " + to_string(0.1)));
+#endif
     }
   }
 
-  //when push send button
-  if(gui_send_.get())
+  //when push send button--TODO: for now, always update seed mesh
+  if (true) // gui_send_.get())
   {
-    ostringstream strX, strY, strZ;
-
     FieldInformation fi("PointCloudMesh",1,"double");
     FieldHandle ofield = CreateField(fi);
     VMesh* mesh = ofield->vmesh();
     VField* field = ofield->vfield();
 
-    for (int i=0; i <numSeeds; i++)
+    for (int i=0; i < numSeeds; i++)
     {
-      if (gui_widget_.get() == 0)
+      if (true) //gui_widget_.get() == 0)
       {
-        const Point location = widget_[i]->GetPosition();
+        const Point location = impl_->pointWidgets_[i]->position();
 
         VMesh::Node::index_type pcindex = mesh->add_point(location);
         field->resize_fdata();
@@ -417,6 +435,7 @@ void GeneratePointSamplesFromField::execute()
       }
       else
       {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
         Point location;
         double r;
         Vector normal;
@@ -425,17 +444,18 @@ void GeneratePointSamplesFromField::execute()
         VMesh::Node::index_type pcindex = mesh->add_point(location);
         field->resize_fdata();
         field->set_value(r, pcindex); // FIX ME: get radius
+#endif
       }
     }
 
-    if (gui_widget_.get() == 0)
+    if (true) //gui_widget_.get() == 0)
     {
       std::vector<double> values(numSeeds);
-      for (VField::index_type i=0; i <numSeeds; i++)
+      for (size_t i = 0; i < numSeeds; i++)
       {
-        const Point location = widget_[i]->GetPosition();
+        const Point location = impl_->pointWidgets_[i]->position();
         mesh->add_point(location);
-        values[i] = i;
+        values[i] = static_cast<double>(i);
       }
 
       field->resize_values();
@@ -443,7 +463,7 @@ void GeneratePointSamplesFromField::execute()
     }
     else
     {
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       std::vector<double> values(numSeeds);
       for (VField::index_type i=0; i <numSeeds; i++)
       {
@@ -457,12 +477,11 @@ void GeneratePointSamplesFromField::execute()
 
       field->resize_values();
       field->set_values(values);
+#endif
     }
 
-    send_output_handle("GeneratePointSamplesFromField Point", ofield);
-    gui_send_.set(0);
+    sendOutput(GeneratedPoints, ofield);
   }
-  #endif
 }
 
 #if 0

@@ -30,7 +30,7 @@
 #define MODULES_LEGACY_FIELDS_GenerateSinglePointProbeFromField_H__
 
 #include <Dataflow/Network/Module.h>
-#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -82,6 +82,20 @@ namespace SCIRun {
         Core::Geometry::Point currentLocation() const;
       };
 
+      class SCISHARE PointWidgetStub
+      {
+      public:
+        PointWidgetStub();
+        Core::Geometry::Point position() const;
+        void setPosition(const Core::Geometry::Point& p);
+        double scale() const { return scale_; }
+        void setScale(double s) { scale_ = s; }
+      private:
+        Core::Geometry::Point pos_;
+        double scale_;
+      };
+
+      typedef boost::shared_ptr<PointWidgetStub> PointWidgetPtr;
     }
   }
 }
