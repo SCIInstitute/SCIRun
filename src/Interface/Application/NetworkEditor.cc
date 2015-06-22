@@ -365,7 +365,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
   proxy->setVisible(visibleItems_);
 
-  GuiLogger::Instance().logStd("Module added: " + module->getModuleId());
+  GuiLogger::Instance().logInfoStd("Module added: " + module->getModuleId());
 }
 
 void NetworkEditor::setMouseAsDragMode()

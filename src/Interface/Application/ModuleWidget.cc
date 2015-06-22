@@ -1196,7 +1196,7 @@ void ModuleWidget::launchDocumentation()
   QUrl qurl(QString::fromStdString(url), QUrl::TolerantMode);
 
   if (!QDesktopServices::openUrl(qurl))
-    GuiLogger::Instance().log("Failed to open help page: " + qurl.toString());
+    GuiLogger::Instance().logError("Failed to open help page: " + qurl.toString());
 }
 
 void ModuleWidget::setStartupNote(const QString& text)

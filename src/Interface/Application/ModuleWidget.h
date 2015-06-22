@@ -193,7 +193,7 @@ private Q_SLOTS:
   void handleDialogFatalError(const QString& message);
   void changeExecuteButtonToPlay();
   void changeExecuteButtonToStop();
-  void updateDockWidgetProperties(bool topLevel);
+  void updateDockWidgetProperties(bool isFloating);
 private:
   ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
