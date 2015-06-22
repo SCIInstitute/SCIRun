@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="12">
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -92,7 +92,7 @@ RESULT= dist *dist;</value>
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -188,22 +188,22 @@ RESULT= dist *dist;</value>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-9.57000000000000000e+002</first>
-				<second>-3.72000000000000000e+002</second>
+				<first>-9.57000000000000000e+02</first>
+				<second>-3.72000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-9.88000000000000000e+002</first>
-				<second>-5.32000000000000000e+002</second>
+				<first>-9.88000000000000000e+02</first>
+				<second>-5.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:0</first>
 			<second>
-				<first>-9.57000000000000000e+002</first>
-				<second>-2.55000000000000000e+002</second>
+				<first>-9.57000000000000000e+02</first>
+				<second>-2.55000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
