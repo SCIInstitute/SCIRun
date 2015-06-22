@@ -448,6 +448,7 @@ void GeneratePointSamplesFromField::execute()
       }
     }
 
+#if 0 // this code does the same as the above, I believe we can delete the entire block.
     if (true) //gui_widget_.get() == 0)
     {
       std::vector<double> values(numSeeds);
@@ -479,6 +480,7 @@ void GeneratePointSamplesFromField::execute()
       field->set_values(values);
 #endif
     }
+#endif 
 
     sendOutput(GeneratedPoints, ofield);
   }
