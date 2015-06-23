@@ -425,7 +425,7 @@ CPM_AddModule("es_general"
 # ++ MODULE: Entity System Rendering.
 CPM_AddModule("es_render"
   GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-render"
-  GIT_TAG "origin/fix_linux"
+  GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: Acorn
