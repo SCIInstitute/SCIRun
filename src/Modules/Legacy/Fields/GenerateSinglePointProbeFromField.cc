@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,28 +27,77 @@
 */
 
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/Mesh.h>
-//#include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Datatypes/Matrix.h>
-//#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Color.h>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+
 //
 //#include <Core/Thread/CrowdMonitor.h>
 //
 //#include <Dataflow/Widgets/PointWidget.h>
-//
-//#include <iostream>
-//#include <stack>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
 const ModuleLookupInfo GenerateSinglePointProbeFromField::staticInfo_("GenerateSinglePointProbeFromField", "NewField", "SCIRun");
+ALGORITHM_PARAMETER_DEF(Fields, XLocation);
+ALGORITHM_PARAMETER_DEF(Fields, YLocation);
+ALGORITHM_PARAMETER_DEF(Fields, ZLocation);
+ALGORITHM_PARAMETER_DEF(Fields, MoveMethod);
+ALGORITHM_PARAMETER_DEF(Fields, DisplayValue);
+ALGORITHM_PARAMETER_DEF(Fields, DisplayNode);
+ALGORITHM_PARAMETER_DEF(Fields, DisplayElem);
+ALGORITHM_PARAMETER_DEF(Fields, FieldValue);
+ALGORITHM_PARAMETER_DEF(Fields, FieldNode);
+ALGORITHM_PARAMETER_DEF(Fields, FieldElem);
+ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
+ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
+ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
+
+namespace SCIRun
+{
+  namespace Modules
+  {
+    namespace Fields
+    {
+      class PointWidgetStub
+      {
+      public:
+        Point position() const { return pos_; }
+        void setPosition(const Point& p) { pos_ = p; }
+      private:
+        Point pos_;
+      };
+
+      typedef boost::shared_ptr<PointWidgetStub> PointWidgetPtr;
+
+      class GenerateSinglePointProbeFromFieldImpl
+      {
+      public:
+        GenerateSinglePointProbeFromFieldImpl() :
+          widget_(new PointWidgetStub),
+          widgetid_(0), l2norm_(0), color_changed_(false) {}
+        PointWidgetPtr widget_;
+        //CrowdMonitor widget_lock_;
+        //int  last_input_generation_;
+        BBox last_bounds_;
+        int widgetid_;
+        double l2norm_;
+        bool color_changed_;
+      };
+    }}}
 
 GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
-  : Module(staticInfo_)
+  : Module(staticInfo_), impl_(new GenerateSinglePointProbeFromFieldImpl)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeneratedWidget);
@@ -58,88 +107,29 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 
 void GenerateSinglePointProbeFromField::setStateDefaults()
 {
-  //TODO
-}
-
-void GenerateSinglePointProbeFromField::execute()
-{
-  //TODO
+  auto state = get_state();
+  using namespace Parameters;
+  state->setValue(XLocation, 0.0);
+  state->setValue(YLocation, 0.0);
+  state->setValue(ZLocation, 0.0);
+  state->setValue(MoveMethod, std::string("Location"));
+  state->setValue(DisplayValue, true);
+  state->setValue(DisplayNode, true);
+  state->setValue(DisplayElem, true);
+  state->setValue(FieldValue, std::string());
+  state->setValue(FieldNode, 0);
+  state->setValue(FieldElem, 0);
+  state->setValue(ProbeSize, 0.5);
+  state->setValue(ProbeLabel, std::string());
+  state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
 }
 
 #if 0
-namespace SCIRun {
-
-using std::stack;
-
-/// @class GenerateSinglePointProbeFromField
-/// @brief This module generates a single probe. 
-
-class GenerateSinglePointProbeFromField : public Module
-{
-  public:
-    GenerateSinglePointProbeFromField(GuiContext* ctx);
-    virtual ~GenerateSinglePointProbeFromField();
-
-    virtual void execute();
-    virtual void widget_moved(bool, BaseWidget*);
-    
-    virtual void tcl_command(GuiArgs& args, void* userdata);
-  private:
-    PointWidget *widget_;
-    CrowdMonitor widget_lock_;
-    int  last_input_generation_;
-    BBox last_bounds_;
-
-    GuiString gui_frame_;
-    GuiDouble gui_locx_;
-    GuiDouble gui_locy_;
-    GuiDouble gui_locz_;
-    
-    GuiString gui_value_;
-    GuiString gui_node_;
-    GuiString gui_elem_;
-    
-    GuiInt gui_show_value_;
-    GuiInt gui_show_node_;
-    GuiInt gui_show_elem_;
-    GuiString gui_moveto_;
-    GuiDouble gui_probe_scale_;
-
-    GuiString gui_label_;
-    GuiDouble gui_color_r_;
-    GuiDouble gui_color_g_;
-    GuiDouble gui_color_b_;
-
-    int widgetid_;
-
-    double l2norm_;
-
-    bool color_changed_;
-};
-
-
-DECLARE_MAKER(GenerateSinglePointProbeFromField)
 
 GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField(GuiContext* ctx)
   : Module("GenerateSinglePointProbeFromField", ctx, Filter, "NewField", "SCIRun"),
     widget_lock_("GenerateSinglePointProbeFromField widget lock"),
     last_input_generation_(0),
-    gui_frame_(get_ctx()->subVar("main_frame"), ""),
-    gui_locx_(get_ctx()->subVar("locx"), 0.0),
-    gui_locy_(get_ctx()->subVar("locy"), 0.0),
-    gui_locz_(get_ctx()->subVar("locz"), 0.0),
-    gui_value_(get_ctx()->subVar("value"), ""),
-    gui_node_(get_ctx()->subVar("node"), ""),
-    gui_elem_(get_ctx()->subVar("elem"), ""),
-    gui_show_value_(get_ctx()->subVar("show-value"), 1),
-    gui_show_node_(get_ctx()->subVar("show-node"), 1),
-    gui_show_elem_(get_ctx()->subVar("show-elem"), 1),
-    gui_moveto_(get_ctx()->subVar("moveto", false), ""),
-    gui_probe_scale_(get_ctx()->subVar("probe_scale"), 0.5),
-    gui_label_(get_ctx()->subVar("label"),""),
-    gui_color_r_(get_ctx()->subVar("color-r"), 1.0),
-    gui_color_g_(get_ctx()->subVar("color-g"), 1.0),
-    gui_color_b_(get_ctx()->subVar("color-b"), 1.0),    
     widgetid_(0),
     color_changed_(false)
 {
@@ -154,23 +144,32 @@ GenerateSinglePointProbeFromField::~GenerateSinglePointProbeFromField()
 {
   delete widget_;
 }
+#endif
 
-
-void
-GenerateSinglePointProbeFromField::execute()
+Point GenerateSinglePointProbeFromField::currentLocation() const
 {
-  // Get input field.
-  FieldHandle ifieldhandle;
-  const bool input_field_p =
-    get_input_handle("Input Field", ifieldhandle, false);
+  auto state = get_state();
+  using namespace Parameters;
+  return Point(state->getValue(XLocation).toDouble(), state->getValue(YLocation).toDouble(), state->getValue(ZLocation).toDouble());
+}
+
+void GenerateSinglePointProbeFromField::execute()
+{
+  auto ifieldOption = getOptionalInput(InputField);
+  FieldHandle ifield;
 
   update_state(Executing);
 
+  const double THRESHOLD = 1e-6;
+  auto state = get_state();
+  using namespace Parameters;
+
   // Maybe update the widget.
   BBox bbox;
-  if (input_field_p)
+  if (ifieldOption && *ifieldOption)
   {
-    bbox = ifieldhandle->vmesh()->get_bounding_box();
+    ifield = *ifieldOption;
+    bbox = ifield->vmesh()->get_bounding_box();
   }
   else
   {
@@ -178,48 +177,49 @@ GenerateSinglePointProbeFromField::execute()
     bbox.extend(Point(1.0, 1.0, 1.0));
   }
 
-  if (!bbox.is_similar_to(last_bounds_))
+  if (!bbox.is_similar_to(impl_->last_bounds_))
   {
-    Point bmin = bbox.min();
-    Point bmax = bbox.max();
+    Point bmin = bbox.get_min();
+    Point bmax = bbox.get_max();
 
     // Fix degenerate boxes.
-    const double size_estimate = Max((bmax-bmin).length() * 0.01, 1.0e-5);
-    if (fabs(bmax.x() - bmin.x()) < 1.0e-6)
+    const double size_estimate = std::max((bmax-bmin).length() * 0.01, 1.0e-5);
+    if (fabs(bmax.x() - bmin.x()) < THRESHOLD)
     {
       bmin.x(bmin.x() - size_estimate);
       bmax.x(bmax.x() + size_estimate);
     }
-    if (fabs(bmax.y() - bmin.y()) < 1.0e-6)
+    if (fabs(bmax.y() - bmin.y()) < THRESHOLD)
     {
       bmin.y(bmin.y() - size_estimate);
       bmax.y(bmax.y() + size_estimate);
     }
-    if (fabs(bmax.z() - bmin.z()) < 1.0e-6)
+    if (fabs(bmax.z() - bmin.z()) < THRESHOLD)
     {
       bmin.z(bmin.z() - size_estimate);
       bmax.z(bmax.z() + size_estimate);
     }
 
     Point center = bmin + Vector(bmax - bmin) * 0.5;
-    l2norm_ = (bmax - bmin).length();
+    impl_->l2norm_ = (bmax - bmin).length();
 
     // If the current location looks reasonable, use that instead
     // of the center.
-    Point curloc(gui_locx_.get(), gui_locy_.get(), gui_locz_.get());
+    Point curloc = currentLocation();
 
     // Invalidate current position if it's outside of our field.
     // Leave it alone if there was no field, as our bbox is arbitrary anyway.
-    if (curloc.x() >= bmin.x() && curloc.x() <= bmax.x() && 
-        curloc.y() >= bmin.y() && curloc.y() <= bmax.y() && 
-        curloc.z() >= bmin.z() && curloc.z() <= bmax.z() ||
-        !input_field_p)
+    if (!ifieldOption ||
+      (curloc.x() >= bmin.x() && curloc.x() <= bmax.x() &&
+        curloc.y() >= bmin.y() && curloc.y() <= bmax.y() &&
+        curloc.z() >= bmin.z() && curloc.z() <= bmax.z()))
     {
       center = curloc;
     }
-    
-    widget_->SetPosition(center);
-    
+
+    impl_->widget_->setPosition(center);
+
+#if SCIRUN4_TO_BE_ENABLED_LATER
     GeomGroup *widget_group = new GeomGroup;
     widget_group->add(widget_->GetWidget());
 
@@ -228,133 +228,131 @@ GenerateSinglePointProbeFromField::execute()
     widgetid_ = ogport->addObj(widget_group, "GenerateSinglePointProbeFromField Selection Widget",
 			       &widget_lock_);
     ogport->flushViews();
-
-    last_bounds_ = bbox;
+#endif
+    impl_->last_bounds_ = bbox;
   }
 
+#if SCIRUN4_TO_BE_ENABLED_LATER
   widget_->SetScale(gui_probe_scale_.get() * l2norm_ * 0.003);
   widget_->SetColor(Color(gui_color_r_.get(),gui_color_g_.get(),gui_color_b_.get()));
   widget_->SetLabel(gui_label_.get());
+#endif
 
-  const std::string &moveto = gui_moveto_.get();
+  const std::string moveto = state->getValue(MoveMethod).toString();
   bool moved_p = false;
-  if (moveto == "location")
+  if (moveto == "Location")
   {
-    const Point newloc(gui_locx_.get(), gui_locy_.get(), gui_locz_.get());
-    widget_->SetPosition(newloc);
-
+    const Point newloc = currentLocation();
+    impl_->widget_->setPosition(newloc);
     moved_p = true;
   }
-  else if (moveto == "center")
+  else if (moveto == "Center")
   {
-    Point bmin = bbox.min();
-    Point bmax = bbox.max();
+    Point bmin = bbox.get_min();
+    Point bmax = bbox.get_max();
 
     // Fix degenerate boxes.
-    const double size_estimate = Max((bmax-bmin).length() * 0.01, 1.0e-5);
-    if (fabs(bmax.x() - bmin.x()) < 1.0e-6)
+    const double size_estimate = std::max((bmax-bmin).length() * 0.01, 1.0e-5);
+    if (fabs(bmax.x() - bmin.x()) < THRESHOLD)
     {
       bmin.x(bmin.x() - size_estimate);
       bmax.x(bmax.x() + size_estimate);
     }
-    if (fabs(bmax.y() - bmin.y()) < 1.0e-6)
+    if (fabs(bmax.y() - bmin.y()) < THRESHOLD)
     {
       bmin.y(bmin.y() - size_estimate);
       bmax.y(bmax.y() + size_estimate);
     }
-    if (fabs(bmax.z() - bmin.z()) < 1.0e-6)
+    if (fabs(bmax.z() - bmin.z()) < THRESHOLD)
     {
       bmin.z(bmin.z() - size_estimate);
       bmax.z(bmax.z() + size_estimate);
     }
 
     Point center = bmin + Vector(bmax - bmin) * 0.5;
+
+#if SCIRUN4_TO_BE_ENABLED_LATER
     widget_->SetColor(Color(gui_color_r_.get(),gui_color_g_.get(),gui_color_b_.get()));
     widget_->SetLabel(gui_label_.get());
-    widget_->SetPosition(center);
+#endif
+
+    impl_->widget_->setPosition(center);
     moved_p = true;
   }
-  else if (moveto != "" && input_field_p)
+  else if (!moveto.empty() && ifieldOption)
   {
-    if (moveto == "node")
+    if (moveto == "Node")
     {
-      VMesh::index_type idx;
-      std::string sval = gui_node_.get();
-      from_string(sval,idx);
-      if (idx >=0 && idx < ifieldhandle->vmesh()->num_nodes())
+      VMesh::index_type idx = state->getValue(FieldNode).toInt();
+      if (idx >= 0 && idx < ifield->vmesh()->num_nodes())
       {
         Point p;
-        ifieldhandle->vmesh()->get_center(p,VMesh::Node::index_type(idx));
-        widget_->SetPosition(p);
-        moved_p = true;        
+        ifield->vmesh()->get_center(p, VMesh::Node::index_type(idx));
+        impl_->widget_->setPosition(p);
+        moved_p = true;
       }
     }
-    else if (moveto == "elem")
+    else if (moveto == "Element")
     {
-      VMesh::index_type idx;
-      std::string sval = gui_elem_.get();
-      from_string(sval,idx);
-      if (idx >=0 && idx < ifieldhandle->vmesh()->num_elems())
+      VMesh::index_type idx = state->getValue(FieldElem).toInt();
+      if (idx >= 0 && idx < ifield->vmesh()->num_elems())
       {
         Point p;
-        ifieldhandle->vmesh()->get_center(p,VMesh::Elem::index_type(idx));
-        widget_->SetPosition(p);
-        moved_p = true;        
+        ifield->vmesh()->get_center(p,VMesh::Elem::index_type(idx));
+        impl_->widget_->setPosition(p);
+        moved_p = true;
       }
     }
   }
   if (moved_p)
   {
+#if SCIRUN4_TO_BE_ENABLED_LATER
     GeometryOPortHandle ogport;
     get_oport_handle("GenerateSinglePointProbeFromField Widget",ogport);
     ogport->flushViews();
     gui_moveto_.set("");
+#endif
   }
 
-  const Point location = widget_->GetPosition();
-  
+  const Point location = impl_->widget_->position();
+
   FieldInformation fi("PointCloudMesh",0,"double");
   MeshHandle mesh = CreateMesh(fi);
   mesh->vmesh()->add_point(location);
-  
+
   FieldHandle ofield;
 
-  std::string nodestr, elemstr;
-  if (input_field_p)
+  if (ifieldOption)
   {
-    if (gui_show_node_.get())
+    if (state->getValue(DisplayNode).toBool())
     {
-      ifieldhandle->vmesh()->synchronize(Mesh::FIND_CLOSEST_NODE_E);
+      ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_NODE_E);
       Point r;
       VMesh::Node::index_type idx;
-      ifieldhandle->vmesh()->find_closest_node(r,idx,location);
-      nodestr = to_string(idx);
-      gui_node_.set(nodestr);
+      ifield->vmesh()->find_closest_node(r,idx,location);
+      state->setValue(FieldNode, static_cast<int>(idx));
     }
 
-    if (gui_show_node_.get())
+    if (state->getValue(DisplayElem).toBool())
     {
-      ifieldhandle->vmesh()->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
+      ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
       Point r;
       VMesh::Elem::index_type idx;
-      ifieldhandle->vmesh()->find_closest_elem(r,idx,location);
-      elemstr = to_string(idx);
-      gui_elem_.set(elemstr);
+      ifield->vmesh()->find_closest_elem(r,idx,location);
+      state->setValue(FieldElem, static_cast<int>(idx));
     }
   }
 
   std::ostringstream valstr;
   VField* vfield = 0;
   VMesh* vmesh = 0;
-  if (ifieldhandle.get_rep())
+  if (ifield)
   {
-    vfield = ifieldhandle->vfield();
-    vmesh = ifieldhandle->vmesh();    
+    vfield = ifield->vfield();
+    vmesh = ifield->vmesh();
   }
-  
-  if (!input_field_p ||
-      ifieldhandle->basis_order() == -1 ||
-      !gui_show_value_.get())
+
+  if (!ifieldOption || ifield->basis_order() == -1 || !state->getValue(DisplayValue).toBool())
   {
     fi.make_double();
     ofield = CreateField(fi,mesh);
@@ -404,46 +402,43 @@ GenerateSinglePointProbeFromField::execute()
       if(vmesh->find_closest_node(closest,node_idx,location))
         vfield->get_value(result,node_idx);
     }
+#if SCIRUN4_TO_BE_ENABLED_LATER
     valstr << result;
+#endif
 
     fi.make_tensor();
     ofield = CreateField(fi,mesh);
     ofield->vfield()->set_value(result, VMesh::index_type(0));
   }
-  
-  gui_locx_.set(location.x());
-  gui_locy_.set(location.y());
-  gui_locz_.set(location.z());
-  if (gui_show_value_.get()) { gui_value_.set(valstr.str()); }
 
-  send_output_handle("GenerateSinglePointProbeFromField Point", ofield);
+  state->setValue(XLocation, location.x());
+  state->setValue(YLocation, location.y());
+  state->setValue(ZLocation, location.z());
+  if (state->getValue(DisplayValue).toBool())
+  {
+    state->setValue(FieldValue, valstr.str());
+  }
 
-  if (input_field_p)
+  sendOutput(GeneratedPoint, ofield);
+
+  if (ifieldOption)
   {
     index_type index = 0;
 
-    if (gui_show_value_.get())
+    if (state->getValue(DisplayNode).toBool())
     {
-      from_string(valstr.str(),index);
+      index = state->getValue(FieldNode).toInt();
     }
-    else if (gui_show_node_.get())
+    else if (state->getValue(DisplayElem).toBool())
     {
-      from_string(nodestr,index);  
+      index = state->getValue(FieldElem).toInt();
     }
-    else if (gui_show_elem_.get())
-    {
-      from_string(elemstr,index);    
-    }
-    else
-    {
-      from_string(valstr.str(),index);    
-    }    
-    
-    MatrixHandle cm = new DenseMatrix(static_cast<double>(index));
-    send_output_handle("Element Index", cm);
+
+    sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
   }
 }
 
+#if 0
 
 void
 GenerateSinglePointProbeFromField::widget_moved(bool last, BaseWidget*)
@@ -456,26 +451,22 @@ GenerateSinglePointProbeFromField::widget_moved(bool last, BaseWidget*)
 
 
 
-void 
+void
 GenerateSinglePointProbeFromField::tcl_command(GuiArgs& args, void* userdata)
 {
-  if(args.count() < 2) 
+  if(args.count() < 2)
   {
     args.error("ShowString needs a minor command");
     return;
   }
 
-  if (args[1] == "color_change") 
+  if (args[1] == "color_change")
   {
     color_changed_ = true;
-  } 
-  else 
+  }
+  else
   {
     Module::tcl_command(args, userdata);
   }
 }
-
-
-} // End namespace SCIRun
 #endif
-

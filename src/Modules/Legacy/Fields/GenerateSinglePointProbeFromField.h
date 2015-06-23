@@ -30,9 +30,34 @@
 #define MODULES_LEGACY_FIELDS_GenerateSinglePointProbeFromField_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
+
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Fields
+      {
+        ALGORITHM_PARAMETER_DECL(XLocation);
+        ALGORITHM_PARAMETER_DECL(YLocation);
+        ALGORITHM_PARAMETER_DECL(ZLocation);
+        ALGORITHM_PARAMETER_DECL(MoveMethod);
+        ALGORITHM_PARAMETER_DECL(DisplayValue);
+        ALGORITHM_PARAMETER_DECL(DisplayNode);
+        ALGORITHM_PARAMETER_DECL(DisplayElem);
+        ALGORITHM_PARAMETER_DECL(FieldValue);
+        ALGORITHM_PARAMETER_DECL(FieldNode);
+        ALGORITHM_PARAMETER_DECL(FieldElem);
+        ALGORITHM_PARAMETER_DECL(ProbeSize);
+        ALGORITHM_PARAMETER_DECL(ProbeLabel);
+        ALGORITHM_PARAMETER_DECL(ProbeColor);
+      }
+    }
+  }
+
   namespace Modules {
     namespace Fields {
 
@@ -52,6 +77,9 @@ namespace SCIRun {
         OUTPUT_PORT(2, ElementIndex, Int32);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        boost::shared_ptr<class GenerateSinglePointProbeFromFieldImpl> impl_;
+        Core::Geometry::Point currentLocation() const;
       };
 
     }

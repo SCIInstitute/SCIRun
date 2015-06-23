@@ -24,33 +24,32 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#ifndef GUI_LOGGER_H
-#define GUI_LOGGER_H
+#ifndef INTERFACE_MODULES_GenerateSinglePointProbeFromFieldDialog_H
+#define INTERFACE_MODULES_GenerateSinglePointProbeFromFieldDialog_H
 
-#include <Core/Utils/Singleton.h>
-#include <Core/Logging/LoggerFwd.h>
-#include <boost/shared_ptr.hpp>
-#include <QString>
+#include "Interface/Modules/Fields/ui_GenerateSinglePointProbeFromField.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Gui {
+  namespace Gui {
 
-  class GuiLogger : boost::noncopyable
-  {
-    CORE_SINGLETON(GuiLogger)
-  public:
-    void logInfo(const QString& message) const;
-    void logError(const QString& message) const;
-    void logInfoStd(const std::string& message) const { logInfo(QString::fromStdString(message)); }
-    void logErrorStd(const std::string& message) const { logError(QString::fromStdString(message)); }
-    static void setInstance(Core::Logging::LoggerHandle logger);
-  private:
-    GuiLogger();
-    static Core::Logging::LoggerHandle loggerImpl_;
-  };
+    class SCISHARE GenerateSinglePointProbeFromFieldDialog : public ModuleDialogGeneric,
+      public Ui::GenerateSinglePointProbeFromField
+    {
+      Q_OBJECT
 
-}}
+    public:
+      GenerateSinglePointProbeFromFieldDialog(const std::string& name,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = 0);
+    private Q_SLOTS:
+      void enableWidgets(const QString& mode);
+    };
+
+  }
+}
 
 #endif
