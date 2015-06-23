@@ -71,8 +71,8 @@ namespace SCIRun {
       for (const auto& package : moduleMap)
       {
         const std::string& packageName = package.first;
-        auto p = new QMenu(QString::fromStdString(packageName), menu);
-        menu->addMenu(p);
+        
+        QList<QMenu*> packageMenus;
         for (const auto& category : package.second)
         {
           const std::string& categoryName = category.first;
@@ -94,10 +94,18 @@ namespace SCIRun {
           {
             auto m = new QMenu(QString::fromStdString(categoryName), menu);
             m->addActions(actions);
-            p->addMenu(m);
+            packageMenus.append(m);
           }
         }
-        menu->addSeparator();
+        if (!packageMenus.isEmpty())
+        {
+          auto p = new QMenu(QString::fromStdString(packageName), menu);
+          for (QMenu* menu : packageMenus)
+            p->addMenu(menu);
+
+          menu->addMenu(p);
+          menu->addSeparator();
+        }
       }
       return allCompatibleActions;
     }

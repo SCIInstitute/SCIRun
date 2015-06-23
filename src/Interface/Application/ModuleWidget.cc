@@ -1093,9 +1093,19 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
+      connect(dockable_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
 
       dialog_->pull();
     }
+  }
+}
+
+void ModuleWidget::updateDockWidgetProperties(bool isFloating)
+{
+  if (isFloating)
+  {
+    dockable_->setWindowFlags(Qt::Window);
+    dockable_->show();
   }
 }
 
@@ -1186,15 +1196,18 @@ void ModuleWidget::launchDocumentation()
   QUrl qurl(QString::fromStdString(url), QUrl::TolerantMode);
 
   if (!QDesktopServices::openUrl(qurl))
-    GuiLogger::Instance().log("Failed to open help page: " + qurl.toString());
+    GuiLogger::Instance().logError("Failed to open help page: " + qurl.toString());
 }
 
 void ModuleWidget::setStartupNote(const QString& text)
 {
-  auto note = getCurrentNote();
-  note.plainText_ = text;
-  note.html_ = "<p style=\"color:white\">" + text;
-  updateNoteFromFile(note);
+  if (isViewScene_ || Core::Preferences::Instance().autoNotes)
+  {
+    auto note = getCurrentNote();
+    note.plainText_ = text;
+    note.html_ = "<p style=\"color:white\">" + text;
+    updateNoteFromFile(note);
+  }
 }
 
 void ModuleWidget::createStartupNote()
