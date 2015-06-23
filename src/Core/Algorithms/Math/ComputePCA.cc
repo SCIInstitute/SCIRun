@@ -43,7 +43,7 @@ void ComputePCAAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftPrinMat, Den
         
         auto rows = denseInput->rows();
         
-        auto centerMatrix = MatrixXd::Identity(rows,rows) - (1/rows)*MatrixXd::Constant(rows,rows,1);
+        auto centerMatrix = Eigen::MatrixXd::Identity(rows,rows) - (1/rows)*Eigen::MatrixXd::Constant(rows,rows,1);
         
         auto denseInputCentered = centerMatrix * *denseInput;
         
@@ -51,7 +51,7 @@ void ComputePCAAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftPrinMat, Den
         
         LeftPrinMat = boost::make_shared<DenseMatrix>(svd_mat.matrixU());
         
-        PrinVals = boost::make_shared<DenseMatrix>(svd_mat.principalValues());
+        PrinVals = boost::make_shared<DenseMatrix>(svd_mat.singularValues());
         
         RightPrinMat = boost::make_shared<DenseMatrix>(svd_mat.matrixV());
     }
@@ -81,6 +81,6 @@ AlgorithmOutput ComputePCAAlgo::run_generic(const AlgorithmInput& input) const
     return output;
 }
 
-AlgorithmOutputName ComputePCAAlgo::PrincipalMatrix("LeftPrincipalMatrix");
-AlgorithmOutputName ComputePCAAlgo::SingularValues("PrincipalValues");
-AlgorithmOutputName ComputePCAAlgo::RightSingularMatrix("RightPrincipalMatrix");
+AlgorithmOutputName ComputePCAAlgo::LeftPrincipalMatrix("LeftPrincipalMatrix");
+AlgorithmOutputName ComputePCAAlgo::PrincipalValues("PrincipalValues");
+AlgorithmOutputName ComputePCAAlgo::RightPrincipalMatrix("RightPrincipalMatrix");

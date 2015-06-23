@@ -25,7 +25,7 @@
 #define ComputePCA_ComputePCA_h
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Math/share.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
     namespace Modules {

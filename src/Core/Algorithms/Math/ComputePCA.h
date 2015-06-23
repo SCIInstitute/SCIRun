@@ -21,8 +21,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef ComputePCA_ComputPCA_h
-#define ComputePCA_ComputPCA_h
+#ifndef ComputePCA_ComputePCA_h_1
+#define ComputePCA_ComputePCA_h_1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>

@@ -21,7 +21,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Modules/Legacy/Math/ComputePCA.h>
+#include <Modules/Math/ComputePCA.h>
 #include <Core/Algorithms/Math/ComputePCA.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Datatypes/Matrix.h>
