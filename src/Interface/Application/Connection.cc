@@ -312,7 +312,7 @@ void ConnectionLine::trackNodes()
 {
   if (fromPort_ && toPort_)
   {
-    qDebug() << "trackNodes";
+    //qDebug() << "trackNodes";
     drawer_->draw(this, fromPort_->position(), toPort_->position());
     updateNotePosition();
   }

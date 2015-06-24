@@ -268,6 +268,7 @@ void ModuleProxyWidget::highlightIfSelected()
     module_->setColorUnselected();
     isSelected_ = false;
   }
+  createPortPositionProviders();
 }
 
 QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant& value)
@@ -289,7 +290,7 @@ void ModuleProxyWidget::createPortPositionProviders()
   const int firstPortXPos = 5;
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
-    qDebug() << "Setting position provider for port " << QString::fromStdString(p->id().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
+    //qDebug() << "Setting position provider for port " << QString::fromStdString(p->id().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
     QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())), p->pos().y());
 
     int extraPadding = p->isHighlighted() ? 4 : 0;

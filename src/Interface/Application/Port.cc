@@ -71,7 +71,7 @@ namespace SCIRun {
       for (const auto& package : moduleMap)
       {
         const std::string& packageName = package.first;
-        
+
         QList<QMenu*> packageMenus;
         for (const auto& category : package.second)
         {
@@ -331,6 +331,18 @@ void PortWidget::makeConnection(const QPointF& pos)
   auto port = closestPortFinder_->closestPort(pos);  //GUI concern: needs unit test
   if (port)
     tryConnectPort(pos, port);
+
+
+  for (const auto& a : portWidgetMap_)
+  {
+    for (const auto& b : a.second)
+    {
+      for (const auto& c : b.second)
+      {
+        c.second->setHighlight(false);
+      }
+    }
+  }
 }
 
 void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
@@ -361,7 +373,7 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
 void PortWidget::setPositionObject(PositionProviderPtr provider)
 {
   NeedsScenePositionProvider::setPositionObject(provider);
-  qDebug() << "PW::setPO";
+  //qDebug() << "PW::setPO";
   Q_EMIT portMoved();
 }
 
@@ -394,6 +406,22 @@ void PortWidget::performDrag(const QPointF& endPos)
     currentConnection_ = connectionFactory_->makeConnectionInProgress(this);
   }
   currentConnection_->update(endPos);
+  //qDebug() << "update other ports here";
+  for (const auto& a : portWidgetMap_)
+  {
+    for (const auto& b : a.second)
+    {
+      for (const auto& c : b.second)
+      {
+        //qDebug() << QString::fromStdString(a.first) << b.first << QString::fromStdString(c.first.toString()) << c.second;
+        if (moduleId_.id_ != a.first && isInput_ != b.first/* && get_typename() == c.second->get_typename()*/)
+        {
+          c.second->setHighlight(true);
+        }
+      }
+    }
+  }
+  //portWidgetMap_[moduleId_.id_][isInput_][portId_] = this;
 }
 
 void PortWidget::addConnection(ConnectionLine* c)
