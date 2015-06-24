@@ -331,7 +331,10 @@ void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
   //TODO: need to update PPPs
   //TODO: need to call same in dragEnter event, if connection in progress
   if (doHighlight_)
+  {
     module_->highlightPorts();
+    createPortPositionProviders();
+  }
   QGraphicsProxyWidget::hoverEnterEvent(event);
 }
 
@@ -340,7 +343,10 @@ void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
   //TODO: need to update PPPs
   //TODO: need to call same in dragLeave event, if connection in progress
   if (doHighlight_)
+  {
     module_->unhighlightPorts();
+    createPortPositionProviders();
+  }
   QGraphicsProxyWidget::hoverLeaveEvent(event);
 }
 

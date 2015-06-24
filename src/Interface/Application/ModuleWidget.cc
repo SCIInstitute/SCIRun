@@ -775,7 +775,7 @@ void ModuleWidget::addOutputPortsToWidget(int index)
 {
   auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
   if (vbox)
-    vbox->insertLayout(-1, outputPortLayout_, 1);
+    vbox->insertLayout(-1, outputPortLayout_, 10);
 }
 
 void ModuleWidget::removeOutputPortsFromWidget(int index)
@@ -792,6 +792,10 @@ void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
 
   BOOST_FOREACH(PortWidget* port, inputPorts_)
     layout->addWidget(port);
+
+  layout->setSizeConstraint(QLayout::SetMinimumSize);
+  //qDebug() << "input port layout min size: " << layout->minimumSize();
+  //qDebug() << "input port layout max size: " << layout->maximumSize();
 }
 
 void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
@@ -801,6 +805,10 @@ void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
 
   BOOST_FOREACH(PortWidget* port, outputPorts_)
     layout->addWidget(port);
+
+  layout->setSizeConstraint(QLayout::SetMinimumSize);
+  //qDebug() << "output port layout min size: " << layout->minimumSize();
+  //qDebug() << "output port layout max size: " << layout->maximumSize();
 }
 
 void ModuleWidget::addInputPortsToLayout(int index)
@@ -1337,7 +1345,6 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
 
 void ModuleWidget::highlightPorts()
 {
-  qDebug() << "MW::highlight";
   ports_->setHighlightPorts(true);
   setPortSpacing(true);
   Q_EMIT displayChanged();
@@ -1357,7 +1364,6 @@ int ModuleWidget::portSpacing() const
 
 void ModuleWidget::unhighlightPorts()
 {
-  qDebug() << "MW::unhighlight";
   ports_->setHighlightPorts(false);
   setPortSpacing(false);
   Q_EMIT displayChanged();

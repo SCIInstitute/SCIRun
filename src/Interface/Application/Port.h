@@ -112,6 +112,7 @@ public:
   virtual bool isLightOn() const override { return lightOn_; }
 
   void setHighlight(bool on);
+  virtual void setPositionObject(PositionProviderPtr provider) override;
 
   void addConnection(ConnectionLine* c);
   void removeConnection(ConnectionLine* c);

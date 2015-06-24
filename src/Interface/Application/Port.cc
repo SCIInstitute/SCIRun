@@ -357,6 +357,12 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
   }
 }
 
+void PortWidget::setPositionObject(PositionProviderPtr provider)
+{
+  NeedsScenePositionProvider::setPositionObject(provider);
+  Q_EMIT portMoved();
+}
+
 void PortWidget::moveEvent(QMoveEvent * event)
 {
   QPushButton::moveEvent(event);
