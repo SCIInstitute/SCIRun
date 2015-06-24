@@ -352,7 +352,8 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
     auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
     connect(c, SIGNAL(noteChanged()), this, SIGNAL(connectionNoteChanged()));
-    connect(this, SIGNAL(portMoved()), c, SLOT(trackNodes()));
+    connect(out, SIGNAL(portMoved()), c, SLOT(trackNodes()));
+    connect(in, SIGNAL(portMoved()), c, SLOT(trackNodes()));
     setConnected(true);
   }
 }
@@ -360,6 +361,7 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
 void PortWidget::setPositionObject(PositionProviderPtr provider)
 {
   NeedsScenePositionProvider::setPositionObject(provider);
+  qDebug() << "PW::setPO";
   Q_EMIT portMoved();
 }
 
