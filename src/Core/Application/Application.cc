@@ -65,6 +65,7 @@ namespace SCIRun
       boost::filesystem::path app_filename_;
       ApplicationParametersHandle parameters_;
       NetworkEditorControllerHandle controller_;
+      void start_eai();
     };
   }
 }
@@ -160,6 +161,9 @@ NetworkEditorControllerHandle Application::controller()
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();
+
+    /// @todo split out into separate piece
+    private_->start_eai();
   }
   return private_->controller_;
 }
@@ -275,3 +279,100 @@ std::string Application::GetAbout()
 	return CORE_APPLICATION_ABOUT;
 }
 */
+
+
+// Services start up...
+void ApplicationPrivate::start_eai()
+{
+  // Create a database of all available services. The next piece of code
+  // Scans both the SCIRun as well as the Packages directories to find
+  // Services that need to be started. Services allow communication with
+  // thirdparty software and are Threads that run asychronicly with
+  // with the rest of SCIRun. Since the thirdparty software may be running
+  // on a different platform it allows for connecting to remote machines
+  // and running the service on a different machine
+  ServiceDBHandle servicedb = new ServiceDB;
+  // load all services and find all makers
+  servicedb->loadpackages();
+  // activate all services
+  servicedb->activateall();
+
+  // Services are started and created by the ServiceManager,
+  // which will be launched here
+  // Two competing managers will be started,
+  // one for purely internal usage and one that
+  // communicates over a socket.
+  // The latter will only be created if a port is set.
+  // If the current instance of SCIRun should not provide any services
+  // to other instances of SCIRun over the internet,
+  // the second manager will not be launched
+
+
+
+  IComAddress internaladdress("internal","servicemanager");
+
+// Only build log file if needed for debugging
+#ifdef DEBUG
+  const char *chome = sci_getenv("HOME");
+  std::string scidir("");
+  if (chome)
+    scidir = chome+std::string("/SCIRun/");
+
+  // A log file is not necessary but handy for debugging purposes
+  ServiceLogHandle internallogfile =
+    new ServiceLog(scidir+"scirun_internal_servicemanager.log");
+
+  ServiceManager* internal_service_manager =
+    new ServiceManager(servicedb, internaladdress, internallogfile);
+#else
+  ServiceManager* internal_service_manager =
+    new ServiceManager(servicedb, internaladdress);
+#endif
+
+  Thread* t_int =
+    new Thread(internal_service_manager, "internal service manager",
+		  0, Thread::NotActivated);
+  t_int->setStackSize(1024*20);
+  t_int->activate(false);
+  t_int->detach();
+
+
+  // Use the following environment setting to switch on IPv6 support
+  // Most machines should be running a dual-host stack for the internet
+  // connections, so it should not hurt to run in IPv6 mode. In most case
+  // ipv4 address will work as well.
+  // It might be useful
+  std::string ipstr(sci_getenv_p("SCIRUN_SERVICE_IPV6")?"ipv6":"");
+
+  // Start an external service as well
+  const char *serviceport_str = sci_getenv("SCIRUN_SERVICE_PORT");
+  // If its not set in the env, we're done
+  if (!serviceport_str) return;
+
+  // The protocol for conencting has been called "scirun"
+  // In the near future this should be replaced with "sciruns" for
+  // a secure version which will run over ssl.
+
+  // A log file is not necessary but handy for debugging purposes
+
+  IComAddress externaladdress("scirun","",serviceport_str,ipstr);
+
+#ifdef DEBUG
+  ServiceLogHandle externallogfile =
+    new ServiceLog(scidir+"scirun_external_servicemanager.log");
+
+  ServiceManager* external_service_manager =
+    new ServiceManager(servicedb,externaladdress,externallogfile);
+#else
+  ServiceManager* external_service_manager =
+    new ServiceManager(servicedb,externaladdress);
+
+#endif
+
+  Thread* t_ext =
+    new Thread(external_service_manager,"external service manager",
+		  0, Thread::NotActivated);
+  t_ext->setStackSize(1024*20);
+  t_ext->activate(false);
+  t_ext->detach();
+}
