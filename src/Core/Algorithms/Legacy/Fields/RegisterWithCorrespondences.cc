@@ -54,7 +54,6 @@ RegisterWithCorrespondencesAlgo::RegisterWithCorrespondencesAlgo()
 
 AlgorithmOutput RegisterWithCorrespondencesAlgo::run_generic(const AlgorithmInput& input) const
 {
-  std::cout << "ALGO" << std::endl;
   auto input_field = input.get<Field>(Variables::InputField);
   auto corres1 = input.get<Field>(Correspondences1);
   auto corres2 = input.get<Field>(Correspondences2);
@@ -65,15 +64,12 @@ AlgorithmOutput RegisterWithCorrespondencesAlgo::run_generic(const AlgorithmInpu
   switch (op)
   {
   case 0:
-    std::cout << "runM" << std::endl;
     runM(input_field, corres1, corres2, return_field);
     break;
   case 1:
-    std::cout << "runA" << std::endl;
     runA(input_field, corres1, corres2, return_field);
     break;
   case 2:
-    std::cout << "runN" << std::endl;
     runN(input_field, corres1, corres2, return_field);
     break;
   }
@@ -227,10 +223,10 @@ bool RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1,
     Bm(3, L1) = 1;
 
     //vertical x,y,z
-    Bm(L1 + 4) = num_cors1, P.x();
-    Bm(L1 + 4) = num_cors1 + 1, P.y();
-    Bm(L1 + 4) = num_cors1 + 2, P.z();
-    Bm(L1 + 4) = num_cors1 + 3, 1;
+    Bm(L1 + 4, num_cors1) = P.x();
+    Bm(L1 + 4, num_cors1 + 1) = P.y();
+    Bm(L1 + 4, num_cors1 + 2) = P.z();
+    Bm(L1 + 4, num_cors1 + 3) = 1;
   }
 
   for (int L1 = num_cors1; L1 < num_cors1 + 4; ++L1)
@@ -244,7 +240,6 @@ bool RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1,
   //put in sigmas
   DenseMatrixHandle SMat;
   radial_basis_func(icors2, icors2, SMat);
-  double temp = 0;
 
   for (int i = 0; i < num_cors1; ++i)
   {
@@ -754,7 +749,6 @@ bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cor
   Point P, Pp;
 
   points->size(num_pts);
-  int msz = coefs.size();
 
   for (int i = 0; i < num_pts; ++i)
   {

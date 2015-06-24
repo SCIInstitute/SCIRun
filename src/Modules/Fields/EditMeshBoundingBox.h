@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #ifndef MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 #define MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
@@ -39,74 +39,76 @@ namespace SCIRun {
   class BoxWidgetInterface;
   typedef boost::shared_ptr<BoxWidgetInterface> BoxWidgetPtr;
 
-namespace Modules {
-namespace Fields {
+  namespace Modules {
+    namespace Fields {
 
-  class EditMeshBoundingBoxImpl;
+      class EditMeshBoundingBoxImpl;
 
-  class SCISHARE EditMeshBoundingBox : public Dataflow::Networks::GeometryGeneratingModule,
-    public Has1InputPort<FieldPortTag>,
-    public Has3OutputPorts<FieldPortTag, GeometryPortTag, MatrixPortTag>
-  {
-  public:
-    EditMeshBoundingBox();
-    virtual void execute();
-    virtual void setStateDefaults();
+      class SCISHARE EditMeshBoundingBox : public Dataflow::Networks::GeometryGeneratingModule,
+        public Has1InputPort<FieldPortTag>,
+        public Has3OutputPorts < FieldPortTag, GeometryPortTag, MatrixPortTag >
+      {
+      public:
+        EditMeshBoundingBox();
+        virtual void execute();
+        virtual void setStateDefaults();
 
-  static const Core::Algorithms::AlgorithmParameterName Resetting;
-	//Input Field Attributes
-	static const Core::Algorithms::AlgorithmParameterName InputCenterX;
-	static const Core::Algorithms::AlgorithmParameterName InputCenterY;
-	static const Core::Algorithms::AlgorithmParameterName InputCenterZ;
-	static const Core::Algorithms::AlgorithmParameterName InputSizeX;
-	static const Core::Algorithms::AlgorithmParameterName InputSizeY;
-	static const Core::Algorithms::AlgorithmParameterName InputSizeZ;
-	//Outpuconst t Field Atributes
-	static const Core::Algorithms::AlgorithmParameterName UseOutputCenter;
-	static const Core::Algorithms::AlgorithmParameterName UseOutputSize;
-	static const Core::Algorithms::AlgorithmParameterName OutputCenterX;
-	static const Core::Algorithms::AlgorithmParameterName OutputCenterY;
-	static const Core::Algorithms::AlgorithmParameterName OutputCenterZ;
-	static const Core::Algorithms::AlgorithmParameterName OutputSizeX;
-	static const Core::Algorithms::AlgorithmParameterName OutputSizeY;
-	static const Core::Algorithms::AlgorithmParameterName OutputSizeZ;
-	//Widgeconst t Scale/Mode
-	static const Core::Algorithms::AlgorithmParameterName Scale;
-	static const Core::Algorithms::AlgorithmParameterName NoTranslation;
-	static const Core::Algorithms::AlgorithmParameterName XYZTranslation;
-	static const Core::Algorithms::AlgorithmParameterName RDITranslation;
-	static const Core::Algorithms::AlgorithmParameterName RestrictX;
-	static const Core::Algorithms::AlgorithmParameterName RestrictY;
-	static const Core::Algorithms::AlgorithmParameterName RestrictZ;
-	static const Core::Algorithms::AlgorithmParameterName RestrictR;
-	static const Core::Algorithms::AlgorithmParameterName RestrictD;
-	static const Core::Algorithms::AlgorithmParameterName RestrictI;
+        static const Core::Algorithms::AlgorithmParameterName Resetting;
+        //Input Field Attributes
+        static const Core::Algorithms::AlgorithmParameterName InputCenterX;
+        static const Core::Algorithms::AlgorithmParameterName InputCenterY;
+        static const Core::Algorithms::AlgorithmParameterName InputCenterZ;
+        static const Core::Algorithms::AlgorithmParameterName InputSizeX;
+        static const Core::Algorithms::AlgorithmParameterName InputSizeY;
+        static const Core::Algorithms::AlgorithmParameterName InputSizeZ;
+        //Outpuconst t Field Atributes
+        static const Core::Algorithms::AlgorithmParameterName UseOutputCenter;
+        static const Core::Algorithms::AlgorithmParameterName UseOutputSize;
+        static const Core::Algorithms::AlgorithmParameterName OutputCenterX;
+        static const Core::Algorithms::AlgorithmParameterName OutputCenterY;
+        static const Core::Algorithms::AlgorithmParameterName OutputCenterZ;
+        static const Core::Algorithms::AlgorithmParameterName OutputSizeX;
+        static const Core::Algorithms::AlgorithmParameterName OutputSizeY;
+        static const Core::Algorithms::AlgorithmParameterName OutputSizeZ;
+        //Widgeconst t Scale/Mode
+        static const Core::Algorithms::AlgorithmParameterName Scale;
+        static const Core::Algorithms::AlgorithmParameterName NoTranslation;
+        static const Core::Algorithms::AlgorithmParameterName XYZTranslation;
+        static const Core::Algorithms::AlgorithmParameterName RDITranslation;
+        static const Core::Algorithms::AlgorithmParameterName RestrictX;
+        static const Core::Algorithms::AlgorithmParameterName RestrictY;
+        static const Core::Algorithms::AlgorithmParameterName RestrictZ;
+        static const Core::Algorithms::AlgorithmParameterName RestrictR;
+        static const Core::Algorithms::AlgorithmParameterName RestrictD;
+        static const Core::Algorithms::AlgorithmParameterName RestrictI;
 
-  static const Core::Algorithms::AlgorithmParameterName BoxMode;
-  static const Core::Algorithms::AlgorithmParameterName BoxRealScale;
+        static const Core::Algorithms::AlgorithmParameterName BoxMode;
+        static const Core::Algorithms::AlgorithmParameterName BoxRealScale;
 
-    INPUT_PORT(0, InputField, LegacyField);
-    OUTPUT_PORT(0, OutputField, LegacyField);
-    OUTPUT_PORT(1, Transformation_Widget, GeometryObject);
-    OUTPUT_PORT(2, Transformation_Matrix, Matrix);
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+        OUTPUT_PORT(1, Transformation_Widget, GeometryObject);
+        OUTPUT_PORT(2, Transformation_Matrix, Matrix);
 
-	static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        void executeImpl(FieldHandle f);
+        void clear_vals();
+        void update_input_attributes(FieldHandle);
+        void build_widget(FieldHandle, bool reset);
+        bool isBoxEmpty() const;
+        void widget_moved(bool);
+        void createBoxWidget();
+        void setBoxRestrictions();
+        Core::Datatypes::GeometryHandle buildGeometryObject();
+        void processWidgetFeedback(SCIRun::Core::Algorithms::VariableHandle var);
+        SCIRun::Core::Geometry::BBox bbox_;
 
-  private:
-    void executeImpl(FieldHandle f);
-    void clear_vals();
-    void update_input_attributes(FieldHandle);
-    void build_widget(FieldHandle, bool reset);
-    bool isBoxEmpty() const;
-    void widget_moved(bool);
-    void createBoxWidget();
-    void setBoxRestrictions();
-    Core::Datatypes::GeometryHandle buildGeometryObject();
-    SCIRun::Core::Geometry::BBox bbox_;
-
-    BoxWidgetPtr box_;
-    boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
-  };
-}}}
+        BoxWidgetPtr box_;
+        boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
+      };
+    }
+  }
+}
 
 #endif

@@ -40,19 +40,19 @@ namespace Render {
 /// Reference ID class.
 struct StaticSRInterface
 {
-  // -- Data --
-  SRInterface* interface_;
+    // -- Data --
+    SRInterface* instance_;
 
-  // -- Functions --
-  StaticSRInterface() : interface_(nullptr) {}
-  StaticSRInterface(SRInterface* srInt) : interface_(srInt) {}
+    // -- Functions --
+    StaticSRInterface() : instance_(nullptr) {}
+    StaticSRInterface(SRInterface* s) : instance_(s) {}
 
-  static const char* getName() {return "scirun:StaticSRInterface";}
+    static const char* getName() {return "scirun:StaticSRInterface";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
-  {
-    return true;
-  }
+    bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+    {
+        return true;
+    }
 };
 
 } // namespace Render

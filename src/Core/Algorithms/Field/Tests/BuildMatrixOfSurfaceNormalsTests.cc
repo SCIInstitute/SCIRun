@@ -43,7 +43,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core; 
 using namespace SCIRun::TestUtils;
 
-TEST(BuildMatrixOfSurfaceNormalsTests, InOutNoCrash)
+TEST(BuildMatrixOfSurfaceNormalsTests, DISABLED_InOutNoCrash)
 {
   //BuildMatrixOfSurfaceNormalsAlgo algo;
 	//FieldHandle surfMesh = loadFieldFromFile(TestResources::rootDir() / "simple_cube_trisurf.fld");
@@ -52,6 +52,6 @@ TEST(BuildMatrixOfSurfaceNormalsTests, InOutNoCrash)
 	//Datatypes::DenseMatrixHandle output_matrix; 
 	//algo.runImpl(surfMesh, output_matrix); 
 
-	EXPECT_EQ(1,1); 
+	FAIL() << "TODO"; 
 
 }

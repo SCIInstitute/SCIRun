@@ -36,31 +36,35 @@ using namespace SCIRun::Core::Logging;
 
 void TextEditAppender::log(const QString& message) const
 {
+  QMutexLocker locker(&mutex_);
   text_->append(message);
+  text_->verticalScrollBar()->setValue(text_->verticalScrollBar()->maximum());
 }
 
 void TextEditAppender::error(const std::string& msg) const
 {
-  log("Error: " + QString::fromStdString(msg));
   Log::get() << ERROR_LOG << msg << std::endl;
 }
 
 void TextEditAppender::warning(const std::string& msg) const
 {
-  log("Warning: " + QString::fromStdString(msg));
   Log::get() << WARN << msg << std::endl;
 }
 
 void TextEditAppender::remark(const std::string& msg) const
 {
-  log("Remark: " + QString::fromStdString(msg));
   Log::get() << NOTICE << msg << std::endl;
 }
 
 void TextEditAppender::status(const std::string& msg) const
 {
-  log(QString::fromStdString(msg));
-  Log::get() << DEBUG_LOG << msg << std::endl;
+  auto level = regressionMode_ ? INFO : DEBUG_LOG;
+  Log::get() << level << msg << std::endl;
+}
+
+void TextEditAppender::log4(const std::string& message) const
+{
+  log(QString::fromStdString(message));
 }
 
 QString TreeViewModuleGetter::text() const
@@ -91,10 +95,8 @@ namespace
     void operator()( T* widget ) const
     {
       //TODO: investigate this Mac Qt bug in more detail. A better workaround probably exists. (Or just wait until Qt 5)
-//#ifdef WIN32
       if (widget)
         widget->setDisabled(flag_);
-//#endif
     }
     bool flag_;
   };

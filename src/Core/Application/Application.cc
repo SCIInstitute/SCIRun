@@ -219,11 +219,6 @@ bool Application::get_user_directory( boost::filesystem::path& user_dir, bool co
   return applicationHelper.get_user_directory(user_dir, config_path);
 }
 
-bool Application::get_user_desktop_directory( boost::filesystem::path& user_desktop_dir ) const
-{
-  return applicationHelper.get_user_desktop_directory(user_desktop_dir);
-}
-
 bool Application::get_config_directory( boost::filesystem::path& config_dir ) const
 {
   return applicationHelper.get_config_directory(config_dir);
