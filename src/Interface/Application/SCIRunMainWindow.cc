@@ -1413,7 +1413,7 @@ void SCIRunMainWindow::adjustModuleDock(int state)
 #ifdef __APPLE__
 static const Qt::Key MetadataShiftKey = Qt::Key_Meta;
 #else
-static const Qt::Key MetadataShiftKey = Qt::Key_Control;
+static const Qt::Key MetadataShiftKey = Qt::Key_CapsLock;
 #endif
 
 void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
