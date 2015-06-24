@@ -184,10 +184,16 @@ PortWidget::~PortWidget()
 
 QSize PortWidgetBase::sizeHint() const
 {
-  const int width = WIDTH;
+  const int width = DEFAULT_WIDTH;
   const int coloredHeight = isInput() ? 5 : 4;
   const int blackHeight = 2;
-  return QSize(width, coloredHeight + blackHeight);
+  QSize size(width, coloredHeight + blackHeight);
+  const double highlightFactor = 1.7;
+  if (isHighlighted_)
+  {
+    size *= highlightFactor;
+  }
+  return size;
 }
 
 void PortWidget::toggleLight()
@@ -208,12 +214,7 @@ void PortWidget::turn_on_light()
 void PortWidgetBase::paintEvent(QPaintEvent* event)
 {
   QSize size = sizeHint();
-  const double highlightFactor = 1.7;
-  if (isHighlighted_)
-  {
-    size *= highlightFactor;
-    resize(size);
-  }
+  resize(size);
 
   QPainter painter(this);
   painter.fillRect(QRect(QPoint(), size), color());

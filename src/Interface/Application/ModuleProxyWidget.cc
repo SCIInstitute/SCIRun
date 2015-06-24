@@ -289,10 +289,11 @@ void ModuleProxyWidget::createPortPositionProviders()
   const int firstPortXPos = 5;
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
-    //std::cout << "Setting position provider for port " << p->id() << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)) << "," << p->pos().y() << std::endl;
-    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidgetBase::WIDTH + ModuleWidget::PORT_SPACING)), p->pos().y());
+    qDebug() << "Setting position provider for port " << QString::fromStdString(p->id().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
+    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())), p->pos().y());
 
-    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));
+    int extraPadding = p->isHighlighted() ? 4 : 0;
+    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(p->width() / 2 + extraPadding, 5)));
     p->setPositionObject(pp);
   }
   if (pos() == QPointF(0, 0) && cachedPosition_ != pos())

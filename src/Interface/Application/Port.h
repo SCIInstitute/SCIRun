@@ -67,10 +67,11 @@ public:
 
   virtual QColor color() const = 0;
   virtual bool isLightOn() const = 0;
-
-  static const int WIDTH = 11;
+  
+  bool isHighlighted() const { return isHighlighted_; }
 
 protected:
+  static const int DEFAULT_WIDTH = 11;
   explicit PortWidgetBase(QWidget* parent);
   virtual QSize sizeHint() const override;
   virtual void paintEvent(QPaintEvent* event) override;
