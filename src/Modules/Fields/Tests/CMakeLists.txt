@@ -46,6 +46,7 @@ SET(Modules_Fields_Tests_SRCS
   MapFieldDataFromElemToNodeTests.cc
   SplitFieldByConnectedRegionTests.cc
   ExtractSimpleIsoSurfaceTest.cc
+  ClipVolumeByIsovalueTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests

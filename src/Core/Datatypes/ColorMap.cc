@@ -173,9 +173,12 @@ ColorRGB ColorMap::valueToColor(double scalar) const {
  */
 ColorRGB ColorMap::valueToColor(const Tensor &tensor) const {
     //TODO this is probably not implemented correctly.
-    return ColorRGB(getTransformedColor(fabs(tensor.xx())),
-                    getTransformedColor(fabs(tensor.yy())),
-                    getTransformedColor(fabs(tensor.zz())));
+    //return ColorRGB(getTransformedColor(fabs(tensor.xx())), getTransformedColor(fabs(tensor.yy())), getTransformedColor(fabs(tensor.zz())));
+  double eigen1, eigen2, eigen3;
+  Tensor ten = tensor;
+  ten.get_eigenvalues(eigen1, eigen2, eigen3);
+  double primaryEigen = std::max(std::max(eigen1, eigen2), eigen3);
+  return getColorMapVal(primaryEigen);
 }
 /**
  * @name valueToColor
@@ -185,10 +188,8 @@ ColorRGB ColorMap::valueToColor(const Tensor &tensor) const {
  */
 ColorRGB ColorMap::valueToColor(const Vector &vector) const {
     //TODO this is probably not implemented correctly.
-    return ColorRGB(getTransformedColor(fabs(vector.x())),
-                    getTransformedColor(fabs(vector.y())),
-                    getTransformedColor(fabs(vector.z())));
-
+   // return ColorRGB(getTransformedColor(fabs(vector.x())),getTransformedColor(fabs(vector.y())), getTransformedColor(fabs(vector.z())));
+  return getColorMapVal(vector.length());
 }
 
 std::string ColorMap::getColorMapName() const { return name_; }

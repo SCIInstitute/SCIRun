@@ -29,7 +29,7 @@
 # CMakeLists.txt for Dataflow/Modules/Fields
 
 SET(Modules_Legacy_Fields_HEADERS
-	RefineMesh.h
+  RefineMesh.h
   ClipVolumeByIsovalue.h
   CreateLatVol.h
   GetFieldBoundary.h
@@ -76,6 +76,8 @@ SET(Modules_Legacy_Fields_HEADERS
   ConvertHexVolToTetVol.h
   ExtractSimpleIsosurface.h
   GetSliceFromStructuredFieldByIndices.h
+  GenerateSinglePointProbeFromField.h
+  GeneratePointSamplesFromField.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -148,13 +150,13 @@ SET(Modules_Legacy_Fields_SRCS
   ConvertQuadSurfToTriSurf.cc
   #TransformPlanarMesh.cc
   #BuildPointCloudToLatVolMappingMatrix.cc
-  #GenerateSinglePointProbeFromField.cc
+  GenerateSinglePointProbeFromField.cc
   #GeneratePointSamplesFromFieldOrWidget.cc
   CreateLatVol.cc
   #CreateImage.cc
   #CreateStructHex.cc
   #ReportScalarFieldStats.cc
-  #GeneratePointSamplesFromField.cc
+  GeneratePointSamplesFromField.cc
   #SelectFieldROIWithBoxWidget.cc
   SetFieldOrMeshStringProperty.cc
   #ConvertMeshToPointCloud.cc

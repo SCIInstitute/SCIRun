@@ -266,7 +266,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   setPositionObject(boost::make_shared<MidpointPositioner>(fromPort_->getPositionObject(), toPort_->getPositionObject()));
 
   trackNodes();
-  GuiLogger::Instance().logStd("Connection made: " + id_.id_);
+  GuiLogger::Instance().logInfoStd("Connection made: " + id_.id_);
 }
 
 ConnectionLine::~ConnectionLine()
@@ -443,7 +443,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
   msgBox->setStandardButtons(QMessageBox::Ok);
   msgBox->setWindowTitle(label + " Data info: " + QString::fromStdString(id));
   msgBox->setText(info);
-  msgBox->setModal(false); 
+  msgBox->setModal(false);
   msgBox->show();
 }
 
@@ -500,8 +500,8 @@ QPointF MidpointPositioner::currentPosition() const
   return (p1_->currentPosition() + p2_->currentPosition()) / 2;
 }
 
-ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : 
-  currentType_(EUCLIDEAN), 
+ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) :
+  currentType_(EUCLIDEAN),
   visible_(true),
   scene_(scene),
   euclidean_(new EuclideanDrawStrategy),

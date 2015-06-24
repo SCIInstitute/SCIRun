@@ -46,15 +46,8 @@ GetFieldBoundary::GetFieldBoundary()
 void
 GetFieldBoundary::execute()
 {
-  FieldHandle field = getRequiredInput(InputField);
+  auto field = getRequiredInput(InputField);
   
-  // If parameters changed, do algorithm
-  /*
-  inputs_changed_ || 
-  !oport_cached("BoundaryField") || 
-  !oport_cached("Mapping")
-  */
-
   if (needToExecute())
   {
     update_state(Executing);

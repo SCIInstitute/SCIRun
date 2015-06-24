@@ -37,10 +37,6 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <boost/unordered_map.hpp>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
- #include <sci_hash_map.h>
-#endif
-
 #include <algorithm>
 #include <set>
 
@@ -50,7 +46,6 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
-using namespace boost::unordered;
 
 int tet_permute_table[15][4] = {
   { 0, 0, 0, 0 }, // 0x0
@@ -81,6 +76,66 @@ int tri_permute_table[7][3] = {
   { 2, 0, 1 }, // 0x6
 };
 
+namespace detail
+{
+  struct edgepair_t
+  {
+    VField::index_type first;
+    VField::index_type second;
+    double dfirst;
+  };
+
+  struct edgepairhash
+  {
+    size_t operator()(const edgepair_t &a) const
+    {
+      std::hash<size_t> h;
+      return h(a.first ^ a.second);
+    }
+  };
+
+  typedef boost::unordered_map<VField::index_type, VMesh::Node::index_type> node_hash_type;
+  typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
+
+  bool operator==(const edgepair_t &a, const edgepair_t &b)
+  {
+    return a.first == b.first && a.second == b.second;
+  }
+
+  bool operator!=(const edgepair_t &a, const edgepair_t &b)
+  {
+    return !(a == b);
+  }
+
+  struct facetriple_t
+  {
+    VField::index_type first, second, third;
+    double dsecond, dthird;
+  };
+
+  bool operator==(const facetriple_t &a, const facetriple_t &b) 
+  {
+    return a.first == b.first && a.second == b.second && a.third == b.third;
+  }
+
+  bool operator!=(const facetriple_t &a, const facetriple_t &b) 
+  {
+    return !(a == b);
+  }
+
+  struct facetriplehash
+  {
+    size_t operator()(const facetriple_t &a) const
+    {
+      std::hash<size_t> h;
+      return h(a.first ^ a.second ^ a.third);
+    }
+  };
+
+  typedef boost::unordered_map<facetriple_t, VMesh::Node::index_type, facetriplehash> face_hash_type;
+
+}
+
 ClipMeshByIsovalueAlgo::ClipMeshByIsovalueAlgo()
 {
  addParameter(LessThanIsoValue, 1);
@@ -93,206 +148,43 @@ class ClipMeshByIsovalueAlgoTet {
     bool run(const AlgorithmBase* algo,FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const;
 
   private:
-    struct edgepair_t
-    {
-      VField::index_type first;
-      VField::index_type second;
-      double dfirst;
-    };
-
-    struct edgepairequal
-    {
-      bool operator()(const edgepair_t &a, const edgepair_t &b) const
-      {
-        return a.first == b.first && a.second == b.second;
-      }
-    };
-
-    struct edgepairless
-    {
-      bool operator()(const edgepair_t &a, const edgepair_t &b)
-      {
-        return less(a, b);
-      }
-      static bool less(const edgepair_t &a, const edgepair_t &b)
-      {
-        return a.first < b.first || a.first == b.first && a.second < b.second;
-      }
-    };
-
-   struct edgepairhash
-   {
-    size_t operator()(const edgepair_t &a) const
-     {
-
-      std::hash<unsigned int> h;
-
-       return h(a.first ^ a.second);
-     }
-
-   };
-
-    typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
-    
-#ifdef HAVE_HASH_MAP
-    struct edgepairhash
-    {
-      unsigned int operator()(const edgepair_t &a) const
-      {
-#if defined(__ECC) || defined(_MSC_VER)
-        hash_compare<unsigned int> h;
-#else
-        hash<unsigned int> h;
-#endif
-        return h(a.first ^ a.second);
-      }
-#if defined(__ECC) || defined(_MSC_VER)
-
-      // These are particularly needed by ICC's hash stuff
-      static const size_t bucket_size = 4;
-      static const size_t min_buckets = 8;
-      
-      // This is a less than function.
-      bool operator()(const edgepair_t & a, const edgepair_t & b) const {
-        return edgepairless::less(a,b);
-      }
-#endif // endif ifdef __ICC
-    };
-#endif
-
-    struct facetriple_t
-    {
-      VField::index_type first, second, third;
-      double dsecond, dthird;
-    };
-
-    struct facetripleequal
-    {
-      bool operator()(const facetriple_t &a, const facetriple_t &b) const
-      {
-        return a.first == b.first && a.second == b.second && a.third == b.third;
-      }
-    };
-
-    struct facetripleless
-    {
-      bool operator()(const facetriple_t &a, const facetriple_t &b) const
-      {
-        return a.first < b.first || a.first == b.first && 
-          ( a.second < b.second || a.second == b.second && a.third < b.third);
-      }
-    };
-
-#ifdef HAVE_HASH_MAP
-    struct facetriplehash
-    {
-      unsigned int operator()(const facetriple_t &a) const
-      {
-#  if defined(__ECC) || defined(_MSC_VER)
-        hash_compare<unsigned int> h;
-#  else
-        hash<unsigned int> h;
-#  endif
-        return h(a.first ^ a.second ^ a.third);
-      }
-#  if defined(__ECC) || defined(_MSC_VER)
-
-      // These are particularly needed by ICC's hash stuff
-      static const size_t bucket_size = 4;
-      static const size_t min_buckets = 8;
-      bool operator()(const facetriple_t &a, const facetriple_t &b) const
-      {
-        return a.first < b.first || a.first == b.first && 
-          ( a.second < b.second || a.second == b.second && a.third < b.third);
-      }
-#endif
-    };
-#endif
-  
-#ifdef HAVE_HASH_MAP
-#  if defined(__ECC) || defined(_MSC_VER)
-    typedef hash_map<VField::index_type,VMesh::Node::index_type> node_hash_type;
-
-    typedef hash_map<edgepair_t,VMesh::Node::index_type,
-         edgepairhash> edge_hash_type;
-
-    typedef hash_map<facetriple_t, VMesh::Node::index_type,
-         facetriplehash> face_hash_type;
-#  else
-    typedef hash_map<VField::index_type,VMesh::Node::index_type,
-         hash<unsigned int>,
-         std::equal_to<unsigned int> > node_hash_type;
-
-    typedef hash_map<edgepair_t,
-         VMesh::Node::index_type,
-         edgepairhash,
-         edgepairequal> edge_hash_type;
-
-    typedef hash_map<facetriple_t,
-         VMesh::Node::index_type,
-         facetriplehash,
-         facetripleequal> face_hash_type;
-#  endif
-#else
-    typedef std::map<index_type,
-          VMesh::Node::index_type,
-          std::less<unsigned int> > node_hash_type;
-/*
-    typedef std::map<edgepair_t,
-          VMesh::Node::index_type,
-          edgepairless> edge_hash_type;
-*/
-    typedef std::map<facetriple_t,
-          VMesh::Node::index_type,
-          facetripleless> face_hash_type;
-#endif
     VMesh::Node::index_type
     edge_lookup(VField::index_type u0, VField::index_type u1, double d0,
-          const Point &p, edge_hash_type &edgemap,
+          const Point &p, detail::edge_hash_type &edgemap,
           VMesh *clipped) const;
 
     VMesh::Node::index_type
     face_lookup(VField::index_type u0, VField::index_type u1, VField::index_type u2,
           double d1, double d2,
-          const Point &p, face_hash_type &facemap,
+          const Point &p, detail::face_hash_type &facemap,
           VMesh *clipped) const;
 
  };
 
-VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::edge_lookup(VField::index_type u0, VField::index_type u1, double d0, const Point &p, edge_hash_type &edgemap, VMesh *clipped) const
+VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::edge_lookup(VField::index_type u0, VField::index_type u1, double d0, const Point &p, detail::edge_hash_type &edgemap, VMesh *clipped) const
 {
+  using namespace detail;
   edgepair_t np;
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
 
-  const boost::unordered::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash>::iterator loc;
+  auto loc = edgemap.find(np);
       
-  if (loc == edgemap.end()) // this is always true ???
+  if (loc == edgemap.end())
   {
     const VMesh::Node::index_type nodeindex = clipped->add_point(p);
-    
-    //edgemap[np] = nodeindex; //does not compile with this instruction
-    /* if I use it this happens:
-    /usr/bin/../lib/c++/v1/functional:521:21: error: invalid operands to binary expression ('const
-      ClipMeshByIsovalueAlgoTet::edgepair_t' and 'const ClipMeshByIsovalueAlgoTet::edgepair_t')
-        {return __x == __y;}
-                ~~~ ^  ~~~
-     /Users/moritz/Desktop/work/SCIRun5_myfork/src/Externals/boost/boost/unordered/detail/unique.hpp:245:25: note: in instantiation of
-      member function 'std::__1::equal_to<ClipMeshByIsovalueAlgoTet::edgepair_t>::operator()' requested here
-                    if (eq(k, this->get_key(*n)))
-    
-    */
-    
+    edgemap[np] = nodeindex; 
     return nodeindex;
   }
   else
   {
-   return (*loc).second;
+   return loc->second;
   }
 }
 
-VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::face_lookup(VField::index_type u0, VField::index_type u1, VField::index_type u2, double d1, double d2, const Point &p, face_hash_type &facemap, VMesh *clipped) const
+VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::face_lookup(VField::index_type u0, VField::index_type u1, VField::index_type u2, double d1, double d2, const Point &p, detail::face_hash_type &facemap, VMesh *clipped) const
 {
+  using namespace detail;
   facetriple_t nt;
   if (u0 < u1)
   {
@@ -348,7 +240,8 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
   VField* field = input->vfield();
   VMesh*  mesh  = input->vmesh();
   VMesh*  clipped = output->vmesh();
-  
+ 
+  using namespace detail;
   node_hash_type nodemap;
   edge_hash_type edgemap;
   face_hash_type facemap;
@@ -399,7 +292,6 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
           const VMesh::Node::index_type nodeindex = clipped->add_point(p[i]);
           nodemap[(VField::index_type)onodes[i]] = nodeindex;
           nnodes[i] = nodeindex;
-	  std::cout << "a:"  << std::endl;
         }
         else
         {
@@ -420,7 +312,6 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
         const VMesh::Node::index_type nodeindex = clipped->add_point(p[perm[0]]);
         nodemap[(VField::index_type)onodes[perm[0]]] = nodeindex;
         nnodes[0] = nodeindex;
-	std::cout << "b:"  << std::endl;
       }
       else
       {
@@ -465,7 +356,6 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
           const VMesh::Node::index_type nodeindex = clipped->add_point(p[perm[i]]);
           nodemap[(VField::index_type)onodes[perm[i]]] = nodeindex;
           inodes[i-1] = nodeindex;
-	  std::cout << "c:" << std::endl;
         }
         else
         {
@@ -572,7 +462,6 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
           const VMesh::Node::index_type nodeindex = clipped->add_point(p[perm[i]]);
           nodemap[(VField::index_type)onodes[perm[i]]] = nodeindex;
           inodes[i-2] = nodeindex;
-	  std::cout << "d:" << std::endl;
         }
         else
         {
@@ -655,9 +544,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
   
   VField* ofield = output->vfield();
   ofield->resize_values();
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-   ofield->copy_properties(field);
-  #endif
+  CopyProperties(*input, *output);
   
     // Add the data values from the old field to the new field.
   node_hash_type::iterator nmitr = nodemap.begin();
@@ -774,99 +661,21 @@ class ClipMeshByIsovalueAlgoTri
 {
   public:
     bool run(const AlgorithmBase* algo,FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const;
-             
-  private:
   
-    struct edgepair_t
-    {
-      VField::index_type first;
-      VField::index_type second;
-      double dfirst;
-    };
-    
-    struct edgepairequal
-    {
-      bool operator()(const edgepair_t &a, const edgepair_t &b) const
-      {
-        return a.first == b.first && a.second == b.second;
-      }
-    };
-    
-    struct edgepairless
-    {
-      bool operator()(const edgepair_t &a, const edgepair_t &b)
-      {
-        return less(a, b);
-      }
-      static bool less(const edgepair_t &a, const edgepair_t &b)
-      {
-        return a.first < b.first || a.first == b.first && a.second < b.second;
-      }
-    };
-/// @todo: needs cleanup, replace all this hash code with unordered map and set
-#ifdef HAVE_HASH_MAP
-    struct edgepairhash
-    {
-      unsigned int operator()(const edgepair_t &a) const
-      {
-#if defined(__ECC) || defined(_MSC_VER)
-        hash_compare<unsigned int> h;
-#else
-        hash<unsigned int> h;
-#endif
-        return h(a.first ^ a.second);
-      }
-#if defined(__ECC) || defined(_MSC_VER)
-    
-      // These are particularly needed by ICC's hash stuff
-      static const size_t bucket_size = 4;
-      static const size_t min_buckets = 8;
-    
-      // This is a less than function.
-      bool operator()(const edgepair_t & a, const edgepair_t & b) const 
-      {
-        return edgepairless::less(a,b);
-      }
-#endif // endif ifdef __ICC
-    };
-  
-  
-#  if defined(__ECC) || defined(_MSC_VER)
-    typedef hash_map<VField::index_type,
-                     VMesh::Node::index_type> node_hash_type;
-  
-    typedef hash_map<edgepair_t,VMesh::Node::index_type,
-                     edgepairhash> edge_hash_type;
-#  else
-    typedef hash_map<VField::index_type,VMesh::Node::index_type,
-         hash<unsigned int>, std::equal_to<unsigned int> > node_hash_type;
-
-    typedef hash_map<edgepair_t,VMesh::Node::index_type,
-         edgepairhash, edgepairequal> edge_hash_type;
-#  endif
-#else
-    typedef std::map<VField::index_type,
-          VMesh::Node::index_type,
-          std::less<unsigned int> > node_hash_type;
-
-    typedef std::map<edgepair_t,
-          VMesh::Node::index_type,
-          edgepairless> edge_hash_type;
-#endif
-
+private:
     VMesh::Node::index_type
     edge_lookup(VField::index_type u0, VField::index_type u1, double d0,
-          const Point &p, edge_hash_type &edgemap,
+          const Point &p, detail::edge_hash_type &edgemap,
           VMesh *clipped) const;
 };
 
-VMesh::Node::index_type ClipMeshByIsovalueAlgoTri::edge_lookup(VField::index_type u0, VField::index_type u1, double d0, const Point &p, edge_hash_type &edgemap, VMesh *clipped) const
+VMesh::Node::index_type ClipMeshByIsovalueAlgoTri::edge_lookup(VField::index_type u0, VField::index_type u1, double d0, const Point &p, detail::edge_hash_type &edgemap, VMesh *clipped) const
 {
+  using namespace detail;
   edgepair_t np;
   if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  const edge_hash_type::iterator loc = edgemap.find(np);
+  const auto loc = edgemap.find(np);
   if (loc == edgemap.end())
   {
     const VMesh::Node::index_type nodeindex = clipped->add_point(p);
@@ -875,9 +684,8 @@ VMesh::Node::index_type ClipMeshByIsovalueAlgoTri::edge_lookup(VField::index_typ
   }
   else
   {
-    return (*loc).second;
+    return loc->second;
   }
-  #endif
 }
 
 bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input, FieldHandle& output, MatrixHandle &mapping) const
@@ -886,6 +694,8 @@ bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input
   VMesh*  mesh  = input->vmesh();
   VMesh*  clipped = output->vmesh();
   
+  using namespace detail;
+
   node_hash_type nodemap;
   edge_hash_type edgemap;
 
@@ -1190,21 +1000,7 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
   // Create a map to help differentiate between new nodes created for
   // the inserted sheet, and the nodes on the stair stepped boundary.
   std::map<VMesh::Node::index_type, VMesh::Node::index_type> clipped_to_original_nodemap;
-  
-#ifdef HAVE_HASH_MAP
-#  if defined(__ECC) || defined(_MSC_VER)
-  typedef hash_map<VField::index_type, VMesh::Node::index_type> hash_type;
-#  else
-  typedef hash_map<VField::index_type,
-    VMesh::Node::index_type,
-    hash<unsigned int>,
-    std::equal_to<unsigned int> > hash_type;
-#  endif
-#else
-  typedef std::map<VField::index_type,
-    VMesh::Node::index_type,
-  std::less<unsigned int> > hash_type;
-#endif 
+  typedef boost::unordered_map<VField::index_type, VMesh::Node::index_type> hash_type;
    
   hash_type nodemap;
   
@@ -1278,7 +1074,6 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
   // the original boundary) so we know which nodes to project to the
   // isosurface to create the new sheet of hexes.
   std::map<VMesh::Node::index_type, VMesh::Node::index_type> vertex_map;
-  std::map<VMesh::Node::index_type, VMesh::Node::index_type>::iterator node_iter;
   
   std::vector<VMesh::Node::index_type> node_list;
   std::vector<VMesh::DElem::index_type> face_list;
@@ -1318,8 +1113,7 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
         for (size_t j=0;j<4; j++) face_nodes[j] = clipped_to_original_nodemap[face_nodes[j]];
         if( mesh->get_delem( old_face, face_nodes) )
         {
-          std::map<VMesh::DElem::index_type, VMesh::DElem::index_type>::iterator bound_iter;
-          bound_iter = original_boundary.find( old_face );
+          auto bound_iter = original_boundary.find( old_face );
           if( bound_iter != original_boundary.end() )
           {
             is_old_boundary = true;
@@ -1340,7 +1134,7 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
           VMesh::size_type size = nodes.size();
           for( i = 0; i < size; i++ )
           {
-            node_iter = vertex_map.find( *niter );
+            auto node_iter = vertex_map.find( *niter );
             if( node_iter == vertex_map.end() )
             {
               node_list.push_back( *niter );
@@ -1418,9 +1212,7 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
 
   VField* ofield = output->vfield();
   ofield->resize_values();
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-   ofield->copy_properties( field );
-  #endif
+  CopyProperties(*input, *output);
 
   // Create the interpolation matrix for downstream use.
   hash_type::iterator hitr = nodemap.begin();

@@ -66,7 +66,6 @@ void ViewScene::setStateDefaults()
 
 void ViewScene::postStateChangeInternalSignalHookup()
 {
-  std::cout << "view scene hooking up state change slot" << std::endl;
   get_state()->connect_state_changed([this]() { processViewSceneObjectFeedback(); });
 }
 
