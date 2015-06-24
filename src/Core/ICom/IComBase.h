@@ -93,7 +93,10 @@ class SCISHARE IComBase {
 	class   invalid_address				: public icomerror
 	{
 	public:
-		virtual const char* what() const throw() override { return "invalid_address"; }
+		explicit invalid_address(const std::string& msg = "") : msg_("invalid_address: " + msg) {}
+		virtual const char* what() const throw() override { return msg_.c_str(); }
+	private:
+		std::string msg_;
 	};
 
 };
