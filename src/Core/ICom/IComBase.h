@@ -59,14 +59,42 @@ class SCISHARE IComBase {
 
 	// Define all the communication errors here
   public:
-	class   icomerror {}; // general socket/packet communication error
+	class   icomerror : public std::exception
+	{
+		public:
+			virtual const char* what() const _NOEXCEPT override { return "general icomerror"; }
+	}; // general socket/packet communication error
 
-	class   could_not_open_socket		: public icomerror {};
-	class   invalid_port_number			: public icomerror {};
-	class   could_not_resolve_address   : public icomerror {};
-	class   not_a_string_packet			: public icomerror {};
-	class   invalid_data_format			: public icomerror {};
-	class   invalid_address				: public icomerror {};
+	class   could_not_open_socket		: public icomerror
+	{
+	public:
+		virtual const char* what() const _NOEXCEPT override { return "could_not_open_socket"; }
+	};
+	class   invalid_port_number			: public icomerror
+	{
+	public:
+		virtual const char* what() const _NOEXCEPT override { return "invalid_port_number"; }
+	};
+	class   could_not_resolve_address   : public icomerror
+	{
+	public:
+		virtual const char* what() const _NOEXCEPT override { return "could_not_resolve_address"; }
+	};
+	class   not_a_string_packet			: public icomerror
+	{
+	public:
+		virtual const char* what() const _NOEXCEPT override { return "not_a_string_packet"; }
+	};
+	class   invalid_data_format			: public icomerror
+	{
+	public:
+		virtual const char* what() const _NOEXCEPT override { return "invalid_data_format"; }
+	};
+	class   invalid_address				: public icomerror
+	{
+	public:
+		virtual const char* what() const _NOEXCEPT override { return "invalid_address"; }
+	};
 
 };
 

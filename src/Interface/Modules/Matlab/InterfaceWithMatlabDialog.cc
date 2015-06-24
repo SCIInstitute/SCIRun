@@ -69,12 +69,12 @@ namespace TableColumns
 
 void InterfaceWithMatlabDialog::updateFromPortChange(int numPorts, const std::string& portId)
 {
-  qDebug() << "ports:" << numPorts << "name: " << QString::fromStdString(portId);
+  //qDebug() << "ports:" << numPorts << "name: " << QString::fromStdString(portId);
   using namespace TableColumns;
 
   if (portId.find("Matrix") != std::string::npos)
   {
-    qDebug() << "adjust matrix input table";
+    //qDebug() << "adjust matrix input table";
     auto oldRowCount = matrixInputTableWidget_->rowCount();
     matrixInputTableWidget_->blockSignals(true);
     if (numPorts > totalInputPorts())
@@ -83,7 +83,7 @@ void InterfaceWithMatlabDialog::updateFromPortChange(int numPorts, const std::st
       auto newRowCount = numMatrixPorts_ - 1;
       if (newRowCount > 0)
       {
-        qDebug() << "oldRowCount" << oldRowCount << "newRowCount" << newRowCount;
+        //qDebug() << "oldRowCount" << oldRowCount << "newRowCount" << newRowCount;
         matrixInputTableWidget_->setRowCount(newRowCount);
         int index = newRowCount - 1;
         //note: the incoming portId is the port that was just added, not connected to. we assume the connected port
@@ -109,7 +109,7 @@ void InterfaceWithMatlabDialog::updateFromPortChange(int numPorts, const std::st
     else
     {
       numMatrixPorts_--;
-      qDebug() << "trying to remove row with " << QString::fromStdString(portId);
+      //qDebug() << "trying to remove row with " << QString::fromStdString(portId);
       auto items = matrixInputTableWidget_->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
       if (!items.empty())
       {
@@ -124,31 +124,28 @@ void InterfaceWithMatlabDialog::updateFromPortChange(int numPorts, const std::st
     }
     matrixInputTableWidget_->blockSignals(false);
 
-
-
-
   }
   else if (portId.find("Field") != std::string::npos)
   {
-    qDebug() << "adjust field input table";
+    //qDebug() << "adjust field input table";
     auto oldRowCount = matrixInputTableWidget_->rowCount();
     if (numPorts > totalInputPorts())
       numFieldPorts_++;
     else
       numFieldPorts_--;
     auto newRowCount = numFieldPorts_ - 1;
-    qDebug() << "oldRowCount" << oldRowCount << "newRowCount" << newRowCount;
+    //qDebug() << "oldRowCount" << oldRowCount << "newRowCount" << newRowCount;
   }
   else if (portId.find("String") != std::string::npos)
   {
-    qDebug() << "adjust string input table";
+    //qDebug() << "adjust string input table";
     auto oldRowCount = matrixInputTableWidget_->rowCount();
     if (numPorts > totalInputPorts())
       numStringPorts_++;
     else
       numStringPorts_--;
     auto newRowCount = numStringPorts_ - 1;
-    qDebug() << "oldRowCount" << oldRowCount << "newRowCount" << newRowCount;
+    //qDebug() << "oldRowCount" << oldRowCount << "newRowCount" << newRowCount;
   }
   else if (portId.find("Nrrd") != std::string::npos)
   {

@@ -110,8 +110,10 @@ bool IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 }
 
 
-bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSocketError &err)
+bool IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSocketError &err)
 {
+	std::cout << "IComInternalSocket::connect" << std::endl;
+
 	IComInternalSocket* isock = 0;
 
 	internalsocketlock_.lock();
@@ -167,13 +169,12 @@ bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSo
 		err.error = "";
 		return(true);
 	}
-
-	catch(...)
+	catch(const icomerror& e)
 	{
 		if (isock) isock->unlock();
 		internalsocketlock_.unlock();
 		err.errnr = EADDRNOTAVAIL;
-		err.error = "Could not connect to specified address";
+		err.error = "Could not connect to specified address. " + std::string(e.what());
 		unlock();
 		return(false);
 	}
