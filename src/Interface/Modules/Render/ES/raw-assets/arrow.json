@@ -3,7 +3,7 @@
     {
       "blender-node": "Cylinder",
       "output-name": "arrow",
-      "shader": "shaders/UniformColor"
+      "shader": "Shaders/UniformColor"
     } ]
 }
 

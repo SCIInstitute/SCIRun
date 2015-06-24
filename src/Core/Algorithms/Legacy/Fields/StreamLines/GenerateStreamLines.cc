@@ -713,7 +713,7 @@ bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, Fiel
 
   if (mesh->dimensionality() < 2)
   {
-    error("This algorithm does not works only work for volumes or surfaces");
+    error("This algorithm only works for volumes or surfaces");
     return (false);
   }
 

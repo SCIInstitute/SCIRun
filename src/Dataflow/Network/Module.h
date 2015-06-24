@@ -259,6 +259,10 @@ namespace Networks {
     size_t add_output_port(OutputPortHandle);
     virtual void removeInputPort(const PortId& id);
 
+    //For modules that need to initialize some internal state signal/slots, this needs to be called after set_state to reinitialize.
+    virtual void postStateChangeInternalSignalHookup() {}
+    void sendFeedbackUpstreamAlongIncomingConnections(const Core::Algorithms::Variable::Value& info);
+
   private:
     template <class T>
     boost::shared_ptr<T> getRequiredInputAtIndex(const PortId& id);

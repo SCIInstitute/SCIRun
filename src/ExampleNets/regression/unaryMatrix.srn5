@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
-<networkFile class_id="0" tracking_level="0" version="2">
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>3</count>
@@ -80,7 +80,7 @@
 									<name>ScalarValue</name>
 									<value>
 										<which>1</which>
-										<value>-5.70000000000000020e+000</value>
+										<value>-5.70000000000000018e+00</value>
 									</value>
 								</second>
 							</item>
@@ -140,22 +140,22 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateMatrix:1</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-6.84000000000000000e+002</first>
-				<second>-4.56000000000000000e+002</second>
+				<first>-6.84000000000000000e+02</first>
+				<second>-4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>EvaluateLinearAlgebraUnary:0</first>
 			<second>
-				<first>-6.84000000000000000e+002</first>
-				<second>-3.04000000000000000e+002</second>
+				<first>-6.84000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:2</first>
 			<second>
-				<first>-6.84000000000000000e+002</first>
-				<second>-1.52000000000000000e+002</second>
+				<first>-6.84000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -167,6 +167,22 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>3</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>CreateMatrix:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraUnary:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
 </networkFile>
 </boost_serialization>
 

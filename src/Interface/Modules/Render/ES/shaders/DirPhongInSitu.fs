@@ -40,6 +40,7 @@ uniform vec4    uDiffuseColor;      // Diffuse color
 uniform vec4    uSpecularColor;     // Specular color     
 uniform float   uSpecularPower;     // Specular power
 uniform vec3    uLightDirWorld;     // Directional light (world space).
+uniform float   uTransparency;
 
 // Lighting in world space. Generally, it's better to light in eye space if you
 // are dealing with point lights. Since we are only dealing with directional
@@ -70,7 +71,9 @@ void main()
   vec3  reflection  = reflect(invLightDir, normal);
   float spec        = max(0.0, dot(reflection, uCamViewVec));
 
+  vec4 diffuseColor = vColor;
+
   spec              = pow(spec, uSpecularPower);
-  gl_FragColor      = vec4((diffuse * spec * uSpecularColor + diffuse * vColor + uAmbientColor).rgb, uDiffuseColor.a);
+  gl_FragColor      = vec4((diffuse * spec * uSpecularColor + diffuse * diffuseColor + uAmbientColor).rgb, uTransparency);
 }
 

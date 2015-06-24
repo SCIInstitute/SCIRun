@@ -1,4 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -7,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 
@@ -45,87 +44,61 @@
 
 #include <algorithm>
 
-
+using namespace SCIRun::Core::Thread;
 
 namespace SCIRun {
 
-typedef std::pair<CleanupManagerCallback, void *> CMCPair;
+  std::shared_ptr<std::vector<CleanupManager::CMCPair>> CleanupManager::callbacks_;
+  bool CleanupManager::initialized_ = false;
+  std::shared_ptr<Mutex> CleanupManager::lock_;
 
-std::vector<CMCPair>* CleanupManager::callbacks_ = NULL;
-bool    CleanupManager::initialized_ = false;
-Mutex * CleanupManager::lock_ = NULL;
+  void CleanupManager::initialize()
+  {
+    if (initialized_)
+      return;
+    initialized_ = true;
 
-void
-CleanupManager::initialize()
-{
-  if( initialized_ )
-    return;
-  initialized_ = true;
+    callbacks_.reset(new std::vector<CMCPair>);
+    lock_.reset(new Mutex("CleanupManager lock"));
+  }
 
-  callbacks_ = new std::vector<CMCPair>;
-  lock_ = new Mutex("CleanupManager lock");
-}
+  void CleanupManager::add_callback(CleanupManagerCallback cb, void* data)
+  {
+    if (!initialized_) initialize();
 
-void
-CleanupManager::add_callback(CleanupManagerCallback cb, void *data)
-{
-  if( !initialized_ ) initialize();
-
-  lock_->lock();
-  if (std::find(callbacks_->begin(), callbacks_->end(), CMCPair(cb, data))
-      == callbacks_->end())
+    Guard g(lock_->get());
+    if (std::find(callbacks_->begin(), callbacks_->end(), CMCPair(cb, data)) == callbacks_->end())
     {
       callbacks_->push_back(CMCPair(cb, data));
     }
-  lock_->unlock();
-}
+  }
 
-void
-CleanupManager::invoke_remove_callback(CleanupManagerCallback callback,
-				       void *data)
-{
-  if( !initialized_ ) initialize();
+  void CleanupManager::invoke_remove_callback(CleanupManagerCallback callback, void* data)
+  {
+    if (!initialized_) initialize();
 
-  lock_->lock();
-  callback(data);
-  callbacks_->erase(std::remove(callbacks_->begin(), callbacks_->end(),
-                                CMCPair(callback, data)),
-                    callbacks_->end());
-  lock_->unlock();
-}
+    Guard g(lock_->get());
+    callback(data);
+    callbacks_->erase(std::remove(callbacks_->begin(), callbacks_->end(), CMCPair(callback, data)), callbacks_->end());
+  }
 
-void
-CleanupManager::remove_callback(CleanupManagerCallback callback, void *data)
-{
-  if( !initialized_ ) initialize();
+  void CleanupManager::remove_callback(CleanupManagerCallback callback, void* data)
+  {
+    if (!initialized_) initialize();
 
-  lock_->lock();
-  callbacks_->erase(std::remove(callbacks_->begin(), callbacks_->end(),
-                                CMCPair(callback, data)),
-                    callbacks_->end());
-  lock_->unlock();
-}
+    Guard g(lock_->get());
+    callbacks_->erase(std::remove(callbacks_->begin(), callbacks_->end(), CMCPair(callback, data)), callbacks_->end());
+  }
 
-void
-CleanupManager::call_callbacks()
-{
-  if( !initialized_ ) initialize();
+  void CleanupManager::call_callbacks()
+  {
+    if (!initialized_) initialize();
 
-  lock_->lock();
-  for (unsigned int i = 0; i < callbacks_->size(); i++)
+    Guard g(lock_->get());
+    for (auto& callback : *callbacks_)
     {
-      (*callbacks_)[i].first((*callbacks_)[i].second);
+      callback.first(callback.second);
     }
-  callbacks_->clear();
-  lock_->unlock();
-
-  // Should memory be cleaned up here?
-//   initialized_ = false;
-//   delete lock_;
-//   delete callbacks_;
+    callbacks_->clear();
+  }
 }
-
-
-} // End namespace SCIRun
-
-#endif

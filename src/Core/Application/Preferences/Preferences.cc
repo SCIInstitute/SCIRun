@@ -46,6 +46,7 @@ Preferences::Preferences() :
   useNewViewSceneMouseControls("useNewViewSceneMouseControls", false),
   modulesSnapToGrid("modulesSnapToGrid", true),
   highlightPorts("highlightPorts", false),
+  autoNotes("autoNotes", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080")
 {
@@ -130,12 +131,8 @@ void Preferences::initialize_states()
 	{
 	  user_path = boost::filesystem::current_path();
 	}
-	boost::filesystem::path desktop_path;
-	Core::Application::Instance()->get_user_desktop_directory( desktop_path );
-
 	//General Preferences
 	this->add_state( "project_path", this->project_path_state_, user_path.string() );
-	this->add_state( "export_path", this->export_path_state_, desktop_path.string() );
 
 	this->add_state( "full_screen_on_startup", this->full_screen_on_startup_state_, false );
 	this->add_state( "auto_save", this->auto_save_state_, true );

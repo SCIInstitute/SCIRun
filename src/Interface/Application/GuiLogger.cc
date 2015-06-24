@@ -44,8 +44,14 @@ void SCIRun::Gui::GuiLogger::setInstance(LoggerHandle logger)
   loggerImpl_ = logger;
 }
 
-void GuiLogger::log(const QString& message) const
+void GuiLogger::logInfo(const QString& message) const
 {
   if (loggerImpl_)
     loggerImpl_->status(message.toStdString());
+}
+
+void GuiLogger::logError(const QString& message) const
+{
+  if (loggerImpl_)
+    loggerImpl_->error(message.toStdString());
 }

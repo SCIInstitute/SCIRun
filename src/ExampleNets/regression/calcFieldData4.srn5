@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
-<networkFile class_id="0" tracking_level="0" version="2">
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>10</count>
@@ -298,7 +298,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -386,7 +386,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -706,71 +706,71 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-198</first>
-				<second>-89</second>
+				<first>-1.98000000000000000e+02</first>
+				<second>-8.90000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:1</first>
 			<second>
-				<first>-603</first>
-				<second>-239</second>
+				<first>-6.03000000000000000e+02</first>
+				<second>-2.39000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:16</first>
 			<second>
-				<first>-11</first>
-				<second>-240</second>
+				<first>-1.10000000000000000e+01</first>
+				<second>-2.40000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:17</first>
 			<second>
-				<first>-827</first>
-				<second>-107</second>
+				<first>-8.27000000000000000e+02</first>
+				<second>-1.07000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:8</first>
 			<second>
-				<first>-300</first>
-				<second>-244</second>
+				<first>-3.00000000000000000e+02</first>
+				<second>-2.44000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:5</first>
 			<second>
-				<first>-643</first>
-				<second>-359</second>
+				<first>-6.43000000000000000e+02</first>
+				<second>-3.59000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:3</first>
 			<second>
-				<first>-473</first>
-				<second>-54</second>
+				<first>-4.73000000000000000e+02</first>
+				<second>-5.40000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:18</first>
 			<second>
-				<first>-60</first>
-				<second>1</second>
+				<first>-6.00000000000000000e+01</first>
+				<second>1.00000000000000000e+00</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:4</first>
 			<second>
-				<first>-209</first>
-				<second>91</second>
+				<first>-2.09000000000000000e+02</first>
+				<second>9.10000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:7</first>
 			<second>
-				<first>-204</first>
-				<second>208</second>
+				<first>-2.04000000000000000e+02</first>
+				<second>2.08000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -795,6 +795,50 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
+	<moduleTags class_id="21" tracking_level="0" version="0">
+		<count>10</count>
+		<item_version>0</item_version>
+		<item class_id="22" tracking_level="0" version="0">
+			<first>CalculateFieldData:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateFieldData:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateFieldData:16</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateFieldData:17</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateFieldData:8</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateLatVol:5</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:3</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:18</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ShowField:4</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ViewScene:7</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
 </networkFile>
 </boost_serialization>
 

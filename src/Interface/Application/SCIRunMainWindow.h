@@ -36,6 +36,8 @@
 #include <Interface/Application/Note.h>
 #include "ui_SCIRunMainWindow.h"
 
+class QToolButton;
+
 namespace SCIRun {
   namespace Dataflow {
     namespace Engine {
@@ -91,7 +93,7 @@ private:
   ProvenanceWindow* provenanceWindow_;
   TagManagerWindow* tagManagerWindow_;
   DeveloperConsole* devConsole_;
-  PreferencesWindow* prefs_;
+  PreferencesWindow* prefsWindow_;
   PythonConsoleWidget* pythonConsole_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
@@ -171,6 +173,7 @@ private Q_SLOTS:
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void highlightPortsChanged();
+  void openLogFolder();
   void resetWindowLayout();
   void zoomNetwork();
   void changeExecuteActionIconToStop();
