@@ -51,6 +51,14 @@
       </layout>
      </widget>
      <widget class="QWidget" name="page">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>552</width>
+        <height>508</height>
+       </rect>
+      </property>
       <attribute name="label">
        <string>Network Editor</string>
       </attribute>
@@ -336,6 +344,14 @@
       </widget>
      </widget>
      <widget class="QWidget" name="page_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>552</width>
+        <height>508</height>
+       </rect>
+      </property>
       <attribute name="label">
        <string>Paths</string>
       </attribute>
@@ -514,14 +530,21 @@
       <attribute name="label">
        <string>Advanced</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0" colspan="2">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
         <widget class="QCheckBox" name="moduleErrorDialogDisableCheckbox_">
          <property name="text">
           <string>Disable Module Error dialogs</string>
          </property>
          <property name="checked">
           <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="autoModuleNoteCheckbox_">
+         <property name="text">
+          <string>Add helpful module notes automatically</string>
          </property>
         </widget>
        </item>

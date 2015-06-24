@@ -90,12 +90,14 @@ namespace Gui {
   protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
   private Q_SLOTS:
     void animate(qreal val);
   private:
     QTimeLine* timeLine_;
     std::function<void()> showModule_;
     const int counter_;
+    QGraphicsRectItem* rect_;
     static std::atomic<int> instanceCounter_;
   };
 

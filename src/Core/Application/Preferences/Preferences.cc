@@ -46,6 +46,7 @@ Preferences::Preferences() :
   useNewViewSceneMouseControls("useNewViewSceneMouseControls", false),
   modulesSnapToGrid("modulesSnapToGrid", true),
   highlightPorts("highlightPorts", false),
+  autoNotes("autoNotes", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080")
 {

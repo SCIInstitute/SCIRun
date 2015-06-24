@@ -69,6 +69,10 @@ ShowFieldModule::ShowFieldModule() : GeometryGeneratingModule(staticInfo_)
 void ShowFieldModule::setStateDefaults()
 {
   auto state = get_state();
+  state->setValue(NodesAvailable, true);
+  state->setValue(EdgesAvailable, true);
+  state->setValue(FacesAvailable, true);
+
   state->setValue(ShowNodes, false);
   state->setValue(ShowEdges, true);
   state->setValue(ShowFaces, true);
@@ -103,6 +107,7 @@ void ShowFieldModule::execute()
 
   if (needToExecute())
   {
+    updateAvailableRenderOptions(field);
     GeometryHandle geom = buildGeometryObject(field, colorMap, get_state());
     sendOutput(SceneGraph, geom);
   }
@@ -1073,9 +1078,7 @@ void ShowFieldModule::renderNodes(
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   ColorRGB node_color;
 
-  if (fld->basis_order() < 0 ||
-    (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
-    state.get(RenderState::USE_DEFAULT_COLOR))
+  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
     colorScheme = GeometryObject::COLOR_UNIFORM;
   else if (state.get(RenderState::USE_COLORMAP))
     colorScheme = GeometryObject::COLOR_MAP;
@@ -1282,22 +1285,57 @@ void ShowFieldModule::renderEdges(
     colorScheme, state, primIn, mesh->get_bounding_box());
 }
 
-AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");
-AlgorithmParameterName ShowFieldModule::ShowEdges("ShowEdges");
-AlgorithmParameterName ShowFieldModule::ShowFaces("ShowFaces");
-AlgorithmParameterName ShowFieldModule::NodeTransparency("NodeTransparency");
-AlgorithmParameterName ShowFieldModule::EdgeTransparency("EdgeTransparency");
-AlgorithmParameterName ShowFieldModule::FaceTransparency("FaceTransparency");
-AlgorithmParameterName ShowFieldModule::FaceInvertNormals("FaceInvertNormals");
-AlgorithmParameterName ShowFieldModule::NodeAsPoints("NodeAsPoints");
-AlgorithmParameterName ShowFieldModule::NodeAsSpheres("NodeAsSpheres");
-AlgorithmParameterName ShowFieldModule::EdgesAsLines("EdgesAsLines");
-AlgorithmParameterName ShowFieldModule::EdgesAsCylinders("EdgesAsCylinders");
-AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
-AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
-AlgorithmParameterName ShowFieldModule::EdgeTransparencyValue("EdgeTransparencyValue");
-AlgorithmParameterName ShowFieldModule::NodeTransparencyValue("NodeTransparencyValue");
-AlgorithmParameterName ShowFieldModule::SphereScaleValue("SphereScaleValue");
-AlgorithmParameterName ShowFieldModule::CylinderRadius("CylinderRadius");
-AlgorithmParameterName ShowFieldModule::CylinderResolution("CylinderResolution");
-AlgorithmParameterName ShowFieldModule::SphereResolution("SphereResolution");
+void ShowFieldModule::updateAvailableRenderOptions(FieldHandle field)
+{
+  if (!field)
+    return;
+
+  auto vmesh = field->vmesh();
+  if (!vmesh)
+    return;
+
+  auto state = get_state();
+  vmesh->synchronize(Mesh::NODES_E);
+  state->setValue(NodesAvailable, 0 != vmesh->num_nodes());
+  vmesh->synchronize(Mesh::EDGES_E);
+  state->setValue(EdgesAvailable, 0 != vmesh->num_edges());
+  vmesh->synchronize(Mesh::FACES_E);
+  state->setValue(FacesAvailable, 0 != vmesh->num_faces());
+  if (0 == vmesh->num_edges() && 0 == vmesh->num_faces())
+  {
+    state->setValue(ShowNodes, true);
+    state->setValue(ShowEdges, false);
+    state->setValue(ShowFaces, false);
+  }
+  else if (0 == vmesh->num_edges())
+  {
+    state->setValue(ShowEdges, false);
+  }
+  else if (0 == vmesh->num_faces())
+  {
+    state->setValue(ShowFaces, false);
+  }
+}
+
+const AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");
+const AlgorithmParameterName ShowFieldModule::ShowEdges("ShowEdges");
+const AlgorithmParameterName ShowFieldModule::ShowFaces("ShowFaces");
+const AlgorithmParameterName ShowFieldModule::NodesAvailable("NodesAvailable");
+const AlgorithmParameterName ShowFieldModule::EdgesAvailable("EdgesAvailable");
+const AlgorithmParameterName ShowFieldModule::FacesAvailable("FacesAvailable");
+const AlgorithmParameterName ShowFieldModule::NodeTransparency("NodeTransparency");
+const AlgorithmParameterName ShowFieldModule::EdgeTransparency("EdgeTransparency");
+const AlgorithmParameterName ShowFieldModule::FaceTransparency("FaceTransparency");
+const AlgorithmParameterName ShowFieldModule::FaceInvertNormals("FaceInvertNormals");
+const AlgorithmParameterName ShowFieldModule::NodeAsPoints("NodeAsPoints");
+const AlgorithmParameterName ShowFieldModule::NodeAsSpheres("NodeAsSpheres");
+const AlgorithmParameterName ShowFieldModule::EdgesAsLines("EdgesAsLines");
+const AlgorithmParameterName ShowFieldModule::EdgesAsCylinders("EdgesAsCylinders");
+const AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
+const AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
+const AlgorithmParameterName ShowFieldModule::EdgeTransparencyValue("EdgeTransparencyValue");
+const AlgorithmParameterName ShowFieldModule::NodeTransparencyValue("NodeTransparencyValue");
+const AlgorithmParameterName ShowFieldModule::SphereScaleValue("SphereScaleValue");
+const AlgorithmParameterName ShowFieldModule::CylinderRadius("CylinderRadius");
+const AlgorithmParameterName ShowFieldModule::CylinderResolution("CylinderResolution");
+const AlgorithmParameterName ShowFieldModule::SphereResolution("SphereResolution");

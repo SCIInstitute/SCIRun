@@ -99,7 +99,7 @@
    </widget>
    <widget class="QRadioButton" name="vectorsAsCometsRButton_">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -111,7 +111,7 @@
     </property>
     <property name="font">
      <font>
-      <strikeout>true</strikeout>
+      <strikeout>false</strikeout>
      </font>
     </property>
     <property name="text">
@@ -366,11 +366,11 @@
     <item>
      <widget class="QRadioButton" name="conversionRGBVectorsColoringRButton_">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="font">
        <font>
-        <strikeout>true</strikeout>
+        <strikeout>false</strikeout>
        </font>
       </property>
       <property name="text">
@@ -392,14 +392,20 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="decimals">
+    <number>4</number>
+   </property>
    <property name="minimum">
-    <double>0.010000000000000</double>
+    <double>0.000100000000000</double>
    </property>
    <property name="maximum">
     <double>100.000000000000000</double>
    </property>
-   <property name="value">
+   <property name="singleStep">
     <double>0.100000000000000</double>
+   </property>
+   <property name="value">
+    <double>1.000000000000000</double>
    </property>
   </widget>
   <widget class="QLabel" name="label_10">

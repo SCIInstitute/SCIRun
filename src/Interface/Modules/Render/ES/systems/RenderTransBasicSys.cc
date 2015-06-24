@@ -197,7 +197,7 @@ private:
       }
 
       std::string transIBOName = pass.front().ibo.name + "trans";
-      result = iboMan.front().instance->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), ibo.front().primMode, ibo.front().primType,
+      result = iboMan.front().instance_->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), ibo.front().primMode, ibo.front().primType,
         numPrimitives, transIBOName);
     }
 
@@ -279,7 +279,7 @@ private:
           {
             if (sortedObjects[index].mSortedID != 0)
             {
-              iboMan.front().instance->removeInMemoryIBO(sortedObjects[index].mSortedID);
+              iboMan.front().instance_->removeInMemoryIBO(sortedObjects[index].mSortedID);
             }
             sortedObjects[index].prevDir = dir;
             sortedObjects[index].mSortedID = sortObjects(dir, ibo, pass, iboMan);
@@ -540,7 +540,7 @@ private:
     {
       if (pass.front().renderState.mSortType == RenderState::TransparencySortType::CONTINUOUS_SORT)
       {
-        iboMan.front().instance->removeInMemoryIBO(iboID);
+        iboMan.front().instance_->removeInMemoryIBO(iboID);
       }
     }
 

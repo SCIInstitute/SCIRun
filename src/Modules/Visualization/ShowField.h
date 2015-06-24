@@ -65,25 +65,28 @@ namespace SCIRun {
         ShowFieldModule();
         virtual void execute();
 
-        static Core::Algorithms::AlgorithmParameterName ShowNodes;
-        static Core::Algorithms::AlgorithmParameterName ShowEdges;
-        static Core::Algorithms::AlgorithmParameterName ShowFaces;
-        static Core::Algorithms::AlgorithmParameterName NodeTransparency;
-        static Core::Algorithms::AlgorithmParameterName EdgeTransparency;
-        static Core::Algorithms::AlgorithmParameterName FaceTransparency;
-        static Core::Algorithms::AlgorithmParameterName FaceInvertNormals;
-        static Core::Algorithms::AlgorithmParameterName NodeAsPoints;
-        static Core::Algorithms::AlgorithmParameterName NodeAsSpheres;
-        static Core::Algorithms::AlgorithmParameterName EdgesAsLines;
-        static Core::Algorithms::AlgorithmParameterName EdgesAsCylinders;
-        static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
-        static Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
-        static Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
-        static Core::Algorithms::AlgorithmParameterName NodeTransparencyValue;
-        static Core::Algorithms::AlgorithmParameterName SphereScaleValue;
-        static Core::Algorithms::AlgorithmParameterName CylinderResolution;
-        static Core::Algorithms::AlgorithmParameterName SphereResolution;
-        static Core::Algorithms::AlgorithmParameterName CylinderRadius;
+        static const Core::Algorithms::AlgorithmParameterName NodesAvailable;
+        static const Core::Algorithms::AlgorithmParameterName EdgesAvailable;
+        static const Core::Algorithms::AlgorithmParameterName FacesAvailable;
+        static const Core::Algorithms::AlgorithmParameterName ShowNodes;
+        static const Core::Algorithms::AlgorithmParameterName ShowEdges;
+        static const Core::Algorithms::AlgorithmParameterName ShowFaces;
+        static const Core::Algorithms::AlgorithmParameterName NodeTransparency;
+        static const Core::Algorithms::AlgorithmParameterName EdgeTransparency;
+        static const Core::Algorithms::AlgorithmParameterName FaceTransparency;
+        static const Core::Algorithms::AlgorithmParameterName FaceInvertNormals;
+        static const Core::Algorithms::AlgorithmParameterName NodeAsPoints;
+        static const Core::Algorithms::AlgorithmParameterName NodeAsSpheres;
+        static const Core::Algorithms::AlgorithmParameterName EdgesAsLines;
+        static const Core::Algorithms::AlgorithmParameterName EdgesAsCylinders;
+        static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
+        static const Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName NodeTransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName SphereScaleValue;
+        static const Core::Algorithms::AlgorithmParameterName CylinderResolution;
+        static const Core::Algorithms::AlgorithmParameterName SphereResolution;
+        static const Core::Algorithms::AlgorithmParameterName CylinderRadius;
 
         INPUT_PORT(0, Field, LegacyField);
         INPUT_PORT(1, ColorMapObject, ColorMap);
@@ -93,35 +96,36 @@ namespace SCIRun {
 
         virtual void setStateDefaults();
       private:
+        void updateAvailableRenderOptions(SCIRun::FieldHandle field);
         /// Constructs a geometry object (essentially a spire object) from the given
         /// field data.
         /// \param field    Field from which to construct geometry.
         /// \param state
         /// \param id       Ends up becoming the name of the spire object.
         Core::Datatypes::GeometryHandle buildGeometryObject(
-          boost::shared_ptr<SCIRun::Field> field,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+          SCIRun::FieldHandle field,
+          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
           Dataflow::Networks::ModuleStateHandle state);
 
         /// Mesh construction. Any of the functions below can modify the renderState.
         /// This modified render state will be passed onto the renderer.
         /// @{
         void renderNodes(
-          boost::shared_ptr<SCIRun::Field> field,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+          SCIRun::FieldHandle field,
+          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
           RenderState state, Core::Datatypes::GeometryHandle geom,
           const std::string& id);
 
         void renderFaces(
-          boost::shared_ptr<SCIRun::Field> field,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+          SCIRun::FieldHandle field,
+          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
           RenderState state, Core::Datatypes::GeometryHandle geom,
           unsigned int approx_div,
           const std::string& id);
 
         void renderFacesLinear(
-          boost::shared_ptr<SCIRun::Field> field,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+          SCIRun::FieldHandle field,
+          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
           RenderState state, Core::Datatypes::GeometryHandle geom,
           unsigned int approxDiv,
           const std::string& id);
@@ -138,8 +142,8 @@ namespace SCIRun {
           const RenderState& state);
 
         void renderEdges(
-          boost::shared_ptr<SCIRun::Field> field,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+          SCIRun::FieldHandle field,
+          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
           RenderState state,
           Core::Datatypes::GeometryHandle geom,
           const std::string& id);
@@ -149,15 +153,15 @@ namespace SCIRun {
         /// @{
         RenderState getNodeRenderState(
           Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
 
         RenderState getEdgeRenderState(
           Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
 
         RenderState getFaceRenderState(
           Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
         /// @}
 
         float faceTransparencyValue_;

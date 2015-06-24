@@ -89,7 +89,7 @@ namespace Gui {
         << new QAction("Replace With", parent)
         << new QAction("Collapse", parent)
         << new QAction("Show Log", parent)
-        << disabled(new QAction("Make Sub-Network", parent))
+        //<< disabled(new QAction("Make Sub-Network", parent))  // Issue #287
         << separatorAction(parent)
         << new QAction("Destroy", parent));
     }
@@ -642,8 +642,8 @@ void ModuleWidget::setupModuleActions()
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
   connect(actionsMenu_->getAction("Collapse"), SIGNAL(triggered()), this, SLOT(collapseToMiniMode()));
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
-  if (isViewScene_)
-    actionsMenu_->getAction("Duplicate")->setDisabled(true);
+  if (isViewScene_ || theModule_->hasDynamicPorts()) //TODO: buggy combination, will disable for now. Fix is #1035
+    actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Duplicate"));
 
   connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
   connectUpdateNote(this);
@@ -1093,9 +1093,19 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
+      connect(dockable_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
 
       dialog_->pull();
     }
+  }
+}
+
+void ModuleWidget::updateDockWidgetProperties(bool isFloating)
+{
+  if (isFloating)
+  {
+    dockable_->setWindowFlags(Qt::Window);
+    dockable_->show();
   }
 }
 
@@ -1186,15 +1196,18 @@ void ModuleWidget::launchDocumentation()
   QUrl qurl(QString::fromStdString(url), QUrl::TolerantMode);
 
   if (!QDesktopServices::openUrl(qurl))
-    GuiLogger::Instance().log("Failed to open help page: " + qurl.toString());
+    GuiLogger::Instance().logError("Failed to open help page: " + qurl.toString());
 }
 
 void ModuleWidget::setStartupNote(const QString& text)
 {
-  auto note = getCurrentNote();
-  note.plainText_ = text;
-  note.html_ = "<p style=\"color:white\">" + text;
-  updateNoteFromFile(note);
+  if (isViewScene_ || Core::Preferences::Instance().autoNotes)
+  {
+    auto note = getCurrentNote();
+    note.plainText_ = text;
+    note.html_ = "<p style=\"color:white\">" + text;
+    updateNoteFromFile(note);
+  }
 }
 
 void ModuleWidget::createStartupNote()

@@ -118,6 +118,13 @@ void ShowFieldDialog::pullSpecial()
     static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+
+  nodesTab_->setEnabled(state_->getValue(ShowFieldModule::NodesAvailable).toBool());
+  displayOptionsTabs_->setTabText(0, nodesTab_->isEnabled() ? "Nodes" : "NO NODES");
+  edgesTab_->setEnabled(state_->getValue(ShowFieldModule::EdgesAvailable).toBool());
+  displayOptionsTabs_->setTabText(1, edgesTab_->isEnabled() ? "Edges" : "NO EDGES");
+  facesTab_->setEnabled(state_->getValue(ShowFieldModule::FacesAvailable).toBool());
+  displayOptionsTabs_->setTabText(2, facesTab_->isEnabled() ? "Faces" : "NO FACES");
 }
 
 void ShowFieldDialog::assignDefaultMeshColor()
