@@ -42,6 +42,9 @@
 #include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
 #include <Core/Application/Version.h>
+#include <Core/Services/ServiceLog.h>
+#include <Core/Services/ServiceDB.h>
+#include <Core/Services/ServiceManager.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -291,7 +294,7 @@ void ApplicationPrivate::start_eai()
   // with the rest of SCIRun. Since the thirdparty software may be running
   // on a different platform it allows for connecting to remote machines
   // and running the service on a different machine
-  ServiceDBHandle servicedb = new ServiceDB;
+  ServiceDBHandle servicedb(new ServiceDB);
   // load all services and find all makers
   servicedb->loadpackages();
   // activate all services
@@ -306,8 +309,6 @@ void ApplicationPrivate::start_eai()
   // If the current instance of SCIRun should not provide any services
   // to other instances of SCIRun over the internet,
   // the second manager will not be launched
-
-
 
   IComAddress internaladdress("internal","servicemanager");
 
@@ -329,14 +330,11 @@ void ApplicationPrivate::start_eai()
     new ServiceManager(servicedb, internaladdress);
 #endif
 
-  Thread* t_int =
-    new Thread(internal_service_manager, "internal service manager",
-		  0, Thread::NotActivated);
-  t_int->setStackSize(1024*20);
-  t_int->activate(false);
-  t_int->detach();
+  boost::thread t_int(internal_service_manager);
+  t_int.detach();
 
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Use the following environment setting to switch on IPv6 support
   // Most machines should be running a dual-host stack for the internet
   // connections, so it should not hurt to run in IPv6 mode. In most case
@@ -375,4 +373,5 @@ void ApplicationPrivate::start_eai()
   t_ext->setStackSize(1024*20);
   t_ext->activate(false);
   t_ext->detach();
+#endif
 }
