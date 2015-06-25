@@ -177,8 +177,6 @@ bool Service::updateparameters()
   return (true);
 }
 
-typedef	Service*  (*ServiceMaker)(ServiceContext &ctx);
-
  void	Service::dolock()
 {
   lock_.lock();

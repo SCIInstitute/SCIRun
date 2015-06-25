@@ -71,8 +71,8 @@ namespace SCIRun {
       for (const auto& package : moduleMap)
       {
         const std::string& packageName = package.first;
-        auto p = new QMenu(QString::fromStdString(packageName), menu);
-        menu->addMenu(p);
+
+        QList<QMenu*> packageMenus;
         for (const auto& category : package.second)
         {
           const std::string& categoryName = category.first;
@@ -94,10 +94,18 @@ namespace SCIRun {
           {
             auto m = new QMenu(QString::fromStdString(categoryName), menu);
             m->addActions(actions);
-            p->addMenu(m);
+            packageMenus.append(m);
           }
         }
-        menu->addSeparator();
+        if (!packageMenus.isEmpty())
+        {
+          auto p = new QMenu(QString::fromStdString(packageName), menu);
+          for (QMenu* menu : packageMenus)
+            p->addMenu(menu);
+
+          menu->addMenu(p);
+          menu->addSeparator();
+        }
       }
       return allCompatibleActions;
     }
@@ -176,10 +184,16 @@ PortWidget::~PortWidget()
 
 QSize PortWidgetBase::sizeHint() const
 {
-  const int width = WIDTH;
+  const int width = DEFAULT_WIDTH;
   const int coloredHeight = isInput() ? 5 : 4;
   const int blackHeight = 2;
-  return QSize(width, coloredHeight + blackHeight);
+  QSize size(width, coloredHeight + blackHeight);
+  const double highlightFactor = 1.7;
+  if (isHighlighted_)
+  {
+    size *= highlightFactor;
+  }
+  return size;
 }
 
 void PortWidget::toggleLight()
@@ -200,12 +214,7 @@ void PortWidget::turn_on_light()
 void PortWidgetBase::paintEvent(QPaintEvent* event)
 {
   QSize size = sizeHint();
-  const double highlightFactor = 1.7;
-  if (isHighlighted_)
-  {
-    size *= highlightFactor;
-    resize(size);
-  }
+  resize(size);
 
   QPainter painter(this);
   painter.fillRect(QRect(QPoint(), size), color());
@@ -322,6 +331,18 @@ void PortWidget::makeConnection(const QPointF& pos)
   auto port = closestPortFinder_->closestPort(pos);  //GUI concern: needs unit test
   if (port)
     tryConnectPort(pos, port);
+
+
+  for (const auto& a : portWidgetMap_)
+  {
+    for (const auto& b : a.second)
+    {
+      for (const auto& c : b.second)
+      {
+        c.second->setHighlight(false);
+      }
+    }
+  }
 }
 
 void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
@@ -343,9 +364,17 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
     auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
     connect(c, SIGNAL(noteChanged()), this, SIGNAL(connectionNoteChanged()));
-    connect(this, SIGNAL(portMoved()), c, SLOT(trackNodes()));
+    connect(out, SIGNAL(portMoved()), c, SLOT(trackNodes()));
+    connect(in, SIGNAL(portMoved()), c, SLOT(trackNodes()));
     setConnected(true);
   }
+}
+
+void PortWidget::setPositionObject(PositionProviderPtr provider)
+{
+  NeedsScenePositionProvider::setPositionObject(provider);
+  //qDebug() << "PW::setPO";
+  Q_EMIT portMoved();
 }
 
 void PortWidget::moveEvent(QMoveEvent * event)
@@ -377,6 +406,22 @@ void PortWidget::performDrag(const QPointF& endPos)
     currentConnection_ = connectionFactory_->makeConnectionInProgress(this);
   }
   currentConnection_->update(endPos);
+  //qDebug() << "update other ports here";
+  for (const auto& a : portWidgetMap_)
+  {
+    for (const auto& b : a.second)
+    {
+      for (const auto& c : b.second)
+      {
+        //qDebug() << QString::fromStdString(a.first) << b.first << QString::fromStdString(c.first.toString()) << c.second;
+        if (moduleId_.id_ != a.first && isInput_ != b.first/* && get_typename() == c.second->get_typename()*/)
+        {
+          c.second->setHighlight(true);
+        }
+      }
+    }
+  }
+  //portWidgetMap_[moduleId_.id_][isInput_][portId_] = this;
 }
 
 void PortWidget::addConnection(ConnectionLine* c)

@@ -41,6 +41,7 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* =
   setupUi(this);
   connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateSaveBeforeExecuteOption(int)));
   connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
+  connect(autoModuleNoteCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateAutoNotesState(int)));
 }
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)
@@ -53,6 +54,12 @@ void PreferencesWindow::updateSaveBeforeExecuteOption(int state)
 {
   SCIRun::Core::Preferences::Instance().saveBeforeExecute.setValue(state != 0);
   LOG_DEBUG("saveBeforeExecute is " << (state != 0));
+}
+
+void PreferencesWindow::updateAutoNotesState(int state)
+{
+  SCIRun::Core::Preferences::Instance().autoNotes.setValue(state != 0);
+  LOG_DEBUG("autoNotes is " << (state != 0));
 }
 
 void PreferencesWindow::setSaveBeforeExecute(bool mode)

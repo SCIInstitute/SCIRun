@@ -45,7 +45,7 @@ namespace TableColumns
   const int OutsideConductivity = 4;
 
   const int MaxColumn = OutsideConductivity + 1;
-};
+}
 
 BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -60,7 +60,7 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
   connect(tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(pushTable(int,int)));
 }
 
-void BuildBEMatrixDialog::updateFromPortChange(int numPorts)
+void BuildBEMatrixDialog::updateFromPortChange(int numPorts, const std::string&)
 {
   //std::cout << "updateFromPortChange " << numPorts << std::endl;
   auto oldRowCount = tableWidget->rowCount();

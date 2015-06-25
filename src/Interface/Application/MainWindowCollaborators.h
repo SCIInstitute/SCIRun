@@ -52,7 +52,8 @@ namespace Gui {
   class TextEditAppender : public Core::Logging::LegacyLoggerInterface, public Core::Logging::LogAppenderStrategy
   {
   public:
-    explicit TextEditAppender(QTextEdit* text) : text_(text) {}
+    explicit TextEditAppender(QTextEdit* text, bool regressionMode = false) :
+      text_(text), regressionMode_(regressionMode) {}
 
     void log(const QString& message) const;
 
@@ -65,6 +66,7 @@ namespace Gui {
   private:
     QTextEdit* text_;
     mutable QMutex mutex_;
+    bool regressionMode_;
   };
 
   class TreeViewModuleGetter : public CurrentModuleSelection
@@ -156,7 +158,7 @@ namespace Gui {
   private Q_SLOTS:
     void showMessageBox();
     void saveToolkit();
-    
+
   private:
     void downloadIcon(); //TODO: cache somehow
     FileDownloader* iconDownloader_;
