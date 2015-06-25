@@ -88,7 +88,9 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
       auto sparse = matrix_cast::as_sparse(matrix);
       if (sparse)
       {
-        THROW_ALGORITHM_PROCESSING_ERROR("TODO: need a fix for slicing a column from SparseRowMatrix. Direct Eigen call is buggy. Waiting on an Eigen upgrade");
+        //TODO: makes a copy of the transpose. Not good. Should test out manually copying elements, trade speed for memory.
+        return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->transpose().eval().row(index).transpose()), max);
+        //THROW_ALGORITHM_PROCESSING_ERROR("TODO: need a fix for slicing a column from SparseRowMatrix. Direct Eigen call is buggy. Waiting on an Eigen upgrade");
       }
       return boost::make_tuple(nullptr, 0);
     }
