@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -73,30 +74,43 @@ void ExtractSimpleIsosurfaceModule::execute()
       state->setValue(Parameters::SingleIsoValue, iso);
     }
 
-    VariableList isos;
+    std::vector<double> isoDoubles;
 
     if (state->getValue(Parameters::IsovalueChoice).toString() == "Single")
     {
       auto singleIso = state->getValue(Parameters::SingleIsoValue).toDouble();
-      isos.push_back(makeVariable("", singleIso));
+      isoDoubles.push_back(singleIso);
     }
     else if (state->getValue(Parameters::IsovalueChoice).toString() == "List")
     {
       auto isoList = state->getValue(Parameters::ListOfIsovalues).toString();
       std::vector<std::string> tokens;
       boost::split(tokens, isoList, boost::is_any_of(","));
-      std::vector<double> isoDoubles;
+      
       std::transform(tokens.begin(), tokens.end(), std::back_inserter(isoDoubles), [](const std::string& s)
       {
         try { return boost::lexical_cast<double>(s); } catch (boost::bad_lexical_cast&) { return 0.0; }
       });
-      std::transform(isoDoubles.begin(), isoDoubles.end(), std::back_inserter(isos), [](double x) { return makeVariable("iso", x); });
+      
     }
     if (state->getValue(Parameters::IsovalueChoice).toString() == "Quantity")
     {
-      //TODO
+      //TODO: add exclusive/inclusive option; move to algo level
+      double qmin, qmax;
+      field->vfield()->minmax(qmin, qmax);
+      std::ostringstream ostr;
+      int num = state->getValue(Parameters::QuantityOfIsovalues).toInt();
+      double di = (qmax - qmin) / (double)(num - 1.0);
+      for (int i = 0; i < num; i++)
+      {
+        isoDoubles.push_back(qmin + ((double)i*di));
+        ostr << isoDoubles[i] << "\n";
+      }
+      state->setValue(Parameters::IsovalueListString, ostr.str());
     }
 
+    VariableList isos;
+    std::transform(isoDoubles.begin(), isoDoubles.end(), std::back_inserter(isos), [](double x) { return makeVariable("iso", x); });
     algo().set(Parameters::Isovalues, isos);
 
     auto output = algo().run_generic(withInputData((InputField, field)));

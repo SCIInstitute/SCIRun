@@ -51,6 +51,7 @@ ALGORITHM_PARAMETER_DEF(Fields, SingleIsoValue);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueChoice);
 ALGORITHM_PARAMETER_DEF(Fields, ListOfIsovalues);
 ALGORITHM_PARAMETER_DEF(Fields, QuantityOfIsovalues);
+ALGORITHM_PARAMETER_DEF(Fields, IsovalueListString);
 
 ExtractSimpleIsosurfaceAlgo::ExtractSimpleIsosurfaceAlgo()
 {

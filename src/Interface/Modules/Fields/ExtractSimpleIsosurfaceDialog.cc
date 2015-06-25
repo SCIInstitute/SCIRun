@@ -45,6 +45,7 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   addDoubleSpinBoxManager(singleDoubleSpinBox_, Parameters::SingleIsoValue);
   addTextEditManager(listTextEdit_, Parameters::ListOfIsovalues);
   addSpinBoxManager(quantitySpinBox_, Parameters::QuantityOfIsovalues);
+  addTextEditManager(isovalListFromQuantityTextEdit_, Parameters::IsovalueListString);
   WidgetStyleMixin::tabStyle(tabWidget);
   connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(updateIsoMethod(int)));
 }
