@@ -35,7 +35,7 @@ SET(Core_ICom_SRCS
   IComINetSocket.cc
   IComInternalSocket.cc
   #IComSslSocket.cc
-  #IComRHostList.cc
+  IComRHostList.cc
 )
 
 SET(Core_ICom_HEADERS
