@@ -30,6 +30,7 @@
 
 SET(Modules_Legacy_Fields_HEADERS
   RefineMesh.h
+  ClipVolumeByIsovalue.h
   CreateLatVol.h
   GetFieldBoundary.h
   BuildMappingMatrix.h
@@ -81,6 +82,7 @@ SET(Modules_Legacy_Fields_HEADERS
 
 SET(Modules_Legacy_Fields_SRCS
   FlipSurfaceNormals.cc
+  ClipVolumeByIsovalue.cc
   #GenerateElectrode.cc
   #PadRegularMesh.cc
   ResampleRegularMesh.cc

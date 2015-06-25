@@ -62,6 +62,7 @@ SET(Interface_Modules_Fields_FORMS
   EditMeshBoundingBox.ui
   ExtractSimpleIsosurface.ui
   registerwithcorrespondences.ui
+  ClipVolumeByIsovalue.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -99,6 +100,7 @@ SET(Interface_Modules_Fields_HEADERS
   ExtractSimpleIsosurfaceDialog.h
   RegisterWithCorrespondencesDialog.h
   GeneratePointSamplesFromFieldDialog.h
+  ClipVolumeByIsovalueDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -135,6 +137,7 @@ SET(Interface_Modules_Fields_SOURCES
   ExtractSimpleIsosurfaceDialog.cc
   RegisterWithCorrespondencesDialog.cc
   GeneratePointSamplesFromFieldDialog.cc
+  ClipVolumeByIsovalueDialog.cc
 )
 
 IF(WITH_TETGEN)
