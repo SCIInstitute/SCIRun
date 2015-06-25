@@ -880,7 +880,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   if (!elc_sponge_location) THROW_ALGORITHM_INPUT_ERROR("Input field (electrode triangle surface) was not allocated ");
   
   DenseMatrixHandle rhs=create_rhs(mesh, elc_tri_surf, elcs, num_of_elc); /// get the right-hand-side
-  
+  std::cout << (*rhs)(0,0) << std::endl;
+
   DenseMatrixHandle lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, selectmatrixind;
   FieldHandle elec_sponge_surf;
   std::vector<double> electrode_sponge_areas;
