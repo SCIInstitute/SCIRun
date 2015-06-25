@@ -35,9 +35,8 @@
 #include <Core/Services/Service.h>
 #include <Core/Services/ServiceNode.h>
 #include <Core/Services/ServiceBase.h>
-#include <Core/Util/soloader.h>
+//#include <Core/Util/soloader.h>
 #include <Core/ICom/IComRHostList.h>
-#include <Core/Containers/LockingHandle.h>
 
 
 #include <string>
@@ -49,7 +48,7 @@
 namespace SCIRun {
 
 class ServiceDB;
-typedef LockingHandle<ServiceDB> ServiceDBHandle;
+typedef boost::shared_ptr<ServiceDB> ServiceDBHandle;
 
 class SCISHARE ServiceInfo {
 
@@ -66,7 +65,7 @@ class SCISHARE ServiceInfo {
                             // activated each service needs to be
                             // activated, before it can be used
   bool      disabled;       // In case the service is fully disabled
-  ServiceMaker  maker;      // dynamic loading of class
+  //ServiceMaker  maker;      // dynamic loading of class
 
   // RCFile stuff
   std::string    rcfile;        // the name of the rcfile used to
@@ -85,7 +84,7 @@ class SCISHARE ServiceInfo {
 };
 
 
-class SCISHARE ServiceDB : public ServiceBase, public UsedWithLockingHandle<Mutex>
+class SCISHARE ServiceDB : public ServiceBase
 {
   public:
   ServiceDB();

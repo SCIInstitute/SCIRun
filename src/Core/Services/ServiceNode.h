@@ -36,9 +36,10 @@
 #ifndef JGS_CORE_SERVICES_SERVICENODE_H
 #define JGS_CORE_SERVICES_SERVICENODE_H 1
 
+#if 0
 #include <libxml/tree.h>
 #include <libxml/parser.h>
-
+#endif
 
 #include <map>
 #include <string>
@@ -67,21 +68,22 @@ namespace SCIRun {
 // There is not too much information to store anyway, so we do not bother about 
 // optimizing memory use. Using one object makes the memory management way easier.
 
-typedef struct {
+struct ServiceNode
+{
   std::string servicename;
   std::string classname;
   std::string classpackagename;
   std::string	version;
   std::map<std::string,std::string> parameter;
-} ServiceNode;
+};
 
-
+#if 0
 //////////////////////////
 // ProcessServiceNode()
 // Copies the contents of "tree" into the active fields of "node"
 
 void ProcessServiceNode(const xmlNode* tree, ServiceNode& node);
-
+#endif
 //////////////////////////
 // PrintServiceNode()
 // Prints the contents of "node" to the screen.

@@ -310,7 +310,7 @@ void ApplicationPrivate::start_eai()
   // to other instances of SCIRun over the internet,
   // the second manager will not be launched
 
-  IComAddress internaladdress("internal","servicemanager");
+  IComAddressHandle internaladdress(new IComAddress("internal","servicemanager"));
 
 // Only build log file if needed for debugging
 #ifdef DEBUG
@@ -320,17 +320,14 @@ void ApplicationPrivate::start_eai()
     scidir = chome+std::string("/SCIRun/");
 
   // A log file is not necessary but handy for debugging purposes
-  ServiceLogHandle internallogfile =
-    new ServiceLog(scidir+"scirun_internal_servicemanager.log");
+  ServiceLogHandle internallogfile(new ServiceLog(scidir+"scirun_internal_servicemanager.log"));
 
-  ServiceManager* internal_service_manager =
-    new ServiceManager(servicedb, internaladdress, internallogfile);
+  ServiceManagerHandle internal_service_manager(new ServiceManager(servicedb, internaladdress, internallogfile));
 #else
-  ServiceManager* internal_service_manager =
-    new ServiceManager(servicedb, internaladdress);
+  ServiceManagerHandle internal_service_manager(new ServiceManager(servicedb, internaladdress));
 #endif
 
-  boost::thread t_int(internal_service_manager);
+  boost::thread t_int(boost::ref(*internal_service_manager));
   t_int.detach();
 
 
