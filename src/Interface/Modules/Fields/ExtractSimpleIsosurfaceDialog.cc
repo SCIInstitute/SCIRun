@@ -42,5 +42,5 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addDoubleSpinBoxManager(doubleSpinBox_, ExtractSimpleIsosurfaceAlgo::GUIIsoValue);
+  addDoubleSpinBoxManager(singleDoubleSpinBox_, ExtractSimpleIsosurfaceAlgo::GUIIsoValue);
 }
