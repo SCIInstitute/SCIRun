@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="12">
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -26,7 +26,7 @@
 									<name>GUIIsoValue</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>1</which>
-										<value>400</value>
+										<value>4.00000000000000000e+02</value>
 									</value>
 								</second>
 							</item>
@@ -66,7 +66,7 @@
 									<name>FilterCutoff</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -78,7 +78,7 @@
 									<name>Lambda</name>
 									<value>
 										<which>1</which>
-										<value>0.63070000000000004</value>
+										<value>6.30700000000000038e-01</value>
 									</value>
 								</second>
 							</item>
@@ -130,7 +130,7 @@
 									<name>FilterCutoff</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -142,7 +142,7 @@
 									<name>Lambda</name>
 									<value>
 										<which>1</which>
-										<value>0.63070000000000004</value>
+										<value>6.30700000000000038e-01</value>
 									</value>
 								</second>
 							</item>
@@ -194,7 +194,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/Desktop/IBBM/Scientific_Visualization/Lab2/IsosurfacingModule/hip_scan_lowres.nrrd</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/hip_scan_lowres.nrrd</value>
 									</value>
 								</second>
 							</item>
@@ -212,7 +212,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -222,7 +222,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -270,7 +270,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -283,6 +283,18 @@
 									<value>
 										<which>0</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -306,7 +318,19 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -342,7 +366,19 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -390,7 +426,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -408,7 +444,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -418,7 +454,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -466,7 +502,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -479,6 +515,18 @@
 									<value>
 										<which>0</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -502,7 +550,19 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -538,7 +598,19 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -586,7 +658,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -799,57 +871,57 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>ExtractSimpleIsosurface:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-397</first>
-				<second>-389</second>
+				<first>-3.97000000000000000e+02</first>
+				<second>-3.89000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>FairMesh:0</first>
 			<second>
-				<first>-121</first>
-				<second>-156</second>
+				<first>-1.21000000000000000e+02</first>
+				<second>-1.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>FairMesh:1</first>
 			<second>
-				<first>-459</first>
-				<second>-261</second>
+				<first>-4.59000000000000000e+02</first>
+				<second>-2.61000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>-401</first>
-				<second>-548</second>
+				<first>-4.01000000000000000e+02</first>
+				<second>-5.48000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-449</first>
-				<second>-116</second>
+				<first>-4.49000000000000000e+02</first>
+				<second>-1.16000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-160</first>
-				<second>-55</second>
+				<first>-1.60000000000000000e+02</first>
+				<second>-5.50000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>SplitFieldByConnectedRegion:0</first>
 			<second>
-				<first>-188</first>
-				<second>-270</second>
+				<first>-1.88000000000000000e+02</first>
+				<second>-2.70000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-370</first>
-				<second>154</second>
+				<first>-3.70000000000000000e+02</first>
+				<second>1.54000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>

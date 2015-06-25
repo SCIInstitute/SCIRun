@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="12">
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -318,7 +318,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -814,7 +814,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/geom/rsm-13-10-03-split_heart.fld</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/geom/rsm-13-10-03-split_heart.fld</value>
 									</value>
 								</second>
 							</item>
@@ -854,7 +854,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/geom/rsm-13-10-03-needle_region.fld</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/geom/rsm-13-10-03-needle_region.fld</value>
 									</value>
 								</second>
 							</item>
@@ -894,7 +894,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/geom/rsm-13-10-03-needle_geometry.mat</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/geom/rsm-13-10-03-needle_geometry.mat</value>
 									</value>
 								</second>
 							</item>
@@ -934,7 +934,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/geom/rsm-13-10-03_whole_heart_aligned.fld</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/geom/rsm-13-10-03_whole_heart_aligned.fld</value>
 									</value>
 								</second>
 							</item>
@@ -974,7 +974,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/geom/rsm-13-10-03-sock_geometry.mat</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/geom/rsm-13-10-03-sock_geometry.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1014,7 +1014,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/data/rsm-13-10-03-ST40-diff-interpolated-data.mat</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/data/rsm-13-10-03-ST40-diff-interpolated-data.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1054,7 +1054,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/data/rsm-13-10-03-Twave-diff-interpolated-data.mat</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/data/rsm-13-10-03-Twave-diff-interpolated-data.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1094,7 +1094,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/data/rsm-13-10-03-ns-st40-diff-avg.mat</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/data/rsm-13-10-03-ns-st40-diff-avg.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1134,7 +1134,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/data/rsm-13-10-03-cs-T-wave-diff-avg.mat</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/data/rsm-13-10-03-cs-st40-diff-avg.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1174,7 +1174,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/data/rsm-13-10-03-cs-T-wave-diff-avg.mat</value>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/data/rsm-13-10-03-cs-T-wave-diff-avg.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1214,7 +1214,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>13.541550823065828</value>
+										<value>1.35415508230658279e+01</value>
 									</value>
 								</second>
 							</item>
@@ -1226,7 +1226,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>-5.5884282536858647</value>
+										<value>-5.58842825368586471e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1454,7 +1454,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1478,7 +1478,7 @@
 									<name>TextBlue</name>
 									<value>
 										<which>1</which>
-										<value>1</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1490,7 +1490,7 @@
 									<name>TextGreen</name>
 									<value>
 										<which>1</which>
-										<value>1</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1502,7 +1502,7 @@
 									<name>TextRed</name>
 									<value>
 										<which>1</which>
-										<value>1</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1578,7 +1578,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1626,7 +1626,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1662,7 +1662,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1698,7 +1698,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1746,7 +1746,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -1764,7 +1764,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1774,7 +1774,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1822,7 +1822,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1835,6 +1835,18 @@
 									<value>
 										<which>0</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1858,7 +1870,19 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1894,7 +1918,19 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1942,7 +1978,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -1960,7 +1996,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>16</count>
+							<count>19</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1970,7 +2006,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2018,7 +2054,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2031,6 +2067,18 @@
 									<value>
 										<which>0</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2066,7 +2114,19 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2102,7 +2162,19 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2150,7 +2222,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -2168,7 +2240,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2178,7 +2250,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2226,7 +2298,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2239,6 +2311,18 @@
 									<value>
 										<which>0</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2262,7 +2346,19 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2298,7 +2394,19 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2346,7 +2454,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -2374,7 +2482,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2422,7 +2530,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2458,7 +2566,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2494,7 +2602,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2542,7 +2650,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -2570,7 +2678,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2618,7 +2726,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2654,7 +2762,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2690,7 +2798,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2738,7 +2846,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -2766,7 +2874,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2814,7 +2922,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2850,7 +2958,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2886,7 +2994,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2934,7 +3042,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>0.029999999999999999</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -2952,7 +3060,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2962,7 +3070,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -3010,7 +3118,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -3022,6 +3130,18 @@
 									<name>EdgesAsCylinders</name>
 									<value>
 										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
 										<value>0</value>
 									</value>
 								</second>
@@ -3046,7 +3166,19 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -3082,7 +3214,19 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.64999997615814209</value>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -3130,7 +3274,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>1</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -3699,281 +3843,281 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>ApplyMappingMatrix:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-217</first>
-				<second>-12</second>
+				<first>-2.17000000000000000e+02</first>
+				<second>-1.20000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateFieldData:0</first>
 			<second>
-				<first>-681</first>
-				<second>-230</second>
+				<first>-6.81000000000000000e+02</first>
+				<second>-2.30000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateFieldData:1</first>
 			<second>
-				<first>-380</first>
-				<second>-228</second>
+				<first>-3.80000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertFieldBasis:0</first>
 			<second>
-				<first>-691</first>
-				<second>-387</second>
+				<first>-6.91000000000000000e+02</first>
+				<second>-3.87000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertFieldBasis:1</first>
 			<second>
-				<first>-291</first>
-				<second>-418</second>
+				<first>-2.91000000000000000e+02</first>
+				<second>-4.18000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:0</first>
 			<second>
-				<first>-457</first>
-				<second>-104</second>
+				<first>-4.57000000000000000e+02</first>
+				<second>-1.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:1</first>
 			<second>
-				<first>873</first>
-				<second>15</second>
+				<first>8.73000000000000000e+02</first>
+				<second>1.50000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>-44</first>
-				<second>83</second>
+				<first>-4.40000000000000000e+01</first>
+				<second>8.30000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:0</first>
 			<second>
-				<first>608</first>
-				<second>304</second>
+				<first>6.08000000000000000e+02</first>
+				<second>3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:0</first>
 			<second>
-				<first>100</first>
-				<second>-374</second>
+				<first>1.00000000000000000e+02</first>
+				<second>-3.74000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:1</first>
 			<second>
-				<first>400</first>
-				<second>-537</second>
+				<first>4.00000000000000000e+02</first>
+				<second>-5.37000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:2</first>
 			<second>
-				<first>-104</first>
-				<second>468</second>
+				<first>-1.04000000000000000e+02</first>
+				<second>4.68000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:3</first>
 			<second>
-				<first>227</first>
-				<second>499</second>
+				<first>2.27000000000000000e+02</first>
+				<second>4.99000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:4</first>
 			<second>
-				<first>416</first>
-				<second>-392</second>
+				<first>4.16000000000000000e+02</first>
+				<second>-3.92000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>-684</first>
-				<second>-532</second>
+				<first>-6.84000000000000000e+02</first>
+				<second>-5.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:1</first>
 			<second>
-				<first>-390</first>
-				<second>-637</second>
+				<first>-3.90000000000000000e+02</first>
+				<second>-6.37000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:2</first>
 			<second>
-				<first>449</first>
-				<second>-210</second>
+				<first>4.49000000000000000e+02</first>
+				<second>-2.10000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:3</first>
 			<second>
-				<first>542</first>
-				<second>166</second>
+				<first>5.42000000000000000e+02</first>
+				<second>1.66000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:4</first>
 			<second>
-				<first>-508</first>
-				<second>291</second>
+				<first>-4.64000000000000000e+02</first>
+				<second>3.95000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:0</first>
 			<second>
-				<first>-36</first>
-				<second>-548</second>
+				<first>-3.60000000000000000e+01</first>
+				<second>-6.23000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:1</first>
 			<second>
-				<first>320</first>
-				<second>-682</second>
+				<first>3.20000000000000000e+02</first>
+				<second>-6.82000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:2</first>
 			<second>
-				<first>759</first>
-				<second>-212</second>
+				<first>7.59000000000000000e+02</first>
+				<second>-2.12000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:3</first>
 			<second>
-				<first>-121</first>
-				<second>365</second>
+				<first>-1.21000000000000000e+02</first>
+				<second>3.65000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:4</first>
 			<second>
-				<first>217</first>
-				<second>387</second>
+				<first>2.17000000000000000e+02</first>
+				<second>3.87000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>171</first>
-				<second>254</second>
+				<first>1.71000000000000000e+02</first>
+				<second>2.54000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:0</first>
 			<second>
-				<first>68</first>
-				<second>-227</second>
+				<first>6.80000000000000000e+01</first>
+				<second>-2.27000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:1</first>
 			<second>
-				<first>-135</first>
-				<second>583</second>
+				<first>-1.35000000000000000e+02</first>
+				<second>5.83000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:2</first>
 			<second>
-				<first>228</first>
-				<second>608</second>
+				<first>2.28000000000000000e+02</first>
+				<second>6.08000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:3</first>
 			<second>
-				<first>988</first>
-				<second>-129</second>
+				<first>9.88000000000000000e+02</first>
+				<second>-1.29000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:4</first>
 			<second>
-				<first>461</first>
-				<second>29</second>
+				<first>4.70000000000000000e+02</first>
+				<second>2.10000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowColorMap:0</first>
 			<second>
-				<first>569</first>
-				<second>789</second>
+				<first>5.69000000000000000e+02</first>
+				<second>7.89000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-736</first>
-				<second>28</second>
+				<first>-7.76227143749999641e+02</first>
+				<second>8.22191937500000023e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-152</first>
-				<second>684</second>
+				<first>-1.52000000000000000e+02</first>
+				<second>6.84000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:2</first>
 			<second>
-				<first>608</first>
-				<second>456</second>
+				<first>6.08000000000000000e+02</first>
+				<second>4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:3</first>
 			<second>
-				<first>228</first>
-				<second>760</second>
+				<first>2.28000000000000000e+02</first>
+				<second>7.60000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:4</first>
 			<second>
-				<first>849</first>
-				<second>186</second>
+				<first>8.49000000000000000e+02</first>
+				<second>1.86000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:5</first>
 			<second>
-				<first>1121</first>
-				<second>152</second>
+				<first>1.20670130625000002e+03</first>
+				<second>1.04776831250000015e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:6</first>
 			<second>
-				<first>-234</first>
-				<second>219</second>
+				<first>-2.34000000000000000e+02</first>
+				<second>2.19000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:7</first>
 			<second>
-				<first>505</first>
-				<second>688</second>
+				<first>5.14000000000000000e+02</first>
+				<second>6.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-327</first>
-				<second>915</second>
+				<first>-2.25557637500000055e+02</first>
+				<second>1.07765758125000002e+03</second>
 			</second>
 		</item>
 	</modulePositions>
