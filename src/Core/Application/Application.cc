@@ -167,7 +167,7 @@ NetworkEditorControllerHandle Application::controller()
 
     /// @todo split out into separate piece
     // TODO: this crashes windows.
-    //private_->start_eai();
+    private_->start_eai();
   }
   return private_->controller_;
 }
@@ -325,10 +325,10 @@ void ApplicationPrivate::start_eai()
 
   ServiceManagerHandle internal_service_manager(new ServiceManager(servicedb, internaladdress, internallogfile));
 #else
-  ServiceManagerHandle internal_service_manager(new ServiceManager(servicedb, internaladdress));
+  ServiceManager internal_service_manager(servicedb, internaladdress);
 #endif
 
-  boost::thread t_int(boost::ref(*internal_service_manager));
+  boost::thread t_int(internal_service_manager);
   t_int.detach();
 
 
