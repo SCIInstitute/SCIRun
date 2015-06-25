@@ -61,6 +61,8 @@ namespace Datatypes {
     Core::Datatypes::ColorRGB valueToColor(double scalar) const;
     Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Tensor &tensor) const;
     Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
+
+    virtual std::string dynamic_type_name() const override { return "ColorMap"; }
     
   private:
     ///<< Internal functions.

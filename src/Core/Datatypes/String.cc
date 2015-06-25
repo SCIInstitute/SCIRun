@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,11 +24,41 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #include <sstream>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 
 String::String(const std::string& s /* = "" */) : value_(s) {}
+
+
+namespace SCIRun {
+
+  static Persistent* maker()
+  {
+    return new String;
+  }
+}
+
+//std::string String::dynamic_type_name() const { return type_id.type; }
+
+const PersistentTypeID String::type_id("String", "Datatype", maker);
+
+#define STRING_VERSION 1
+
+void String::io(Piostream& stream)
+{
+  /*int version=*/stream.begin_class("String", STRING_VERSION);
+
+  // Do the base class first.
+  PropertyManager().io(stream);
+
+  stream.begin_cheap_delim();
+  stream.io(value_);
+  stream.end_cheap_delim();
+  stream.end_class();
+}

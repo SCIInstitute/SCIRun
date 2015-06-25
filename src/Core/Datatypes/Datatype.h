@@ -56,6 +56,8 @@ namespace Datatypes {
     }
 
     virtual Datatype* clone() const = 0;
+
+    virtual std::string dynamic_type_name() const = 0;
   };
 
 }}}
