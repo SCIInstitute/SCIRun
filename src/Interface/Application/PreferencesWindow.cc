@@ -39,25 +39,9 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* =
   regressionMode_(false)
 {
   setupUi(this);
-  connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
   connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateSaveBeforeExecuteOption(int)));
   connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
-}
-
-void PreferencesWindow::updateRegressionTestDataDir()
-{
-  auto newDir = QFileDialog::getExistingDirectory(this, "Select regression data directory", ".");
-  if (!newDir.isEmpty())
-  {
-    regressionTestDataDir_ = newDir;
-    setRegressionTestDataDir();
-  }
-}
-
-void PreferencesWindow::setRegressionTestDataDir()
-{
-  regressionTestDataDirLineEdit_->setText(regressionTestDataDir_);
-  networkEditor_->setRegressionTestDataDir(regressionTestDataDir_);
+  connect(autoModuleNoteCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateAutoNotesState(int)));
 }
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)
@@ -70,6 +54,12 @@ void PreferencesWindow::updateSaveBeforeExecuteOption(int state)
 {
   SCIRun::Core::Preferences::Instance().saveBeforeExecute.setValue(state != 0);
   LOG_DEBUG("saveBeforeExecute is " << (state != 0));
+}
+
+void PreferencesWindow::updateAutoNotesState(int state)
+{
+  SCIRun::Core::Preferences::Instance().autoNotes.setValue(state != 0);
+  LOG_DEBUG("autoNotes is " << (state != 0));
 }
 
 void PreferencesWindow::setSaveBeforeExecute(bool mode)

@@ -30,9 +30,11 @@
 #define INTERFACE_APPLICATION_NETWORKEDITOR_H
 
 #include <QGraphicsView>
+#include <QGraphicsTextItem>
 #ifndef Q_MOC_RUN
 #include <boost/shared_ptr.hpp>
 #include <map>
+#include <atomic>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
@@ -46,6 +48,7 @@ class QToolBar;
 class QAction;
 class QGraphicsScene;
 class DialogErrorControl;
+class QTimeLine;
 Q_DECLARE_METATYPE (std::string)
 
 namespace SCIRun {
@@ -68,6 +71,34 @@ namespace Gui {
   public:
     virtual ~DefaultNotePositionGetter() {}
     virtual NotePosition position() const = 0;
+  };
+
+  class ModuleErrorDisplayer
+  {
+  public:
+    virtual ~ModuleErrorDisplayer() {}
+    virtual void displayError(const QString& msg, std::function<void()> showModule) = 0;
+  };
+
+  class ErrorItem : public QGraphicsTextItem
+  {
+    Q_OBJECT
+  public:
+    explicit ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent = 0);
+    ~ErrorItem();
+    int num() const { return counter_; }
+  protected:
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+  private Q_SLOTS:
+    void animate(qreal val);
+  private:
+    QTimeLine* timeLine_;
+    std::function<void()> showModule_;
+    const int counter_;
+    QGraphicsRectItem* rect_;
+    static std::atomic<int> instanceCounter_;
   };
 
   class ModuleEventProxy : public QObject
@@ -108,13 +139,14 @@ Q_SIGNALS:
     public SCIRun::Dataflow::Networks::ExecutableLookup,
     public SCIRun::Dataflow::Networks::NetworkEditorSerializationManager,
     public SCIRun::Dataflow::Engine::NetworkIOInterface<SCIRun::Dataflow::Networks::NetworkFileHandle>,
-    public SCIRun::Dataflow::Networks::ConnectionMakerService
+    public SCIRun::Dataflow::Networks::ConnectionMakerService,
+    public ModuleErrorDisplayer
   {
 	  Q_OBJECT
 
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
-				boost::shared_ptr<DialogErrorControl> dialogErrorControl, 
+				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
         TagColorFunc tagColor = defaultTagColor,
         QWidget* parent = 0);
     ~NetworkEditor();
@@ -148,7 +180,6 @@ Q_SIGNALS:
     void enableInputWidgets();
 
     //TODO: this class is getting too big and messy, schedule refactoring
-    void setRegressionTestDataDir(const QString& dir);
 
     void setBackground(const QBrush& brush);
     QBrush background() const;
@@ -166,6 +197,8 @@ Q_SIGNALS:
     void metadataLayer(bool active);
     void tagLayer(bool active, int tag);
     bool tagLayerActive() const { return tagLayerActive_; }
+
+    virtual void displayError(const QString& msg, std::function<void()> showModule) override;
 
   protected:
     virtual void dropEvent(QDropEvent* event) override;

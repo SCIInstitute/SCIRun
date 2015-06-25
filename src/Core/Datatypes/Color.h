@@ -42,15 +42,16 @@ namespace Datatypes {
   class SCISHARE ColorRGB
   {
   private:
-    double r_, g_, b_;
+    double r_, g_, b_, a_;
   public:
     ColorRGB();
     explicit ColorRGB(const std::string& rgb);
     ColorRGB(double r, double g, double b);
+    ColorRGB(double r, double g, double b, double a);
 
     // These equality operations should use floating point comparisons.
     inline bool operator==(const ColorRGB& c) const {
-      return ((r_==c.r_)&&(g_==c.g_)&&(b_==c.b_));
+      return ((r_==c.r_)&&(g_==c.g_)&&(b_==c.b_)&&(a_==c.a_));
     }
 
     inline bool operator!=(const ColorRGB& c) const {
@@ -63,6 +64,7 @@ namespace Datatypes {
     inline double r() const {return r_;}
     inline double g() const {return g_;}
     inline double b() const {return b_;}
+    inline double a() const {return a_;}
 
     std::string toString() const;
   };

@@ -53,10 +53,12 @@ SET(Modules_Legacy_Visualization_SRCS
   #ShowTextureSurface.cc
   #ShowTextureVolume.cc
   #ShowString.cc
+  ShowAndEditDipoles.cc
 )
 
 SET(Modules_Legacy_Visualization_HEADERS
   GenerateStreamLines.h
+  ShowAndEditDipoles.h
   share.h
 )
 

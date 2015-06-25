@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="12">
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -50,7 +50,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -138,7 +138,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -238,7 +238,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.5</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -374,7 +374,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.5</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -586,50 +586,50 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:3</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-768</first>
-				<second>-433</second>
+				<first>-7.68000000000000000e+02</first>
+				<second>-4.33000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:4</first>
 			<second>
-				<first>-1034</first>
-				<second>-439</second>
+				<first>-1.03400000000000000e+03</first>
+				<second>-4.39000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:8</first>
 			<second>
-				<first>-1041</first>
-				<second>-318</second>
+				<first>-1.04100000000000000e+03</first>
+				<second>-3.18000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:9</first>
 			<second>
-				<first>-782</first>
-				<second>-317</second>
+				<first>-7.82000000000000000e+02</first>
+				<second>-3.17000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:5</first>
 			<second>
-				<first>-1110</first>
-				<second>-166</second>
+				<first>-1.11000000000000000e+03</first>
+				<second>-1.66000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:6</first>
 			<second>
-				<first>-741</first>
-				<second>-200</second>
+				<first>-7.41000000000000000e+02</first>
+				<second>-2.00000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:7</first>
 			<second>
-				<first>-802</first>
-				<second>-37</second>
+				<first>-8.02000000000000000e+02</first>
+				<second>-3.70000000000000000e+01</second>
 			</second>
 		</item>
 	</modulePositions>

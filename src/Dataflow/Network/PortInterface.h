@@ -32,13 +32,14 @@
 
 
 #ifndef DATAFLOW_NETWORK_PORT_INTERFACE_H
-#define DATAFLOW_NETWORK_PORT_INTERFACE_H 
+#define DATAFLOW_NETWORK_PORT_INTERFACE_H
 
 #include <string>
 #include <vector>
 #include <boost/signals2/signal.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Algorithms/Base/Variable.h>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
@@ -69,7 +70,7 @@ namespace Networks {
     virtual void setIndex(size_t index) = 0;
     virtual void setId(const PortId& id) = 0;
   };
-  
+
   typedef boost::signals2::signal<void(const PortId&, SCIRun::Core::Datatypes::DatatypeHandle)> DataOnPortHasChangedSignalType;
   typedef boost::function<std::string()> PortDataDescriber;
 
@@ -83,7 +84,9 @@ namespace Networks {
     virtual bool hasChanged() const = 0;
     virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) = 0;
   };
-  
+
+  typedef boost::signals2::signal<void(SCIRun::Core::Algorithms::VariableHandle)> ConnectionFeedbackSignalType;
+
   class SCISHARE OutputPortInterface : virtual public PortInterface
   {
   public:
@@ -92,6 +95,8 @@ namespace Networks {
     virtual bool hasData() const = 0;
     virtual OutputPortInterface* clone() const { return 0; } // TODO
     virtual PortDataDescriber getPortDataDescriber() const = 0;
+    virtual boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) = 0;
+    virtual void sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info) = 0;
   };
 
   class SCISHARE PortConnectionDeterminer

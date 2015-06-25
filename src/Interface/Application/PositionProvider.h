@@ -50,7 +50,7 @@ class NeedsScenePositionProvider
 {
 public:
   virtual ~NeedsScenePositionProvider() {}
-  void setPositionObject(PositionProviderPtr provider) 
+  virtual void setPositionObject(PositionProviderPtr provider) 
   { 
     positionProvider_ = provider; 
   }
@@ -69,13 +69,13 @@ private:
   QPointF offset_;
 };
 
-class MidpointPositioner : public PositionProvider
+class MidpointPositionerFromPorts : public PositionProvider
 {
 public:
-  MidpointPositioner(PositionProviderPtr p1, PositionProviderPtr p2);
+  MidpointPositionerFromPorts(NeedsScenePositionProvider* p1, NeedsScenePositionProvider* p2);
   virtual QPointF currentPosition() const override;
 private:
-  PositionProviderPtr p1_, p2_;
+  NeedsScenePositionProvider *p1_, *p2_;
 };
 
 class PassThroughPositioner : public PositionProvider

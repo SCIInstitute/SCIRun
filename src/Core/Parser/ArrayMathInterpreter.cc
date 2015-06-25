@@ -1203,26 +1203,26 @@ ArrayMathInterpreter::run(ArrayMathProgramHandle& mprogram,
 
   // First: run the const ones
   size_t error_line;
-  if(!(mprogram->run_const(error_line)))
+  if(!mprogram->run_const(error_line))
   {
     pprogram->get_const_function(error_line,fhandle);
-    error = " RUNTIME ERROR - Function '"+fhandle->get_name()+"' crashed for unknown reason";
+    error = " RUNTIME ERROR - Function '"+fhandle->get_name()+"' crashed. Try simplifying your expressions or removing duplicate assignments.";
     return (false);    
   }
   
   // Second: run the single ones
-  if(!(mprogram->run_single(error_line)))
+  if(!mprogram->run_single(error_line))
   {
     pprogram->get_single_function(error_line,fhandle);
-    error = " RUNTIME ERROR - Function '"+fhandle->get_name()+"' crashed for unknown reason";
+    error = " RUNTIME ERROR - Function '"+fhandle->get_name()+"' crashed. Try simplifying your expressions or removing duplicate assignments.";
     return (false);    
   }
   
   // Third: run the sequential ones
-  if(!(mprogram->run_sequential(error_line)))
+  if(!mprogram->run_sequential(error_line))
   {
     pprogram->get_sequential_function(error_line,fhandle);
-    error = " RUNTIME ERROR - Function '"+fhandle->get_name()+"' crashed for unknown reason";
+    error = " RUNTIME ERROR - Function '"+fhandle->get_name()+"' crashed. Try simplifying your expressions or removing duplicate assignments.";
     return (false);    
   }
   
@@ -1236,8 +1236,9 @@ ArrayMathInterpreter::add_fielddata_source(ArrayMathProgramHandle& pprogram,
                                            FieldHandle field,
                                            std::string& error)
 {
-  if(!(create_program(pprogram,error))) return (false);
-  return(pprogram->add_source(name,field->vfield()));
+  if (!create_program(pprogram,error)) 
+    return (false);
+  return pprogram->add_source(name,field->vfield());
 }
                               
 bool
