@@ -31,7 +31,6 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>
-#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
 
 namespace SCIRun {
   namespace Modules {
@@ -51,8 +50,7 @@ namespace SCIRun {
         INPUT_PORT(1, Isovalue, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
 	
-	static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-	static Core::Algorithms::Fields::ClipMeshByIsovalueAlgo algo_;	
+	      static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }
