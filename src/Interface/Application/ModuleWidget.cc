@@ -764,7 +764,7 @@ void ModuleWidget::addOutputPortsToLayout(int index)
   {
     //TODO--extract method
     outputPortLayout_ = new QHBoxLayout;
-    outputPortLayout_->setSpacing(PORT_SPACING);
+    outputPortLayout_->setSpacing(SMALL_PORT_SPACING);
     outputPortLayout_->setAlignment(Qt::AlignLeft);
     addOutputPortsToWidget(index);
   }
@@ -775,7 +775,7 @@ void ModuleWidget::addOutputPortsToWidget(int index)
 {
   auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
   if (vbox)
-    vbox->insertLayout(-1, outputPortLayout_, 1);
+    vbox->insertLayout(-1, outputPortLayout_, 10);
 }
 
 void ModuleWidget::removeOutputPortsFromWidget(int index)
@@ -792,6 +792,10 @@ void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
 
   BOOST_FOREACH(PortWidget* port, inputPorts_)
     layout->addWidget(port);
+
+  layout->setSizeConstraint(QLayout::SetMinimumSize);
+  //qDebug() << "input port layout min size: " << layout->minimumSize();
+  //qDebug() << "input port layout max size: " << layout->maximumSize();
 }
 
 void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
@@ -801,6 +805,10 @@ void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
 
   BOOST_FOREACH(PortWidget* port, outputPorts_)
     layout->addWidget(port);
+
+  layout->setSizeConstraint(QLayout::SetMinimumSize);
+  //qDebug() << "output port layout min size: " << layout->minimumSize();
+  //qDebug() << "output port layout max size: " << layout->maximumSize();
 }
 
 void ModuleWidget::addInputPortsToLayout(int index)
@@ -808,7 +816,7 @@ void ModuleWidget::addInputPortsToLayout(int index)
   if (!inputPortLayout_)
   {
     inputPortLayout_ = new QHBoxLayout;
-    inputPortLayout_->setSpacing(PORT_SPACING);
+    inputPortLayout_->setSpacing(SMALL_PORT_SPACING);
     inputPortLayout_->setAlignment(Qt::AlignLeft);
     addInputPortsToWidget(index);
   }
@@ -1338,16 +1346,26 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
 void ModuleWidget::highlightPorts()
 {
   ports_->setHighlightPorts(true);
-  inputPortLayout_->setSpacing(PORT_SPACING * 4);
-  outputPortLayout_->setSpacing(PORT_SPACING * 4);
+  setPortSpacing(true);
   Q_EMIT displayChanged();
+}
+
+void ModuleWidget::setPortSpacing(bool highlighted)
+{
+  int spacing = highlighted ? LARGE_PORT_SPACING : SMALL_PORT_SPACING;
+  inputPortLayout_->setSpacing(spacing);
+  outputPortLayout_->setSpacing(spacing);
+}
+
+int ModuleWidget::portSpacing() const
+{
+  return inputPortLayout_->spacing();
 }
 
 void ModuleWidget::unhighlightPorts()
 {
   ports_->setHighlightPorts(false);
-  inputPortLayout_->setSpacing(PORT_SPACING);
-  outputPortLayout_->setSpacing(PORT_SPACING);
+  setPortSpacing(false);
   Q_EMIT displayChanged();
 }
 
