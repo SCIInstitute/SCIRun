@@ -35,10 +35,11 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
 ExtractSimpleIsosurfaceModule::ExtractSimpleIsosurfaceModule()
-  : Module(ModuleLookupInfo("ExtractSimpleIsosurface", "NewField", "SCIRun"), true)
+  : Module(ModuleLookupInfo("ExtractSimpleIsosurface", "NewField", "SCIRun"))
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(Isovalue);
@@ -47,8 +48,7 @@ ExtractSimpleIsosurfaceModule::ExtractSimpleIsosurfaceModule()
 
 void ExtractSimpleIsosurfaceModule::setStateDefaults()
 {
- auto state = get_state();
- setStateDoubleFromAlgo(ExtractSimpleIsosurfaceAlgo::GUIIsoValue);
+  setStateDoubleFromAlgo(Parameters::SingleIsoValue);
 }
 
 void ExtractSimpleIsosurfaceModule::execute()
@@ -59,14 +59,18 @@ void ExtractSimpleIsosurfaceModule::execute()
   if (needToExecute())
   {
     update_state(Executing);
+    auto state = get_state();
 
     if (isovalueOption && *isovalueOption && !(*isovalueOption)->empty())
     {
       double iso = (*isovalueOption)->get(0,0);
-      get_state()->setValue(ExtractSimpleIsosurfaceAlgo::GUIIsoValue, iso);
+      state->setValue(Parameters::SingleIsoValue, iso);
     }
 
-    setAlgoDoubleFromState(ExtractSimpleIsosurfaceAlgo::GUIIsoValue);
+    auto singleIso = state->getValue(Parameters::SingleIsoValue).toDouble();
+    VariableList isos;
+    isos.push_back(makeVariable("", singleIso));
+    algo().set(Parameters::SingleIsoValue, isos);
 
     auto output = algo().run_generic(withInputData((InputField, field)));
 

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -42,5 +42,23 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addDoubleSpinBoxManager(singleDoubleSpinBox_, ExtractSimpleIsosurfaceAlgo::GUIIsoValue);
+  addDoubleSpinBoxManager(singleDoubleSpinBox_, Parameters::SingleIsoValue);
+  WidgetStyleMixin::tabStyle(tabWidget);
+  connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(updateIsoMethod(int)));
+}
+
+void ExtractSimpleIsosurfaceDialog::updateIsoMethod(int tab)
+{
+  switch (tab)
+  {
+  case 0:
+    state_->setValue(Parameters::IsovalueChoice, std::string("Single"));
+    break;
+  case 1:
+    state_->setValue(Parameters::IsovalueChoice, std::string("List"));
+    break;
+  case 2:
+    state_->setValue(Parameters::IsovalueChoice, std::string("Quantity"));
+    break;
+  }
 }

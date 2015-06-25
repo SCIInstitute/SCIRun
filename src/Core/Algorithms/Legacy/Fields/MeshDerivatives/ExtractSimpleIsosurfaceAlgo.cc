@@ -46,17 +46,18 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-AlgorithmInputName ExtractSimpleIsosurfaceAlgo::InputField("InputField");
-AlgorithmOutputName ExtractSimpleIsosurfaceAlgo::OutputField("OutputField");
+ALGORITHM_PARAMETER_DEF(Fields, SingleIsoValue);
+ALGORITHM_PARAMETER_DEF(Fields, IsovalueChoice);
 
 ExtractSimpleIsosurfaceAlgo::ExtractSimpleIsosurfaceAlgo()
 {
-  addParameter(GUIIsoValue, 0.0);
+  addParameter(Parameters::SingleIsoValue, 0.0);
+  add_option(Parameters::IsovalueChoice, "Single", "Single|List|Quantity");
 }
 
 bool ExtractSimpleIsosurfaceAlgo::run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& output) const
 {
-  if (isovalues.size()==0)
+  if (isovalues.empty())
   {  
     THROW_ALGORITHM_INPUT_ERROR("Error in ExtractIsosurface algorithm: No Isovalue available.");
   }
@@ -68,25 +69,22 @@ bool ExtractSimpleIsosurfaceAlgo::run(FieldHandle input, std::vector<double>& is
   return (true);
 }
 
-AlgorithmParameterName ExtractSimpleIsosurfaceAlgo::GUIIsoValue("GUIIsoValue");
-
 AlgorithmOutput ExtractSimpleIsosurfaceAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 
   FieldHandle output_field;
 
-  double iso_value = get(GUIIsoValue).toDouble();
+  auto iso_values = get(Parameters::SingleIsoValue).toVector();
  
   std::vector<double> iso_value_vector;
-  
-  iso_value_vector.push_back(iso_value);
+  std::transform(iso_values.begin(), iso_values.end(), std::back_inserter(iso_value_vector), [](const Variable& v) { return v.toDouble(); });
   
   if (!run(field, iso_value_vector, output_field))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[OutputField] = output_field;
+  output[Variables::OutputField] = output_field;
 
   return output;
 }
