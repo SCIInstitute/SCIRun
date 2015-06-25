@@ -2093,7 +2093,7 @@
 			<item>
 				<moduleId1_>GeneratePointSamplesFromField:0</moduleId1_>
 				<port1_>
-					<name>GeneratedPoint</name>
+					<name>GeneratedPoints</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>GenerateStreamLines:0</moduleId2_>
@@ -2636,4 +2636,3 @@ p, li { white-space: pre-wrap; }
 	</moduleTags>
 </networkFile>
 </boost_serialization>
-
