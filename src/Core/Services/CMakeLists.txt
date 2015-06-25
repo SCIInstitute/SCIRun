@@ -29,10 +29,10 @@
 # Sources of Core/Services classes
 SET(Core_Services_SRCS
   Service.cc
-  #ServiceDB.cc
+  ServiceDB.cc
   #ServiceFrame.cc
   ServiceLog.cc
-  #ServiceManager.cc
+  ServiceManager.cc
   #ServiceNode.cc
   ServiceClient.cc
   #SimpleService.cc

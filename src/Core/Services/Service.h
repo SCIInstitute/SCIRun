@@ -133,6 +133,8 @@ private:
   ServiceContext	ctx_;
 };
 
+typedef std::function<Service*(ServiceContext&)> ServiceMaker; //???
+
 } // namespace SCIRun
 
 #endif

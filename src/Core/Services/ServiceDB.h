@@ -35,14 +35,7 @@
 #include <Core/Services/Service.h>
 #include <Core/Services/ServiceNode.h>
 #include <Core/Services/ServiceBase.h>
-//#include <Core/Util/soloader.h>
 #include <Core/ICom/IComRHostList.h>
-
-
-#include <string>
-#include <map>
-
-
 #include <Core/Services/share.h>
 
 namespace SCIRun {
@@ -65,7 +58,7 @@ class SCISHARE ServiceInfo {
                             // activated each service needs to be
                             // activated, before it can be used
   bool      disabled;       // In case the service is fully disabled
-  //ServiceMaker  maker;      // dynamic loading of class
+  ServiceMaker  maker;      // dynamic loading of class
 
   // RCFile stuff
   std::string    rcfile;        // the name of the rcfile used to
@@ -83,6 +76,7 @@ class SCISHARE ServiceInfo {
   std::map<std::string,std::string> parameters;
 };
 
+typedef boost::shared_ptr<ServiceInfo> ServiceInfoHandle;
 
 class SCISHARE ServiceDB : public ServiceBase
 {
@@ -111,21 +105,21 @@ class SCISHARE ServiceDB : public ServiceBase
   // Get all the information that is contained in the services
   // database about a certain service The ServiceManager needs this to
   // launch a specified service
-  ServiceInfo*  getserviceinfo(const std::string& servicename);
-  ServiceDB*    clone();
+  ServiceInfoHandle  getserviceinfo(const std::string& servicename);
+  ServiceDB*    clone() const;
 
   private:
 
   // Some of these were literaly taken out of existing SCIRun code and
   // need some modernisation Especially in memory management and the
   // use of STL
-  
+#if 0
   bool      findmaker(ServiceInfo* info);
   bool      parse_service_rcfile(ServiceInfo *new_service, const std::string& filename);
   void      parse_and_find_service_rcfile(ServiceInfo *new_service, const std::string& xmldir);
-  
+#endif
   // Associate list with all the information structures
-  std::map<std::string,ServiceInfo *> servicedb_;
+  std::map<std::string, ServiceInfoHandle> servicedb_;
 };
 
 // The service database to be used by the ServiceManager
