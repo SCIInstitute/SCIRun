@@ -49,6 +49,8 @@ ExtractSimpleIsosurfaceModule::ExtractSimpleIsosurfaceModule()
 void ExtractSimpleIsosurfaceModule::setStateDefaults()
 {
   setStateDoubleFromAlgo(Parameters::SingleIsoValue);
+  setStateStringFromAlgo(Parameters::ListOfIsovalues);
+  setStateIntFromAlgo(Parameters::QuantityOfIsovalues);
 }
 
 void ExtractSimpleIsosurfaceModule::execute()
@@ -63,17 +65,34 @@ void ExtractSimpleIsosurfaceModule::execute()
 
     if (isovalueOption && *isovalueOption && !(*isovalueOption)->empty())
     {
+      //TODO: pass entire first column for multiple isovalues
       double iso = (*isovalueOption)->get(0,0);
       state->setValue(Parameters::SingleIsoValue, iso);
     }
 
-    auto singleIso = state->getValue(Parameters::SingleIsoValue).toDouble();
     VariableList isos;
-    isos.push_back(makeVariable("", singleIso));
-    algo().set(Parameters::SingleIsoValue, isos);
+
+    if (state->getValue(Parameters::IsovalueChoice).toString() == "Single")
+    {
+      auto singleIso = state->getValue(Parameters::SingleIsoValue).toDouble();
+      isos.push_back(makeVariable("", singleIso));
+    }
+    else if (state->getValue(Parameters::IsovalueChoice).toString() == "List")
+    {
+      auto singleIso = state->getValue(Parameters::SingleIsoValue).toDouble();
+      isos.push_back(makeVariable("", singleIso));
+      std::cout << "added single isoval" << std::endl;
+    }
+    if (state->getValue(Parameters::IsovalueChoice).toString() == "Quantity")
+    {
+      auto singleIso = state->getValue(Parameters::SingleIsoValue).toDouble();
+      isos.push_back(makeVariable("", singleIso));
+      std::cout << "added single isoval" << std::endl;
+    }
+
+    algo().set(Parameters::Isovalues, isos);
 
     auto output = algo().run_generic(withInputData((InputField, field)));
-
     sendOutputFromAlgorithm(OutputField, output);
   }
 }

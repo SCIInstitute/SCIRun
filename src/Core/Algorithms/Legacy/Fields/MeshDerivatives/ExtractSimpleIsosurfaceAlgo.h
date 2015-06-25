@@ -40,6 +40,9 @@ namespace Algorithms {
 namespace Fields {
 
   ALGORITHM_PARAMETER_DECL(SingleIsoValue);
+  ALGORITHM_PARAMETER_DECL(ListOfIsovalues);
+  ALGORITHM_PARAMETER_DECL(QuantityOfIsovalues);
+  ALGORITHM_PARAMETER_DECL(Isovalues);
   ALGORITHM_PARAMETER_DECL(IsovalueChoice);
 
 class SCISHARE ExtractSimpleIsosurfaceAlgo : public AlgorithmBase

@@ -641,6 +641,11 @@ void Module::setStateIntFromAlgo(const AlgorithmParameterName& name)
   get_state()->setValue(name, algo().get(name).toInt());
 }
 
+void Module::setStateStringFromAlgo(const AlgorithmParameterName& name)
+{
+  get_state()->setValue(name, algo().get(name).toString());
+}
+
 void Module::setStateDoubleFromAlgo(const AlgorithmParameterName& name)
 {
   get_state()->setValue(name, algo().get(name).toDouble());

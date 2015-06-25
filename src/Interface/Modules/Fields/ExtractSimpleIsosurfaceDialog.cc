@@ -43,8 +43,11 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   addDoubleSpinBoxManager(singleDoubleSpinBox_, Parameters::SingleIsoValue);
+  addTextEditManager(listTextEdit_, Parameters::ListOfIsovalues);
+  addSpinBoxManager(quantitySpinBox_, Parameters::QuantityOfIsovalues);
   WidgetStyleMixin::tabStyle(tabWidget);
   connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(updateIsoMethod(int)));
+  updateIsoMethod(tabWidget->currentIndex());
 }
 
 void ExtractSimpleIsosurfaceDialog::updateIsoMethod(int tab)
