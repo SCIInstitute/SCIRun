@@ -30,6 +30,9 @@
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -79,15 +82,19 @@ void ExtractSimpleIsosurfaceModule::execute()
     }
     else if (state->getValue(Parameters::IsovalueChoice).toString() == "List")
     {
-      auto singleIso = state->getValue(Parameters::SingleIsoValue).toDouble();
-      isos.push_back(makeVariable("", singleIso));
-      std::cout << "added single isoval" << std::endl;
+      auto isoList = state->getValue(Parameters::ListOfIsovalues).toString();
+      std::vector<std::string> tokens;
+      boost::split(tokens, isoList, boost::is_any_of(","));
+      std::vector<double> isoDoubles;
+      std::transform(tokens.begin(), tokens.end(), std::back_inserter(isoDoubles), [](const std::string& s)
+      {
+        try { return boost::lexical_cast<double>(s); } catch (boost::bad_lexical_cast&) { return 0.0; }
+      });
+      std::transform(isoDoubles.begin(), isoDoubles.end(), std::back_inserter(isos), [](double x) { return makeVariable("iso", x); });
     }
     if (state->getValue(Parameters::IsovalueChoice).toString() == "Quantity")
     {
-      auto singleIso = state->getValue(Parameters::SingleIsoValue).toDouble();
-      isos.push_back(makeVariable("", singleIso));
-      std::cout << "added single isoval" << std::endl;
+      //TODO
     }
 
     algo().set(Parameters::Isovalues, isos);

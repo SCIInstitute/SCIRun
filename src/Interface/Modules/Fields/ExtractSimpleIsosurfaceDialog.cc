@@ -47,21 +47,34 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   addSpinBoxManager(quantitySpinBox_, Parameters::QuantityOfIsovalues);
   WidgetStyleMixin::tabStyle(tabWidget);
   connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(updateIsoMethod(int)));
-  updateIsoMethod(tabWidget->currentIndex());
+}
+
+void ExtractSimpleIsosurfaceDialog::pullSpecial()
+{
+  auto method = state_->getValue(Parameters::IsovalueChoice).toString();
+  if (method == "Single")
+    tabWidget->setCurrentIndex(0);
+  else if (method == "List")
+    tabWidget->setCurrentIndex(1);
+  else if (method == "Quantity")
+    tabWidget->setCurrentIndex(2);
 }
 
 void ExtractSimpleIsosurfaceDialog::updateIsoMethod(int tab)
 {
-  switch (tab)
+  if (!pulling_)
   {
-  case 0:
-    state_->setValue(Parameters::IsovalueChoice, std::string("Single"));
-    break;
-  case 1:
-    state_->setValue(Parameters::IsovalueChoice, std::string("List"));
-    break;
-  case 2:
-    state_->setValue(Parameters::IsovalueChoice, std::string("Quantity"));
-    break;
+    switch (tab)
+    {
+    case 0:
+      state_->setValue(Parameters::IsovalueChoice, std::string("Single"));
+      break;
+    case 1:
+      state_->setValue(Parameters::IsovalueChoice, std::string("List"));
+      break;
+    case 2:
+      state_->setValue(Parameters::IsovalueChoice, std::string("Quantity"));
+      break;
+    }
   }
 }
