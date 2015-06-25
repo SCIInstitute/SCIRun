@@ -593,7 +593,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
  if (scalp_info.is_quadsurf())
    conv_algo.run(scalp_mesh,scalp);
       else
-        scalp=scalp_mesh;
+        scalp=scalp_mesh;	
  
  auto do_not_create_interpolated_elc_shapes = get(Parameters::PutElectrodesOnScalpCheckBox).toBool();
 	
@@ -1311,10 +1311,10 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
        THROW_ALGORITHM_PROCESSING_ERROR(ostr1.str());
      }
      FieldInformation fi_proto(prototyp);
-     if (!(fi_proto.is_trisurfmesh() || fi_proto.is_quadsurfmesh()))
+     if (!(fi_proto.is_trisurfmesh() || fi_proto.is_quadsurfmesh() || fi_proto.is_pointcloud()))
      {
       std::ostringstream ostr;
-      ostr << (c1+2) << ". input needs to be a triangluar (TRISURF) of rectangular mesh (QUADSURF)." << std::endl;
+      ostr << (c1+2) << ". input needs to be a triangluar (TRISURF), rectangular mesh (QUADSURF) or point cloud." << std::endl;
       THROW_ALGORITHM_PROCESSING_ERROR(ostr.str());
      }
 
