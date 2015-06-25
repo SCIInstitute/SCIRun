@@ -166,7 +166,8 @@ NetworkEditorControllerHandle Application::controller()
     IEPluginManager::Initialize();
 
     /// @todo split out into separate piece
-    private_->start_eai();
+    // TODO: this crashes windows.
+    //private_->start_eai();
   }
   return private_->controller_;
 }
