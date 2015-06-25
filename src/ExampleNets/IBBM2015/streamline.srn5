@@ -168,7 +168,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>21</count>
+							<count>22</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -178,7 +178,7 @@
 									<name>InputCenterX</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  0.0000</value>
 									</value>
 								</second>
 							</item>
@@ -190,7 +190,7 @@
 									<name>InputCenterY</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  0.0000</value>
 									</value>
 								</second>
 							</item>
@@ -202,7 +202,7 @@
 									<name>InputCenterZ</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  0.0000</value>
 									</value>
 								</second>
 							</item>
@@ -214,7 +214,7 @@
 									<name>InputSizeX</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  2.0000</value>
 									</value>
 								</second>
 							</item>
@@ -226,7 +226,7 @@
 									<name>InputSizeY</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  2.0000</value>
 									</value>
 								</second>
 							</item>
@@ -238,7 +238,7 @@
 									<name>InputSizeZ</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  2.0000</value>
 									</value>
 								</second>
 							</item>
@@ -286,7 +286,7 @@
 									<name>OutputSizeX</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -298,7 +298,7 @@
 									<name>OutputSizeY</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -310,7 +310,19 @@
 									<name>OutputSizeZ</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>2.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Resetting</name>
+								</first>
+								<second>
+									<name>Resetting</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -860,8 +872,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Bundle File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/Defib_simulation_results.bdl</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -2636,3 +2672,4 @@ p, li { white-space: pre-wrap; }
 	</moduleTags>
 </networkFile>
 </boost_serialization>
+

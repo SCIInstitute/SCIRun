@@ -52,6 +52,7 @@ SET(Algorithms_Field_Tests_SRCS
   SplitByConnectedRegionTests.cc
   ConvertMeshToTetVolTests.cc
   ExtractSimpleIsoSurfaceAlgoTests.cc
+  ClipVolumeByIsovalueTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
