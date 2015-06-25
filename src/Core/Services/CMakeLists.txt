@@ -30,7 +30,7 @@
 SET(Core_Services_SRCS
   Service.cc
   ServiceDB.cc
-  #ServiceFrame.cc
+  ServiceFrame.cc
   ServiceLog.cc
   ServiceManager.cc
   #ServiceNode.cc

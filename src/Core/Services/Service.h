@@ -83,6 +83,7 @@ public:
 
   // Run will be called by the thread environment as the entry point of
   // a new thread.
+  void run() { operator()(); }
   void			operator()();
 
   // Entrypoint of the actual function of the service
