@@ -332,14 +332,16 @@ void PortWidget::makeConnection(const QPointF& pos)
   if (port)
     tryConnectPort(pos, port);
 
-
-  for (const auto& a : portWidgetMap_)
+  if (false) //disable unstable code
   {
-    for (const auto& b : a.second)
+    for (const auto& a : portWidgetMap_)
     {
-      for (const auto& c : b.second)
+      for (const auto& b : a.second)
       {
-        c.second->setHighlight(false);
+        for (const auto& c : b.second)
+        {
+          c.second->setHighlight(false);
+        }
       }
     }
   }

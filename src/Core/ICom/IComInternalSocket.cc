@@ -70,7 +70,6 @@ IComInternalSocket::~IComInternalSocket()
 
 bool IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 {
-	std::cout << "IComInternalSocket::bind" << std::endl;
 	internalsocketlock_.lock();		// Full access to the global list maintaining all internal sockets
 	dolock();							// Full access to this socket
 
@@ -81,7 +80,6 @@ bool IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 		std::string name = address.getinternalname();
 		if (internalsocketlist_[name] != 0)  throw invalid_address("already bound: map already contains a socket by name " + name);
 
-		std::cout << "IComInternalSocket::bind: socket is registered: " << name << std::endl;
 		internalsocketlist_[name] = this;
 		registered_ = true;
 
@@ -96,10 +94,9 @@ bool IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 		unlock();
 		internalsocketlock_.unlock();
 	}
-
 	catch(invalid_address& e)
 	{
-		std::cerr << "ERROR IN BIND: socket didn't make it into map, name = " << address.getinternalname() << std::endl;
+		//std::cerr << "ERROR IN BIND: socket didn't make it into map, name = " << address.getinternalname() << std::endl;
 		err.errnr = EADDRNOTAVAIL;
 		err.error = std::string("Could not resolve address: ") + e.what();
 		unlock();
@@ -115,8 +112,6 @@ bool IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 
 bool IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSocketError &err)
 {
-	std::cout << "IComInternalSocket::connect" << std::endl;
-
 	IComInternalSocket* isock = 0;
 
 	internalsocketlock_.lock();
@@ -125,9 +120,6 @@ bool IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSo
 	try
 	{
 		if (!address.isinternal()) throw invalid_address("non-internal");
-
-		std::cout << "looking up socket of name " << address.getinternalname() << std::endl;
-		std::cout << "map has " << internalsocketlist_.size() << " elements." << std::endl;
 		isock = internalsocketlist_[address.getinternalname()];
 
 		if (isock == 0) throw invalid_address("isock null");
