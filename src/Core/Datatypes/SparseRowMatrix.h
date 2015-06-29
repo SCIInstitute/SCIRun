@@ -155,7 +155,12 @@ namespace Datatypes {
 
     this_type getColumn(int i) const
     {
+#ifdef _WIN32
+      // TODO: Eigen compiler bug I think!
+      auto tr = this->transpose().eval();
+#else
       auto tr = this->transpose();
+#endif
       return tr.block(i, 0, 1, nrows()).transpose();
     }
 

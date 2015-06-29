@@ -47,8 +47,10 @@ namespace Datatypes {
 
     //! Persistent representation
     virtual void io(Piostream&) override;
-    static const PersistentTypeID type_id;
-    virtual std::string dynamic_type_name() const override { return type_id.type; }
+    static PersistentTypeID type_id_obj;
+    static PersistentTypeID type_id_func();
+    virtual std::string dynamic_type_name() const override;
+    std::string type_name() const;
 
   private:
     std::string value_;

@@ -148,7 +148,7 @@ Bundle::io(Piostream& stream)
       else if (type=="string")
       {
         StringHandle handle;
-        Pio(stream,handle);
+        Pio2(stream,handle);
         bundle_[name] = handle;
       }
       else if (type=="nrrd")
@@ -235,7 +235,7 @@ Bundle::io(Piostream& stream)
           stream.io(type);
           stream.end_cheap_delim();
           stream.begin_cheap_delim();
-          Pio(stream,stringhandle);
+          Pio2(stream, stringhandle);
           stream.end_cheap_delim();
           continue;
         }

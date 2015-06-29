@@ -35,18 +35,17 @@ using namespace SCIRun::Core::Datatypes;
 
 String::String(const std::string& s /* = "" */) : value_(s) {}
 
-
-namespace SCIRun {
-
-  static Persistent* maker()
-  {
-    return new String;
-  }
+static Persistent* maker()
+{
+  return new String;
 }
 
-//std::string String::dynamic_type_name() const { return type_id.type; }
+std::string String::type_name() const { return type_id_obj.type; }
 
-const PersistentTypeID String::type_id("String", "Datatype", maker);
+PersistentTypeID String::type_id_obj("String", "Datatype", maker);
+
+PersistentTypeID String::type_id_func() { return type_id_obj;  }
+std::string String::dynamic_type_name() const { return type_id_func().type; }
 
 #define STRING_VERSION 1
 
