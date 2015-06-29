@@ -252,7 +252,7 @@ void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
   {
     int distance = (pos - startPos_).manhattanLength();
     if (distance >= QApplication::startDragDistance())
-      performDrag(pos);
+      dragImpl(pos);
   }
 }
 
@@ -332,14 +332,16 @@ void PortWidget::makeConnection(const QPointF& pos)
   if (port)
     tryConnectPort(pos, port);
 
-
-  for (const auto& a : portWidgetMap_)
+  if (false) //disable unstable code
   {
-    for (const auto& b : a.second)
+    for (const auto& a : portWidgetMap_)
     {
-      for (const auto& c : b.second)
+      for (const auto& b : a.second)
       {
-        c.second->setHighlight(false);
+        for (const auto& c : b.second)
+        {
+          c.second->setHighlight(false);
+        }
       }
     }
   }
@@ -399,29 +401,33 @@ bool PortWidget::isFullInputPort() const
   return isInput() && !connections_.empty();
 }
 
-void PortWidget::performDrag(const QPointF& endPos)
+void PortWidget::dragImpl(const QPointF& endPos)
 {
   if (!currentConnection_)
   {
     currentConnection_ = connectionFactory_->makeConnectionInProgress(this);
   }
   currentConnection_->update(endPos);
+
   //qDebug() << "update other ports here";
-  for (const auto& a : portWidgetMap_)
+  if (false) // disable until setting is hooked up, and port spacing is fixed
   {
-    for (const auto& b : a.second)
+    for (const auto& a : portWidgetMap_)
     {
-      for (const auto& c : b.second)
+      for (const auto& b : a.second)
       {
-        //qDebug() << QString::fromStdString(a.first) << b.first << QString::fromStdString(c.first.toString()) << c.second;
-        if (moduleId_.id_ != a.first && isInput_ != b.first/* && get_typename() == c.second->get_typename()*/)
+        for (const auto& c : b.second)
         {
-          c.second->setHighlight(true);
+          //qDebug() << QString::fromStdString(a.first) << b.first << QString::fromStdString(c.first.toString()) << c.second;
+          if (moduleId_.id_ != a.first && isInput_ != b.first/* && get_typename() == c.second->get_typename()*/)
+          {
+            if (c.second)
+              c.second->setHighlight(true);
+          }
         }
       }
     }
   }
-  //portWidgetMap_[moduleId_.id_][isInput_][portId_] = this;
 }
 
 void PortWidget::addConnection(ConnectionLine* c)
