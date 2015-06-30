@@ -41,9 +41,6 @@ ADD_SUBDIRECTORY(log4cpp)
 MESSAGE(STATUS "Configuring cleaver 1")
 ADD_SUBDIRECTORY(cleaver)
 
-MESSAGE(STATUS "Configuring sqlite")
-ADD_SUBDIRECTORY(sqlite)
-
 IF(WITH_TETGEN)
   MESSAGE(STATUS "Configuring tetgen")
   ADD_SUBDIRECTORY(tetgen)
