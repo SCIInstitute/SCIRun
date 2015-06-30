@@ -63,7 +63,7 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   addCheckBoxManager(AllInputsTDCS_, Parameters::AllInputsTDCS);
   addCheckBoxManager(electrodethicknessCheckBox_, Parameters::ElectrodethicknessCheckBox);
   addCheckBoxManager(invertNormalsCheckBox_, Parameters::InvertNormalsCheckBox);
-  addCheckBoxManager(improveElectrodeShapeInterpolationCheckBox_, Parameters::ImproveElectrodeShapeInterpolationCheckBox);
+  addCheckBoxManager(OrientTMSCoilRadialToScalpCheckBox_, Parameters::OrientTMSCoilRadialToScalpCheckBox);
   addCheckBoxManager(PutElectrodesOnScalpCheckBox_, Parameters::PutElectrodesOnScalpCheckBox);
   addDoubleSpinBoxManager(electrodethicknessSpinBox_, Parameters::ElectrodethicknessSpinBox);
   connect(electrode_coil_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(validateCell(int, int)));

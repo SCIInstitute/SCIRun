@@ -77,7 +77,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, ProtoTypeInputComboBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessCheckBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessSpinBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, InvertNormalsCheckBox);
-ALGORITHM_PARAMETER_DEF(BrainStimulator, ImproveElectrodeShapeInterpolationCheckBox);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, OrientTMSCoilRadialToScalpCheckBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, PutElectrodesOnScalpCheckBox);
 
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::FINAL_ELECTRODES_FIELD("FINAL_ELECTRODES_FIELD");
@@ -119,7 +119,7 @@ ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
   addParameter(AllInputsTDCS, false);
   addParameter(ElectrodethicknessCheckBox, false);
   addParameter(ElectrodethicknessSpinBox, 1.0); 
-  addParameter(ImproveElectrodeShapeInterpolationCheckBox, false);
+  addParameter(OrientTMSCoilRadialToScalpCheckBox, true);
   addParameter(PutElectrodesOnScalpCheckBox, false);
  }
 }
@@ -277,7 +277,7 @@ DenseMatrixHandle ElectrodeCoilSetupAlgorithm::make_rotation_matrix_around_axis(
 }
 
 
-FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& coil_prototyp_map, const std::vector<double>& coil_x, const std::vector<double>& coil_y, const std::vector<double>& coil_z, const std::vector<double>& coil_angle_rotation, const std::vector<double>& coil_nx, const std::vector<double>& coil_ny, const std::vector<double>& coil_nz) const 
+FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& coil_prototyp_map, const std::vector<double>& coil_x, const  std::vector<double>& coil_y, const std::vector<double>& coil_z, const std::vector<double>& coil_angle_rotation,  std::vector<double>& coil_nx,  std::vector<double>& coil_ny,  std::vector<double>& coil_nz) const 
 {  
   FieldInformation fieldinfo("PointCloudMesh", 0, "Vector");
   FieldHandle tms_coils_field = CreateField(fieldinfo);        
@@ -353,10 +353,32 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
       DenseMatrixHandle rotation_matrix,rotation_matrix1,rotation_matrix2;
       // 2.1) create rotation matrices
       std::vector<double> coil_vector;
+      
+      bool OrientTMSCoilRadiallyToHead = get(Parameters::OrientTMSCoilRadialToScalpCheckBox).toBool();
+	     
+      Vector norm;
+      if (OrientTMSCoilRadiallyToHead)
+      {
+       VMesh* scalp_vmesh = scalp->vmesh();
+       VMesh::Node::index_type didx;
+       Point tms_coil(coil_x[i],coil_y[i],coil_z[i]),r;
+       scalp_vmesh->synchronize(Mesh::NODE_LOCATE_E);
+       double distance=0;
+       scalp_vmesh->find_closest_node(distance,r,didx,tms_coil);       
+       scalp_vmesh->synchronize(Mesh::NORMALS_E);
+       scalp_vmesh->get_normal(norm,didx);
+       if(norm.length())
+       {
+        coil_nx[i]=norm[0];
+	coil_ny[i]=norm[1];
+	coil_nz[i]=norm[2];
+       }
+      }     
+
       coil_vector.push_back(coil_nx[i]);
       coil_vector.push_back(coil_ny[i]);
       coil_vector.push_back(coil_nz[i]);
-
+      
       rotation_matrix1 = make_rotation_matrix(angle, coil_vector);
 
       if (angle!=0) /// test it !

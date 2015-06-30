@@ -159,7 +159,7 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QCheckBox" name="improveElectrodeShapeInterpolationCheckBox_">
+  <widget class="QCheckBox" name="OrientTMSCoilRadialToScalpCheckBox_">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -167,9 +167,12 @@
      <width>271</width>
      <height>20</height>
     </rect>
+   </property> 
+   <property name="checked">
+    <bool>true</bool>
    </property>
    <property name="text">
-    <string>Improve electrode shape interpolation</string>
+    <string>Orient TMS coil radially to scalp</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="PutElectrodesOnScalpCheckBox_">

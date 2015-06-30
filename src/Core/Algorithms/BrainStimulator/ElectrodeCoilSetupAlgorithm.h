@@ -63,7 +63,7 @@ namespace BrainStimulator {
   ALGORITHM_PARAMETER_DECL(ElectrodethicknessCheckBox);
   ALGORITHM_PARAMETER_DECL(ElectrodethicknessSpinBox);
   ALGORITHM_PARAMETER_DECL(InvertNormalsCheckBox);
-  ALGORITHM_PARAMETER_DECL(ImproveElectrodeShapeInterpolationCheckBox);
+  ALGORITHM_PARAMETER_DECL(OrientTMSCoilRadialToScalpCheckBox);
   ALGORITHM_PARAMETER_DECL(PutElectrodesOnScalpCheckBox);
   
   class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
@@ -93,7 +93,7 @@ namespace BrainStimulator {
     Datatypes::DenseMatrixHandle make_rotation_matrix(const double angle, const std::vector<double>& normal) const;
     boost::tuple<Datatypes::DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> make_tdcs_electrodes(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto,
     const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness, VariableHandle table) const;            
-    FieldHandle make_tms(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& coil_prototyp_map, const std::vector<double>& coil_x, const std::vector<double>& coil_y, const std::vector<double>& coil_z, const std::vector<double>& coil_angle_rotation, const std::vector<double>& coil_nx, const std::vector<double>& coil_ny, const std::vector<double>& coil_nz) const;        
+    FieldHandle make_tms(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& coil_prototyp_map, const std::vector<double>& coil_x, const std::vector<double>& coil_y, const std::vector<double>& coil_z, const std::vector<double>& coil_angle_rotation, std::vector<double>& coil_nx, std::vector<double>& coil_ny, std::vector<double>& coil_nz) const;        
     VariableHandle fill_table(FieldHandle scalp, Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& input) const;
     boost::tuple<Variable::List, double, double, double> make_table_row(int i,double x, double y, double z, double nx, double ny, double nz) const;
   };
