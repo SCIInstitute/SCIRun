@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -42,5 +42,40 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addDoubleSpinBoxManager(doubleSpinBox_, ExtractSimpleIsosurfaceAlgo::GUIIsoValue);
+  addDoubleSpinBoxManager(singleDoubleSpinBox_, Parameters::SingleIsoValue);
+  addTextEditManager(listTextEdit_, Parameters::ListOfIsovalues);
+  addSpinBoxManager(quantitySpinBox_, Parameters::QuantityOfIsovalues);
+  addTextEditManager(isovalListFromQuantityTextEdit_, Parameters::IsovalueListString);
+  WidgetStyleMixin::tabStyle(tabWidget);
+  connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(updateIsoMethod(int)));
+}
+
+void ExtractSimpleIsosurfaceDialog::pullSpecial()
+{
+  auto method = state_->getValue(Parameters::IsovalueChoice).toString();
+  if (method == "Single")
+    tabWidget->setCurrentIndex(0);
+  else if (method == "List")
+    tabWidget->setCurrentIndex(1);
+  else if (method == "Quantity")
+    tabWidget->setCurrentIndex(2);
+}
+
+void ExtractSimpleIsosurfaceDialog::updateIsoMethod(int tab)
+{
+  if (!pulling_)
+  {
+    switch (tab)
+    {
+    case 0:
+      state_->setValue(Parameters::IsovalueChoice, std::string("Single"));
+      break;
+    case 1:
+      state_->setValue(Parameters::IsovalueChoice, std::string("List"));
+      break;
+    case 2:
+      state_->setValue(Parameters::IsovalueChoice, std::string("Quantity"));
+      break;
+    }
+  }
 }

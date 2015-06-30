@@ -245,18 +245,29 @@ inline void Pio(Piostream& stream, Persistent& data) { data.io(stream); }
 
 SCISHARE void Pio_index(Piostream& stream, index_type* data, size_type sz);
 
-
 template<class T>
-void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = 0)
+void PioImpl(Piostream& stream, boost::shared_ptr<T>& data, const PersistentTypeID& typeId)
 {
   stream.begin_cheap_delim();
   Persistent* trep = data.get();
-  stream.io(trep, T::type_id);
-  if(stream.reading())
+  stream.io(trep, typeId);
+  if (stream.reading())
   {
     data.reset(static_cast<T*>(trep));
   }
   stream.end_cheap_delim();
+}
+
+template<class T>
+inline void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = 0)
+{
+  PioImpl(stream, data, T::type_id);
+}
+
+template<class T>
+inline void Pio2(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = 0)
+{
+  PioImpl(stream, data, T::type_id_func());
 }
 
 template<class T>

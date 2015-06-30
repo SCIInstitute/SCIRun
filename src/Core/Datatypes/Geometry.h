@@ -80,6 +80,8 @@ namespace Datatypes {
 
     const std::string& uniqueID() const { return objectName_; }
 
+    virtual std::string dynamic_type_name() const override { return "GeometryObject"; }
+
     // Could require rvalue references...
     struct SpireVBO
     {

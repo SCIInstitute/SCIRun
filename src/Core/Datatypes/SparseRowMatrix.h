@@ -121,6 +121,17 @@ namespace Datatypes {
       return *this;
     }
 
+    SparseRowMatrixGeneric(const SparseRowMatrixGeneric& other) : EigenBase(other) {}
+    SparseRowMatrixGeneric& operator=(const SparseRowMatrixGeneric& other)
+    {
+      if (this != &other)
+      {
+        this->EigenBase::operator=(other);
+      }
+      return *this;
+    }
+    SparseRowMatrixGeneric(SparseRowMatrixGeneric&& other) : EigenBase(std::move(other)) {}
+
     virtual SparseRowMatrixGeneric* clone() const
     {
       return new SparseRowMatrixGeneric(*this);
@@ -142,6 +153,16 @@ namespace Datatypes {
     RowsPtr get_rows() { return this->outerIndexPtr(); }
     ColumnsPtr get_cols() { return this->innerIndexPtr(); }
 
+    this_type getColumn(int i) const
+    {
+#ifdef _WIN32
+      // TODO: Eigen compiler bug I think!
+      auto tr = this->transpose().eval();
+#else
+      auto tr = this->transpose();
+#endif
+      return tr.block(i, 0, 1, nrows()).transpose();
+    }
 
     virtual void accept(MatrixVisitorGeneric<T>& visitor)
     {
