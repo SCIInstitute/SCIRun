@@ -218,7 +218,7 @@ TEST_F(ModuleDatabaseQueries, CountEnabledModules)
 {
   auto count = countEnabledModules();
   std::cout << "# of enabled modules: " << count << std::endl;
-  EXPECT_EQ(58, count);
+  EXPECT_EQ(59, count);
 }
 
 //TODO: figure out better way to generate a report from these tests. Need a process to enforce keeping them up to date (special branch?)
