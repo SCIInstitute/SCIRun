@@ -51,46 +51,30 @@ class SetupRHSforTDCSandTMSTests : public ModuleTest
 
 namespace
 {
-  FieldHandle LoadMickeyMouseCleaverMesh()
+  FieldHandle LoadColin27ScalpSurfMesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/cleaver_mesh.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/setuptdcs/colin27_skin_surf.fld");
   }
-  FieldHandle LoadMickeyMouseScalpMesh()
+  FieldHandle LoadColin27ElecSurfMesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/scalp_surf_mesh.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/setuptdcs/colin27_elc_surf.fld");
   }
-  FieldHandle LoadMickeyMouseElectrodeSpongeMesh()
+  FieldHandle LoadColin27TetMesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/elc_surf_mesh.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/setuptdcs/elc_tet.fld");
   }
   
   DenseMatrixHandle ElectrodeSpongeLocationAndThickness()
   { 
-   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(6,4));
-   (*m)(0,0) = 33.5;
-   (*m)(0,1) = 33.5;
-   (*m)(0,2) = 18.246;
-   (*m)(0,3) = 3.0;   
-   (*m)(1,0) = 33.5;
-   (*m)(1,1) = 18.246;
-   (*m)(1,2) = 33.5;
-   (*m)(1,3) = 3.0;   
-   (*m)(2,0) = 18.246;
-   (*m)(2,1) = 33.5;
-   (*m)(2,2) = 33.5;
-   (*m)(2,3) = 3.0;  
-   (*m)(3,0) = 48.754;
-   (*m)(3,1) = 33.5;
-   (*m)(3,2) = 33.5;
-   (*m)(3,3) = 3.0;  
-   (*m)(4,0) = 33.5;
-   (*m)(4,1) = 48.754;
-   (*m)(4,2) = 33.5;
-   (*m)(4,3) = 3.0;
-   (*m)(5,0) = 33.5;
-   (*m)(5,1) = 33.5;
-   (*m)(5,2) = 48.754;
-   (*m)(5,3) = 3.0;
+   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2,4));
+   (*m)(0,0) = 59.5343;
+   (*m)(0,1) = 15.5240;
+   (*m)(0,2) = 84.5013;
+   (*m)(0,3) = 4.0;   
+   (*m)(1,0) = 122.798;
+   (*m)(1,1) = 32.2019;
+   (*m)(1,2) = 128.798;
+   (*m)(1,3) = 4.0;   
 
    return m;
   }
@@ -99,9 +83,9 @@ namespace
 TEST_F(SetupRHSforTDCSandTMSTests, Correct)
 {
   auto tdcs = makeModule("SetupTDCS");
-  stubPortNWithThisData(tdcs, 0, LoadMickeyMouseCleaverMesh());
-  stubPortNWithThisData(tdcs, 1, LoadMickeyMouseScalpMesh());
-  stubPortNWithThisData(tdcs, 2, LoadMickeyMouseElectrodeSpongeMesh());
+  stubPortNWithThisData(tdcs, 0, LoadColin27TetMesh());
+  stubPortNWithThisData(tdcs, 1, LoadColin27ScalpSurfMesh());
+  stubPortNWithThisData(tdcs, 2, LoadColin27ElecSurfMesh());
   stubPortNWithThisData(tdcs, 3, ElectrodeSpongeLocationAndThickness());
   EXPECT_NO_THROW(tdcs->execute());
 }
@@ -113,7 +97,7 @@ TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForWrongType)
   stubPortNWithThisData(tdcs, 0, ElectrodeSpongeLocationAndThickness());
   stubPortNWithThisData(tdcs, 1, ElectrodeSpongeLocationAndThickness());
   stubPortNWithThisData(tdcs, 2, ElectrodeSpongeLocationAndThickness());
-  stubPortNWithThisData(tdcs, 3, LoadMickeyMouseCleaverMesh());
+  stubPortNWithThisData(tdcs, 3, LoadColin27ElecSurfMesh());
   
   EXPECT_THROW(tdcs->execute(), WrongDatatypeOnPortException);
 }

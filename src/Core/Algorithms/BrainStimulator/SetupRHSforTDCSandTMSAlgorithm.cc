@@ -319,6 +319,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  DenseMatrixHandle distances(new DenseMatrix(electrode_sponges, 1));
  VMesh::Node::index_type didx;
  double distance=0; 
+
  for (long i=0;i<electrode_sponges;i++)
  {
   Point elc((*elc_sponge_location)(i,0),(*elc_sponge_location)(i,1),(*elc_sponge_location)(i,2)),r;
@@ -330,6 +331,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
    tmp_mesh->synchronize(Mesh::NODE_LOCATE_E); 
    
    tmp_mesh->find_closest_node(distance,r,didx,elc);
+   
    if (distance<min_dis)
    {
      min_dis=distance;
@@ -545,7 +547,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   
   double dot_sp_o1 = Dot(sp_o1, current_scalp_normal_at_elec);
   double dot_sp_o2 = Dot(sp_o2, current_scalp_normal_at_elec);
-  
+
   double x=0,y=0,z=0;  
   if( (dot_sp_o1<0 && dot_sp_o2<0) || (dot_sp_o1>0 && dot_sp_o2>0) )
   {
@@ -716,7 +718,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
    THROW_ALGORITHM_PROCESSING_ERROR("Internal error: internal field definition is "); 
  }
  
- double area=0.0; double prev_elc=0;
+ double area=0.0,prev_elc=0,tmp_fld_val=0;
  for(VMesh::Elem::index_type l=0; l<elc_sponge_surf_vmesh->num_elems(); l++)
  {
   (*elc_elem_typ)(l,0)=2; //define triangles to incject currents in TDCS simulations
@@ -753,15 +755,14 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   double x3=pos.x(), y3=pos.y(), z3=pos.z();
   
   (*elc_elem_def)(l,3)=0; 
-  (*elc_elem)(l,0)=field_values[l]; 
-  (*elc_con_imp)(l,0)=impedances[l];
+  (*elc_elem)(l,0)=field_values[l];   
   
   ///compute surface area of electrode/scalp interface
   double area_tmp =y1*z2+z1*y3+y2*z3-z2*y3-z1*y2-y1*z3;
   double area_tmp1=z1*x2+x1*z3+z2*x3-x2*z3-x1*z2-z1*x3;
   double area_tmp2=x1*y2+y1*x3+x2*y3-y2*x3-y1*x2-x1*y3;
   double triangle_area=0.5 * sqrt(area_tmp*area_tmp+area_tmp1*area_tmp1+area_tmp2*area_tmp2);
-  double tmp_fld_val=0;
+  tmp_fld_val=0;
   elc_sponge_surf_vfld->get_value(tmp_fld_val,l);
     
   if(prev_elc!=tmp_fld_val)
@@ -775,8 +776,21 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
    area+=triangle_area;
   }
  }
+ 
  area*=1e-6;
+ 
  electrode_sponge_areas.push_back(area);
+ 
+ for(VMesh::Elem::index_type l=0; l<elc_sponge_surf_vmesh->num_elems(); l++) /// the impedance (Ohm * m^2) that was provided by the user needs to be defined related to the electrode area. For convenience we do that for the user here.
+ {
+  elc_sponge_surf_vfld->get_value(tmp_fld_val,l);
+  if(tmp_fld_val>=electrode_sponge_areas.size())
+   { 
+    THROW_ALGORITHM_PROCESSING_ERROR("Internal ERROR (should not happen): could not scale contact impedance by electrode surface area (index out of bound). "); 
+   }
+   (*elc_con_imp)(l,0)=impedances[tmp_fld_val]*electrode_sponge_areas[tmp_fld_val];
+ }
+ 
  DenseMatrixHandle selectmatrixind(new DenseMatrix(mesh_vmesh->num_nodes(), 1)); ///create indeces for SelectSubMatrix
  for(long i=0;i<mesh_vmesh->num_nodes();i++)
  { 
@@ -802,7 +816,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
     double temp = elcs_wanted[i].toDouble();
     min_current += temp;
   }
-  
+
   if (std::fabs(min_current) > electode_current_summation_bound) 
         THROW_ALGORITHM_INPUT_ERROR("Summed electrode current intensities are greater than 1e-6 mA. The sum should be close to 0 mA !!! ");  
 
@@ -815,7 +829,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
   VMesh* mesh_elc_tri_surf = elc_tri_surf->vmesh();
   mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E); 
   vmesh->synchronize(Mesh::NODE_LOCATE_E); 
-  
+
   for(VMesh::Node::index_type l=0; l<mesh_elc_tri_surf->num_nodes(); l++)
   {
    Point p,q; 
@@ -825,7 +839,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
    vmesh->find_closest_node(distance,q,ind,p);
    (*output)(ind,0)=elcs_wanted[l].toDouble()/1000.0;
   } 
-    
+
   return output;
  } else
  { 
@@ -859,14 +873,12 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
 {
   if (num_of_elc > max_number_of_electrodes) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes (>512) given exceeds what is possible ");}  /// number of  possible electrodes is currently bound to 512 electrodes in default setting
   if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}
-  
   if (!mesh) THROW_ALGORITHM_INPUT_ERROR("Input field (mesh) was not allocated "); 
   if (!scalp_tri_surf) THROW_ALGORITHM_INPUT_ERROR("Input field (scalp triangle surface) was not allocated ");
   if (!elc_tri_surf) THROW_ALGORITHM_INPUT_ERROR("Input field (electrode triangle surface) was not allocated ");
   if (!elc_sponge_location) THROW_ALGORITHM_INPUT_ERROR("Input field (electrode triangle surface) was not allocated ");
-  
   DenseMatrixHandle rhs=create_rhs(mesh, elc_tri_surf, elcs, num_of_elc); /// get the right-hand-side
-  
+
   DenseMatrixHandle lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, selectmatrixind;
   FieldHandle elec_sponge_surf;
   std::vector<double> electrode_sponge_areas;
