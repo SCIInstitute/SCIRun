@@ -816,7 +816,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
     double temp = elcs_wanted[i].toDouble();
     min_current += temp;
   }
-  
+
   if (std::fabs(min_current) > electode_current_summation_bound) 
         THROW_ALGORITHM_INPUT_ERROR("Summed electrode current intensities are greater than 1e-6 mA. The sum should be close to 0 mA !!! ");  
 
@@ -829,7 +829,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
   VMesh* mesh_elc_tri_surf = elc_tri_surf->vmesh();
   mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E); 
   vmesh->synchronize(Mesh::NODE_LOCATE_E); 
-  
+
   for(VMesh::Node::index_type l=0; l<mesh_elc_tri_surf->num_nodes(); l++)
   {
    Point p,q; 
@@ -839,7 +839,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
    vmesh->find_closest_node(distance,q,ind,p);
    (*output)(ind,0)=elcs_wanted[l].toDouble()/1000.0;
   } 
-    
+
   return output;
  } else
  { 
@@ -873,14 +873,11 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
 {
   if (num_of_elc > max_number_of_electrodes) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes (>512) given exceeds what is possible ");}  /// number of  possible electrodes is currently bound to 512 electrodes in default setting
   if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}
-  
   if (!mesh) THROW_ALGORITHM_INPUT_ERROR("Input field (mesh) was not allocated "); 
   if (!scalp_tri_surf) THROW_ALGORITHM_INPUT_ERROR("Input field (scalp triangle surface) was not allocated ");
   if (!elc_tri_surf) THROW_ALGORITHM_INPUT_ERROR("Input field (electrode triangle surface) was not allocated ");
   if (!elc_sponge_location) THROW_ALGORITHM_INPUT_ERROR("Input field (electrode triangle surface) was not allocated ");
-  
   DenseMatrixHandle rhs=create_rhs(mesh, elc_tri_surf, elcs, num_of_elc); /// get the right-hand-side
-  std::cout << (*rhs)(0,0) << std::endl;
 
   DenseMatrixHandle lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, selectmatrixind;
   FieldHandle elec_sponge_surf;

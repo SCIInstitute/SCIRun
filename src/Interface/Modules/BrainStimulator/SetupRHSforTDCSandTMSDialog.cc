@@ -110,6 +110,7 @@ void SetupRHSforTDCSandTMSDialog::pullSpecial()
 {
   int nr_elc=(state_->getValue(Parameters::number_of_electrodes)).toInt();
   int rows=-1;
+  
   if (nr_elc!=-1)
   {
     electrode_tableWidget->setRowCount(static_cast<int>(nr_elc));
@@ -118,9 +119,14 @@ void SetupRHSforTDCSandTMSDialog::pullSpecial()
   {
     rows = electrode_tableWidget->rowCount();
   }
-
+  
+  if (nr_elc>=SetupTDCSAlgorithm::max_number_of_electrodes )
+  {
+    nr_elc=SetupTDCSAlgorithm::max_number_of_electrodes;
+    rows = nr_elc;
+  }  
+  
   auto surface_areas = (state_->getValue(Parameters::SurfaceAreaValues)).toVector();
-
   // obtaining initial values, pulling hasn't been set
   std::vector<AlgorithmParameter> elc_vals_in_table; //electrical electrode charges
   std::vector<AlgorithmParameter> imp_elc_vals_in_table; //electrode impedances
