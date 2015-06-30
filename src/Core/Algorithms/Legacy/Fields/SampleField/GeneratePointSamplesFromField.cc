@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,6 +37,14 @@
 
 #include <math.h>
 
+GeneratePointSamplesFromFieldAlgo()
+{
+  add_int("num_seed_points",100);
+  add_int("rng_seed",1);
+  add_option("seed_method","uniuni","impscat|impuni|uniuni|uniscat");
+  add_bool("clamp",true);
+}
+
 namespace SCIRunAlgo {
 
 using namespace SCIRun;
@@ -48,7 +56,7 @@ class GeneratePointSamplesFromFieldAlgoF {
     bool build_table(VMesh *mesh, VField* vfield,
                      std::vector<weight_type> &table,
                      std::string& method);
-                     
+
     static bool
     weight_less(const weight_type &a, const weight_type &b)
     {
@@ -56,14 +64,14 @@ class GeneratePointSamplesFromFieldAlgoF {
     }
 };
 
-bool 
+bool
 GeneratePointSamplesFromFieldAlgoF::build_table(VMesh *vmesh,
                                                 VField* vfield,
                                                 std::vector<weight_type> &table,
                                                 std::string& method)
 {
   VMesh::size_type num_elems = vmesh->num_elems();
-  
+
   long double sum = 0.0;
   for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
   {
@@ -115,10 +123,10 @@ GeneratePointSamplesFromFieldAlgoF::build_table(VMesh *vmesh,
       elemsize = vmesh->get_size(idx);
     }
     else if (method == "uniscat")
-    { 
+    {
       elemsize = 1.0;
     }
-    
+
     if (elemsize > 0.0)
     {
       sum += elemsize;
@@ -146,20 +154,20 @@ GeneratePointSamplesFromFieldAlgo::run(FieldHandle input, FieldHandle& output)
   int               rng_seeds = get_int("rng_seed");
   std::string method          = get_option("seed_method");
   bool              clamp     = get_bool("clamp");
-  
+
   std::vector<GeneratePointSamplesFromFieldAlgoF::weight_type> table;
-  
+
   if (input.get_rep() == 0)
   {
     error("No input field was given");
     algo_end(); return (false);
   }
-    
+
   VMesh*  mesh  = input->vmesh();
   VField* field = input->vfield();
 
   GeneratePointSamplesFromFieldAlgoF table_algo;
-  
+
   if (method == "uniuni" || method == "uniscat")
   {
     if (!table_algo.build_table(mesh, field, table, method))
@@ -192,13 +200,13 @@ GeneratePointSamplesFromFieldAlgo::run(FieldHandle input, FieldHandle& output)
 
   FieldInformation fi("PointCloudMesh",0,"double");
   output = CreateField(fi);
-  
+
   if (output.get_rep() == 0)
   {
     error("Could not allocate output field");
     algo_end(); return (false);
   }
-  
+
   VMesh* omesh = output->vmesh();
   VField* ofield = output->vfield();
 
@@ -206,14 +214,14 @@ GeneratePointSamplesFromFieldAlgo::run(FieldHandle input, FieldHandle& output)
   {
     Point p;
     std::vector<GeneratePointSamplesFromFieldAlgoF::weight_type>::iterator loc;
-    
-    do 
+
+    do
     {
       loc = std::lower_bound(table.begin(), table.end(),
 			 GeneratePointSamplesFromFieldAlgoF::weight_type(
        rng() * max, VMesh::Elem::index_type(0)),
        GeneratePointSamplesFromFieldAlgoF::weight_less);
-    } 
+    }
     while (loc == table.end());
 
     if (clamp)
@@ -232,11 +240,10 @@ GeneratePointSamplesFromFieldAlgo::run(FieldHandle input, FieldHandle& output)
   }
 
   ofield->resize_values();
-  
+
   algo_end();
   return (true);
 }
 
 
 } // End namespace SCIRun
-

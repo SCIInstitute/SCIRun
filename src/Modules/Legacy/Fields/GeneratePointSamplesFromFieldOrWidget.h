@@ -33,22 +33,6 @@
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-
-  namespace Core
-  {
-    namespace Algorithms
-    {
-      namespace Fields
-      {
-        ALGORITHM_PARAMETER_DECL(NumSamples);
-        ALGORITHM_PARAMETER_DECL(DistributionType);
-        ALGORITHM_PARAMETER_DECL(ClampToNodes);
-        ALGORITHM_PARAMETER_DECL(IncrementRNGSeed);
-        ALGORITHM_PARAMETER_DECL(RNGSeed);
-      }
-    }
-  }
-
   namespace Modules {
     namespace Fields {
 

@@ -34,7 +34,7 @@
 ///@date  October 2000
 
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
-//#include <Core/Algorithms/Fields/SampleField/GeneratePointSamplesFromField.h>
+#include <Core/Algorithms/Legacy/Fields/SampleField/GeneratePointSamplesFromField.h>
 
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -644,23 +644,28 @@ GeneratePointSamplesFromFieldOrWidget::execute_frame(FieldHandle ifield)
 FieldHandle
 GeneratePointSamplesFromFieldOrWidget::execute_random(FieldHandle ifield)
 {
-  throw "todo";
-  #if 0
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   GeometryOPortHandle ogport;
   get_oport_handle("Sampling Widget",ogport);
+#endif
 
-  SCIRunAlgo::GeneratePointSamplesFromFieldAlgo algo;
-  algo.set_progress_reporter(this);
-  algo.set_int("num_seed_points",gui_random_seeds_.get());
-  algo.set_int("rng_seed",gui_rngSeed_.get());
-  algo.set_option("seed_method",gui_randdist_.get());
-  algo.set_bool("clamp",gui_clamp_.get());
+//  SCIRunAlgo::GeneratePointSamplesFromFieldAlgo algo;
+//  algo.set_progress_reporter(this);
+  setAlgoIntFromState(NumSamples);
+  setAlgoIntFromState(RNGSeed);
+  setAlgoOptionFromState(DistributionType);
+  setAlgoBoolFromState(ClampToNodes);
+//  algo.set_int("num_seed_points",gui_random_seeds_.get());
+  //algo.set_int("rng_seed",gui_rngSeed_.get());
+//  algo.set_option("seed_method",gui_randdist_.get());
+//  algo.set_bool("clamp",gui_clamp_.get());
 
   FieldHandle seeds;
   if(!(algo.run(ifield,seeds))) return 0;
 
   if (gui_rngInc_.get()) gui_rngSeed_.set(gui_rngSeed_.get()+1);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (widgetid_)
   {
     ogport->delObj(widgetid_);
@@ -668,9 +673,9 @@ GeneratePointSamplesFromFieldOrWidget::execute_random(FieldHandle ifield)
     widgetid_ = 0;
     wtype_ = 0;
   }
+#endif
 
- return seeds;
- #endif
+  return seeds;
 }
 
 void
