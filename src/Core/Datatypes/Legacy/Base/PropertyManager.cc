@@ -93,7 +93,7 @@ PropertyManager::PropertyManager(const PropertyManager &copy) :
   {
     if (! pi->second->transient())
     {
-      this->properties_[pi->first] = pi->second->clone();
+      properties_[pi->first].reset(pi->second->clone());
     }
     ++pi;
   }
@@ -117,7 +117,7 @@ PropertyManager::copy_properties(const PropertyManager* src)
   Guard this_guard(lock.get());
 
   clear_transient();
-  this->frozen_ = false;
+  frozen_ = false;
 
   {
     Guard src_guard(const_cast<PropertyManager*>(src)->lock.get());
@@ -126,13 +126,13 @@ PropertyManager::copy_properties(const PropertyManager* src)
     {
       if (! pi->second->transient())
       {
-        this->properties_[pi->first] = pi->second->clone();
+        properties_[pi->first].reset(pi->second->clone());
       }
       ++pi;
     }
   }
 
-  this->frozen_ = true;
+  frozen_ = true;
 }
 
 
@@ -152,9 +152,9 @@ PropertyManager::operator==(const PropertyManager &pm)
   map_type::const_iterator pi = pm.properties_.begin();
   while (result && pi != pm.properties_.end())
   {
-    map_type::iterator loc = this->properties_.find(pi->first);
+    map_type::iterator loc = properties_.find(pi->first);
 
-    if (loc == this->properties_.end() )
+    if (loc == properties_.end() )
     {
       result = false;
     }
@@ -180,8 +180,7 @@ PropertyManager::operator!=(const PropertyManager &pm)
 PropertyManager::~PropertyManager()
 {
   Guard g(lock.get());
-  // Clear all the properties.
-  delete_all_values(this->properties_);
+  properties_.clear();
 }
 
 
@@ -199,7 +198,7 @@ PropertyManager::thaw()
   Guard g(lock.get());
 
   clear_transient();
-  this->frozen_ = false;
+  frozen_ = false;
 }
 
 
@@ -208,7 +207,7 @@ PropertyManager::freeze()
 {
   Guard g(lock.get());
 
-  this->frozen_ = true;
+  frozen_ = true;
 }
 
 
@@ -218,8 +217,8 @@ PropertyManager::is_property(const std::string &name)
   Guard g(lock.get());
 
   bool ans = false;
-  map_type::iterator loc = this->properties_.find(name);
-  if (loc != this->properties_.end())
+  map_type::iterator loc = properties_.find(name);
+  if (loc != properties_.end())
     ans = true;
 
   return ans;
@@ -229,11 +228,11 @@ PropertyManager::is_property(const std::string &name)
 std::string
 PropertyManager::get_property_name(size_t index)
 {
-  if (index < this->nproperties())
+  if (index < nproperties())
   {
     Guard g(lock.get());
 
-    map_type::const_iterator pi = this->properties_.begin();
+    map_type::const_iterator pi = properties_.begin();
 
     for(size_t i=0; i<index; i++ )
       ++pi;
@@ -254,10 +253,10 @@ PropertyManager::remove_property( const std::string &name )
 {
   Guard g(lock.get());
 
-  map_type::iterator loc = this->properties_.find(name);
-  if (loc != this->properties_.end())
+  map_type::iterator loc = properties_.find(name);
+  if (loc != properties_.end())
   {
-    this->properties_.erase(name);
+    properties_.erase(name);
   }
 }
 
@@ -268,13 +267,13 @@ PropertyManager::clear_transient()
   bool found;
   do {
     found = false;
-    map_type::iterator iter = this->properties_.begin();
-    while (iter != this->properties_.end())
+    map_type::iterator iter = properties_.begin();
+    while (iter != properties_.end())
     {
-      std::pair<const std::string, PropertyBase *> p = *iter;
+      auto p = *iter;
       if (p.second->transient())
       {
-        this->properties_.erase(iter);
+        properties_.erase(iter);
         found = true;
         break;
       }
@@ -292,21 +291,18 @@ PropertyManager::io(Piostream &stream)
   bool bc = stream.backwards_compat_id();
   stream.set_backwards_compat_id(false);
 
-  const int version =
-    stream.begin_class("PropertyManager", PROPERTYMANAGER_VERSION);
+  const int version = stream.begin_class("PropertyManager", PROPERTYMANAGER_VERSION);
   if ( stream.writing() )
   {
     Guard g(lock.get());
-    unsigned int nprop = this->nproperties();
+    size_t nprop = nproperties();
     Pio(stream, nprop);
-    map_type::iterator i = this->properties_.begin(); 
-    while ( i != properties_.end() )
+    for (auto& p : properties_)
     {
-      std::string name = i->first;
+      std::string name = p.first;
       Pio(stream, name);
-      Persistent *p = i->second;
-      stream.io( p, PropertyBase::type_id );
-      ++i;
+      PersistentHandle x = p.second;
+      stream.io(x, PropertyBase::type_id);
     }
   }
   else
@@ -315,16 +311,16 @@ PropertyManager::io(Piostream &stream)
     Pio( stream, size );
     Guard g(lock.get());
 
-    std::string name;
-    Persistent *p = 0;
     for (unsigned int i=0; i<size; i++ )
     {
+      std::string name;
       Pio(stream, name );
+      PersistentHandle p;
       stream.io( p, PropertyBase::type_id );
-      this->properties_[name] = static_cast<PropertyBase *>(p);
+      properties_[name] = boost::static_pointer_cast<PropertyBase>(p);
       if (version < 2 && name == "minmax")
       {
-        this->properties_[name]->set_transient(true);
+        properties_[name]->set_transient(true);
       }
     }
   }
