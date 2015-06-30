@@ -268,7 +268,6 @@ PropertyManager::set_property(const std::string &name,  const T& obj,
     freeze();
   }
   Core::Thread::Guard g(lock.get());
-  map_type::iterator loc = properties_.find(name);
   properties_[name].reset(new Property<T>(obj, is_transient));
 }
 
