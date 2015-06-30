@@ -83,5 +83,3 @@ ENDIF(WIN32)
 TARGET_LINK_LIBRARIES(Core_Thread_Legacy
   ${Core_Thread_Legacy_Link}
 )
-
-ADD_DEPENDENCIES(Core_Thread_Legacy Boost_external)
