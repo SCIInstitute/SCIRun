@@ -38,7 +38,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/setuptdcs/example/elc_tet.mat</value>
+										<value>%SCIRUNDATADIR%/Fields/setuptdcs/elc_tet.mat</value>
 									</value>
 								</second>
 							</item>
@@ -78,7 +78,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/setuptdcs/example/cloin27_skin_surf.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/setuptdcs/colin27_skin_surf.fld</value>
 									</value>
 								</second>
 							</item>
@@ -118,7 +118,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/setuptdcs/example/cloin27_elc_surf.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/setuptdcs/colin27_elc_surf.fld</value>
 									</value>
 								</second>
 							</item>
@@ -158,7 +158,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/setuptdcs/example/elc_avr_scirun5.mat</value>
+										<value>%SCIRUNDATADIR%/Fields/setuptdcs/elc_avr_scirun5.mat</value>
 									</value>
 								</second>
 							</item>
