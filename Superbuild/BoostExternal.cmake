@@ -48,7 +48,9 @@ SET(boost_Libraries
   "date_time"
   "exception"
   "filesystem"
+  "program_options"
   "regex"
+  "serialization"
   "system"
   "thread"
   CACHE INTERNAL "Boost library name.")
