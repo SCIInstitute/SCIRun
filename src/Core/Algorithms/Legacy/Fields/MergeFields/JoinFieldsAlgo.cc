@@ -507,6 +507,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     {
       if (ofield->basis_order() == 0 && ifield->basis_order() == 0)
       {
+        ofield->resize_values();
         if (merge_elems)
         {
           for (VMesh::Elem::index_type j=0;j<num_elems;j++)
@@ -519,7 +520,6 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
         }
         else
         {
-          ofield->resize_values();
           ofield->copy_values(ifield,0,elems_offset,num_elems);
         }
       }
