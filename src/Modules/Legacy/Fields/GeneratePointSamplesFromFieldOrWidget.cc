@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,30 +33,42 @@
 ///   University of Utah
 ///@date  October 2000
 
-#include <Core/Algorithms/Fields/SampleField/GeneratePointSamplesFromField.h>
+#include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
+//#include <Core/Algorithms/Fields/SampleField/GeneratePointSamplesFromField.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Thread/CrowdMonitor.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Dataflow/Widgets/GaugeWidget.h>
 #include <Dataflow/Widgets/RingWidget.h>
 #include <Dataflow/Widgets/FrameWidget.h>
+#endif
 
-#include <Dataflow/Network/Ports/GeometryPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-#include <math.h>
-#include <set>
-#include <vector>
+ALGORITHM_PARAMETER_DEF(Fields, NumSamples);
+ALGORITHM_PARAMETER_DEF(Fields, DistributionType);
+ALGORITHM_PARAMETER_DEF(Fields, IncrementRNGSeed);
+ALGORITHM_PARAMETER_DEF(Fields, ClampToNodes);
+ALGORITHM_PARAMETER_DEF(Fields, RNGSeed);
 
+const ModuleLookupInfo GeneratePointSamplesFromFieldOrWidget::staticInfo_("GeneratePointSamplesFromFieldOrWidget", "NewField", "SCIRun");
+
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 namespace SCIRun {
 
 /// @class GeneratePointSamplesFromFieldOrWidget
 /// @brief This module generates samples from any type of input field and
-/// outputs the samples as a PointCloudField field. 
+/// outputs the samples as a PointCloudField field.
 
 class GeneratePointSamplesFromFieldOrWidget : public Module
 {
@@ -168,9 +180,9 @@ GeneratePointSamplesFromFieldOrWidget::~GeneratePointSamplesFromFieldOrWidget()
 void
 GeneratePointSamplesFromFieldOrWidget::widget_moved(bool last, BaseWidget*)
 {
-  if (last) 
+  if (last)
   {
-    if (rake_) 
+    if (rake_)
     {
       rake_->GetEndpoints(endpoint0_, endpoint1_);
       double ratio = rake_->GetRatio();
@@ -188,13 +200,13 @@ GeneratePointSamplesFromFieldOrWidget::widget_moved(bool last, BaseWidget*)
     }
 
     widget_change_ = true;
-    
+
     gui_autoexec_.reset();
     if (gui_autoexec_.get())
       want_to_execute();
 
-  } 
-  else 
+  }
+  else
   { // rescaling the widget forces a "last=false" widget_moved event
     if (rake_)
       gui_widgetscale_.set(rake_->GetScale());
@@ -210,21 +222,21 @@ GeneratePointSamplesFromFieldOrWidget::initialize_rake(FieldHandle ifield)
   const BBox ibox = ifield->vmesh()->get_bounding_box();
   const Point &min = ibox.min();
   const Point &max = ibox.max();
-  
+
   const Point center(((max.asVector() + min.asVector()) * 0.5).asPoint());
   const double length = (max.asVector() - min.asVector()).length();
 
   // This size seems empirically good.
   const double quarterl2norm = length / 4.0;
   gui_widgetscale_.set( quarterl2norm * .06 );
-      
+
   gui_endpoint0x_.set( center.x() - quarterl2norm     );
   gui_endpoint0y_.set( center.y() - quarterl2norm / 3 );
   gui_endpoint0z_.set( center.z() - quarterl2norm / 4 );
   gui_endpoint1x_.set( center.x() + quarterl2norm     );
   gui_endpoint1y_.set( center.y() + quarterl2norm / 2 );
   gui_endpoint1z_.set( center.z() + quarterl2norm / 3 );
-  
+
   gui_endpoints_.set( 1 );
 }
 
@@ -240,17 +252,17 @@ GeneratePointSamplesFromFieldOrWidget::execute_rake(FieldHandle ifield)
   gui_force_rake_reset_.set(0);
   bool resize = rake_bbox_.valid() && !ibox.is_similar_to(rake_bbox_);
 
-  if (!rake_) 
+  if (!rake_)
   {
     if(!gui_endpoints_.get()) initialize_rake(ifield);
 
     endpoint0_ = Point(gui_endpoint0x_.get(),
                        gui_endpoint0y_.get(),
                        gui_endpoint0z_.get());
-    
+
     endpoint1_ = Point(gui_endpoint1x_.get(),
                        gui_endpoint1y_.get(),
-                       gui_endpoint1z_.get()); 
+                       gui_endpoint1z_.get());
 
     rake_ = new GaugeWidget(this, &gui_widget_lock_,
                             gui_widgetscale_.get(), true);
@@ -271,11 +283,11 @@ GeneratePointSamplesFromFieldOrWidget::execute_rake(FieldHandle ifield)
 
     endpoint0_ = Point(gui_endpoint0x_.get(),
                        gui_endpoint0y_.get(),
-                       gui_endpoint0z_.get()); 
-    
+                       gui_endpoint0z_.get());
+
     endpoint1_ = Point(gui_endpoint1x_.get(),
                        gui_endpoint1y_.get(),
-                       gui_endpoint1z_.get()); 
+                       gui_endpoint1z_.get());
 
     rake_->SetScale(gui_widgetscale_.get()); // do first, widget_moved resets
     rake_->SetEndpoints(endpoint0_, endpoint1_);
@@ -289,13 +301,13 @@ GeneratePointSamplesFromFieldOrWidget::execute_rake(FieldHandle ifield)
   }
 
 
-  if (wtype_ != 1) 
+  if (wtype_ != 1)
   {
-    if (widgetid_)  
-    { 
-      ogport->delObj(widgetid_); 
+    if (widgetid_)
+    {
+      ogport->delObj(widgetid_);
     }
-    
+
     GeomHandle widget = rake_->GetWidget();
     widgetid_ = ogport->addObj(widget,
 				"GeneratePointSamplesFromFieldOrWidget Rake",
@@ -306,13 +318,13 @@ GeneratePointSamplesFromFieldOrWidget::execute_rake(FieldHandle ifield)
 
   Point min, max;
   rake_->GetEndpoints(min, max);
-  
+
   Vector dir(max-min);
 
   unsigned int num_seeds = Max(0, gui_widget_seeds_.get());
   remark("num_seeds = " + to_string(num_seeds));
 
-  if (num_seeds > 1) 
+  if (num_seeds > 1)
   {
     const double ratio = 1.0 / (static_cast<double>(num_seeds) - 1.0);
 
@@ -339,7 +351,7 @@ GeneratePointSamplesFromFieldOrWidget::execute_rake(FieldHandle ifield)
 
   field->resize_values();
   field->set_values(values);
-  
+
   return seeds;
 }
 
@@ -355,13 +367,13 @@ GeneratePointSamplesFromFieldOrWidget::execute_ring(FieldHandle ifield)
   gui_force_rake_reset_.set(0);
   bool resize = ring_bbox_.valid() && !ibox.is_similar_to(ring_bbox_);
 
-  if (!ring_) 
+  if (!ring_)
   {
     ring_ = new RingWidget(this, &gui_widget_lock_,
                            gui_widgetscale_.get(),false);
     ring_->Connect(ogport.get_rep());
 
-    if (gui_ringstate_.get() != "") 
+    if (gui_ringstate_.get() != "")
     {
       ring_->SetStateString(gui_ringstate_.get());
 
@@ -373,14 +385,14 @@ GeneratePointSamplesFromFieldOrWidget::execute_ring(FieldHandle ifield)
     }
   }
 
-  if (reset || resize) 
+  if (reset || resize)
   {
     Point c, nc;
     Vector n, nn;
     double r, nr;
     double s, ns;
 
-    if (reset) 
+    if (reset)
     {
       const Vector xaxis(0.0, 0.0, 0.2);
       const Vector yaxis(0.2, 0.0, 0.0);
@@ -392,14 +404,14 @@ GeneratePointSamplesFromFieldOrWidget::execute_ring(FieldHandle ifield)
       ring_bbox_.reset();
       ring_bbox_.extend(Point(-1.0, -1.0, -1.0));
       ring_bbox_.extend(Point(1.0, 1.0, 1.0));
-    } 
-    else 
+    }
+    else
     {
       // Get the old coordinates.
       ring_->GetPosition(c, n, r);
       s = ring_->GetScale();
     }
-    
+
     // Build a transform.
     Transform trans;
     trans.load_identity();
@@ -408,7 +420,7 @@ GeneratePointSamplesFromFieldOrWidget::execute_ring(FieldHandle ifield)
     trans.pre_translate(-ring_bbox_.min().asVector());
     trans.pre_scale(scale);
     trans.pre_translate(ibox.min().asVector());
-    
+
     // Do the transform.
     trans.project(c, nc);
     nn = n; //trans.project_normal(n, nn);
@@ -426,13 +438,13 @@ GeneratePointSamplesFromFieldOrWidget::execute_ring(FieldHandle ifield)
     ring_bbox_ = ibox;
   }
 
-  if (wtype_ != 2) 
+  if (wtype_ != 2)
   {
-    if (widgetid_)  
-    { 
-      ogport->delObj(widgetid_); 
+    if (widgetid_)
+    {
+      ogport->delObj(widgetid_);
     }
-    
+
     GeomHandle widget = ring_->GetWidget();
     widgetid_ = ogport->addObj(widget,
                                 "GeneratePointSamplesFromFieldOrWidget Ring",
@@ -440,26 +452,26 @@ GeneratePointSamplesFromFieldOrWidget::execute_ring(FieldHandle ifield)
     ogport->flushViews();
     wtype_ = 2;
   }
-  
+
   unsigned int num_seeds = Max(0, gui_widget_seeds_.get());
   remark("num_seeds = " + to_string(num_seeds));
 
   FieldInformation fi("PointCloudMesh",0,"double");
   FieldHandle seeds = CreateField(fi);
-  
+
   VMesh* mesh = seeds->vmesh();
   VField* field = seeds->vfield();
 
   Point center;
   double r;
-  
+
   Vector normal, xaxis, yaxis;
   ring_->GetPosition(center, normal, r);
   ring_->GetPlane(xaxis, yaxis);
-  
+
   std::vector<double> values(num_seeds);
 
-  for (unsigned int i=0; i<num_seeds; ++i) 
+  for (unsigned int i=0; i<num_seeds; ++i)
   {
     const double frac = 2.0 * M_PI * i / num_seeds;
     mesh->add_point(center + xaxis * r * cos(frac) + yaxis * r * sin(frac));
@@ -485,27 +497,27 @@ GeneratePointSamplesFromFieldOrWidget::execute_frame(FieldHandle ifield)
   gui_force_rake_reset_.set(0);
   bool resize = frame_bbox_.valid() && !ibox.is_similar_to(frame_bbox_);
 
-  if (!frame_) 
+  if (!frame_)
   {
     frame_ = new FrameWidget(this,&gui_widget_lock_,gui_widgetscale_.get());
     frame_->Connect(ogport.get_rep());
 
-    if (gui_framestate_.get() != "") 
+    if (gui_framestate_.get() != "")
     {
       frame_->SetStateString(gui_framestate_.get());
-    } 
-    else 
+    }
+    else
     {
       reset = true;
     }
   }
 
-  if (reset || resize) 
+  if (reset || resize)
   {
     Point c, nc, r, nr, d, nd;
     double s, ns;
 
-    if (reset) 
+    if (reset)
     {
       c = Point(0.5, 0.0, 0.0);
       r = c + Vector(0.0, 0.0, 0.2);
@@ -515,14 +527,14 @@ GeneratePointSamplesFromFieldOrWidget::execute_frame(FieldHandle ifield)
       frame_bbox_.reset();
       frame_bbox_.extend(Point(-1.0, -1.0, -1.0));
       frame_bbox_.extend(Point(1.0, 1.0, 1.0));
-    } 
-    else 
+    }
+    else
     {
       // Get the old coordinates.
       frame_->GetPosition(c, r, d);
       s = frame_->GetScale();
     }
-    
+
     // Build a transform.
     Transform trans;
     trans.load_identity();
@@ -531,7 +543,7 @@ GeneratePointSamplesFromFieldOrWidget::execute_frame(FieldHandle ifield)
     trans.pre_translate(-frame_bbox_.min().asVector());
     trans.pre_scale(scale);
     trans.pre_translate(ibox.min().asVector());
-    
+
     // Do the transform.
     trans.project(c, nc);
     trans.project(r, nr);
@@ -548,11 +560,11 @@ GeneratePointSamplesFromFieldOrWidget::execute_frame(FieldHandle ifield)
     widget_change_ = false;
   }
 
-  if (wtype_ != 3) 
+  if (wtype_ != 3)
   {
-    if (widgetid_) 
-    { 
-      ogport->delObj(widgetid_); 
+    if (widgetid_)
+    {
+      ogport->delObj(widgetid_);
     }
     GeomHandle widget = frame_->GetWidget();
     widgetid_ = ogport->addObj(widget,
@@ -567,7 +579,7 @@ GeneratePointSamplesFromFieldOrWidget::execute_frame(FieldHandle ifield)
 
   FieldInformation fi("PointCloudMesh",0,"double");
   FieldHandle seeds = CreateField(fi);
-  
+
   VMesh* mesh = seeds->vmesh();
   VField* field = seeds->vfield();
 
@@ -585,10 +597,10 @@ GeneratePointSamplesFromFieldOrWidget::execute_frame(FieldHandle ifield)
   edge[1] = corner[2] - corner[1];
   edge[2] = corner[3] - corner[2];
   edge[3] = corner[0] - corner[3];
-  
+
   std::vector<double> values(num_seeds);
 
-  for (unsigned int i=0; i<num_seeds; ++i) 
+  for (unsigned int i=0; i<num_seeds; ++i)
   {
     const double frac =  4.0 * static_cast<double>( i )/ static_cast<double>( num_seeds );
     const int ei = (int) frac;
@@ -670,7 +682,7 @@ GeneratePointSamplesFromFieldOrWidget::execute()
       {
         field_out_handle = execute_frame(field_in_handle);
       }
-      
+
       send_output_handle("Samples", field_out_handle);
     }
   }
@@ -711,4 +723,4 @@ GeneratePointSamplesFromFieldOrWidget::post_read()
 }
 
 } // End namespace SCIRun
-
+#endif
