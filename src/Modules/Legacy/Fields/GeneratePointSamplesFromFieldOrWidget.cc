@@ -42,7 +42,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Dataflow/Widgets/GaugeWidget.h>
 #include <Dataflow/Widgets/RingWidget.h>
 #include <Dataflow/Widgets/FrameWidget.h>
@@ -63,17 +63,38 @@ ALGORITHM_PARAMETER_DEF(Fields, RNGSeed);
 
 const ModuleLookupInfo GeneratePointSamplesFromFieldOrWidget::staticInfo_("GeneratePointSamplesFromFieldOrWidget", "NewField", "SCIRun");
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
-namespace SCIRun {
-
 /// @class GeneratePointSamplesFromFieldOrWidget
 /// @brief This module generates samples from any type of input field and
 /// outputs the samples as a PointCloudField field.
 
-class GeneratePointSamplesFromFieldOrWidget : public Module
+GeneratePointSamplesFromFieldOrWidget::GeneratePointSamplesFromFieldOrWidget()
+  : Module(staticInfo_)//, impl_(new GeneratePointSamplesFromFieldImpl)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Sampling_Widget);
+  INITIALIZE_PORT(Samples);
+}
+
+void GeneratePointSamplesFromFieldOrWidget::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(Parameters::NumSamples, 10);
+  state->setValue(Parameters::DistributionType, std::string("uniNot"));
+  state->setValue(Parameters::ClampToNodes, false);
+  state->setValue(Parameters::IncrementRNGSeed, true);
+  state->setValue(Parameters::RNGSeed, 1);
+}
+
+#if 0
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
+
+class GeneratePointSamplesFromFieldOrWidgetImpl
 {
   public:
-    GeneratePointSamplesFromFieldOrWidget(GuiContext* ctx);
+    //explicit GeneratePointSamplesFromFieldOrWidgetImpl(GeneratePointSamplesFromFieldOrWidget* module);
+    #if 0
     virtual ~GeneratePointSamplesFromFieldOrWidget();
     virtual void execute();
     virtual void widget_moved(bool last, BaseWidget*);
@@ -125,13 +146,13 @@ class GeneratePointSamplesFromFieldOrWidget : public Module
     FieldHandle execute_rake(FieldHandle ifield);
     FieldHandle execute_ring(FieldHandle ifield);
     FieldHandle execute_frame(FieldHandle ifield);
+    #endif
+
     FieldHandle execute_random(FieldHandle ifield);
 };
+#endif
 
-
-DECLARE_MAKER(GeneratePointSamplesFromFieldOrWidget)
-
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 GeneratePointSamplesFromFieldOrWidget::GeneratePointSamplesFromFieldOrWidget(GuiContext* ctx)
   : Module("GeneratePointSamplesFromFieldOrWidget", ctx, Filter, "NewField", "SCIRun"),
     gui_wtype_(get_ctx()->subVar("wtype"), "rake"),
@@ -616,10 +637,15 @@ GeneratePointSamplesFromFieldOrWidget::execute_frame(FieldHandle ifield)
   return seeds;
 }
 
+} // End namespace SCIRun
+#endif
+
 
 FieldHandle
 GeneratePointSamplesFromFieldOrWidget::execute_random(FieldHandle ifield)
 {
+  throw "todo";
+  #if 0
   GeometryOPortHandle ogport;
   get_oport_handle("Sampling Widget",ogport);
 
@@ -644,15 +670,15 @@ GeneratePointSamplesFromFieldOrWidget::execute_random(FieldHandle ifield)
   }
 
  return seeds;
+ #endif
 }
 
 void
 GeneratePointSamplesFromFieldOrWidget::execute()
 {
-  /// Get the input field handle from the port.
-  FieldHandle field_in_handle;
-  get_input_handle("Field to Sample", field_in_handle, true);
+  auto field_in_handle = getRequiredInput(InputField);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // See if the tab has changed if so execute.
   if( gui_whichTab_.changed( true ) ) inputs_changed_ = true;
 
@@ -686,41 +712,16 @@ GeneratePointSamplesFromFieldOrWidget::execute()
       send_output_handle("Samples", field_out_handle);
     }
   }
-  else if (gui_whichTab_.get() == "Random")
+  else
+  if (gui_whichTab_.get() == "Random")
+#endif
+  //only Random method for now
   {
-    if( inputs_changed_ || !oport_cached("Samples") ||
-        gui_random_seeds_.changed() || gui_randdist_.changed() ||
-        gui_rngSeed_.changed()  || gui_rngInc_.changed()   ||
-        gui_clamp_.changed() )
+    if (needToExecute())
     {
       update_state(Executing);
-      FieldHandle field_out_handle = execute_random(field_in_handle);
-      send_output_handle("Samples", field_out_handle);
+      auto field_out_handle = execute_random(field_in_handle);
+      sendOutput(Samples, field_out_handle);
     }
   }
 }
-
-void
-GeneratePointSamplesFromFieldOrWidget::post_read()
-{
-  char names[2][2][30] = { {"maxseeds", "widget_seeds"},
-			   {"numseeds", "random_seeds" } };
-
-  // Get the module name
-  const std::string modName = get_ctx()->getfullname() + "-";
-
-  std::string val;
-
-  for( unsigned int i=0; i<2; i++ )
-  {
-    // Get the current values for the old names
-    if( TCLInterface::get(modName+names[i][0], val, get_ctx()) )
-    {
-      // Set the current values for the new names
-      TCLInterface::set(modName+names[i][1], val, get_ctx());
-    }
-  }
-}
-
-} // End namespace SCIRun
-#endif
