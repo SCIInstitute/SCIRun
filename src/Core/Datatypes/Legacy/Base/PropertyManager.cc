@@ -291,11 +291,12 @@ PropertyManager::io(Piostream &stream)
   bool bc = stream.backwards_compat_id();
   stream.set_backwards_compat_id(false);
 
+
   const int version = stream.begin_class("PropertyManager", PROPERTYMANAGER_VERSION);
   if ( stream.writing() )
   {
     Guard g(lock.get());
-    size_t nprop = nproperties();
+    PropertyManagerSize nprop = nproperties();
     Pio(stream, nprop);
     for (auto& p : properties_)
     {
@@ -307,7 +308,7 @@ PropertyManager::io(Piostream &stream)
   }
   else
   {
-    unsigned int size;
+    PropertyManagerSize size;
     Pio( stream, size );
     Guard g(lock.get());
 

@@ -222,7 +222,10 @@ public:
   bool is_frozen() const { return frozen_; }
 
   void remove_property( const std::string & );
-  size_t nproperties() const { return properties_.size(); }
+
+  //NOTE: do NOT change this type to size_t to avoid casting below! it will break reading all old matrix/field types.
+  typedef unsigned int PropertyManagerSize;
+  PropertyManagerSize nproperties() const { return static_cast<PropertyManagerSize>(properties_.size()); }
   const std::map<std::string, PropertyBaseHandle>& properties() const { return properties_; }
 
   void    io(Piostream &stream);
