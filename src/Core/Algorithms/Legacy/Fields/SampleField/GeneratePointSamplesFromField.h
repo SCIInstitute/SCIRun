@@ -50,7 +50,9 @@ class SCISHARE GeneratePointSamplesFromFieldAlgo : public AlgorithmBase
 {
   public:
     GeneratePointSamplesFromFieldAlgo();
-    bool run(FieldHandle input, FieldHandle& seeds);
+    bool runImpl(FieldHandle input, FieldHandle& seeds) const;
+    static const AlgorithmOutputName Samples;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 };
 }
 }
