@@ -27,12 +27,12 @@
 */
 
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldOrWidgetDialog.h>
-//#include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
+#include <Core/Algorithms/Legacy/Fields/SampleField/GeneratePointSamplesFromField.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 GeneratePointSamplesFromFieldOrWidgetDialog::GeneratePointSamplesFromFieldOrWidgetDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -44,6 +44,19 @@ GeneratePointSamplesFromFieldOrWidgetDialog::GeneratePointSamplesFromFieldOrWidg
 
   WidgetStyleMixin::tabStyle(tabWidget);
 
+  addSpinBoxManager(numSamplesSpinBox_, Parameters::NumSamples);
+  addSpinBoxManager(rngSeedValueSpinBox_, Parameters::RNGSeed);
+  addCheckBoxManager(incrementSeedCheckBox_, Parameters::IncrementRNGSeed);
+  addCheckBoxManager(clampToNodesCheckBox_, Parameters::ClampToNodes);
+
+  GuiStringTranslationMap distributionNames;
+  //"impscat|impuni|uniuni|uniscat"
+  distributionNames.insert(StringPair("Unweighted--Uniform", "uniuni"));
+  distributionNames.insert(StringPair("Unweighted--Scattered", "uniscat"));
+  distributionNames.insert(StringPair("Importance--Uniform", "impuni"));
+  distributionNames.insert(StringPair("Importance--Scattered", "impscat"));
+  addComboBoxManager(distributionComboBox_, Parameters::DistributionType, distributionNames);
+
   //addDoubleSpinBoxManager(seedSizeDoubleSpinBox_, Parameters::ProbeScale);
-  //addSpinBoxManager(numberOfSeedsSpinBox_, Parameters::NumSeeds);
+  //(numberOfSeedsSpinBox_, Parameters::NumSeeds);
 }

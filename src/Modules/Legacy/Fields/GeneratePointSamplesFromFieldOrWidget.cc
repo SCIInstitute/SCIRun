@@ -72,11 +72,11 @@ GeneratePointSamplesFromFieldOrWidget::GeneratePointSamplesFromFieldOrWidget()
 void GeneratePointSamplesFromFieldOrWidget::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Parameters::NumSamples, 10);
-  state->setValue(Parameters::DistributionType, std::string("uniNot"));
-  state->setValue(Parameters::ClampToNodes, false);
+  setStateIntFromAlgo(Parameters::NumSamples);
+  setStateStringFromAlgoOption(Parameters::DistributionType);
+  setStateBoolFromAlgo(Parameters::ClampToNodes);
   state->setValue(Parameters::IncrementRNGSeed, true);
-  state->setValue(Parameters::RNGSeed, 1);
+  setStateIntFromAlgo(Parameters::RNGSeed);
 }
 
 #if 0
