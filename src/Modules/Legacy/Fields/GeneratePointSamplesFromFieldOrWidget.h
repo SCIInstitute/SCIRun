@@ -52,7 +52,7 @@ namespace SCIRun {
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
-        FieldHandle execute_random(FieldHandle ifield);
+        void execute_random(FieldHandle ifield);
 
         //boost::shared_ptr<class GeneratePointSamplesFromFieldOrWidgetImpl> impl_;
       };

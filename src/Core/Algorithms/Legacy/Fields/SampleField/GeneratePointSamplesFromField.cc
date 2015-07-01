@@ -37,6 +37,12 @@
 
 #include <math.h>
 
+ALGORITHM_PARAMETER_DEF(Fields, NumSamples);
+ALGORITHM_PARAMETER_DEF(Fields, DistributionType);
+ALGORITHM_PARAMETER_DEF(Fields, IncrementRNGSeed);
+ALGORITHM_PARAMETER_DEF(Fields, ClampToNodes);
+ALGORITHM_PARAMETER_DEF(Fields, RNGSeed);
+
 GeneratePointSamplesFromFieldAlgo()
 {
   add_int("num_seed_points",100);

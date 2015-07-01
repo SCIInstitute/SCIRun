@@ -55,12 +55,6 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-ALGORITHM_PARAMETER_DEF(Fields, NumSamples);
-ALGORITHM_PARAMETER_DEF(Fields, DistributionType);
-ALGORITHM_PARAMETER_DEF(Fields, IncrementRNGSeed);
-ALGORITHM_PARAMETER_DEF(Fields, ClampToNodes);
-ALGORITHM_PARAMETER_DEF(Fields, RNGSeed);
-
 const ModuleLookupInfo GeneratePointSamplesFromFieldOrWidget::staticInfo_("GeneratePointSamplesFromFieldOrWidget", "NewField", "SCIRun");
 
 /// @class GeneratePointSamplesFromFieldOrWidget
@@ -641,8 +635,7 @@ GeneratePointSamplesFromFieldOrWidget::execute_frame(FieldHandle ifield)
 #endif
 
 
-FieldHandle
-GeneratePointSamplesFromFieldOrWidget::execute_random(FieldHandle ifield)
+void GeneratePointSamplesFromFieldOrWidget::execute_random(FieldHandle ifield)
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   GeometryOPortHandle ogport;
@@ -651,19 +644,22 @@ GeneratePointSamplesFromFieldOrWidget::execute_random(FieldHandle ifield)
 
 //  SCIRunAlgo::GeneratePointSamplesFromFieldAlgo algo;
 //  algo.set_progress_reporter(this);
-  setAlgoIntFromState(NumSamples);
-  setAlgoIntFromState(RNGSeed);
-  setAlgoOptionFromState(DistributionType);
-  setAlgoBoolFromState(ClampToNodes);
+  setAlgoIntFromState(Parameters::NumSamples);
+  setAlgoIntFromState(Parameters::RNGSeed);
+  setAlgoOptionFromState(Parameters::DistributionType);
+  setAlgoBoolFromState(Parameters::ClampToNodes);
 //  algo.set_int("num_seed_points",gui_random_seeds_.get());
   //algo.set_int("rng_seed",gui_rngSeed_.get());
 //  algo.set_option("seed_method",gui_randdist_.get());
 //  algo.set_bool("clamp",gui_clamp_.get());
 
-  FieldHandle seeds;
-  if(!(algo.run(ifield,seeds))) return 0;
+  auto output = algo().run_generic(withInputData((InputField, ifield)));
 
-  if (gui_rngInc_.get()) gui_rngSeed_.set(gui_rngSeed_.get()+1);
+  auto state = get_state();
+  if (state->getValue(Parameters::IncrementRNGSeed).toBool())
+  {
+    state->setValue(Parameters::RNGSeed, state->getValue(Parameters::RNGSeed).toInt() + 1);
+  }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (widgetid_)
@@ -675,7 +671,7 @@ GeneratePointSamplesFromFieldOrWidget::execute_random(FieldHandle ifield)
   }
 #endif
 
-  return seeds;
+  sendOutputFromAlgorithm(Samples, output);
 }
 
 void
@@ -725,8 +721,7 @@ GeneratePointSamplesFromFieldOrWidget::execute()
     if (needToExecute())
     {
       update_state(Executing);
-      auto field_out_handle = execute_random(field_in_handle);
-      sendOutput(Samples, field_out_handle);
+      execute_random(field_in_handle);
     }
   }
 }
