@@ -249,7 +249,7 @@ GeneratePointSamplesFromFieldAlgo::runImpl(FieldHandle input, FieldHandle& outpu
 
 AlgorithmOutput GeneratePointSamplesFromFieldAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto inputField = input.get<Field>(Variables::InputFields);
+  auto inputField = input.get<Field>(Variables::InputField);
 
   FieldHandle outputField;
   if (!runImpl(inputField, outputField))
