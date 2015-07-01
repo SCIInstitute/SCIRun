@@ -55,6 +55,7 @@ public:
 public Q_SLOTS:
   void updateModuleErrorDialogOption(int state);
   void updateSaveBeforeExecuteOption(int state);
+  void updateAutoNotesState(int state);
 
 private:
   NetworkEditor* networkEditor_;

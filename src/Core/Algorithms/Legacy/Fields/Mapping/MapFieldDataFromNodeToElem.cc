@@ -64,7 +64,9 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
   VField *ifield = input->vfield();
   VField *ofield = output->vfield();
 
-  /// Make sure that the data vector has the proper length
+  /// Make sure that the data vector has the same length
+  ofield->resize_fdata();
+
   VMesh* mesh = input->vmesh();
 
   VMesh::Elem::array_type elems;
@@ -93,7 +95,6 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
         val += tval;
       }
 
-      ofield->resize_fdata();
       val = static_cast<DATA>(val * static_cast<double>((1.0 / static_cast<double>(nsize))));
       ofield->set_value(val, *it);
       ++it;
@@ -209,7 +210,9 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
         algo->update_progress_max(c, sz);
       }
     }
-  } else return false;
+  }
+  else
+    return false;
 
   return true;
 }

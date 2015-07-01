@@ -240,8 +240,6 @@ namespace SCIRun {
             // Adds an IBO to the given entityID.
             void addIBOToEntity(uint64_t entityID, const std::string& iboName);
             
-            void reorderIBO(Core::Datatypes::GeometryObject::SpireSubPass& pass);
-            
             // Adds a shader to the given entityID. Represents different materials
             // associated with different passes.
             void addShaderToEntity(uint64_t entityID, const std::string& shaderName);

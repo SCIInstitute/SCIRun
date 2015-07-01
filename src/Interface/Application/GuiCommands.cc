@@ -144,7 +144,7 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 bool FileOpenCommand::execute()
 {
   if (!filename_.empty())
-    GuiLogger::Instance().log("Attempting load of " + QString::fromStdString(filename_));
+    GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename_));
 
   try
   {
@@ -179,31 +179,31 @@ bool FileOpenCommand::execute()
       QPointF center = findCenterOfNetworkFile(*openedFile_);
       networkEditor_->centerOn(center);
 
-      GuiLogger::Instance().log("File load done.");
+      GuiLogger::Instance().logInfo("File load done.");
       return true;
     }
     else
     {
       if (!filename_.empty())
       {
-        GuiLogger::Instance().log("File load failed: null xml returned.");
+        GuiLogger::Instance().logErrorStd("File load failed (" + filename_ + "): null xml returned.");
       }
     }
   }
   catch (ExceptionBase& e)
   {
     if (!filename_.empty())
-      GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(e.what()));
+      GuiLogger::Instance().logError("File load failed: exception in load_xml, " + QString(e.what()));
   }
   catch (std::exception& ex)
   {
     if (!filename_.empty())
-      GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(ex.what()));
+      GuiLogger::Instance().logError("File load failed: exception in load_xml, " + QString(ex.what()));
   }
   catch (...)
   {
     if (!filename_.empty())
-      GuiLogger::Instance().log("File load failed: Unknown exception in load_xml.");
+      GuiLogger::Instance().logError("File load failed: Unknown exception in load_xml.");
   }
   return false;
 }

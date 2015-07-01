@@ -147,12 +147,9 @@ Bundle::io(Piostream& stream)
       }
       else if (type=="string")
       {
-        std::cerr << "error from Bundle Pio: can't read string objects directly yet" << std::endl;
-        #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
         StringHandle handle;
-        Pio(stream,handle);
+        Pio2(stream,handle);
         bundle_[name] = handle;
-        #endif
       }
       else if (type=="nrrd")
       {
@@ -231,7 +228,6 @@ Bundle::io(Piostream& stream)
           continue;
         }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
         auto stringhandle = getString(name);
         if (stringhandle)
         {
@@ -239,11 +235,12 @@ Bundle::io(Piostream& stream)
           stream.io(type);
           stream.end_cheap_delim();
           stream.begin_cheap_delim();
-          Pio(stream,stringhandle);
+          Pio2(stream, stringhandle);
           stream.end_cheap_delim();
           continue;
         }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
         LockingHandle<NrrdData> nrrdhandle =
                                  dynamic_cast<NrrdData*>(bundle_[p].get_rep());
         if (nrrdhandle.get_rep())

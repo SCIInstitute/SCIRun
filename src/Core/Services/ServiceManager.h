@@ -39,36 +39,34 @@
 #include <Core/Services/Service.h>
 #include <Core/Services/ServiceFrame.h>
 #include <Core/Services/ServiceLog.h>
-#include <Core/Thread/Thread.h>
-#include <Core/Thread/Runnable.h>
 #include <Core/Thread/Mutex.h>
-#include <Core/Containers/LockingHandle.h>
 
 #include <Core/Services/share.h>
 namespace SCIRun {
 
-class SCISHARE ServiceManager: public Runnable, public ServiceBase {
+class SCISHARE ServiceManager: /*public Runnable,*/ public ServiceBase {
 public:
 
   // Constructor/destructor
-  ServiceManager(ServiceDBHandle db, IComAddress address,
-                 ServiceLogHandle log = 0);
+  ServiceManager(ServiceDBHandle db, IComAddressHandle address,
+                 ServiceLogHandle log = nullptr);
   virtual ~ServiceManager();
 
   // Run will be called by the thread environment as the entry point
   // of a new thread.
   void run();
+  void operator()() { run(); }
     
 private:
 
   // Database with all the services created by the users
   ServiceLogHandle  log_;
   ServiceDBHandle   db_;
-  IComAddress       address_;
+  IComAddressHandle       address_;
 };
 
 
-typedef LockingHandle<ServiceManager> ServiceManagerHandle;
+typedef boost::shared_ptr<ServiceManager> ServiceManagerHandle;
 
 }
 

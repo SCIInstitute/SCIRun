@@ -207,7 +207,7 @@ Persistent::io(Piostream&)
 }
 
 void
-Piostream::io(Persistent*& data, const PersistentTypeID& pid)
+Piostream::io(PersistentHandle& data, const PersistentTypeID& pid)
 {
 #if DEBUG
 //  std::cerr << "looking for pid: "<<pid.type.c_str()<<" "<<pid.parent.c_str()<<std::endl;
@@ -276,7 +276,7 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
       }
       
       // Make it.
-      data = (*maker)();
+      data.reset((*maker)());
 
       // Read it in.
       data->io(*this);
@@ -288,11 +288,10 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
         begin_cheap_delim();
         int hd;
         int p_id;
-        delete data;
-        data = 0;
+        data.reset();
         emit_pointer(hd, p_id);
         if (hd) peek_class();
-        data = (*bc_maker1)();
+        data.reset((*bc_maker1)());
         // Read it in.
         data->io(*this);
         if (err && bc_maker2) 
@@ -303,11 +302,10 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
           begin_cheap_delim();
           int hd;
           int p_id;
-          delete data;
-          data = 0;
+          data.reset();
           emit_pointer(hd, p_id);
           if (hd) peek_class();
-          data = (*bc_maker2)();
+          data.reset((*bc_maker2)());
           // Read it in.
           data->io(*this);
         }
@@ -316,7 +314,7 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
       // Insert this pointer in the database.
       if (!inpointers)
       {
-        inpointers = new MapIntPersistent;
+        inpointers.reset(new MapIntPersistent);
       }
       (*inpointers)[pointer_id] = data;
     }
@@ -325,7 +323,7 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
       // Look it up.
       if (pointer_id == 0)
       {
-        data = 0;
+        data.reset();
       }
       else 
       {
@@ -356,7 +354,7 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
         pointer_id = 0;
     }
     
-    if (data == 0)
+    if (!data)
     {
       have_data = 0;
       pointer_id = 0;
@@ -374,7 +372,7 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
       pointer_id = current_pointer_id++;
       if (!outpointers)
       {
-        outpointers = new MapPersistentInt;
+        outpointers.reset(new MapPersistentInt);
       }
       (*outpointers)[data] = pointer_id;
     }
