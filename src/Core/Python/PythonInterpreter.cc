@@ -213,7 +213,7 @@ PythonInterpreter::PythonInterpreter() :
 	this->private_->terminal_running_ = false;
 	this->private_->waiting_for_input_ = false;
 	//this->private_->action_context_.reset( new PythonActionContext );
-  initialize_eventhandler();
+//  initialize_eventhandler();
 }
 
 PythonInterpreter::~PythonInterpreter()
@@ -226,7 +226,7 @@ void PythonInterpreter::initialize_eventhandler()
 {
 	using namespace boost::python;
 
-	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
+//	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 
 	// Register C++ to Python type converters
 	//RegisterToPythonConverters();
@@ -238,7 +238,7 @@ void PythonInterpreter::initialize_eventhandler()
   {
     PyImport_AppendInittab( ( *it ).first.c_str(), ( *it ).second );
   }
-
+std::wcerr << "initialize_eventhandler: program name=" << this->private_->program_name_ << std::endl;
   Py_SetProgramName( const_cast< wchar_t* >( this->private_->program_name_ ) );
   boost::filesystem::path lib_path( this->private_->program_name_ );
   boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH;
@@ -257,6 +257,7 @@ void PythonInterpreter::initialize_eventhandler()
   << plat_lib_path.wstring() << PATH_SEP
   << dynload_lib_path.wstring() << PATH_SEP
   << site_lib_path.wstring();
+std::wcerr << lib_paths.str() << L"\n";
   Py_SetPath( lib_paths.str().c_str() );
 #elif defined (_WIN32)
   lib_paths << top_lib_path.wstring() << PATH_SEP
@@ -315,23 +316,28 @@ void PythonInterpreter::initialize_eventhandler()
 	// Remove intermediate python variables
 	PyRun_SimpleString( "del (interpreter, __internal_compiler, __term_io, __term_err)\n" );
 
-	this->private_->thread_condition_variable_.notify_one();
+	//this->private_->thread_condition_variable_.notify_one();
 
   this->private_->initialized_ = true;
 }
 
-//void PythonInterpreter::initialize( wchar_t* program_name, const module_list_type& init_list )
-//{
-//	std::cout << ( "Initializing Python ..." ) << std::endl;
-//	this->private_->program_name_ = program_name;
-//	this->private_->modules_ = init_list;
-//
-//	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
-//	//this->start_eventhandler();
-//	this->private_->thread_condition_variable_.wait( lock );
-//	this->private_->initialized_ = true;
-//	std::cout << ( "Python initialized." ) << std::endl;
-//}
+void PythonInterpreter::initialize( const wchar_t* program_name, const module_list_type& init_list )
+{
+std::wcerr << "initialize: program name=" << program_name << std::endl;
+  std::cerr << "Initializing Python ..." << std::endl;
+  this->private_->program_name_ = program_name;
+std::wcerr << "initialize program name=" << this->private_->program_name_ << std::endl;
+  this->private_->modules_ = init_list;
+
+//  PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
+//  this->start_eventhandler();
+
+  initialize_eventhandler();
+
+  //this->private_->thread_condition_variable_.wait( lock );
+  this->private_->initialized_ = true;
+  std::cerr << "Python initialized." << std::endl;
+}
 
 void PythonInterpreter::print_banner()
 {

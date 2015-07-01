@@ -72,7 +72,11 @@ private:
 	void initialize_eventhandler();
 
 public:
-	// PRINT_BANNER:
+  // INITIALIZE:
+  /// Initialize the python interpreter with extra modules.
+  void initialize( const wchar_t* program_name, const module_list_type& init_list );
+
+  // PRINT_BANNER:
 	/// Print the basic information about the python interpreter to output_signal_.
 	void print_banner();
 
