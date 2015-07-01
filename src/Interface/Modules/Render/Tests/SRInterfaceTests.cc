@@ -26,42 +26,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   December 2012
-/// \brief  Not sure this file should go in Modules/Render. But it is an 
-///         auxiliary file to the ViewScene render module.
+#if _WIN32
+#include <GL/glew.h>
+#endif
+#include <gtest/gtest.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
 
-#ifndef INTERFACE_MODULES_RENDER_GLCONTEXT_H
-#define INTERFACE_MODULES_RENDER_GLCONTEXT_H
+using namespace SCIRun;
+using namespace SCIRun::Render;
+using namespace SCIRun::Gui;
 
-// For windows.
-#define NOMINMAX
+TEST(SRInterfaceTest, CanInstantiateSRInterface)
+{
+  std::shared_ptr<GLContext> context;
+  std::vector<std::string> shaderDirs;
+  SRInterface srinterface(context, shaderDirs);
+}
 
-#include <Interface/Modules/Render/GLContextPlatformCompatibility.h>
-#include <Interface/Modules/Render/share.h>
-
-namespace SCIRun {
-namespace Gui {
-
-/// Context that will be sent to spire.
-class SCISHARE GLContext
+class DummyGLContext : public GLContext
 {
 public:
-  GLContext(QGLWidget* glWidget);
-  virtual ~GLContext();
-
-  /// Mandatory override from Context.
-  virtual void makeCurrent();
-  
-  /// Mandatory override from Context.
-  virtual void swapBuffers();
-
-private:
-
-  QGLWidget* mGLWidget;
+  DummyGLContext() : GLContext(nullptr) {}
+  virtual void makeCurrent() override 
+  { 
+    std::cout << "DummyGLContext::makeCurrent called" << std::endl;
+  }
+  virtual void swapBuffers() override
+  {
+    std::cout << "DummyGLContext::swapBuffers called" << std::endl;
+  }
 };
 
-} // end of namespace SCIRun
-} // end of namespace Gui
 
-#endif 
+TEST(SRInterfaceTest, CanRenderEmptyFrame)
+{
+  std::shared_ptr<GLContext> context(new DummyGLContext);
+  std::vector<std::string> shaderDirs;
+  SRInterface srinterface(context, shaderDirs);
+
+  srinterface.doFrame(0, 50);
+}
+
