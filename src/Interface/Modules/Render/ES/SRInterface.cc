@@ -282,8 +282,10 @@ namespace SCIRun {
 
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
       std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
-      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) {
-          if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) {
+      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) 
+      {
+          if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) 
+          {
               if (foundObject != mSRObjects.end())
               {
                 // Iterate through each of the passes and remove their associated
