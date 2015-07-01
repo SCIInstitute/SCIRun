@@ -231,26 +231,54 @@ void PythonInterpreter::initialize_eventhandler()
 	// Register C++ to Python type converters
 	//RegisterToPythonConverters();
 
-	// Add the extension modules
-	PyImport_AppendInittab( "interpreter", PyInit_interpreter );
-	for ( auto it = this->private_->modules_.begin(); 
-		it != this->private_->modules_.end(); ++it )
-	{
-		PyImport_AppendInittab( ( *it ).first.c_str(), ( *it ).second );
-	}
+  // Add the extension modules
+  PyImport_AppendInittab( "interpreter", PyInit_interpreter );
+  for ( module_list_type::iterator it = this->private_->modules_.begin();
+       it != this->private_->modules_.end(); ++it )
+  {
+    PyImport_AppendInittab( ( *it ).first.c_str(), ( *it ).second );
+  }
 
-	//Py_SetProgramName( const_cast< wchar_t* >( this->private_->program_name_ ) );
-	//boost::filesystem::path lib_path( this->private_->program_name_ );
-	//lib_path = lib_path.parent_path() / PYTHONPATH;
-	//Py_SetPath( lib_path.wstring().c_str() );
-	Py_IgnoreEnvironmentFlag = 1;
-	Py_InspectFlag = 1;
-	Py_OptimizeFlag = 2;
-#if !defined( _WIN32 )
-	Py_NoSiteFlag = 1;
+  Py_SetProgramName( const_cast< wchar_t* >( this->private_->program_name_ ) );
+  boost::filesystem::path lib_path( this->private_->program_name_ );
+  boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH;
+  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
+  boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
+  std::wstringstream lib_paths;
+#if defined( _WIN32 )
+  const std::wstring PATH_SEP(L";");
+#else
+  const std::wstring PATH_SEP(L":");
 #endif
 
-	Py_Initialize();
+#if defined( __APPLE__ )
+  boost::filesystem::path plat_lib_path = top_lib_path / "plat-darwin";
+  lib_paths << top_lib_path.wstring() << PATH_SEP
+  << plat_lib_path.wstring() << PATH_SEP
+  << dynload_lib_path.wstring() << PATH_SEP
+  << site_lib_path.wstring();
+  Py_SetPath( lib_paths.str().c_str() );
+#elif defined (_WIN32)
+  lib_paths << top_lib_path.wstring() << PATH_SEP
+  << site_lib_path.wstring();
+  Py_SetPath( lib_paths.str().c_str() );
+#else
+  // linux...
+  boost::filesystem::path plat_lib_path = top_lib_path / "plat-linux";
+  lib_paths << top_lib_path.wstring() << PATH_SEP
+  << plat_lib_path.wstring() << PATH_SEP
+  << dynload_lib_path.wstring() << PATH_SEP
+  << site_lib_path.wstring();
+  Py_SetPath( lib_paths.str().c_str() );
+#endif
+
+  Py_IgnoreEnvironmentFlag = 1;
+  Py_InspectFlag = 1;
+  Py_OptimizeFlag = 2;
+#if !defined( _WIN32 )
+  Py_NoSiteFlag = 1;
+#endif
+  Py_Initialize();
 
 	// Create the compiler object
 	PyRun_SimpleString( "from codeop import CommandCompiler\n"
