@@ -53,6 +53,7 @@ SET(boost_Libraries
   "serialization"
   "system"
   "thread"
+  "wserialization"
   CACHE INTERNAL "Boost library name.")
 
 IF(BUILD_WITH_PYTHON)
@@ -60,6 +61,11 @@ IF(BUILD_WITH_PYTHON)
   LIST(APPEND boost_Libraries python)
   LIST(APPEND boost_DEPENDENCIES Python_external)
   LIST(APPEND boost_CXX_Flag "-DBOOST_PYTHON_STATIC_MODULE" "-DBOOST_PYTHON_STATIC_LIB")
+ENDIF()
+
+# for travis clang builds--need a narrower test
+IF(UNIX)
+  ADD_DEFINITIONS(-DBOOST_NO_CXX11_ALLOCATOR)
 ENDIF()
 
 # TODO: set up 64-bit build detection

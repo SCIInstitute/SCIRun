@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,39 +24,30 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#ifndef CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEPOINTSAMPLESFROMFIELD_H
-#define CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEPOINTSAMPLESFROMFIELD_H 1
+#ifndef INTERFACE_MODULES_GeneratePointSamplesFromFieldOrWidgetDialog_H
+#define INTERFACE_MODULES_GeneratePointSamplesFromFieldOrWidgetDialog_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include "Interface/Modules/Fields/ui_GeneratePointSamplesFromFieldOrWidget.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-namespace SCIRun
-{
-  namespace Core
-  {
-    namespace Algorithms
+namespace SCIRun {
+  namespace Gui {
+
+    class SCISHARE GeneratePointSamplesFromFieldOrWidgetDialog : public ModuleDialogGeneric,
+      public Ui::GeneratePointSamplesFromFieldOrWidget
     {
-      namespace Fields
-      {
-        ALGORITHM_PARAMETER_DECL(NumSamples);
-        ALGORITHM_PARAMETER_DECL(DistributionType);
-        ALGORITHM_PARAMETER_DECL(ClampToNodes);
-        ALGORITHM_PARAMETER_DECL(IncrementRNGSeed);
-        ALGORITHM_PARAMETER_DECL(RNGSeed);
+      Q_OBJECT
 
-class SCISHARE GeneratePointSamplesFromFieldAlgo : public AlgorithmBase
-{
-  public:
-    GeneratePointSamplesFromFieldAlgo();
-    bool runImpl(FieldHandle input, FieldHandle& seeds) const;
-    static const AlgorithmOutputName Samples;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-};
-}
-}
-}
+    public:
+      GeneratePointSamplesFromFieldOrWidgetDialog(const std::string& name,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = 0);
+    };
+
+  }
 }
 
 #endif

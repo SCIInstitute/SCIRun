@@ -84,6 +84,7 @@ protected:
   static Persistent *maker();
 };
 
+typedef boost::shared_ptr<PropertyBase> PropertyBaseHandle;
 
 class SCISHARE PropertyManager;
 
@@ -221,8 +222,11 @@ public:
   bool is_frozen() const { return frozen_; }
 
   void remove_property( const std::string & );
-  size_t nproperties() const { return properties_.size(); }
-  const std::map<std::string, PropertyBase *>& properties() const { return properties_; }
+
+  //NOTE: do NOT change this type to size_t to avoid casting below! it will break reading all old matrix/field types.
+  typedef unsigned int PropertyManagerSize;
+  PropertyManagerSize nproperties() const { return static_cast<PropertyManagerSize>(properties_.size()); }
+  const std::map<std::string, PropertyBaseHandle>& properties() const { return properties_; }
 
   void    io(Piostream &stream);
   static  PersistentTypeID type_id;
@@ -240,7 +244,7 @@ public:
 
 private:
 
-  typedef std::map<std::string, PropertyBase *> map_type;
+  typedef std::map<std::string, PropertyBaseHandle> map_type;
   map_type properties_;
 
 protected:
@@ -264,12 +268,7 @@ PropertyManager::set_property(const std::string &name,  const T& obj,
     freeze();
   }
   Core::Thread::Guard g(lock.get());
-  map_type::iterator loc = properties_.find(name);
-  if (loc != properties_.end())
-  {
-    delete loc->second;
-  }
-  properties_[name] = new Property<T>(obj, is_transient);
+  properties_[name].reset(new Property<T>(obj, is_transient));
 }
 
 
@@ -282,7 +281,7 @@ PropertyManager::get_property(const std::string &name, T &ref)
   bool ans = false;
   map_type::iterator loc = properties_.find(name);
   if (loc != properties_.end()) {
-    const Property<T> *prop = dynamic_cast<const Property<T> *>(loc->second);
+    auto prop = boost::dynamic_pointer_cast<const Property<T>>(loc->second);
     if (prop)
     {
       ref = prop->obj_;

@@ -47,6 +47,15 @@ using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 
+static void printMatrix(const DenseMatrix& m, const std::string& tag = "tag")
+{
+#if 0
+  std::cout << tag << std::endl;
+  std::cout << "Size: " << m.nrows() << " x " << m.ncols() << std::endl;
+  std::cout << "Min/Max: " << std::setprecision(15) << m.minCoeff() << " , " << m.maxCoeff() << std::endl;
+#endif
+}
+
 RegisterWithCorrespondencesAlgo::RegisterWithCorrespondencesAlgo()
 {
   addParameter(Variables::Operator, 0);
@@ -354,6 +363,7 @@ bool RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1,
 
 bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
 {
+  //std::cout << "runA" << std::endl;
   double sumx2;
   double sumy2;
   double sumz2;
@@ -395,18 +405,6 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   VMesh* omesh = output->vmesh();
   VMesh* icors1 = Cors1_cp->vmesh();
   VMesh* icors2 = Cors2_cp->vmesh();
-
-  {
-    const BBox bbox = omesh->get_bounding_box();
-    if (bbox.valid())
-    {
-      std::cout << "output size: " << bbox.diagonal() << " center: " << bbox.center() << std::endl;
-    }
-    else
-    {
-      std::cout << "output bbox invalid" << std::endl;
-    }
-  }
 
   //get the number of nodes in input field  
   //VMesh::size_type num_nodes = imesh->num_nodes();
@@ -513,39 +511,6 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
     BMat(L1, 3) = 1;
   }
 
-  //Create big matrix //
-  DenseMatrix BigMat(3 * num_cors1, 12);
-
-  for (int i = 0; i < (3 * num_cors1); ++i)
-  {
-    for (int j = 0; j < (12); ++j)
-    {
-      BigMat(i, j) = 0;
-    }
-  }
-  for (int i = 0; i < (num_cors1); ++i)
-  {
-    for (int j = 0; j < 4; ++j)
-    {
-      BigMat(i, j) = BMat(i, j);
-    }
-  }
-  for (int i = 0; i < (num_cors1); ++i)
-  {
-    for (int j = 0; j < 4; ++j)
-    {
-      BigMat(num_cors1 + i, 4 + j) = BMat(i, j);
-
-    }
-  }
-  for (int i = 0; i < (num_cors1); ++i)
-  {
-    for (int j = 0; j < (4); ++j)
-    {
-      BigMat(2 * num_cors1 + i, 8 + j) = BMat(i, j);
-    }
-  }
-
   //create right side of equation//
   for (int i = 0; i < num_cors1; ++i)
   {
@@ -572,10 +537,19 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
 
   //create the U and V matrix
 
+  printMatrix(BMat, "BMat");
   Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(BMat, Eigen::ComputeFullU | Eigen::ComputeFullV);
   DenseMatrix UMat = svd_mat.matrixU();
   DenseMatrix VMat = svd_mat.matrixV();
   DenseMatrix matSingularValues(svd_mat.singularValues());
+
+  printMatrix(UMat, "UMat");
+  printMatrix(VMat, "VMat");
+  printMatrix(matSingularValues, "matS");
+  //std::cout << "entire matS: \n" << matSingularValues << std::endl;
+  //std::cout << "entire UMat: \n" << UMat << std::endl;
+  //std::cout << "entire VMat: \n" << VMat << std::endl;
+
 
   //Make more storage for the solving the linear least squares
   DenseMatrix RsideMat(m, 1);
@@ -585,22 +559,20 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
 
   for (int xyz = 0; xyz < 3; xyz++)
   {
-
+    //std::cout << "\n-----XYZ " << xyz << "\n" << std::endl;
     for (int loop = 0; loop < m; ++loop)
     {
       RsideMat(loop, 0) = rside[xyz*m + loop];
     }
-
+    printMatrix(RsideMat, "RsideMat");
     //c=trans(Um)*rside;
     CMat = UMat.transpose() * RsideMat;
+    printMatrix(CMat, "CMat");
 
-    for (int k = 0; k<n; k++)
-    {
-      YMat(k, 0) = CMat(k, 0) / matSingularValues(k, 0);
-    }
-
+    YMat = CMat.cwiseQuotient(matSingularValues);
+    printMatrix(YMat, "YMat");
     CoefMat = VMat.transpose() * YMat;
-
+    printMatrix(CoefMat, "CoefMat");
     for (int p = 0; p < n; p++)
     {
       coefs.push_back(CoefMat(p, 0));
@@ -609,6 +581,7 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   //done with solve, make the new field
   make_new_pointsA(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
 
+#if 0
   {
     const BBox bbox = omesh->get_bounding_box();
     if (bbox.valid())
@@ -620,6 +593,7 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
       std::cout << "output bbox invalid" << std::endl;
     }
   }
+#endif
 
   return (true);
 }
@@ -702,7 +676,7 @@ bool RegisterWithCorrespondencesAlgo::radial_basis_func(VMesh* Cors, VMesh* poin
   return true;
 }
 
-bool RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const
+bool RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const
 {
   VMesh::Node::size_type num_cors, num_pts;
   VMesh::Node::iterator it, itp;
@@ -742,13 +716,22 @@ bool RegisterWithCorrespondencesAlgo::make_new_points(VMesh* points, VMesh* Cors
   return true;
 }
 
-bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cors, std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const
+bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cors, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const
 {
   VMesh::Node::size_type num_cors, num_pts;
   VMesh::Node::iterator it, itp;
   Point P, Pp;
 
   points->size(num_pts);
+
+#if 0
+  std::cout << "make new points A inputs" <<
+    "\ncoefs: " << coefs.size()
+    << "\nsumx: " << sumx
+    << "\nsumy: " << sumy
+    << "\nsumz: " << sumz << "\n" << std::endl;
+  std::copy(coefs.begin(), coefs.end(), std::ostream_iterator<double>(std::cout, "\n"));
+#endif
 
   for (int i = 0; i < num_pts; ++i)
   {
