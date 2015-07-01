@@ -53,7 +53,6 @@ SET(boost_Libraries
   "serialization"
   "system"
   "thread"
-  "wserialization"
   CACHE INTERNAL "Boost library name.")
 
 IF(BUILD_WITH_PYTHON)
