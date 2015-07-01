@@ -152,6 +152,9 @@ protected:
   virtual void mouseReleaseEvent(QMouseEvent* event) override;
   virtual void mouseMoveEvent(QMouseEvent* event) override;
 private:
+  template <typename Func, typename Pred>
+  static void forEachPort(Func func, Pred pred);
+
   void dragImpl(const QPointF& endPos);
   void makeConnection(const QPointF& pos);
   void tryConnectPort(const QPointF& pos, PortWidget* port);
