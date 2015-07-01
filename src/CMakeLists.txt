@@ -878,6 +878,8 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
   SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO_Tests PROPERTY FOLDER "Modules/DataIO")
   SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
+  
+  SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
 ENDIF()
 
 #SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
@@ -900,9 +902,6 @@ IF(WITH_TETGEN)
   SET_PROPERTY(TARGET tetlib         PROPERTY FOLDER "Externals")
 ENDIF()
 
-#IF(DOWNLOAD_TOOLKITS)
-#  SET_PROPERTY(TARGET BrainStimulator_external   PROPERTY FOLDER "Externals")
-#ENDIF()
 
 ########################################################################
 # Custom CMake settings for CPack

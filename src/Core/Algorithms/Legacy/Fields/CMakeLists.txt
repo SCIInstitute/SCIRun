@@ -95,6 +95,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   StreamLines/StreamLineIntegrators.h
   StreamLines/GenerateStreamLines.h
   RegisterWithCorrespondences.h
+  SampleField/GeneratePointSamplesFromField.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -192,7 +193,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   RefineMesh/RefineMeshTriSurfAlgoV.cc
   ResampleMesh/ResampleRegularMesh.cc
   #ResampleMesh/PadRegularMesh.cc
-  #SampleField/GeneratePointSamplesFromField.cc
+  SampleField/GeneratePointSamplesFromField.cc
   SmoothMesh/FairMesh.cc
   StreamLines/StreamLineIntegrators.cc
   StreamLines/GenerateStreamLines.cc
