@@ -44,6 +44,8 @@
 
 #include <Core/Python/PythonInterpreter.h>
 
+#include <Dataflow/Engine/Python/SCIRunPythonModule.h>
+
 //#ifdef _MSC_VER
 //#pragma warning( pop )
 //#endif
@@ -233,6 +235,7 @@ void PythonInterpreter::initialize_eventhandler()
 
   // Add the extension modules
   PyImport_AppendInittab( "interpreter", PyInit_interpreter );
+  PyImport_AppendInittab( "SCIRunPythonAPI", PyInit_SCIRunPythonAPI );
   for ( module_list_type::iterator it = this->private_->modules_.begin();
        it != this->private_->modules_.end(); ++it )
   {
