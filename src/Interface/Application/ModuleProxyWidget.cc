@@ -329,8 +329,6 @@ void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 
 void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  //TODO: need to update PPPs
-  //TODO: need to call same in dragEnter event, if connection in progress
   if (doHighlight_)
   {
     module_->highlightPorts();
@@ -341,8 +339,6 @@ void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 
 void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-  //TODO: need to update PPPs
-  //TODO: need to call same in dragLeave event, if connection in progress
   if (doHighlight_)
   {
     module_->unhighlightPorts();

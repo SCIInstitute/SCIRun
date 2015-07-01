@@ -336,7 +336,7 @@ void PortWidget::makeConnection(const QPointF& pos)
 
   if (Preferences::Instance().highlightPorts)
   {
-    forEachPort([](PortWidget* p) { p->setHighlight(false); }, boost::lambda::constant(true));
+    forEachPort([](PortWidget* p) { p->setHighlight(false, true); }, boost::lambda::constant(true));
   }
 }
 
@@ -404,7 +404,7 @@ void PortWidget::dragImpl(const QPointF& endPos)
   if (Preferences::Instance().highlightPorts)
   {
     forEachPort(
-      [](PortWidget* p) { p->setHighlight(true); }, 
+      [](PortWidget* p) { p->setHighlight(true, true); }, 
       [this](const std::string& mid, bool isInput, const PortWidget* port) { return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename(); });
   }
 }
@@ -482,8 +482,11 @@ ModuleId PortWidget::getUnderlyingModuleId() const
   return moduleId_;
 }
 
-void PortWidget::setHighlight(bool on)
+void PortWidget::setHighlight(bool on, bool individual)
 {
+  if (!isHighlighted_ && on && individual)
+    Q_EMIT highlighted(true);
+
   isHighlighted_ = on;
   if (on)
   {
@@ -492,6 +495,7 @@ void PortWidget::setHighlight(bool on)
   }
   else
   {
+    Q_EMIT highlighted(false);
   }
 }
 
