@@ -198,13 +198,13 @@ namespace
         auto v = state->getValue(apn);
 
         /// @todo: extract
-        if ( const int* p = boost::get<int>( &v.value_ ) )
+        if ( const int* p = boost::get<int>( &v.value() ) )
           return boost::python::object(*p);
-        else if ( const std::string* p = boost::get<std::string>( &v.value_ ) )
+        else if ( const std::string* p = boost::get<std::string>( &v.value() ) )
           return boost::python::object(*p);
-        else if ( const double* p = boost::get<double>( &v.value_ ) )
+        else if ( const double* p = boost::get<double>( &v.value() ) )
           return boost::python::object(*p);
-        else if ( const bool* p = boost::get<bool>( &v.value_ ) )
+        else if ( const bool* p = boost::get<bool>( &v.value() ) )
           return boost::python::object(*p);
 
         return boost::python::object();
