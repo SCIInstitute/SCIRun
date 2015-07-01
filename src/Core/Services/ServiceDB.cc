@@ -123,7 +123,6 @@ ServiceDB::findmaker(ServiceInfo* info)
 void
 ServiceDB::loadpackages()
 {
-  std::cout << "ServiceDB::loadpackages()" << std::endl;
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Find the path to the package directory
 
