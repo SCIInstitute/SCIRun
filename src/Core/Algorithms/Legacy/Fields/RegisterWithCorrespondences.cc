@@ -839,7 +839,7 @@ bool RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1,
     }
     
     double traceA;
-    traceA=SVMat(0,0)+SVMat(1,1)+SVMat(2,2);
+    traceA=SVMat(0,0)+SVMat(1,0)+SVMat(2,0);
     
     double scaling=traceA*norm1/norm2;
     

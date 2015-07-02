@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>250</width>
-    <height>250</height>
+    <height>150</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -64,14 +64,14 @@
      <item row="2" column="1">
       <widget class="QRadioButton" name="rigidRadioButton_">
        <property name="text">
-        <string>None</string>
+        <string>Rigid</string>
        </property>
       </widget>
      </item>
      <item row="2" column="0">
       <widget class="QRadioButton" name="noneRadioButton_">
        <property name="text">
-        <string>Rigid</string>
+        <string>None</string>
        </property>
       </widget>
      </item>
