@@ -1,7 +1,15 @@
 
 include_directories(${SCI_BOOST_INCLUDE})
 link_directories(${SCI_BOOST_LIBRARY_DIR})
-add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_PYTHON_STATIC_LIB -DBOOST_PYTHON_STATIC_MODULE)
+add_definitions(-DBOOST_ALL_NO_LIB)
+if(BUILD_WITH_PYTHON)
+  add_definitions(-DBOOST_PYTHON_STATIC_LIB -DBOOST_PYTHON_STATIC_MODULE)
+endif()
+
+if(UNIX)
+  add_definitions(-DBOOST_NO_CXX11_ALLOCATOR)
+endif()
+
 
 # TODO: if static runtime link is supported, then ABI tag postfix must include s
 # see:
