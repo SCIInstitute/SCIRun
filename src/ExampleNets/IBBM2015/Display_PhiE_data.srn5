@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>19</count>
+			<count>20</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>BuildMappingMatrix:0</first>
@@ -223,6 +223,34 @@
 									<value>
 										<which>2</which>
 										<value>Linear</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ConvertMatrixType:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ConvertMatrixType</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>OutputMatrixType</name>
+								</first>
+								<second>
+									<name>OutputMatrixType</name>
+									<value>
+										<which>2</which>
+										<value>dense</value>
 									</value>
 								</second>
 							</item>
@@ -578,7 +606,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/tissue_modeling/phie_doubStim_slab_model_40ms.txt</value>
+										<value>/Users/dan/Desktop/phie_doubStim_slab_model_40ms.txt</value>
 									</value>
 								</second>
 							</item>
@@ -1308,7 +1336,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>23</count>
+			<count>24</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>BuildMappingMatrix:0</moduleId1_>
@@ -1383,6 +1411,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>ConvertMatrixType:1</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetFieldData:2</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>CreateStandardColorMap:1</moduleId1_>
 				<port1_>
 					<name>ColorMapObject</name>
@@ -1448,7 +1488,7 @@
 					<name>OutputMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetFieldData:2</moduleId2_>
+				<moduleId2_>ConvertMatrixType:1</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
@@ -1589,7 +1629,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>19</count>
+		<count>20</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>BuildMappingMatrix:0</first>
@@ -1627,10 +1667,17 @@
 			</second>
 		</item>
 		<item>
+			<first>ConvertMatrixType:1</first>
+			<second>
+				<first>-6.84000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
 			<first>CreateStandardColorMap:1</first>
 			<second>
 				<first>-4.12000000000000000e+02</first>
-				<second>-1.87000000000000000e+02</second>
+				<second>-1.20993750000000375e+01</second>
 			</second>
 		</item>
 		<item>
@@ -1685,29 +1732,29 @@
 		<item>
 			<first>RescaleColorMap:1</first>
 			<second>
-				<first>-7.37000000000000000e+02</first>
-				<second>-7.30000000000000000e+01</second>
+				<first>-7.60000000000000000e+02</first>
+				<second>7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:2</first>
 			<second>
 				<first>-8.59000000000000000e+02</first>
-				<second>-1.82000000000000000e+02</second>
+				<second>-7.09937500000003752e+00</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowColorMap:1</first>
 			<second>
 				<first>-3.80000000000000000e+02</first>
-				<second>7.60000000000000000e+01</second>
+				<second>2.50900624999999962e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:2</first>
 			<second>
 				<first>-7.25000000000000000e+02</first>
-				<second>8.40000000000000000e+01</second>
+				<second>2.58900624999999991e+02</second>
 			</second>
 		</item>
 		<item>
@@ -1721,7 +1768,7 @@
 			<first>ViewScene:1</first>
 			<second>
 				<first>-6.08000000000000000e+02</first>
-				<second>2.28000000000000000e+02</second>
+				<second>4.02900624999999991e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1760,7 +1807,7 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="21" tracking_level="0" version="0">
-		<count>19</count>
+		<count>20</count>
 		<item_version>0</item_version>
 		<item class_id="22" tracking_level="0" version="0">
 			<first>BuildMappingMatrix:0</first>
@@ -1780,6 +1827,10 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>ConvertFieldBasis:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ConvertMatrixType:1</first>
 			<second>0</second>
 		</item>
 		<item>
