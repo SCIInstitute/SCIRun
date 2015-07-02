@@ -82,10 +82,9 @@ namespace BrainStimulator {
     
     static Core::Algorithms::AlgorithmParameterName ElectrodeParameterName(int i);
     static Core::Algorithms::AlgorithmParameterName ElectrodeImpedanceParameterName(int i);
-   
+    static const int max_number_of_electrodes;
   private:  
     static const int special_label;
-    static const int max_number_of_electrodes;
     static const double electode_current_summation_bound;
     SCIRun::Core::Datatypes::DenseMatrixHandle create_rhs(FieldHandle mesh, FieldHandle elc_tri_surf, const std::vector<Variable>& elcs, int num_of_elc) const;    
     boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle, std::vector<double>> create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;

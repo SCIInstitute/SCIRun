@@ -1301,7 +1301,7 @@ void ShowFieldModule::updateAvailableRenderOptions(FieldHandle field)
   state->setValue(EdgesAvailable, 0 != vmesh->num_edges());
   vmesh->synchronize(Mesh::FACES_E);
   state->setValue(FacesAvailable, 0 != vmesh->num_faces());
-  if (0 == vmesh->num_edges() && 0 == vmesh->num_faces())
+  if (vmesh->is_pointcloudmesh())
   {
     state->setValue(ShowNodes, true);
     state->setValue(ShowEdges, false);

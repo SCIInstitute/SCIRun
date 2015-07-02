@@ -266,7 +266,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -354,7 +354,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -484,7 +484,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -584,7 +584,7 @@
 									<name>OutputCenterX</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -596,7 +596,7 @@
 									<name>OutputCenterY</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-01</value>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -608,7 +608,7 @@
 									<name>OutputCenterZ</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-01</value>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -620,7 +620,7 @@
 									<name>OutputSizeX</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000011e-01</value>
+										<value>2.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -632,7 +632,7 @@
 									<name>OutputSizeY</name>
 									<value>
 										<which>1</which>
-										<value>1.50000000000000000e+00</value>
+										<value>1.50000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -644,7 +644,7 @@
 									<name>OutputSizeZ</name>
 									<value>
 										<which>1</which>
-										<value>1.50000000000000000e+00</value>
+										<value>1.50000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -740,7 +740,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -864,7 +864,7 @@
 									<name>OutputCenterX</name>
 									<value>
 										<which>1</which>
-										<value>-1.00000000000000000e+00</value>
+										<value>-1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -876,7 +876,7 @@
 									<name>OutputCenterY</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-01</value>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -888,7 +888,7 @@
 									<name>OutputCenterZ</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-01</value>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -900,7 +900,7 @@
 									<name>OutputSizeX</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000011e-01</value>
+										<value>2.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -912,7 +912,7 @@
 									<name>OutputSizeY</name>
 									<value>
 										<which>1</which>
-										<value>1.50000000000000000e+00</value>
+										<value>1.50000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -924,7 +924,7 @@
 									<name>OutputSizeZ</name>
 									<value>
 										<which>1</which>
-										<value>1.50000000000000000e+00</value>
+										<value>1.50000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1020,7 +1020,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1148,7 +1148,7 @@
 									<name>tolerance</name>
 									<value>
 										<which>1</which>
-										<value>9.99999999999999955e-07</value>
+										<value>9.99999999999999950e-007</value>
 									</value>
 								</second>
 							</item>
@@ -1188,7 +1188,7 @@
 									<name>MaxDistance</name>
 									<value>
 										<which>1</which>
-										<value>1.79769313486231571e+308</value>
+										<value>1.79769313486231570e+308</value>
 									</value>
 								</second>
 							</item>
@@ -1200,7 +1200,7 @@
 									<name>OutsideValue</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1252,7 +1252,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>5.00000010187778287e+02</value>
+										<value>5.00000010187778290e+002</value>
 									</value>
 								</second>
 							</item>
@@ -1264,7 +1264,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1332,7 +1332,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1380,7 +1380,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1416,7 +1416,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1452,7 +1452,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1500,7 +1500,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999989e-02</value>
+										<value>2.99999999999999990e-002</value>
 									</value>
 								</second>
 							</item>
@@ -1528,7 +1528,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1576,7 +1576,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1612,7 +1612,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1648,7 +1648,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1696,7 +1696,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999989e-02</value>
+										<value>2.99999999999999990e-002</value>
 									</value>
 								</second>
 							</item>
@@ -1724,7 +1724,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1772,7 +1772,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1808,7 +1808,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1844,7 +1844,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1892,7 +1892,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999989e-02</value>
+										<value>2.99999999999999990e-002</value>
 									</value>
 								</second>
 							</item>
@@ -1920,7 +1920,7 @@
 									<name>MaxIterations</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e+02</value>
+										<value>5.00000000000000000e+002</value>
 									</value>
 								</second>
 							</item>
@@ -1956,7 +1956,7 @@
 									<name>TargetError</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000008e-05</value>
+										<value>1.00000000000000010e-005</value>
 									</value>
 								</second>
 							</item>
@@ -2364,155 +2364,155 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1.88900000000000000e+03</first>
-				<second>-7.19000000000000000e+02</second>
+				<first>-1.88900000000000000e+003</first>
+				<second>-7.19000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>BuildFEMatrix:0</first>
 			<second>
-				<first>-2.04000000000000000e+03</first>
-				<second>-1.13500000000000000e+03</second>
+				<first>-2.04000000000000000e+003</first>
+				<second>-1.13500000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertIndicesToFieldData:0</first>
 			<second>
-				<first>-1.77900000000000000e+03</first>
-				<second>-9.73000000000000000e+02</second>
+				<first>-1.77900000000000000e+003</first>
+				<second>-9.73000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:0</first>
 			<second>
-				<first>-1.75500000000000000e+03</first>
-				<second>-1.52600000000000000e+03</second>
+				<first>-1.75500000000000000e+003</first>
+				<second>-1.52600000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:1</first>
 			<second>
-				<first>-1.31300000000000000e+03</first>
-				<second>-1.52200000000000000e+03</second>
+				<first>-1.31300000000000000e+003</first>
+				<second>-1.52200000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:2</first>
 			<second>
-				<first>-2.00700000000000000e+03</first>
-				<second>-1.77300000000000000e+03</second>
+				<first>-2.00700000000000000e+003</first>
+				<second>-1.77300000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-1.98900000000000000e+03</first>
-				<second>-1.91800000000000000e+03</second>
+				<first>-1.98900000000000000e+003</first>
+				<second>-1.91800000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:1</first>
 			<second>
-				<first>-1.35300000000000000e+03</first>
-				<second>-1.84700000000000000e+03</second>
+				<first>-1.35300000000000000e+003</first>
+				<second>-1.84700000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:0</first>
 			<second>
-				<first>-1.71700000000000000e+03</first>
-				<second>-1.08200000000000000e+03</second>
+				<first>-1.71700000000000000e+003</first>
+				<second>-1.08200000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>-1.22014999999999986e+03</first>
-				<second>-4.97949999999999989e+02</second>
+				<first>-1.22014999999999990e+003</first>
+				<second>-4.97949999999999990e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>EditMeshBoundingBox:0</first>
 			<second>
-				<first>-1.31200000000000000e+03</first>
-				<second>-1.65900000000000000e+03</second>
+				<first>-1.31200000000000000e+003</first>
+				<second>-1.65900000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>EditMeshBoundingBox:1</first>
 			<second>
-				<first>-1.75500000000000000e+03</first>
-				<second>-1.65300000000000000e+03</second>
+				<first>-1.75500000000000000e+003</first>
+				<second>-1.65300000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:0</first>
 			<second>
-				<first>-1.82000000000000000e+03</first>
-				<second>-8.32000000000000000e+02</second>
+				<first>-1.82000000000000000e+003</first>
+				<second>-8.32000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>JoinFields:0</first>
 			<second>
-				<first>-1.67300000000000000e+03</first>
-				<second>-1.34300000000000000e+03</second>
+				<first>-1.67300000000000000e+003</first>
+				<second>-1.34300000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoNodes:0</first>
 			<second>
-				<first>-1.78000000000000000e+03</first>
-				<second>-1.18100000000000000e+03</second>
+				<first>-1.78000000000000000e+003</first>
+				<second>-1.18100000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>-1.76524999999999977e+03</first>
-				<second>-2.58750000000000000e+02</second>
+				<first>-1.76524999999999980e+003</first>
+				<second>-2.58750000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:0</first>
 			<second>
-				<first>-1.91304999999999995e+03</first>
-				<second>-4.34699999999999818e+02</second>
+				<first>-1.91305000000000000e+003</first>
+				<second>-4.34699999999999820e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-1.37200000000000000e+03</first>
-				<second>-1.25000000000000000e+03</second>
+				<first>-1.37200000000000000e+003</first>
+				<second>-1.25000000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-1.29100000000000000e+03</first>
-				<second>-1.39600000000000000e+03</second>
+				<first>-1.29100000000000000e+003</first>
+				<second>-1.39600000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:2</first>
 			<second>
-				<first>-1.81814999999999986e+03</first>
-				<second>-8.39499999999999886e+01</second>
+				<first>-1.81814999999999990e+003</first>
+				<second>-8.39499999999999890e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>SolveLinearSystem:0</first>
 			<second>
-				<first>-1.88800000000000000e+03</first>
-				<second>-5.68000000000000000e+02</second>
+				<first>-1.88800000000000000e+003</first>
+				<second>-5.68000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-1.92444999999999982e+03</first>
-				<second>8.17499999999998295e+01</second>
+				<first>-1.92444999999999980e+003</first>
+				<second>8.17499999999998290e+001</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -2525,11 +2525,11 @@
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt; color:#ffffff;&quot;&gt;0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>0</noteText>
 				<position>3</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2538,11 +2538,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;500&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt; color:#ffffff;&quot;&gt;500&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>500</noteText>
 				<position>3</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2551,11 +2551,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;simulation domain&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt; color:#ffffff;&quot;&gt;simulation domain&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>simulation domain</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2564,11 +2564,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;electrode volume&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt; color:#ffffff;&quot;&gt;electrode volume&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>electrode volume</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2577,11 +2577,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;set electrode values here&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt;&quot;&gt;set electrode values here&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>set electrode values here</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2590,11 +2590,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Green Electrode&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Green Electrode&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Green Electrode</noteText>
 				<position>3</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2603,11 +2603,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Red Electrode&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Red Electrode&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Red Electrode</noteText>
 				<position>3</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2616,11 +2616,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 0</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2629,11 +2629,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; color:#ffffff;&quot;&gt;ID: 1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 1</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2642,11 +2642,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 2&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; color:#ffffff;&quot;&gt;ID: 2&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 2</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>8</fontSize>
 			</second>
 		</item>
 	</moduleNotes>

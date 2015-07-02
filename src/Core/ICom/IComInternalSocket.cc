@@ -75,10 +75,10 @@ bool IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 
 	try
 	{
-		if (!address.isinternal()) 	throw invalid_address();
+		if (!address.isinternal()) 	throw invalid_address("bind: non-internal");
 
 		std::string name = address.getinternalname();
-		if (internalsocketlist_[name] != 0)  throw invalid_address();
+		if (internalsocketlist_[name] != 0)  throw invalid_address("already bound: map already contains a socket by name " + name);
 
 		internalsocketlist_[name] = this;
 		registered_ = true;
@@ -94,11 +94,11 @@ bool IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 		unlock();
 		internalsocketlock_.unlock();
 	}
-
-	catch(...)
+	catch(invalid_address& e)
 	{
+		//std::cerr << "ERROR IN BIND: socket didn't make it into map, name = " << address.getinternalname() << std::endl;
 		err.errnr = EADDRNOTAVAIL;
-		err.error = "Could not resolve address";
+		err.error = std::string("Could not resolve address: ") + e.what();
 		unlock();
 		internalsocketlock_.unlock();
 		return(false);
@@ -110,7 +110,7 @@ bool IComInternalSocket::bind(IComAddress& address, IComSocketError &err)
 }
 
 
-bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSocketError &err)
+bool IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSocketError &err)
 {
 	IComInternalSocket* isock = 0;
 
@@ -119,21 +119,20 @@ bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSo
 
 	try
 	{
-		if (!address.isinternal()) throw invalid_address();
-
+		if (!address.isinternal()) throw invalid_address("non-internal");
 		isock = internalsocketlist_[address.getinternalname()];
 
-		if (isock == 0) throw invalid_address();
+		if (isock == 0) throw invalid_address("isock null");
 		if (isock == this)
 		{
 			std::cerr << "Socket tried to connect to itself\n";
-			throw invalid_address();
+			throw invalid_address("Socket tried to connect to itself");
 		}
 
 		isock->dolock();
 		internalsocketlock_.unlock();
 
-		if (isock->listen_ == false) throw invalid_address();	// Socket is not listening
+		if (isock->listen_ == false) throw invalid_address("Socket not listening");	// Socket is not listening
 
 		// Create a new socket;
 		IComSocketHandle newsocket(new IComSocket);
@@ -167,13 +166,12 @@ bool	IComInternalSocket::connect(IComAddress& address, conntype /*conn*/, IComSo
 		err.error = "";
 		return(true);
 	}
-
-	catch(...)
+	catch(const icomerror& e)
 	{
 		if (isock) isock->unlock();
 		internalsocketlock_.unlock();
 		err.errnr = EADDRNOTAVAIL;
-		err.error = "Could not connect to specified address";
+		err.error = "Could not connect to specified address. " + std::string(e.what());
 		unlock();
 		return(false);
 	}

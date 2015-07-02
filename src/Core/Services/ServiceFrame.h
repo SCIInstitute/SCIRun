@@ -43,7 +43,6 @@
 #include <Core/Services/ServiceManager.h>
 #include <Core/Services/ServiceLog.h>
 #include <Core/Thread/Mutex.h>
-#include <Core/Thread/Thread.h>
 
 
 #include <string>
@@ -56,7 +55,7 @@
 
 namespace SCIRun {
 
-class SCISHARE ServiceFrame : public Runnable, public ServiceBase {
+class SCISHARE ServiceFrame : /*public Runnable,*/ public ServiceBase {
 
 public:
 	// After the manager accepts the connection
@@ -65,10 +64,11 @@ public:
 	// It needs a pointer to the manager to check the
 	// services database
 	
-	ServiceFrame(IComSocket socket, ServiceDBHandle db,ServiceLogHandle log);
+  ServiceFrame(IComSocketHandle socket, ServiceDBHandle db, ServiceLogHandle log);
 	
 	// Entrypoint for the thread. 
 	void	run();
+  void operator()() { run(); }
 	
 	bool	initiate();
 	bool	runservice();
@@ -80,7 +80,7 @@ private:
   int               timeout_;
 	std::string       servicename_;
 	int               session_;
-	IComSocket        socket_;
+	IComSocketHandle        socket_;
 	ServiceDBHandle		db_;
 	ServiceLogHandle	log_;
 };

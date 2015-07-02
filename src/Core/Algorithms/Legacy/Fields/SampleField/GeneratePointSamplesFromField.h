@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,37 +29,34 @@
 #ifndef CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEPOINTSAMPLESFROMFIELD_H
 #define CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEPOINTSAMPLESFROMFIELD_H 1
 
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GeneratePointSamplesFromFieldAlgo : public AlgoBase 
+namespace SCIRun
 {
-
-  public:
-    GeneratePointSamplesFromFieldAlgo()
+  namespace Core
+  {
+    namespace Algorithms
     {
-      add_int("num_seed_points",100);
-      add_int("rng_seed",1);
-      add_option("seed_method","uniuni","impscat|impuni|uniuni|uniscat");
-      add_bool("clamp",true);
-    }
-    
-    /// Convert data into a matrix
-    bool run(FieldHandle input, FieldHandle& seeds);
-};
+      namespace Fields
+      {
+        ALGORITHM_PARAMETER_DECL(NumSamples);
+        ALGORITHM_PARAMETER_DECL(DistributionType);
+        ALGORITHM_PARAMETER_DECL(ClampToNodes);
+        ALGORITHM_PARAMETER_DECL(IncrementRNGSeed);
+        ALGORITHM_PARAMETER_DECL(RNGSeed);
 
-} // end namespace SCIRunAlgo
+class SCISHARE GeneratePointSamplesFromFieldAlgo : public AlgorithmBase
+{
+  public:
+    GeneratePointSamplesFromFieldAlgo();
+    bool runImpl(FieldHandle input, FieldHandle& seeds) const;
+    static const AlgorithmOutputName Samples;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+};
+}
+}
+}
+}
 
 #endif

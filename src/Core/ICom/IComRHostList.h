@@ -46,11 +46,11 @@ public:
 	// insert a pattern which is then broken down in pieces
 	// which can be  used for comparison
 	// Currently '*' is the wildcard character
-	void insert(std::string pattern);
+	void insert(const std::string& pattern);
 	
 	// Compare the host name with the pattern
 	// And return whether there is a match
-	bool compare(std::string host);
+  bool compare(const std::string& host) const;
 
 private:
 	std::string start_;
@@ -63,11 +63,11 @@ class SCISHARE IComRHostList {
 
 public:
 	// insert a comma or black space delimited list
-	void insert(std::string rmhostlist);
+  void insert(const std::string& rmhostlist);
 	// Compare an address with a list of patterns
 	// Both the dns name aswell as the ip name are
 	// compared.
-	bool compare(IComAddress &address);
+	bool compare(IComAddress& address) const;
 	
 private:
 	std::vector<IComRHostPattern> patterns_;

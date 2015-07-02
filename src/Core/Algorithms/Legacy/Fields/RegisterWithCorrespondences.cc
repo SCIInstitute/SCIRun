@@ -513,8 +513,11 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
     BMat(L1, 2) = P.z();
     BMat(L1, 3) = 1;
   }
+<<<<<<< HEAD
     
     printMatrix(BMat, "BMat");
+=======
+>>>>>>> upstream/master
 
   //create right side of equation//
   for (int i = 0; i < num_cors1; ++i)
@@ -576,7 +579,11 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
 
     YMat = CMat.cwiseQuotient(matSingularValues);
     printMatrix(YMat, "YMat");
+<<<<<<< HEAD
     CoefMat = VMat * YMat;
+=======
+    CoefMat = VMat.transpose() * YMat;
+>>>>>>> upstream/master
     printMatrix(CoefMat, "CoefMat");
     for (int p = 0; p < n; p++)
     {

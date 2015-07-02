@@ -152,7 +152,7 @@ protected:
   virtual void mouseReleaseEvent(QMouseEvent* event) override;
   virtual void mouseMoveEvent(QMouseEvent* event) override;
 private:
-  void performDrag(const QPointF& endPos);
+  void dragImpl(const QPointF& endPos);
   void makeConnection(const QPointF& pos);
   void tryConnectPort(const QPointF& pos, PortWidget* port);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;

@@ -30,18 +30,18 @@
 // ServiceManager.cc
 
 #include <Core/Services/ServiceManager.h>
+#include <boost/thread.hpp>
 
 namespace SCIRun {
 
-ServiceManager::ServiceManager(ServiceDBHandle db, IComAddress address,
+ServiceManager::ServiceManager(ServiceDBHandle db, IComAddressHandle address,
                                ServiceLogHandle log) :
-  Runnable(true),
   log_(log),
   db_(db),
   address_(address)
 {
   // create an empty log
-  if (log_.get_rep() == 0) log_ = new ServiceLog("");
+  if (!log_) log_.reset(new ServiceLog(""));
 }
 
 ServiceManager::~ServiceManager()
@@ -59,7 +59,7 @@ void ServiceManager::run()
   log_->putmsg("ServiceManager: Starting ServiceManager");
   IComSocket serversocket;
 	
-  if (!address_.isvalid()) 
+  if (!address_->isvalid()) 
   {
     log_->putmsg("ServiceManager: invalid address for server, shutting down service manager");
     std::cerr << "-------------------------------------------------------" << std::endl;
@@ -70,7 +70,7 @@ void ServiceManager::run()
     return;		
   }
   
-  if(!(serversocket.create(address_.getprotocol()))) 
+  if(!(serversocket.create(address_->getprotocol()))) 
   {
     log_->putmsg("ServiceManager: socket.create() failed, shutting down service manager");
     log_->putmsg(std::string("ServiceFrame: socket error = ") + serversocket.geterror());
@@ -84,7 +84,7 @@ void ServiceManager::run()
     return;	
   }
 	
-  if(!(serversocket.bind(address_))) 
+  if(!(serversocket.bind(*address_))) 
   {
     log_->putmsg("ServiceManager: socket.bind() failed, shutting down service manager");
     std::string errormsg = "ServiceManager: socket error = " + serversocket.geterror();
@@ -99,7 +99,7 @@ void ServiceManager::run()
     return;	
   }
 
-  std::string status = "ServiceManager: servicemanager address: " + address_.geturl();
+  std::string status = "ServiceManager: servicemanager address: " + address_->geturl();
   log_->putmsg(status);
   log_->putmsg("ServiceManager: listening...");
 
@@ -119,8 +119,8 @@ void ServiceManager::run()
   {
     // LOOP FOREVER...
 
-    IComSocket clientsocket;
-    clientsocket.close();
+    IComSocketHandle clientsocket(new IComSocket);
+    clientsocket->close();
     log_->putmsg("ServiceManager: connection attempt made by remote host");
     
     if (serversocket.accept(clientsocket)) 
@@ -129,13 +129,12 @@ void ServiceManager::run()
       log_->putmsg(status);
 
       // Since this is a runnable it will destroy itself on exit
-      ServiceFrame *sf;
-      sf = new ServiceFrame(clientsocket,db_,log_);
+      ServiceFrame sf(clientsocket,db_,log_);
 
       // The new thread to be launched
-      Thread* thread = new Thread(sf,"service server");
+      boost::thread thread(sf);
       log_->putmsg("ServiceManager: new thread to handle service");
-      thread->detach();	// It will do all it's stuff by itself
+      thread.detach();	// It will do all its stuff by itself
     }
     else 
     {
