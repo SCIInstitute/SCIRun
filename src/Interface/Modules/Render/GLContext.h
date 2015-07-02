@@ -38,12 +38,13 @@
 #define NOMINMAX
 
 #include <Interface/Modules/Render/GLContextPlatformCompatibility.h>
+#include <Interface/Modules/Render/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
 /// Context that will be sent to spire.
-class GLContext
+class SCISHARE GLContext
 {
 public:
   GLContext(QGLWidget* glWidget);

@@ -149,7 +149,6 @@ public:
     /// Persistent I/O.
     static PersistentTypeID type_id;
     virtual void io(Piostream &stream);
-    SCISHARE friend void Pio(Piostream&, Transform*&);
 };
 
 SCISHARE Point operator*(Transform &t, const Point &d);
@@ -158,7 +157,6 @@ SCISHARE Vector operator*(Transform &t, const Vector &d);
 SCISHARE Tensor operator*(const Transform &t, const Tensor &d);
 SCISHARE Tensor operator*(const Tensor &d, const Transform &t);
 
-SCISHARE void Pio(Piostream&, Transform*&);
 SCISHARE void Pio_old(Piostream&, Transform&);
 SCISHARE const TypeDescription* get_type_description(Transform*);
 
