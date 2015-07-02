@@ -43,7 +43,7 @@
       <x>10</x>
       <y>21</y>
       <width>141</width>
-      <height>61</height>
+      <height>74</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -54,17 +54,24 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QRadioButton" name="noneRadioButton_">
+     <item row="1" column="1">
+      <widget class="QRadioButton" name="affineRadioButton_">
+       <property name="text">
+        <string>Affine</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QRadioButton" name="rigidRadioButton_">
        <property name="text">
         <string>None</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QRadioButton" name="affineRadioButton_">
+     <item row="2" column="0">
+      <widget class="QRadioButton" name="noneRadioButton_">
        <property name="text">
-        <string>Affine</string>
+        <string>Rigid</string>
        </property>
       </widget>
      </item>
