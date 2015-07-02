@@ -55,10 +55,11 @@ private Q_SLOTS:
 
   void pushTable();
   void updateStimTypeColumn();
+  void updateInvertNormals();
   void updatePrototypeColumnValues(int index);
   void togglePrototypeColumnReadOnly(int state);
   void toggleThicknessColumnReadOnly(int state);
-  void updateThicknessColumnValues(double value);
+  void updateThicknessColumnValues(double value);  
 
 private:
   bool comboBoxesSetup_;
