@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>35</count>
+			<count>36</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AddKnownsToLinearSystem:0</first>
@@ -103,6 +103,34 @@
 									<value>
 										<which>2</which>
 										<value>double</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ConvertMatrixType:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ConvertMatrixType</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>OutputMatrixType</name>
+								</first>
+								<second>
+									<name>OutputMatrixType</name>
+									<value>
+										<which>2</which>
+										<value>dense</value>
 									</value>
 								</second>
 							</item>
@@ -1793,7 +1821,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>5.00000010187778287e+02</value>
+										<value>5.00000010187778003e+02</value>
 									</value>
 								</second>
 							</item>
@@ -3208,14 +3236,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>221</value>
+													<value>439</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>204</value>
+													<value>264</value>
 												</value>
 											</item>
 										</value>
@@ -3228,7 +3256,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>52</count>
+			<count>54</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>AddKnownsToLinearSystem:0</moduleId1_>
@@ -3359,6 +3387,18 @@
 				<moduleId2_>GetFieldData:1</moduleId2_>
 				<port2_>
 					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertMatrixType:0</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetFieldData:1</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3632,7 +3672,7 @@
 					<name>Result</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetFieldData:1</moduleId2_>
+				<moduleId2_>ConvertMatrixType:0</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
@@ -3831,6 +3871,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>ShowField:6</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>9</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>SolveLinearSystem:0</moduleId1_>
 				<port1_>
 					<name>Solution</name>
@@ -3857,7 +3909,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>35</count>
+		<count>36</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
@@ -3892,6 +3944,13 @@
 			<second>
 				<first>-9.77299999999999841e+02</first>
 				<second>-8.79949999999999704e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ConvertMatrixType:0</first>
+			<second>
+				<first>-1.06400000000000000e+03</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -4044,8 +4103,8 @@
 		<item>
 			<first>SetFieldData:1</first>
 			<second>
-				<first>-1.11664999999999895e+03</first>
-				<second>-1.60999999999999943e+02</second>
+				<first>-1.14000000000000000e+03</first>
+				<second>0.00000000000000000e+00</second>
 			</second>
 		</item>
 		<item>
@@ -4079,8 +4138,8 @@
 		<item>
 			<first>ShowField:6</first>
 			<second>
-				<first>-1.11204999999999927e+03</first>
-				<second>-3.56499999999999773e+01</second>
+				<first>-1.14000000000000000e+03</first>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -4100,8 +4159,8 @@
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-1.27624962500000015e+03</first>
-				<second>1.95965125000000000e+02</second>
+				<first>-1.29200000000000000e+03</first>
+				<second>3.04000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -4257,7 +4316,7 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="22" tracking_level="0" version="0">
-		<count>35</count>
+		<count>36</count>
 		<item_version>0</item_version>
 		<item class_id="23" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
@@ -4277,6 +4336,10 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>ConvertIndicesToFieldData:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ConvertMatrixType:0</first>
 			<second>0</second>
 		</item>
 		<item>
