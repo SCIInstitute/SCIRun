@@ -262,7 +262,6 @@ namespace SCIRun {
             
             int axesFailCount_;
             std::shared_ptr<Gui::GLContext>   mContext;         ///< Context to use for rendering.
-            std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
             std::vector<SRObject>             mSRObjects;       ///< All SCIRun objects.
             Core::Geometry::BBox              mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
             
@@ -279,6 +278,7 @@ namespace SCIRun {
             ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
             RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
             const int frameInitLimit_;
+            std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
         };
         
     } // namespace Render
