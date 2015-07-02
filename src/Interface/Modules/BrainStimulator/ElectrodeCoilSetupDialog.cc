@@ -65,13 +65,17 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   addCheckBoxManager(invertNormalsCheckBox_, Parameters::InvertNormalsCheckBox);
   addCheckBoxManager(OrientTMSCoilRadialToScalpCheckBox_, Parameters::OrientTMSCoilRadialToScalpCheckBox);
   addCheckBoxManager(PutElectrodesOnScalpCheckBox_, Parameters::PutElectrodesOnScalpCheckBox);
+  addCheckBoxManager(InterpolateElectrodeShapeCheckbox_, Parameters::InterpolateElectrodeShapeCheckbox);
   addDoubleSpinBoxManager(electrodethicknessSpinBox_, Parameters::ElectrodethicknessSpinBox);
   connect(electrode_coil_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(validateCell(int, int)));
   connect(AllInputsTDCS_, SIGNAL(stateChanged(int)), this, SLOT(updateStimTypeColumn()));
   connect(invertNormalsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateInvertNormals()));
   connect(ProtoTypeInputCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(togglePrototypeColumnReadOnly(int)));
   connect(ProtoTypeInputComboBox_, SIGNAL(currentIndexChanged(int)), this, SLOT(updatePrototypeColumnValues(int)));
+  
+  connect(PutElectrodesOnScalpCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(toggleThicknessColumnReadOnly(int)));
   connect(electrodethicknessCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(toggleThicknessColumnReadOnly(int)));
+  
   connect(electrodethicknessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(updateThicknessColumnValues(double)));
 }
 

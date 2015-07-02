@@ -31,6 +31,7 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
+#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
@@ -79,6 +80,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessSpinBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, InvertNormalsCheckBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, OrientTMSCoilRadialToScalpCheckBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, PutElectrodesOnScalpCheckBox);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, InterpolateElectrodeShapeCheckbox);
 
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::FINAL_ELECTRODES_FIELD("FINAL_ELECTRODES_FIELD");
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::MOVED_ELECTRODES_FIELD("MOVED_ELECTRODES_FIELD");
@@ -121,6 +123,7 @@ ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
   addParameter(ElectrodethicknessSpinBox, 1.0); 
   addParameter(OrientTMSCoilRadialToScalpCheckBox, true);
   addParameter(PutElectrodesOnScalpCheckBox, false);
+  addParameter(InterpolateElectrodeShapeCheckbox, false);
  }
 }
 
@@ -617,8 +620,9 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       else
         scalp=scalp_mesh;	
  
- auto do_not_create_interpolated_elc_shapes = get(Parameters::PutElectrodesOnScalpCheckBox).toBool();
-	
+ auto compute_third_output = get(Parameters::PutElectrodesOnScalpCheckBox).toBool();
+ auto interpolate_elec_shape = get(Parameters::InterpolateElectrodeShapeCheckbox).toBool();
+ 
  if (tab_values.size()==elc_prototyp_map.size() && elc_thickness.size()==elc_prototyp_map.size() && elc_x.size()==elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size())
  {  
   VMesh* scalp_vmesh = scalp->vmesh(); 
@@ -774,9 +778,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     num_valid_electrode_definition++;   
     
     tmp_tdcs_elc_vfld->set_all_values(0.0);
-    
-   if(do_not_create_interpolated_elc_shapes)
-   {
     /// since the protoype has to be centered around coordinate origin
     /// it will envelop the scalp/electrode sponge surface at its final location (it is now!)
     /// scalp needs to have data stored on nodes for clipping to prevent having frayed electrode sponge corners
@@ -797,23 +798,114 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      algo_sdf.run(scalp, tmp_tdcs_elc, sdf_output);  
        else
          algo_sdf.run(scalp_linear_data, tmp_tdcs_elc, sdf_output); /// assumed that CalculateSignedDistanceFieldAlgo output has always values defined on nodes
-	  
+    
     VField* tmp_sdf_vfld  = sdf_output->vfield();   
     VMesh*  tmp_sdf_vmsh  = sdf_output->vmesh(); 
     
-    tmp_sdf_vmsh->synchronize(Mesh::NODE_LOCATE_E);
-    Point tmp_p;
+    FieldHandle final_electrode_sponge_surf;
+    std::vector<double> tmp_field_bin_values;
+    bool found_elc_surf=false;
+    std::vector<FieldHandle> result;
     
-    double label_switch=0.0,fld_value=std::numeric_limits<double>::quiet_NaN(); 
- 
-    for (VMesh::Elem::index_type k=0; k<tmp_sdf_vmsh->num_elems(); k++) 
-     {
-       VMesh::Node::array_type onodes(3); 
-       tmp_sdf_vmsh->get_nodes(onodes, k);
-       
-       for (VMesh::Node::index_type l=0; l<3; l++)
+    if (compute_third_output) /// a lot of code is inside this if (make sure it creates proper results)
+    {
+     if(interpolate_elec_shape)
+     {      
+      FieldHandle sdf_output_linear;
+      using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
+      {
+       convert_field_basis.set_option(OutputType, "Linear");
+       convert_field_basis.set(BuildBasisMapping, false); 
+       convert_field_basis.runImpl(sdf_output, sdf_output_linear);
+      }  
+      
+      /// use clipvolumebyisovalue to get the electrode patch edges right
+      FieldHandle clipmeshbyisoval_output; 
+      ClipMeshByIsovalueAlgo clipmeshbyisoval_algo;
+      clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::ScalarIsoValue, 0.0);
+      clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::LessThanIsoValue, true);
+      clipmeshbyisoval_algo.run(sdf_output_linear, clipmeshbyisoval_output);
+      /// check if we could find the electrode location r that is projected onto the scalp to ensure its the desired surface   
+      bool found_correct_surface=false;
+      if (clipmeshbyisoval_output)
+      {
+       VMesh* clipmeshbyisoval_vmesh = clipmeshbyisoval_output->vmesh();
+       if (clipmeshbyisoval_vmesh)
+       {
+        clipmeshbyisoval_vmesh->synchronize(Mesh::NODE_LOCATE_E); 
+	double distance=0;
+	Point p;
+	VMesh::Node::index_type didx;
+        for (VMesh::Node::index_type l=0; l<clipmeshbyisoval_vmesh->num_nodes(); l++)
         {
-	 tmp_sdf_vmsh->get_center(tmp_p,onodes[l]);
+         clipmeshbyisoval_vmesh->find_closest_node(distance,p,didx,r);
+	 if (distance==0)
+	 {
+	  found_correct_surface=true;	  
+	  break;
+	 }
+        }
+       }
+       if(!found_correct_surface)
+       {
+        clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::ScalarIsoValue, 0.0);
+        clipmeshbyisoval_algo.set(ClipMeshByIsovalueAlgo::LessThanIsoValue, false);
+	clipmeshbyisoval_algo.run(sdf_output, clipmeshbyisoval_output);
+        if(clipmeshbyisoval_output)
+        {
+         clipmeshbyisoval_vmesh = clipmeshbyisoval_output->vmesh();
+	 if (clipmeshbyisoval_vmesh)
+	 {
+	  clipmeshbyisoval_vmesh->synchronize(Mesh::NODE_LOCATE_E); 
+          for (VMesh::Node::index_type l=0; l<clipmeshbyisoval_vmesh->num_nodes(); l++)
+          {	   
+	   clipmeshbyisoval_vmesh->find_closest_node(distance,p,l,r);
+	   if (distance==0)
+	   {
+	    found_correct_surface=true;
+	    break;
+	   }
+	  }
+	 }
+        }
+	if (!found_correct_surface)
+	{
+         std::ostringstream ostr3;
+         ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode. Make sure that prototype encapsulated scalp!" << std::endl;
+         remark(ostr3.str());
+         skip_current_iteration=true;
+	 continue;
+	}
+	
+       }
+       
+        using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
+        {
+         convert_field_basis.set_option(OutputType, "Constant");
+         convert_field_basis.set(BuildBasisMapping, false); 
+         convert_field_basis.runImpl(clipmeshbyisoval_output, final_electrode_sponge_surf);
+        }  
+	
+	final_electrode_sponge_surf->vfield()->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero  
+	result.push_back(final_electrode_sponge_surf);
+       
+      }
+      
+     } else
+     {
+      tmp_sdf_vmsh->synchronize(Mesh::NODE_LOCATE_E);
+      Point tmp_p;
+    
+      double label_switch=0.0,fld_value=std::numeric_limits<double>::quiet_NaN(); 
+ 
+      for (VMesh::Elem::index_type k=0; k<tmp_sdf_vmsh->num_elems(); k++) 
+      {
+        VMesh::Node::array_type onodes(3); 
+        tmp_sdf_vmsh->get_nodes(onodes, k);
+       
+        for (VMesh::Node::index_type l=0; l<3; l++)
+        {
+         tmp_sdf_vmsh->get_center(tmp_p,onodes[l]);
 	 if(tmp_p.x()==r.x() && tmp_p.y()==r.y() && tmp_p.z()==r.z())
 	 {
 	  tmp_sdf_vfld->get_value(fld_value,k);
@@ -827,118 +919,119 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	}
       }
     
-    if (!tmp_sdf_vfld || tmp_sdf_vfld->num_values()<=0)
-    {
-     std::ostringstream ostr3;
-     ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode. Make sure that prototype encapsulated scalp." << std::endl;
-     remark(ostr3.str());
-     skip_current_iteration=true;
-     continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 	
-    } 
-
-    std::vector<double> tmp_field_bin_values;
-    bool found_elc_surf=false;
-    tmp_field_bin_values.resize(tmp_sdf_vfld->num_values());
-    for (VMesh::Node::index_type l=0; l<tmp_sdf_vfld->num_values(); l++) /// find out which nodes are inside the prototype
-    {
-     double tmp_sdf_fld_val=std::numeric_limits<double>::quiet_NaN(); /// store binary classification of which scalp nodes are inside prototype and which are outside
-     tmp_sdf_vfld->get_value(tmp_sdf_fld_val,l);
-     if (tmp_sdf_fld_val <= 0.0)
+     if (!tmp_sdf_vfld || tmp_sdf_vfld->num_values()<=0)
      {
-      tmp_field_bin_values[l]=(1.0-label_switch);
-      found_elc_surf=true;
-     } else
-       tmp_field_bin_values[l]=(label_switch-0.0);
-    }     
-    FieldHandle final_electrode_sponge_surf;
-    
-    if(!found_elc_surf)
-    {
-     std::ostringstream ostr3;
-     ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (after sdf binarization). Make sure that prototype encapsulates scalp." << std::endl;
-     remark(ostr3.str());
-     skip_current_iteration=true;
-     continue;/// in that case go to the next electrode -> leave the for loop thats iterating over
-    }  
-	  
-    using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
-    {
-     convert_field_basis.set_option(OutputType, "Constant");
-     convert_field_basis.set(BuildBasisMapping, false); 
-     convert_field_basis.runImpl(sdf_output, final_electrode_sponge_surf);
-    }    
-    VField* final_electrode_sponge_surf_fld = final_electrode_sponge_surf->vfield();
-    VMesh*  final_electrode_sponge_surf_msh = final_electrode_sponge_surf->vmesh();
-    
-    if (!final_electrode_sponge_surf_fld || final_electrode_sponge_surf_fld->num_values()<=0 || !final_electrode_sponge_surf_msh || final_electrode_sponge_surf_msh->num_elems()<=0)
-    {
-     std::ostringstream ostr3;
-     ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
-     remark(ostr3.str());
-     skip_current_iteration=true;
-     continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 
-    }   
-     
-    final_electrode_sponge_surf_fld->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero   
-    for (VMesh::Elem::index_type l=0; l<final_electrode_sponge_surf_msh->num_elems(); l++) 
-    {
-      VMesh::Node::array_type onodes(3); 
-      tmp_sdf_vmsh->get_nodes(onodes, l);
-      if (tmp_field_bin_values[onodes[0]]==1.0 && tmp_field_bin_values[onodes[1]]==1.0 && tmp_field_bin_values[onodes[2]]==1.0)
-      {
-        final_electrode_sponge_surf_fld->set_value(1.0,l); 
-	found_elc_surf=true;
-      }
-        else
-          final_electrode_sponge_surf_fld->set_value(0.0,l);
-    } 
-     
-    if (!found_elc_surf)
-    {
-     std::ostringstream ostr3;
-     ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
-     remark(ostr3.str());
-     skip_current_iteration=true;
-     continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
-    }
-     
-     /// are there multiple not connected scalp surfaces that are inside the prototype
-     /// use projected point r (that was projected on scalp surface) to differentiate which surface is the one to use
-     /// but first splitbydomain to get the surface with tha value 1.0
-     SplitFieldByDomainAlgo algo_splitfieldbydomain;
-     algo_splitfieldbydomain.setLogger(getLogger());
-     FieldList final_electrode_sponge_surf_domainsplit;  
-     algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortBySize, true);
-     algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortAscending, false);
-     algo_splitfieldbydomain.runImpl(final_electrode_sponge_surf, final_electrode_sponge_surf_domainsplit);
-     found_elc_surf=false;
-     FieldHandle find_elc_surf;
-     VMesh::Elem::index_type c_ind=0;
-     for(long l=0;l<final_electrode_sponge_surf_domainsplit.size();l++)
+      std::ostringstream ostr3;
+      ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode. Make sure that prototype encapsulated scalp." << std::endl;
+      remark(ostr3.str());
+      skip_current_iteration=true;
+      continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 	
+     } 
+   
+     tmp_field_bin_values.resize(tmp_sdf_vfld->num_values());
+     for (VMesh::Node::index_type l=0; l<tmp_sdf_vfld->num_values(); l++) /// find out which nodes are inside the prototype
      {
-      VField* final_electrode_sponge_surf_domainsplit_fld = final_electrode_sponge_surf_domainsplit[l]->vfield(); 
-      double tmp_val=std::numeric_limits<double>::quiet_NaN();
-      final_electrode_sponge_surf_domainsplit_fld->get_value(tmp_val,c_ind);
-      if(tmp_val==1.0)
+      double tmp_sdf_fld_val=std::numeric_limits<double>::quiet_NaN(); /// store binary classification of which scalp nodes are inside prototype and which are outside
+      tmp_sdf_vfld->get_value(tmp_sdf_fld_val,l);
+      if (tmp_sdf_fld_val <= 0.0)
       {
-       find_elc_surf=final_electrode_sponge_surf_domainsplit[l];
+       tmp_field_bin_values[l]=(1.0-label_switch);
        found_elc_surf=true;
-      }
-     }
-
+      } else
+       tmp_field_bin_values[l]=(label_switch-0.0);
+     }    
+    
      if(!found_elc_surf)
      {
+      std::ostringstream ostr3;
+      ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (after sdf binarization). Make sure that prototype encapsulates scalp." << std::endl;
+      remark(ostr3.str());
+      skip_current_iteration=true;
+      continue;/// in that case go to the next electrode -> leave the for loop thats iterating over
+     }  
+	  
+      using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
+      {
+       convert_field_basis.set_option(OutputType, "Constant");
+       convert_field_basis.set(BuildBasisMapping, false); 
+       convert_field_basis.runImpl(sdf_output, final_electrode_sponge_surf);
+      }    
+
+     VField* final_electrode_sponge_surf_fld = final_electrode_sponge_surf->vfield();
+     VMesh*  final_electrode_sponge_surf_msh = final_electrode_sponge_surf->vmesh();
+
+     if (!final_electrode_sponge_surf_fld || final_electrode_sponge_surf_fld->num_values()<=0 || !final_electrode_sponge_surf_msh || final_electrode_sponge_surf_msh->num_elems()<=0)
+     {
+      std::ostringstream ostr3;
+      ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
+      remark(ostr3.str());
+      skip_current_iteration=true;
+      continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 
+     }   
+     
+     final_electrode_sponge_surf_fld->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero   
+     
+     for (VMesh::Elem::index_type l=0; l<final_electrode_sponge_surf_msh->num_elems(); l++) 
+      {
+       VMesh::Node::array_type onodes(3); 
+       tmp_sdf_vmsh->get_nodes(onodes, l);
+       if (tmp_field_bin_values[onodes[0]]==1.0 && tmp_field_bin_values[onodes[1]]==1.0 && tmp_field_bin_values[onodes[2]]==1.0)
+       {
+        final_electrode_sponge_surf_fld->set_value(1.0,l); 
+	found_elc_surf=true;
+       }
+        else
+          final_electrode_sponge_surf_fld->set_value(0.0,l);
+      } 
+    
+      if (!found_elc_surf)
+      {
+       std::ostringstream ostr3;
+       ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
+       remark(ostr3.str());
+       skip_current_iteration=true;
+       continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
+      }
+     
+      /// are there multiple not connected scalp surfaces that are inside the prototype
+      /// use projected point r (that was projected on scalp surface) to differentiate which surface is the one to use
+      /// but first splitbydomain to get the surface with tha value 1.0
+      SplitFieldByDomainAlgo algo_splitfieldbydomain;
+      algo_splitfieldbydomain.setLogger(getLogger());
+      FieldList final_electrode_sponge_surf_domainsplit;  
+      algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortBySize, true);
+      algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortAscending, false);
+      algo_splitfieldbydomain.runImpl(final_electrode_sponge_surf, final_electrode_sponge_surf_domainsplit);
+      found_elc_surf=false;
+      FieldHandle find_elc_surf;
+      VMesh::Elem::index_type c_ind=0;
+      for(long l=0;l<final_electrode_sponge_surf_domainsplit.size();l++)
+      {
+       VField* final_electrode_sponge_surf_domainsplit_fld = final_electrode_sponge_surf_domainsplit[l]->vfield(); 
+       double tmp_val=std::numeric_limits<double>::quiet_NaN();
+       final_electrode_sponge_surf_domainsplit_fld->get_value(tmp_val,c_ind);
+       if(tmp_val==1.0)
+       {
+        find_elc_surf=final_electrode_sponge_surf_domainsplit[l];
+        found_elc_surf=true;
+       }
+      }
+
+      if(!found_elc_surf)
+      {
        std::ostringstream ostr3;
        ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (after domainsplit). Make sure that prototype encapsulates scalp." << std::endl;
        remark(ostr3.str());
        found_elc_surf=false;
        continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
-     }
+      }
 
-     SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
-     algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-     algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
-     std::vector<FieldHandle> result = algo_splitbyconnectedregion.run(find_elc_surf);
+      SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
+      algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
+      algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+      result = algo_splitbyconnectedregion.run(find_elc_surf);
+     }
+     
      found_elc_surf=false;
      double distance=std::numeric_limits<double>::quiet_NaN();
      VMesh::Node::index_type didx;
@@ -954,7 +1047,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       if (distance==0)
       {    
        found_elc_surf=true;
-       scalp_vmesh->synchronize(Mesh::NODE_LOCATE_E);
+       scalp_vmesh->synchronize(Mesh::NORMALS_E);
        Point q;
        Vector norm;
        
@@ -971,24 +1064,21 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        {
         tmp_fld_msh->get_center(p,k);
 	scalp_vmesh->find_closest_node(distance,q,didx,p);
-	if (distance==0)
-	{
-	 scalp_vmesh->synchronize(Mesh::NORMALS_E);
-	 scalp_vmesh->get_normal(norm,didx);
-	 double x=norm.x(),y=norm.y(),z=norm.z();
-	 double normal_mag=sqrt(x*x+y*y+z*z);
-	 x/=normal_mag;
-         y/=normal_mag;
-         z/=normal_mag;
-	 Point tmp_pt;
-	 if (!flip_normal)
-	   tmp_pt=Point(q.x()+x*elc_thickness[i],q.y()+y*elc_thickness[i],q.z()+z*elc_thickness[i]);
+	scalp_vmesh->get_normal(norm,didx);
+	double x=norm.x(),y=norm.y(),z=norm.z();
+	double normal_mag=sqrt(x*x+y*y+z*z);
+	x/=normal_mag;
+        y/=normal_mag;
+        z/=normal_mag;
+	Point tmp_pt;
+	if (!flip_normal)
+	  tmp_pt=Point(p.x()+x*elc_thickness[i],p.y()+y*elc_thickness[i],p.z()+z*elc_thickness[i]);
 	     else
-	      tmp_pt=Point(q.x()-x*elc_thickness[i],q.y()-y*elc_thickness[i],q.z()-z*elc_thickness[i]); 
+	      tmp_pt=Point(p.x()-x*elc_thickness[i],p.y()-y*elc_thickness[i],p.z()-z*elc_thickness[i]); 
 	      
 	 output_vmesh->add_point(tmp_pt);
 	 count_pts++;
-	}
+	
        }
        int offset=nr_elc_sponge_triangles_on_scalp;
        
@@ -1130,9 +1220,9 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
          remark(ostr3.str());
          continue;    
        }
-       
+  
       }
-     }
+     } 
     }
    } else
    {
@@ -1142,10 +1232,11 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     skip_current_iteration=true;
     continue; 	    
    } 
+
   tdcs_vfld->resize_values();
   tdcs_vfld->set_values(field_values);
   
-  if(do_not_create_interpolated_elc_shapes)
+  if(compute_third_output)
   {
    output_vfld->resize_values();
    output_vfld->set_values(field_values_elc_on_scalp);
@@ -1166,15 +1257,15 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     }
    }
   }
+
  }
  
- if(do_not_create_interpolated_elc_shapes)
+ if(compute_third_output)
  {
   VMesh::Face::size_type isize;
   output->vmesh()->size(isize);
   flipnormal_algo.run(output, output);
  }
- 
  } else
  {
   std::ostringstream ostr3;
