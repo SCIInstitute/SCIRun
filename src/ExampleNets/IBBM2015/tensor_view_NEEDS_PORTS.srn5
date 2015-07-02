@@ -38,7 +38,7 @@
 									<name>FunctionString</name>
 									<value>
 										<which>2</which>
-										<value>RESULT = abs(DATA1);</value>
+										<value>RESULT = fracanisotropy(DATA1);</value>
 									</value>
 								</second>
 							</item>
@@ -78,7 +78,7 @@
 									<name>FunctionString</name>
 									<value>
 										<which>2</which>
-										<value>DATA1 &lt; 0;</value>
+										<value>DATA2 &gt; 0;</value>
 									</value>
 								</second>
 							</item>
@@ -182,7 +182,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -222,7 +222,7 @@
 									<name>Dim_i</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>75</value>
 									</value>
 								</second>
 							</item>
@@ -234,7 +234,7 @@
 									<name>Dim_j</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>109</value>
 									</value>
 								</second>
 							</item>
@@ -246,7 +246,7 @@
 									<name>Dim_k</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>29</value>
 									</value>
 								</second>
 							</item>
@@ -322,7 +322,7 @@
 									<name>Dim_i</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>75</value>
 									</value>
 								</second>
 							</item>
@@ -334,7 +334,7 @@
 									<name>Dim_j</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>109</value>
 									</value>
 								</second>
 							</item>
@@ -346,7 +346,7 @@
 									<name>Dim_k</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>29</value>
 									</value>
 								</second>
 							</item>
@@ -400,8 +400,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>NrrdFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/IBBM2015/demo-DTI.nrrd</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -438,7 +462,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>8.46298356643100491e-01</value>
 									</value>
 								</second>
 							</item>
@@ -450,7 +474,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -538,7 +562,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -562,7 +586,7 @@
 									<name>TextBlue</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -574,7 +598,7 @@
 									<name>TextGreen</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -586,7 +610,7 @@
 									<name>TextRed</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -710,7 +734,7 @@
 									<name>ScalarsScale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -734,7 +758,7 @@
 									<name>ScalarsTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.50000000000000020e-001</value>
+										<value>6.50000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -782,7 +806,7 @@
 									<name>ShowTensorTab</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -878,7 +902,7 @@
 									<name>TensorsScale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -902,7 +926,7 @@
 									<name>TensorsTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.50000000000000020e-001</value>
+										<value>6.50000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -950,7 +974,7 @@
 									<name>VectorsScale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -974,7 +998,7 @@
 									<name>VectorsTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.50000000000000020e-001</value>
+										<value>6.50000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1190,78 +1214,78 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-5.24000000000000000e+002</first>
-				<second>-4.06000000000000000e+002</second>
+				<first>-5.24000000000000000e+02</first>
+				<second>-4.06000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ClipFieldByFunction:0</first>
 			<second>
-				<first>-8.73000000000000000e+002</first>
-				<second>-1.62000000000000000e+002</second>
+				<first>-8.82000000000000000e+02</first>
+				<second>-1.59000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ClipFieldByFunction:1</first>
 			<second>
-				<first>-5.89000000000000000e+002</first>
-				<second>-1.64000000000000000e+002</second>
+				<first>-5.20000000000000000e+02</first>
+				<second>-1.54000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>5.90000000000000000e+001</first>
-				<second>-3.97000000000000000e+002</second>
+				<first>5.90000000000000000e+01</first>
+				<second>-3.97000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetSliceFromStructuredFieldByIndices:0</first>
 			<second>
-				<first>-9.88000000000000000e+002</first>
-				<second>-4.56000000000000000e+002</second>
+				<first>-9.88000000000000000e+02</first>
+				<second>-4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetSliceFromStructuredFieldByIndices:1</first>
 			<second>
-				<first>-4.85000000000000000e+002</first>
-				<second>-2.78000000000000000e+002</second>
+				<first>-4.85000000000000000e+02</first>
+				<second>-2.78000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>-6.84000000000000000e+002</first>
-				<second>-6.08000000000000000e+002</second>
+				<first>-6.84000000000000000e+02</first>
+				<second>-6.08000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>-1.84000000000000000e+002</first>
-				<second>-1.58000000000000000e+002</second>
+				<first>-1.84000000000000000e+02</first>
+				<second>-1.58000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowColorMap:0</first>
 			<second>
-				<first>-3.06000000000000000e+002</first>
-				<second>-4.20000000000000000e+001</second>
+				<first>-3.06000000000000000e+02</first>
+				<second>-4.20000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowFieldGlyphs:0</first>
 			<second>
-				<first>-8.00000000000000000e+002</first>
-				<second>2.30000000000000000e+001</second>
+				<first>-8.00000000000000000e+02</first>
+				<second>2.30000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-5.60000000000000000e+002</first>
-				<second>1.61000000000000000e+002</second>
+				<first>-5.60000000000000000e+02</first>
+				<second>1.61000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1274,11 +1298,11 @@
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 0</noteText>
 				<position>0</position>
-				<fontSize>8</fontSize>
+				<fontSize>13</fontSize>
 			</second>
 		</item>
 	</moduleNotes>

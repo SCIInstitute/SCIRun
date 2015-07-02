@@ -56,6 +56,7 @@ class SCISHARE RegisterWithCorrespondencesAlgo : public AlgorithmBase
     /// run the algorithm
     bool runM(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
     bool runA(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
+    bool runP(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
     bool runN(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;
     bool radial_basis_func(VMesh* Cors, VMesh* points, Datatypes::DenseMatrixHandle& Smat)  const;
     bool make_new_points(VMesh* points, VMesh* Cors, const std::vector<double>& coefs, VMesh& omesh, double sumx, double sumy, double sumz) const;
