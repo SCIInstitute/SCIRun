@@ -538,7 +538,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/tissue_modeling/Slab_model_300k.fld</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/tissue_modeling/Slab_model_300k.fld</value>
 									</value>
 								</second>
 							</item>
@@ -578,7 +578,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/tissue_modeling/phie_doubStim_slab_model_40ms.txt</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/tissue_modeling/phie_doubStim_slab_model_40ms.txt</value>
 									</value>
 								</second>
 							</item>

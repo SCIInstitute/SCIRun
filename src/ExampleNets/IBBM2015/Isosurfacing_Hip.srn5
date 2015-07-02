@@ -16,7 +16,7 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>1</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
@@ -25,6 +25,30 @@
 								<second class_id="10" tracking_level="0" version="0">
 									<name>GUIIsoValue</name>
 									<value class_id="11" tracking_level="0" version="0">
+										<which>1</which>
+										<value>4.00000000000000000e+02</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>IsovalueChoice</name>
+								</first>
+								<second>
+									<name>IsovalueChoice</name>
+									<value>
+										<which>2</which>
+										<value>Single</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SingleIsoValue</name>
+								</first>
+								<second>
+									<name>SingleIsoValue</name>
+									<value>
 										<which>1</which>
 										<value>4.00000000000000000e+02</value>
 									</value>
@@ -182,7 +206,7 @@
 									<name>FileTypeName</name>
 									<value>
 										<which>2</which>
-										<value>NrrdFile[DataOnNodes]</value>
+										<value>NrrdFile</value>
 									</value>
 								</second>
 							</item>
@@ -194,7 +218,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/hip_scan_lowres.nrrd</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/hip_scan_lowres.nrrd</value>
 									</value>
 								</second>
 							</item>
@@ -745,14 +769,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>506</value>
+													<value>228</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>363</value>
+													<value>246</value>
 												</value>
 											</item>
 										</value>

@@ -156,6 +156,7 @@ public Q_SLOTS:
   void collapseToMiniMode();
   void expandToFullMode();
   void updateMetadata(bool active);
+  void updatePortSpacing(bool highlighted);
   static void setGlobalMiniMode(bool mini);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
@@ -228,6 +229,8 @@ private:
   Qt::DockWidgetArea allowedDockArea() const;
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   QMenu* getReplaceWithMenu();
+  void setInputPortSpacing(bool highlighted);
+  void setOutputPortSpacing(bool highlighted);
 
   class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;

@@ -4,34 +4,18 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>40</count>
+			<count>47</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ApplyMappingMatrix:0</first>
+				<first>CalculateFieldData:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
 						<category_name_>ChangeFieldData</category_name_>
-						<module_name_>ApplyMappingMatrix</module_name_>
+						<module_name_>CalculateFieldData</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>CalculateFieldData:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>ChangeFieldData</category_name_>
-						<module_name_>CalculateFieldData</module_name_>
-					</module>
-					<state>
-						<stateMap>
 							<count>2</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
@@ -95,6 +79,118 @@
 									<value>
 										<which>2</which>
 										<value>RESULT = abs(DATA1);</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ClipVolumeByIsovalue:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>ClipVolumeByIsovalue</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ScalarIsoValue</name>
+								</first>
+								<second>
+									<name>ScalarIsoValue</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ClipVolumeByIsovalue:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>ClipVolumeByIsovalue</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ScalarIsoValue</name>
+								</first>
+								<second>
+									<name>ScalarIsoValue</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ClipVolumeByIsovalue:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>ClipVolumeByIsovalue</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ScalarIsoValue</name>
+								</first>
+								<second>
+									<name>ScalarIsoValue</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ClipVolumeByIsovalue:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>ClipVolumeByIsovalue</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ScalarIsoValue</name>
+								</first>
+								<second>
+									<name>ScalarIsoValue</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -226,7 +322,7 @@
 									<name>TextEntry</name>
 									<value>
 										<which>2</which>
-										<value></value>
+										<value>-.15</value>
 									</value>
 								</second>
 							</item>
@@ -254,7 +350,7 @@
 									<name>TextEntry</name>
 									<value>
 										<which>2</which>
-										<value></value>
+										<value>1.5</value>
 									</value>
 								</second>
 							</item>
@@ -328,6 +424,54 @@
 			</item>
 			<item>
 				<first>GetFieldBoundary:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GetFieldBoundary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GetFieldBoundary:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GetFieldBoundary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GetFieldBoundary:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GetFieldBoundary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GetFieldBoundary:3</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -783,6 +927,70 @@
 				</second>
 			</item>
 			<item>
+				<first>MapFieldDataOntoNodes:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>MapFieldDataOntoNodes</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InterpolationModel</name>
+								</first>
+								<second>
+									<name>InterpolationModel</name>
+									<value>
+										<which>2</which>
+										<value>interpolateddata</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxDistance</name>
+								</first>
+								<second>
+									<name>MaxDistance</name>
+									<value>
+										<which>1</which>
+										<value>1.79769313486231571e+308</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutsideValue</name>
+								</first>
+								<second>
+									<name>OutsideValue</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Quantity</name>
+								</first>
+								<second>
+									<name>Quantity</name>
+									<value>
+										<which>2</which>
+										<value>value</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ReadField:0</first>
 				<second>
 					<module>
@@ -814,7 +1022,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/geom/rsm-13-10-03-split_heart.fld</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/geom/rsm-13-10-03-split_heart.fld</value>
 									</value>
 								</second>
 							</item>
@@ -854,7 +1062,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/geom/rsm-13-10-03-needle_region.fld</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/geom/rsm-13-10-03-needle_region.fld</value>
 									</value>
 								</second>
 							</item>
@@ -894,7 +1102,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/geom/rsm-13-10-03-needle_geometry.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/geom/rsm-13-10-03-needle_geometry.mat</value>
 									</value>
 								</second>
 							</item>
@@ -934,7 +1142,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/geom/rsm-13-10-03_whole_heart_aligned.fld</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/geom/rsm-13-10-03_whole_heart_aligned.fld</value>
 									</value>
 								</second>
 							</item>
@@ -974,7 +1182,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/geom/rsm-13-10-03-sock_geometry.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/geom/rsm-13-10-03-sock_geometry.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1014,7 +1222,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/data/rsm-13-10-03-ST40-diff-interpolated-data.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/data/rsm-13-10-03-ST40-diff-interpolated-data.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1054,7 +1262,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/data/rsm-13-10-03-Twave-diff-interpolated-data.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/data/rsm-13-10-03-Twave-diff-interpolated-data.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1094,7 +1302,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/data/rsm-13-10-03-ns-st40-diff-avg.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/data/rsm-13-10-03-ns-st40-diff-avg.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1134,7 +1342,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/data/rsm-13-10-03-cs-st40-diff-avg.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/data/rsm-13-10-03-cs-st40-diff-avg.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1174,7 +1382,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/ischemia_vis/data/rsm-13-10-03-cs-T-wave-diff-avg.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/ischemia_vis/data/rsm-13-10-03-cs-T-wave-diff-avg.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1568,7 +1776,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1644,6 +1852,18 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -1663,6 +1883,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1704,13 +1936,25 @@
 							</item>
 							<item>
 								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>ShowEdges</name>
 								</first>
 								<second>
 									<name>ShowEdges</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -2472,7 +2716,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2548,6 +2792,18 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -2567,6 +2823,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2603,6 +2871,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2668,7 +2948,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2744,6 +3024,18 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -2763,6 +3055,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2799,6 +3103,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2864,7 +3180,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2940,6 +3256,18 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -2959,6 +3287,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -3000,13 +3340,25 @@
 							</item>
 							<item>
 								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>ShowEdges</name>
 								</first>
 								<second>
 									<name>ShowEdges</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -3321,14 +3673,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>506</value>
+													<value>237</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>793</value>
+													<value>247</value>
 												</value>
 											</item>
 										</value>
@@ -3341,17 +3693,77 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>41</count>
+			<count>62</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
-				<moduleId1_>ApplyMappingMatrix:0</moduleId1_>
+				<moduleId1_>CalculateFieldData:0</moduleId1_>
 				<port1_ class_id="15" tracking_level="0" version="0">
-					<name>Output</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:6</moduleId2_>
+				<moduleId2_>ClipVolumeByIsovalue:0</moduleId2_>
 				<port2_>
-					<name>Field</name>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CalculateFieldData:1</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ClipVolumeByIsovalue:2</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ClipVolumeByIsovalue:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetFieldBoundary:3</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ClipVolumeByIsovalue:1</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetFieldBoundary:2</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ClipVolumeByIsovalue:2</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>MapFieldDataOntoNodes:2</moduleId2_>
+				<port2_>
+					<name>Destination</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ClipVolumeByIsovalue:3</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetFieldBoundary:1</moduleId2_>
+				<port2_>
+					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3392,6 +3804,54 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ClipVolumeByIsovalue:0</moduleId2_>
+				<port2_>
+					<name>Isovalue</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ClipVolumeByIsovalue:2</moduleId2_>
+				<port2_>
+					<name>Isovalue</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:1</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ClipVolumeByIsovalue:1</moduleId2_>
+				<port2_>
+					<name>Isovalue</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:1</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ClipVolumeByIsovalue:3</moduleId2_>
+				<port2_>
+					<name>Isovalue</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
 				<port1_>
 					<name>ColorMapObject</name>
@@ -3410,6 +3870,42 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:2</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldBoundary:1</moduleId1_>
+				<port1_>
+					<name>BoundaryField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:4</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldBoundary:2</moduleId1_>
+				<port1_>
+					<name>BoundaryField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:5</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldBoundary:3</moduleId1_>
+				<port1_>
+					<name>BoundaryField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:0</moduleId2_>
 				<port2_>
 					<name>Field</name>
 					<id>0</id>
@@ -3520,6 +4016,18 @@
 				<moduleId2_>GetMatrixSlice:3</moduleId2_>
 				<port2_>
 					<name>Current_Index</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>MapFieldDataOntoNodes:2</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:6</moduleId2_>
+				<port2_>
+					<name>Field</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3685,6 +4193,42 @@
 					<name>ColorMapOutput</name>
 					<id>0</id>
 				</port1_>
+				<moduleId2_>ShowField:1</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:3</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:6</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>ShowField:7</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
@@ -3697,7 +4241,19 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ApplyMappingMatrix:0</moduleId2_>
+				<moduleId2_>ClipVolumeByIsovalue:3</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>MapFieldDataOntoNodes:2</moduleId2_>
 				<port2_>
 					<name>Source</name>
 					<id>0</id>
@@ -3740,6 +4296,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>SetFieldData:3</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ClipVolumeByIsovalue:1</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>SetFieldData:4</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
@@ -3773,6 +4341,18 @@
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>4</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:0</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>6</id>
 				</port2_>
 			</item>
 			<item>
@@ -3812,6 +4392,30 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>ShowField:4</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>7</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:5</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>8</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>ShowField:6</moduleId1_>
 				<port1_>
 					<name>SceneGraph</name>
@@ -3838,18 +4442,11 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>40</count>
+		<count>47</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
-			<first>ApplyMappingMatrix:0</first>
-			<second class_id="18" tracking_level="0" version="0">
-				<first>-2.17000000000000000e+02</first>
-				<second>-1.20000000000000000e+01</second>
-			</second>
-		</item>
-		<item>
 			<first>CalculateFieldData:0</first>
-			<second>
+			<second class_id="18" tracking_level="0" version="0">
 				<first>-6.81000000000000000e+02</first>
 				<second>-2.30000000000000000e+02</second>
 			</second>
@@ -3859,6 +4456,34 @@
 			<second>
 				<first>-3.80000000000000000e+02</first>
 				<second>-2.28000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ClipVolumeByIsovalue:0</first>
+			<second>
+				<first>-8.12386514687499698e+02</first>
+				<second>1.01447501562499966e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ClipVolumeByIsovalue:1</first>
+			<second>
+				<first>1.36322345499999915e+03</first>
+				<second>3.98844293749999849e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ClipVolumeByIsovalue:2</first>
+			<second>
+				<first>-5.40619506562499737e+02</first>
+				<second>-1.07100851250000119e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ClipVolumeByIsovalue:3</first>
+			<second>
+				<first>9.62299235312499150e+02</first>
+				<second>4.22889154999999846e+02</second>
 			</second>
 		</item>
 		<item>
@@ -3878,15 +4503,15 @@
 		<item>
 			<first>CreateMatrix:0</first>
 			<second>
-				<first>-4.57000000000000000e+02</first>
-				<second>-1.04000000000000000e+02</second>
+				<first>-1.11479999999999995e+03</first>
+				<second>-2.46599999999999966e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:1</first>
 			<second>
-				<first>8.73000000000000000e+02</first>
-				<second>1.50000000000000000e+01</second>
+				<first>1.39049999999999955e+03</first>
+				<second>8.74499999999999602e+01</second>
 			</second>
 		</item>
 		<item>
@@ -3901,6 +4526,27 @@
 			<second>
 				<first>6.08000000000000000e+02</first>
 				<second>3.04000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>GetFieldBoundary:1</first>
+			<second>
+				<first>9.91299999999999727e+02</first>
+				<second>5.84199999999999818e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>GetFieldBoundary:2</first>
+			<second>
+				<first>1.39149999999999977e+03</first>
+				<second>5.66949999999999818e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>GetFieldBoundary:3</first>
+			<second>
+				<first>-8.92399999999999636e+02</first>
+				<second>2.38049999999999841e+02</second>
 			</second>
 		</item>
 		<item>
@@ -3920,8 +4566,8 @@
 		<item>
 			<first>GetMatrixSlice:2</first>
 			<second>
-				<first>-1.04000000000000000e+02</first>
-				<second>4.68000000000000000e+02</second>
+				<first>-7.17999999999999972e+01</first>
+				<second>6.91100000000000136e+02</second>
 			</second>
 		</item>
 		<item>
@@ -3939,6 +4585,13 @@
 			</second>
 		</item>
 		<item>
+			<first>MapFieldDataOntoNodes:2</first>
+			<second>
+				<first>-2.46099999999999937e+02</first>
+				<second>1.26499999999999915e+01</second>
+			</second>
+		</item>
+		<item>
 			<first>ReadField:0</first>
 			<second>
 				<first>-6.84000000000000000e+02</first>
@@ -3948,8 +4601,8 @@
 		<item>
 			<first>ReadField:1</first>
 			<second>
-				<first>-3.90000000000000000e+02</first>
-				<second>-6.37000000000000000e+02</second>
+				<first>-3.98148087812500194e+02</first>
+				<second>-6.33418339374999960e+02</second>
 			</second>
 		</item>
 		<item>
@@ -3969,8 +4622,8 @@
 		<item>
 			<first>ReadField:4</first>
 			<second>
-				<first>-4.64000000000000000e+02</first>
-				<second>3.95000000000000000e+02</second>
+				<first>-5.20720874999999978e+02</first>
+				<second>4.41000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -3997,8 +4650,8 @@
 		<item>
 			<first>ReadMatrix:3</first>
 			<second>
-				<first>-1.21000000000000000e+02</first>
-				<second>3.65000000000000000e+02</second>
+				<first>-8.87999999999999972e+01</first>
+				<second>5.88100000000000136e+02</second>
 			</second>
 		</item>
 		<item>
@@ -4018,29 +4671,29 @@
 		<item>
 			<first>SetFieldData:0</first>
 			<second>
-				<first>6.80000000000000000e+01</first>
-				<second>-2.27000000000000000e+02</second>
+				<first>1.12850000000000023e+02</first>
+				<second>-2.14350000000000023e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:1</first>
 			<second>
-				<first>-1.35000000000000000e+02</first>
-				<second>5.83000000000000000e+02</second>
+				<first>-1.02799999999999997e+02</first>
+				<second>8.06100000000000136e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:2</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>6.08000000000000000e+02</second>
+				<first>2.26479124999999954e+02</first>
+				<second>6.08000000000000114e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:3</first>
 			<second>
-				<first>9.88000000000000000e+02</first>
-				<second>-1.29000000000000000e+02</second>
+				<first>1.01605634156250005e+03</first>
+				<second>4.35356643749998966e+01</second>
 			</second>
 		</item>
 		<item>
@@ -4060,15 +4713,15 @@
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-7.76227143749999641e+02</first>
-				<second>8.22191937500000023e+01</second>
+				<first>-8.65954571249999276e+02</first>
+				<second>3.90648410312499720e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>6.84000000000000000e+02</second>
+				<first>-6.35276250000000076e+01</first>
+				<second>9.57288874999999962e+02</second>
 			</second>
 		</item>
 		<item>
@@ -4088,22 +4741,22 @@
 		<item>
 			<first>ShowField:4</first>
 			<second>
-				<first>8.49000000000000000e+02</first>
-				<second>1.86000000000000000e+02</second>
+				<first>1.00884999999999991e+03</first>
+				<second>7.32249999999999773e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:5</first>
 			<second>
-				<first>1.20670130625000002e+03</first>
-				<second>1.04776831250000015e+02</second>
+				<first>1.42405130625000015e+03</first>
+				<second>7.02776831249999759e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:6</first>
 			<second>
-				<first>-2.34000000000000000e+02</first>
-				<second>2.19000000000000000e+02</second>
+				<first>-2.33623375000000038e+02</first>
+				<second>4.70887375000000020e+02</second>
 			</second>
 		</item>
 		<item>
@@ -4116,8 +4769,8 @@
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-2.25557637500000055e+02</first>
-				<second>1.07765758125000002e+03</second>
+				<first>-1.65757637500000101e+02</first>
+				<second>1.15585758125000007e+03</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -4364,18 +5017,30 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="22" tracking_level="0" version="0">
-		<count>40</count>
+		<count>47</count>
 		<item_version>0</item_version>
 		<item class_id="23" tracking_level="0" version="0">
-			<first>ApplyMappingMatrix:0</first>
-			<second>0</second>
-		</item>
-		<item>
 			<first>CalculateFieldData:0</first>
 			<second>0</second>
 		</item>
 		<item>
 			<first>CalculateFieldData:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ClipVolumeByIsovalue:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ClipVolumeByIsovalue:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ClipVolumeByIsovalue:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ClipVolumeByIsovalue:3</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -4403,6 +5068,18 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
+			<first>GetFieldBoundary:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldBoundary:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldBoundary:3</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>GetMatrixSlice:0</first>
 			<second>0</second>
 		</item>
@@ -4420,6 +5097,10 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>GetMatrixSlice:4</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>MapFieldDataOntoNodes:2</first>
 			<second>0</second>
 		</item>
 		<item>

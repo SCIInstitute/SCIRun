@@ -47,6 +47,8 @@
 #include <es-render/comp/CommonUniforms.hpp>
 #include <glm/glm.hpp>
 
+#include <Interface/Modules/Render/share.h>
+
 namespace SCIRun {
     namespace Render {
         
@@ -62,14 +64,14 @@ namespace SCIRun {
         // structures. The view scene dialog on qt widgets only serve one purpose:
         // to relay information to this thread so that rendering can take place.
         // Information such as mouse clicks and user settings.
-        class SRInterface
+        class SCISHARE SRInterface
         {
             friend class AssetBootstrap;  ///< For assigning asset entity ids.
             ///< This can be removed if we use a static
             ///< component for assigning entity IDs.
         public:
             SRInterface(std::shared_ptr<Gui::GLContext> context,
-                        const std::vector<std::string>& shaderDirs, int frameInitLimit);
+                        const std::vector<std::string>& shaderDirs, int frameInitLimit = 100);
             ~SRInterface();
             
             /// Call this whenever the window is resized. This will modify the viewport
@@ -260,7 +262,6 @@ namespace SCIRun {
             
             int axesFailCount_;
             std::shared_ptr<Gui::GLContext>   mContext;         ///< Context to use for rendering.
-            std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
             std::vector<SRObject>             mSRObjects;       ///< All SCIRun objects.
             Core::Geometry::BBox              mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
             
@@ -277,6 +278,7 @@ namespace SCIRun {
             ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
             RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
             const int frameInitLimit_;
+            std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
         };
         
     } // namespace Render

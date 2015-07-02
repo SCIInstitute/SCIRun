@@ -111,7 +111,7 @@ public:
   void turn_off_light();
   virtual bool isLightOn() const override { return lightOn_; }
 
-  void setHighlight(bool on);
+  void setHighlight(bool on, bool individual = false);
   virtual void setPositionObject(PositionProviderPtr provider) override;
 
   void addConnection(ConnectionLine* c);
@@ -147,12 +147,16 @@ Q_SIGNALS:
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void portMoved();
   void connectionNoteChanged();
+  void highlighted(bool highlighted);
 protected:
   virtual void mousePressEvent(QMouseEvent* event) override;
   virtual void mouseReleaseEvent(QMouseEvent* event) override;
   virtual void mouseMoveEvent(QMouseEvent* event) override;
 private:
-  void performDrag(const QPointF& endPos);
+  template <typename Func, typename Pred>
+  static void forEachPort(Func func, Pred pred);
+
+  void dragImpl(const QPointF& endPos);
   void makeConnection(const QPointF& pos);
   void tryConnectPort(const QPointF& pos, PortWidget* port);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;

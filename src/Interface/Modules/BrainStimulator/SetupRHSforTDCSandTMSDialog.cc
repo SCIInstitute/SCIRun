@@ -63,20 +63,20 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
     // seting the inital values of the electrodes
     if (i == 0)
     {
-      electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(1.0)));
-      electrode_tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(1.0)));
-      electrode_tableWidget->setItem(i, 3, new QTableWidgetItem(QString("")));
+      electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(1.0)));  /// set default current intensity: 1 mA
+      electrode_tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(5000.0))); /// set default Contact Impedance: 5000 Ohm * m^2
+      electrode_tableWidget->setItem(i, 3, new QTableWidgetItem(QString(""))); /// electrode surface area is going to be determined if valid input data are provided
     }
     else if (i == 1)
      {
       electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(-1.0)));
-      electrode_tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(1.0)));
+      electrode_tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(5000.0)));
       electrode_tableWidget->setItem(i, 3, new QTableWidgetItem(QString("")));
      }
     else if (i > 1)
       {
        electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(0.0)));
-       electrode_tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(1.0)));
+       electrode_tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(5000.0)));
        electrode_tableWidget->setItem(i, 3, new QTableWidgetItem(QString("")));
       }
   }
@@ -110,6 +110,7 @@ void SetupRHSforTDCSandTMSDialog::pullSpecial()
 {
   int nr_elc=(state_->getValue(Parameters::number_of_electrodes)).toInt();
   int rows=-1;
+  
   if (nr_elc!=-1)
   {
     electrode_tableWidget->setRowCount(static_cast<int>(nr_elc));
@@ -118,9 +119,14 @@ void SetupRHSforTDCSandTMSDialog::pullSpecial()
   {
     rows = electrode_tableWidget->rowCount();
   }
-
+  
+  if (nr_elc>=SetupTDCSAlgorithm::max_number_of_electrodes )
+  {
+    nr_elc=SetupTDCSAlgorithm::max_number_of_electrodes;
+    rows = nr_elc;
+  }  
+  
   auto surface_areas = (state_->getValue(Parameters::SurfaceAreaValues)).toVector();
-
   // obtaining initial values, pulling hasn't been set
   std::vector<AlgorithmParameter> elc_vals_in_table; //electrical electrode charges
   std::vector<AlgorithmParameter> imp_elc_vals_in_table; //electrode impedances

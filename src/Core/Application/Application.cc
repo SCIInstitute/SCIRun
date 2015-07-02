@@ -166,8 +166,8 @@ NetworkEditorControllerHandle Application::controller()
     IEPluginManager::Initialize();
 
     /// @todo split out into separate piece
-    // TODO: this crashes windows.
-    //private_->start_eai();
+    // TODO: turn off until Matlab services are converted.
+    // private_->start_eai();
   }
   return private_->controller_;
 }
@@ -289,9 +289,9 @@ std::string Application::GetAbout()
 void ApplicationPrivate::start_eai()
 {
   // Create a database of all available services. The next piece of code
-  // Scans both the SCIRun as well as the Packages directories to find
-  // Services that need to be started. Services allow communication with
-  // thirdparty software and are Threads that run asychronicly with
+  // scans both the SCIRun as well as the Packages directories to find
+  // services that need to be started. Services allow communication with
+  // thirdparty software and are Threads that run asychronously with
   // with the rest of SCIRun. Since the thirdparty software may be running
   // on a different platform it allows for connecting to remote machines
   // and running the service on a different machine
@@ -325,10 +325,10 @@ void ApplicationPrivate::start_eai()
 
   ServiceManagerHandle internal_service_manager(new ServiceManager(servicedb, internaladdress, internallogfile));
 #else
-  ServiceManagerHandle internal_service_manager(new ServiceManager(servicedb, internaladdress));
+  ServiceManager internal_service_manager(servicedb, internaladdress);
 #endif
 
-  boost::thread t_int(boost::ref(*internal_service_manager));
+  boost::thread t_int(internal_service_manager);
   t_int.detach();
 
 

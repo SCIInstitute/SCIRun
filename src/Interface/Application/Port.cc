@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <QtGui>
+#include <boost/lambda/lambda.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
@@ -37,10 +38,11 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-
+#include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core;
 using namespace SCIRun::Dataflow::Networks;
 
 
@@ -179,7 +181,7 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
 
 PortWidget::~PortWidget()
 {
-  portWidgetMap_[moduleId_.id_][isInput_][portId_] = 0;
+  portWidgetMap_[moduleId_.id_][isInput_].erase(portId_);
 }
 
 QSize PortWidgetBase::sizeHint() const
@@ -252,7 +254,7 @@ void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
   {
     int distance = (pos - startPos_).manhattanLength();
     if (distance >= QApplication::startDragDistance())
-      performDrag(pos);
+      dragImpl(pos);
   }
 }
 
@@ -332,16 +334,9 @@ void PortWidget::makeConnection(const QPointF& pos)
   if (port)
     tryConnectPort(pos, port);
 
-
-  for (const auto& a : portWidgetMap_)
+  if (Preferences::Instance().highlightPorts)
   {
-    for (const auto& b : a.second)
-    {
-      for (const auto& c : b.second)
-      {
-        c.second->setHighlight(false);
-      }
-    }
+    forEachPort([](PortWidget* p) { p->setHighlight(false, true); }, boost::lambda::constant(true));
   }
 }
 
@@ -373,7 +368,6 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
 void PortWidget::setPositionObject(PositionProviderPtr provider)
 {
   NeedsScenePositionProvider::setPositionObject(provider);
-  //qDebug() << "PW::setPO";
   Q_EMIT portMoved();
 }
 
@@ -399,29 +393,36 @@ bool PortWidget::isFullInputPort() const
   return isInput() && !connections_.empty();
 }
 
-void PortWidget::performDrag(const QPointF& endPos)
+void PortWidget::dragImpl(const QPointF& endPos)
 {
   if (!currentConnection_)
   {
     currentConnection_ = connectionFactory_->makeConnectionInProgress(this);
   }
   currentConnection_->update(endPos);
-  //qDebug() << "update other ports here";
-  for (const auto& a : portWidgetMap_)
+
+  if (Preferences::Instance().highlightPorts)
   {
-    for (const auto& b : a.second)
+    forEachPort(
+      [](PortWidget* p) { p->setHighlight(true, true); }, 
+      [this](const std::string& mid, bool isInput, const PortWidget* port) { return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename(); });
+  }
+}
+
+template <typename Func, typename Pred>
+void PortWidget::forEachPort(Func func, Pred pred)
+{
+  for (auto& p1 : portWidgetMap_)
+  {
+    for (auto& p2 : p1.second)
     {
-      for (const auto& c : b.second)
+      for (auto& p3 : p2.second)
       {
-        //qDebug() << QString::fromStdString(a.first) << b.first << QString::fromStdString(c.first.toString()) << c.second;
-        if (moduleId_.id_ != a.first && isInput_ != b.first/* && get_typename() == c.second->get_typename()*/)
-        {
-          c.second->setHighlight(true);
-        }
+        if (pred(p1.first, p2.first, p3.second))
+          func(p3.second);
       }
     }
   }
-  //portWidgetMap_[moduleId_.id_][isInput_][portId_] = this;
 }
 
 void PortWidget::addConnection(ConnectionLine* c)
@@ -481,8 +482,11 @@ ModuleId PortWidget::getUnderlyingModuleId() const
   return moduleId_;
 }
 
-void PortWidget::setHighlight(bool on)
+void PortWidget::setHighlight(bool on, bool individual)
 {
+  if (!isHighlighted_ && on && individual)
+    Q_EMIT highlighted(true);
+
   isHighlighted_ = on;
   if (on)
   {
@@ -491,6 +495,7 @@ void PortWidget::setHighlight(bool on)
   }
   else
   {
+    Q_EMIT highlighted(false);
   }
 }
 

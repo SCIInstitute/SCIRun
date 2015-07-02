@@ -31,6 +31,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <boost/lexical_cast.hpp>
+#include <boost/format.hpp>
+#include <Core/Math/MiscMath.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -60,13 +62,84 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   addCheckBoxManager(ProtoTypeInputCheckbox_, Parameters::ProtoTypeInputCheckbox);
   addCheckBoxManager(AllInputsTDCS_, Parameters::AllInputsTDCS);
   addCheckBoxManager(electrodethicknessCheckBox_, Parameters::ElectrodethicknessCheckBox);
+  addCheckBoxManager(invertNormalsCheckBox_, Parameters::InvertNormalsCheckBox);
+  addCheckBoxManager(OrientTMSCoilRadialToScalpCheckBox_, Parameters::OrientTMSCoilRadialToScalpCheckBox);
+  addCheckBoxManager(PutElectrodesOnScalpCheckBox_, Parameters::PutElectrodesOnScalpCheckBox);
+  addCheckBoxManager(InterpolateElectrodeShapeCheckbox_, Parameters::InterpolateElectrodeShapeCheckbox);
   addDoubleSpinBoxManager(electrodethicknessSpinBox_, Parameters::ElectrodethicknessSpinBox);
   connect(electrode_coil_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(validateCell(int, int)));
   connect(AllInputsTDCS_, SIGNAL(stateChanged(int)), this, SLOT(updateStimTypeColumn()));
+  connect(invertNormalsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateInvertNormals()));
   connect(ProtoTypeInputCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(togglePrototypeColumnReadOnly(int)));
   connect(ProtoTypeInputComboBox_, SIGNAL(currentIndexChanged(int)), this, SLOT(updatePrototypeColumnValues(int)));
+  
+  connect(PutElectrodesOnScalpCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(toggleThicknessColumnReadOnly(int)));
   connect(electrodethicknessCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(toggleThicknessColumnReadOnly(int)));
+  
   connect(electrodethicknessSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(updateThicknessColumnValues(double)));
+}
+
+void ElectrodeCoilSetupDialog::updateInvertNormals()
+{
+ auto all_elc_values = (state_->getValue(Parameters::TableValues)).toVector();
+
+  for (int j=0; j<all_elc_values.size(); j++)
+  {
+   float NX=std::numeric_limits<float>::quiet_NaN(), NY=std::numeric_limits<float>::quiet_NaN(), NZ=std::numeric_limits<float>::quiet_NaN();
+   try
+   {
+    NX=lexical_cast<float>((electrode_coil_tableWidget->item(j,6)->text()).toStdString());
+   }
+   catch(bad_lexical_cast &)
+   {
+   }
+   
+   try
+   {
+    NY=lexical_cast<float>((electrode_coil_tableWidget->item(j,7)->text()).toStdString());
+   }
+   catch(bad_lexical_cast &)
+   {
+   }
+   
+   try
+   {
+    NZ=lexical_cast<float>((electrode_coil_tableWidget->item(j,8)->text()).toStdString());
+   }
+   catch(bad_lexical_cast &)
+   {
+   }
+  
+   if(!(IsNan(NX) || IsNan(NY) || IsNan(NZ)))
+   {
+   
+     if (NX<0) NX=fabs(NX); 
+       else 
+         if (NX>0) NX=-1 * fabs(NX);
+	 
+     if (NY<0) NY=fabs(NY); 
+       else 
+         if (NY>0) NY=-1 * fabs(NY);
+   
+     if (NZ<0) NZ=fabs(NZ); 
+       else 
+         if (NZ>0) NZ=-1 * fabs(NZ);
+
+     auto item_NX = electrode_coil_tableWidget->item(j, 6);
+     auto item_NY = electrode_coil_tableWidget->item(j, 7);
+     auto item_NZ = electrode_coil_tableWidget->item(j, 8);
+     electrode_coil_tableWidget->blockSignals(true);
+     if (j==0)
+        electrode_coil_tableWidget->scrollToItem(electrode_coil_tableWidget->item(0, 6));
+	
+     item_NX->setText(QString::fromStdString(str(boost::format("%.3f") % NX)));
+     item_NY->setText(QString::fromStdString(str(boost::format("%.3f") % NY)));
+     item_NZ->setText(QString::fromStdString(str(boost::format("%.3f") % NZ)));
+     electrode_coil_tableWidget->blockSignals(false);
+     
+     push();
+   }
+ }
 }
 
 void ElectrodeCoilSetupDialog::validateCell(int row, int col)

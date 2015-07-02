@@ -232,7 +232,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -240,6 +240,61 @@
 								</first>
 								<second>
 									<name>GUIIsoValue</name>
+									<value>
+										<which>1</which>
+										<value>2.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>IsovalueChoice</name>
+								</first>
+								<second>
+									<name>IsovalueChoice</name>
+									<value>
+										<which>2</which>
+										<value>Quantity</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>IsovalueListString</name>
+								</first>
+								<second>
+									<name>IsovalueListString</name>
+									<value>
+										<which>2</which>
+										<value>0
+0.57735
+1.1547
+1.73205
+2.3094
+2.88675
+3.4641
+</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>QuantityOfIsovalues</name>
+								</first>
+								<second>
+									<name>QuantityOfIsovalues</name>
+									<value>
+										<which>0</which>
+										<value>7</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SingleIsoValue</name>
+								</first>
+								<second>
+									<name>SingleIsoValue</name>
 									<value>
 										<which>1</which>
 										<value>2.00000000000000000e+00</value>
@@ -921,14 +976,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>281</value>
+													<value>110</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>302</value>
+													<value>233</value>
 												</value>
 											</item>
 										</value>
@@ -1128,8 +1183,8 @@
 		<item>
 			<first>ExtractSimpleIsosurface:0</first>
 			<second>
-				<first>-1.44500000000000000e+03</first>
-				<second>-6.83000000000000000e+02</second>
+				<first>-1.42900000000000000e+03</first>
+				<second>-7.37000000000000000e+02</second>
 			</second>
 		</item>
 		<item>

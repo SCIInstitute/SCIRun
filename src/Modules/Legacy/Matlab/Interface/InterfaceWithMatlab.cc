@@ -792,7 +792,7 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
 
   if ( sci_getenv("SCIRUN_MATLABLIBRARY") ) matlablibrary = sci_getenv("SCIRUN_MATLABLIBRARY");
 #endif
-  int timeout = 0;
+  int timeout = 60;
 #if 0
   std::string timeout_str = sci_getenv("SCIRUN_MATLABTIMEOUT");
   from_string(timeout_str,timeout);
