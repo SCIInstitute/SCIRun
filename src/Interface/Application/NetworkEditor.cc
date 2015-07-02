@@ -59,7 +59,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
-  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, 
+  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   TagColorFunc tagColor,
   QWidget* parent)
   : QGraphicsView(parent),
@@ -94,7 +94,11 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
 
   updateActions();
-  ensureVisible(0,0,0,0);
+
+  setSceneRect(QRectF(-1000, -1000, 2000, 2000));
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  centerOn(100, 100);
 
   setMouseAsDragMode();
 
@@ -320,7 +324,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   {
     connect(controller_.get(), SIGNAL(portAdded(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)), module, SLOT(addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)));
     connect(controller_.get(), SIGNAL(portRemoved(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)), module, SLOT(removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)));
-    connect(module, SIGNAL(dynamicPortChanged()), proxy, SLOT(createPortPositionProviders()));
+    connect(module, SIGNAL(dynamicPortChanged(const std::string&)), proxy, SLOT(createPortPositionProviders()));
   }
 
   LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
@@ -353,6 +357,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
   scene_->addItem(proxy);
+  ensureVisible(proxy);
   proxy->createStartupNote();
 
   scene_->clearSelection();
@@ -360,7 +365,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
   proxy->setVisible(visibleItems_);
 
-  GuiLogger::Instance().logStd("Module added: " + module->getModuleId());
+  GuiLogger::Instance().logInfoStd("Module added: " + module->getModuleId());
 }
 
 void NetworkEditor::setMouseAsDragMode()
@@ -815,7 +820,10 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
     {
       auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
       if (posIter != modulePositions.modulePositions.end())
+      {
         w->setPos(posIter->second.first, posIter->second.second);
+        ensureVisible(w);
+      }
     }
   }
 }
@@ -925,6 +933,8 @@ void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHan
   //TODO: duplication
   const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";
   controller_->getSettings().setValue("networkStateUpdateThread", value);
+
+  setSceneRect(QRectF());
 }
 
 size_t NetworkEditor::numModules() const
@@ -1206,6 +1216,119 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
     colorize->setColor(color);
     item->setGraphicsEffect(colorize);
   }
+}
+
+std::atomic<int> ErrorItem::instanceCounter_(0);
+
+ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent) : QGraphicsTextItem(text, parent),
+  showModule_(showModule), counter_(instanceCounter_), rect_(0)
+{
+  setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
+  setZValue(10000);
+  instanceCounter_++;
+  setDefaultTextColor(Qt::red);
+
+  {
+    timeLine_ = new QTimeLine(10000, this);
+    connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(animate(qreal)));
+    connect(timeLine_, SIGNAL(finished()), this, SLOT(deleteLater()));
+  }
+  timeLine_->start();
+}
+
+ErrorItem::~ErrorItem()
+{
+  instanceCounter_--;
+  delete rect_;
+}
+
+void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+  if (event->buttons() & Qt::LeftButton)
+  {
+    showModule_();
+  }
+  else if (event->buttons() & Qt::RightButton)
+  {
+    if (rect_)
+    {
+      scene()->removeItem(rect_);
+      rect_ = 0;
+    }
+    scene()->removeItem(this);
+  }
+  QGraphicsTextItem::mousePressEvent(event);
+}
+
+void ErrorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+  timeLine_->setCurrentTime(0);
+  QGraphicsTextItem::hoverEnterEvent(event);
+}
+
+void ErrorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+  if (!rect_)
+  {
+    timeLine_->stop();
+    timeLine_->setCurrentTime(0);
+    auto f = font();
+    f.setBold(true);
+    setFont(f);
+    setFlags(flags() ^ ItemIsMovable);
+    rect_ = scene()->addRect(boundingRect(), QPen(Qt::red, 2, Qt::DotLine));
+    rect_->setPos(pos());
+  }
+  else
+  {
+    auto f = font();
+    f.setBold(false);
+    setFont(f);
+    setFlags(flags() & ItemIsMovable);
+    scene()->removeItem(rect_);
+    rect_ = 0;
+    timeLine_->start();
+  }
+
+  QGraphicsTextItem::mouseDoubleClickEvent(event);
+}
+
+void ErrorItem::animate(qreal val)
+{
+  if (val < 1)
+    show();
+  else
+    hide();
+  setOpacity(val < 0.5 ? 1 : 2 - 2*val);
+}
+
+void NetworkEditor::displayError(const QString& msg, std::function<void()> showModule)
+{
+  auto errorItem = new ErrorItem(msg, showModule);
+  scene()->addItem(errorItem);
+
+  QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
+  QPointF br = tl + viewport()->rect().bottomRight();
+  QMatrix mat = matrix().inverted();
+  auto rect = mat.mapRect(QRectF(tl,br));
+
+  auto corner = rect.bottomLeft();
+  errorItem->setPos(corner + QPointF(100, -(40*errorItem->num() + 100)));
+
+#if 0
+  auto xMin = rect.topLeft().x();
+  auto xMax = rect.topRight().x();
+  auto yMin = rect.topLeft().y();
+  auto yMax = rect.bottomLeft().y();
+  for (double x = xMin; x < xMax; x += 100)
+    for (double y = yMin; y < yMax; y += 100)
+      {
+        QString xy = QString::number(x) + "," + QString::number(y);
+        auto item = scene()->addText(xy);
+        item->setDefaultTextColor(Qt::white);
+        item->setPos(x, y);
+      }
+#endif
 }
 
 NetworkEditor::~NetworkEditor()

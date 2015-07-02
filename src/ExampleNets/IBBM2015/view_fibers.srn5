@@ -524,7 +524,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>ShowScalarTab</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -596,7 +596,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>ShowVectorTab</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -728,7 +728,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<name>VectorsScale</name>
 									<value>
 										<which>1</which>
-										<value>1.10000000000000009e+00</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1110,7 +1110,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1121,6 +1121,35 @@ RESULT=select(isfinite(angle),angle,90);</value>
 									<value>
 										<which>2</which>
 										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>GeometryFeedbackInfo</name>
+								</first>
+								<second>
+									<name>GeometryFeedbackInfo</name>
+									<value>
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name>x</name>
+												<value>
+													<which>0</which>
+													<value>455</value>
+												</value>
+											</item>
+											<item>
+												<name>y</name>
+												<value>
+													<which>0</which>
+													<value>274</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -1157,12 +1186,12 @@ RESULT=select(isfinite(angle),angle,90);</value>
 				</second>
 			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
+		<connections class_id="13" tracking_level="0" version="0">
 			<count>9</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
+			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CalculateFieldData:0</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
+				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
@@ -1199,24 +1228,24 @@ RESULT=select(isfinite(angle),angle,90);</value>
 			<item>
 				<moduleId1_>GetSliceFromStructuredFieldByIndices:0</moduleId1_>
 				<port1_>
-					<name>OutputMatrix</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GetSliceFromStructuredFieldByIndices:1</moduleId2_>
-				<port2_>
-					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>GetSliceFromStructuredFieldByIndices:1</moduleId1_>
-				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowFieldGlyphs:0</moduleId2_>
 				<port2_>
 					<name>PrimaryData</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetSliceFromStructuredFieldByIndices:0</moduleId1_>
+				<port1_>
+					<name>OutputMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetSliceFromStructuredFieldByIndices:1</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1270,12 +1299,12 @@ RESULT=select(isfinite(angle),angle,90);</value>
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
+	<modulePositions class_id="16" tracking_level="0" version="0">
 		<count>11</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
+		<item class_id="17" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
-			<second class_id="17" tracking_level="0" version="0">
+			<second class_id="18" tracking_level="0" version="0">
 				<first>-2.99000000000000000e+02</first>
 				<second>-9.11000000000000000e+02</second>
 			</second>
@@ -1311,7 +1340,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 		<item>
 			<first>GetSliceFromStructuredFieldByIndices:1</first>
 			<second>
-				<first>-2.96000000000000000e+02</first>
+				<first>-2.98000000000000000e+02</first>
 				<second>-8.07000000000000000e+02</second>
 			</second>
 		</item>
@@ -1325,7 +1354,7 @@ RESULT=select(isfinite(angle),angle,90);</value>
 		<item>
 			<first>ShowFieldGlyphs:0</first>
 			<second>
-				<first>-6.37000000000000000e+02</first>
+				<first>-6.39000000000000000e+02</first>
 				<second>-6.57000000000000000e+02</second>
 			</second>
 		</item>
@@ -1351,12 +1380,12 @@ RESULT=select(isfinite(angle),angle,90);</value>
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
+	<moduleNotes class_id="19" tracking_level="0" version="0">
 		<count>2</count>
 		<item_version>0</item_version>
-		<item class_id="19" tracking_level="0" version="0">
+		<item class_id="20" tracking_level="0" version="0">
 			<first>ShowFieldGlyphs:0</first>
-			<second class_id="20" tracking_level="0" version="0">
+			<second class_id="21" tracking_level="0" version="0">
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -1385,10 +1414,10 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="21" tracking_level="0" version="0">
+	<moduleTags class_id="22" tracking_level="0" version="0">
 		<count>11</count>
 		<item_version>0</item_version>
-		<item class_id="22" tracking_level="0" version="0">
+		<item class_id="23" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
 			<second>0</second>
 		</item>

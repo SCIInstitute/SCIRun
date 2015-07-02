@@ -80,6 +80,7 @@ namespace SCIRun
       BooleanVariable useNewViewSceneMouseControls;
       BooleanVariable modulesSnapToGrid;
       BooleanVariable highlightPorts;
+      BooleanVariable autoNotes;
       TrackedVariable<BooleanVariable> modulesAreDockable;
       StringVariable networkBackgroundColor;
 

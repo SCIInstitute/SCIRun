@@ -86,6 +86,10 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h>
 #include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h>
 #include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
+#include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
+#include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
+#include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
+#include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
 #include <Modules/Legacy/Bundle/ReportBundleInfo.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
@@ -206,14 +210,19 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ComputeSVD>("ComputeSVD","Math","SCIRun","...","...");
 
   addModuleDesc<InterfaceWithMatlab>("Real ported module", "...");
-  
+
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
   addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
   addModuleDesc<RescaleColorMap>("Real ported module", "...");
   addModuleDesc<ConvertMatrixToString>("ConvertMatrixToString","Converters","SCIRun","...","...");
-  addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences","ChangeFieldData","SCIRun","...","...");
+  addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences","ChangeFieldData","SCIRun","...","In progress--Computation is incorrect");
+
+  addModuleDesc<GeneratePointSamplesFromField>("Real ported module", "in progress");
+  addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
+  addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
+  addModuleDesc<ShowAndEditDipoles>("Real ported module", "in progress");
 
   // insert module desc here
 }

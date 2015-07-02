@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +28,7 @@
 /// @todo Documentation Core/Datatypes/Scalar.h
 
 #ifndef CORE_DATATYPES_SCALAR_H
-#define CORE_DATATYPES_SCALAR_H 
+#define CORE_DATATYPES_SCALAR_H
 
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/share.h>
@@ -44,13 +44,14 @@ namespace Datatypes {
     explicit Scalar(const T& val) : val_(val) {}
     T value() const { return val_; }
     virtual Scalar* clone() const { return new Scalar(*this); }
+    virtual std::string dynamic_type_name() const { return "Scalar"; }
   private:
     T val_;
   };
 
   typedef Scalar<int> Int32;
   typedef Scalar<double> Double;
-  
+
 }}}
 
 

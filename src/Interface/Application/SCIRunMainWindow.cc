@@ -118,6 +118,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 	dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
+  tagManagerWindow_->hide();
   setupPreferencesWindow();
   setupNetworkEditor();
 
@@ -240,6 +241,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   }
 
   setupProvenanceWindow();
+  provenanceWindow_->hide();
   setupDevConsole();
   setupPythonConsole();
 
@@ -326,7 +328,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 
   setupInputWidgets();
 
-  GuiLogger::Instance().log("Hello! Welcome to SCIRun 5.");
+  logTextBrowser_->append("Hello! Welcome to SCIRun 5.");
   readSettings();
 
   setCurrentFile("");
@@ -340,9 +342,6 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
 		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
 		"QHeaderView::section { background: rgb(66,66,69);} "
 		);
-
-  provenanceWindow_->hide();
-  tagManagerWindow_->hide();
 
   hideNonfunctioningWidgets();
 
@@ -458,11 +457,12 @@ void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorCont
 void SCIRunMainWindow::setupNetworkEditor()
 {
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
-  boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_));
+	const bool regression = Application::Instance().parameters()->isRegressionMode();
+  boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_, regression));
   GuiLogger::setInstance(logger);
-  Core::Logging::Log::get().addCustomAppender(logger);
+  Log::get().addCustomAppender(logger);
   boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
-  Core::Logging::Log::get("Modules").addCustomAppender(moduleLog);
+  Log::get("Modules").addCustomAppender(moduleLog);
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*prefsWindow_->defaultNotePositionComboBox_));
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
   networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, tagColorFunc, scrollAreaWidgetContents_);
@@ -481,7 +481,7 @@ void SCIRunMainWindow::executeCommandLineRequests()
 
 void SCIRunMainWindow::executeAll()
 {
-  if (Core::Preferences::Instance().saveBeforeExecute && !Core::Application::Instance().parameters()->isRegressionMode())
+  if (Core::Preferences::Instance().saveBeforeExecute && !Application::Instance().parameters()->isRegressionMode())
   {
     saveNetwork();
   }
@@ -534,7 +534,7 @@ void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
   setCurrentFile(QString::fromStdString(fileNameWithExtension));
 
   statusBar()->showMessage(tr("File saved"), 2000);
-  GuiLogger::Instance().log("File save done.");
+  GuiLogger::Instance().logInfo("File save done: " + fileName);
   setWindowModified(false);
 }
 
@@ -763,7 +763,7 @@ void SCIRunMainWindow::chooseBackgroundColor()
   if (newColor.isValid())
   {
     networkEditor_->setBackground(newColor);
-    GuiLogger::Instance().log("Background color set to " + newColor.name());
+    GuiLogger::Instance().logInfo("Background color set to " + newColor.name());
   }
 }
 
@@ -836,7 +836,7 @@ void SCIRunMainWindow::resetBackgroundColor()
   //TODO: standardize these defaults
   QColor defaultColor(Qt::darkGray);
   networkEditor_->setBackground(defaultColor);
-  GuiLogger::Instance().log("Background color set to " + defaultColor.name());
+  GuiLogger::Instance().logInfo("Background color set to " + defaultColor.name());
 }
 
 void SCIRunMainWindow::setupProvenanceWindow()
@@ -928,11 +928,11 @@ void SCIRunMainWindow::setupPythonConsole()
 void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
-  GuiLogger::Instance().log("RUNNING PYTHON SCRIPT: " + scriptFileName);
+  GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
   SCIRun::Core::PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
   statusBar()->showMessage(tr("Script is running."), 2000);
 #else
-  GuiLogger::Instance().log("Python not included in this build, cannot run " + scriptFileName);
+  GuiLogger::Instance().logInfo("Python not included in this build, cannot run " + scriptFileName);
 #endif
 }
 
@@ -1413,7 +1413,7 @@ void SCIRunMainWindow::adjustModuleDock(int state)
 #ifdef __APPLE__
 static const Qt::Key MetadataShiftKey = Qt::Key_Meta;
 #else
-static const Qt::Key MetadataShiftKey = Qt::Key_Control;
+static const Qt::Key MetadataShiftKey = Qt::Key_CapsLock;
 #endif
 
 void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)

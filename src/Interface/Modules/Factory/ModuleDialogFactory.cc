@@ -62,6 +62,9 @@
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
 #include <Interface/Modules/Fields/GetSliceFromStructuredFieldByIndicesDialog.h>
+#include <Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h>
+#include <Interface/Modules/Fields/GeneratePointSamplesFromFieldDialog.h>
+#include <Interface/Modules/Fields/GeneratePointSamplesFromFieldOrWidgetDialog.h>
 #include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
@@ -100,6 +103,7 @@
 #include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
 #include <Interface/Modules/Bundle/ReportBundleInfoDialog.h>
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
+#include <Interface/Modules/Fields/ClipVolumeByIsovalueDialog.h>
 #include <boost/assign.hpp>
 #include <boost/functional/factory.hpp>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -189,6 +193,9 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
     ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
+    ADD_MODULE_DIALOG(GenerateSinglePointProbeFromField, GenerateSinglePointProbeFromFieldDialog)
+    ADD_MODULE_DIALOG(GeneratePointSamplesFromField, GeneratePointSamplesFromFieldDialog)
+    ADD_MODULE_DIALOG(GeneratePointSamplesFromFieldOrWidget, GeneratePointSamplesFromFieldOrWidgetDialog)
     ADD_MODULE_DIALOG(GetSliceFromStructuredFieldByIndices, GetSliceFromStructuredFieldByIndicesDialog)
     ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
     ADD_MODULE_DIALOG(SolveInverseProblemWithTikhonov, SolveInverseProblemWithTikhonovDialog)
@@ -196,7 +203,8 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(RescaleColorMap, RescaleColorMapDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
     ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
-    ;
+    ADD_MODULE_DIALOG(ClipVolumeByIsovalue, ClipVolumeByIsovalueDialog)
+  ;
 }
 
 ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId, ModuleStateHandle state)

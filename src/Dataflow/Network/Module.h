@@ -248,6 +248,7 @@ namespace Networks {
     void setStateIntFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setStateDoubleFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setStateListFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
+    void setStateStringFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setStateStringFromAlgoOption(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoBoolFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoIntFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
@@ -258,6 +259,10 @@ namespace Networks {
     virtual size_t add_input_port(InputPortHandle);
     size_t add_output_port(OutputPortHandle);
     virtual void removeInputPort(const PortId& id);
+
+    //For modules that need to initialize some internal state signal/slots, this needs to be called after set_state to reinitialize.
+    virtual void postStateChangeInternalSignalHookup() {}
+    void sendFeedbackUpstreamAlongIncomingConnections(const Core::Algorithms::Variable::Value& info);
 
   private:
     template <class T>

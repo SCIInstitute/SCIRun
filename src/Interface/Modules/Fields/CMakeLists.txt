@@ -54,12 +54,16 @@ SET(Interface_Modules_Fields_FORMS
   ConvertIndicesToFieldData.ui
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
+  GenerateSinglePointProbeFromField.ui
+  GeneratePointSamplesFromFieldOrWidget.ui
+  GeneratePointSamplesFromField.ui
   RefineMesh.ui
   ConvertFieldBasis.ui
   swapfielddatawithmatrixentries.ui
   EditMeshBoundingBox.ui
   ExtractSimpleIsosurface.ui
   registerwithcorrespondences.ui
+  ClipVolumeByIsovalue.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -86,6 +90,7 @@ SET(Interface_Modules_Fields_HEADERS
   GetSliceFromStructuredFieldByIndicesDialog.h
   MapFieldDataOntoElemsDialog.h
   MapFieldDataOntoNodesDialog.h
+  GenerateSinglePointProbeFromFieldDialog.h
   ClipFieldByFunctionDialog.h
   RefineMeshDialog.h
   ConvertFieldBasisDialog.h
@@ -95,6 +100,9 @@ SET(Interface_Modules_Fields_HEADERS
   ConvertIndicesToFieldDataDialog.h
   ExtractSimpleIsosurfaceDialog.h
   RegisterWithCorrespondencesDialog.h
+  GeneratePointSamplesFromFieldDialog.h
+  GeneratePointSamplesFromFieldOrWidgetDialog.h
+  ClipVolumeByIsovalueDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -118,6 +126,7 @@ SET(Interface_Modules_Fields_SOURCES
   ResampleRegularMeshDialog.cc
   GetSliceFromStructuredFieldByIndicesDialog.cc
   ProjectPointsOntoMeshDialog.cc
+  GenerateSinglePointProbeFromFieldDialog.cc
   CalculateDistanceToFieldDialog.cc
   CalculateDistanceToFieldBoundaryDialog.cc
   MapFieldDataOntoElemsDialog.cc
@@ -129,6 +138,9 @@ SET(Interface_Modules_Fields_SOURCES
   ConvertIndicesToFieldDataDialog.cc
   ExtractSimpleIsosurfaceDialog.cc
   RegisterWithCorrespondencesDialog.cc
+  GeneratePointSamplesFromFieldDialog.cc
+  GeneratePointSamplesFromFieldOrWidgetDialog.cc
+  ClipVolumeByIsovalueDialog.cc
 )
 
 IF(WITH_TETGEN)

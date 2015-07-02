@@ -67,10 +67,11 @@ public:
 
   virtual QColor color() const = 0;
   virtual bool isLightOn() const = 0;
-
-  static const int WIDTH = 11;
+  
+  bool isHighlighted() const { return isHighlighted_; }
 
 protected:
+  static const int DEFAULT_WIDTH = 11;
   explicit PortWidgetBase(QWidget* parent);
   virtual QSize sizeHint() const override;
   virtual void paintEvent(QPaintEvent* event) override;
@@ -110,7 +111,8 @@ public:
   void turn_off_light();
   virtual bool isLightOn() const override { return lightOn_; }
 
-  void setHighlight(bool on);
+  void setHighlight(bool on, bool individual = false);
+  virtual void setPositionObject(PositionProviderPtr provider) override;
 
   void addConnection(ConnectionLine* c);
   void removeConnection(ConnectionLine* c);
@@ -145,12 +147,16 @@ Q_SIGNALS:
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void portMoved();
   void connectionNoteChanged();
+  void highlighted(bool highlighted);
 protected:
   virtual void mousePressEvent(QMouseEvent* event) override;
   virtual void mouseReleaseEvent(QMouseEvent* event) override;
   virtual void mouseMoveEvent(QMouseEvent* event) override;
 private:
-  void performDrag(const QPointF& endPos);
+  template <typename Func, typename Pred>
+  static void forEachPort(Func func, Pred pred);
+
+  void dragImpl(const QPointF& endPos);
   void makeConnection(const QPointF& pos);
   void tryConnectPort(const QPointF& pos, PortWidget* port);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;

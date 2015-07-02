@@ -65,11 +65,11 @@ void SCIRunMainWindow::readSettings()
   //TODO: set up signal/slot for each prefs variable to make it easy to track changes from arbitrary widgets
 
   latestNetworkDirectory_ = settings.value("networkDirectory").toString();
-  GuiLogger::Instance().log("Setting read: default network directory = " + latestNetworkDirectory_.path());
+  GuiLogger::Instance().logInfo("Setting read: default network directory = " + latestNetworkDirectory_.path());
 
   recentFiles_ = settings.value("recentFiles").toStringList();
   updateRecentFileActions();
-  GuiLogger::Instance().log("Setting read: recent network file list");
+  GuiLogger::Instance().logInfo("Setting read: recent network file list");
 
   //TODO: make a separate class for these keys, bad duplication.
   const QString colorKey = qname(prefs.networkBackgroundColor);
@@ -78,7 +78,7 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(colorKey).toString();
     prefs.networkBackgroundColor.setValue(value.toStdString());
     networkEditor_->setBackground(QColor(value));
-    GuiLogger::Instance().log("Setting read: background color = " + networkEditor_->background().color().name());
+    GuiLogger::Instance().logInfo("Setting read: background color = " + networkEditor_->background().color().name());
   }
 
   const QString notePositionKey = "defaultNotePositionIndex";
@@ -86,7 +86,7 @@ void SCIRunMainWindow::readSettings()
   {
     int notePositionIndex = settings.value(notePositionKey).toInt();
     prefsWindow_->defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
-    GuiLogger::Instance().log("Setting read: default note position = " + QString::number(notePositionIndex));
+    GuiLogger::Instance().logInfo("Setting read: default note position = " + QString::number(notePositionIndex));
   }
 
   const QString pipeTypeKey = "connectionPipeType";
@@ -94,7 +94,7 @@ void SCIRunMainWindow::readSettings()
   {
     int pipeType = settings.value(pipeTypeKey).toInt();
     networkEditor_->setConnectionPipelineType(pipeType);
-    GuiLogger::Instance().log("Setting read: connection pipe style = " + QString::number(pipeType));
+    GuiLogger::Instance().logInfo("Setting read: connection pipe style = " + QString::number(pipeType));
     switch (pipeType)
     {
     case MANHATTAN:
@@ -115,7 +115,7 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(snapTo).toBool();
     prefs.modulesSnapToGrid.setValue(value);
     prefsWindow_->modulesSnapToCheckBox_->setChecked(value);
-    GuiLogger::Instance().log("Setting read: modules snap to grid = " + QString::number(prefs.modulesSnapToGrid));
+    GuiLogger::Instance().logInfo("Setting read: modules snap to grid = " + QString::number(prefs.modulesSnapToGrid));
   }
 
   const QString portHighlight = qname(prefs.highlightPorts);
@@ -124,7 +124,7 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(portHighlight).toBool();
     prefs.highlightPorts.setValue(value);
     prefsWindow_->portSizeEffectsCheckBox_->setChecked(value);
-    GuiLogger::Instance().log("Setting read: highlight ports on hover = " + QString::number(prefs.highlightPorts));
+    GuiLogger::Instance().logInfo("Setting read: highlight ports on hover = " + QString::number(prefs.highlightPorts));
   }
 
   const QString dockable = qname(prefs.modulesAreDockable);
@@ -133,14 +133,23 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(dockable).toBool();
     prefs.modulesAreDockable.setValue(value);
     prefsWindow_->dockableModulesCheckBox_->setChecked(value);
-    GuiLogger::Instance().log("Setting read: modules are dockable = " + QString::number(prefs.modulesAreDockable));
+    GuiLogger::Instance().logInfo("Setting read: modules are dockable = " + QString::number(prefs.modulesAreDockable));
+  }
+
+  const QString autoNotes = qname(prefs.autoNotes);
+  if (settings.contains(autoNotes))
+  {
+    auto value = settings.value(autoNotes).toBool();
+    prefs.autoNotes.setValue(value);
+    prefsWindow_->autoModuleNoteCheckbox_->setChecked(value);
+    GuiLogger::Instance().logInfo("Setting read: automatic module notes = " + QString::number(prefs.autoNotes));
   }
 
   const QString disableModuleErrorDialogsKey = "disableModuleErrorDialogs";
   if (settings.contains(disableModuleErrorDialogsKey))
   {
     bool disableModuleErrorDialogs = settings.value(disableModuleErrorDialogsKey).toBool();
-    GuiLogger::Instance().log("Setting read: disable module error dialogs = " + QString::number(disableModuleErrorDialogs));
+    GuiLogger::Instance().logInfo("Setting read: disable module error dialogs = " + QString::number(disableModuleErrorDialogs));
     prefsWindow_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
   }
 
@@ -148,7 +157,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(saveBeforeExecute))
   {
     bool mode = settings.value(saveBeforeExecute).toBool();
-    GuiLogger::Instance().log("Setting read: save before execute = " + QString::number(mode));
+    GuiLogger::Instance().logInfo("Setting read: save before execute = " + QString::number(mode));
     prefsWindow_->setSaveBeforeExecute(mode);
   }
 
@@ -156,7 +165,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(newViewSceneMouseControls))
   {
     bool mode = settings.value(newViewSceneMouseControls).toBool();
-    GuiLogger::Instance().log("Setting read: newViewSceneMouseControls = " + QString::number(mode));
+    GuiLogger::Instance().logInfo("Setting read: newViewSceneMouseControls = " + QString::number(mode));
     Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(mode);
   }
 
@@ -164,7 +173,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(favoriteModules))
   {
     auto faves = settings.value(favoriteModules).toStringList();
-    GuiLogger::Instance().log("Setting read: favoriteModules = " + faves.join(", "));
+    GuiLogger::Instance().logInfo("Setting read: favoriteModules = " + faves.join(", "));
     favoriteModuleNames_ = faves;
   }
 
@@ -172,7 +181,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(dataDirectory))
   {
     auto dataDir = settings.value(dataDirectory).toString();
-    GuiLogger::Instance().log("Setting read: dataDirectory = " + dataDir);
+    GuiLogger::Instance().logInfo("Setting read: dataDirectory = " + dataDir);
     setDataDirectory(dataDir);
   }
 
@@ -180,7 +189,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(dataPath))
   {
     auto path = settings.value(dataPath).toStringList().join(";");
-    GuiLogger::Instance().log("Setting read: dataPath = " + path);
+    GuiLogger::Instance().logInfo("Setting read: dataPath = " + path);
     setDataPath(path);
   }
 
@@ -188,7 +197,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(tagNamesKey))
   {
     auto tagNames = settings.value(tagNamesKey).toStringList();
-    GuiLogger::Instance().log("Setting read: tagNames = " + tagNames.join(";"));
+    GuiLogger::Instance().logInfo("Setting read: tagNames = " + tagNames.join(";"));
     tagManagerWindow_->setTagNames(tagNames.toVector());
   }
 
@@ -196,7 +205,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(tagColorsKey))
   {
     auto tagColors = settings.value(tagColorsKey).toStringList();
-    GuiLogger::Instance().log("Setting read: tagColors = " + tagColors.join(";"));
+    GuiLogger::Instance().logInfo("Setting read: tagColors = " + tagColors.join(";"));
     tagManagerWindow_->setTagColors(tagColors.toVector());
   }
   else
@@ -218,6 +227,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
   settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
   settings.setValue(qname(prefs.modulesAreDockable), prefs.modulesAreDockable.val());
+  settings.setValue(qname(prefs.autoNotes), prefs.autoNotes.val());
   settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
   settings.setValue("defaultNotePositionIndex", prefsWindow_->defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());

@@ -54,7 +54,7 @@ namespace SCIRun {
 
         typedef boost::shared_ptr<MockPortDescription> MockPortDescriptionPtr;
 
-        class MockInputPort : public InputPortInterface  
+        class MockInputPort : public InputPortInterface
         {
         public:
           MOCK_METHOD1(attach, void(Connection*));
@@ -79,7 +79,7 @@ namespace SCIRun {
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
 
-        class MockOutputPort : public OutputPortInterface  
+        class MockOutputPort : public OutputPortInterface
         {
         public:
           MOCK_METHOD1(attach, void(Connection*));
@@ -98,6 +98,8 @@ namespace SCIRun {
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_CONST_METHOD0(hasData, bool());
           MOCK_CONST_METHOD0(getPortDataDescriber, PortDataDescriber());
+          MOCK_METHOD1(connectConnectionFeedbackListener, boost::signals2::connection(const ConnectionFeedbackSignalType::slot_type&));
+          MOCK_METHOD1(sendConnectionFeedback, void(SCIRun::Core::Algorithms::VariableHandle));
         };
 
         typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;
@@ -105,9 +107,7 @@ namespace SCIRun {
         class MockDatatypeSink : public DatatypeSinkInterface
         {
         public:
-          //MOCK_CONST_METHOD0(hasData, bool());
           MOCK_CONST_METHOD0(clone, DatatypeSinkInterface*());
-          //MOCK_METHOD1(setHasData, void(bool));
           MOCK_METHOD0(waitForData, void());
           MOCK_METHOD0(invalidateProvider, void());
           MOCK_METHOD0(receive, Core::Datatypes::DatatypeHandleOption());

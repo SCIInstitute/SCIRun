@@ -263,10 +263,10 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
 
-  setPositionObject(boost::make_shared<MidpointPositioner>(fromPort_->getPositionObject(), toPort_->getPositionObject()));
+  setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
 
   trackNodes();
-  GuiLogger::Instance().logStd("Connection made: " + id_.id_);
+  GuiLogger::Instance().logInfoStd("Connection made: " + id_.id_);
 }
 
 ConnectionLine::~ConnectionLine()
@@ -312,6 +312,7 @@ void ConnectionLine::trackNodes()
 {
   if (fromPort_ && toPort_)
   {
+    //qDebug() << "trackNodes";
     drawer_->draw(this, fromPort_->position(), toPort_->position());
     updateNotePosition();
   }
@@ -443,7 +444,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
   msgBox->setStandardButtons(QMessageBox::Ok);
   msgBox->setWindowTitle(label + " Data info: " + QString::fromStdString(id));
   msgBox->setText(info);
-  msgBox->setModal(false); 
+  msgBox->setModal(false);
   msgBox->show();
 }
 
@@ -489,19 +490,19 @@ void ConnectionInProgressManhattan::update(const QPointF& end)
     drawStrategy_->draw(this, fromPort_->position(), end);
 }
 
-MidpointPositioner::MidpointPositioner(PositionProviderPtr p1, PositionProviderPtr p2) : p1_(p1), p2_(p2)
+MidpointPositionerFromPorts::MidpointPositionerFromPorts(NeedsScenePositionProvider* p1, NeedsScenePositionProvider* p2) : p1_(p1), p2_(p2)
 {
   ENSURE_NOT_NULL(p1, "port1");
   ENSURE_NOT_NULL(p2, "port2");
 }
 
-QPointF MidpointPositioner::currentPosition() const
+QPointF MidpointPositionerFromPorts::currentPosition() const
 {
-  return (p1_->currentPosition() + p2_->currentPosition()) / 2;
+  return (p1_->getPositionObject()->currentPosition() + p2_->getPositionObject()->currentPosition()) / 2;
 }
 
-ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : 
-  currentType_(EUCLIDEAN), 
+ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) :
+  currentType_(EUCLIDEAN),
   visible_(true),
   scene_(scene),
   euclidean_(new EuclideanDrawStrategy),

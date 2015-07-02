@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,29 +26,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/SampleField/GeneratePointSamplesFromField.h>
-
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-
-#include <set>
-#include <vector>
-
-#include <math.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/Fields/SampleField/GeneratePointSamplesFromField.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldRNG.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
 
+ALGORITHM_PARAMETER_DEF(Fields, NumSamples);
+ALGORITHM_PARAMETER_DEF(Fields, DistributionType);
+ALGORITHM_PARAMETER_DEF(Fields, IncrementRNGSeed);
+ALGORITHM_PARAMETER_DEF(Fields, ClampToNodes);
+ALGORITHM_PARAMETER_DEF(Fields, RNGSeed);
+
+GeneratePointSamplesFromFieldAlgo::GeneratePointSamplesFromFieldAlgo()
+{
+  addParameter(Parameters::NumSamples, 10);
+  addParameter(Parameters::RNGSeed, 1);
+  add_option(Parameters::DistributionType,"uniuni","impscat|impuni|uniuni|uniscat");
+  addParameter(Parameters::ClampToNodes,true);
+}
+
+namespace detail
+{
 class GeneratePointSamplesFromFieldAlgoF {
   public:
-    typedef std::pair<long double, VMesh::Elem::index_type> weight_type;
+    typedef std::pair<double, VMesh::Elem::index_type> weight_type;
+    typedef std::vector<weight_type> table_type;
 
     bool build_table(VMesh *mesh, VField* vfield,
                      std::vector<weight_type> &table,
                      std::string& method);
-                     
+
     static bool
     weight_less(const weight_type &a, const weight_type &b)
     {
@@ -56,14 +73,14 @@ class GeneratePointSamplesFromFieldAlgoF {
     }
 };
 
-bool 
+bool
 GeneratePointSamplesFromFieldAlgoF::build_table(VMesh *vmesh,
                                                 VField* vfield,
                                                 std::vector<weight_type> &table,
                                                 std::string& method)
 {
   VMesh::size_type num_elems = vmesh->num_elems();
-  
+
   long double sum = 0.0;
   for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
   {
@@ -115,10 +132,10 @@ GeneratePointSamplesFromFieldAlgoF::build_table(VMesh *vmesh,
       elemsize = vmesh->get_size(idx);
     }
     else if (method == "uniscat")
-    { 
+    {
       elemsize = 1.0;
     }
-    
+
     if (elemsize > 0.0)
     {
       sum += elemsize;
@@ -132,41 +149,37 @@ GeneratePointSamplesFromFieldAlgoF::build_table(VMesh *vmesh,
 
   return (false);
 }
-
-
-
-
+}
 
 bool
-GeneratePointSamplesFromFieldAlgo::run(FieldHandle input, FieldHandle& output)
+GeneratePointSamplesFromFieldAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
-  algo_start("GeneratePointSamplesFromField");
+  ScopedAlgorithmStatusReporter asr(this, "GeneratePointSamplesFromField");
 
-  VField::size_type num_seeds = get_int("num_seed_points");
-  int               rng_seeds = get_int("rng_seed");
-  std::string method          = get_option("seed_method");
-  bool              clamp     = get_bool("clamp");
-  
-  std::vector<GeneratePointSamplesFromFieldAlgoF::weight_type> table;
-  
-  if (input.get_rep() == 0)
+  VField::size_type num_seeds = get(Parameters::NumSamples).toInt();
+  int               rng_seeds = get(Parameters::RNGSeed).toInt();
+  std::string method          = get_option(Parameters::DistributionType);
+  bool              clamp     = get(Parameters::ClampToNodes).toBool();
+
+  if (!input)
   {
     error("No input field was given");
-    algo_end(); return (false);
+    return (false);
   }
-    
+
   VMesh*  mesh  = input->vmesh();
   VField* field = input->vfield();
 
+  using namespace detail;
   GeneratePointSamplesFromFieldAlgoF table_algo;
-  
+  GeneratePointSamplesFromFieldAlgoF::table_type table;
+
   if (method == "uniuni" || method == "uniscat")
   {
     if (!table_algo.build_table(mesh, field, table, method))
     {
-      error("Unable to build unweighted weight table for this mesh.");
-      error("Mesh is likely to be empty.");
-      algo_end(); return (false);
+      error("Unable to build unweighted weight table for this mesh. Mesh is likely to be empty.");
+      return (false);
     }
   }
   else if (field->is_scalar() || field->is_vector())
@@ -174,16 +187,14 @@ GeneratePointSamplesFromFieldAlgo::run(FieldHandle input, FieldHandle& output)
     mesh->synchronize(Mesh::LOCATE_E);
     if (!table_algo.build_table(mesh, field, table, method))
     {
-      error("Invalid weights in mesh, probably all zero.");
-      error("Try using an unweighted option.");
-      algo_end(); return (false);
+      error("Invalid weights in mesh, probably all zero. Try using an unweighted option.");
+      return (false);
     }
   }
   else
   {
-    error("Mesh contains non-weight data.");
-    error("Try using an unweighted option.");
-    algo_end(); return (false);
+    error("Mesh contains non-weight data. Try using an unweighted option.");
+    return (false);
   }
 
   FieldRNG rng(rng_seeds);
@@ -192,28 +203,28 @@ GeneratePointSamplesFromFieldAlgo::run(FieldHandle input, FieldHandle& output)
 
   FieldInformation fi("PointCloudMesh",0,"double");
   output = CreateField(fi);
-  
-  if (output.get_rep() == 0)
+
+  if (!output)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);
+    return (false);
   }
-  
+
   VMesh* omesh = output->vmesh();
   VField* ofield = output->vfield();
 
   for (VField::index_type i=0; i < num_seeds; i++)
   {
     Point p;
-    std::vector<GeneratePointSamplesFromFieldAlgoF::weight_type>::iterator loc;
-    
-    do 
+    GeneratePointSamplesFromFieldAlgoF::table_type::iterator loc;
+
+    do
     {
       loc = std::lower_bound(table.begin(), table.end(),
 			 GeneratePointSamplesFromFieldAlgoF::weight_type(
        rng() * max, VMesh::Elem::index_type(0)),
        GeneratePointSamplesFromFieldAlgoF::weight_less);
-    } 
+    }
     while (loc == table.end());
 
     if (clamp)
@@ -232,11 +243,21 @@ GeneratePointSamplesFromFieldAlgo::run(FieldHandle input, FieldHandle& output)
   }
 
   ofield->resize_values();
-  
-  algo_end();
+
   return (true);
 }
 
+AlgorithmOutput GeneratePointSamplesFromFieldAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(Variables::InputField);
 
-} // End namespace SCIRun
+  FieldHandle outputField;
+  if (!runImpl(inputField, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
+  AlgorithmOutput output;
+  output[Samples] = outputField;
+  return output;
+}
+
+const AlgorithmOutputName GeneratePointSamplesFromFieldAlgo::Samples("Samples");

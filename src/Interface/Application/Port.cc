@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <QtGui>
+#include <boost/lambda/lambda.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
@@ -37,10 +38,11 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-
+#include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core;
 using namespace SCIRun::Dataflow::Networks;
 
 
@@ -71,8 +73,8 @@ namespace SCIRun {
       for (const auto& package : moduleMap)
       {
         const std::string& packageName = package.first;
-        auto p = new QMenu(QString::fromStdString(packageName), menu);
-        menu->addMenu(p);
+
+        QList<QMenu*> packageMenus;
         for (const auto& category : package.second)
         {
           const std::string& categoryName = category.first;
@@ -94,10 +96,18 @@ namespace SCIRun {
           {
             auto m = new QMenu(QString::fromStdString(categoryName), menu);
             m->addActions(actions);
-            p->addMenu(m);
+            packageMenus.append(m);
           }
         }
-        menu->addSeparator();
+        if (!packageMenus.isEmpty())
+        {
+          auto p = new QMenu(QString::fromStdString(packageName), menu);
+          for (QMenu* menu : packageMenus)
+            p->addMenu(menu);
+
+          menu->addMenu(p);
+          menu->addSeparator();
+        }
       }
       return allCompatibleActions;
     }
@@ -171,15 +181,21 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
 
 PortWidget::~PortWidget()
 {
-  portWidgetMap_[moduleId_.id_][isInput_][portId_] = 0;
+  portWidgetMap_[moduleId_.id_][isInput_].erase(portId_);
 }
 
 QSize PortWidgetBase::sizeHint() const
 {
-  const int width = WIDTH;
+  const int width = DEFAULT_WIDTH;
   const int coloredHeight = isInput() ? 5 : 4;
   const int blackHeight = 2;
-  return QSize(width, coloredHeight + blackHeight);
+  QSize size(width, coloredHeight + blackHeight);
+  const double highlightFactor = 1.7;
+  if (isHighlighted_)
+  {
+    size *= highlightFactor;
+  }
+  return size;
 }
 
 void PortWidget::toggleLight()
@@ -200,12 +216,7 @@ void PortWidget::turn_on_light()
 void PortWidgetBase::paintEvent(QPaintEvent* event)
 {
   QSize size = sizeHint();
-  const double highlightFactor = 1.7;
-  if (isHighlighted_)
-  {
-    size *= highlightFactor;
-    resize(size);
-  }
+  resize(size);
 
   QPainter painter(this);
   painter.fillRect(QRect(QPoint(), size), color());
@@ -243,7 +254,7 @@ void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
   {
     int distance = (pos - startPos_).manhattanLength();
     if (distance >= QApplication::startDragDistance())
-      performDrag(pos);
+      dragImpl(pos);
   }
 }
 
@@ -322,6 +333,11 @@ void PortWidget::makeConnection(const QPointF& pos)
   auto port = closestPortFinder_->closestPort(pos);  //GUI concern: needs unit test
   if (port)
     tryConnectPort(pos, port);
+
+  if (Preferences::Instance().highlightPorts)
+  {
+    forEachPort([](PortWidget* p) { p->setHighlight(false, true); }, boost::lambda::constant(true));
+  }
 }
 
 void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
@@ -343,9 +359,16 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
     auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
     connect(c, SIGNAL(noteChanged()), this, SIGNAL(connectionNoteChanged()));
-    connect(this, SIGNAL(portMoved()), c, SLOT(trackNodes()));
+    connect(out, SIGNAL(portMoved()), c, SLOT(trackNodes()));
+    connect(in, SIGNAL(portMoved()), c, SLOT(trackNodes()));
     setConnected(true);
   }
+}
+
+void PortWidget::setPositionObject(PositionProviderPtr provider)
+{
+  NeedsScenePositionProvider::setPositionObject(provider);
+  Q_EMIT portMoved();
 }
 
 void PortWidget::moveEvent(QMoveEvent * event)
@@ -370,13 +393,36 @@ bool PortWidget::isFullInputPort() const
   return isInput() && !connections_.empty();
 }
 
-void PortWidget::performDrag(const QPointF& endPos)
+void PortWidget::dragImpl(const QPointF& endPos)
 {
   if (!currentConnection_)
   {
     currentConnection_ = connectionFactory_->makeConnectionInProgress(this);
   }
   currentConnection_->update(endPos);
+
+  if (Preferences::Instance().highlightPorts)
+  {
+    forEachPort(
+      [](PortWidget* p) { p->setHighlight(true, true); }, 
+      [this](const std::string& mid, bool isInput, const PortWidget* port) { return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename(); });
+  }
+}
+
+template <typename Func, typename Pred>
+void PortWidget::forEachPort(Func func, Pred pred)
+{
+  for (auto& p1 : portWidgetMap_)
+  {
+    for (auto& p2 : p1.second)
+    {
+      for (auto& p3 : p2.second)
+      {
+        if (pred(p1.first, p2.first, p3.second))
+          func(p3.second);
+      }
+    }
+  }
 }
 
 void PortWidget::addConnection(ConnectionLine* c)
@@ -436,8 +482,11 @@ ModuleId PortWidget::getUnderlyingModuleId() const
   return moduleId_;
 }
 
-void PortWidget::setHighlight(bool on)
+void PortWidget::setHighlight(bool on, bool individual)
 {
+  if (!isHighlighted_ && on && individual)
+    Q_EMIT highlighted(true);
+
   isHighlighted_ = on;
   if (on)
   {
@@ -446,6 +495,7 @@ void PortWidget::setHighlight(bool on)
   }
   else
   {
+    Q_EMIT highlighted(false);
   }
 }
 

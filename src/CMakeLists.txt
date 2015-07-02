@@ -314,6 +314,7 @@ MARK_AS_ADVANCED(DOWNLOAD_TOOLKITS)
 IF(DOWNLOAD_TOOLKITS)
   INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ToolkitsConfig.cmake)
   EXTERNAL_TOOLKIT(BrainStimulator)
+  EXTERNAL_TOOLKIT(FwdInvToolkit)
 ENDIF()
 
 ########################################################################
@@ -730,6 +731,8 @@ SET_PROPERTY(TARGET Core_Application         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Application_Preferences         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Application_Session         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Utils         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_ICom         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Services         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Math         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Matlab         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Parser         PROPERTY FOLDER "Core")
@@ -838,6 +841,8 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
   SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO_Tests PROPERTY FOLDER "Modules/DataIO")
   SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
+  
+  SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
 ENDIF()
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
@@ -862,6 +867,7 @@ ENDIF()
 
 IF(DOWNLOAD_TOOLKITS)
   SET_PROPERTY(TARGET BrainStimulator_external   PROPERTY FOLDER "Externals")
+  SET_PROPERTY(TARGET FwdInvToolkit_external   PROPERTY FOLDER "Externals")
 ENDIF()
 
 ########################################################################

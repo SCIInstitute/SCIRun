@@ -33,56 +33,78 @@
 ///   University of Utah
 ///@date  March 2001
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Core/Algorithms/Fields/ClipMesh/ClipMeshByIsovalue.h>
-#include <iostream>
+#include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
+#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-namespace SCIRun {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Dataflow/Network/Module.h>
+ #include <Dataflow/Network/Ports/FieldPort.h>
+ #include <Dataflow/Network/Ports/MatrixPort.h>
+ #include <Core/Algorithms/Fields/ClipMesh/ClipMeshByIsovalue.h>
+ #include <iostream>
+#endif
+
+using namespace SCIRun;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
 
 /// @class ClipVolumeByIsovalue
 /// @brief Clip out parts of a field.
 
-class ClipVolumeByIsovalue : public Module
+const ModuleLookupInfo ClipVolumeByIsovalueModule::staticInfo_("ClipVolumeByIsovalue", "NewField", "SCIRun");
+
+ClipVolumeByIsovalueModule::ClipVolumeByIsovalueModule() : Module(staticInfo_)
 {
-  public:
-    ClipVolumeByIsovalue(GuiContext* ctx);
-    virtual ~ClipVolumeByIsovalue() {}
-    virtual void execute();
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Isovalue);
+  INITIALIZE_PORT(OutputField);
+}
 
-  private:
-    GuiDouble  gui_iso_value_min_;
-    GuiDouble  gui_iso_value_max_;
-    GuiDouble  gui_iso_value_;
-    GuiInt     gui_lte_;
-    //gui_update_type_ must be declared after gui_iso_value_max_ which is
-    //traced in the tcl code. If gui_update_type_ is set to Auto having it
-    //last will prevent the net from executing when it is instantiated.
-    GuiString  gui_update_type_;
-
-    SCIRunAlgo::ClipMeshByIsovalueAlgo algo_;    
-};
-
-
-DECLARE_MAKER(ClipVolumeByIsovalue)
-
-
-ClipVolumeByIsovalue::ClipVolumeByIsovalue(GuiContext* context)
-  : Module("ClipVolumeByIsovalue", context, Filter, "NewField", "SCIRun"),
-    gui_iso_value_min_(context->subVar("isoval-min"),  0.0),
-    gui_iso_value_max_(context->subVar("isoval-max"), 99.0),
-    gui_iso_value_(context->subVar("isoval"), 0.0),
-    gui_lte_(context->subVar("lte"), 1),
-    gui_update_type_(context->subVar("update_type"), "On Release")
+void ClipVolumeByIsovalueModule::setStateDefaults()
 {
-  algo_.set_progress_reporter(this);
+  auto state = get_state();
+  setStateDoubleFromAlgo(ClipMeshByIsovalueAlgo::ScalarIsoValue);
 }
 
 
-void
-ClipVolumeByIsovalue::execute()
+void ClipVolumeByIsovalueModule::execute()
 {
+  auto input = getRequiredInput(InputField);
+  auto isovalueOption = getOptionalInput(Isovalue);
+  
+  if (needToExecute())
+  {
+    update_state(Executing);
+    double iso=0;
+    
+    // GUI inputs have less priority than isovalue - second module input
+    iso = get_state()->getValue(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();  
+    
+    if (isovalueOption && *isovalueOption && !(*isovalueOption)->empty())
+    {
+      iso = (*isovalueOption)->get(0,0); 
+    }
+    
+    algo().set(ClipMeshByIsovalueAlgo::ScalarIsoValue, iso);     
+   
+    auto gui_LessThanIsoValue = (get_state()->getValue(ClipMeshByIsovalueAlgo::LessThanIsoValue)).toInt();
+    
+    if (gui_LessThanIsoValue==-1)
+       gui_LessThanIsoValue=0;
+       
+    algo().set(ClipMeshByIsovalueAlgo::LessThanIsoValue, gui_LessThanIsoValue);
+    
+    auto output = algo().run_generic(withInputData((InputField, input)));
+
+    sendOutputFromAlgorithm(OutputField, output);
+  }
+  
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldHandle field_input_handle;
   get_input_handle( "Input", field_input_handle, true );
 
@@ -166,7 +188,7 @@ ClipVolumeByIsovalue::execute()
     send_output_handle("Clipped",  field_output_handle);
     send_output_handle("Mapping", matrix_output_handle);
   }
+ #endif 
 }
 
-} // End namespace SCIRun
 
