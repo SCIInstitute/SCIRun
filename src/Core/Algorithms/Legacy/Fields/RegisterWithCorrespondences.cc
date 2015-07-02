@@ -661,8 +661,6 @@ bool RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1,
     icors2->size(num_cors2);
     imesh->size(num_pts);
     
-    std::vector<double> coefs;//(length of 12);
-    
     if (num_cors1 != num_cors2)
     {
         error("Number of correspondence points does not match");
@@ -843,18 +841,19 @@ bool RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1,
     
     double scaling=traceA*norm1/norm2;
     
-    coefs[0]=Tmat(0,0)*traceA*norm1;
-    coefs[1]=Tmat(0,1)*traceA*norm1;
-    coefs[2]=Tmat(0,2)*traceA*norm1;
-    coefs[3]=0.0;
-    coefs[4]=Tmat(1,0)*traceA*norm1;
-    coefs[5]=Tmat(1,1)*traceA*norm1;
-    coefs[6]=Tmat(1,2)*traceA*norm1;
-    coefs[7]=0.0;
-    coefs[8]=Tmat(2,0)*traceA*norm1;
-    coefs[9]=Tmat(2,1)*traceA*norm1;
-    coefs[10]=Tmat(2,2)*traceA*norm1;
-    coefs[11]=0.0;
+    std::vector<double> coefs = {
+      Tmat(0, 0)*traceA*norm1,
+      Tmat(0, 1)*traceA*norm1,
+      Tmat(0, 2)*traceA*norm1,
+      0.0,
+      Tmat(1, 0)*traceA*norm1,
+      Tmat(1, 1)*traceA*norm1,
+      Tmat(1, 2)*traceA*norm1,
+      0.0,
+      Tmat(2, 0)*traceA*norm1,
+      Tmat(2, 1)*traceA*norm1,
+      Tmat(2, 2)*traceA*norm1,
+      0.0 };
     
     //done with solve, make the new field
     make_new_pointsA(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
