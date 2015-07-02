@@ -178,7 +178,7 @@
 									<name>InputCenterX</name>
 									<value>
 										<which>2</which>
-										<value>  0.0000</value>
+										<value>  0.0406</value>
 									</value>
 								</second>
 							</item>
@@ -190,7 +190,7 @@
 									<name>InputCenterY</name>
 									<value>
 										<which>2</which>
-										<value>  0.0000</value>
+										<value>  0.0051</value>
 									</value>
 								</second>
 							</item>
@@ -202,7 +202,7 @@
 									<name>InputCenterZ</name>
 									<value>
 										<which>2</which>
-										<value>  0.0000</value>
+										<value>  0.0444</value>
 									</value>
 								</second>
 							</item>
@@ -214,7 +214,7 @@
 									<name>InputSizeX</name>
 									<value>
 										<which>2</which>
-										<value>  2.0000</value>
+										<value>  0.1344</value>
 									</value>
 								</second>
 							</item>
@@ -226,7 +226,7 @@
 									<name>InputSizeY</name>
 									<value>
 										<which>2</which>
-										<value>  2.0000</value>
+										<value>  0.0990</value>
 									</value>
 								</second>
 							</item>
@@ -238,7 +238,7 @@
 									<name>InputSizeZ</name>
 									<value>
 										<which>2</which>
-										<value>  2.0000</value>
+										<value>  0.1338</value>
 									</value>
 								</second>
 							</item>
@@ -250,7 +250,7 @@
 									<name>OutputCenterX</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>4.06116060000000084e-02</value>
 									</value>
 								</second>
 							</item>
@@ -262,7 +262,7 @@
 									<name>OutputCenterY</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>5.13503400000002441e-03</value>
 									</value>
 								</second>
 							</item>
@@ -274,7 +274,7 @@
 									<name>OutputCenterZ</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>4.43749999999999978e-02</value>
 									</value>
 								</second>
 							</item>
@@ -286,7 +286,7 @@
 									<name>OutputSizeX</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>1.34437535999999996e-01</value>
 									</value>
 								</second>
 							</item>
@@ -298,7 +298,7 @@
 									<name>OutputSizeY</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>9.89609640000000124e-02</value>
 									</value>
 								</second>
 							</item>
@@ -310,7 +310,7 @@
 									<name>OutputSizeZ</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>1.33750000000000036e-01</value>
 									</value>
 								</second>
 							</item>
@@ -567,17 +567,77 @@
 				</second>
 			</item>
 			<item>
-				<first>GeneratePointSamplesFromField:0</first>
+				<first>GeneratePointSamplesFromFieldOrWidget:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>NewField</category_name_>
-						<module_name_>GeneratePointSamplesFromField</module_name_>
+						<module_name_>GeneratePointSamplesFromFieldOrWidget</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>5</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ClampToNodes</name>
+								</first>
+								<second>
+									<name>ClampToNodes</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DistributionType</name>
+								</first>
+								<second>
+									<name>DistributionType</name>
+									<value>
+										<which>2</which>
+										<value>uniuni</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>IncrementRNGSeed</name>
+								</first>
+								<second>
+									<name>IncrementRNGSeed</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NumSamples</name>
+								</first>
+								<second>
+									<name>NumSamples</name>
+									<value>
+										<which>0</which>
+										<value>50</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RNGSeed</name>
+								</first>
+								<second>
+									<name>RNGSeed</name>
+									<value>
+										<which>0</which>
+										<value>3</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -730,7 +790,7 @@
 									<name>field1-name</name>
 									<value>
 										<which>2</which>
-										<value>field0</value>
+										<value>POTENTIAL_FIELD</value>
 									</value>
 								</second>
 							</item>
@@ -742,7 +802,7 @@
 									<name>field2-name</name>
 									<value>
 										<which>2</which>
-										<value>field1</value>
+										<value>CURRENT_VECTOR_FIELD</value>
 									</value>
 								</second>
 							</item>
@@ -754,7 +814,7 @@
 									<name>field3-name</name>
 									<value>
 										<which>2</which>
-										<value>field2</value>
+										<value>CAN_ELECTRODE</value>
 									</value>
 								</second>
 							</item>
@@ -766,7 +826,7 @@
 									<name>field4-name</name>
 									<value>
 										<which>2</which>
-										<value>field3</value>
+										<value>RED_WIRE_ELECTRODE</value>
 									</value>
 								</second>
 							</item>
@@ -778,7 +838,7 @@
 									<name>field5-name</name>
 									<value>
 										<which>2</which>
-										<value>field4</value>
+										<value>CARDIAC_SURFACE</value>
 									</value>
 								</second>
 							</item>
@@ -894,7 +954,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/Defib_simulation_results.bdl</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/Defib_simulation_results.bdl</value>
 									</value>
 								</second>
 							</item>
@@ -934,7 +994,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>4.99468159286184743e+02</value>
 									</value>
 								</second>
 							</item>
@@ -946,7 +1006,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>2.18387164519450039e+02</value>
 									</value>
 								</second>
 							</item>
@@ -998,7 +1058,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>4.99999999999999659e+02</value>
 									</value>
 								</second>
 							</item>
@@ -1040,7 +1100,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1074,7 +1134,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(0.5,0.5,0.5)</value>
+										<value>Color(0,0,0)</value>
 									</value>
 								</second>
 							</item>
@@ -1116,73 +1176,109 @@
 							</item>
 							<item>
 								<first>
-									<name>FaceTransparency</name>
+									<name>EdgesAvailable</name>
 								</first>
 								<second>
-									<name>FaceTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FaceTransparencyValue</name>
-								</first>
-								<second>
-									<name>FaceTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeAsSpheres</name>
-								</first>
-								<second>
-									<name>NodeAsSpheres</name>
-									<value>
-										<which>0</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparency</name>
-								</first>
-								<second>
-									<name>NodeTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparencyValue</name>
-								</first>
-								<second>
-									<name>NodeTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowEdges</name>
-								</first>
-								<second>
-									<name>ShowEdges</name>
+									<name>EdgesAvailable</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparencyValue</name>
+								</first>
+								<second>
+									<name>NodeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1236,7 +1332,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1270,7 +1366,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(0.5,0.5,0.5)</value>
+										<value>Color(0,0,0)</value>
 									</value>
 								</second>
 							</item>
@@ -1312,73 +1408,109 @@
 							</item>
 							<item>
 								<first>
-									<name>FaceTransparency</name>
+									<name>EdgesAvailable</name>
 								</first>
 								<second>
-									<name>FaceTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FaceTransparencyValue</name>
-								</first>
-								<second>
-									<name>FaceTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeAsSpheres</name>
-								</first>
-								<second>
-									<name>NodeAsSpheres</name>
-									<value>
-										<which>0</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparency</name>
-								</first>
-								<second>
-									<name>NodeTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparencyValue</name>
-								</first>
-								<second>
-									<name>NodeTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowEdges</name>
-								</first>
-								<second>
-									<name>ShowEdges</name>
+									<name>EdgesAvailable</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparencyValue</name>
+								</first>
+								<second>
+									<name>NodeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1432,7 +1564,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1508,6 +1640,18 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -1527,6 +1671,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1568,6 +1724,18 @@
 							</item>
 							<item>
 								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>ShowEdges</name>
 								</first>
 								<second>
@@ -1586,7 +1754,7 @@
 									<name>ShowFaces</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1628,7 +1796,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1704,13 +1872,25 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
 									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1722,7 +1902,19 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>4.00000000000000022e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1764,13 +1956,25 @@
 							</item>
 							<item>
 								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>ShowEdges</name>
 								</first>
 								<second>
 									<name>ShowEdges</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1824,7 +2028,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1858,7 +2062,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(0.5,0.5,0.5)</value>
+										<value>Color(0.498039,0.283253,0.298558)</value>
 									</value>
 								</second>
 							</item>
@@ -1900,73 +2104,109 @@
 							</item>
 							<item>
 								<first>
-									<name>FaceTransparency</name>
+									<name>EdgesAvailable</name>
 								</first>
 								<second>
-									<name>FaceTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FaceTransparencyValue</name>
-								</first>
-								<second>
-									<name>FaceTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeAsSpheres</name>
-								</first>
-								<second>
-									<name>NodeAsSpheres</name>
-									<value>
-										<which>0</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparency</name>
-								</first>
-								<second>
-									<name>NodeTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparencyValue</name>
-								</first>
-								<second>
-									<name>NodeTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowEdges</name>
-								</first>
-								<second>
-									<name>ShowEdges</name>
+									<name>EdgesAvailable</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparencyValue</name>
+								</first>
+								<second>
+									<name>NodeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -2011,7 +2251,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ViewScene:0</first>
+				<first>ViewScene:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -2020,7 +2260,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2034,17 +2274,46 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>GeometryFeedbackInfo</name>
+								</first>
+								<second>
+									<name>GeometryFeedbackInfo</name>
+									<value>
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name>x</name>
+												<value>
+													<which>0</which>
+													<value>120</value>
+												</value>
+											</item>
+											<item>
+												<name>y</name>
+												<value>
+													<which>0</which>
+													<value>286</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
+		<connections class_id="13" tracking_level="0" version="0">
 			<count>28</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
+			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
+				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
@@ -2084,22 +2353,10 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>GeneratePointSamplesFromField:0</moduleId2_>
+				<moduleId2_>GeneratePointSamplesFromFieldOrWidget:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>EditMeshBoundingBox:0</moduleId1_>
-				<port1_>
-					<name>Transformation_Widget</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
-				<port2_>
-					<name>GeneralGeom</name>
-					<id>5</id>
 				</port2_>
 			</item>
 			<item>
@@ -2127,9 +2384,9 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>GeneratePointSamplesFromField:0</moduleId1_>
+				<moduleId1_>GeneratePointSamplesFromFieldOrWidget:0</moduleId1_>
 				<port1_>
-					<name>GeneratedPoints</name>
+					<name>Samples</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>GenerateStreamLines:0</moduleId2_>
@@ -2324,7 +2581,7 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>3</id>
@@ -2336,7 +2593,7 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>4</id>
@@ -2348,7 +2605,7 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>2</id>
@@ -2360,7 +2617,7 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>0</id>
@@ -2372,29 +2629,41 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>1</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ShowField:4</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:1</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>5</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
+	<modulePositions class_id="16" tracking_level="0" version="0">
 		<count>19</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
+		<item class_id="17" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
-			<second class_id="17" tracking_level="0" version="0">
-				<first>2.30000000000000000e+01</first>
-				<second>-4.01000000000000000e+02</second>
+			<second class_id="18" tracking_level="0" version="0">
+				<first>4.88548749999999927e+01</first>
+				<second>-2.65642124999999965e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>-3.80000000000000000e+02</first>
-				<second>0.00000000000000000e+00</second>
+				<first>-4.65168999999999983e+02</first>
+				<second>4.56262500000000060e+00</second>
 			</second>
 		</item>
 		<item>
@@ -2419,17 +2688,17 @@
 			</second>
 		</item>
 		<item>
-			<first>GeneratePointSamplesFromField:0</first>
+			<first>GeneratePointSamplesFromFieldOrWidget:0</first>
 			<second>
-				<first>7.60000000000000000e+01</first>
-				<second>-1.52000000000000000e+02</second>
+				<first>8.66898749999999723e+01</first>
+				<second>-1.61212749999999971e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GenerateStreamLines:0</first>
 			<second>
-				<first>0.00000000000000000e+00</first>
-				<second>-7.60000000000000000e+01</second>
+				<first>-1.06461249999999978e+01</first>
+				<second>-3.18946250000000049e+01</second>
 			</second>
 		</item>
 		<item>
@@ -2443,14 +2712,14 @@
 			<first>GetFieldsFromBundle:0</first>
 			<second>
 				<first>-5.04000000000000000e+02</first>
-				<second>-3.98000000000000000e+02</second>
+				<second>-3.96479125000000010e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoNodes:0</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>0.00000000000000000e+00</second>
+				<first>-9.26858749999999958e+01</first>
+				<second>1.07982124999999996e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2470,22 +2739,22 @@
 		<item>
 			<first>RescaleColorMap:1</first>
 			<second>
-				<first>-4.30000000000000000e+01</first>
-				<second>1.30000000000000000e+02</second>
+				<first>-3.69164999999999850e+01</first>
+				<second>2.54711749999999995e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>4.10000000000000000e+02</first>
-				<second>-4.12000000000000000e+02</second>
+				<first>5.04294250000000090e+02</first>
+				<second>-2.73600375000000042e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>3.44000000000000000e+02</first>
-				<second>-1.73000000000000000e+02</second>
+				<first>4.17002000000000066e+02</first>
+				<second>-2.54751249999999914e+01</second>
 			</second>
 		</item>
 		<item>
@@ -2498,31 +2767,31 @@
 		<item>
 			<first>ShowField:3</first>
 			<second>
-				<first>-6.84000000000000000e+02</first>
-				<second>2.28000000000000000e+02</second>
+				<first>-6.36852875000000040e+02</first>
+				<second>3.26856874999999945e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:4</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>7.60000000000000000e+01</second>
+				<first>3.16210749999999962e+02</first>
+				<second>1.56606374999999957e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ViewScene:0</first>
+			<first>ViewScene:1</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>5.32000000000000000e+02</second>
+				<first>-5.04930499999999938e+02</first>
+				<second>5.42952374999999961e+02</second>
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
+	<moduleNotes class_id="19" tracking_level="0" version="0">
 		<count>5</count>
 		<item_version>0</item_version>
-		<item class_id="19" tracking_level="0" version="0">
+		<item class_id="20" tracking_level="0" version="0">
 			<first>ShowField:0</first>
-			<second class_id="20" tracking_level="0" version="0">
+			<second class_id="21" tracking_level="0" version="0">
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -2590,10 +2859,10 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="21" tracking_level="0" version="0">
+	<moduleTags class_id="22" tracking_level="0" version="0">
 		<count>19</count>
 		<item_version>0</item_version>
-		<item class_id="22" tracking_level="0" version="0">
+		<item class_id="23" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
 			<second>0</second>
 		</item>
@@ -2614,7 +2883,7 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
-			<first>GeneratePointSamplesFromField:0</first>
+			<first>GeneratePointSamplesFromFieldOrWidget:0</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -2666,7 +2935,7 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
-			<first>ViewScene:0</first>
+			<first>ViewScene:1</first>
 			<second>0</second>
 		</item>
 	</moduleTags>

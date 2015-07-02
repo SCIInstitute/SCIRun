@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,37 +26,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEPOINTSAMPLESFROMFIELD_H
-#define CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEPOINTSAMPLESFROMFIELD_H 1
-
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
-
-namespace SCIRun
-{
-  namespace Core
-  {
-    namespace Algorithms
-    {
-      namespace Fields
-      {
-        ALGORITHM_PARAMETER_DECL(NumSamples);
-        ALGORITHM_PARAMETER_DECL(DistributionType);
-        ALGORITHM_PARAMETER_DECL(ClampToNodes);
-        ALGORITHM_PARAMETER_DECL(IncrementRNGSeed);
-        ALGORITHM_PARAMETER_DECL(RNGSeed);
-
-class SCISHARE GeneratePointSamplesFromFieldAlgo : public AlgorithmBase
-{
-  public:
-    GeneratePointSamplesFromFieldAlgo();
-    bool runImpl(FieldHandle input, FieldHandle& seeds) const;
-    static const AlgorithmOutputName Samples;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-};
-}
-}
-}
-}
-
+#if _WIN32
+#include <GL/glew.h>
 #endif
+#include <gtest/gtest.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Render;
+using namespace SCIRun::Gui;
+
+TEST(SRInterfaceTest, CanInstantiateSRInterface)
+{
+  std::shared_ptr<GLContext> context;
+  std::vector<std::string> shaderDirs;
+  SRInterface srinterface(context, shaderDirs);
+}
+
+class DummyGLContext : public GLContext
+{
+public:
+  DummyGLContext() : GLContext(nullptr) {}
+  virtual void makeCurrent() override 
+  { 
+    std::cout << "DummyGLContext::makeCurrent called" << std::endl;
+  }
+  virtual void swapBuffers() override
+  {
+    std::cout << "DummyGLContext::swapBuffers called" << std::endl;
+  }
+};
+
+
+TEST(SRInterfaceTest, CanRenderEmptyFrame)
+{
+  std::shared_ptr<GLContext> context(new DummyGLContext);
+  std::vector<std::string> shaderDirs;
+  SRInterface srinterface(context, shaderDirs);
+
+  srinterface.doFrame(0, 50);
+}
+

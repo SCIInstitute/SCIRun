@@ -707,6 +707,7 @@ void ModuleWidget::createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfo
       this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+    connect(w, SIGNAL(highlighted(bool)), this, SLOT(updatePortSpacing(bool)));
     ports_->addPort(w);
     ++i;
     if (dialog_)
@@ -740,6 +741,7 @@ void ModuleWidget::createOutputPorts(const SCIRun::Dataflow::Networks::ModuleInf
       closestPortFinder_,
       port->getPortDataDescriber(),
       this);
+    connect(w, SIGNAL(highlighted(bool)), this, SLOT(updatePortSpacing(bool)));
     hookUpGeneralPortSignals(w);
     ports_->addPort(w);
     ++i;
@@ -1357,9 +1359,34 @@ void ModuleWidget::setPortSpacing(bool highlighted)
   outputPortLayout_->setSpacing(spacing);
 }
 
+void ModuleWidget::setInputPortSpacing(bool highlighted)
+{
+  int spacing = highlighted ? LARGE_PORT_SPACING : SMALL_PORT_SPACING;
+  inputPortLayout_->setSpacing(spacing);
+}
+
+void ModuleWidget::setOutputPortSpacing(bool highlighted)
+{
+  int spacing = highlighted ? LARGE_PORT_SPACING : SMALL_PORT_SPACING;
+  outputPortLayout_->setSpacing(spacing);
+}
+
 int ModuleWidget::portSpacing() const
 {
   return inputPortLayout_->spacing();
+}
+
+void ModuleWidget::updatePortSpacing(bool highlighted)
+{
+  //qDebug() << "NEED TO UPDATE SPACING FOR " << sender();
+  auto port = qobject_cast<PortWidget*>(sender());
+  if (port)
+  {
+    if (port->isInput())
+      setInputPortSpacing(highlighted);
+    else
+      setOutputPortSpacing(highlighted);
+  }
 }
 
 void ModuleWidget::unhighlightPorts()

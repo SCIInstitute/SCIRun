@@ -26,37 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEPOINTSAMPLESFROMFIELD_H
-#define CORE_ALGORITHMS_FIELDS_SAMPLEFIELD_GENERATEPOINTSAMPLESFROMFIELD_H 1
+#ifndef MODULES_LEGACY_FIELDS_GeneratePointSamplesFromFieldOrWidget_H__
+#define MODULES_LEGACY_FIELDS_GeneratePointSamplesFromFieldOrWidget_H__
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-namespace SCIRun
-{
-  namespace Core
-  {
-    namespace Algorithms
-    {
-      namespace Fields
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
+
+      class SCISHARE GeneratePointSamplesFromFieldOrWidget : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has2OutputPorts<GeometryPortTag, FieldPortTag>
       {
-        ALGORITHM_PARAMETER_DECL(NumSamples);
-        ALGORITHM_PARAMETER_DECL(DistributionType);
-        ALGORITHM_PARAMETER_DECL(ClampToNodes);
-        ALGORITHM_PARAMETER_DECL(IncrementRNGSeed);
-        ALGORITHM_PARAMETER_DECL(RNGSeed);
+      public:
+        GeneratePointSamplesFromFieldOrWidget();
 
-class SCISHARE GeneratePointSamplesFromFieldAlgo : public AlgorithmBase
-{
-  public:
-    GeneratePointSamplesFromFieldAlgo();
-    bool runImpl(FieldHandle input, FieldHandle& seeds) const;
-    static const AlgorithmOutputName Samples;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-};
-}
-}
-}
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
+
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, Sampling_Widget, GeometryObject);
+        OUTPUT_PORT(1, Samples, LegacyField);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        void execute_random(FieldHandle ifield);
+
+        //boost::shared_ptr<class GeneratePointSamplesFromFieldOrWidgetImpl> impl_;
+      };
+
+    }
+  }
 }
 
 #endif
