@@ -96,6 +96,9 @@ namespace SCIRun {
 
       showOrientation_ = true;
       autoRotate_ = false;
+      selectWidget_ = true;
+      widgetSelected_ = false;
+      widgetExists_ = false;
       mRenderSortType = RenderState::TransparencySortType::UPDATE_SORT;
       // Construct ESCore. We will need to bootstrap the core. We should also
       // probably add utility static classes.
@@ -200,19 +203,43 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseDown(const glm::ivec2& pos, MouseButton btn)
     {
+      if (selectWidget_ && widgetExists_)
+      {
+        if (btn == MouseButton::MOUSE_LEFT)
+        {
+          //widgetSelected_ = foundWidget(pos);
+          std::cout << "widget exists" << std::endl;
+        }
+      }
       mCamera->mouseDownEvent(pos, btn);
     }
 
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseMove(const glm::ivec2& pos, MouseButton btn)
     {
-      mCamera->mouseMoveEvent(pos, btn);
+      if (widgetSelected_)
+      {
+
+      }
+      else
+      {
+        mCamera->mouseMoveEvent(pos, btn);
+      }
     }
 
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseWheel(int32_t delta)
     {
       mCamera->mouseWheelEvent(delta);
+    }
+
+    //------------------------------------------------------------------------------
+    void SRInterface::inputShiftKeyDown(bool shiftDown)
+    {
+      if (shiftDown) std::cout << "ShiftDown" << std::endl;
+      else  std::cout << "ShiftUp" << std::endl;
+
+      selectWidget_ = shiftDown;
     }
 
     //------------------------------------------------------------------------------
@@ -564,6 +591,11 @@ namespace SCIRun {
                     // Add transformation
                     gen::Transform trafo;
 
+                    if (pass.renderState.get(SCIRun::RenderState::ActionFlags::IS_WIDGET))
+                    {
+                      widgetExists_ = true;
+                    }
+
                     if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
                     {
                       double scale = pass.scalar;
@@ -683,6 +715,20 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
+    bool SRInterface::foundWidget(const glm::ivec2& pos)
+    {
+      mContext->makeCurrent();
+      for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+      {
+        for (const auto& pass : it->mPasses)
+        {
+          
+        }
+      }
+      return true;
+    }
+
+    //------------------------------------------------------------------------------
     void SRInterface::removeAllGeomObjects()
     {
       mContext->makeCurrent();
@@ -698,7 +744,7 @@ namespace SCIRun {
       }
 
       mCore.renormalize(true);
-
+      widgetExists_ = false;
       mSRObjects.clear();
     }
 
