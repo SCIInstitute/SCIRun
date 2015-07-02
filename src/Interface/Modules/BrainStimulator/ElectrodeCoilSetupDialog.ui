@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>752</width>
-    <height>420</height>
+    <height>450</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>752</width>
-    <height>420</height>
+    <height>450</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -143,6 +143,73 @@
     <double>1.000000000000000</double>
    </property>
   </widget>
+  <widget class="QCheckBox" name="invertNormalsCheckBox_">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>360</y>
+     <width>321</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Invert normals to position electrodes on scalp</string>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="OrientTMSCoilRadialToScalpCheckBox_">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>390</y>
+     <width>271</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Force TMS coil to be radial to scalp</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="PutElectrodesOnScalpCheckBox_">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>390</y>
+     <width>341</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Compute 3rd module output (might take a while)</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="InterpolateElectrodeShapeCheckbox_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>410</y>
+     <width>281</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Interpolate electrode sponge edges</string>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
@@ -178,6 +245,22 @@
      <y>371</y>
     </hint>
    </hints>
-  </connection>
+  </connection>  
+  <connection>
+   <sender>PutElectrodesOnScalpCheckBox_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>InterpolateElectrodeShapeCheckbox_</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>120</x>
+     <y>369</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>264</x>
+     <y>371</y>
+    </hint>
+   </hints>
+  </connection>  
  </connections>
 </ui>
