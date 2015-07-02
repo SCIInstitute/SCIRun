@@ -426,7 +426,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/work/SCIRunTestData_github/IBBM2015/BrainStimulator/mesh.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/BrainStimulator/mesh.mat</value>
 									</value>
 								</second>
 							</item>
@@ -466,7 +466,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/work/SCIRunTestData_github/IBBM2015/BrainStimulator/elc_nodes.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/BrainStimulator/elc_nodes.mat</value>
 									</value>
 								</second>
 							</item>
@@ -506,7 +506,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/work/SCIRunTestData_github/IBBM2015/BrainStimulator/brain.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/BrainStimulator/brain.mat</value>
 									</value>
 								</second>
 							</item>
@@ -546,7 +546,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/work/SCIRunTestData_github/IBBM2015/BrainStimulator/scalp.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/BrainStimulator/scalp.mat</value>
 									</value>
 								</second>
 							</item>
