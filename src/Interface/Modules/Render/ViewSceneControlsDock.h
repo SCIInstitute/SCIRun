@@ -53,6 +53,8 @@ namespace SCIRun {
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
 
       void setSampleColor(const QColor& color);
+      void setObjectModel(QAbstractItemModel* model);
+      void addObject(QWidget* item);
 
     private:
       //ViewSceneDialog* scene_;
