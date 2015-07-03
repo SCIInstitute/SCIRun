@@ -55,6 +55,7 @@ SET(Interface_Modules_Fields_FORMS
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
   GenerateSinglePointProbeFromField.ui
+  GeneratePointSamplesFromFieldOrWidget.ui
   GeneratePointSamplesFromField.ui
   RefineMesh.ui
   ConvertFieldBasis.ui
@@ -100,6 +101,7 @@ SET(Interface_Modules_Fields_HEADERS
   ExtractSimpleIsosurfaceDialog.h
   RegisterWithCorrespondencesDialog.h
   GeneratePointSamplesFromFieldDialog.h
+  GeneratePointSamplesFromFieldOrWidgetDialog.h
   ClipVolumeByIsovalueDialog.h
 )
 
@@ -137,6 +139,7 @@ SET(Interface_Modules_Fields_SOURCES
   ExtractSimpleIsosurfaceDialog.cc
   RegisterWithCorrespondencesDialog.cc
   GeneratePointSamplesFromFieldDialog.cc
+  GeneratePointSamplesFromFieldOrWidgetDialog.cc
   ClipVolumeByIsovalueDialog.cc
 )
 

@@ -4,53 +4,89 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>8</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ExtractSimpleIsosurface:0</first>
+				<first>CreateLatVol:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
 						<category_name_>NewField</category_name_>
-						<module_name_>ExtractSimpleIsosurface</module_name_>
+						<module_name_>CreateLatVol</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>3</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>GUIIsoValue</name>
+									<name>DataAtLocation</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>GUIIsoValue</name>
+									<name>DataAtLocation</name>
 									<value class_id="11" tracking_level="0" version="0">
-										<which>1</which>
-										<value>4.00000000000000000e+02</value>
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>IsovalueChoice</name>
+									<name>ElementSizeNormalized</name>
 								</first>
 								<second>
-									<name>IsovalueChoice</name>
+									<name>ElementSizeNormalized</name>
 									<value>
-										<which>2</which>
-										<value>Single</value>
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>SingleIsoValue</name>
+									<name>PadPercent</name>
 								</first>
 								<second>
-									<name>SingleIsoValue</name>
+									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000000e+02</value>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XSize</name>
+								</first>
+								<second>
+									<name>XSize</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YSize</name>
+								</first>
+								<second>
+									<name>YSize</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ZSize</name>
+								</first>
+								<second>
+									<name>ZSize</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
 									</value>
 								</second>
 							</item>
@@ -59,62 +95,74 @@
 				</second>
 			</item>
 			<item>
-				<first>FairMesh:0</first>
+				<first>GeneratePointSamplesFromFieldOrWidget:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>NewField</category_name_>
-						<module_name_>FairMesh</module_name_>
+						<module_name_>GeneratePointSamplesFromFieldOrWidget</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>FairMeshMethod</name>
+									<name>ClampToNodes</name>
 								</first>
 								<second>
-									<name>FairMeshMethod</name>
+									<name>ClampToNodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DistributionType</name>
+								</first>
+								<second>
+									<name>DistributionType</name>
 									<value>
 										<which>2</which>
-										<value>fast</value>
+										<value>uniuni</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>FilterCutoff</name>
+									<name>IncrementRNGSeed</name>
 								</first>
 								<second>
-									<name>FilterCutoff</name>
+									<name>IncrementRNGSeed</name>
 									<value>
-										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>Lambda</name>
+									<name>NumSamples</name>
 								</first>
 								<second>
-									<name>Lambda</name>
-									<value>
-										<which>1</which>
-										<value>6.30700000000000038e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NumIterations</name>
-								</first>
-								<second>
-									<name>NumIterations</name>
+									<name>NumSamples</name>
 									<value>
 										<which>0</which>
-										<value>50</value>
+										<value>14</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RNGSeed</name>
+								</first>
+								<second>
+									<name>RNGSeed</name>
+									<value>
+										<which>0</which>
+										<value>6</value>
 									</value>
 								</second>
 							</item>
@@ -123,105 +171,17 @@
 				</second>
 			</item>
 			<item>
-				<first>FairMesh:1</first>
+				<first>ReportFieldInfo:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>NewField</category_name_>
-						<module_name_>FairMesh</module_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FairMeshMethod</name>
-								</first>
-								<second>
-									<name>FairMeshMethod</name>
-									<value>
-										<which>2</which>
-										<value>fast</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FilterCutoff</name>
-								</first>
-								<second>
-									<name>FilterCutoff</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000006e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Lambda</name>
-								</first>
-								<second>
-									<name>Lambda</name>
-									<value>
-										<which>1</which>
-										<value>6.30700000000000038e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NumIterations</name>
-								</first>
-								<second>
-									<name>NumIterations</name>
-									<value>
-										<which>0</which>
-										<value>50</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadField:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadField</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>NrrdFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>%SCIRUNDATADIR%/IBBM2015/hip_scan_lowres.nrrd</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -414,7 +374,7 @@
 									<name>ShowEdges</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -426,7 +386,7 @@
 									<name>ShowFaces</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -502,7 +462,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(0.498039,0,0.041001)</value>
+										<value>Color(0,1,1)</value>
 									</value>
 								</second>
 							</item>
@@ -550,7 +510,7 @@
 									<name>EdgesAvailable</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -586,7 +546,7 @@
 									<name>FacesAvailable</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -598,7 +558,7 @@
 									<name>NodeAsSpheres</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -658,7 +618,7 @@
 									<name>ShowFaces</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -670,7 +630,7 @@
 									<name>ShowNodes</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -683,46 +643,6 @@
 									<value>
 										<which>1</which>
 										<value>2.99999999999999989e-02</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>SplitFieldByConnectedRegion:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>NewField</category_name_>
-						<module_name_>SplitFieldByConnectedRegion</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>SortAscending</name>
-								</first>
-								<second>
-									<name>SortAscending</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>SortDomainBySize</name>
-								</first>
-								<second>
-									<name>SortDomainBySize</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -769,14 +689,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>228</value>
+													<value>342</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>246</value>
+													<value>149</value>
 												</value>
 											</item>
 										</value>
@@ -789,48 +709,24 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>8</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
-				<moduleId1_>ExtractSimpleIsosurface:0</moduleId1_>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
 				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>FairMesh:1</moduleId2_>
-				<port2_>
-					<name>Input_Mesh</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ExtractSimpleIsosurface:0</moduleId1_>
-				<port1_>
-					<name>OutputField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>SplitFieldByConnectedRegion:0</moduleId2_>
+				<moduleId2_>GeneratePointSamplesFromFieldOrWidget:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>FairMesh:0</moduleId1_>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
 				<port1_>
-					<name>Faired_Mesh</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ShowField:1</moduleId2_>
-				<port2_>
-					<name>Field</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>FairMesh:1</moduleId1_>
-				<port1_>
-					<name>Faired_Mesh</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:0</moduleId2_>
@@ -840,14 +736,26 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadField:0</moduleId1_>
+				<moduleId1_>GeneratePointSamplesFromFieldOrWidget:0</moduleId1_>
 				<port1_>
-					<name>Field</name>
+					<name>Samples</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ExtractSimpleIsosurface:0</moduleId2_>
+				<moduleId2_>ReportFieldInfo:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GeneratePointSamplesFromFieldOrWidget:0</moduleId1_>
+				<port1_>
+					<name>Samples</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:1</moduleId2_>
+				<port2_>
+					<name>Field</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -875,131 +783,75 @@
 					<id>1</id>
 				</port2_>
 			</item>
-			<item>
-				<moduleId1_>SplitFieldByConnectedRegion:0</moduleId1_>
-				<port1_>
-					<name>OutputField1</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>FairMesh:0</moduleId2_>
-				<port2_>
-					<name>Input_Mesh</name>
-					<id>0</id>
-				</port2_>
-			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>8</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
-			<first>ExtractSimpleIsosurface:0</first>
+			<first>CreateLatVol:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-3.97000000000000000e+02</first>
-				<second>-3.89000000000000000e+02</second>
+				<first>7.40000000000000000e+01</first>
+				<second>-1.72000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>FairMesh:0</first>
+			<first>GeneratePointSamplesFromFieldOrWidget:0</first>
 			<second>
-				<first>-1.21000000000000000e+02</first>
-				<second>-1.56000000000000000e+02</second>
+				<first>4.90000000000000000e+01</first>
+				<second>1.45000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
-			<first>FairMesh:1</first>
+			<first>ReportFieldInfo:0</first>
 			<second>
-				<first>-4.59000000000000000e+02</first>
-				<second>-2.61000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadField:0</first>
-			<second>
-				<first>-4.01000000000000000e+02</first>
-				<second>-5.48000000000000000e+02</second>
+				<first>7.60000000000000000e+01</first>
+				<second>2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-4.49000000000000000e+02</first>
-				<second>-1.16000000000000000e+02</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-1.60000000000000000e+02</first>
-				<second>-5.50000000000000000e+01</second>
-			</second>
-		</item>
-		<item>
-			<first>SplitFieldByConnectedRegion:0</first>
-			<second>
-				<first>-1.88000000000000000e+02</first>
-				<second>-2.70000000000000000e+02</second>
+				<first>3.50000000000000000e+02</first>
+				<second>1.58000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-3.70000000000000000e+02</first>
-				<second>1.54000000000000000e+02</second>
+				<first>-1.30000000000000000e+01</first>
+				<second>3.57000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="19" tracking_level="0" version="0">
-		<count>2</count>
+		<count>0</count>
 		<item_version>0</item_version>
-		<item class_id="20" tracking_level="0" version="0">
-			<first>ShowField:0</first>
-			<second class_id="21" tracking_level="0" version="0">
-				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
-				<noteText>ID: 0</noteText>
-				<position>0</position>
-				<fontSize>13</fontSize>
-			</second>
-		</item>
-		<item>
-			<first>ShowField:1</first>
-			<second>
-				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt; color:#ffffff;&quot;&gt;ID: 1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
-				<noteText>ID: 1</noteText>
-				<position>0</position>
-				<fontSize>13</fontSize>
-			</second>
-		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="22" tracking_level="0" version="0">
-		<count>8</count>
+	<moduleTags class_id="20" tracking_level="0" version="0">
+		<count>6</count>
 		<item_version>0</item_version>
-		<item class_id="23" tracking_level="0" version="0">
-			<first>ExtractSimpleIsosurface:0</first>
+		<item class_id="21" tracking_level="0" version="0">
+			<first>CreateLatVol:0</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>FairMesh:0</first>
+			<first>GeneratePointSamplesFromFieldOrWidget:0</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>FairMesh:1</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReadField:0</first>
+			<first>ReportFieldInfo:0</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -1008,10 +860,6 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>ShowField:1</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>SplitFieldByConnectedRegion:0</first>
 			<second>0</second>
 		</item>
 		<item>

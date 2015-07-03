@@ -80,7 +80,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -88,6 +88,30 @@
 								</first>
 								<second>
 									<name>GUIIsoValue</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>IsovalueChoice</name>
+								</first>
+								<second>
+									<name>IsovalueChoice</name>
+									<value>
+										<which>2</which>
+										<value>Single</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SingleIsoValue</name>
+								</first>
+								<second>
+									<name>SingleIsoValue</name>
 									<value>
 										<which>1</which>
 										<value>5.00000000000000000e-01</value>
@@ -130,7 +154,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/Registration/user.pts</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/Registration/user.pts</value>
 									</value>
 								</second>
 							</item>
@@ -170,7 +194,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/Registration/Transformed_RA_CPts.fld</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/Registration/Transformed_RA_CPts.fld</value>
 									</value>
 								</second>
 							</item>
@@ -210,7 +234,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/Registration/Transformed_RA_Mesh.fld</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/Registration/Transformed_RA_Mesh.fld</value>
 									</value>
 								</second>
 							</item>
@@ -250,7 +274,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/Registration/RA.nrrd</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/Registration/RA.nrrd</value>
 									</value>
 								</second>
 							</item>
@@ -290,7 +314,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/jess/software/SCIRunTestData_min/IBBM2015/Registration/Mesh_Data.mat</value>
+										<value>%SCIRUNDATADIR%/IBBM2015/Registration/Mesh_Data.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1760,7 +1784,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1774,17 +1798,46 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>GeometryFeedbackInfo</name>
+								</first>
+								<second>
+									<name>GeometryFeedbackInfo</name>
+									<value>
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name>x</name>
+												<value>
+													<which>0</which>
+													<value>576</value>
+												</value>
+											</item>
+											<item>
+												<name>y</name>
+												<value>
+													<which>0</which>
+													<value>346</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
-			<count>21</count>
+		<connections class_id="13" tracking_level="0" version="0">
+			<count>22</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
+			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
+				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
@@ -1920,6 +1973,18 @@
 					<name>ColorMapOutput</name>
 					<id>0</id>
 				</port1_>
+				<moduleId2_>ShowField:1</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>ShowField:2</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
@@ -2036,14 +2101,14 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
+	<modulePositions class_id="16" tracking_level="0" version="0">
 		<count>17</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
+		<item class_id="17" tracking_level="0" version="0">
 			<first>CreateStandardColorMap:0</first>
-			<second class_id="17" tracking_level="0" version="0">
-				<first>-1.59600000000000000e+03</first>
-				<second>-3.80000000000000000e+02</second>
+			<second class_id="18" tracking_level="0" version="0">
+				<first>-1.60400000000000000e+03</first>
+				<second>-4.58000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2091,7 +2156,7 @@
 		<item>
 			<first>RegisterWithCorrespondences:0</first>
 			<second>
-				<first>-1.29200000000000000e+03</first>
+				<first>-1.29100000000000000e+03</first>
 				<second>-5.32000000000000000e+02</second>
 			</second>
 		</item>
@@ -2126,7 +2191,7 @@
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-1.21600000000000000e+03</first>
+				<first>-1.21500000000000000e+03</first>
 				<second>-7.60000000000000000e+01</second>
 			</second>
 		</item>
@@ -2159,12 +2224,12 @@
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
+	<moduleNotes class_id="19" tracking_level="0" version="0">
 		<count>5</count>
 		<item_version>0</item_version>
-		<item class_id="19" tracking_level="0" version="0">
+		<item class_id="20" tracking_level="0" version="0">
 			<first>ShowField:0</first>
-			<second class_id="20" tracking_level="0" version="0">
+			<second class_id="21" tracking_level="0" version="0">
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -2232,10 +2297,10 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="21" tracking_level="0" version="0">
+	<moduleTags class_id="22" tracking_level="0" version="0">
 		<count>17</count>
 		<item_version>0</item_version>
-		<item class_id="22" tracking_level="0" version="0">
+		<item class_id="23" tracking_level="0" version="0">
 			<first>CreateStandardColorMap:0</first>
 			<second>0</second>
 		</item>
