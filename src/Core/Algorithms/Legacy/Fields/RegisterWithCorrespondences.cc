@@ -741,13 +741,13 @@ bool RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1,
     {
         icors1->get_center(sqp1, idx);
         ssq1x = sqp1.x()*sqp1.x() + ssq1x;
-        ssq1y = sqp1.y()*sqp1.y() + ssq1x;
-        ssq1z = sqp1.z()*sqp1.z() + ssq1x;
+        ssq1y = sqp1.y()*sqp1.y() + ssq1y;
+        ssq1z = sqp1.z()*sqp1.z() + ssq1z;
 
         icors2->get_center(sqp2, idx);
         ssq2x = sqp2.x()*sqp2.x() + ssq2x;
-        ssq2y = sqp2.y()*sqp2.y() + ssq2x;
-        ssq2z = sqp2.z()*sqp2.z() + ssq2x;
+        ssq2y = sqp2.y()*sqp2.y() + ssq2y;
+        ssq2z = sqp2.z()*sqp2.z() + ssq2z;
     }
     
     norm1=sqrt(ssq1x+ssq1y+ssq1z);
@@ -761,7 +761,7 @@ bool RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1,
         normp1.z(sqp1.z()/norm1);
         icors1->set_point(normp1, idx);
     
-        icors2->get_center(sqp1, idx);
+        icors2->get_center(sqp2, idx);
         normp2.x(sqp2.x()/norm2);
         normp2.y(sqp2.y()/norm2);
         normp2.z(sqp2.z()/norm2);
@@ -779,38 +779,33 @@ bool RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1,
     }
     
     DenseMatrix Amat(3,3);
-    double a11=0,a12=0,a13=0,a21=0,a22=0,a23=0,a31=0,a32=0,a33=0;
-    VMesh::Node::iterator it;
     Point p1,p2;
+    VMesh::Node::index_type idx;
+    DenseMatrix P1(num_cors1,3),P2(num_cors1,3);
     
     //This is to fine the matrix A where A=P1'*P2
     // P1 and P2 are the normalized, centered point sets of size nx3.
-    for (int L1 = 0; L1 < num_cors1; ++L1)
+    for (int L1 = 0; L1 < num_cors1; L1++)
     {
-        it = L1;
-        icors2->get_point(p1, *(it));
-        icors2->get_point(p2, *(it));
+        idx=L1;
+        icors1->get_point(p1, idx);
+        icors2->get_point(p2, idx);
         
-        a11=p1.x()*p2.x()+a11;
-        a12=p1.x()*p2.y()+a12;
-        a13=p1.x()*p2.z()+a13;
-        a21=p1.y()*p2.x()+a21;
-        a22=p1.y()*p2.y()+a22;
-        a23=p1.y()*p2.z()+a23;
-        a31=p1.z()*p2.x()+a31;
-        a32=p1.z()*p2.y()+a32;
-        a33=p1.z()*p2.z()+a33;
+        P1(L1,0)=p1.x();
+        P1(L1,1)=p1.y();
+        P1(L1,2)=p1.z();
+        P2(L1,0)=p2.x();
+        P2(L1,1)=p2.y();
+        P2(L1,2)=p2.z();
     }
-    Amat(0,0)=a11;
-    Amat(0,1)=a12;
-    Amat(0,2)=a13;
-    Amat(1,0)=a21;
-    Amat(1,1)=a22;
-    Amat(1,2)=a23;
-    Amat(2,0)=a31;
-    Amat(2,1)=a32;
-    Amat(2,2)=a33;
+
+    Amat=P1.transpose()*P2;
     
+    /*
+    std::cout<<"P1 " << P1 <<std::endl;
+    std::cout<<"P2 " << P2 <<std::endl;
+    std::cout<<"Amat " << Amat <<std::endl;
+    */
     Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(Amat, Eigen::ComputeFullU | Eigen::ComputeFullV);
     
     //create the U and V matrix
@@ -824,7 +819,7 @@ bool RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1,
     
     //rotation matrix
     DenseMatrix Tmat(3,3);
-    Tmat=VMat*UMat.transpose();
+    Tmat=UMat*VMat.transpose();
     
     // check for negative determinant and fix.
     // this prevents reflection in the registration
@@ -833,11 +828,13 @@ bool RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1,
         VMat(0,2)=-1*VMat(0,2);
         VMat(1,2)=-1*VMat(1,2);
         VMat(2,2)=-1*VMat(2,2);
-        Tmat=VMat*UMat.transpose();
+        Tmat=VMat.transpose()*UMat;
     }
     
     double traceA;
     traceA=SVMat(0,0)+SVMat(1,0)+SVMat(2,0);
+    
+    //std::cout<<"Tmat " << Tmat <<std::endl;
     
     double scaling=traceA*norm1/norm2;
     
