@@ -828,7 +828,7 @@ bool RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1,
         VMat(0,2)=-1*VMat(0,2);
         VMat(1,2)=-1*VMat(1,2);
         VMat(2,2)=-1*VMat(2,2);
-        Tmat=VMat.transpose()*UMat;
+        Tmat=UMat*VMat.transpose();
     }
     
     double traceA;
