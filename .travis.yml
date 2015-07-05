@@ -1,0 +1,43 @@
+language:
+- cpp
+
+os:
+#Too many slow builds on Travis OSX images causing build errors. Turning off to speed up turn around. We can investigate later. For now, main developers should build on Mac before merging.
+#- osx
+- linux
+
+compiler:
+- clang
+# TODO: gcc chokes on a boost pthread usage, disabling for now.
+#- gcc
+
+#matrix:
+#  exclude:
+#  - os: osx
+#    compiler: g++
+
+# check environment (copied from libgit2sharp)
+before_install:
+- date -u
+- uname -a
+- if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ./ci/linux_before_install.sh; fi
+- if [ "${TRAVIS_OS_NAME}" = "osx" ]; then ./ci/osx_before_install.sh; fi
+
+# make sure cmake is installed, set up latest GCC C++ compiler if necessary
+install:
+ - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ./ci/linux_install.sh; fi
+# - if [ "${TRAVIS_OS_NAME}" = "linux" -a "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+ - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then ./ci/osx_install.sh; fi
+
+# TODO: could move script to separate file
+# Not running unit tests at the moment, so turn off testing, which will
+# hopefully make OS X builds a bit faster
+script:
+  cd bin
+  && cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../src
+  && make -j8
+  && make SCIRunTestData_external
+#  && make test
+
+notifications:
+  slack: sciinstitute:lZnpQQXNd4Io5iGDPQDpJmI1

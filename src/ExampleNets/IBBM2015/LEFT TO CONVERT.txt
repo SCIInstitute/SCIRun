@@ -1,0 +1,3 @@
+bem_tank_forward.srn: this looks like a copy of the FwdInvToolkit network.
+dipole_forward.srn: possible but unlikely
+optimize_dipole.srn: almost zero chance of this one working in 5 before end of year. 

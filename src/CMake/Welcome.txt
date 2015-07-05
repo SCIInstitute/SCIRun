@@ -1,0 +1,3 @@
+Welcome to the SCIRun installation.
+
+This program will guide you through the process of installing SCIRun on your computer.

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="9">
+<networkFile class_id="0" tracking_level="0" version="0">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>5</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>ReadMesh:7</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>ReadMesh</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>1</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>Filename</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>Filename</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>E:/brettMesh/TestTriSurf.pts</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReadMesh:9</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>ReadMesh</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>E:/brettMesh/TestTriSurf_LowRes.pts</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowMesh:10</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowMesh</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>6</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>Edge Transparency</name>
+								</first>
+								<second>
+									<name>Edge Transparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Face Transparency</name>
+								</first>
+								<second>
+									<name>Face Transparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Node Transparency</name>
+								</first>
+								<second>
+									<name>Node Transparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Show edges</name>
+								</first>
+								<second>
+									<name>Show edges</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Show faces</name>
+								</first>
+								<second>
+									<name>Show faces</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Show nodes</name>
+								</first>
+								<second>
+									<name>Show nodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowMesh:6</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowMesh</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>6</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>Edge Transparency</name>
+								</first>
+								<second>
+									<name>Edge Transparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Face Transparency</name>
+								</first>
+								<second>
+									<name>Face Transparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Node Transparency</name>
+								</first>
+								<second>
+									<name>Node Transparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Show edges</name>
+								</first>
+								<second>
+									<name>Show edges</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Show faces</name>
+								</first>
+								<second>
+									<name>Show faces</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Show nodes</name>
+								</first>
+								<second>
+									<name>Show nodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ViewScene:8</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>ViewScene</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>4</count>
+			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>ReadMesh:7</moduleId1_>
+				<port1_>0</port1_>
+				<moduleId2_>ShowMesh:6</moduleId2_>
+				<port2_>0</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadMesh:9</moduleId1_>
+				<port1_>0</port1_>
+				<moduleId2_>ShowMesh:10</moduleId2_>
+				<port2_>0</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowMesh:10</moduleId1_>
+				<port1_>0</port1_>
+				<moduleId2_>ViewScene:8</moduleId2_>
+				<port2_>1</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowMesh:6</moduleId1_>
+				<port1_>0</port1_>
+				<moduleId2_>ViewScene:8</moduleId2_>
+				<port2_>0</port2_>
+			</item>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="14" tracking_level="0" version="0">
+		<count>5</count>
+		<item_version>0</item_version>
+		<item class_id="15" tracking_level="0" version="0">
+			<first>ReadMesh:7</first>
+			<second class_id="16" tracking_level="0" version="0">
+				<first>-292</first>
+				<second>-79</second>
+			</second>
+		</item>
+		<item>
+			<first>ReadMesh:9</first>
+			<second>
+				<first>-41</first>
+				<second>-67</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowMesh:10</first>
+			<second>
+				<first>-96</first>
+				<second>128</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowMesh:6</first>
+			<second>
+				<first>-231</first>
+				<second>35</second>
+			</second>
+		</item>
+		<item>
+			<first>ViewScene:8</first>
+			<second>
+				<first>-274</first>
+				<second>301</second>
+			</second>
+		</item>
+	</modulePositions>
+</networkFile>
+</boost_serialization>
+

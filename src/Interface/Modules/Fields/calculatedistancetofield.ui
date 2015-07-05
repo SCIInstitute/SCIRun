@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CalculateDistanceToField</class>
+ <widget class="QDialog" name="CalculateDistanceToField">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>411</width>
+    <height>123</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>411</width>
+    <height>123</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>CalculateDistanceToField</string>
+  </property>
+  <widget class="QComboBox" name="dataTypeComboBox_">
+   <property name="geometry">
+    <rect>
+     <x>164</x>
+     <y>12</y>
+     <width>150</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>double</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>float</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>char</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>unsigned char</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>short</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>unsigned short</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>int</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>unsigned int</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>14</x>
+     <y>14</y>
+     <width>142</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>111</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>Data type output field:</string>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="truncateDoubleSpinBox_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>228</x>
+     <y>74</y>
+     <width>168</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="decimals">
+    <number>7</number>
+   </property>
+   <property name="maximum">
+    <double>1000000000.000000000000000</double>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="truncateDistanceCheckBox_">
+   <property name="geometry">
+    <rect>
+     <x>12</x>
+     <y>77</y>
+     <width>215</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Truncate distance larger than:</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="basisTypeComboBox_">
+   <property name="geometry">
+    <rect>
+     <x>164</x>
+     <y>42</y>
+     <width>143</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>same as input</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>constant</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>linear</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>14</x>
+     <y>44</y>
+     <width>145</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>111</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>Basis type output field:</string>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>truncateDistanceCheckBox_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>truncateDoubleSpinBox_</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>102</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>254</x>
+     <y>85</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SCIRunMainWindow</class>
+ <widget class="QMainWindow" name="SCIRunMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1440</width>
+    <height>852</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SCIRun</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../Resources/Icons/scirun5_32.ico</normaloff>../../Resources/Icons/scirun5_32.ico</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget_">
+   <property name="acceptDrops">
+    <bool>true</bool>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QScrollArea" name="scrollArea_">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
+      <property name="whatsThis">
+       <string>The network editor pane. Displays modules and connections in the current network file.</string>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents_">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1081</width>
+         <height>443</height>
+        </rect>
+       </property>
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5"/>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar_">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1440</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile_">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <widget class="QMenu" name="recentNetworksMenu_">
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Recent Networks</string>
+     </property>
+    </widget>
+    <addaction name="actionNew_"/>
+    <addaction name="actionLoad_"/>
+    <addaction name="recentNetworksMenu_"/>
+    <addaction name="actionInsert_"/>
+    <addaction name="actionRunScript_"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_"/>
+    <addaction name="actionSave_As_"/>
+    <addaction name="separator"/>
+    <addaction name="actionExecute_All_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreate_Module_Skeleton_"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit_"/>
+   </widget>
+   <widget class="QMenu" name="menuModules_">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>&amp;Modules</string>
+    </property>
+    <widget class="QMenu" name="menuActions">
+     <property name="title">
+      <string>Actions</string>
+     </property>
+     <addaction name="actionFilter_modules_"/>
+     <addaction name="actionAddModule_"/>
+     <addaction name="actionSelectModule_"/>
+    </widget>
+    <addaction name="menuActions"/>
+    <addaction name="actionTagManager_"/>
+   </widget>
+   <widget class="QMenu" name="menuSubnets_">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>&amp;Subnets</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuToolkits_">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>&amp;Toolkits</string>
+    </property>
+    <addaction name="actionForwardInverse_"/>
+    <addaction name="actionBrainStimulator_"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp_">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionShow_Tooltips_"/>
+    <addaction name="actionAbout_"/>
+    <addaction name="actionCredits_"/>
+    <addaction name="actionLicense_"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="actionConfiguration_"/>
+    <addaction name="actionModule_Selector"/>
+    <addaction name="actionProvenance_"/>
+    <addaction name="separator"/>
+    <addaction name="actionPythonConsole_"/>
+    <addaction name="actionDevConsole_"/>
+    <addaction name="actionPreferences_"/>
+    <addaction name="separator"/>
+    <addaction name="actionReset_Window_Layout"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo_"/>
+    <addaction name="actionRedo_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCut_"/>
+    <addaction name="actionCopy_"/>
+    <addaction name="actionPaste_"/>
+    <addaction name="actionDelete_"/>
+    <addaction name="actionSelectAll_"/>
+   </widget>
+   <widget class="QMenu" name="menuNetwork">
+    <property name="title">
+     <string>Network</string>
+    </property>
+    <addaction name="actionPinAllModuleUIs_"/>
+    <addaction name="actionHideAllModuleUIs_"/>
+    <addaction name="actionRestoreAllModuleUIs_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCenterNetworkViewer_"/>
+    <addaction name="actionZoomIn_"/>
+    <addaction name="actionZoomOut_"/>
+    <addaction name="actionZoomBestFit_"/>
+    <addaction name="actionResetNetworkZoom_"/>
+    <addaction name="separator"/>
+    <addaction name="actionDragMode_"/>
+    <addaction name="actionSelectMode_"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggleMetadataLayer_"/>
+    <addaction name="actionToggleTagLayer_"/>
+   </widget>
+   <addaction name="menuFile_"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuModules_"/>
+   <addaction name="menuNetwork"/>
+   <addaction name="menuSubnets_"/>
+   <addaction name="menuToolkits_"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuHelp_"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar_"/>
+  <widget class="QDockWidget" name="moduleSelectorDockWidget_">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>299</width>
+     <height>364</height>
+    </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="windowTitle">
+    <string>Module Selector</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="filterButton_">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>35</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>35</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Module Filter</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click here to choose either simple filtering by name, or with wildcards (? and *)</string>
+         </property>
+         <property name="text">
+          <string>Filter:</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="moduleFilterLineEdit_">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>35</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>35</height>
+          </size>
+         </property>
+         <property name="whatsThis">
+          <string>Enter a filter string here. The module list below will display only those modules whose name matches the filter (either by exact string or wildcard).</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="clearFilterButton_">
+         <property name="minimumSize">
+          <size>
+           <width>58</width>
+           <height>35</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>58</width>
+           <height>35</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Clear filter text</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click this button to clear the filter text and see all available modules.</string>
+         </property>
+         <property name="text">
+          <string>Clear</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QTreeWidget" name="moduleSelectorTreeWidget_">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Drag or double-click to add a module. Star icon adds/removes from favorites.</string>
+       </property>
+       <property name="whatsThis">
+        <string>List of available modules. Drag an item from here and drop onto the network editor, or double-click an item, to instantiate a new instance of that module. Click the checkbox to add/remove from the favorites list.</string>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragOnly</enum>
+       </property>
+       <property name="defaultDropAction">
+        <enum>Qt::IgnoreAction</enum>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="animated">
+        <bool>true</bool>
+       </property>
+       <attribute name="headerMinimumSectionSize">
+        <number>50</number>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>STATUS</string>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <italic>true</italic>
+          <bold>true</bold>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Description</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="miniviewTextLabel_">
+       <property name="text">
+        <string>Network Miniview</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="networkEditorMiniViewLabel_">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="configurationDockWidget_">
+   <property name="whatsThis">
+    <string>Access application logs here.</string>
+   </property>
+   <property name="windowTitle">
+    <string>Logs</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QTabWidget" name="optionsTabWidget_">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>265</height>
+        </size>
+       </property>
+       <property name="whatsThis">
+        <string/>
+       </property>
+       <property name="tabPosition">
+        <enum>QTabWidget::North</enum>
+       </property>
+       <property name="tabShape">
+        <enum>QTabWidget::Triangular</enum>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="logTab">
+        <property name="whatsThis">
+         <string>The global network log. Events of general importance are logged here.</string>
+        </property>
+        <attribute name="title">
+         <string>Main Log</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="1" column="0">
+          <widget class="QTextBrowser" name="logTextBrowser_">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>192</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QPushButton" name="openLogFolderButton_">
+           <property name="maximumSize">
+            <size>
+             <width>140</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Open Log Folder</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Module Log</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QTextBrowser" name="moduleLogTextBrowser_"/>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionLoad_">
+   <property name="text">
+    <string>Load...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionInsert_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Insert...</string>
+   </property>
+  </action>
+  <action name="actionSave_">
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSave_As_">
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+  </action>
+  <action name="actionExecute_All_">
+   <property name="text">
+    <string>&amp;Execute All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionCreate_Module_Skeleton_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Create Module Skeleton...</string>
+   </property>
+  </action>
+  <action name="actionQuit_">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionShow_Tooltips_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Tooltips</string>
+   </property>
+  </action>
+  <action name="actionAbout_">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>About...</string>
+   </property>
+  </action>
+  <action name="actionCredits_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Credits...</string>
+   </property>
+  </action>
+  <action name="actionLicense_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>License...</string>
+   </property>
+  </action>
+  <action name="actionConfiguration_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Log</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+L</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionModule_Selector">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Module Selector</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+M</string>
+   </property>
+  </action>
+  <action name="actionDump_positions">
+   <property name="text">
+    <string>Dump positions</string>
+   </property>
+  </action>
+  <action name="actionRenderer">
+   <property name="text">
+    <string>Renderer</string>
+   </property>
+  </action>
+  <action name="actionClear_Recent">
+   <property name="text">
+    <string>Clear Recent</string>
+   </property>
+  </action>
+  <action name="actionEnterWhatsThisMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Enter &quot;What's This?&quot; Mode</string>
+   </property>
+  </action>
+  <action name="actionProvenance_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Provenance</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+P</string>
+   </property>
+  </action>
+  <action name="actionUndo_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo_">
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="actionCut_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="actionCopy_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="actionPaste_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+  </action>
+  <action name="actionDelete_">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionSelectAll_">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionDevConsole_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Developer Console</string>
+   </property>
+  </action>
+  <action name="actionPreferences_">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
+   </property>
+  </action>
+  <action name="actionPythonConsole_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Python Console</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Y</string>
+   </property>
+  </action>
+  <action name="actionNew_">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionRunScript_">
+   <property name="text">
+    <string>Run Script...</string>
+   </property>
+  </action>
+  <action name="actionPinAllModuleUIs_">
+   <property name="text">
+    <string>Pin All Module UIs</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Right</string>
+   </property>
+  </action>
+  <action name="actionHideAllModuleUIs_">
+   <property name="text">
+    <string>Hide All Module UIs</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Down</string>
+   </property>
+  </action>
+  <action name="actionRestoreAllModuleUIs_">
+   <property name="text">
+    <string>Restore All Module UIs</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Up</string>
+   </property>
+  </action>
+  <action name="actionFilter_modules_">
+   <property name="text">
+    <string>Filter modules</string>
+   </property>
+   <property name="shortcut">
+    <string>/</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionAddModule_">
+   <property name="text">
+    <string>Add module</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionSelectModule_">
+   <property name="text">
+    <string>Select module</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionReset_Window_Layout">
+   <property name="text">
+    <string>Reset Window Layout</string>
+   </property>
+  </action>
+  <action name="actionCenterNetworkViewer_">
+   <property name="text">
+    <string>Center Network View</string>
+   </property>
+  </action>
+  <action name="actionResetNetworkZoom_">
+   <property name="text">
+    <string>Reset Network Zoom</string>
+   </property>
+  </action>
+  <action name="actionDragMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Drag Mode</string>
+   </property>
+  </action>
+  <action name="actionSelectMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select Mode</string>
+   </property>
+  </action>
+  <action name="actionZoomIn_">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+  </action>
+  <action name="actionZoomOut_">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+  </action>
+  <action name="actionZoomBestFit_">
+   <property name="text">
+    <string>Zoom Best Fit</string>
+   </property>
+  </action>
+  <action name="actionTagManager_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tag Manager</string>
+   </property>
+  </action>
+  <action name="actionForwardInverse_">
+   <property name="text">
+    <string>Forward/Inverse</string>
+   </property>
+  </action>
+  <action name="actionBrainStimulator_">
+   <property name="text">
+    <string>Brain Stimulator</string>
+   </property>
+  </action>
+  <action name="actionToggleMetadataLayer_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Metadata Layer</string>
+   </property>
+  </action>
+  <action name="actionToggleTagLayer_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tag Layer</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionModule_Selector</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>moduleSelectorDockWidget_</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>97</x>
+     <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionConfiguration_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>configurationDockWidget_</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>518</x>
+     <y>847</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearFilterButton_</sender>
+   <signal>clicked()</signal>
+   <receiver>moduleFilterLineEdit_</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>64</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>141</x>
+     <y>63</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>moduleSelectorDockWidget_</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionModule_Selector</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>149</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>configurationDockWidget_</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionConfiguration_</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>559</x>
+     <y>696</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

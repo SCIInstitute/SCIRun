@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SetFieldDataToConstantValue</class>
+ <widget class="QDialog" name="SetFieldDataToConstantValue">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>429</width>
+    <height>108</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>429</width>
+    <height>108</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Output Field Data Type</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QComboBox" name="fieldDataTypeComboBox_">
+     <item>
+      <property name="text">
+       <string>same as input</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>char</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>unsigned char</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>short</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>unsigned short</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>unsigned int</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>int</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>long</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>float</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>double</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Output Field Basis Order</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QComboBox" name="basisOrderComboBox_">
+     <item>
+      <property name="text">
+       <string>same as input</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>nodata</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>constant</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>linear</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>quadratic</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Constant value for all nodes/elements</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QDoubleSpinBox" name="valueSpinBox_">
+     <property name="decimals">
+      <number>4</number>
+     </property>
+     <property name="maximum">
+      <double>1000000.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

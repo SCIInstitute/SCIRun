@@ -1,0 +1,4 @@
+DESCRIPTION
+===========
+
+SCIRun 5's installer was created using CPack (http://www.cmake.org).

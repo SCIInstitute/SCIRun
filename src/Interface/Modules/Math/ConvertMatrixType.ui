@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConvertMatrixType</class>
+ <widget class="QDialog" name="ConvertMatrixType">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>177</width>
+    <height>61</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>177</width>
+    <height>61</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Ouput Matrix Type:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="matrixTypeComboBox_">
+     <item>
+      <property name="text">
+       <string>Same (pass-through)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ColumnMatrix</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DenseMatrix</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SparseRowMatrix</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
