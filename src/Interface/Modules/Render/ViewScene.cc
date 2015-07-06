@@ -116,7 +116,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   }
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
-	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
+  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue())); 
 }
 
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
@@ -490,7 +490,7 @@ void ViewSceneDialog::handleSelectedItem(const QString& name)
 }
 
 //------------------------------------------------------------------------------
-bool ViewSceneDialog::isObjectUnselected(std::string& name)
+bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 {
   return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
 }

@@ -112,7 +112,7 @@ namespace SCIRun {
       virtual void hideEvent(QHideEvent* evt) override;
       virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
-      bool isObjectUnselected(std::string& name);
+      bool isObjectUnselected(const std::string& name);
       void addToolBar();
       void addAutoViewButton();
       void addScreenshotButton();
