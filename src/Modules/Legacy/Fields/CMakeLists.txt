@@ -243,6 +243,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
   #Core_Persistent
   #Core_Thread
   Core_Util_Legacy
+  Graphics_Glyphs
   #${TK_LIBRARY}
   #${GL_LIBRARY}
   #${LEX_LIBRARY}

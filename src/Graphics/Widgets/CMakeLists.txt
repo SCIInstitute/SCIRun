@@ -26,5 +26,32 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Glyphs)
-ADD_SUBDIRECTORY(Widgets)
+SET(Graphics_Widgets_SRCS
+  Widget.cc
+)
+
+SET(Graphics_Widgets_HEADERS
+  Widget.h
+  share.h
+)
+
+SCIRUN_ADD_LIBRARY(Graphics_Widgets
+  ${Graphics_Widgets_HEADERS}
+  ${Graphics_Widgets_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Graphics_Widgets
+  Core_Math
+  Core_Datatypes
+  Core_Geometry_Primitives
+  Graphics_Glyphs
+  ${OPENGL_LIBRARIES}
+  ${CPM_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+	ADD_DEFINITIONS(-DBUILD_Graphics_Widgets)
+ENDIF(BUILD_SHARED_LIBS)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

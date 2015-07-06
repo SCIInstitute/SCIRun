@@ -865,14 +865,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>473</value>
+													<value>362</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>591</value>
+													<value>640</value>
 												</value>
 											</item>
 										</value>
@@ -885,7 +885,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>8</count>
+			<count>9</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateFieldData:0</moduleId1_>
@@ -957,6 +957,18 @@
 				<port2_>
 					<name>Field</name>
 					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GenerateSinglePointProbeFromField:0</moduleId1_>
+				<port1_>
+					<name>GeneratedWidget</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>2</id>
 				</port2_>
 			</item>
 			<item>

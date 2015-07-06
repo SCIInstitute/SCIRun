@@ -26,42 +26,11 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H
-#define INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H
+#include <Graphics/Widgets/Widget.h>
 
-#include "Interface/Modules/Render/ui_ViewSceneControls.h"
+using namespace SCIRun;
+using namespace SCIRun::Graphics;
+Widget::Widget()
+{
 
-#include <boost/shared_ptr.hpp>
-
-#include <Interface/Modules/Render/ViewScene.h>
-
-//#include <Modules/Basic/SendScalarModuleState.h>
-//#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-
-#include <Interface/Modules/Render/namespaces.h>
-#include <Interface/Modules/Render/share.h>
-
-namespace SCIRun {
-  namespace Gui {
-    class ViewSceneDialog;
-
-    class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls
-    {
-      Q_OBJECT
-
-    public:
-      ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
-
-      void setSampleColor(const QColor& color);
-      void setObjectModel(QAbstractItemModel* model);
-      void addObject(QWidget* item);
-
-    private:
-      //ViewSceneDialog* scene_;
-
-    };
-
-  }
 }
-
-#endif //INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H

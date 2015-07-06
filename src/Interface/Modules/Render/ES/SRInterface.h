@@ -100,6 +100,8 @@ namespace SCIRun {
             /// @}
             
             void inputMouseWheel(int32_t delta);
+
+            void inputShiftKeyDown(bool shiftDown);
             
             /// \todo Selecting objects...
             
@@ -246,10 +248,16 @@ namespace SCIRun {
             
             // Apply uniform.
             void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform);
+
+            // search for a widget at mouse position
+            bool foundWidget(const glm::ivec2& pos);
             
             
             bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
             bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
+            bool                              selectWidget_;    ///< Whether mouse click will select a widget.
+            bool                              widgetSelected_;  ///< Whether or not a widget is currently selected.
+            bool                              widgetExists_;    ///< Geometry contains a widget to find.
             
             
             MouseMode                         mMouseMode;       ///< Current mouse mode.

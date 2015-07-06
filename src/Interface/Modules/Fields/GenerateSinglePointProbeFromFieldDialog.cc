@@ -29,10 +29,13 @@
 #include <Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Core/Datatypes/Color.h>
+#include <QColorDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
 
 GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -51,6 +54,7 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   addSpinBoxManager(fieldElemSpinBox_, Parameters::FieldElem);
 
   connect(moveToComboBox_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
+  connect(colorChooserPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 }
 
 void GenerateSinglePointProbeFromFieldDialog::enableWidgets(const QString& mode)
@@ -60,4 +64,30 @@ void GenerateSinglePointProbeFromFieldDialog::enableWidgets(const QString& mode)
   zLocationDoubleSpinBox_->setReadOnly(mode != "Location");
   fieldNodeSpinBox_->setReadOnly(mode != "Node");
   fieldElemSpinBox_->setReadOnly(mode != "Element");
+}
+
+void GenerateSinglePointProbeFromFieldDialog::pullSpecial()
+{
+  ColorRGB color(state_->getValue(Parameters::ProbeColor).toString());
+  // check for old saved color format: integers 0-255.
+  defaultMeshColor_ = QColor(
+    static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+    static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+    static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+}
+
+void GenerateSinglePointProbeFromFieldDialog::assignDefaultMeshColor()
+{
+  auto newColor = QColorDialog::getColor(defaultMeshColor_, this, "Choose default mesh color");
+  if (newColor.isValid())
+  {
+    defaultMeshColor_ = newColor;
+    pushColor();
+  }
+}
+
+void GenerateSinglePointProbeFromFieldDialog::pushColor()
+{
+  state_->setValue(Parameters::ProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+  Q_EMIT executeActionTriggered();
 }
