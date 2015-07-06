@@ -41,25 +41,12 @@ using namespace SCIRun;
 
 const ModuleLookupInfo TransformMeshWithTransform::staticInfo_("TransformMeshWithTransform", "ChangeMesh", "SCIRun");
 
-#if 0
-namespace SCIRun {
-
-
-class TransformMeshWithTransform : public Module
-{
-  public:
-    TransformMeshWithTransform(GuiContext* ctx);
-    virtual ~TransformMeshWithTransform() {}
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::TransformMeshWithTransformAlgo algo_;
-};
-#endif
-
 TransformMeshWithTransform::TransformMeshWithTransform()
   : Module(staticInfo_, false)
 {
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(TransformMatrix);
+  INITIALIZE_PORT(Transformed_Field);
 }
 
 void TransformMeshWithTransform::execute()
