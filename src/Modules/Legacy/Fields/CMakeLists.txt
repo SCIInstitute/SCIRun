@@ -79,6 +79,7 @@ SET(Modules_Legacy_Fields_HEADERS
   GenerateSinglePointProbeFromField.h
   GeneratePointSamplesFromField.h
   GeneratePointSamplesFromFieldOrWidget.h
+  TransformMeshWithTransform.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -171,7 +172,7 @@ SET(Modules_Legacy_Fields_SRCS
   #CalculateFieldDataMetric.cc
   #CalculateMeshNodes.cc
   #QueryFieldData.cc
-  #TransformMeshWithTransform.cc
+  TransformMeshWithTransform.cc
   CalculateVectorMagnitudes.cc
   #GenerateLinearSegments.cc
   CalculateDistanceToField.cc
