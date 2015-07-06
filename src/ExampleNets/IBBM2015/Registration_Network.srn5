@@ -342,7 +342,7 @@
 									<name>Operator</name>
 									<value>
 										<which>0</which>
-										<value>1</value>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
@@ -1813,14 +1813,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>576</value>
+													<value>534</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>346</value>
+													<value>379</value>
 												</value>
 											</item>
 										</value>
