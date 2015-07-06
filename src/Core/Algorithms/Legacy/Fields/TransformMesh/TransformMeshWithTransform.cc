@@ -27,6 +27,8 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/TransformMeshWithTransform.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -111,4 +113,21 @@ bool TransformMeshWithTransformAlgo::run(FieldHandle input, DenseMatrixHandle tr
   CopyProperties(*input, *output);
 
   return (true);
+}
+
+const AlgorithmInputName TransformMeshWithTransformAlgo::TransformMatrix("TransformMatrix");
+const AlgorithmOutputName TransformMeshWithTransformAlgo::Transformed_Field("Transformed_Field");
+
+AlgorithmOutput TransformMeshWithTransformAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(Variables::InputField);
+  auto transform = input.get<DenseMatrix>(TransformMatrix);
+
+  FieldHandle outputField;
+  if (!run(inputField, transform, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Transformed_Field] = outputField;
+  return output;
 }
