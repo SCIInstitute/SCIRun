@@ -30,35 +30,26 @@
 #ifndef CORE_ALGORITHMS_FIELDS_TRANSFORMMESH_TRANSFORMMESHWITHTRANSFORM_H
 #define CORE_ALGORITHMS_FIELDS_TRANSFORMMESH_TRANSFORMMESHWITHTRANSFORM_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+        class SCISHARE TransformMeshWithTransformAlgo : public AlgorithmBase
+        {
+        public:
+          TransformMeshWithTransformAlgo();
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+          bool run(FieldHandle input, Core::Datatypes::DenseMatrixHandle transform, FieldHandle& output) const;
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE TransformMeshWithTransformAlgo : public AlgoBase
-{
-  public:
-    /// Set defaults
-    TransformMeshWithTransformAlgo()
-    {
-      add_bool("rotate_data",true);
+      }
     }
-
-    /// run the algorithm
-    bool run(FieldHandle input, MatrixHandle transform, FieldHandle& output);
-};
-
-} // end namespace SCIRunAlgo
+  }
+}
 
 #endif 
