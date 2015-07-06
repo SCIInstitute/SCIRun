@@ -52,8 +52,11 @@ public:
   void setDisableModuleErrorDialogs(bool disableModuleErrorDialogs);
   bool disableModuleErrorDialogs() const;
 
+  void setModuleErrorInlineMessages(bool showInlineErrors);
+
 public Q_SLOTS:
   void updateModuleErrorDialogOption(int state);
+  void updateModuleErrorInlineMessagesOption(int state);
   void updateSaveBeforeExecuteOption(int state);
   void updateAutoNotesState(int state);
 
