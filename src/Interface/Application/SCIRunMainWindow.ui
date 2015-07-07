@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1081</width>
-         <height>443</height>
+         <width>1093</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -137,6 +137,7 @@
     <addaction name="actionAbout_"/>
     <addaction name="actionCredits_"/>
     <addaction name="actionLicense_"/>
+    <addaction name="actionKeyboardShortcuts_"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -871,6 +872,14 @@
    </property>
    <property name="text">
     <string>Tag Layer</string>
+   </property>
+  </action>
+  <action name="actionKeyboardShortcuts_">
+   <property name="text">
+    <string>Keyboard Shortcuts...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Shift+K</string>
    </property>
   </action>
  </widget>

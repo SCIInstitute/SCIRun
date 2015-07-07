@@ -42,6 +42,7 @@
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/TagManagerWindow.h>
+#include <Interface/Application/ShortcutsInterface.h>
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
@@ -84,7 +85,7 @@ static const char* ToolkitIconURL = "ToolkitIconURL";
 static const char* ToolkitURL = "ToolkitURL";
 static const char* ToolkitFilename = "ToolkitFilename";
 
-SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(0)
+SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true), returnCode_(0)
 {
 	setupUi(this);
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -288,7 +289,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
+  actionAddModule_->setVisible(false);
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
+  actionSelectModule_->setVisible(false);
 
   connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
   connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
@@ -302,6 +305,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(
   connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
   connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
+
+  connect(actionKeyboardShortcuts_, SIGNAL(triggered()), this, SLOT(showKeyboardShortcutsDialog()));
 
   //TODO: store in xml file, add to app resources
 	connect(actionForwardInverse_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
@@ -845,11 +850,7 @@ void SCIRunMainWindow::setupProvenanceWindow()
   provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
   connect(actionProvenance_, SIGNAL(toggled(bool)), provenanceWindow_, SLOT(setVisible(bool)));
   connect(provenanceWindow_, SIGNAL(visibilityChanged(bool)), actionProvenance_, SLOT(setChecked(bool)));
-
-//  provenanceWindow_->setVisible(false);
-//  provenanceWindow_->setFloating(true);
-//  addDockWidget(Qt::RightDockWidgetArea, provenanceWindow_);
-
+  
   connect(actionUndo_, SIGNAL(triggered()), provenanceWindow_, SLOT(undo()));
   connect(actionRedo_, SIGNAL(triggered()), provenanceWindow_, SLOT(redo()));
   actionUndo_->setEnabled(false);
@@ -1330,6 +1331,7 @@ void SCIRunMainWindow::setFocusOnFilterLine()
   statusBar()->showMessage(tr("Module filter activated"), 2000);
 }
 
+//disable these
 void SCIRunMainWindow::addModuleKeyboardAction()
 {
   //TODO
@@ -1556,6 +1558,15 @@ void SCIRunMainWindow::toggleMetadataLayer(bool toggle)
 		showStatusMessage("Metadata layer active");
 	else
 		showStatusMessage("Metadata layer inactive", 1000);
+}
+
+void SCIRunMainWindow::showKeyboardShortcutsDialog()
+{
+  if (!shortcuts_)
+  {
+    shortcuts_ = new ShortcutsInterface(this);
+  }
+  shortcuts_->show();
 }
 
 FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent), reply_(0)
