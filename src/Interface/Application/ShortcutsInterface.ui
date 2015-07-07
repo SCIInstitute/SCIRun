@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>586</width>
-    <height>440</height>
+    <width>730</width>
+    <height>541</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>586</width>
-    <height>440</height>
+    <width>730</width>
+    <height>541</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -56,7 +56,7 @@ QWidget#scrollAreaWidgetContents_4{
        <widget class="QGroupBox" name="groupBox_8">
         <property name="maximumSize">
          <size>
-          <width>300</width>
+          <width>375</width>
           <height>300</height>
          </size>
         </property>
@@ -183,7 +183,7 @@ QWidget#scrollAreaWidgetContents_4{
        <widget class="QGroupBox" name="groupBox_10">
         <property name="maximumSize">
          <size>
-          <width>300</width>
+          <width>375</width>
           <height>100</height>
          </size>
         </property>
@@ -264,7 +264,7 @@ QWidget#scrollAreaWidgetContents_4{
        <widget class="QGroupBox" name="groupBox_11">
         <property name="maximumSize">
          <size>
-          <width>350</width>
+          <width>375</width>
           <height>100</height>
          </size>
         </property>
@@ -532,7 +532,7 @@ QWidget#scrollAreaWidgetContents_4{
             </item>
             <item row="4" column="0">
              <widget class="QWidget" name="widget" native="true">
-              <layout class="QVBoxLayout" name="verticalLayout_9" stretch="">
+              <layout class="QVBoxLayout" name="verticalLayout_9">
                <property name="spacing">
                 <number>0</number>
                </property>
@@ -629,7 +629,7 @@ QWidget#scrollAreaWidgetContents_4{
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>50</height>
+             <height>70</height>
             </size>
            </property>
            <property name="title">
