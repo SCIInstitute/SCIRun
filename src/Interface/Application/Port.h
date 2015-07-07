@@ -69,6 +69,7 @@ public:
   virtual bool isLightOn() const = 0;
   
   bool isHighlighted() const { return isHighlighted_; }
+  int properWidth() const { return sizeHint().width(); }
 
 protected:
   static const int DEFAULT_WIDTH = 11;

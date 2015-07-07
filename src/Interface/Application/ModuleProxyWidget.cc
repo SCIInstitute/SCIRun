@@ -286,15 +286,17 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
-  //std::cout << "create PPPs" << std::endl;
   const int firstPortXPos = 5;
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
-    //qDebug() << "Setting position provider for port " << QString::fromStdString(p->id().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
-    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())), p->pos().y());
+    //qDebug() << "Setting position provider for port " << QString::fromStdString(p->id().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
+    //qDebug() << firstPortXPos << static_cast<int>(p->getIndex()) << p->properWidth() << getModuleWidget()->portSpacing();
+
+    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())), p->pos().y());
 
     int extraPadding = p->isHighlighted() ? 4 : 0;
-    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(p->width() / 2 + extraPadding, 5)));
+    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5)));
+    //qDebug() << "PWP real " << realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5);
     p->setPositionObject(pp);
   }
   if (pos() == QPointF(0, 0) && cachedPosition_ != pos())
