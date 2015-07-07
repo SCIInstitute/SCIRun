@@ -26,6 +26,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+#include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include "qbrush.h"
 
@@ -47,6 +48,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   parent->menuMouseControlChanged(mouseControlComboBox_->currentIndex());
 
   connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
+  connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
   connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
   connect(contSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeContinuous(bool)));
@@ -59,12 +61,14 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   /////Set unused widgets to be not visible
   ////Clipping tab
+  tabWidget->removeTab(2);
   //ClippingTab->setVisible(false);
   //ClippingTab->setEnabled(false);
   //groupBox_3->setVisible(false);
   //groupBox_4->setVisible(false);
   //groupBox_5->setVisible(false);
 
+  tabWidget->removeTab(1);
   ////View Tab
   //groupBox->setVisible(false);
 
@@ -79,4 +83,16 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
     QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
 
   currentBackgroundLabel_->setStyleSheet(styleSheet);
+}
+
+
+void ViewSceneControlsDock::setObjectModel(QAbstractItemModel* model)
+{
+  //objectListView_->setItemDelegate(new FixMacCheckBoxes);
+  objectListView_->setModel(model);
+}
+
+void ViewSceneControlsDock::addObject(QWidget* item)
+{
+  //objectListWidget_->addItem(
 }

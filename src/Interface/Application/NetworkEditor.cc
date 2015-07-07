@@ -77,7 +77,8 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
-  zLevelManager_(new ZLevelManager(scene_))
+  zLevelManager_(new ZLevelManager(scene_)),
+  fileLoading_(false)
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
@@ -157,6 +158,10 @@ void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::N
   moduleEventProxy_->trackModule(module);
 
   setupModuleWidget(moduleWidget);
+  if (!fileLoading_)
+  {
+    moduleWidget->postLoadAction();
+  }
   count.increment();
   //std::cout << "\tNE modules done (end): " << *count.count << std::endl;
   Q_EMIT modified();
@@ -928,7 +933,17 @@ SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork() const
 
 void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
 {
+  fileLoading_ = true;
   controller_->loadNetwork(xml);
+  fileLoading_ = false;
+
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      w->getModuleWidget()->postLoadAction();
+    }
+  }
 
   //TODO: duplication
   const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";

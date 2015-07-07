@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+//Uncomment line below to check for memory leaks (run in debug mode VS)
+//#define LOOK_FOR_MEMORY_LEAKS
 
 #include <Core/Application/Application.h>
 #include <Interface/Application/GuiApplication.h>
@@ -37,6 +39,11 @@ using namespace SCIRun::Core::Console;
 
 int mainImpl(int argc, const char* argv[])
 {
+#ifdef LOOK_FOR_MEMORY_LEAKS
+  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+  //_CrtSetBreakAlloc(34006);
+#endif
+
   Application::Instance().readCommandLine(argc, argv);
 
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here

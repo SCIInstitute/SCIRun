@@ -53,12 +53,10 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-
+    
   addToolBar();
-  addViewBar();
-  addConfigurationButton();
   itemManager_->SetupConnections(this);
-
+  
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
   fmt.setAlpha(true);
@@ -118,7 +116,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   }
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
-	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
+  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue())); 
 }
 
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
@@ -172,8 +170,9 @@ void ViewSceneDialog::newGeometryValue()
     {
       boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
 			auto name = obj->uniqueID();
-      objectNames.push_back(name);
-      if (!isObjectUnselected(name))
+      auto displayName = QString::fromStdString(name).split('_').at(1);
+      objectNames.push_back(displayName.toStdString());
+      if (!isObjectUnselected(displayName.toStdString()))
       {
         spire->handleGeomObject(obj, port);
         validObjects.push_back(name);
@@ -193,14 +192,14 @@ void ViewSceneDialog::newGeometryValue()
       for (auto it = objectNames.begin(); it != objectNames.end(); ++it)
       {
         std::string name = *it;
-        auto displayName = QString::fromStdString(name).split('_').first();
+        QString display = "test";
         if (isObjectUnselected(name))
         {
-          itemManager_->addItem(QString::fromStdString(name), displayName, false);
+          itemManager_->addItem(QString::fromStdString(name), !isObjectUnselected(name));
         }
         else
         {
-          itemManager_->addItem(QString::fromStdString(name), displayName, true);
+          itemManager_->addItem(QString::fromStdString(name), true);
         }
       }
       itemValueChanged_ = false;
@@ -491,7 +490,7 @@ void ViewSceneDialog::handleSelectedItem(const QString& name)
 }
 
 //------------------------------------------------------------------------------
-bool ViewSceneDialog::isObjectUnselected(std::string& name)
+bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 {
   return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
 }
@@ -501,11 +500,14 @@ void ViewSceneDialog::addToolBar()
 	mToolBar = new QToolBar(this);
 	mToolBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
 
+  addConfigurationButton();
 	addAutoViewButton();
   addScreenshotButton();
 	addObjectToggleMenu();
 
 	glLayout->addWidget(mToolBar);
+  
+  addViewBar();
 }
 
 void ViewSceneDialog::addAutoViewButton()
@@ -517,7 +519,8 @@ void ViewSceneDialog::addAutoViewButton()
 	autoViewBtn->setDefault(false);
 	autoViewBtn->setShortcut(Qt::Key_0);
 	connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
-	mToolBar->addWidget(autoViewBtn);
+  mToolBar->addWidget(autoViewBtn);
+  mToolBar->addSeparator();
 }
 
 void ViewSceneDialog::addScreenshotButton()
@@ -530,11 +533,6 @@ void ViewSceneDialog::addScreenshotButton()
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
   mToolBar->addWidget(screenshotButton);
-
-  auto saveNewGeom = new QCheckBox(this);
-  saveNewGeom->setText("Save screenshot on geometry update");
-  connect(saveNewGeom, SIGNAL(stateChanged(int)), this, SLOT(saveNewGeometryChanged(int)));
-  mToolBar->addWidget(saveNewGeom);
 
   mToolBar->addSeparator();
 }
@@ -566,7 +564,7 @@ void ViewSceneDialog::addViewBarButton()
 	viewBarBtn->setToolTip("Show View Options");
 	viewBarBtn->setText("Views");
 	viewBarBtn->setAutoDefault(false);
-	viewBarBtn->setDefault(false);
+  viewBarBtn->setDefault(false);
 	connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
 	mToolBar->addWidget(viewBarBtn);
 	mToolBar->addSeparator();
@@ -657,7 +655,8 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
 	{
 		autoViewClicked();
 		shown_ = true;
-	}
+  }
+  setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 	ModuleDialogGeneric::showEvent(evt);
 }
 
@@ -667,7 +666,31 @@ void ViewSceneDialog::hideEvent(QHideEvent* evt)
 	ModuleDialogGeneric::hideEvent(evt);
 }
 
+void ViewSceneDialog::saveNewGeometryChanged(int state)
+{
+  saveScreenshotOnNewGeometry_ = state != 0;
+}
 
+void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
+{
+  using namespace SCIRun::Core::Algorithms;
+  Variable::List coords;
+  coords.push_back(makeVariable("x", x));
+  coords.push_back(makeVariable("y", y));
+  state_->setValue(Parameters::GeometryFeedbackInfo, coords);
+}
+
+void ViewSceneDialog::screenshotClicked()
+{
+  if (!screenshotTaker_)
+    screenshotTaker_ = new Screenshot(mGLWidget, this);
+
+  screenshotTaker_->takeScreenshot();
+  screenshotTaker_->saveScreenshot();
+}
+
+
+/// Start of ViewSceneItemManager
 ViewSceneItemManager::ViewSceneItemManager()
   : model_(new QStandardItemModel(3, 1))
 {
@@ -689,16 +712,15 @@ ViewSceneItemManager::ViewSceneItemManager()
 #endif
 }
 
-
 void ViewSceneItemManager::SetupConnections(ViewSceneDialog* slotHolder)
 {
   connect(this, SIGNAL(itemUnselected(const QString&)), slotHolder, SLOT(handleUnselectedItem(const QString&)));
   connect(this, SIGNAL(itemSelected(const QString&)), slotHolder, SLOT(handleSelectedItem(const QString&)));
 }
 
-void ViewSceneItemManager::addItem(const QString& name, const QString& displayName, bool checked)
+void ViewSceneItemManager::addItem(const QString& name, bool checked)
 {
-	QStandardItem* item = new QStandardItem(name);
+  QStandardItem* item = new QStandardItem(name);
   //TODO dan
   //item->setToolTip(displayName);
 
@@ -749,15 +771,7 @@ void ViewSceneItemManager::slotChanged(const QModelIndex& topLeft, const QModelI
 	}
 }
 
-void ViewSceneDialog::screenshotClicked()
-{
-  if (!screenshotTaker_)
-    screenshotTaker_ = new Screenshot(mGLWidget, this);
-
-  screenshotTaker_->takeScreenshot();
-  screenshotTaker_->saveScreenshot();
-}
-
+/// Start of Screenshot
 const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
 
 Screenshot::Screenshot(QGLWidget *glwidget, QObject *parent)
@@ -788,18 +802,4 @@ void Screenshot::saveScreenshot()
 QString Screenshot::screenshotFile() const
 {
   return filePath + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
-}
-
-void ViewSceneDialog::saveNewGeometryChanged(int state)
-{
-  saveScreenshotOnNewGeometry_ = state != 0;
-}
-
-void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
-{
-  using namespace SCIRun::Core::Algorithms;
-  Variable::List coords;
-  coords.push_back(makeVariable("x", x));
-  coords.push_back(makeVariable("y", y));
-  state_->setValue(Parameters::GeometryFeedbackInfo, coords);
 }

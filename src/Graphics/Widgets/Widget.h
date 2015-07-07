@@ -6,7 +6,7 @@ The MIT License
 Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
-License for the specific language governing rights and limitations under
+
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation
@@ -26,42 +26,21 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H
-#define INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H
+#ifndef Graphics_Graphics_Widgets_Widget_H
+#define Graphics_Graphics_Widgets_Widget_H
 
-#include "Interface/Modules/Render/ui_ViewSceneControls.h"
-
-#include <boost/shared_ptr.hpp>
-
-#include <Interface/Modules/Render/ViewScene.h>
-
-//#include <Modules/Basic/SendScalarModuleState.h>
-//#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-
-#include <Interface/Modules/Render/namespaces.h>
-#include <Interface/Modules/Render/share.h>
+#include <Graphics/Glyphs/share.h>
 
 namespace SCIRun {
-  namespace Gui {
-    class ViewSceneDialog;
+  namespace Graphics {
 
-    class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls
+    class SCISHARE Widget
     {
-      Q_OBJECT
-
     public:
-      ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
+      Widget();
 
-      void setSampleColor(const QColor& color);
-      void setObjectModel(QAbstractItemModel* model);
-      void addObject(QWidget* item);
+    };// class Widget
+  }// Graphics
+} // SCIRun
+#endif // Graphics_Graphics_Widgets_Widget_H
 
-    private:
-      //ViewSceneDialog* scene_;
-
-    };
-
-  }
-}
-
-#endif //INTERFACE_MODULES_VIEW_SCENE_CONTROLS_H

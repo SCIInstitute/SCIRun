@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 
 //
 //#include <Core/Thread/CrowdMonitor.h>
@@ -90,7 +91,7 @@ namespace SCIRun
     }}}
 
 GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
-  : Module(staticInfo_), impl_(new GenerateSinglePointProbeFromFieldImpl)
+  : GeometryGeneratingModule(staticInfo_), impl_(new GenerateSinglePointProbeFromFieldImpl)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeneratedWidget);
@@ -148,6 +149,18 @@ Point GenerateSinglePointProbeFromField::currentLocation() const
 
 void GenerateSinglePointProbeFromField::execute()
 {
+  FieldHandle field = GenerateOutputField();
+  sendOutput(GeneratedPoint, field);
+  
+  index_type index = GenerateIndex();
+  sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
+
+  GeometryHandle geom = BuildWidgetObject(field);
+  sendOutput(GeneratedWidget, geom);
+}
+
+FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
+{
   auto ifieldOption = getOptionalInput(InputField);
   FieldHandle ifield;
 
@@ -176,7 +189,7 @@ void GenerateSinglePointProbeFromField::execute()
     Point bmax = bbox.get_max();
 
     // Fix degenerate boxes.
-    const double size_estimate = std::max((bmax-bmin).length() * 0.01, 1.0e-5);
+    const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
     if (fabs(bmax.x() - bmin.x()) < THRESHOLD)
     {
       bmin.x(bmin.x() - size_estimate);
@@ -204,8 +217,8 @@ void GenerateSinglePointProbeFromField::execute()
     // Leave it alone if there was no field, as our bbox is arbitrary anyway.
     if (!ifieldOption ||
       (curloc.x() >= bmin.x() && curloc.x() <= bmax.x() &&
-        curloc.y() >= bmin.y() && curloc.y() <= bmax.y() &&
-        curloc.z() >= bmin.z() && curloc.z() <= bmax.z()))
+      curloc.y() >= bmin.y() && curloc.y() <= bmax.y() &&
+      curloc.z() >= bmin.z() && curloc.z() <= bmax.z()))
     {
       center = curloc;
     }
@@ -217,9 +230,9 @@ void GenerateSinglePointProbeFromField::execute()
     widget_group->add(widget_->GetWidget());
 
     GeometryOPortHandle ogport;
-    get_oport_handle("GenerateSinglePointProbeFromField Widget",ogport);
+    get_oport_handle("GenerateSinglePointProbeFromField Widget", ogport);
     widgetid_ = ogport->addObj(widget_group, "GenerateSinglePointProbeFromField Selection Widget",
-			       &widget_lock_);
+      &widget_lock_);
     ogport->flushViews();
 #endif
     impl_->last_bounds_ = bbox;
@@ -227,7 +240,7 @@ void GenerateSinglePointProbeFromField::execute()
 
 #if SCIRUN4_TO_BE_ENABLED_LATER
   widget_->SetScale(gui_probe_scale_.get() * l2norm_ * 0.003);
-  widget_->SetColor(Color(gui_color_r_.get(),gui_color_g_.get(),gui_color_b_.get()));
+  widget_->SetColor(Color(gui_color_r_.get(), gui_color_g_.get(), gui_color_b_.get()));
   widget_->SetLabel(gui_label_.get());
 #endif
 
@@ -245,7 +258,7 @@ void GenerateSinglePointProbeFromField::execute()
     Point bmax = bbox.get_max();
 
     // Fix degenerate boxes.
-    const double size_estimate = std::max((bmax-bmin).length() * 0.01, 1.0e-5);
+    const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
     if (fabs(bmax.x() - bmin.x()) < THRESHOLD)
     {
       bmin.x(bmin.x() - size_estimate);
@@ -265,7 +278,7 @@ void GenerateSinglePointProbeFromField::execute()
     Point center = bmin + Vector(bmax - bmin) * 0.5;
 
 #if SCIRUN4_TO_BE_ENABLED_LATER
-    widget_->SetColor(Color(gui_color_r_.get(),gui_color_g_.get(),gui_color_b_.get()));
+    widget_->SetColor(Color(gui_color_r_.get(), gui_color_g_.get(), gui_color_b_.get()));
     widget_->SetLabel(gui_label_.get());
 #endif
 
@@ -291,7 +304,7 @@ void GenerateSinglePointProbeFromField::execute()
       if (idx >= 0 && idx < ifield->vmesh()->num_elems())
       {
         Point p;
-        ifield->vmesh()->get_center(p,VMesh::Elem::index_type(idx));
+        ifield->vmesh()->get_center(p, VMesh::Elem::index_type(idx));
         impl_->widget_->setPosition(p);
         moved_p = true;
       }
@@ -301,7 +314,7 @@ void GenerateSinglePointProbeFromField::execute()
   {
 #if SCIRUN4_TO_BE_ENABLED_LATER
     GeometryOPortHandle ogport;
-    get_oport_handle("GenerateSinglePointProbeFromField Widget",ogport);
+    get_oport_handle("GenerateSinglePointProbeFromField Widget", ogport);
     ogport->flushViews();
     gui_moveto_.set("");
 #endif
@@ -309,7 +322,7 @@ void GenerateSinglePointProbeFromField::execute()
 
   const Point location = impl_->widget_->position();
 
-  FieldInformation fi("PointCloudMesh",0,"double");
+  FieldInformation fi("PointCloudMesh", 0, "double");
   MeshHandle mesh = CreateMesh(fi);
   mesh->vmesh()->add_point(location);
 
@@ -322,7 +335,7 @@ void GenerateSinglePointProbeFromField::execute()
       ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_NODE_E);
       Point r;
       VMesh::Node::index_type idx;
-      ifield->vmesh()->find_closest_node(r,idx,location);
+      ifield->vmesh()->find_closest_node(r, idx, location);
       state->setValue(FieldNode, static_cast<int>(idx));
     }
 
@@ -331,7 +344,7 @@ void GenerateSinglePointProbeFromField::execute()
       ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
       Point r;
       VMesh::Elem::index_type idx;
-      ifield->vmesh()->find_closest_elem(r,idx,location);
+      ifield->vmesh()->find_closest_elem(r, idx, location);
       state->setValue(FieldElem, static_cast<int>(idx));
     }
   }
@@ -348,7 +361,7 @@ void GenerateSinglePointProbeFromField::execute()
   if (!ifieldOption || ifield->basis_order() == -1 || !state->getValue(DisplayValue).toBool())
   {
     fi.make_double();
-    ofield = CreateField(fi,mesh);
+    ofield = CreateField(fi, mesh);
     ofield->vfield()->resize_values();
     valstr << 0;
     ofield->vfield()->set_value(0.0, VMesh::index_type(0));
@@ -360,29 +373,29 @@ void GenerateSinglePointProbeFromField::execute()
     {
       Point closest;
       VMesh::Node::index_type node_idx;
-      if(vmesh->find_closest_node(closest,node_idx,location))
-        vfield->get_value(result,node_idx);
+      if (vmesh->find_closest_node(closest, node_idx, location))
+        vfield->get_value(result, node_idx);
     }
     valstr << result;
 
     fi.make_double();
-    ofield = CreateField(fi,mesh);
+    ofield = CreateField(fi, mesh);
     ofield->vfield()->set_value(result, VMesh::index_type(0));
   }
   else if (vfield->is_vector())
   {
-    Vector result(0.0,0.0,0.0);
+    Vector result(0.0, 0.0, 0.0);
     if (!vfield->interpolate(result, location))
     {
       Point closest;
       VMesh::Node::index_type node_idx;
-      if (vmesh->find_closest_node(closest,node_idx,location))
-        vfield->get_value(result,node_idx);
+      if (vmesh->find_closest_node(closest, node_idx, location))
+        vfield->get_value(result, node_idx);
     }
     valstr << result;
 
     fi.make_vector();
-    ofield = CreateField(fi,mesh);
+    ofield = CreateField(fi, mesh);
     ofield->vfield()->set_value(result, VMesh::index_type(0));
   }
   else if (vfield->is_tensor())
@@ -392,15 +405,15 @@ void GenerateSinglePointProbeFromField::execute()
     {
       Point closest;
       VMesh::Node::index_type node_idx;
-      if(vmesh->find_closest_node(closest,node_idx,location))
-        vfield->get_value(result,node_idx);
+      if (vmesh->find_closest_node(closest, node_idx, location))
+        vfield->get_value(result, node_idx);
     }
 #if SCIRUN4_TO_BE_ENABLED_LATER
     valstr << result;
 #endif
 
     fi.make_tensor();
-    ofield = CreateField(fi,mesh);
+    ofield = CreateField(fi, mesh);
     ofield->vfield()->set_value(result, VMesh::index_type(0));
   }
 
@@ -412,12 +425,19 @@ void GenerateSinglePointProbeFromField::execute()
     state->setValue(FieldValue, valstr.str());
   }
 
-  sendOutput(GeneratedPoint, ofield);
+  return ofield; 
+}
 
+index_type GenerateSinglePointProbeFromField::GenerateIndex()
+{
+
+  auto ifieldOption = getRequiredInput(InputField);
+  index_type index = 0;
+  
+  auto state = get_state();
+  using namespace Parameters;
   if (ifieldOption)
   {
-    index_type index = 0;
-
     if (state->getValue(DisplayNode).toBool())
     {
       index = state->getValue(FieldNode).toInt();
@@ -426,9 +446,82 @@ void GenerateSinglePointProbeFromField::execute()
     {
       index = state->getValue(FieldElem).toInt();
     }
-
-    sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
   }
+  
+  return index;
+}
+
+GeometryHandle GenerateSinglePointProbeFromField::BuildWidgetObject(SCIRun::FieldHandle field)
+{
+  GeometryHandle geom(new GeometryObject(field, *this, "EntireSinglePointProbeFromField"));
+
+  VMesh*  mesh = field->vmesh();
+  
+  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  ColorRGB node_color;  
+
+  mesh->synchronize(Mesh::NODES_E);
+
+  VMesh::Node::iterator eiter, eiter_end;
+  mesh->begin(eiter);
+  mesh->end(eiter_end);
+
+  auto my_state = this->get_state();
+  using namespace Parameters;
+  double radius = my_state->getValue(ProbeSize).toDouble();
+  double num_strips = 10;
+  if (radius < 0) radius = 1.;
+  if (num_strips < 0) num_strips = 10.;
+  std::stringstream ss;
+  ss << radius << num_strips << colorScheme;
+  
+  std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
+  
+  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;    
+  
+  Graphics::GlyphGeom glyphs;
+  while (eiter != eiter_end)
+  {
+    //checkForInterruption();
+
+    Core::Geometry::Point p;
+    mesh->get_point(p, *eiter);
+   
+    glyphs.addSphere(p, radius, num_strips, node_color);
+
+    ++eiter;
+  }
+
+  RenderState renState = GetWidgetRenderState(my_state);  
+
+  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0, 
+    colorScheme, renState, primIn, mesh->get_bounding_box());
+  
+  return geom;
+}
+
+RenderState GenerateSinglePointProbeFromField::GetWidgetRenderState(ModuleStateHandle state)
+{
+  RenderState renState;
+
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::USE_TRANSPARENCY, false);
+
+  renState.defaultColor = ColorRGB(state->getValue(Parameters::ProbeColor).toString());
+  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
+    renState.defaultColor.g() > 1.0 ||
+    renState.defaultColor.b() > 1.0) ?
+    ColorRGB(
+    renState.defaultColor.r() / 255.,
+    renState.defaultColor.g() / 255.,
+    renState.defaultColor.b() / 255.)
+    : renState.defaultColor;
+
+  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::IS_WIDGET, true);
+
+  return renState;
 }
 
 #if 0

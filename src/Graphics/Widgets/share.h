@@ -26,33 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#undef SCISHARE
 
-#ifndef CORE_ALGORITHMS_FIELDS_TRANSFORMMESH_TRANSFORMMESHWITHTRANSFORM_H
-#define CORE_ALGORITHMS_FIELDS_TRANSFORMMESH_TRANSFORMMESHWITHTRANSFORM_H 1
-
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
-
-namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
-
-        class SCISHARE TransformMeshWithTransformAlgo : public AlgorithmBase
-        {
-        public:
-          TransformMeshWithTransformAlgo();
-
-          static const AlgorithmInputName TransformMatrix;
-          static const AlgorithmOutputName Transformed_Field;
-
-          bool run(FieldHandle input, Core::Datatypes::DenseMatrixHandle transform, FieldHandle& output) const;
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-        };
-
-      }
-    }
-  }
-}
-
-#endif 
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Graphics_Widgets
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif

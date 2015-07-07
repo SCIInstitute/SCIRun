@@ -54,6 +54,9 @@ public:
 
     DIRTY,
 
+    // Widget
+    IS_WIDGET,
+
     // Node flags
     USE_SPHERE,
     USE_TRANSPARENT_NODES,
