@@ -35,7 +35,7 @@ install:
 script:
   cd bin
   && cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../src
-  && make -j8
+  && make -j4
   && make SCIRunTestData_external
 #  && make test
 
