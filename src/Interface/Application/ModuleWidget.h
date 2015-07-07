@@ -122,6 +122,7 @@ public:
   bool hasDynamicPorts() const;
 
   void createStartupNote();
+  void postLoadAction();
 
   static const int SMALL_PORT_SPACING = 3;
   static const int LARGE_PORT_SPACING = SMALL_PORT_SPACING * 4;
@@ -157,6 +158,7 @@ public Q_SLOTS:
   void expandToFullMode();
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
+  void replaceMe();
   static void setGlobalMiniMode(bool mini);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);

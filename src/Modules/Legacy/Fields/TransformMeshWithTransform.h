@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_LEGACY_FIELDS_TransformMeshWithTransform_H__
+#define MODULES_LEGACY_FIELDS_TransformMeshWithTransform_H__
 
-#ifndef CORE_ALGORITHMS_FIELDS_TRANSFORMMESH_TRANSFORMMESHWITHTRANSFORM_H
-#define CORE_ALGORITHMS_FIELDS_TRANSFORMMESH_TRANSFORMMESHWITHTRANSFORM_H 1
-
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
+  namespace Modules {
+    namespace Fields {
 
-        class SCISHARE TransformMeshWithTransformAlgo : public AlgorithmBase
-        {
-        public:
-          TransformMeshWithTransformAlgo();
+      class SCISHARE TransformMeshWithTransform : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, MatrixPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        TransformMeshWithTransform();
 
-          static const AlgorithmInputName TransformMatrix;
-          static const AlgorithmOutputName Transformed_Field;
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
-          bool run(FieldHandle input, Core::Datatypes::DenseMatrixHandle transform, FieldHandle& output) const;
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-        };
+        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(1, TransformMatrix, Matrix);
+        OUTPUT_PORT(0, Transformed_Field, LegacyField);
 
-      }
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+
     }
   }
 }
 
-#endif 
+#endif
