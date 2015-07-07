@@ -59,18 +59,6 @@ int mainImpl(int argc, const char* argv[])
 #ifdef WIN32
 
 #include <windows.h>
-#include <vector>
-#include <boost/algorithm/string.hpp>
-
-static std::string&& stripQuotes(std::string& s)
-{
-  if (s.front() == '"' && s.back() == '"')
-  {
-    s.erase(0, 1); // erase the first character
-    s.erase(s.size() - 1); // erase the last character
-  }
-  return std::move(s);
-}
 
 const char* utf8_encode(const std::wstring &wstr)
 {
@@ -91,60 +79,29 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
   freopen("CONOUT$", "w", stderr);
 #endif
 
-  //const int argc = __argc;
-  const char *argv[50];
-  //char *tempArgv[] = { GetCommandLine() };
-
-  // The GetCommandLine() function returns argv as a single string. The split function splits it up into
-  // the individual arguments.
-
-  // TODO: another edge case is the Windows package. Full path of SCIRun.exe is passed with no quotes, so if the path
-  // has spaces this function does not work--we need the entire exe path to be in argv[0]. Unit test coming soon.
+  const char *argv[100] = { 0 };
   int argc;
   {
-    std::cout << "NEW METHOD:\n\n";
-
     LPWSTR *szArglist;
-    int nArgs;
 
-    szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+    szArglist = CommandLineToArgvW(GetCommandLineW(), &argc);
     if (!szArglist)
     {
-      wprintf(L"CommandLineToArgvW failed\n");
-      return 0;
+      std::cout << "CommandLineToArgvW failed" << std::endl;
+      return 7;
     }
     else
     {
-      for (int i = 0; i < nArgs; i++)
+      for (int i = 0; i < argc; i++)
       {
-        printf("%d: %ws\n", i, szArglist[i]);
         argv[i] = utf8_encode(szArglist[i]);
-        printf("%d: %ws\n", i, argv[i]);
       }
     }
 
-    argc = nArgs;
-
     // Free memory allocated for CommandLineToArgvW arguments.
-
     LocalFree(szArglist);
   }
 
-  /*
-
-  std::cout << "PRINTING CMD LINE:\n" << tempArgv[0] << std::endl;
-
-  std::vector<std::string> getArgv;
-  boost::algorithm::split(getArgv, tempArgv[0], boost::is_any_of(" \0"), boost::algorithm::token_compress_on);
-  
-  // Put the individual arguments into the argv that will be passed.
-  for (int i = 0; i < argc; i++)
-  {
-    argv[i] = stripQuotes(getArgv[i]).c_str();
-    std::cout << i << " : " << getArgv[i] << std::endl;
-    std::cout << i << " stripped: " << argv[i] << std::endl;
-  }
-  */
   return mainImpl(argc, argv);
 }
 
