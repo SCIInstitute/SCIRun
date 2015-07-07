@@ -79,7 +79,7 @@ Application::Application() :
 	private_( new ApplicationPrivate )
 {
   private_->app_filepath_ = boost::filesystem::current_path();
-  //std::cout << "exec path set to: " << private_->app_filepath_ << std::endl;
+  std::cout << "exec path set to: " << private_->app_filepath_ << std::endl;
   auto configDir = configDirectory();
   Log::setLogDirectory(configDir);
   SessionManager::Instance().initialize(configDir);
@@ -126,20 +126,20 @@ void Application::readCommandLine(int argc, const char* argv[])
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
 
-  //std::cout << "argv[0]: " << argv[0] << std::endl;
+  std::cout << "argv[0]: " << argv[0] << std::endl;
   private_->app_filename_ = boost::filesystem::path(argv[0]);
-  //std::cout << "app_filename_: " << private_->app_filename_ << std::endl;
+  std::cout << "app_filename_: " << private_->app_filename_ << std::endl;
 
   if (!private_->app_filename_.parent_path().empty())
   {
-    //std::cout << "app_filename_ parent path: " << private_->app_filename_.parent_path() << std::endl;
+    std::cout << "app_filename_ parent path: " << private_->app_filename_.parent_path() << std::endl;
     auto oldPath = private_->app_filepath_;
     private_->app_filepath_ = boost::filesystem::system_complete(private_->app_filename_.parent_path());
-    //std::cout << "exec path reset to: " << private_->app_filepath_ << std::endl;
+    std::cout << "exec path reset to: " << private_->app_filepath_ << std::endl;
     if (!boost::filesystem::exists(private_->app_filepath_))
     {
       private_->app_filepath_ = oldPath;
-      //std::cout << "reset to old path: " << oldPath << std::endl;
+      std::cout << "reset to old path: " << oldPath << std::endl;
     }
   }
 
