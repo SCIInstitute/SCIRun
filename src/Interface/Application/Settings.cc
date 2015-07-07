@@ -153,6 +153,14 @@ void SCIRunMainWindow::readSettings()
     prefsWindow_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
   }
 
+  const QString showModuleErrorInlineMessagesKey = "showModuleErrorInlineMessages";
+  if (settings.contains(showModuleErrorInlineMessagesKey))
+  {
+    bool val = settings.value(showModuleErrorInlineMessagesKey).toBool();
+    GuiLogger::Instance().logInfo("Setting read: show module inline error = " + QString::number(val));
+    prefsWindow_->setModuleErrorInlineMessages(val);
+  }
+
   const QString saveBeforeExecute = "saveBeforeExecute";
   if (settings.contains(saveBeforeExecute))
   {
@@ -229,6 +237,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.modulesAreDockable), prefs.modulesAreDockable.val());
   settings.setValue(qname(prefs.autoNotes), prefs.autoNotes.val());
   settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
+  settings.setValue(qname(prefs.showModuleErrorInlineMessages), prefs.showModuleErrorInlineMessages.val());
   settings.setValue("defaultNotePositionIndex", prefsWindow_->defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());

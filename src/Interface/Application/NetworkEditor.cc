@@ -1319,31 +1319,34 @@ void ErrorItem::animate(qreal val)
 
 void NetworkEditor::displayError(const QString& msg, std::function<void()> showModule)
 {
-  auto errorItem = new ErrorItem(msg, showModule);
-  scene()->addItem(errorItem);
+  if (Core::Preferences::Instance().showModuleErrorInlineMessages)
+  {
+    auto errorItem = new ErrorItem(msg, showModule);
+    scene()->addItem(errorItem);
 
-  QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
-  QPointF br = tl + viewport()->rect().bottomRight();
-  QMatrix mat = matrix().inverted();
-  auto rect = mat.mapRect(QRectF(tl,br));
+    QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
+    QPointF br = tl + viewport()->rect().bottomRight();
+    QMatrix mat = matrix().inverted();
+    auto rect = mat.mapRect(QRectF(tl, br));
 
-  auto corner = rect.bottomLeft();
-  errorItem->setPos(corner + QPointF(100, -(40*errorItem->num() + 100)));
+    auto corner = rect.bottomLeft();
+    errorItem->setPos(corner + QPointF(100, -(40*errorItem->num() + 100)));
 
 #if 0
-  auto xMin = rect.topLeft().x();
-  auto xMax = rect.topRight().x();
-  auto yMin = rect.topLeft().y();
-  auto yMax = rect.bottomLeft().y();
-  for (double x = xMin; x < xMax; x += 100)
-    for (double y = yMin; y < yMax; y += 100)
+    auto xMin = rect.topLeft().x();
+    auto xMax = rect.topRight().x();
+    auto yMin = rect.topLeft().y();
+    auto yMax = rect.bottomLeft().y();
+    for (double x = xMin; x < xMax; x += 100)
+      for (double y = yMin; y < yMax; y += 100)
       {
         QString xy = QString::number(x) + "," + QString::number(y);
         auto item = scene()->addText(xy);
         item->setDefaultTextColor(Qt::white);
         item->setPos(x, y);
-      }
+  }
 #endif
+  }
 }
 
 NetworkEditor::~NetworkEditor()
