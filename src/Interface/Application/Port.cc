@@ -156,6 +156,7 @@ namespace SCIRun {
   }}
 
 PortWidget::PortWidgetMap PortWidget::portWidgetMap_;
+PortWidget::PotentialConnectionMap PortWidget::potentialConnectionsMap_;
 
 PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent), isHighlighted_(false) {}
 
@@ -340,6 +341,10 @@ void PortWidget::makeConnection(const QPointF& pos)
   if (Preferences::Instance().highlightPorts)
   {
     forEachPort([](PortWidget* p) { p->setHighlight(false, true); }, boost::lambda::constant(true));
+    potentialConnectionsMap_[this].clear();
+    for (auto& c : potentialConnections_)
+      delete c;
+    potentialConnections_.clear();
   }
 }
 
@@ -406,9 +411,13 @@ void PortWidget::dragImpl(const QPointF& endPos)
 
   if (Preferences::Instance().highlightPorts)
   {
-    forEachPort(
-      [](PortWidget* p) { p->setHighlight(true, true); },
-      [this](const std::string& mid, bool isInput, const PortWidget* port) { return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename(); });
+    auto isCompatible = [this](const std::string& mid, bool isInput, const PortWidget* port)
+    {
+      return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename();
+    };
+    forEachPort([](PortWidget* p) { p->setHighlight(true, true); }, isCompatible);
+
+    forEachPort([this](PortWidget* p) { this->makePotentialConnectionLine(p); }, isCompatible);
   }
 }
 
@@ -425,6 +434,19 @@ void PortWidget::forEachPort(Func func, Pred pred)
           func(p3.second);
       }
     }
+  }
+}
+
+void PortWidget::makePotentialConnectionLine(PortWidget* other)
+{
+  auto potentials = potentialConnectionsMap_[this];
+  if (potentials.find(other) == potentials.end())
+  {
+    potentialConnectionsMap_[this][other] = true;
+    //qDebug() << "need potential line from " << this << " to " << other;
+    auto potential = connectionFactory_->makePotentialConnection(this);
+    potential->update(other->position());
+    potentialConnections_.insert(potential);
   }
 }
 

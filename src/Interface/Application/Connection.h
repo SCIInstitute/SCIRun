@@ -69,8 +69,8 @@ public:
   ~ConnectionLine();
   void setColor(const QColor& color);
   void setColorAndWidth(const QColor& color, int width);
-  QColor color() const; 
-  ModuleIdPair getConnectedToModuleIds() const; 
+  QColor color() const;
+  ModuleIdPair getConnectedToModuleIds() const;
   void updateNoteFromFile(const Note& note);
   std::pair<PortWidget*, PortWidget*> connectedPorts() const { return{ fromPort_, toPort_ }; }
 public Q_SLOTS:
@@ -82,16 +82,16 @@ Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void noteChanged();
 protected:
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override; 
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override; 
+  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
   QVariant itemChange(GraphicsItemChange change, const QVariant& value);
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
   virtual void setNoteGraphicsContext() override;
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
   void keyPressEvent(QKeyEvent* event) override;
-   
+
 private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
@@ -100,7 +100,7 @@ private:
   void destroy();
   bool destroyed_;
   class ConnectionMenu* menu_;
-  bool menuOpen_; 
+  bool menuOpen_;
   QColor placeHoldingColor_;
   int placeHoldingWidth_;
 };
@@ -112,6 +112,7 @@ class ConnectionInProgress
 public:
 	virtual ~ConnectionInProgress() {}
   virtual void update(const QPointF& end) = 0;
+  virtual void makePotential() = 0;
 };
 
 template <class Base>
@@ -132,6 +133,11 @@ public:
   QColor color() const
   {
     return Base::pen().color();
+  }
+
+  virtual void makePotential() override
+  {
+    Base::setOpacity(0.5);
   }
 
 protected:
@@ -166,6 +172,7 @@ class ConnectionFactory : public QObject
 public:
   explicit ConnectionFactory(QGraphicsScene* scene);
   ConnectionInProgress* makeConnectionInProgress(PortWidget* port) const;
+  ConnectionInProgress* makePotentialConnection(PortWidget* port) const;
   ConnectionLine* makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const;
   void setType(ConnectionDrawType type);
   ConnectionDrawType getType() const;

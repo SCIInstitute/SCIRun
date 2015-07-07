@@ -538,6 +538,14 @@ ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* po
   }
 }
 
+ConnectionInProgress* ConnectionFactory::makePotentialConnection(PortWidget* port) const
+{
+  auto conn = makeConnectionInProgress(port);
+  conn->makePotential();
+  return conn;
+}
+
+
 void ConnectionFactory::activate(QGraphicsItem* item) const
 {
   if (item)

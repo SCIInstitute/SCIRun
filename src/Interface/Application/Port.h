@@ -67,7 +67,7 @@ public:
 
   virtual QColor color() const = 0;
   virtual bool isLightOn() const = 0;
-  
+
   bool isHighlighted() const { return isHighlighted_; }
   int properWidth() const { return sizeHint().width(); }
 
@@ -117,6 +117,8 @@ public:
 
   void addConnection(ConnectionLine* c);
   void removeConnection(ConnectionLine* c);
+
+  void makePotentialConnectionLine(PortWidget* other);
 
   void trackConnections();
   void deleteConnections();
@@ -183,6 +185,10 @@ private:
   //TODO
   typedef std::map<std::string, std::map<bool, std::map<SCIRun::Dataflow::Networks::PortId, PortWidget*>>> PortWidgetMap;
   static PortWidgetMap portWidgetMap_;
+
+  typedef std::map<PortWidget*, std::map<PortWidget*, bool>> PotentialConnectionMap;
+  static PotentialConnectionMap potentialConnectionsMap_;
+  std::set<ConnectionInProgress*> potentialConnections_;
 };
 
 // To fill the layout
