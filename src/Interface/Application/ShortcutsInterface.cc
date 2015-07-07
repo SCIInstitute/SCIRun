@@ -45,9 +45,11 @@ ShortcutsInterface::ShortcutsInterface(QWidget* parent) : QDialog(parent)
   flags = flags & ( ~helpFlag );
   setWindowFlags( flags );
   
-  
   updateFontsAndText();
-  
+  if (minimumWidth() > 0 && minimumHeight() > 0)
+  {
+    setFixedSize(minimumWidth(), minimumHeight());
+  }
   
   // Python Shortcut visible
 #ifdef BUILD_WITH_PYTHON
