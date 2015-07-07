@@ -63,11 +63,13 @@ namespace SCIRun {
       bool isInput = parent->isInput();
       return fillMenuWithFilteredModuleActions(menu, moduleMap,
         [=](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, isInput, m); },
-        [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); });
+        [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); },
+        parent);
     }
 
     //TODO: lots of duplicated filtering here. Make smarter logic to cache based on port type, since it's the same menu for each type--just need to copy an existing one.
-    QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup)
+    QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred,
+      QActionHookup hookup, QWidget* parent)
     {
       QList<QAction*> allCompatibleActions;
       for (const auto& package : moduleMap)
@@ -94,14 +96,14 @@ namespace SCIRun {
           }
           if (!actions.empty())
           {
-            auto m = new QMenu(QString::fromStdString(categoryName), menu);
+            auto m = new QMenu(QString::fromStdString(categoryName), parent);
             m->addActions(actions);
             packageMenus.append(m);
           }
         }
         if (!packageMenus.isEmpty())
         {
-          auto p = new QMenu(QString::fromStdString(packageName), menu);
+          auto p = new QMenu(QString::fromStdString(packageName), parent);
           for (QMenu* menu : packageMenus)
             p->addMenu(menu);
 
@@ -134,7 +136,7 @@ namespace SCIRun {
         addActions(actions);
 
         auto m = new QMenu("Connect Module", parent);
-        faves_ = new QMenu("Favorites", m);
+        faves_ = new QMenu("Favorites", parent);
         m->addMenu(faves_);
         compatibleModuleActions_ = fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
         addMenu(m);
@@ -404,7 +406,7 @@ void PortWidget::dragImpl(const QPointF& endPos)
   if (Preferences::Instance().highlightPorts)
   {
     forEachPort(
-      [](PortWidget* p) { p->setHighlight(true, true); }, 
+      [](PortWidget* p) { p->setHighlight(true, true); },
       [this](const std::string& mid, bool isInput, const PortWidget* port) { return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename(); });
   }
 }

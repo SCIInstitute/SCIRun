@@ -661,7 +661,8 @@ void ModuleWidget::fillReplaceWithMenu()
   auto isReplacement = [&](const ModuleDescription& md) { return replacements.find(md.lookupInfo_) != replacements.end(); };
   fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
     isReplacement,
-    [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); });
+    [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); },
+    currentDisplay_->getModuleActionButton());
 }
 
 QMenu* ModuleWidget::getReplaceWithMenu()
