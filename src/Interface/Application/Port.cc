@@ -68,6 +68,7 @@ namespace SCIRun {
     }
 
     //TODO: lots of duplicated filtering here. Make smarter logic to cache based on port type, since it's the same menu for each type--just need to copy an existing one.
+    // parent is passed to fix menu positioning--every child menu needs the same (graphicsscene button) parent!
     QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred,
       QActionHookup hookup, QWidget* parent)
     {
