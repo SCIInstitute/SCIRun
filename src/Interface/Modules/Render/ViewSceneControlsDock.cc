@@ -42,6 +42,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   setWindowTitle(name);
   setAllowedAreas(Qt::BottomDockWidgetArea);
   setFloating(true);
+  setHidden(true);
   setVisible(false);
   setEnabled(false);
   setStyleSheet(parent->styleSheet());
@@ -98,7 +99,7 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
 void ViewSceneControlsDock::addItem(const QString& name, bool checked)
 {
   auto items = objectListWidget_->findItems(name, Qt::MatchExactly);
-  if (items.count() > 1)
+  if (items.count() > 0)
   {
     return;
   }

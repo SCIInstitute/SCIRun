@@ -183,6 +183,11 @@ void ViewSceneDialog::newGeometryValue()
     if (previousObjectNames_ != objectNames)
     {
       itemValueChanged_ = true;
+      for (auto it = previousObjectNames_.begin(); it != previousObjectNames_.end(); ++it)
+      {
+        std::string name = *it;
+        std::cout << name << std::endl;
+      }
       previousObjectNames_ = objectNames;
     }
     if (itemValueChanged_)
@@ -609,6 +614,7 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 {
   QString name = viewName + " Configuration";
   mConfigurationDock = new ViewSceneControlsDock(name, this);
+  mConfigurationDock->setHidden(true);
   mConfigurationDock->setVisible(false);
 
 	showConfiguration_ = false;
