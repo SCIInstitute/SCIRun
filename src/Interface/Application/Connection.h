@@ -114,14 +114,18 @@ public:
   virtual void update(const QPointF& end) = 0;
   virtual void makePotential() = 0;
   virtual void highlight(bool on) = 0;
+  virtual bool isHighlighted() const = 0;
   virtual QPointF center() const = 0;
+  virtual PortWidget* receiver() const = 0;
+  virtual void setReceiver(PortWidget* rec) = 0;
 };
 
 template <class Base>
 class ConnectionInProgressGraphicsItem : public Base, public ConnectionInProgress
 {
 public:
-  ConnectionInProgressGraphicsItem(PortWidget* port, ConnectionDrawStrategyPtr drawer) : fromPort_(port), drawStrategy_(drawer)
+  ConnectionInProgressGraphicsItem(PortWidget* port, ConnectionDrawStrategyPtr drawer) :
+    fromPort_(port), receiver_(0), drawStrategy_(drawer), isHighlighted_(false)
   {
     Base::setZValue(1000); //TODO
     setColor(fromPort_->color());
@@ -149,17 +153,32 @@ public:
       Base::setPen(QPen(Qt::red, 8.0, Qt::SolidLine));
     else
       Base::setPen(QPen(fromPort_->color(), 5.0, Qt::DotLine));
+    isHighlighted_ = on;
   }
+
+  virtual bool isHighlighted() const override { return isHighlighted_; }
 
   virtual QPointF center() const override
   {
     return (fromPort_->position() + lastEnd_) / 2;
   }
 
+  virtual PortWidget* receiver() const override
+  {
+    return receiver_;
+  }
+
+  virtual void setReceiver(PortWidget* rec) override
+  {
+    receiver_ = rec;
+  }
+
 protected:
   PortWidget* fromPort_;
+  PortWidget* receiver_;
   ConnectionDrawStrategyPtr drawStrategy_;
   QPointF lastEnd_;
+  bool isHighlighted_;
 };
 
 class ConnectionInProgressStraight : public ConnectionInProgressGraphicsItem<QGraphicsLineItem>

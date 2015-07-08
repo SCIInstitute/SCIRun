@@ -334,24 +334,35 @@ void PortWidget::makeConnection(const QPointF& pos)
 {
   DeleteCurrentConnectionAtEndOfBlock deleter(this);  //GUI concern: could go away if we got a NO-CONNECT signal from service layer
 
-  auto port = closestPortFinder_->closestPort(pos);  //GUI concern: needs unit test
-  if (port)
-    tryConnectPort(pos, port);
-
   if (Preferences::Instance().highlightPorts)
   {
-    forEachPort([](PortWidget* p) { p->setHighlight(false, true); }, boost::lambda::constant(true));
+    auto connection = std::find_if(potentialConnections_.begin(), potentialConnections_.end(), [](const ConnectionInProgress* c) { return c->isHighlighted();});
+    if (connection != potentialConnections_.end())
+    {
+      tryConnectPort(pos, (*connection)->receiver(), std::numeric_limits<double>::max());
+    }
+    else
+    {
+      qDebug() << "no highlighted port found";
+    }
+    //forEachPort([](PortWidget* p) { p->setHighlight(false, true); }, boost::lambda::constant(true));
     potentialConnectionsMap_[this].clear();
     for (auto& c : potentialConnections_)
       delete c;
     potentialConnections_.clear();
   }
+  else //old way
+  {
+    auto port = closestPortFinder_->closestPort(pos);  //GUI concern: needs unit test
+    if (port)
+      tryConnectPort(pos, port, PORT_CONNECTION_THRESHOLD);
+  }
 }
 
-void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
+void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double threshold)
 {
   int distance = (pos - port->position()).manhattanLength();     //GUI concern: needs unit test
-  if (distance <= PORT_CONNECTION_THRESHOLD)                 //GUI concern: needs unit test
+  if (distance <= threshold)                 //GUI concern: needs unit test
   {
     Q_EMIT requestConnection(this, port);
   }
@@ -467,6 +478,7 @@ void PortWidget::makePotentialConnectionLine(PortWidget* other)
     //qDebug() << "need potential line from " << this << " to " << other;
     auto potential = connectionFactory_->makePotentialConnection(this);
     potential->update(other->position());
+    potential->setReceiver(other);
     potentialConnections_.insert(potential);
   }
 }

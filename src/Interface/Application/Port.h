@@ -161,7 +161,7 @@ private:
 
   void dragImpl(const QPointF& endPos);
   void makeConnection(const QPointF& pos);
-  void tryConnectPort(const QPointF& pos, PortWidget* port);
+  void tryConnectPort(const QPointF& pos, PortWidget* port, double threshold);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;
 
   const QString name_;
