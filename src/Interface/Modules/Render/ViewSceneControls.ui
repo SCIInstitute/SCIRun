@@ -164,23 +164,13 @@
         <property name="title">
          <string>Object Selection</string>
         </property>
-        <widget class="QListView" name="objectListView_">
-         <property name="geometry">
-          <rect>
-           <x>5</x>
-           <y>281</y>
-           <width>251</width>
-           <height>41</height>
-          </rect>
-         </property>
-        </widget>
         <widget class="QListWidget" name="objectListWidget_">
          <property name="geometry">
           <rect>
            <x>5</x>
            <y>20</y>
            <width>251</width>
-           <height>192</height>
+           <height>301</height>
           </rect>
          </property>
         </widget>
