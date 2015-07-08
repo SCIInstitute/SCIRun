@@ -171,7 +171,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   standardBar->addAction(actionZoomOut_);
   //TODO: requires some real code
   actionZoomBestFit_->setDisabled(true);
-  standardBar->addAction(actionZoomBestFit_);
+  //standardBar->addAction(actionZoomBestFit_);
+	menuNetwork->removeAction(actionZoomBestFit_);
   standardBar->addAction(actionResetNetworkZoom_);
   standardBar->addAction(actionDragMode_);
   standardBar->addAction(actionSelectMode_);
@@ -850,7 +851,7 @@ void SCIRunMainWindow::setupProvenanceWindow()
   provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
   connect(actionProvenance_, SIGNAL(toggled(bool)), provenanceWindow_, SLOT(setVisible(bool)));
   connect(provenanceWindow_, SIGNAL(visibilityChanged(bool)), actionProvenance_, SLOT(setChecked(bool)));
-  
+
   connect(actionUndo_, SIGNAL(triggered()), provenanceWindow_, SLOT(undo()));
   connect(actionRedo_, SIGNAL(triggered()), provenanceWindow_, SLOT(redo()));
   actionUndo_->setEnabled(false);
