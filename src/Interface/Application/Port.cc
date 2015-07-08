@@ -321,6 +321,8 @@ void PortWidget::setIndex(size_t index)
 namespace
 {
   const int PORT_CONNECTION_THRESHOLD = 12;
+  const int NEW_PORT_CONNECTION_THRESHOLD = 900;
+  const int TOO_CLOSE_PORT_CONNECTION_THRESHOLD = 100;
 }
 
 namespace SCIRun {
@@ -457,7 +459,8 @@ void PortWidget::dragImpl(const QPointF& endPos)
         pc->highlight(false);
       }
 
-      if ((endPos - minPotential->endpoint()).manhattanLength() < PORT_CONNECTION_THRESHOLD * 10)
+      if ((endPos - minPotential->endpoint()).manhattanLength() < NEW_PORT_CONNECTION_THRESHOLD
+        && (endPos - position()).manhattanLength() > TOO_CLOSE_PORT_CONNECTION_THRESHOLD)  // "deciding not to connect" threshold
       {
         minPotential->highlight(true);
       }
