@@ -320,7 +320,7 @@ void PortWidget::setIndex(size_t index)
 
 namespace
 {
-  const int PORT_CONNECTION_THRESHOLD = 12;
+  //const int PORT_CONNECTION_THRESHOLD = 12;
   const int NEW_PORT_CONNECTION_THRESHOLD = 900;
   const int TOO_CLOSE_PORT_CONNECTION_THRESHOLD = 100;
 }

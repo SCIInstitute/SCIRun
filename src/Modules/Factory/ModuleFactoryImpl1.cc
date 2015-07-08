@@ -210,7 +210,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
   addModuleDesc<ComputeSVD>("ComputeSVD","Math","SCIRun","...","...");
 
-  addModuleDesc<InterfaceWithMatlab>("Real ported module", "...");
+  //addModuleDesc<InterfaceWithMatlab>("In progress", "...");
 
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
@@ -224,7 +224,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GeneratePointSamplesFromField>("Real ported module", "in progress");
   addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
-  addModuleDesc<ShowAndEditDipoles>("Real ported module", "in progress");
+  //addModuleDesc<ShowAndEditDipoles>("Real ported module", "in progress");
 
   // insert module desc here
 }
