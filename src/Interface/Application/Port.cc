@@ -429,11 +429,6 @@ bool PortWidget::isFullInputPort() const
   return isInput() && !connections_.empty();
 }
 
-static double dist(const QPointF& a, const QPointF& b)
-{
-  return std::sqrt(std::pow(a.x() - b.x(), 2) + std::pow(a.y() - b.y(), 2));
-}
-
 void PortWidget::dragImpl(const QPointF& endPos)
 {
   if (!currentConnection_)
