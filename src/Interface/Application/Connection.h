@@ -113,6 +113,8 @@ public:
 	virtual ~ConnectionInProgress() {}
   virtual void update(const QPointF& end) = 0;
   virtual void makePotential() = 0;
+  virtual void highlight(bool on) = 0;
+  virtual QPointF center() const = 0;
 };
 
 template <class Base>
@@ -122,12 +124,12 @@ public:
   ConnectionInProgressGraphicsItem(PortWidget* port, ConnectionDrawStrategyPtr drawer) : fromPort_(port), drawStrategy_(drawer)
   {
     Base::setZValue(1000); //TODO
-    setColor(port->color());
+    setColor(fromPort_->color());
   }
 
   void setColor(const QColor& color)
   {
-    Base::setPen(QPen(color, 5.0, Qt::DashLine));
+    Base::setPen(QPen(color, 5.0, Qt::DotLine));
   }
 
   QColor color() const
@@ -138,11 +140,26 @@ public:
   virtual void makePotential() override
   {
     Base::setOpacity(0.5);
+    Base::setPen(QPen(color(), 5.0, Qt::DotLine));
+  }
+
+  virtual void highlight(bool on) override
+  {
+    if (on)
+      Base::setPen(QPen(Qt::red, 8.0, Qt::SolidLine));
+    else
+      Base::setPen(QPen(fromPort_->color(), 5.0, Qt::DotLine));
+  }
+
+  virtual QPointF center() const override
+  {
+    return (fromPort_->position() + lastEnd_) / 2;
   }
 
 protected:
   PortWidget* fromPort_;
   ConnectionDrawStrategyPtr drawStrategy_;
+  QPointF lastEnd_;
 };
 
 class ConnectionInProgressStraight : public ConnectionInProgressGraphicsItem<QGraphicsLineItem>

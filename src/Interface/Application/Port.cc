@@ -401,6 +401,11 @@ bool PortWidget::isFullInputPort() const
   return isInput() && !connections_.empty();
 }
 
+static double dist(const QPointF& a, const QPointF& b)
+{
+  return std::sqrt(std::pow(a.x() - b.x(), 2) + std::pow(a.y() - b.y(), 2));
+}
+
 void PortWidget::dragImpl(const QPointF& endPos)
 {
   if (!currentConnection_)
@@ -413,11 +418,27 @@ void PortWidget::dragImpl(const QPointF& endPos)
   {
     auto isCompatible = [this](const std::string& mid, bool isInput, const PortWidget* port)
     {
-      return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename();
+      return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename() && (!isInput || !port->isConnected());
     };
-    forEachPort([](PortWidget* p) { p->setHighlight(true, true); }, isCompatible);
+    //forEachPort([](PortWidget* p) { p->setHighlight(true, true); }, isCompatible);
 
     forEachPort([this](PortWidget* p) { this->makePotentialConnectionLine(p); }, isCompatible);
+
+    if (!potentialConnections_.empty())
+    {
+      auto minPotential = *std::min_element(potentialConnections_.begin(), potentialConnections_.end(),
+        [&](const ConnectionInProgress* a, const ConnectionInProgress* b)
+        { return (endPos - a->center()).manhattanLength() < (endPos - b->center()).manhattanLength();});
+
+      minPotential->highlight(true);
+
+      for (const auto& pc : potentialConnections_)
+      {
+        if (pc != minPotential)
+          pc->highlight(false);
+        //qDebug() << "Distance to" << pc << "=" << (endPos - pc->center()).manhattanLength();
+      }
+    }
   }
 }
 
