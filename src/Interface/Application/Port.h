@@ -144,6 +144,7 @@ public Q_SLOTS:
   void cancelConnectionsInProgress();
   void portCachingChanged(bool checked);
   void connectNewModule();
+  void clearPotentialConnections();
 Q_SIGNALS:
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);

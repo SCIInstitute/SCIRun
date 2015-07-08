@@ -245,6 +245,10 @@ void PortWidget::doMousePress(Qt::MouseButton button, const QPointF& pos)
     startPos_ = pos;
     update();
   }
+  else
+  {
+    //qDebug() << "mouse press sth else";
+  }
 }
 
 void PortWidget::mouseMoveEvent(QMouseEvent* event)
@@ -259,6 +263,10 @@ void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
     int distance = (pos - startPos_).manhattanLength();
     if (distance >= QApplication::startDragDistance())
       dragImpl(pos);
+  }
+  else
+  {
+    //qDebug() << "mouse move sth else";
   }
 }
 
@@ -287,6 +295,10 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
   {
     menu_->filterFavorites();
     showMenu();
+  }
+  else
+  {
+    //qDebug() << "mouse release sth else";
   }
 }
 
@@ -345,11 +357,7 @@ void PortWidget::makeConnection(const QPointF& pos)
     {
       //qDebug() << "no highlighted port found";
     }
-    //forEachPort([](PortWidget* p) { p->setHighlight(false, true); }, boost::lambda::constant(true));
-    potentialConnectionsMap_[this].clear();
-    for (auto& c : potentialConnections_)
-      delete c;
-    potentialConnections_.clear();
+    clearPotentialConnections();
   }
   else //old way
   {
@@ -357,6 +365,14 @@ void PortWidget::makeConnection(const QPointF& pos)
     if (port)
       tryConnectPort(pos, port, PORT_CONNECTION_THRESHOLD);
   }
+}
+
+void PortWidget::clearPotentialConnections()
+{
+  potentialConnectionsMap_[this].clear();
+  for (auto& c : potentialConnections_)
+    delete c;
+  potentialConnections_.clear();
 }
 
 void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double threshold)
@@ -431,7 +447,6 @@ void PortWidget::dragImpl(const QPointF& endPos)
     {
       return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename() && (!isInput || !port->isConnected());
     };
-    //forEachPort([](PortWidget* p) { p->setHighlight(true, true); }, isCompatible);
 
     forEachPort([this](PortWidget* p) { this->makePotentialConnectionLine(p); }, isCompatible);
 
@@ -444,7 +459,6 @@ void PortWidget::dragImpl(const QPointF& endPos)
       for (const auto& pc : potentialConnections_)
       {
         pc->highlight(false);
-        //qDebug() << "Distance to" << pc << "=" << (endPos - pc->center()).manhattanLength();
       }
 
       if ((endPos - minPotential->endpoint()).manhattanLength() < PORT_CONNECTION_THRESHOLD * 10)
@@ -477,7 +491,6 @@ void PortWidget::makePotentialConnectionLine(PortWidget* other)
   if (potentials.find(other) == potentials.end())
   {
     potentialConnectionsMap_[this][other] = true;
-    //qDebug() << "need potential line from " << this << " to " << other;
     auto potential = connectionFactory_->makePotentialConnection(this);
     potential->update(other->position());
     potential->setReceiver(other);
