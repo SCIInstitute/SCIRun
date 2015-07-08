@@ -104,14 +104,12 @@ void ViewSceneControlsDock::addItem(const QString& name, bool checked)
   }
 
   QListWidgetItem* item = new QListWidgetItem(name, objectListWidget_);
-  //item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
 
-  if (checked) item->setCheckState(Qt::Checked);
-    //item->setData(Qt::Checked, Qt::CheckStateRole);
-  else item->setCheckState(Qt::Unchecked);
-    //item->setData(Qt::Unchecked, Qt::CheckStateRole);
+  if (checked) 
+    item->setCheckState(Qt::Checked);
+  else 
+    item->setCheckState(Qt::Unchecked);
 
-  //items_.push_back(item);
   objectListWidget_->addItem(item);
 }
 
@@ -122,7 +120,6 @@ void ViewSceneControlsDock::removeItem(const QString& name)
   {
     objectListWidget_->removeItemWidget(item);
   }
-  //items_.erase(std::remove_if(items_.begin(), items_.end(), [&](QListWidgetItem* item) { return item->text() == name; }), items_.end());
 }
 
 void ViewSceneControlsDock::removeAllItems()
@@ -131,7 +128,6 @@ void ViewSceneControlsDock::removeAllItems()
   {
     LOG_DEBUG("ViewScene items cleared" << std::endl);
     objectListWidget_->clear();
-    //items_.clear();
   }
 }
 
