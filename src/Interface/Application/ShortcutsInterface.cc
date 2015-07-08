@@ -71,15 +71,19 @@ void ShortcutsInterface::updateFontsAndText()
     const QString option = QChar(0x2325);
     text_temp.replace("ALT", option, Qt::CaseInsensitive );
     text_temp.replace("+", "", Qt::CaseInsensitive );
-    text_temp.replace("PLUS", "+", Qt::CaseInsensitive );
+    
 
     QFont font = child->font();
     font.setPointSize( 11 );
     child->setFont( font );
 #else
-    const QString caps = QChar(0x21EA);
-    text_temp.replace("META_KEY", caps, Qt::CaseInsensitive );
+    //const QString caps = QChar(0x21EA);
+    text_temp.replace("META_KEY", "Caps Lock", Qt::CaseInsensitive );
+    text_temp.replace("CTRL", "Ctrl", Qt::CaseInsensitive);
+    text_temp.replace("SHIFT", "Shift", Qt::CaseInsensitive);
+    text_temp.replace("ALT", "Alt", Qt::CaseInsensitive);
 #endif
+    text_temp.replace("PLUS", "+", Qt::CaseInsensitive);
     child->setText( text_temp );
   }
 
