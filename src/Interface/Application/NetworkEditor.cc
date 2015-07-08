@@ -231,32 +231,30 @@ void NetworkEditor::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHan
 
 void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName)
 {
-  //add new module
-
   auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
   lastModulePosition_ = oldModule->scenePos();
-  //qDebug() << "replace: adding new";
   controller_->addModule(newModuleName);
 
   // connect up same ports
-  //qDebug() << "TODO: replace module: " << moduleToReplace->get_id().id_.c_str() << " with " << latestModuleId_.c_str();
   auto newModule = findById(scene_->items(), latestModuleId_);
 
-  auto oldModPorts = oldModule->getModuleWidget()->ports();
-  auto newModPorts = newModule->getModuleWidget()->ports();
+  const auto& oldModPorts = oldModule->getModuleWidget()->ports();
+  const auto& newModPorts = newModule->getModuleWidget()->ports();
 
   {
     int nextInputIndex = 0;
-    auto newInputs = newModPorts.inputs();
     for (const auto& iport : oldModPorts.inputs())
     {
-      //qDebug() << port->get_portname().c_str();
       if (iport->isConnected())
       {
+        const auto& newInputs = newModPorts.inputs();
         auto toConnect = std::find_if(newInputs.begin(), newInputs.end(),
           [&](const PortWidget* port) { return port->get_typename() == iport->get_typename() && port->getIndex() >= nextInputIndex; });
         if (toConnect == newInputs.end())
-          throw "logical error";
+        {
+          qDebug() << "Logical error: could not find input port to connect to" << iport << nextInputIndex;
+          break;
+        }
         requestConnection(iport->connectedPorts()[0], *toConnect);
         nextInputIndex = (*toConnect)->getIndex() + 1;
       }
@@ -268,13 +266,15 @@ void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHa
     auto newOutputs = newModPorts.outputs();
     for (const auto& oport : oldModPorts.outputs())
     {
-      //qDebug() << port->get_portname().c_str();
       if (oport->isConnected())
       {
         auto toConnect = std::find_if(newOutputs.begin(), newOutputs.end(),
           [&](const PortWidget* port) { return port->get_typename() == oport->get_typename() && port->getIndex() >= nextOutputIndex; });
         if (toConnect == newOutputs.end())
-          throw "logical error";
+        {
+          qDebug() << "Logical error: could not find output port to connect to" << oport;
+          break;
+        }
         auto connectedPorts = oport->connectedPorts();
         std::vector<PortWidget*> dynamicPortsNeedSpecialHandling;
         std::copy_if(connectedPorts.begin(), connectedPorts.end(), std::back_inserter(dynamicPortsNeedSpecialHandling), [](const PortWidget* p) { return p->isDynamic(); });
@@ -289,8 +289,6 @@ void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHa
     }
   }
 
-  //qDebug() << "replace: deleting old";
-  // delete old module
   oldModule->deleteLater();
 }
 

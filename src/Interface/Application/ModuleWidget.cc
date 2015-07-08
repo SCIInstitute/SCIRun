@@ -886,6 +886,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
+    ports_->reindexInputs();
     inputPortLayout_->addWidget(w);
 
     Q_EMIT dynamicPortChanged(pid.toString());
@@ -1351,7 +1352,7 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
   qDebug() << "Dialog error: " << message;
   updateBackgroundColor(colorStateLookup.right.at((int)ModuleExecutionState::Errored));
   colorLocked_ = true;
-  setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nDelete and re-add to network for proper execution.");
+  setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nClick \"Refresh\" button to replace module for proper execution.");
 
   //This is entirely ViewScene-specific.
   disconnect(currentDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
