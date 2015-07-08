@@ -35,6 +35,7 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Interface/Application/NetworkEditor.h>
 #include <Core/Logging/Log.h>
 #include <Core/Math/MiscMath2.h>
 #include <Core/Application/Preferences/Preferences.h>
@@ -142,7 +143,14 @@ void ModuleProxyWidget::ensureVisible()
 {
   auto views = scene()->views();
   if (!views.isEmpty())
+  {
+    auto netEd = qobject_cast<NetworkEditor*>(views[0]);
+    if (netEd && netEd->currentZoomPercentage() > 200)
+    {
+      return; // the call below led to a crash when too zoomed in to fit a module.
+    }
     views[0]->ensureVisible(this);
+  }
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
