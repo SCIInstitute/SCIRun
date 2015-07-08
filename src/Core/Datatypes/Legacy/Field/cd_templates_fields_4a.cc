@@ -43,6 +43,20 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Basis;
 using namespace SCIRun::Core::Geometry;
 
+//Constant
+typedef ConstantBasis<Tensor>                CFDTensorBasis;
+typedef ConstantBasis<Vector>                CFDVectorBasis;
+typedef ConstantBasis<double>                CFDdoubleBasis;
+typedef ConstantBasis<float>                 CFDfloatBasis;
+typedef ConstantBasis<int>                   CFDintBasis;
+typedef ConstantBasis<long long>             CFDlonglongBasis;
+typedef ConstantBasis<short>                 CFDshortBasis;
+typedef ConstantBasis<char>                  CFDcharBasis;
+typedef ConstantBasis<unsigned int>          CFDuintBasis;
+typedef ConstantBasis<unsigned short>        CFDushortBasis;
+typedef ConstantBasis<unsigned char>         CFDucharBasis;
+typedef ConstantBasis<unsigned long>         CFDulongBasis;
+
 //Linear
 typedef TriLinearLgn<Tensor>                FDTensorBasis;
 typedef TriLinearLgn<Vector>                FDVectorBasis;
@@ -78,6 +92,73 @@ template class GenericField<TSMesh, FDushortBasis, std::vector<unsigned short> >
 template class GenericField<TSMesh, FDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<TSMesh, FDulongBasis,  std::vector<unsigned long> >;
 }
+
+PersistentTypeID
+backwards_compat_TSFT("TriSurfField<Tensor>", "Field",
+GenericField<TSMesh, FDTensorBasis,
+std::vector<Tensor> >::maker,
+GenericField<TSMesh, CFDTensorBasis,
+std::vector<Tensor> >::maker);
+PersistentTypeID
+backwards_compat_TSFV("TriSurfField<Vector>", "Field",
+GenericField<TSMesh, FDVectorBasis,
+std::vector<Vector> >::maker,
+GenericField<TSMesh, CFDVectorBasis,
+std::vector<Vector> >::maker);
+PersistentTypeID
+backwards_compat_TSFd("TriSurfField<double>", "Field",
+GenericField<TSMesh, FDdoubleBasis,
+std::vector<double> >::maker,
+GenericField<TSMesh, CFDdoubleBasis,
+std::vector<double> >::maker);
+PersistentTypeID
+backwards_compat_TSFf("TriSurfField<float>", "Field",
+GenericField<TSMesh, FDfloatBasis,
+std::vector<float> >::maker,
+GenericField<TSMesh, CFDfloatBasis,
+std::vector<float> >::maker);
+PersistentTypeID
+backwards_compat_TSFi("TriSurfField<int>", "Field",
+GenericField<TSMesh, FDintBasis,
+std::vector<int> >::maker,
+GenericField<TSMesh, CFDintBasis,
+std::vector<int> >::maker);
+PersistentTypeID
+backwards_compat_TSFs("TriSurfField<short>", "Field",
+GenericField<TSMesh, FDshortBasis,
+std::vector<short> >::maker,
+GenericField<TSMesh, CFDshortBasis,
+std::vector<short> >::maker);
+PersistentTypeID
+backwards_compat_TSFc("TriSurfField<char>", "Field",
+GenericField<TSMesh, FDcharBasis,
+std::vector<char> >::maker,
+GenericField<TSMesh, CFDcharBasis,
+std::vector<char> >::maker);
+PersistentTypeID
+backwards_compat_TSFui("TriSurfField<unsigned_int>", "Field",
+GenericField<TSMesh, FDuintBasis,
+std::vector<unsigned int> >::maker,
+GenericField<TSMesh, CFDuintBasis,
+std::vector<unsigned int> >::maker);
+PersistentTypeID
+backwards_compat_TSFus("TriSurfField<unsigned_short>", "Field",
+GenericField<TSMesh, FDushortBasis,
+std::vector<unsigned short> >::maker,
+GenericField<TSMesh, CFDushortBasis,
+std::vector<unsigned short> >::maker);
+PersistentTypeID
+backwards_compat_TSFuc("TriSurfField<unsigned_char>", "Field",
+GenericField<TSMesh, FDucharBasis,
+std::vector<unsigned char> >::maker,
+GenericField<TSMesh, CFDucharBasis,
+std::vector<unsigned char> >::maker);
+PersistentTypeID
+backwards_compat_TSFul("TriSurfField<unsigned_long>", "Field",
+GenericField<TSMesh, FDulongBasis,
+std::vector<unsigned long> >::maker,
+GenericField<TSMesh, CFDulongBasis,
+std::vector<unsigned long> >::maker);
 
 //Linear
 typedef CrvLinearLgn<Tensor>                CrFDTensorBasis;
