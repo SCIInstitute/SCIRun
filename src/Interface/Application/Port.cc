@@ -230,6 +230,7 @@ void PortWidgetBase::paintEvent(QPaintEvent* event)
   QColor lightColor = isLightOn() ? Qt::red : color();
 
   painter.fillRect(QRect(lightStart, QSize(size.width(), 2)), lightColor);
+  setFixedHeight(size.height());
 }
 
 void PortWidget::mousePressEvent(QMouseEvent* event)

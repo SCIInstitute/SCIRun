@@ -125,7 +125,7 @@ public:
   void postLoadAction();
 
   static const int SMALL_PORT_SPACING = 3;
-  static const int LARGE_PORT_SPACING = SMALL_PORT_SPACING * 4;
+  static const int LARGE_PORT_SPACING = SMALL_PORT_SPACING * 2;
   int portSpacing() const;
   void setPortSpacing(bool highlighted);
 
