@@ -54,7 +54,6 @@ ShortcutsInterface::ShortcutsInterface(QWidget* parent) : QDialog(parent)
 
 void ShortcutsInterface::updateFontsAndText()
 {
-
 // ShortCut keys on Mac are different: CTRL becomes command key and we need to fix the font size
 // on mac as it is too large. Default fonts on Mac and Windows are set differently.
 // This function fixes the appearance
@@ -67,17 +66,15 @@ void ShortcutsInterface::updateFontsAndText()
     text_temp.replace("CTRL", splat, Qt::CaseInsensitive );
     const QString shift = QChar(0x21E7);
     text_temp.replace("SHIFT", shift, Qt::CaseInsensitive );
-    text_temp.replace("META_KEY", "^", Qt::CaseInsensitive );
+    text_temp.replace("META_KEY", "Ctrl", Qt::CaseInsensitive );
     const QString option = QChar(0x2325);
     text_temp.replace("ALT", option, Qt::CaseInsensitive );
     text_temp.replace("+", "", Qt::CaseInsensitive );
-    
 
     QFont font = child->font();
     font.setPointSize( 11 );
     child->setFont( font );
 #else
-    //const QString caps = QChar(0x21EA);
     text_temp.replace("META_KEY", "Caps Lock", Qt::CaseInsensitive );
     text_temp.replace("CTRL", "Ctrl", Qt::CaseInsensitive);
     text_temp.replace("SHIFT", "Shift", Qt::CaseInsensitive);
