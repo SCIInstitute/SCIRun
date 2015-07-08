@@ -343,7 +343,7 @@ void PortWidget::makeConnection(const QPointF& pos)
     }
     else
     {
-      qDebug() << "no highlighted port found";
+      //qDebug() << "no highlighted port found";
     }
     //forEachPort([](PortWidget* p) { p->setHighlight(false, true); }, boost::lambda::constant(true));
     potentialConnectionsMap_[this].clear();
@@ -439,15 +439,17 @@ void PortWidget::dragImpl(const QPointF& endPos)
     {
       auto minPotential = *std::min_element(potentialConnections_.begin(), potentialConnections_.end(),
         [&](const ConnectionInProgress* a, const ConnectionInProgress* b)
-        { return (endPos - a->center()).manhattanLength() < (endPos - b->center()).manhattanLength();});
-
-      minPotential->highlight(true);
+        { return (endPos - a->endpoint()).manhattanLength() < (endPos - b->endpoint()).manhattanLength(); });
 
       for (const auto& pc : potentialConnections_)
       {
-        if (pc != minPotential)
-          pc->highlight(false);
+        pc->highlight(false);
         //qDebug() << "Distance to" << pc << "=" << (endPos - pc->center()).manhattanLength();
+      }
+
+      if ((endPos - minPotential->endpoint()).manhattanLength() < PORT_CONNECTION_THRESHOLD * 10)
+      {
+        minPotential->highlight(true);
       }
     }
   }

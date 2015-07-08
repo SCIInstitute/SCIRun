@@ -115,7 +115,7 @@ public:
   virtual void makePotential() = 0;
   virtual void highlight(bool on) = 0;
   virtual bool isHighlighted() const = 0;
-  virtual QPointF center() const = 0;
+  virtual QPointF endpoint() const = 0;
   virtual PortWidget* receiver() const = 0;
   virtual void setReceiver(PortWidget* rec) = 0;
 };
@@ -158,9 +158,9 @@ public:
 
   virtual bool isHighlighted() const override { return isHighlighted_; }
 
-  virtual QPointF center() const override
+  virtual QPointF endpoint() const override
   {
-    return (fromPort_->position() + lastEnd_) / 2;
+    return lastEnd_;
   }
 
   virtual PortWidget* receiver() const override
