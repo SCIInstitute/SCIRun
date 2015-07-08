@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>730</width>
-    <height>541</height>
+    <width>750</width>
+    <height>566</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>730</width>
-    <height>541</height>
+    <width>750</width>
+    <height>566</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -46,7 +46,7 @@ QWidget#scrollAreaWidgetContents_4{
    <item>
     <widget class="QGroupBox" name="groupBox_7">
      <property name="title">
-      <string>Viewer Shortcuts:</string>
+      <string>Viewer</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -64,6 +64,20 @@ QWidget#scrollAreaWidgetContents_4{
          <string>Network</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
+         <item row="9" column="1">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>PLUS</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Zoom in:</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label_72">
            <property name="text">
@@ -95,7 +109,7 @@ QWidget#scrollAreaWidgetContents_4{
          <item row="6" column="1">
           <widget class="QLabel" name="label_77">
            <property name="text">
-            <string>CAPS LOCK / OPTION</string>
+            <string>META_KEY</string>
            </property>
           </widget>
          </item>
@@ -127,52 +141,66 @@ QWidget#scrollAreaWidgetContents_4{
            </property>
           </widget>
          </item>
-         <item row="9" column="0">
+         <item row="11" column="0">
           <widget class="QLabel" name="label_90">
            <property name="text">
-            <string>*Reset network zoom:</string>
+            <string>Reset network zoom:</string>
            </property>
           </widget>
          </item>
-         <item row="11" column="0">
+         <item row="13" column="0">
           <widget class="QLabel" name="label_92">
            <property name="text">
-            <string>*Center network view:</string>
+            <string>Center network view:</string>
            </property>
           </widget>
          </item>
          <item row="2" column="1">
           <widget class="QLabel" name="label_83">
            <property name="text">
-            <string>CTRL-↓</string>
+            <string>CTRL+↓</string>
            </property>
           </widget>
          </item>
          <item row="4" column="1">
           <widget class="QLabel" name="label_75">
            <property name="text">
-            <string>CTRL-↑</string>
+            <string>CTRL+↑</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
           <widget class="QLabel" name="label_73">
            <property name="text">
-            <string>CTRL-→</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="1">
-          <widget class="QLabel" name="label_91">
-           <property name="text">
-            <string>←</string>
+            <string>CTRL+→</string>
            </property>
           </widget>
          </item>
          <item row="11" column="1">
+          <widget class="QLabel" name="label_91">
+           <property name="text">
+            <string>CTRL+0</string>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="1">
           <widget class="QLabel" name="label_93">
            <property name="text">
-            <string>→</string>
+            <string>CTRL+9</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Zoom out:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="1">
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>-</string>
            </property>
           </widget>
          </item>
@@ -188,7 +216,7 @@ QWidget#scrollAreaWidgetContents_4{
          </size>
         </property>
         <property name="title">
-         <string>NEW control scheme</string>
+         <string>ViewScene: NEW control scheme</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_7">
          <item row="0" column="0">
@@ -269,9 +297,22 @@ QWidget#scrollAreaWidgetContents_4{
          </size>
         </property>
         <property name="title">
-         <string>LEGACY control scheme</string>
+         <string>ViewScene: LEGACY control scheme</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_8">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_113">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Zoom:</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label_116">
            <property name="minimumSize">
@@ -291,23 +332,17 @@ QWidget#scrollAreaWidgetContents_4{
            </property>
           </widget>
          </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_111">
+           <property name="text">
+            <string>Middle Mouse Button, or option-Left Click</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="1">
           <widget class="QLabel" name="label_112">
            <property name="text">
             <string>Left Mouse Button</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_113">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Zoom:</string>
            </property>
           </widget>
          </item>
@@ -331,13 +366,6 @@ QWidget#scrollAreaWidgetContents_4{
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <widget class="QLabel" name="label_111">
-           <property name="text">
-            <string>Middle Mouse Button, or option-Left Click</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
@@ -356,7 +384,7 @@ QWidget#scrollAreaWidgetContents_4{
       <item>
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
-         <string>General Shortcuts:</string>
+         <string>Menus</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -371,6 +399,13 @@ QWidget#scrollAreaWidgetContents_4{
             <string>Edit</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
+            <item row="1" column="1">
+             <widget class="QLabel" name="label_89">
+              <property name="text">
+               <string>SHIFT+CTRL+Z</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="0">
              <widget class="QLabel" name="label_86">
               <property name="text">
@@ -392,13 +427,6 @@ QWidget#scrollAreaWidgetContents_4{
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="label_89">
-              <property name="text">
-               <string>CTRL+SHIFT+Z</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_19">
               <property name="minimumSize">
@@ -415,13 +443,6 @@ QWidget#scrollAreaWidgetContents_4{
               </property>
               <property name="text">
                <string>Select all network objects:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLabel" name="label_20">
-              <property name="text">
-               <string>CTRL+A</string>
               </property>
              </widget>
             </item>
@@ -445,6 +466,13 @@ QWidget#scrollAreaWidgetContents_4{
               </property>
              </widget>
             </item>
+            <item row="2" column="1">
+             <widget class="QLabel" name="label_20">
+              <property name="text">
+               <string>CTRL+A</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -457,7 +485,7 @@ QWidget#scrollAreaWidgetContents_4{
             <item row="5" column="1">
              <widget class="QLabel" name="label_101">
               <property name="text">
-               <string>CTRL+SHIFT+Y</string>
+               <string>SHIFT+CTRL+Y</string>
               </property>
              </widget>
             </item>
@@ -478,7 +506,7 @@ QWidget#scrollAreaWidgetContents_4{
             <item row="1" column="1">
              <widget class="QLabel" name="label_48">
               <property name="text">
-               <string>CTRL+SHIFT+P</string>
+               <string>SHIFT+CTRL+P</string>
               </property>
              </widget>
             </item>
@@ -498,7 +526,7 @@ QWidget#scrollAreaWidgetContents_4{
             <item row="0" column="1">
              <widget class="QLabel" name="label_42">
               <property name="text">
-               <string>CTRL+SHIFT+L</string>
+               <string>SHIFT+CTRL+L</string>
               </property>
              </widget>
             </item>
@@ -526,7 +554,7 @@ QWidget#scrollAreaWidgetContents_4{
             <item row="2" column="1">
              <widget class="QLabel" name="label_44">
               <property name="text">
-               <string>CTRL+SHIFT+M</string>
+               <string>SHIFT+CTRL+M</string>
               </property>
              </widget>
             </item>
@@ -596,14 +624,14 @@ QWidget#scrollAreaWidgetContents_4{
             <item row="3" column="0">
              <widget class="QLabel" name="label_84">
               <property name="text">
-               <string>*Save Network As:</string>
+               <string>Save Network As:</string>
               </property>
              </widget>
             </item>
             <item row="3" column="1">
              <widget class="QLabel" name="label_85">
               <property name="text">
-               <string>CTRL+SHIFT+S</string>
+               <string>SHIFT+CTRL+S</string>
               </property>
              </widget>
             </item>

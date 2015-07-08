@@ -58,15 +58,29 @@ void ShortcutsInterface::updateFontsAndText()
 // ShortCut keys on Mac are different: CTRL becomes command key and we need to fix the font size
 // on mac as it is too large. Default fonts on Mac and Windows are set differently.
 // This function fixes the appearance
-#ifdef __APPLE__
+
   for (auto& child : findChildren<QLabel*>())
   {
     QString text_temp = child->text();
-    text_temp.replace("CTRL", "COMMAND", Qt::CaseInsensitive );
-    child->setText( text_temp );
+#ifdef __APPLE__
+    const QString splat = QChar(0x2318);
+    text_temp.replace("CTRL", splat, Qt::CaseInsensitive );
+    const QString shift = QChar(0x21E7);
+    text_temp.replace("SHIFT", shift, Qt::CaseInsensitive );
+    text_temp.replace("META_KEY", "^", Qt::CaseInsensitive );
+    const QString option = QChar(0x2325);
+    text_temp.replace("ALT", option, Qt::CaseInsensitive );
+    text_temp.replace("+", "", Qt::CaseInsensitive );
+    text_temp.replace("PLUS", "+", Qt::CaseInsensitive );
+
     QFont font = child->font();
     font.setPointSize( 11 );
     child->setFont( font );
-  }
+#else
+    const QString caps = QChar(0x21EA);
+    text_temp.replace("META_KEY", caps, Qt::CaseInsensitive );
 #endif
+    child->setText( text_temp );
+  }
+
 }
