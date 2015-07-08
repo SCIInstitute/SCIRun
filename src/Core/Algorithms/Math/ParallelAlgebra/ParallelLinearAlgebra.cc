@@ -132,7 +132,7 @@ bool ParallelLinearAlgebra::add_matrix(SparseRowMatrixHandle mat, ParallelMatrix
   if (!mat) return (false);
   if (mat->nrows() != size_) return (false);
   
-  mat->makeCompressed(); /// @todo: this should be an invariant of our SparseRowMatrix type.
+  //mat->makeCompressed(); /// @todo: this should be an invariant of our SparseRowMatrix type.
   M.data_ = mat->valuePtr();
   M.rows_ = mat->outerIndexPtr();
   M.columns_ = mat->innerIndexPtr();
