@@ -1163,7 +1163,7 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
   }
   else
   {
-    if (dockable_)
+    if (dockable_ && !dockable_->isHidden())
     {
       dockable_->setFloating(true);
     }
