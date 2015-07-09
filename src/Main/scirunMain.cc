@@ -32,23 +32,18 @@
 #include <Core/ConsoleApplication/ConsoleApplication.h>
 
 #ifdef BUILD_WITH_PYTHON
-#include <Python.h>
-#include <Core/Utils/Legacy/StringUtil.h>
 #include <Core/Python/PythonInterpreter.h>
-#include <boost/preprocessor.hpp>
-#include <string>
-#include <vector>
 #endif
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Console;
 
-#ifdef BUILD_WITH_PYTHON
-BOOST_PYTHON_MODULE( SCIRun )
-{
-}
-#endif
+//#ifdef BUILD_WITH_PYTHON
+//BOOST_PYTHON_MODULE( SCIRun )
+//{
+//}
+//#endif
 
 
 int mainImpl(int argc, const char* argv[])
@@ -56,16 +51,7 @@ int mainImpl(int argc, const char* argv[])
   Application::Instance().readCommandLine(argc, argv);
 
 #ifdef BUILD_WITH_PYTHON
-  size_t name_len = strlen( argv[ 0 ] );
-  std::vector< wchar_t > program_name( name_len + 1 );
-  mbstowcs( &program_name[ 0 ], argv[ 0 ], name_len + 1 );
-
-  SCIRun::Core::PythonInterpreter::module_list_type python_modules;
-  std::string module_name = SCIRun::string_tolower( BOOST_PP_STRINGIZE( APPLICATION_NAME ) );
-  python_modules.push_back( SCIRun::Core::PythonInterpreter::module_entry_type( module_name, BOOST_PP_CAT( PyInit_, APPLICATION_NAME ) ) );
-  SCIRun::Core::PythonInterpreter::Instance().initialize( &program_name[ 0 ], python_modules );
-  SCIRun::Core::PythonInterpreter::Instance().run_string( "import " + module_name + "\n" );
-  SCIRun::Core::PythonInterpreter::Instance().run_string( "from " + module_name + " import *\n" );
+  SCIRun::Core::PythonInterpreter::Instance().initialize();
 #endif
 
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here

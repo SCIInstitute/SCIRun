@@ -84,10 +84,15 @@ ELSE()
   ADD_EXECUTABLE(${APPLICATION_NAME} ${SCIRunMain_SOURCES})
 ENDIF()
 
-# TODO: Spire library linked against executable (shouldn't be necessary)?
 TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
   Interface_Application
 )
+
+IF(BUILD_WITH_PYTHON)
+  TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
+    Core_Python
+  )
+ENDIF()
 
 IF(APPLE)
   SET(BUILD_BUNDLE TRUE)
