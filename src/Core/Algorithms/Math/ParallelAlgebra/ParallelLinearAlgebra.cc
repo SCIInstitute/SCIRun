@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -48,13 +48,13 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
 
-ParallelLinearAlgebraBase::ParallelLinearAlgebraBase() 
+ParallelLinearAlgebraBase::ParallelLinearAlgebraBase()
 {}
 
-ParallelLinearAlgebraBase::~ParallelLinearAlgebraBase() 
+ParallelLinearAlgebraBase::~ParallelLinearAlgebraBase()
 {}
 
-ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& data, int proc) 
+ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& data, int proc)
   : data_(data),
   proc_(proc),
   nproc_(data.numProcs())
@@ -62,19 +62,19 @@ ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& da
   // Compute local size
   size_ = data.getSize();
   local_size_ = size_/nproc_;
-  
+
   // Compute start and end index for this thread
   start_ = proc*local_size_;
   end_   = (proc+1)*local_size_;
   if (proc == nproc_-1) end_ = size_;
   if (proc == nproc_-1) local_size_ = end_ - start_;
   local_size16_ = (local_size_&(~0xf));
-  
+
   // Set reduction buffers
   // To optimize performance we alternate buffers
   reduce_[0] = data.reduceBuffer1();
   reduce_[1] = data.reduceBuffer2();
-  
+
   reduce_buffer_ = 0;
 }
 
@@ -90,17 +90,17 @@ bool ParallelLinearAlgebra::add_vector(DenseColumnMatrixHandle mat, ParallelVect
   if (mat->ncols() != 1)  { return (false); }
   if (mat->nrows() != size_) { return (false); }
   if (matrix_is::sparse(mat)) { return (false); }
-  
+
   V.data_ = mat->data();
   V.size_ = size_;
-  
+
   return true;
 }
 
 bool ParallelLinearAlgebra::new_vector(ParallelVector& V)
 {
   wait();
-  
+
   data_.setSuccess(proc_);
   if (proc_ == 0)
   {
@@ -115,12 +115,12 @@ bool ParallelLinearAlgebra::new_vector(ParallelVector& V)
       data_.setFail(0);
     }
   }
-  
+
   wait();
 
-  if (!data_.isSuccess(0)) 
+  if (!data_.isSuccess(0))
     return false;
-  
+
   auto mat = data_.getCurrentMatrix();
   wait();
 
@@ -131,35 +131,35 @@ bool ParallelLinearAlgebra::add_matrix(SparseRowMatrixHandle mat, ParallelMatrix
 {
   if (!mat) return (false);
   if (mat->nrows() != size_) return (false);
-  
-  //mat->makeCompressed(); /// @todo: this should be an invariant of our SparseRowMatrix type.
+
+  mat->makeCompressed(); /// @todo: this should be an invariant of our SparseRowMatrix type.
   M.data_ = mat->valuePtr();
   M.rows_ = mat->outerIndexPtr();
   M.columns_ = mat->innerIndexPtr();
-  
+
   M.m_ = mat->nrows();
   M.n_ = mat->ncols();
   M.nnz_ = mat->nonZeros();
-  
+
   return (true);
 }
 
 /// @todo: refactor duplication
 
 void ParallelLinearAlgebra::mult(const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
-{ 
-  double* a_ptr = a.data_+start_; 
-  double* b_ptr = b.data_+start_; 
+{
+  double* a_ptr = a.data_+start_;
+  double* b_ptr = b.data_+start_;
   double* r_ptr = r.data_+start_;
 
   size_t j = 0;
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    
+
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
@@ -169,33 +169,33 @@ void ParallelLinearAlgebra::mult(const ParallelVector& a, const ParallelVector& 
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    
+
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
   }
-  
-  for (; j<local_size_; j++) 
+
+  for (; j<local_size_; j++)
   {
     *r_ptr = (*a_ptr)*(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
   }
 }
 
 void ParallelLinearAlgebra::add(const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
-{ 
-  double* a_ptr = a.data_+start_; 
-  double* b_ptr = b.data_+start_; 
+{
+  double* a_ptr = a.data_+start_;
+  double* b_ptr = b.data_+start_;
   double* r_ptr = r.data_+start_;
 
   size_t j = 0;
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    
+
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
@@ -205,33 +205,28 @@ void ParallelLinearAlgebra::add(const ParallelVector& a, const ParallelVector& b
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    
+
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
   }
-  
-  for (; j<local_size_; j++) 
+
+  for (; j<local_size_; j++)
   {
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
   }
 }
 
 void ParallelLinearAlgebra::sub(const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
-{ 
-  double* a_ptr = a.data_+start_; 
-  double* b_ptr = b.data_+start_; 
+{
+  double* a_ptr = a.data_+start_;
+  double* b_ptr = b.data_+start_;
   double* r_ptr = r.data_+start_;
-  
+
   size_t j = 0;
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
-    *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
@@ -241,14 +236,19 @@ void ParallelLinearAlgebra::sub(const ParallelVector& a, const ParallelVector& b
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    
+
+    *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
+    *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
+    *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
+    *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
+
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
   }
-  
-  for (; j<local_size_; j++) 
+
+  for (; j<local_size_; j++)
   {
     *r_ptr = (*a_ptr)-(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
   }
@@ -256,17 +256,17 @@ void ParallelLinearAlgebra::sub(const ParallelVector& a, const ParallelVector& b
 
 void ParallelLinearAlgebra::copy(const ParallelVector& a, ParallelVector& r)
 {
-  double* a_ptr = a.data_+start_; 
+  double* a_ptr = a.data_+start_;
   double* r_ptr = r.data_+start_;
 
   size_t j=0;
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
-    
+
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
@@ -276,14 +276,14 @@ void ParallelLinearAlgebra::copy(const ParallelVector& a, ParallelVector& r)
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
-    
+
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
   }
-  
-  for (; j<local_size_; j++) 
+
+  for (; j<local_size_; j++)
   {
     *r_ptr = *a_ptr; r_ptr++; a_ptr++;
   }
@@ -291,17 +291,17 @@ void ParallelLinearAlgebra::copy(const ParallelVector& a, ParallelVector& r)
 
 void ParallelLinearAlgebra::scale(double s, ParallelVector& a, ParallelVector& r)
 {
-  double* a_ptr = a.data_+start_; 
+  double* a_ptr = a.data_+start_;
   double* r_ptr = r.data_+start_;
 
   size_t j=0;
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
-    
+
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
@@ -311,14 +311,14 @@ void ParallelLinearAlgebra::scale(double s, ParallelVector& a, ParallelVector& r
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
-    
+
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
   }
 
-  for (; j<local_size_; j++) 
+  for (; j<local_size_; j++)
   {
     *r_ptr = s*(*a_ptr); r_ptr++; a_ptr++;
   }
@@ -326,17 +326,17 @@ void ParallelLinearAlgebra::scale(double s, ParallelVector& a, ParallelVector& r
 
 void ParallelLinearAlgebra::invert(ParallelVector& a, ParallelVector& r)
 {
-  double* a_ptr = a.data_+start_; 
+  double* a_ptr = a.data_+start_;
   double* r_ptr = r.data_+start_;
 
   size_t j=0;
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
-    
+
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
@@ -346,14 +346,14 @@ void ParallelLinearAlgebra::invert(ParallelVector& a, ParallelVector& r)
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
-    
+
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
   }
 
-  for (; j<local_size_; j++) 
+  for (; j<local_size_; j++)
   {
     *r_ptr = 1.0/(*a_ptr); r_ptr++; a_ptr++;
   }
@@ -361,12 +361,12 @@ void ParallelLinearAlgebra::invert(ParallelVector& a, ParallelVector& r)
 
 void ParallelLinearAlgebra::threshold_invert(ParallelVector& a, ParallelVector& r,double threshold)
 {
-  double* a_ptr = a.data_+start_; 
+  double* a_ptr = a.data_+start_;
   double* r_ptr = r.data_+start_;
 
-  for (size_t j=0; j<local_size_; j++) 
+  for (size_t j=0; j<local_size_; j++)
   {
-    if (*a_ptr > threshold) *r_ptr = 1.0/(*a_ptr); 
+    if (*a_ptr > threshold) *r_ptr = 1.0/(*a_ptr);
     else *r_ptr = 1.0;
     r_ptr++; a_ptr++;
   }
@@ -374,31 +374,26 @@ void ParallelLinearAlgebra::threshold_invert(ParallelVector& a, ParallelVector& 
 
 void ParallelLinearAlgebra::absthreshold_invert(const ParallelVector& a, ParallelVector& r,double threshold)
 {
-  double* a_ptr = a.data_+start_; 
+  double* a_ptr = a.data_+start_;
   double* r_ptr = r.data_+start_;
 
-  for (size_t j=0; j<local_size_; j++) 
+  for (size_t j=0; j<local_size_; j++)
   {
-    if (std::abs(*a_ptr) > threshold) *r_ptr = 1.0/(*a_ptr); 
+    if (std::abs(*a_ptr) > threshold) *r_ptr = 1.0/(*a_ptr);
     else *r_ptr = 1.0;
     r_ptr++; a_ptr++;
   }
 }
 
 void ParallelLinearAlgebra::scale_add(double s, const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
-{ 
-  double* a_ptr = a.data_+start_; 
-  double* b_ptr = b.data_+start_; 
+{
+  double* a_ptr = a.data_+start_;
+  double* b_ptr = b.data_+start_;
   double* r_ptr = r.data_+start_;
-  
+
   size_t j=0;
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
-    *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
@@ -408,14 +403,19 @@ void ParallelLinearAlgebra::scale_add(double s, const ParallelVector& a, const P
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
-    
+
+    *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
+    *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
+    *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
+    *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
+
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
   }
 
-  for (; j<local_size_; j++) 
+  for (; j<local_size_; j++)
   {
     *r_ptr = s*(*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
   }
@@ -423,18 +423,13 @@ void ParallelLinearAlgebra::scale_add(double s, const ParallelVector& a, const P
 
 double ParallelLinearAlgebra::dot(const ParallelVector& a, const ParallelVector& b)
 {
-  double* a_ptr = a.data_+start_; 
+  double* a_ptr = a.data_+start_;
   double* b_ptr = b.data_+start_;
 
   double val = 0.0;
   size_t j=0;
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
-    val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
-    val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
-    val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
-    val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
-    
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
@@ -444,34 +439,34 @@ double ParallelLinearAlgebra::dot(const ParallelVector& a, const ParallelVector&
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
-    
+
+    val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
+    val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
+    val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
+    val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
+
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
   }
 
-  for (; j<local_size_; j++) 
+  for (; j<local_size_; j++)
   {
     val += (*a_ptr)*(*b_ptr); b_ptr++; a_ptr++;
   }
-  
+
   return(reduce_sum(val));
 }
- 
+
 void ParallelLinearAlgebra::zeros(ParallelVector& a)
 {
   double* a_ptr = a.data_+start_;
 
   size_t j=0;
 
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
-    (*a_ptr) = 0.0; a_ptr++;
-    (*a_ptr) = 0.0; a_ptr++;
-    (*a_ptr) = 0.0; a_ptr++;
-    (*a_ptr) = 0.0; a_ptr++;
-    
     (*a_ptr) = 0.0; a_ptr++;
     (*a_ptr) = 0.0; a_ptr++;
     (*a_ptr) = 0.0; a_ptr++;
@@ -481,15 +476,20 @@ void ParallelLinearAlgebra::zeros(ParallelVector& a)
     (*a_ptr) = 0.0; a_ptr++;
     (*a_ptr) = 0.0; a_ptr++;
     (*a_ptr) = 0.0; a_ptr++;
-    
+
+    (*a_ptr) = 0.0; a_ptr++;
+    (*a_ptr) = 0.0; a_ptr++;
+    (*a_ptr) = 0.0; a_ptr++;
+    (*a_ptr) = 0.0; a_ptr++;
+
     (*a_ptr) = 0.0; a_ptr++;
     (*a_ptr) = 0.0; a_ptr++;
     (*a_ptr) = 0.0; a_ptr++;
     (*a_ptr) = 0.0; a_ptr++;
   }
-  
-  for (; j<local_size_; j++) 
-  {  
+
+  for (; j<local_size_; j++)
+  {
     (*a_ptr) = 0.0; a_ptr++;
   }
 }
@@ -500,13 +500,8 @@ void ParallelLinearAlgebra::ones(ParallelVector& a)
 
   size_t j=0;
 
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
-    (*a_ptr) = 1.0; a_ptr++;
-    (*a_ptr) = 1.0; a_ptr++;
-    (*a_ptr) = 1.0; a_ptr++;
-    (*a_ptr) = 1.0; a_ptr++;
-    
     (*a_ptr) = 1.0; a_ptr++;
     (*a_ptr) = 1.0; a_ptr++;
     (*a_ptr) = 1.0; a_ptr++;
@@ -516,19 +511,24 @@ void ParallelLinearAlgebra::ones(ParallelVector& a)
     (*a_ptr) = 1.0; a_ptr++;
     (*a_ptr) = 1.0; a_ptr++;
     (*a_ptr) = 1.0; a_ptr++;
-    
+
+    (*a_ptr) = 1.0; a_ptr++;
+    (*a_ptr) = 1.0; a_ptr++;
+    (*a_ptr) = 1.0; a_ptr++;
+    (*a_ptr) = 1.0; a_ptr++;
+
     (*a_ptr) = 1.0; a_ptr++;
     (*a_ptr) = 1.0; a_ptr++;
     (*a_ptr) = 1.0; a_ptr++;
     (*a_ptr) = 1.0; a_ptr++;
   }
-  
-  for (; j<local_size_; j++) 
-  {  
+
+  for (; j<local_size_; j++)
+  {
     (*a_ptr) = 1.0; a_ptr++;
   }
-}    
-             
+}
+
 double ParallelLinearAlgebra::norm(const ParallelVector& a)
 {
   double* a_ptr = a.data_+start_;
@@ -536,13 +536,8 @@ double ParallelLinearAlgebra::norm(const ParallelVector& a)
   double val = 0.0;
   size_t j=0;
 
-  for (; j<local_size16_; j+=16) 
+  for (; j<local_size16_; j+=16)
   {
-    val += (*a_ptr)*(*a_ptr); a_ptr++;
-    val += (*a_ptr)*(*a_ptr); a_ptr++;
-    val += (*a_ptr)*(*a_ptr); a_ptr++;
-    val += (*a_ptr)*(*a_ptr); a_ptr++;
-    
     val += (*a_ptr)*(*a_ptr); a_ptr++;
     val += (*a_ptr)*(*a_ptr); a_ptr++;
     val += (*a_ptr)*(*a_ptr); a_ptr++;
@@ -552,18 +547,23 @@ double ParallelLinearAlgebra::norm(const ParallelVector& a)
     val += (*a_ptr)*(*a_ptr); a_ptr++;
     val += (*a_ptr)*(*a_ptr); a_ptr++;
     val += (*a_ptr)*(*a_ptr); a_ptr++;
-    
+
+    val += (*a_ptr)*(*a_ptr); a_ptr++;
+    val += (*a_ptr)*(*a_ptr); a_ptr++;
+    val += (*a_ptr)*(*a_ptr); a_ptr++;
+    val += (*a_ptr)*(*a_ptr); a_ptr++;
+
     val += (*a_ptr)*(*a_ptr); a_ptr++;
     val += (*a_ptr)*(*a_ptr); a_ptr++;
     val += (*a_ptr)*(*a_ptr); a_ptr++;
     val += (*a_ptr)*(*a_ptr); a_ptr++;
   }
-  
-  for (; j<local_size_; j++) 
-  {  
+
+  for (; j<local_size_; j++)
+  {
     val += (*a_ptr)*(*a_ptr); a_ptr++;
   }
-  
+
   return(sqrt(reduce_sum(val)));
 }
 
@@ -573,8 +573,8 @@ double ParallelLinearAlgebra::max(const ParallelVector& a)
   double m = -(DBL_MAX);
   double* a_ptr = a.data_+start_;
 
-  for (size_t j=0; j<local_size_; j++) 
-  { 
+  for (size_t j=0; j<local_size_; j++)
+  {
     if (m < (*a_ptr)) m = (*a_ptr);
     a_ptr++;
   }
@@ -587,12 +587,12 @@ double ParallelLinearAlgebra::min(const ParallelVector& a)
   double m = DBL_MAX;
   double* a_ptr = a.data_+start_;
 
-  for (size_t j=0; j<local_size_; j++) 
-  { 
+  for (size_t j=0; j<local_size_; j++)
+  {
     if (m > (*a_ptr)) m = (*a_ptr);
     a_ptr++;
   }
-  
+
   return(reduce_min(m));
 }
 
@@ -601,13 +601,13 @@ double ParallelLinearAlgebra::absmin(const ParallelVector& a)
   double m = DBL_MAX;
   double* a_ptr = a.data_+start_;
 
-  for (size_t j=0; j<local_size_; j++) 
-  { 
+  for (size_t j=0; j<local_size_; j++)
+  {
     double val = std::abs(*a_ptr);
     if (m > val) m = val;
     a_ptr++;
   }
-  
+
   return(reduce_min(m));
 }
 
@@ -616,13 +616,13 @@ double ParallelLinearAlgebra::absmax(const ParallelVector& a)
   double m = -(DBL_MAX);
   double* a_ptr = a.data_+start_;
 
-  for (size_t j=0; j<local_size_; j++) 
-  { 
+  for (size_t j=0; j<local_size_; j++)
+  {
     double val = std::abs(*a_ptr);
     if (m < val) m = val;
     a_ptr++;
   }
-  
+
   return(reduce_max(m));
 }
 
@@ -632,11 +632,11 @@ void ParallelLinearAlgebra::mult(const ParallelMatrix& a, const ParallelVector& 
 
   double* idata = b.data_;
   double* odata = r.data_;
-  
+
   double* data = a.data_;
   auto rows = a.rows_;
   auto columns = a.columns_;
-  
+
   for(size_t i=start_;i<end_;i++)
   {
     double sum = 0.0;
@@ -647,7 +647,7 @@ void ParallelLinearAlgebra::mult(const ParallelMatrix& a, const ParallelVector& 
 	    sum+=data[j]*idata[columns[j]];
     }
     odata[i]=sum;
-  }    
+  }
 }
 
 void ParallelLinearAlgebra::mult_trans(ParallelMatrix& a, ParallelVector& b, ParallelVector& r)
@@ -656,12 +656,12 @@ void ParallelLinearAlgebra::mult_trans(ParallelMatrix& a, ParallelVector& b, Par
 
   double* idata = b.data_;
   double* odata = r.data_;
-  
+
   double* data = a.data_;
   auto rows = a.rows_;
-  auto columns = a.columns_;  
+  auto columns = a.columns_;
   size_t m = a.m_;
-  
+
   for (size_t i=start_; i<end_; i++) odata[i] = 0.0;
   for (size_t j=0; j<m; j++)
   {
@@ -679,11 +679,11 @@ void ParallelLinearAlgebra::mult_trans(ParallelMatrix& a, ParallelVector& b, Par
 void ParallelLinearAlgebra::diag(ParallelMatrix& a, ParallelVector& r)
 {
   double* odata = r.data_;
-  
+
   double* data = a.data_;
   auto rows = a.rows_;
   auto columns = a.columns_;
-  
+
   for(size_t i=start_;i<end_;i++)
   {
     double val = 0.0;
@@ -695,13 +695,13 @@ void ParallelLinearAlgebra::diag(ParallelMatrix& a, ParallelVector& r)
       if (columns[j] == i) val = data[j];
     }
     odata[i]=val;
-  }    
+  }
 }
 
 void ParallelLinearAlgebra::absdiag(const ParallelMatrix& a, ParallelVector& r)
 {
   double* odata = r.data_;
-  
+
   double* data = a.data_;
   auto rows = a.rows_;
   auto columns = a.columns_;
@@ -714,23 +714,23 @@ void ParallelLinearAlgebra::absdiag(const ParallelMatrix& a, ParallelVector& r)
 
     for(size_t j=row_idx;j<next_idx;j++)
     {
-      if (columns[j] == i) 
+      if (columns[j] == i)
         val = data[j];
     }
     odata[i]=std::abs(val);
-  }    
+  }
 }
 
 double ParallelLinearAlgebra::reduce_sum(double val)
 {
   int buffer = reduce_buffer_;
   reduce_[buffer][proc_] = val;
-  if (reduce_buffer_) 
-    reduce_buffer_ = 0; 
-  else 
+  if (reduce_buffer_)
+    reduce_buffer_ = 0;
+  else
     reduce_buffer_ = 1;
   wait();
-  
+
   double ret = 0.0; for (int j=0; j<nproc_;j++) ret += reduce_[buffer][j];
   return (ret);
 }
@@ -740,12 +740,12 @@ double ParallelLinearAlgebra::reduce_max(double val)
 {
   int buffer = reduce_buffer_;
   reduce_[buffer][proc_] = val;
-  if (reduce_buffer_) 
-    reduce_buffer_ = 0; 
-  else 
+  if (reduce_buffer_)
+    reduce_buffer_ = 0;
+  else
     reduce_buffer_ = 1;
   wait();
-  
+
   double ret = -(DBL_MAX); for (int j=0; j<nproc_;j++) if (reduce_[buffer][j] > ret) ret = reduce_[buffer][j];
   return (ret);
 }
@@ -755,12 +755,12 @@ double ParallelLinearAlgebra::reduce_min(double val)
 {
   int buffer = reduce_buffer_;
   reduce_[buffer][proc_] = val;
-  if (reduce_buffer_) 
-    reduce_buffer_ = 0; 
-  else 
+  if (reduce_buffer_)
+    reduce_buffer_ = 0;
+  else
     reduce_buffer_ = 1;
   wait();
-  
+
   double ret = DBL_MAX; for (int j=0; j<nproc_;j++) if (reduce_[buffer][j] < ret) ret = reduce_[buffer][j];
   return (ret);
 }
@@ -781,13 +781,13 @@ bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc
   {
     nproc = static_cast<int>(size) / 50;
   }
-  if (nproc < 1) 
+  if (nproc < 1)
   {
     nproc = Parallel::NumCores();
   }
 
   ParallelLinearAlgebraSharedData sharedData(matrices, nproc);
-  
+
   auto task_i = [&sharedData, this](int i) { run_parallel(sharedData, i); };
   Parallel::RunTasks(task_i, nproc);
 
@@ -800,8 +800,8 @@ void ParallelLinearAlgebraBase::run_parallel(ParallelLinearAlgebraSharedData& da
   data.setFlag(proc, parallel(PLA, data.inputs()));
 }
 
-ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs) : size_(inputs.A->nrows()), 
-  success_(numProcs), 
+ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs) : size_(inputs.A->nrows()),
+  success_(numProcs),
   reduce1_(numProcs),
   reduce2_(numProcs),
   imatrices_(inputs), barrier_("Parallel Linear Algebra", numProcs), numProcs_(numProcs)
