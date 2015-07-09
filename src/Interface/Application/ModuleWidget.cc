@@ -630,13 +630,6 @@ void ModuleWidget::setupModuleActions()
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
 
-  auto replaceWith = actionsMenu_->getAction("Replace With");
-  auto menu = new QMenu(this);
-  replaceWith->setMenu(menu);
-  fillReplaceWithMenu();
-  connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
-  connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
-
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
@@ -649,6 +642,16 @@ void ModuleWidget::setupModuleActions()
   connectUpdateNote(this);
 }
 
+void ModuleWidget::postLoadAction()
+{
+  auto replaceWith = actionsMenu_->getAction("Replace With");
+  auto menu = new QMenu(this);
+  replaceWith->setMenu(menu);
+  fillReplaceWithMenu();
+  connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
+  connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
+}
+
 void ModuleWidget::fillReplaceWithMenu()
 {
   auto menu = getReplaceWithMenu();
@@ -658,7 +661,8 @@ void ModuleWidget::fillReplaceWithMenu()
   auto isReplacement = [&](const ModuleDescription& md) { return replacements.find(md.lookupInfo_) != replacements.end(); };
   fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
     isReplacement,
-    [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); });
+    [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); },
+    currentDisplay_->getModuleActionButton());
 }
 
 QMenu* ModuleWidget::getReplaceWithMenu()
@@ -671,6 +675,11 @@ void ModuleWidget::replaceModuleWith()
   QAction* action = qobject_cast<QAction*>(sender());
   QString moduleToReplace = action->text();
   Q_EMIT replaceModuleWith(theModule_, moduleToReplace.toStdString());
+}
+
+void ModuleWidget::replaceMe()
+{
+  Q_EMIT replaceModuleWith(theModule_, theModule_->get_module_name());
 }
 
 void ModuleWidget::addPortLayouts(int index)
@@ -753,9 +762,11 @@ void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
   connect(port, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(cancelConnectionsInProgress()));
+  connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(clearPotentialConnections()));
   connect(port, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
   connect(port, SIGNAL(connectionNoteChanged()), this, SIGNAL(noteChanged()));
+  connect(port, SIGNAL(highlighted(bool)), this, SLOT(updatePortSpacing(bool)));
 }
 
 void ModuleWidget::addOutputPortsToLayout(int index)
@@ -875,6 +886,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
+    ports_->reindexInputs();
     inputPortLayout_->addWidget(w);
 
     Q_EMIT dynamicPortChanged(pid.toString());
@@ -1340,7 +1352,13 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
   qDebug() << "Dialog error: " << message;
   updateBackgroundColor(colorStateLookup.right.at((int)ModuleExecutionState::Errored));
   colorLocked_ = true;
-  setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nDelete and re-add to network for proper execution.");
+  setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nClick \"Refresh\" button to replace module for proper execution.");
+
+  //This is entirely ViewScene-specific.
+  disconnect(currentDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
+  currentDisplay_->getOptionsButton()->setText("");
+  currentDisplay_->getOptionsButton()->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
+  connect(currentDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(replaceMe()));
 }
 
 void ModuleWidget::highlightPorts()
@@ -1357,9 +1375,34 @@ void ModuleWidget::setPortSpacing(bool highlighted)
   outputPortLayout_->setSpacing(spacing);
 }
 
+void ModuleWidget::setInputPortSpacing(bool highlighted)
+{
+  int spacing = highlighted ? LARGE_PORT_SPACING : SMALL_PORT_SPACING;
+  inputPortLayout_->setSpacing(spacing);
+}
+
+void ModuleWidget::setOutputPortSpacing(bool highlighted)
+{
+  int spacing = highlighted ? LARGE_PORT_SPACING : SMALL_PORT_SPACING;
+  outputPortLayout_->setSpacing(spacing);
+}
+
 int ModuleWidget::portSpacing() const
 {
   return inputPortLayout_->spacing();
+}
+
+void ModuleWidget::updatePortSpacing(bool highlighted)
+{
+  //qDebug() << "NEED TO UPDATE SPACING FOR " << sender();
+  auto port = qobject_cast<PortWidget*>(sender());
+  if (port)
+  {
+    if (port->isInput())
+      setInputPortSpacing(highlighted);
+    else
+      setOutputPortSpacing(highlighted);
+  }
 }
 
 void ModuleWidget::unhighlightPorts()

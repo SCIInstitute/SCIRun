@@ -76,6 +76,8 @@ protected:
   virtual void mouseMoveEvent(QMouseEvent* event);
   virtual void mouseReleaseEvent(QMouseEvent* event);
   virtual void wheelEvent(QWheelEvent* event);
+  virtual void keyPressEvent(QKeyEvent* event);
+  virtual void keyReleaseEvent(QKeyEvent* event);
   virtual void initializeGL();
   virtual void resizeGL(int width, int height);
   void closeEvent(QCloseEvent *evt);

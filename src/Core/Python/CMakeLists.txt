@@ -53,6 +53,7 @@ TARGET_LINK_LIBRARIES(Core_Python
   ${SCI_PYTHON_LIBRARY}
   ${SCI_BOOST_LIBRARY}
   SCIRunPythonAPI
+  Core_Application
 )
 
 SET_TARGET_PROPERTIES(Core_Python

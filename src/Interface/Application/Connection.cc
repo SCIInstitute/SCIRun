@@ -193,8 +193,8 @@ namespace SCIRun
       {
         deleteAction_ = addAction(deleteAction);
         addWidgetToExecutionDisableList(deleteAction_);
-        addAction(insertModuleAction)->setDisabled(true);
-        addAction(disableEnableAction)->setDisabled(true);
+        //addAction(insertModuleAction)->setDisabled(true);
+        //addAction(disableEnableAction)->setDisabled(true);
         notesAction_ = addAction(editNotesAction);
       }
       ~ConnectionMenu()
@@ -461,6 +461,7 @@ ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, Con
 
 void ConnectionInProgressStraight::update(const QPointF& end)
 {
+  lastEnd_ = end;
   //TODO: use strategy object. probably need to improve first parameter: templatized? or just change this case to use QGraphicsPathItem directly
   //drawStrategy_->draw(this, fromPort_->position(), end);
 
@@ -474,6 +475,7 @@ ConnectionInProgressCurved::ConnectionInProgressCurved(PortWidget* port, Connect
 
 void ConnectionInProgressCurved::update(const QPointF& end)
 {
+  lastEnd_ = end;
   drawStrategy_->draw(this, fromPort_->position(), end);
 }
 
@@ -484,6 +486,7 @@ ConnectionInProgressManhattan::ConnectionInProgressManhattan(PortWidget* port, C
 
 void ConnectionInProgressManhattan::update(const QPointF& end)
 {
+  lastEnd_ = end;
   if (fromPort_->isInput())
     drawStrategy_->draw(this, end, fromPort_->position());
   else
@@ -537,6 +540,14 @@ ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* po
       return 0;
   }
 }
+
+ConnectionInProgress* ConnectionFactory::makePotentialConnection(PortWidget* port) const
+{
+  auto conn = makeConnectionInProgress(port);
+  conn->makePotential();
+  return conn;
+}
+
 
 void ConnectionFactory::activate(QGraphicsItem* item) const
 {

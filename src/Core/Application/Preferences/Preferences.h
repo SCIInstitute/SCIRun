@@ -77,6 +77,7 @@ namespace SCIRun
 
       TrackedVariable<BooleanVariable> showModuleErrorDialogs;
       BooleanVariable saveBeforeExecute;
+      BooleanVariable showModuleErrorInlineMessages;
       BooleanVariable useNewViewSceneMouseControls;
       BooleanVariable modulesSnapToGrid;
       BooleanVariable highlightPorts;

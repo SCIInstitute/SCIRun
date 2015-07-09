@@ -37,14 +37,22 @@
 #include <boost/python.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
+#include <boost/preprocessor.hpp>
+#include <string>
+#include <vector>
 #include <boost/thread/condition_variable.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim_all.hpp>
 
+#include <Core/Application/Application.h>
 #include <Core/Utils/StringContainer.h>
 #include <Core/Utils/Lockable.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 
 #include <Core/Python/PythonInterpreter.h>
 
 #include <Dataflow/Engine/Python/SCIRunPythonModule.h>
+
 
 //#ifdef _MSC_VER
 //#pragma warning( pop )
@@ -228,7 +236,7 @@ void PythonInterpreter::initialize_eventhandler()
 {
 	using namespace boost::python;
 
-//	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
+	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 
 	// Register C++ to Python type converters
 	//RegisterToPythonConverters();
@@ -324,13 +332,32 @@ std::wcerr << lib_paths.str() << L"\n";
   this->private_->initialized_ = true;
 }
 
-void PythonInterpreter::initialize( const wchar_t* program_name, const module_list_type& init_list )
+void PythonInterpreter::initialize( /*const wchar_t* program_name, const module_list_type& init_list*/ )
 {
-std::wcerr << "initialize: program name=" << program_name << std::endl;
+  using namespace boost::algorithm;
+  std::string cmdline = Application::Instance().parameters()->entireCommandLine();
+  trim_all( cmdline );
+  std::cerr << "entireCommandLine: " << cmdline << std::endl;
+  std::vector< std::string > argv;
+  split( argv, cmdline, is_any_of(" ") );
+std::cerr << "argv[0]=[" << argv[0] << "]" << std::endl;
+
+  size_t name_len = strlen( argv[ 0 ].c_str() );
+  std::vector< wchar_t > program_name( name_len + 1 );
+  mbstowcs( &program_name[ 0 ], argv[ 0 ].c_str(), name_len + 1 );
+
+//  SCIRun::Core::PythonInterpreter::module_list_type python_modules;
+//  std::string module_name = SCIRun::string_tolower( BOOST_PP_STRINGIZE( APPLICATION_NAME ) );
+//  python_modules.push_back( SCIRun::Core::PythonInterpreter::module_entry_type( module_name, BOOST_PP_CAT( PyInit_, APPLICATION_NAME ) ) );
+//
+//  SCIRun::Core::PythonInterpreter::Instance().run_string( "import " + module_name + "\n" );
+//  SCIRun::Core::PythonInterpreter::Instance().run_string( "from " + module_name + " import *\n" );
+
   std::cerr << "Initializing Python ..." << std::endl;
-  this->private_->program_name_ = program_name;
+  this->private_->program_name_ = &program_name[0];
 std::wcerr << "initialize program name=" << this->private_->program_name_ << std::endl;
-  this->private_->modules_ = init_list;
+
+//  this->private_->modules_ = init_list;
 
 //  PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 //  this->start_eventhandler();

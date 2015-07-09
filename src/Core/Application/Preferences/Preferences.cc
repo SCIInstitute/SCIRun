@@ -43,7 +43,8 @@ CORE_SINGLETON_IMPLEMENTATION( Preferences );
 Preferences::Preferences() :
   showModuleErrorDialogs("showModuleErrorDialogs", true),
   saveBeforeExecute("saveBeforeExecute", false),
-  useNewViewSceneMouseControls("useNewViewSceneMouseControls", false),
+  showModuleErrorInlineMessages("showModuleErrorInlineMessages", true),
+  useNewViewSceneMouseControls("useNewViewSceneMouseControls", true),
   modulesSnapToGrid("modulesSnapToGrid", true),
   highlightPorts("highlightPorts", false),
   autoNotes("autoNotes", false),

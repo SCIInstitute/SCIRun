@@ -67,8 +67,9 @@ public:
 
   virtual QColor color() const = 0;
   virtual bool isLightOn() const = 0;
-  
+
   bool isHighlighted() const { return isHighlighted_; }
+  int properWidth() const { return sizeHint().width(); }
 
 protected:
   static const int DEFAULT_WIDTH = 11;
@@ -111,11 +112,13 @@ public:
   void turn_off_light();
   virtual bool isLightOn() const override { return lightOn_; }
 
-  void setHighlight(bool on);
+  void setHighlight(bool on, bool individual = false);
   virtual void setPositionObject(PositionProviderPtr provider) override;
 
   void addConnection(ConnectionLine* c);
   void removeConnection(ConnectionLine* c);
+
+  void makePotentialConnectionLine(PortWidget* other);
 
   void trackConnections();
   void deleteConnections();
@@ -141,20 +144,25 @@ public Q_SLOTS:
   void cancelConnectionsInProgress();
   void portCachingChanged(bool checked);
   void connectNewModule();
+  void clearPotentialConnections();
 Q_SIGNALS:
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void portMoved();
   void connectionNoteChanged();
+  void highlighted(bool highlighted);
 protected:
   virtual void mousePressEvent(QMouseEvent* event) override;
   virtual void mouseReleaseEvent(QMouseEvent* event) override;
   virtual void mouseMoveEvent(QMouseEvent* event) override;
 private:
+  template <typename Func, typename Pred>
+  static void forEachPort(Func func, Pred pred);
+
   void dragImpl(const QPointF& endPos);
   void makeConnection(const QPointF& pos);
-  void tryConnectPort(const QPointF& pos, PortWidget* port);
+  void tryConnectPort(const QPointF& pos, PortWidget* port, double threshold);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;
 
   const QString name_;
@@ -178,6 +186,10 @@ private:
   //TODO
   typedef std::map<std::string, std::map<bool, std::map<SCIRun::Dataflow::Networks::PortId, PortWidget*>>> PortWidgetMap;
   static PortWidgetMap portWidgetMap_;
+
+  typedef std::map<PortWidget*, std::map<PortWidget*, bool>> PotentialConnectionMap;
+  static PotentialConnectionMap potentialConnectionsMap_;
+  std::set<ConnectionInProgress*> potentialConnections_;
 };
 
 // To fill the layout

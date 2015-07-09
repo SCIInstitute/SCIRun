@@ -44,7 +44,10 @@ NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidg
   if (positionAdjustable)
     connect(positionComboBox_, SIGNAL(activated(int)), this, SLOT(changeNotePosition(int)));
   else
-    positionComboBox_->setEnabled(false);
+  {
+    positionComboBox_->setVisible(false);
+    positionLabel_->setVisible(false);
+  }
   connect(fontSizeComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeFontSize(const QString&)));
   //TODO: sloppy.
   //connect(alignmentComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeTextAlignment(const QString&)));
