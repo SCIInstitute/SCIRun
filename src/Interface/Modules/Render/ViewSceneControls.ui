@@ -39,8 +39,42 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
+      <widget class="QWidget" name="ObjectTab">
+       <attribute name="title">
+        <string>Objects</string>
+       </attribute>
+       <widget class="QGroupBox" name="groupBox_7">
+        <property name="geometry">
+         <rect>
+          <x>8</x>
+          <y>10</y>
+          <width>261</width>
+          <height>331</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="title">
+         <string>Object Selection</string>
+        </property>
+        <widget class="QListWidget" name="objectListWidget_">
+         <property name="geometry">
+          <rect>
+           <x>5</x>
+           <y>20</y>
+           <width>251</width>
+           <height>301</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+      </widget>
       <widget class="QWidget" name="RenderTab">
        <attribute name="title">
         <string>Render</string>
@@ -138,50 +172,6 @@
          </property>
          <property name="text">
           <string>List Sort</string>
-         </property>
-        </widget>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="ObjectTab">
-       <attribute name="title">
-        <string>Objects</string>
-       </attribute>
-       <widget class="QGroupBox" name="groupBox_7">
-        <property name="geometry">
-         <rect>
-          <x>8</x>
-          <y>10</y>
-          <width>261</width>
-          <height>331</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="title">
-         <string>Object Selection</string>
-        </property>
-        <widget class="QListView" name="objectListView_">
-         <property name="geometry">
-          <rect>
-           <x>5</x>
-           <y>281</y>
-           <width>251</width>
-           <height>41</height>
-          </rect>
-         </property>
-        </widget>
-        <widget class="QListWidget" name="objectListWidget_">
-         <property name="geometry">
-          <rect>
-           <x>5</x>
-           <y>20</y>
-           <width>251</width>
-           <height>192</height>
-          </rect>
          </property>
         </widget>
        </widget>
@@ -787,7 +777,7 @@
          <string>Save screenshot on geometry update</string>
         </property>
         <property name="text">
-         <string>Save screenshot on geometry update</string>
+         <string>Save screenshot on update</string>
         </property>
        </widget>
       </widget>
