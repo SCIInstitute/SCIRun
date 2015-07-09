@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+//Uncomment line below to check for memory leaks (run in debug mode VS)
+//#define LOOK_FOR_MEMORY_LEAKS
 
 #include <Core/Application/Application.h>
 #include <Interface/Application/GuiApplication.h>
@@ -37,6 +39,11 @@ using namespace SCIRun::Core::Console;
 
 int mainImpl(int argc, const char* argv[])
 {
+#ifdef LOOK_FOR_MEMORY_LEAKS
+  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+  //_CrtSetBreakAlloc(34006);
+#endif
+
   Application::Instance().readCommandLine(argc, argv);
 
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here
@@ -52,45 +59,49 @@ int mainImpl(int argc, const char* argv[])
 #ifdef WIN32
 
 #include <windows.h>
-#include <vector>
-#include <boost/algorithm/string.hpp>
 
-static std::string&& stripQuotes(std::string& s)
+const char* utf8_encode(const std::wstring &wstr)
 {
-  if (s.front() == '"' && s.back() == '"')
-  {
-    s.erase(0, 1); // erase the first character
-    s.erase(s.size() - 1); // erase the last character
-  }
-  return std::move(s);
+  if (wstr.empty()) return "";
+  int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+  char* strTo = new char[size_needed + 1];
+  strTo[size_needed] = 0;
+  WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), strTo, size_needed, NULL, NULL);
+  return strTo;
 }
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 #ifdef SCIRUN_SHOW_CONSOLE 
-   AllocConsole();
-   freopen("CONIN$","r",stdin);
-   freopen("CONOUT$","w",stdout);
-   freopen("CONOUT$","w",stderr);  
+  AllocConsole();
+  freopen("CONIN$", "r", stdin);
+  freopen("CONOUT$", "w", stdout);
+  freopen("CONOUT$", "w", stderr);
 #endif
 
-  const int argc = __argc;  
-  const char *argv[50];
-  char *tempArgv[] = {GetCommandLine()};  
-
-  // The GetCommandLine() function returns argv as a single string. The split function splits it up into
-  // the individual arguments.
-  
-  // TODO: another edge case is the Windows package. Full path of SCIRun.exe is passed with no quotes, so if the path
-  // has spaces this function does not work--we need the entire exe path to be in argv[0]. Unit test coming soon.
-  std::vector<std::string> getArgv;
-  boost::algorithm::split(getArgv, tempArgv[0], boost::is_any_of(" \0"), boost::algorithm::token_compress_on);
-  
-  // Put the individual arguments into the argv that will be passed.
-  for (int i = 0; i < argc; i++)
+  const char *argv[100] = { 0 };
+  int argc;
   {
-    argv[i] = stripQuotes(getArgv[i]).c_str();
+    LPWSTR *szArglist;
+
+    szArglist = CommandLineToArgvW(GetCommandLineW(), &argc);
+    if (!szArglist)
+    {
+      std::cout << "CommandLineToArgvW failed" << std::endl;
+      return 7;
+    }
+    else
+    {
+      for (int i = 0; i < argc; i++)
+      {
+        argv[i] = utf8_encode(szArglist[i]);
+      }
+    }
+
+    // Free memory allocated for CommandLineToArgvW arguments.
+    LocalFree(szArglist);
   }
+
   return mainImpl(argc, argv);
 }
 

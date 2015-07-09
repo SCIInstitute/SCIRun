@@ -85,7 +85,13 @@ struct MinimumCoefficient : Matrix::Visitor
   virtual void visit(SparseRowMatrix& m)
   {
     if (!m.empty())
-      value_ = *std::min_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
+    {
+      auto value = m.valuePtr();
+      if (value)
+        value_ = *std::min_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
+      else
+        value_ = 0;
+    }
   }
 };
 
@@ -111,7 +117,13 @@ struct MaximumCoefficient : Matrix::Visitor
   virtual void visit(SparseRowMatrix& m)
   {
     if (!m.empty())
-      value_ = *std::max_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
+    {
+      auto value = m.valuePtr();
+      if (value)
+        value_ = *std::max_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
+      else
+        value_ = 0;
+    }
   }
 };
 

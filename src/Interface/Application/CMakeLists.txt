@@ -54,6 +54,7 @@ SET(Interface_Application_SOURCES
   PreferencesWindow.cc
   PythonConsoleWidget.cc
   Settings.cc
+  ShortcutsInterface.cc
   TagManagerWindow.cc
   Connection.cc
   NetworkEditor.cc
@@ -78,6 +79,7 @@ SET(Interface_Application_HEADERS
   PortWidgetManager.h
   ProvenanceWindow.h
   SCIRunMainWindow.h
+  ShortcutsInterface.h
   Node.h
   Note.h
   NoteEditor.h
@@ -101,6 +103,7 @@ SET(Interface_Application_FORMS
   Preferences.ui
   ProvenanceWindow.ui
   SCIRunMainWindow.ui
+  ShortcutsInterface.ui
   RenderWindow.ui
   TagManager.ui
 )

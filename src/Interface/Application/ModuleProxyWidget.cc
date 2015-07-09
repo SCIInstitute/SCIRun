@@ -35,6 +35,7 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Interface/Application/NetworkEditor.h>
 #include <Core/Logging/Log.h>
 #include <Core/Math/MiscMath2.h>
 #include <Core/Application/Preferences/Preferences.h>
@@ -142,7 +143,14 @@ void ModuleProxyWidget::ensureVisible()
 {
   auto views = scene()->views();
   if (!views.isEmpty())
+  {
+    auto netEd = qobject_cast<NetworkEditor*>(views[0]);
+    if (netEd && netEd->currentZoomPercentage() > 200)
+    {
+      return; // the call below led to a crash when too zoomed in to fit a module.
+    }
     views[0]->ensureVisible(this);
+  }
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
@@ -286,15 +294,17 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
-  //std::cout << "create PPPs" << std::endl;
   const int firstPortXPos = 5;
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
-    //qDebug() << "Setting position provider for port " << QString::fromStdString(p->id().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
-    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())), p->pos().y());
+    //qDebug() << "Setting position provider for port " << QString::fromStdString(p->id().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
+    //qDebug() << firstPortXPos << static_cast<int>(p->getIndex()) << p->properWidth() << getModuleWidget()->portSpacing();
+
+    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())), p->pos().y());
 
     int extraPadding = p->isHighlighted() ? 4 : 0;
-    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(p->width() / 2 + extraPadding, 5)));
+    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5)));
+    //qDebug() << "PWP real " << realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5);
     p->setPositionObject(pp);
   }
   if (pos() == QPointF(0, 0) && cachedPosition_ != pos())

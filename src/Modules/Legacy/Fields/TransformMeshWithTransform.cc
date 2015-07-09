@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,57 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/TransformMesh/TransformMeshWithTransform.h>
+#include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Matrix.h>
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-#include <Dataflow/Network/Module.h>
-
-namespace SCIRun {
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
 /// @class TransformMeshWithTransform
-/// @brief Non-interactive geometric transform of a field. 
+/// @brief Non-interactive geometric transform of a field.
 
-class TransformMeshWithTransform : public Module
+const ModuleLookupInfo TransformMeshWithTransform::staticInfo_("TransformMeshWithTransform", "ChangeMesh", "SCIRun");
+
+TransformMeshWithTransform::TransformMeshWithTransform()
+  : Module(staticInfo_, false)
 {
-  public:
-    TransformMeshWithTransform(GuiContext* ctx);
-    virtual ~TransformMeshWithTransform() {} 
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::TransformMeshWithTransformAlgo algo_;
-};
-
-
-DECLARE_MAKER(TransformMeshWithTransform)
-
-TransformMeshWithTransform::TransformMeshWithTransform(GuiContext* ctx)
-  : Module("TransformMeshWithTransform", ctx, Filter, "ChangeMesh", "SCIRun")
-{
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(TransformMatrix);
+  INITIALIZE_PORT(Transformed_Field);
 }
 
-void
-TransformMeshWithTransform::execute()
+void TransformMeshWithTransform::execute()
 {
-  // Get input field.
-  FieldHandle ifield, ofield;
-  get_input_handle("Input Field", ifield,true);
+  auto ifield = getRequiredInput(InputField);
+  auto imatrix = getRequiredInput(TransformMatrix);
 
-  MatrixHandle imatrix;
-  get_input_handle("Transform Matrix", imatrix,true);
-
-  if (inputs_changed_ || !oport_cached("Transformed Field"))
+  if (needToExecute())
   {
-    update_state(Executing);
-
-    if(!(algo_.run(ifield,imatrix,ofield))) return;    
-    send_output_handle("Transformed Field", ofield);
+    auto output = algo().run_generic(withInputData((InputField, ifield)(TransformMatrix, imatrix)));
+    sendOutputFromAlgorithm(Transformed_Field, output);
   }
 }
-
-
-} // End namespace SCIRun
-

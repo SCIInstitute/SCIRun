@@ -40,10 +40,16 @@
    <item row="2" column="1">
     <widget class="QDoubleSpinBox" name="seedSizeDoubleSpinBox_">
      <property name="decimals">
-      <number>1</number>
+      <number>3</number>
+     </property>
+     <property name="maximum">
+      <double>100.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
      </property>
      <property name="value">
-      <double>5.000000000000000</double>
+      <double>0.200000000000000</double>
      </property>
     </widget>
    </item>

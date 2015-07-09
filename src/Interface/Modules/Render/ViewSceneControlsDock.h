@@ -51,12 +51,21 @@ namespace SCIRun {
 
     public:
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
-
       void setSampleColor(const QColor& color);
 
-    private:
-      //ViewSceneDialog* scene_;
+    public Q_SLOTS:
+      void addItem(const QString& name, bool checked); 
+      void removeItem(const QString& name);
+      void removeAllItems();
+    Q_SIGNALS:
+      void itemSelected(const QString& name);
+      void itemUnselected(const QString& name);
+    private Q_SLOTS:
+      void slotChanged(QListWidgetItem* item);
 
+    private:
+      std::vector<QListWidgetItem*> items_;
+      void setupObjectListWidget();
     };
 
   }

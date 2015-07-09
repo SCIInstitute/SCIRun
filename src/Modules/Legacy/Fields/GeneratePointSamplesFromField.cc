@@ -45,6 +45,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -89,7 +90,7 @@ namespace SCIRun
 
 
 GeneratePointSamplesFromField::GeneratePointSamplesFromField()
-  : Module(staticInfo_), impl_(new GeneratePointSamplesFromFieldImpl)
+  : GeometryGeneratingModule(staticInfo_), impl_(new GeneratePointSamplesFromFieldImpl)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeneratedWidget);
@@ -100,10 +101,19 @@ void GeneratePointSamplesFromField::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Parameters::NumSeeds, 1);
-  state->setValue(Parameters::ProbeScale, 5.0);
+  state->setValue(Parameters::ProbeScale, 0.23);
 }
 
 void GeneratePointSamplesFromField::execute()
+{
+  FieldHandle field = GenerateOutputField();
+  sendOutput(GeneratedPoints, field);
+
+  GeometryHandle geom = BuildWidgetObject(field);
+  sendOutput(GeneratedWidget, geom);
+}
+
+FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 {
   auto ifieldhandle = getRequiredInput(InputField);
 
@@ -283,7 +293,80 @@ void GeneratePointSamplesFromField::execute()
     field->set_value(static_cast<double>(i), pcindex);
   }
 
-  sendOutput(GeneratedPoints, ofield);
+  return ofield;
+}
+
+GeometryHandle GeneratePointSamplesFromField::BuildWidgetObject(SCIRun::FieldHandle field)
+{
+  GeometryHandle geom(new GeometryObject(field, *this, "EntireSinglePointProbeFromField"));
+
+  VMesh*  mesh = field->vmesh();
+
+  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  ColorRGB node_color;  
+
+  mesh->synchronize(Mesh::NODES_E);
+
+  VMesh::Node::iterator eiter, eiter_end;
+  mesh->begin(eiter);
+  mesh->end(eiter_end);
+
+  auto my_state = this->get_state();
+  using namespace Parameters;
+  double radius = my_state->getValue(ProbeScale).toDouble();
+  double num_strips = 10;
+  if (radius < 0) radius = 1.;
+  if (num_strips < 0) num_strips = 10.;
+  std::stringstream ss;
+  ss << radius << num_strips << colorScheme;
+
+  std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
+
+  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;
+
+  Graphics::GlyphGeom glyphs;
+  while (eiter != eiter_end)
+  {
+    //checkForInterruption();
+
+    Core::Geometry::Point p;
+    mesh->get_point(p, *eiter);
+
+    glyphs.addSphere(p, radius, num_strips, node_color);
+
+    ++eiter;
+  }
+
+  RenderState renState = GetWidgetRenderState(my_state);
+
+  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+    colorScheme, renState, primIn, mesh->get_bounding_box());
+
+  return geom;
+}
+
+RenderState GeneratePointSamplesFromField::GetWidgetRenderState(Dataflow::Networks::ModuleStateHandle state)
+{
+  RenderState renState;
+
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::USE_TRANSPARENCY, false);
+
+  renState.defaultColor = ColorRGB(0.5, 0.5, 0.5);
+  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
+    renState.defaultColor.g() > 1.0 ||
+    renState.defaultColor.b() > 1.0) ?
+    ColorRGB(
+    renState.defaultColor.r() / 255.,
+    renState.defaultColor.g() / 255.,
+    renState.defaultColor.b() / 255.)
+    : renState.defaultColor;
+
+  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::IS_WIDGET, true);
+
+  return renState;
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: this will be part 3, with interactive widgets

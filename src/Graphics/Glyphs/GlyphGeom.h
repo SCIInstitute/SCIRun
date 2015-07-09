@@ -26,8 +26,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef Graphics_Graphics_Glyphs_H
-#define Graphics_Graphics_Glyphs_H
+#ifndef Graphics_Graphics_Glyphs_GlyphGeom_H
+#define Graphics_Graphics_Glyphs_GlyphGeom_H
 
 
 #include <Core/GeometryPrimitives/Point.h>
@@ -128,4 +128,4 @@ namespace SCIRun {
     };
   } //Graphics
 } //SCIRun
-#endif //Graphics_Graphics_Glyphs_H
+#endif //Graphics_Graphics_Glyphs_GlyphGeom_H

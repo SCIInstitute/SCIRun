@@ -96,6 +96,9 @@ namespace SCIRun {
 
       showOrientation_ = true;
       autoRotate_ = false;
+      selectWidget_ = true;
+      widgetSelected_ = false;
+      widgetExists_ = false;
       mRenderSortType = RenderState::TransparencySortType::UPDATE_SORT;
       // Construct ESCore. We will need to bootstrap the core. We should also
       // probably add utility static classes.
@@ -200,19 +203,43 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseDown(const glm::ivec2& pos, MouseButton btn)
     {
+      if (selectWidget_ && widgetExists_)
+      {
+        if (btn == MouseButton::MOUSE_LEFT)
+        {
+          //widgetSelected_ = foundWidget(pos);
+          std::cout << "widget exists" << std::endl;
+        }
+      }
       mCamera->mouseDownEvent(pos, btn);
     }
 
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseMove(const glm::ivec2& pos, MouseButton btn)
     {
-      mCamera->mouseMoveEvent(pos, btn);
+      if (widgetSelected_)
+      {
+
+      }
+      else
+      {
+        mCamera->mouseMoveEvent(pos, btn);
+      }
     }
 
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseWheel(int32_t delta)
     {
       mCamera->mouseWheelEvent(delta);
+    }
+
+    //------------------------------------------------------------------------------
+    void SRInterface::inputShiftKeyDown(bool shiftDown)
+    {
+      if (shiftDown) std::cout << "ShiftDown" << std::endl;
+      else  std::cout << "ShiftUp" << std::endl;
+
+      selectWidget_ = shiftDown;
     }
 
     //------------------------------------------------------------------------------
@@ -282,8 +309,10 @@ namespace SCIRun {
 
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
       std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
-      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) {
-          if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) {
+      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) 
+      {
+          if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) 
+          {
               if (foundObject != mSRObjects.end())
               {
                 // Iterate through each of the passes and remove their associated
@@ -562,6 +591,11 @@ namespace SCIRun {
                     // Add transformation
                     gen::Transform trafo;
 
+                    if (pass.renderState.get(RenderState::IS_WIDGET))
+                    {
+                      widgetExists_ = true;
+                    }
+
                     if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
                     {
                       double scale = pass.scalar;
@@ -681,6 +715,21 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
+    bool SRInterface::foundWidget(const glm::ivec2& pos)
+    {
+      mContext->makeCurrent();
+      for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+      {
+        for (const auto& pass : it->mPasses)
+        {
+          uint64_t entityID = getEntityIDForName(pass.passName, it->mPort);
+          mCore.getComponentContainer(entityID);
+        }
+      }
+      return true;
+    }
+
+    //------------------------------------------------------------------------------
     void SRInterface::removeAllGeomObjects()
     {
       mContext->makeCurrent();
@@ -696,7 +745,7 @@ namespace SCIRun {
       }
 
       mCore.renormalize(true);
-
+      widgetExists_ = false;
       mSRObjects.clear();
     }
 
@@ -798,230 +847,233 @@ namespace SCIRun {
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
       std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
       std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
-      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) {
-          if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) {
-              if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) {
-                  GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
-                  GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
-                  GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhong");
+      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) 
+      {
+        if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) 
+        {
+          if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) 
+          {
+            GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
+            GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
+            GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhong");
 
-                  // Bail if assets have not been loaded yet (asynchronous loading may take a
-                  // few frames).
-                  if (arrowVBO == 0 || arrowIBO == 0 || shader == 0)
-                  {
-                    axesFailCount_++;
-                    if (axesFailCount_ > frameInitLimit_)
-                      throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
-                    return;
-                  }
+            // Bail if assets have not been loaded yet (asynchronous loading may take a
+            // few frames).
+            if (arrowVBO == 0 || arrowIBO == 0 || shader == 0)
+            {
+              axesFailCount_++;
+              if (axesFailCount_ > frameInitLimit_)
+                throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
+              return;
+            }
 
-                  const ren::IBOMan::IBOData* iboData;
-                  try
-                  {
-                    iboData = &iboMan->getIBOData("Assets/arrow.geom");
-                  }
-                  catch (...)
-                  {
-                    // Return if IBO data not available.
-                    return;
-                  }
+            const ren::IBOMan::IBOData* iboData;
+            try
+            {
+              iboData = &iboMan->getIBOData("Assets/arrow.geom");
+            }
+            catch (...)
+            {
+              // Return if IBO data not available.
+              return;
+            }
 
-                  // Ensure shader attributes are setup appropriately.
-                  mArrowAttribs.setup(arrowVBO, shader, *vboMan);
+            // Ensure shader attributes are setup appropriately.
+            mArrowAttribs.setup(arrowVBO, shader, *vboMan);
 
-                  glm::mat4 trafo;
+            glm::mat4 trafo;
 
-                  GL(glUseProgram(shader));
+            GL(glUseProgram(shader));
 
-                  GL(glBindBuffer(GL_ARRAY_BUFFER, arrowVBO));
-                  GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, arrowIBO));
+            GL(glBindBuffer(GL_ARRAY_BUFFER, arrowVBO));
+            GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, arrowIBO));
 
-                  bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
-                  bool cullFace = glIsEnabled(GL_CULL_FACE);
-                  bool blend = glIsEnabled(GL_BLEND);
+            bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
+            bool cullFace = glIsEnabled(GL_CULL_FACE);
+            bool blend = glIsEnabled(GL_BLEND);
 
-                  GL(glDepthMask(GL_TRUE));
-                  GL(glDisable(GL_CULL_FACE));
-                  GL(glDisable(GL_BLEND));
+            GL(glDepthMask(GL_TRUE));
+            GL(glDisable(GL_CULL_FACE));
+            GL(glDisable(GL_BLEND));
 
-                  // Note that we can pull aspect ratio from the screen dimensions static
-                  // variable.
-                  gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
-                  float aspect = static_cast<float>(dims->width) / static_cast<float>(dims->height);
-                  glm::mat4 projection = glm::perspective(0.59f, aspect, 1.0f, 2000.0f);
+            // Note that we can pull aspect ratio from the screen dimensions static
+            // variable.
+            gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
+            float aspect = static_cast<float>(dims->width) / static_cast<float>(dims->height);
+            glm::mat4 projection = glm::perspective(0.59f, aspect, 1.0f, 2000.0f);
 
-                  // Build world transform for all axes. Rotates about uninverted camera's
-                  // view, then translates to a specified corner on the screen.
-                  glm::mat4 axesRot = mCamera->getWorldToView();
-                  axesRot[3][0] = 0.0f;
-                  axesRot[3][1] = 0.0f;
-                  axesRot[3][2] = 0.0f;
-                  glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.375f * aspect, 0.37f, -1.5f));
-                  glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f));
-                  glm::mat4 axesTransform = axesScale * axesRot;
+            // Build world transform for all axes. Rotates about uninverted camera's
+            // view, then translates to a specified corner on the screen.
+            glm::mat4 axesRot = mCamera->getWorldToView();
+            axesRot[3][0] = 0.0f;
+            axesRot[3][1] = 0.0f;
+            axesRot[3][2] = 0.0f;
+            glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.375f * aspect, 0.37f, -1.5f));
+            glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f));
+            glm::mat4 axesTransform = axesScale * axesRot;
 
-                  GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
-                  GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
+            GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
+            GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
 
-                  GLint locAmbientColor = glGetUniformLocation(shader, "uAmbientColor");
-                  GLint locDiffuseColor = glGetUniformLocation(shader, "uDiffuseColor");
-                  GLint locSpecularColor = glGetUniformLocation(shader, "uSpecularColor");
-                  GLint locSpecularPower = glGetUniformLocation(shader, "uSpecularPower");
+            GLint locAmbientColor = glGetUniformLocation(shader, "uAmbientColor");
+            GLint locDiffuseColor = glGetUniformLocation(shader, "uDiffuseColor");
+            GLint locSpecularColor = glGetUniformLocation(shader, "uSpecularColor");
+            GLint locSpecularPower = glGetUniformLocation(shader, "uSpecularPower");
 
-                  GLint locProjIVObject = glGetUniformLocation(shader, "uProjIVObject");
-                  GLint locObject = glGetUniformLocation(shader, "uObject");
+            GLint locProjIVObject = glGetUniformLocation(shader, "uProjIVObject");
+            GLint locObject = glGetUniformLocation(shader, "uObject");
 
-                  GL(glUniform3f(locCamViewVec, 0.0f, 0.0f, -1.0f));
-                  GL(glUniform3f(locLightDirWorld, 0.0f, 0.0f, -1.0f));
+            GL(glUniform3f(locCamViewVec, 0.0f, 0.0f, -1.0f));
+            GL(glUniform3f(locLightDirWorld, 0.0f, 0.0f, -1.0f));
 
-                  // Build projection for the axes to use on the screen. The arrors will not
-                  // use the camera, but will use the camera's transformation matrix.
+            // Build projection for the axes to use on the screen. The arrors will not
+            // use the camera, but will use the camera's transformation matrix.
 
-                  mArrowAttribs.bind();
+            mArrowAttribs.bind();
 
-                  // X Axis (dark)
-                  {
-                    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
-                    glm::mat4 finalTrafo = axesTransform * xform;
+            // X Axis (dark)
+            {
+              glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+              glm::mat4 finalTrafo = axesTransform * xform;
 
-                    GL(glUniform4f(locAmbientColor, 0.1f, 0.01f, 0.01f, 1.0f));
-                    GL(glUniform4f(locDiffuseColor, 0.25f, 0.0f, 0.0f, 1.0f));
-                    GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-                    GL(glUniform1f(locSpecularPower, 16.0f));
+              GL(glUniform4f(locAmbientColor, 0.1f, 0.01f, 0.01f, 1.0f));
+              GL(glUniform4f(locDiffuseColor, 0.25f, 0.0f, 0.0f, 1.0f));
+              GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
+              GL(glUniform1f(locSpecularPower, 16.0f));
 
-                    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                    const GLfloat* ptr = glm::value_ptr(worldToProj);
-                    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+              glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
-                    glm::mat4 objectSpace = finalTrafo;
-                    ptr = glm::value_ptr(objectSpace);
-                    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+              glm::mat4 objectSpace = finalTrafo;
+              ptr = glm::value_ptr(objectSpace);
+              GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-                    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-                  }
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+            }
 
-                  // X Axis
-                  {
-                    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
-                    glm::mat4 finalTrafo = axesTransform * xform;
+            // X Axis
+            {
+              glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+              glm::mat4 finalTrafo = axesTransform * xform;
 
-                    GL(glUniform4f(locAmbientColor, 0.5f, 0.01f, 0.01f, 1.0f));
-                    GL(glUniform4f(locDiffuseColor, 1.0f, 0.0f, 0.0f, 1.0f));
-                    GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-                    GL(glUniform1f(locSpecularPower, 16.0f));
+              GL(glUniform4f(locAmbientColor, 0.5f, 0.01f, 0.01f, 1.0f));
+              GL(glUniform4f(locDiffuseColor, 1.0f, 0.0f, 0.0f, 1.0f));
+              GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
+              GL(glUniform1f(locSpecularPower, 16.0f));
 
-                    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                    const GLfloat* ptr = glm::value_ptr(worldToProj);
-                    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+              glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
-                    glm::mat4 objectSpace = finalTrafo;
-                    ptr = glm::value_ptr(objectSpace);
-                    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+              glm::mat4 objectSpace = finalTrafo;
+              ptr = glm::value_ptr(objectSpace);
+              GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-                    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-                  }
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+            }
 
-                  // Y Axis (dark)
-                  {
-                    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
-                    glm::mat4 finalTrafo = axesTransform * xform;
+            // Y Axis (dark)
+            {
+              glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+              glm::mat4 finalTrafo = axesTransform * xform;
 
-                    GL(glUniform4f(locAmbientColor, 0.01f, 0.1f, 0.01f, 1.0f));
-                    GL(glUniform4f(locDiffuseColor, 0.0f, 0.25f, 0.0f, 1.0f));
-                    GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-                    GL(glUniform1f(locSpecularPower, 16.0f));
+              GL(glUniform4f(locAmbientColor, 0.01f, 0.1f, 0.01f, 1.0f));
+              GL(glUniform4f(locDiffuseColor, 0.0f, 0.25f, 0.0f, 1.0f));
+              GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
+              GL(glUniform1f(locSpecularPower, 16.0f));
 
-                    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                    const GLfloat* ptr = glm::value_ptr(worldToProj);
-                    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+              glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
-                    glm::mat4 objectSpace = finalTrafo;
-                    ptr = glm::value_ptr(objectSpace);
-                    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+              glm::mat4 objectSpace = finalTrafo;
+              ptr = glm::value_ptr(objectSpace);
+              GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-                    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-                  }
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+            }
 
-                  // Y Axis
-                  {
-                    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
-                    glm::mat4 finalTrafo = axesTransform * xform;
+            // Y Axis
+            {
+              glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+              glm::mat4 finalTrafo = axesTransform * xform;
 
-                    GL(glUniform4f(locAmbientColor, 0.01f, 0.5f, 0.01f, 1.0f));
-                    GL(glUniform4f(locDiffuseColor, 0.0f, 1.0f, 0.0f, 1.0f));
-                    GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-                    GL(glUniform1f(locSpecularPower, 16.0f));
+              GL(glUniform4f(locAmbientColor, 0.01f, 0.5f, 0.01f, 1.0f));
+              GL(glUniform4f(locDiffuseColor, 0.0f, 1.0f, 0.0f, 1.0f));
+              GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
+              GL(glUniform1f(locSpecularPower, 16.0f));
 
-                    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                    const GLfloat* ptr = glm::value_ptr(worldToProj);
-                    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+              glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
-                    glm::mat4 objectSpace = finalTrafo;
-                    ptr = glm::value_ptr(objectSpace);
-                    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+              glm::mat4 objectSpace = finalTrafo;
+              ptr = glm::value_ptr(objectSpace);
+              GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-                    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-                  }
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+            }
 
-                  // Z Axis (dark)
-                  {
-                    // No rotation at all
-                    glm::mat4 finalTrafo = axesTransform;
+            // Z Axis (dark)
+            {
+              // No rotation at all
+              glm::mat4 finalTrafo = axesTransform;
 
-                    GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.1f, 1.0f));
-                    GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 0.25f, 1.0f));
-                    GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-                    GL(glUniform1f(locSpecularPower, 16.0f));
+              GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.1f, 1.0f));
+              GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 0.25f, 1.0f));
+              GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
+              GL(glUniform1f(locSpecularPower, 16.0f));
 
-                    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                    const GLfloat* ptr = glm::value_ptr(worldToProj);
-                    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+              glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
-                    glm::mat4 objectSpace = finalTrafo;
-                    ptr = glm::value_ptr(objectSpace);
-                    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+              glm::mat4 objectSpace = finalTrafo;
+              ptr = glm::value_ptr(objectSpace);
+              GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-                    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-                  }
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+            }
 
-                  // Z Axis
-                  {
-                    // No rotation at all
-                    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
-                    glm::mat4 finalTrafo = axesTransform * xform;
+            // Z Axis
+            {
+              // No rotation at all
+              glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
+              glm::mat4 finalTrafo = axesTransform * xform;
 
-                    GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.5f, 1.0f));
-                    GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 1.0f, 1.0f));
-                    GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-                    GL(glUniform1f(locSpecularPower, 16.0f));
+              GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.5f, 1.0f));
+              GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 1.0f, 1.0f));
+              GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
+              GL(glUniform1f(locSpecularPower, 16.0f));
 
-                    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
-                    const GLfloat* ptr = glm::value_ptr(worldToProj);
-                    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+              glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+              const GLfloat* ptr = glm::value_ptr(worldToProj);
+              GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
 
-                    glm::mat4 objectSpace = finalTrafo;
-                    ptr = glm::value_ptr(objectSpace);
-                    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+              glm::mat4 objectSpace = finalTrafo;
+              ptr = glm::value_ptr(objectSpace);
+              GL(glUniformMatrix4fv(locObject, 1, false, ptr));
 
-                    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
-                  }
+              GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+            }
 
-                  mArrowAttribs.unbind();
+            mArrowAttribs.unbind();
 
-                  if (!depthMask)
-                  {
-                    GL(glDepthMask(GL_FALSE));
-                  }
-                  if (cullFace)
-                  {
-                    GL(glEnable(GL_CULL_FACE));
-                  }
-                  if (blend)
-                  {
-                    GL(glEnable(GL_BLEND));
-                  }
-              }
+            if (!depthMask)
+            {
+              GL(glDepthMask(GL_FALSE));
+            }
+            if (cullFace)
+            {
+              GL(glEnable(GL_CULL_FACE));
+            }
+            if (blend)
+            {
+              GL(glEnable(GL_BLEND));
+            }
           }
+        }
       }
     }
 

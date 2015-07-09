@@ -63,11 +63,14 @@ namespace SCIRun {
       bool isInput = parent->isInput();
       return fillMenuWithFilteredModuleActions(menu, moduleMap,
         [=](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, isInput, m); },
-        [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); });
+        [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); },
+        parent);
     }
 
     //TODO: lots of duplicated filtering here. Make smarter logic to cache based on port type, since it's the same menu for each type--just need to copy an existing one.
-    QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup)
+    // parent is passed to fix menu positioning--every child menu needs the same (graphicsscene button) parent!
+    QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred,
+      QActionHookup hookup, QWidget* parent)
     {
       QList<QAction*> allCompatibleActions;
       for (const auto& package : moduleMap)
@@ -94,14 +97,14 @@ namespace SCIRun {
           }
           if (!actions.empty())
           {
-            auto m = new QMenu(QString::fromStdString(categoryName), menu);
+            auto m = new QMenu(QString::fromStdString(categoryName), parent);
             m->addActions(actions);
             packageMenus.append(m);
           }
         }
         if (!packageMenus.isEmpty())
         {
-          auto p = new QMenu(QString::fromStdString(packageName), menu);
+          auto p = new QMenu(QString::fromStdString(packageName), parent);
           for (QMenu* menu : packageMenus)
             p->addMenu(menu);
 
@@ -134,7 +137,7 @@ namespace SCIRun {
         addActions(actions);
 
         auto m = new QMenu("Connect Module", parent);
-        faves_ = new QMenu("Favorites", m);
+        faves_ = new QMenu("Favorites", parent);
         m->addMenu(faves_);
         compatibleModuleActions_ = fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
         addMenu(m);
@@ -153,6 +156,7 @@ namespace SCIRun {
   }}
 
 PortWidget::PortWidgetMap PortWidget::portWidgetMap_;
+PortWidget::PotentialConnectionMap PortWidget::potentialConnectionsMap_;
 
 PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent), isHighlighted_(false) {}
 
@@ -226,6 +230,7 @@ void PortWidgetBase::paintEvent(QPaintEvent* event)
   QColor lightColor = isLightOn() ? Qt::red : color();
 
   painter.fillRect(QRect(lightStart, QSize(size.width(), 2)), lightColor);
+  setFixedHeight(size.height());
 }
 
 void PortWidget::mousePressEvent(QMouseEvent* event)
@@ -240,6 +245,10 @@ void PortWidget::doMousePress(Qt::MouseButton button, const QPointF& pos)
     toggleLight();
     startPos_ = pos;
     update();
+  }
+  else
+  {
+    //qDebug() << "mouse press sth else";
   }
 }
 
@@ -256,51 +265,15 @@ void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
     if (distance >= QApplication::startDragDistance())
       dragImpl(pos);
   }
+  else
+  {
+    //qDebug() << "mouse move sth else";
+  }
 }
 
 void PortWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   doMouseRelease(event->button(), event->pos(), event->modifiers());
-}
-
-size_t PortWidget::getIndex() const
-{
-  return index_;
-}
-
-PortId PortWidget::id() const
-{
-  return portId_;
-}
-
-void PortWidget::setIndex(size_t index)
-{
-  index_ = index;
-}
-
-namespace
-{
-  const int PORT_CONNECTION_THRESHOLD = 12;
-}
-
-namespace SCIRun {
-  namespace Gui {
-    struct DeleteCurrentConnectionAtEndOfBlock
-    {
-      explicit DeleteCurrentConnectionAtEndOfBlock(PortWidget* p) : p_(p) {}
-      ~DeleteCurrentConnectionAtEndOfBlock()
-      {
-        p_->cancelConnectionsInProgress();
-      }
-      PortWidget* p_;
-    };
-  }
-}
-
-void PortWidget::cancelConnectionsInProgress()
-{
-  delete currentConnection_;
-  currentConnection_ = 0;
 }
 
 void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::KeyboardModifiers modifiers)
@@ -324,26 +297,92 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
     menu_->filterFavorites();
     showMenu();
   }
+  else
+  {
+    //qDebug() << "mouse release sth else";
+  }
+}
+
+size_t PortWidget::getIndex() const
+{
+  return index_;
+}
+
+PortId PortWidget::id() const
+{
+  return portId_;
+}
+
+void PortWidget::setIndex(size_t index)
+{
+  index_ = index;
+}
+
+namespace
+{
+  //const int PORT_CONNECTION_THRESHOLD = 12;
+  const int NEW_PORT_CONNECTION_THRESHOLD = 900;
+  const int VERY_CLOSE_TO_DESTINATION_PORT_CONNECTION_THRESHOLD = 30;
+  const int TOO_CLOSE_TO_SOURCE_PORT_CONNECTION_THRESHOLD = 100;
+}
+
+namespace SCIRun {
+  namespace Gui {
+    struct DeleteCurrentConnectionAtEndOfBlock
+    {
+      explicit DeleteCurrentConnectionAtEndOfBlock(PortWidget* p) : p_(p) {}
+      ~DeleteCurrentConnectionAtEndOfBlock()
+      {
+        p_->cancelConnectionsInProgress();
+      }
+      PortWidget* p_;
+    };
+  }
+}
+
+void PortWidget::cancelConnectionsInProgress()
+{
+  delete currentConnection_;
+  currentConnection_ = 0;
 }
 
 void PortWidget::makeConnection(const QPointF& pos)
 {
   DeleteCurrentConnectionAtEndOfBlock deleter(this);  //GUI concern: could go away if we got a NO-CONNECT signal from service layer
 
-  auto port = closestPortFinder_->closestPort(pos);  //GUI concern: needs unit test
-  if (port)
-    tryConnectPort(pos, port);
-
-  if (Preferences::Instance().highlightPorts)
+  auto connection = std::find_if(potentialConnections_.begin(), potentialConnections_.end(), [](const ConnectionInProgress* c) { return c->isHighlighted();});
+  if (connection != potentialConnections_.end())
   {
-    forEachPort([](PortWidget* p) { p->setHighlight(false, true); }, boost::lambda::constant(true));
+    tryConnectPort(pos, (*connection)->receiver(), std::numeric_limits<double>::max());
   }
+  else
+  {
+    //qDebug() << "no highlighted port found";
+  }
+  clearPotentialConnections();
+
+#if 0 // clean up later, might reuse closestPortFinder
+  else //old way
+  {
+    auto port = closestPortFinder_->closestPort(pos);  //GUI concern: needs unit test
+    if (port)
+      tryConnectPort(pos, port, PORT_CONNECTION_THRESHOLD);
+  }
+#endif
 }
 
-void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
+void PortWidget::clearPotentialConnections()
+{
+  potentialConnectionsMap_[this].clear();
+  for (auto& c : potentialConnections_)
+    delete c;
+  potentialConnections_.clear();
+}
+
+void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double threshold)
 {
   int distance = (pos - port->position()).manhattanLength();     //GUI concern: needs unit test
-  if (distance <= PORT_CONNECTION_THRESHOLD)                 //GUI concern: needs unit test
+  if (distance <= threshold)                 //GUI concern: needs unit test
   {
     Q_EMIT requestConnection(this, port);
   }
@@ -401,11 +440,32 @@ void PortWidget::dragImpl(const QPointF& endPos)
   }
   currentConnection_->update(endPos);
 
-  if (Preferences::Instance().highlightPorts)
+  auto isCompatible = [this](const std::string& mid, bool isInput, const PortWidget* port)
   {
-    forEachPort(
-      [](PortWidget* p) { p->setHighlight(true, true); }, 
-      [this](const std::string& mid, bool isInput, const PortWidget* port) { return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename(); });
+    return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename() && (!isInput || !port->isConnected());
+  };
+
+  forEachPort([this](PortWidget* p) { this->makePotentialConnectionLine(p); }, isCompatible);
+
+  if (!potentialConnections_.empty())
+  {
+    auto minPotential = *std::min_element(potentialConnections_.begin(), potentialConnections_.end(),
+      [&](const ConnectionInProgress* a, const ConnectionInProgress* b)
+    { return (endPos - a->endpoint()).manhattanLength() < (endPos - b->endpoint()).manhattanLength(); });
+
+    for (const auto& pc : potentialConnections_)
+    {
+      pc->highlight(false);
+    }
+
+    auto distToPotentialPort = (endPos - minPotential->endpoint()).manhattanLength();
+    if (distToPotentialPort < VERY_CLOSE_TO_DESTINATION_PORT_CONNECTION_THRESHOLD
+      ||
+      (distToPotentialPort < NEW_PORT_CONNECTION_THRESHOLD
+      && (endPos - position()).manhattanLength() > TOO_CLOSE_TO_SOURCE_PORT_CONNECTION_THRESHOLD))  // "deciding not to connect" threshold
+    {
+      minPotential->highlight(true);
+    }
   }
 }
 
@@ -422,6 +482,19 @@ void PortWidget::forEachPort(Func func, Pred pred)
           func(p3.second);
       }
     }
+  }
+}
+
+void PortWidget::makePotentialConnectionLine(PortWidget* other)
+{
+  auto potentials = potentialConnectionsMap_[this];
+  if (potentials.find(other) == potentials.end())
+  {
+    potentialConnectionsMap_[this][other] = true;
+    auto potential = connectionFactory_->makePotentialConnection(this);
+    potential->update(other->position());
+    potential->setReceiver(other);
+    potentialConnections_.insert(potential);
   }
 }
 

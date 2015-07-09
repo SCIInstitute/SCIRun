@@ -69,8 +69,8 @@ public:
   ~ConnectionLine();
   void setColor(const QColor& color);
   void setColorAndWidth(const QColor& color, int width);
-  QColor color() const; 
-  ModuleIdPair getConnectedToModuleIds() const; 
+  QColor color() const;
+  ModuleIdPair getConnectedToModuleIds() const;
   void updateNoteFromFile(const Note& note);
   std::pair<PortWidget*, PortWidget*> connectedPorts() const { return{ fromPort_, toPort_ }; }
 public Q_SLOTS:
@@ -82,16 +82,16 @@ Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void noteChanged();
 protected:
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override; 
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override; 
+  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
   QVariant itemChange(GraphicsItemChange change, const QVariant& value);
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
   virtual void setNoteGraphicsContext() override;
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
   void keyPressEvent(QKeyEvent* event) override;
-   
+
 private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
@@ -100,7 +100,7 @@ private:
   void destroy();
   bool destroyed_;
   class ConnectionMenu* menu_;
-  bool menuOpen_; 
+  bool menuOpen_;
   QColor placeHoldingColor_;
   int placeHoldingWidth_;
 };
@@ -112,21 +112,28 @@ class ConnectionInProgress
 public:
 	virtual ~ConnectionInProgress() {}
   virtual void update(const QPointF& end) = 0;
+  virtual void makePotential() = 0;
+  virtual void highlight(bool on) = 0;
+  virtual bool isHighlighted() const = 0;
+  virtual QPointF endpoint() const = 0;
+  virtual PortWidget* receiver() const = 0;
+  virtual void setReceiver(PortWidget* rec) = 0;
 };
 
 template <class Base>
 class ConnectionInProgressGraphicsItem : public Base, public ConnectionInProgress
 {
 public:
-  ConnectionInProgressGraphicsItem(PortWidget* port, ConnectionDrawStrategyPtr drawer) : fromPort_(port), drawStrategy_(drawer)
+  ConnectionInProgressGraphicsItem(PortWidget* port, ConnectionDrawStrategyPtr drawer) :
+    fromPort_(port), receiver_(0), drawStrategy_(drawer), isHighlighted_(false)
   {
     Base::setZValue(1000); //TODO
-    setColor(port->color());
+    setColor(fromPort_->color());
   }
 
   void setColor(const QColor& color)
   {
-    Base::setPen(QPen(color, 5.0, Qt::DashLine));
+    Base::setPen(QPen(color, 5.0, Qt::DotLine));
   }
 
   QColor color() const
@@ -134,9 +141,44 @@ public:
     return Base::pen().color();
   }
 
+  virtual void makePotential() override
+  {
+    Base::setOpacity(0.5);
+    Base::setPen(QPen(color(), 5.0, Qt::DotLine));
+  }
+
+  virtual void highlight(bool on) override
+  {
+    if (on)
+      Base::setPen(QPen(Qt::red, 8.0, Qt::SolidLine));
+    else
+      Base::setPen(QPen(fromPort_->color(), 5.0, Qt::DotLine));
+    isHighlighted_ = on;
+  }
+
+  virtual bool isHighlighted() const override { return isHighlighted_; }
+
+  virtual QPointF endpoint() const override
+  {
+    return lastEnd_;
+  }
+
+  virtual PortWidget* receiver() const override
+  {
+    return receiver_;
+  }
+
+  virtual void setReceiver(PortWidget* rec) override
+  {
+    receiver_ = rec;
+  }
+
 protected:
   PortWidget* fromPort_;
+  PortWidget* receiver_;
   ConnectionDrawStrategyPtr drawStrategy_;
+  QPointF lastEnd_;
+  bool isHighlighted_;
 };
 
 class ConnectionInProgressStraight : public ConnectionInProgressGraphicsItem<QGraphicsLineItem>
@@ -166,6 +208,7 @@ class ConnectionFactory : public QObject
 public:
   explicit ConnectionFactory(QGraphicsScene* scene);
   ConnectionInProgress* makeConnectionInProgress(PortWidget* port) const;
+  ConnectionInProgress* makePotentialConnection(PortWidget* port) const;
   ConnectionLine* makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const;
   void setType(ConnectionDrawType type);
   ConnectionDrawType getType() const;

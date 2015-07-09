@@ -36,6 +36,7 @@ using namespace SCIRun::Core::Datatypes;
 GeometryObject::GeometryObject(DatatypeConstHandle dh, const GeometryIDGenerator& idGenerator, const std::string& tag) :
     mLowestValue(0.0),
     mHighestValue(0.0),
+    isVisible(true),
     data_(dh),
     objectName_(idGenerator.generateGeometryID(tag))
 {
@@ -44,6 +45,7 @@ GeometryObject::GeometryObject(DatatypeConstHandle dh, const GeometryIDGenerator
 GeometryObject::GeometryObject(const GeometryObject& other) :
     mLowestValue(0.0),
     mHighestValue(0.0),
+    isVisible(true),
     data_(other.data_->clone()),
     objectName_(other.objectName_) // TODO?
 {}
