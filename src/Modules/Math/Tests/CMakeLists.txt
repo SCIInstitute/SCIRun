@@ -38,6 +38,7 @@ SET(Modules_Math_Tests_SRCS
   SelectSubMatrixTests.cc
   AddKnownsToLinearSystemTests.cc
   PortCachingUnitTest.cc
+  ComputePCAtest.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS
