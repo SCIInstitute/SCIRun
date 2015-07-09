@@ -94,7 +94,7 @@
 									<name>TruncateDistance</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000028e-02</value>
+										<value>4.00000000000000008e-02</value>
 									</value>
 								</second>
 							</item>
@@ -362,7 +362,7 @@
 									<name>DataAtLocation</name>
 									<value>
 										<which>0</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -398,7 +398,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>100</value>
+										<value>50</value>
 									</value>
 								</second>
 							</item>
@@ -410,7 +410,7 @@
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>100</value>
+										<value>50</value>
 									</value>
 								</second>
 							</item>
@@ -422,7 +422,7 @@
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>100</value>
+										<value>75</value>
 									</value>
 								</second>
 							</item>
@@ -538,19 +538,18 @@
 									<name>TextEntry</name>
 									<value>
 										<which>2</which>
-										<value>0
-0
-.22
-.002
-.25
-.05
-.15
-.07
-.007
-.006
-.7
-.3
-.3
+										<value>0         air
+.22      torso
+.002    bowelgas
+.25      muscle
+.05      fat
+.15      kidney
+.07      liver
+.007    lung
+.006    bone
+.7        blood
+.3        atria
+.3        ventricle
 
 
 </value>
@@ -582,8 +581,8 @@
 									<value>
 										<which>2</which>
 										<value>nan
-0
-500</value>
+500
+0</value>
 									</value>
 								</second>
 							</item>
@@ -1171,7 +1170,7 @@
 									<name>SampleMethod</name>
 									<value>
 										<which>2</which>
-										<value>average</value>
+										<value>mostcommon</value>
 									</value>
 								</second>
 							</item>
@@ -1183,7 +1182,7 @@
 									<name>SamplePoints</name>
 									<value>
 										<which>2</which>
-										<value>regular1</value>
+										<value>regular2</value>
 									</value>
 								</second>
 							</item>
@@ -1571,7 +1570,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>8.37312744580968911e+01</value>
+										<value>3.52365433110050958e+02</value>
 									</value>
 								</second>
 							</item>
@@ -1583,7 +1582,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>-3.86315020914680596e-12</value>
+										<value>9.28069013612791167e+01</value>
 									</value>
 								</second>
 							</item>
@@ -1705,7 +1704,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1781,6 +1780,18 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -1800,6 +1811,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1836,6 +1859,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2142,8 +2177,8 @@
 								<second>
 									<name>MaxIterations</name>
 									<value>
-										<which>1</which>
-										<value>5.00000000000000000e+02</value>
+										<which>0</which>
+										<value>500</value>
 									</value>
 								</second>
 							</item>
@@ -2179,7 +2214,7 @@
 									<name>TargetError</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000008e-05</value>
+										<value>2.00000000000000004e-08</value>
 									</value>
 								</second>
 							</item>
@@ -2197,7 +2232,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2211,17 +2246,46 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>GeometryFeedbackInfo</name>
+								</first>
+								<second>
+									<name>GeometryFeedbackInfo</name>
+									<value>
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name>x</name>
+												<value>
+													<which>0</which>
+													<value>343</value>
+												</value>
+											</item>
+											<item>
+												<name>y</name>
+												<value>
+													<which>0</which>
+													<value>274</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
-			<count>45</count>
+		<connections class_id="13" tracking_level="0" version="0">
+			<count>44</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
+			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>AddKnownsToLinearSystem:0</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
+				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>OutPutLHSMatrix</name>
 					<id>0</id>
 				</port1_>
@@ -2633,18 +2697,6 @@
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>GetDomainBoundary:0</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadField:0</moduleId1_>
-				<port1_>
-					<name>Field</name>
-					<id>0</id>
-				</port1_>
 				<moduleId2_>MapFieldDataOntoElements:0</moduleId2_>
 				<port2_>
 					<name>Source</name>
@@ -2761,28 +2813,28 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
+	<modulePositions class_id="16" tracking_level="0" version="0">
 		<count>35</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
+		<item class_id="17" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
-			<second class_id="17" tracking_level="0" version="0">
-				<first>-6.37246625000000222e+02</first>
-				<second>-5.38389749999999822e+02</second>
+			<second class_id="18" tracking_level="0" version="0">
+				<first>-6.47246625000000222e+02</first>
+				<second>-5.03239749999999844e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>BuildFEMatrix:0</first>
 			<second>
-				<first>-6.20516999999999939e+02</first>
-				<second>-7.33061749999999961e+02</second>
+				<first>-6.27516999999999825e+02</first>
+				<second>-6.40061749999999847e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateDistanceToField:0</first>
 			<second>
-				<first>-5.80105374999999867e+02</first>
-				<second>-1.36107962500000008e+03</second>
+				<first>-5.61755374999999844e+02</first>
+				<second>-1.44162962499999958e+03</second>
 			</second>
 		</item>
 		<item>
@@ -2795,22 +2847,22 @@
 		<item>
 			<first>ClipFieldByFunction:1</first>
 			<second>
-				<first>3.23946374999999932e+02</first>
-				<second>-5.06451374999999871e+02</second>
+				<first>5.27496374999999944e+02</first>
+				<second>-4.36301374999999837e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertIndicesToFieldData:0</first>
 			<second>
-				<first>-6.49413625000000138e+02</first>
+				<first>-6.05413625000000138e+02</first>
 				<second>-8.60815249999999878e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertIndicesToFieldData:1</first>
 			<second>
-				<first>-1.06461249999999978e+02</first>
-				<second>-7.55874875000000202e+02</second>
+				<first>-2.13461250000000007e+02</first>
+				<second>-7.48492375000000266e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2830,15 +2882,15 @@
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-6.91874749999999949e+02</first>
-				<second>-1.67151500000000033e+03</second>
+				<first>-6.97874749999999835e+02</first>
+				<second>-1.59126500000000055e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:1</first>
 			<second>
-				<first>3.52842999999999961e+02</first>
-				<second>-7.45228749999999650e+02</second>
+				<first>5.10392999999999972e+02</first>
+				<second>-7.52128749999999741e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2851,15 +2903,15 @@
 		<item>
 			<first>CreateMatrix:1</first>
 			<second>
-				<first>1.70274374999999907e+02</first>
-				<second>-1.10776750000000015e+03</second>
+				<first>6.64243749999998840e+01</first>
+				<second>-1.21011749999999984e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>-3.80218749999999943e+01</first>
-				<second>-1.67296249999999986e+02</second>
+				<first>-3.57334374999999966e+02</first>
+				<second>-8.78712500000000318e+01</second>
 			</second>
 		</item>
 		<item>
@@ -2879,8 +2931,8 @@
 		<item>
 			<first>GetDomainBoundary:0</first>
 			<second>
-				<first>3.68051749999999970e+02</first>
-				<second>-8.91232749999999669e+02</second>
+				<first>4.65801749999999913e+02</first>
+				<second>-8.99282749999999510e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2893,8 +2945,8 @@
 		<item>
 			<first>GetFieldData:0</first>
 			<second>
-				<first>-1.00377749999999992e+02</first>
-				<second>-6.49413624999999911e+02</second>
+				<first>-2.16377749999999963e+02</first>
+				<second>-6.23263624999999934e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2907,29 +2959,29 @@
 		<item>
 			<first>JoinFields:0</first>
 			<second>
-				<first>-2.61186874999999986e+02</first>
-				<second>-1.52766212499999983e+03</second>
+				<first>-2.53671875000000000e+02</first>
+				<second>-1.55714212499999985e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoElements:0</first>
 			<second>
-				<first>-6.09268374999999878e+02</first>
-				<second>-1.14141362499999991e+03</second>
+				<first>-6.39168374999999855e+02</first>
+				<second>-1.17246362499999987e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoElements:1</first>
 			<second>
-				<first>3.23946375000000046e+02</first>
-				<second>-6.20516999999999825e+02</second>
+				<first>5.29646374999999580e+02</first>
+				<second>-5.88316999999999666e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoNodes:0</first>
 			<second>
-				<first>-1.03419499999999942e+02</first>
-				<second>-8.76023999999999319e+02</second>
+				<first>-2.06169499999999942e+02</first>
+				<second>-9.13023999999999546e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2949,15 +3001,15 @@
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>-6.93874749999999949e+02</first>
-				<second>-1.77751500000000033e+03</second>
+				<first>-7.05524750000000381e+02</first>
+				<second>-1.73956499999999983e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>RefineMesh:0</first>
 			<second>
-				<first>-5.78061625000000049e+02</first>
-				<second>-1.26193449999999984e+03</second>
+				<first>-5.66861625000000117e+02</first>
+				<second>-1.32393449999999962e+03</second>
 			</second>
 		</item>
 		<item>
@@ -2991,15 +3043,15 @@
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>8.90000000000000000e+01</first>
-				<second>-5.40000000000000000e+01</second>
+				<first>1.07514999999999986e+02</first>
+				<second>-1.17480000000000018e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SolveLinearSystem:0</first>
 			<second>
-				<first>-6.37246624999999995e+02</first>
-				<second>-4.09115375000000029e+02</second>
+				<first>-6.51696624999999926e+02</first>
+				<second>-3.69315375000000131e+02</second>
 			</second>
 		</item>
 		<item>
@@ -3010,12 +3062,25 @@
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>4</count>
+	<moduleNotes class_id="19" tracking_level="0" version="0">
+		<count>7</count>
 		<item_version>0</item_version>
-		<item class_id="19" tracking_level="0" version="0">
+		<item class_id="20" tracking_level="0" version="0">
+			<first>CreateLatVol:0</first>
+			<second class_id="21" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;set resolution&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>set resolution</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
+		<item>
 			<first>CreateMatrix:0</first>
-			<second class_id="20" tracking_level="0" version="0">
+			<second>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -3035,6 +3100,36 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;set electrode values&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>set electrode values</noteText>
+				<position>3</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>ReadBundle:0</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;electrode &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;placement &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;bundle&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>electrode 
+placement 
+bundle</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>ReadField:0</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;segmentation&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>segmentation</noteText>
 				<position>3</position>
 				<fontSize>13</fontSize>
 			</second>
@@ -3070,10 +3165,10 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="21" tracking_level="0" version="0">
+	<moduleTags class_id="22" tracking_level="0" version="0">
 		<count>35</count>
 		<item_version>0</item_version>
-		<item class_id="22" tracking_level="0" version="0">
+		<item class_id="23" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
 			<second>0</second>
 		</item>

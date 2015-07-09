@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>36</count>
+			<count>42</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AddKnownsToLinearSystem:0</first>
@@ -646,6 +646,70 @@
 				</second>
 			</item>
 			<item>
+				<first>CreateStandardColorMap:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ColorMapInvert</name>
+								</first>
+								<second>
+									<name>ColorMapInvert</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapName</name>
+								</first>
+								<second>
+									<name>ColorMapName</name>
+									<value>
+										<which>2</which>
+										<value>Blackbody</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapResolution</name>
+								</first>
+								<second>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>EditMeshBoundingBox:0</first>
 				<second>
 					<module>
@@ -893,7 +957,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>4.00000000000000008e-02</value>
 									</value>
 								</second>
 							</item>
@@ -1173,7 +1237,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -1215,7 +1279,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>22</count>
+							<count>23</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1286,6 +1350,18 @@
 									<value>
 										<which>2</which>
 										<value>  2.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NoTranslation</name>
+								</first>
+								<second>
+									<name>NoTranslation</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1453,7 +1529,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>4.00000000000000008e-02</value>
 									</value>
 								</second>
 							</item>
@@ -1518,6 +1594,46 @@
 									<value>
 										<which>0</which>
 										<value>2</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>EvaluateLinearAlgebraBinary:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>EvaluateLinearAlgebraBinary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>abs(x-y)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Operator</name>
+								</first>
+								<second>
+									<name>Operator</name>
+									<value>
+										<which>0</which>
+										<value>3</value>
 									</value>
 								</second>
 							</item>
@@ -1821,7 +1937,71 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>5.00000010187778003e+02</value>
+										<value>5.00000010187778287e+02</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>RescaleColorMap:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>2.53342309863768378e+01</value>
 									</value>
 								</second>
 							</item>
@@ -1883,6 +2063,34 @@
 			</item>
 			<item>
 				<first>SetFieldData:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>SetFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>keepTypeCheckBox</name>
+								</first>
+								<second>
+									<name>keepTypeCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>SetFieldData:3</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -2649,7 +2857,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(0.479973,0.498039,0)</value>
+										<value>Color(0.494118,0.427436,0.056672)</value>
 									</value>
 								</second>
 							</item>
@@ -3025,7 +3233,239 @@
 									<name>ShowEdges</name>
 									<value>
 										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value>
+										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>2.99999999999999989e-02</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowField:7</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>18</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CylinderRadius</name>
+								</first>
+								<second>
+									<name>CylinderRadius</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000006e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CylinderResolution</name>
+								</first>
+								<second>
+									<name>CylinderResolution</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(0.5,0.5,0.5)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparency</name>
+								</first>
+								<second>
+									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparencyValue</name>
+								</first>
+								<second>
+									<name>EdgeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparencyValue</name>
+								</first>
+								<second>
+									<name>NodeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -3236,14 +3676,71 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>439</value>
+													<value>336</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>264</value>
+													<value>252</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ViewScene:4</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>ViewScene</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>BackgroundColor</name>
+								</first>
+								<second>
+									<name>BackgroundColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>GeometryFeedbackInfo</name>
+								</first>
+								<second>
+									<name>GeometryFeedbackInfo</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name>x</name>
+												<value>
+													<which>0</which>
+													<value>274</value>
+												</value>
+											</item>
+											<item>
+												<name>y</name>
+												<value>
+													<which>0</which>
+													<value>338</value>
 												</value>
 											</item>
 										</value>
@@ -3256,7 +3753,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>54</count>
+			<count>63</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>AddKnownsToLinearSystem:0</moduleId1_>
@@ -3387,6 +3884,18 @@
 				<moduleId2_>GetFieldData:1</moduleId2_>
 				<port2_>
 					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertMatrixType:0</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:1</moduleId2_>
+				<port2_>
+					<name>LHS</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3595,6 +4104,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>CreateStandardColorMap:3</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:3</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>EditMeshBoundingBox:0</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
@@ -3663,7 +4184,7 @@
 				<moduleId2_>ViewScene:0</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>5</id>
+					<id>10</id>
 				</port2_>
 			</item>
 			<item>
@@ -3673,6 +4194,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ConvertMatrixType:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraBinary:1</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetFieldData:3</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
@@ -3751,6 +4284,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>MapFieldDataOntoNodes:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetFieldData:3</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>MapFieldDataOntoNodes:1</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
@@ -3787,6 +4332,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>RescaleColorMap:3</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:7</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>SetFieldData:0</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
@@ -3817,6 +4374,30 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:6</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetFieldData:3</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:3</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetFieldData:3</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:7</moduleId2_>
 				<port2_>
 					<name>Field</name>
 					<id>0</id>
@@ -3867,7 +4448,7 @@
 				<moduleId2_>ViewScene:0</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>7</id>
+					<id>11</id>
 				</port2_>
 			</item>
 			<item>
@@ -3880,6 +4461,30 @@
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>9</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:7</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:4</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SolveLinearSystem:0</moduleId1_>
+				<port1_>
+					<name>Solution</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:1</moduleId2_>
+				<port2_>
+					<name>RHS</name>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -3909,7 +4514,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>36</count>
+		<count>42</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
@@ -4017,6 +4622,13 @@
 			</second>
 		</item>
 		<item>
+			<first>CreateStandardColorMap:3</first>
+			<second>
+				<first>-2.76342987499999879e+02</first>
+				<second>1.03191368749999953e+02</second>
+			</second>
+		</item>
+		<item>
 			<first>EditMeshBoundingBox:0</first>
 			<second>
 				<first>-1.31200000000000000e+03</first>
@@ -4033,8 +4645,8 @@
 		<item>
 			<first>EditMeshBoundingBox:2</first>
 			<second>
-				<first>-9.25117500000000064e+02</first>
-				<second>-1.67586262500000043e+03</second>
+				<first>-8.57669999999999959e+02</first>
+				<second>-1.67718512500000020e+03</second>
 			</second>
 		</item>
 		<item>
@@ -4042,6 +4654,13 @@
 			<second>
 				<first>-9.97049999999999841e+02</first>
 				<second>-2.94399999999999920e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:1</first>
+			<second>
+				<first>-7.84954225000000406e+02</first>
+				<second>2.29363374999998584e+01</second>
 			</second>
 		</item>
 		<item>
@@ -4094,6 +4713,13 @@
 			</second>
 		</item>
 		<item>
+			<first>RescaleColorMap:3</first>
+			<second>
+				<first>-5.40442931249999674e+02</first>
+				<second>2.95582056249999823e+02</second>
+			</second>
+		</item>
+		<item>
 			<first>SetFieldData:0</first>
 			<second>
 				<first>-1.91304999999999995e+03</first>
@@ -4103,8 +4729,15 @@
 		<item>
 			<first>SetFieldData:1</first>
 			<second>
-				<first>-1.14000000000000000e+03</first>
+				<first>-1.14174900625000009e+03</first>
 				<second>0.00000000000000000e+00</second>
+			</second>
+		</item>
+		<item>
+			<first>SetFieldData:3</first>
+			<second>
+				<first>-8.34900625000000105e+02</first>
+				<second>1.65195912499999764e+02</second>
 			</second>
 		</item>
 		<item>
@@ -4143,6 +4776,13 @@
 			</second>
 		</item>
 		<item>
+			<first>ShowField:7</first>
+			<second>
+				<first>-8.01044862499999567e+02</first>
+				<second>4.14514481249999847e+02</second>
+			</second>
+		</item>
+		<item>
 			<first>SolveLinearSystem:0</first>
 			<second>
 				<first>-1.87994999999999982e+03</first>
@@ -4159,8 +4799,15 @@
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-1.29200000000000000e+03</first>
-				<second>3.04000000000000000e+02</second>
+				<first>-1.26819499999999994e+03</first>
+				<second>3.35740000000000009e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ViewScene:4</first>
+			<second>
+				<first>-7.83554799999999659e+02</first>
+				<second>6.68120387499999651e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -4316,7 +4963,7 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="22" tracking_level="0" version="0">
-		<count>36</count>
+		<count>42</count>
 		<item_version>0</item_version>
 		<item class_id="23" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
@@ -4379,6 +5026,10 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
+			<first>CreateStandardColorMap:3</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>EditMeshBoundingBox:0</first>
 			<second>0</second>
 		</item>
@@ -4392,6 +5043,10 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>EvaluateLinearAlgebraBinary:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:1</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -4423,11 +5078,19 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
+			<first>RescaleColorMap:3</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>SetFieldData:0</first>
 			<second>0</second>
 		</item>
 		<item>
 			<first>SetFieldData:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>SetFieldData:3</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -4451,6 +5114,10 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
+			<first>ShowField:7</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>SolveLinearSystem:0</first>
 			<second>0</second>
 		</item>
@@ -4460,6 +5127,10 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>ViewScene:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ViewScene:4</first>
 			<second>0</second>
 		</item>
 	</moduleTags>
