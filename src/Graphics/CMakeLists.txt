@@ -27,3 +27,4 @@
 #
 
 ADD_SUBDIRECTORY(Glyphs)
+ADD_SUBDIRECTORY(Widgets)

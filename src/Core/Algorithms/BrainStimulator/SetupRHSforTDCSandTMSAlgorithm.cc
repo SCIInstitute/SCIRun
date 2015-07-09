@@ -207,7 +207,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  {
   THROW_ALGORITHM_PROCESSING_ERROR(" The scalp surface (second module input, field, SCALP_TRI_SURF_MESH) must be a triangle mesh. "); 
  } 
-  
+
  VMesh*  mesh_vmesh = mesh->vmesh();
  VMesh::size_type mesh_num_nodes = mesh_vmesh->num_nodes();
  mesh_vmesh->synchronize(Mesh::NODE_LOCATE_E);
@@ -215,7 +215,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  std::vector<double> electrode_sponge_areas;
  index_type refnode_number = get(Parameters::refnode).toInt();
  bool getsurf = get(Parameters::GetContactSurface).toBool();
- 
  double normal_dot_product_bound_ = get(Parameters::normal_dot_product_bound).toDouble();
  double identical_node_location_differce = get(Parameters::pointdistancebound).toDouble();
 
@@ -280,7 +279,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), false);
  algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
  std::vector<FieldHandle> result = algo.run(elc_tri_surf);
- 
+
  if (result.size()<=0)
  {
     THROW_ALGORITHM_PROCESSING_ERROR(" Splitting input mesh into connected regions failed. ");
@@ -311,7 +310,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  VMesh* elc_sponge_surf_vmesh = elc_sponge_surf->vmesh();  
  VField* elc_sponge_surf_vfld  = elc_sponge_surf->vfield();
  std::vector<double> field_values, impedances;
- 
+
  /// map the electrode sponge center (CreateElectrodeCoil) to generated tDCS electrode geometry (Cleaver), 
  /// this mapping is meant to map the GUI inputs to actual electrode geometry by having a lookup table
  int electrode_sponges=elc_sponge_location->nrows();
@@ -341,7 +340,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   (*lookup)(i,0)=found_index;
   (*distances)(i,0)=min_dis;
  }
- 
+
  /// throw error if the geometry is too far away from predicted location - further away than sponge thickness
  for (long i=0;i<elc_sponge_location->nrows();i++)
  {
@@ -367,7 +366,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  DenseMatrixHandle sponge_center_pojected_onto_scalp(new DenseMatrix(result.size(), 3));
  
  mesh_scalp_tri_surf->synchronize(Mesh::NODE_LOCATE_E);
-
  for(long i=0;i<result.size();i++)
  {
   VMesh*  tmp_mesh = result[i]->vmesh();
@@ -410,7 +408,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   mesh_scalp_tri_surf->find_closest_node(distance,p,node_ind,q);
   (*sponge_center_pojected_onto_scalp_index)(i,0)=node_ind;
  }
- 
  /// determine normal of scalp/electrode sponge inferface center 
  mesh_scalp_tri_surf->synchronize(Mesh::NORMALS_E);
  VMesh::Elem::array_type ca;
@@ -434,11 +431,9 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E); 
   
  int nr_elc_sponge_triangles=0;
-
  FieldInformation fi3("PointCloudMesh",0,"double");
  FieldHandle estimated_sponge_top_center_points=CreateField(fi3);
  VMesh*  estimated_sponge_top_center_points_vmesh = estimated_sponge_top_center_points->vmesh();
- 
  /// retrieve electrode thickness from last input by using the lookup table
  for(int k=0;k<sponge_center_pojected_onto_scalp_normal->nrows();k++)
  {
@@ -547,7 +542,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   
   double dot_sp_o1 = Dot(sp_o1, current_scalp_normal_at_elec);
   double dot_sp_o2 = Dot(sp_o2, current_scalp_normal_at_elec);
-
   double x=0,y=0,z=0;  
   if( (dot_sp_o1<0 && dot_sp_o2<0) || (dot_sp_o1>0 && dot_sp_o2>0) )
   {
@@ -829,7 +823,11 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
   VMesh* mesh_elc_tri_surf = elc_tri_surf->vmesh();
   mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E); 
   vmesh->synchronize(Mesh::NODE_LOCATE_E); 
-
+  for(VMesh::Node::index_type l=0; l<vmesh->num_nodes(); l++)
+  {
+    (*output)(l,0)=0;
+  }
+  double min_dis = get(Parameters::pointdistancebound).toDouble();
   for(VMesh::Node::index_type l=0; l<mesh_elc_tri_surf->num_nodes(); l++)
   {
    Point p,q; 
@@ -838,6 +836,12 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, FieldHandle e
    VMesh::Node::index_type ind;
    vmesh->find_closest_node(distance,q,ind,p);
    (*output)(ind,0)=elcs_wanted[l].toDouble()/1000.0;
+   if(min_dis<distance)
+   {
+     std::ostringstream ostr4;
+     ostr4 << " The electrode locations (4th module input) are further away from them mesh as provided by the GUI (min. distance bound). " << std::endl;
+     remark(ostr4.str());	
+   }
   } 
 
   return output;

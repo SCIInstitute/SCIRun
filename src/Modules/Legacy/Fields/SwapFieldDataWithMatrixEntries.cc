@@ -25,11 +25,11 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
    */
-#include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h> 
+   
+#include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Matrix.h> 
+#include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;

@@ -74,6 +74,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/ConvertFieldBasisType.h
   TransformMesh/ScaleFieldMeshAndData.h
   TransformMesh/ProjectPointsOntoMesh.h
+  TransformMesh/TransformMeshWithTransform.h
   MeshData/FlipSurfaceNormals.h
   RefineMesh/RefineMesh.h
   MarchingCubes/BaseMC.h
@@ -198,7 +199,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   StreamLines/StreamLineIntegrators.cc
   StreamLines/GenerateStreamLines.cc
   TransformMesh/AlignMeshBoundingBoxes.cc
-  #TransformMesh/TransformMeshWithTransform.cc
+  TransformMesh/TransformMeshWithTransform.cc
   #TransformMesh/ConvertMeshCoordinateSystem.cc
   TransformMesh/ScaleFieldMeshAndData.cc
   #TransformMesh/TransformPlanarMesh.cc

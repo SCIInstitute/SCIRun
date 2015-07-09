@@ -299,6 +299,7 @@ Q_SIGNALS:
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
     boost::shared_ptr<ZLevelManager> zLevelManager_;
     std::string latestModuleId_;
+    bool fileLoading_;
   };
 }
 }

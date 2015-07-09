@@ -237,6 +237,8 @@ namespace Datatypes {
     double mLowestValue;    ///< Lowest value a field takes on.
     double mHighestValue;   ///< Highest value a field takes on.
 
+    bool isVisible;
+
   private:
     DatatypeConstHandle data_;
 

@@ -31,13 +31,14 @@
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::TestUtils;
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
@@ -50,18 +51,54 @@ class ElectrodeCoilSetupTests : public ModuleTest
 
 };
 
+namespace
+{
+  FieldHandle LoadMickeyScalpSurfMesh()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/BrainStim/mickey_mesh.fld");
+  }
+  FieldHandle LoadMickeyTMSCoil()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/BrainStim/mickey_tms_coil.fld");
+  }
+    
+  DenseMatrixHandle TMSCoilLocation()
+  { 
+   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,3));
+   (*m)(0,0) = 33.6654;
+   (*m)(0,1) = 34.625;
+   (*m)(0,2) = 10.6;
+
+   return m;
+  }
+}
+
+
+TEST_F(ElectrodeCoilSetupTests, Correct)
+{
+  auto tms = makeModule("ElectrodeCoilSetup");
+  stubPortNWithThisData(tms, 0, LoadMickeyScalpSurfMesh());
+  stubPortNWithThisData(tms, 1, TMSCoilLocation());
+  stubPortNWithThisData(tms, 2, LoadMickeyTMSCoil());
+  EXPECT_NO_THROW(tms->execute());
+}
+
+TEST_F(ElectrodeCoilSetupTests, ThrowsForWrongType)
+{
+  auto tms = makeModule("ElectrodeCoilSetup");
+  stubPortNWithThisData(tms, 0, TMSCoilLocation());
+  stubPortNWithThisData(tms, 1, LoadMickeyScalpSurfMesh());
+  stubPortNWithThisData(tms, 2, TMSCoilLocation());  
+  EXPECT_THROW(tms->execute(), WrongDatatypeOnPortException);
+}
+
 TEST_F(ElectrodeCoilSetupTests, ThrowsForNullInput)
 {
-  auto tdcs = makeModule("ElectrodeCoilSetup");
-  ASSERT_TRUE(tdcs != nullptr);
+  auto tms = makeModule("ElectrodeCoilSetup");
   FieldHandle nullField;
-  stubPortNWithThisData(tdcs, 0, nullField);
-  stubPortNWithThisData(tdcs, 1, nullField);
-
-  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException); 
+  stubPortNWithThisData(tms, 0, nullField);
+  stubPortNWithThisData(tms, 1, nullField);
+  stubPortNWithThisData(tms, 2, nullField);
+  EXPECT_THROW(tms->execute(), NullHandleOnPortException);
 }
 
-TEST_F(ElectrodeCoilSetupTests, DISABLED_Foo)
-{
-  FAIL() << "TODO";
-}

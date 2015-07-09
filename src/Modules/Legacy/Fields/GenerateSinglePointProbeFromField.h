@@ -31,6 +31,8 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -61,7 +63,7 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE GenerateSinglePointProbeFromField : public Dataflow::Networks::Module,
+      class SCISHARE GenerateSinglePointProbeFromField : public Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<FieldPortTag>,
         public Has3OutputPorts<GeometryPortTag, FieldPortTag, ScalarPortTag>
       {
@@ -80,6 +82,11 @@ namespace SCIRun {
       private:
         boost::shared_ptr<class GenerateSinglePointProbeFromFieldImpl> impl_;
         Core::Geometry::Point currentLocation() const;
+        
+        FieldHandle GenerateOutputField();
+        index_type GenerateIndex();
+        Core::Datatypes::GeometryHandle BuildWidgetObject(SCIRun::FieldHandle field);
+        RenderState GetWidgetRenderState(Dataflow::Networks::ModuleStateHandle state);
       };
 
       class SCISHARE PointWidgetStub
