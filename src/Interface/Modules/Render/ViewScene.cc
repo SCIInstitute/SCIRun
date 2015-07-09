@@ -52,8 +52,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-    
-  addConfigurationDock(windowTitle());
 
   addToolBar();
   
@@ -182,15 +180,10 @@ void ViewSceneDialog::newGeometryValue()
     std::sort(objectNames.begin(), objectNames.end());
     if (previousObjectNames_ != objectNames)
     {
-      itemValueChanged_ = true;
-      for (auto it = previousObjectNames_.begin(); it != previousObjectNames_.end(); ++it)
-      {
-        std::string name = *it;
-        std::cout << name << std::endl;
-      }
+      itemValueChanged_ = true;      
       previousObjectNames_ = objectNames;
     }
-    if (itemValueChanged_)
+    if (itemValueChanged_ && mConfigurationDock)
     {
       mConfigurationDock->removeAllItems();
       for (auto it = objectNames.begin(); it != objectNames.end(); ++it)
@@ -430,6 +423,7 @@ void ViewSceneDialog::configurationButtonClicked()
   {
     addConfigurationDock(windowTitle());
     mConfigurationDock->setSampleColor(bgColor_);
+    newGeometryValue();
   }
 
   showConfiguration_ = !mConfigurationDock->isVisible();
@@ -604,7 +598,8 @@ void ViewSceneDialog::addConfigurationButton()
 	configurationButton->setToolTip("Open/Close Configuration Menu");
 	configurationButton->setText("Configure");
 	configurationButton->setAutoDefault(false);
-	configurationButton->setDefault(false);
+  configurationButton->setDefault(false);
+  configurationButton->setShortcut(Qt::Key_F5);
 	connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
 	mToolBar->addWidget(configurationButton);
 	mToolBar->addSeparator();

@@ -39,12 +39,12 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 {
   setupUi(this);
 
-  setWindowTitle(name);
-  setAllowedAreas(Qt::BottomDockWidgetArea);
-  setFloating(true);
   setHidden(true);
   setVisible(false);
   setEnabled(false);
+  setWindowTitle(name);
+  setAllowedAreas(Qt::BottomDockWidgetArea);
+  setFloating(true);
   setStyleSheet(parent->styleSheet());
   
   setupObjectListWidget();
