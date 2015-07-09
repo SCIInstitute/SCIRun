@@ -113,7 +113,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(FieldValue, std::string());
   state->setValue(FieldNode, 0);
   state->setValue(FieldElem, 0);
-  state->setValue(ProbeSize, 0.5);
+  state->setValue(ProbeSize, 50);
   state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
 }
@@ -169,6 +169,8 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
   const double THRESHOLD = 1e-6;
   auto state = get_state();
   using namespace Parameters;
+
+  std::cout << "Size: " << state->getValue(ProbeSize).toInt() << std::endl;
 
   // Maybe update the widget.
   BBox bbox;

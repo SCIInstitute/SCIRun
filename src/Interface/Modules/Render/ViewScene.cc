@@ -48,14 +48,12 @@ using namespace SCIRun::Modules::Render;
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(0), shown_(false), itemValueChanged_(true),
-	itemManager_(new ViewSceneItemManager),
   screenshotTaker_(0), saveScreenshotOnNewGeometry_(false)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-    
+
   addToolBar();
-  itemManager_->SetupConnections(this);
   
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
@@ -114,7 +112,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
   }
-
+  
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue())); 
 }
@@ -144,7 +142,6 @@ void ViewSceneDialog::newGeometryValue()
   if (!spire)
     return;
   spire->removeAllGeomObjects();
-
 
   // Grab the geomData transient value.
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
@@ -183,23 +180,22 @@ void ViewSceneDialog::newGeometryValue()
     std::sort(objectNames.begin(), objectNames.end());
     if (previousObjectNames_ != objectNames)
     {
-      itemValueChanged_ = true;
+      itemValueChanged_ = true;      
       previousObjectNames_ = objectNames;
     }
-    if (itemValueChanged_)
+    if (itemValueChanged_ && mConfigurationDock)
     {
-      itemManager_->removeAll();
+      mConfigurationDock->removeAllItems();
       for (auto it = objectNames.begin(); it != objectNames.end(); ++it)
       {
         std::string name = *it;
-        QString display = "test";
         if (isObjectUnselected(name))
         {
-          itemManager_->addItem(QString::fromStdString(name), !isObjectUnselected(name));
+          mConfigurationDock->addItem(QString::fromStdString(name), false);
         }
         else
         {
-          itemManager_->addItem(QString::fromStdString(name), true);
+          mConfigurationDock->addItem(QString::fromStdString(name), true);
         }
       }
       itemValueChanged_ = false;
@@ -427,6 +423,7 @@ void ViewSceneDialog::configurationButtonClicked()
   {
     addConfigurationDock(windowTitle());
     mConfigurationDock->setSampleColor(bgColor_);
+    newGeometryValue();
   }
 
   showConfiguration_ = !mConfigurationDock->isVisible();
@@ -503,7 +500,7 @@ void ViewSceneDialog::addToolBar()
   addConfigurationButton();
 	addAutoViewButton();
   addScreenshotButton();
-	addObjectToggleMenu();
+	//addObjectToggleMenu();
 
 	glLayout->addWidget(mToolBar);
   
@@ -535,27 +532,6 @@ void ViewSceneDialog::addScreenshotButton()
   mToolBar->addWidget(screenshotButton);
 
   mToolBar->addSeparator();
-}
-
-class FixMacCheckBoxes : public QStyledItemDelegate
-{
-public:
-	void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
-	{
-		QStyleOptionViewItem& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option);
-		refToNonConstOption.showDecorationSelected = false;
-		QStyledItemDelegate::paint(painter, refToNonConstOption, index);
-	}
-};
-
-void ViewSceneDialog::addObjectToggleMenu()
-{
-	QComboBox* combo = new QComboBox();
-	combo->setItemDelegate(new FixMacCheckBoxes);
-	combo->setModel(itemManager_->model());
-	combo->setToolTip("Select an Object");
-	mToolBar->addWidget(combo);
-	mToolBar->addSeparator();
 }
 
 void ViewSceneDialog::addViewBarButton()
@@ -622,7 +598,8 @@ void ViewSceneDialog::addConfigurationButton()
 	configurationButton->setToolTip("Open/Close Configuration Menu");
 	configurationButton->setText("Configure");
 	configurationButton->setAutoDefault(false);
-	configurationButton->setDefault(false);
+  configurationButton->setDefault(false);
+  configurationButton->setShortcut(Qt::Key_F5);
 	connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
 	mToolBar->addWidget(configurationButton);
 	mToolBar->addSeparator();
@@ -632,6 +609,7 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 {
   QString name = viewName + " Configuration";
   mConfigurationDock = new ViewSceneControlsDock(name, this);
+  mConfigurationDock->setHidden(true);
   mConfigurationDock->setVisible(false);
 
 	showConfiguration_ = false;
@@ -689,87 +667,6 @@ void ViewSceneDialog::screenshotClicked()
   screenshotTaker_->saveScreenshot();
 }
 
-
-/// Start of ViewSceneItemManager
-ViewSceneItemManager::ViewSceneItemManager()
-  : model_(new QStandardItemModel(3, 1))
-{
-	model_->setItem(0, 0, new QStandardItem(QString("Object Selection")));
-	connect(model_, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(slotChanged(const QModelIndex&, const QModelIndex&)));
-
-#if 0
-	//fill with dummy items for testing:
-	for (int r = 0; r < 3; ++r)
-	{
-		QStandardItem* item = new QStandardItem(QString("Item %0").arg(r));
-
-		item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-		item->setData(Qt::Unchecked, Qt::CheckStateRole);
-		items_.push_back(item);
-
-		model_->setItem(r + 1, item);
-	}
-#endif
-}
-
-void ViewSceneItemManager::SetupConnections(ViewSceneDialog* slotHolder)
-{
-  connect(this, SIGNAL(itemUnselected(const QString&)), slotHolder, SLOT(handleUnselectedItem(const QString&)));
-  connect(this, SIGNAL(itemSelected(const QString&)), slotHolder, SLOT(handleSelectedItem(const QString&)));
-}
-
-void ViewSceneItemManager::addItem(const QString& name, bool checked)
-{
-  QStandardItem* item = new QStandardItem(name);
-  //TODO dan
-  //item->setToolTip(displayName);
-
-	item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-
-  if (checked)
-    item->setData(Qt::Checked, Qt::CheckStateRole);
-  else
-    item->setData(Qt::Unchecked, Qt::CheckStateRole);
-	items_.push_back(item);
-
-	model_->appendRow(item);
-}
-
-void ViewSceneItemManager::removeItem(const QString& name)
-{
-	auto items = model_->findItems(name);
-	Q_FOREACH(QStandardItem* item, items)
-	{
-		model_->removeRow(item->row());
-	}
-	items_.erase(std::remove_if(items_.begin(), items_.end(), [&](QStandardItem* item) { return item->text() == name; }), items_.end());
-}
-
-void ViewSceneItemManager::removeAll()
-{
-	if (model_->rowCount() > 1)
-	{
-		LOG_DEBUG("ViewScene items cleared" << std::endl);
-		model_->removeRows(1, model_->rowCount() - 1);
-		items_.clear();
-	}
-}
-
-void ViewSceneItemManager::slotChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight)
-{
-	auto index = topLeft.row() - 1;
-	QStandardItem* item = items_[index];
-	if (item->checkState() == Qt::Unchecked)
-	{
-		LOG_DEBUG("Item " << item->text().toStdString() << " Unchecked!" << std::endl);
-		Q_EMIT itemUnselected(item->text());
-	}
-	else if (item->checkState() == Qt::Checked)
-	{
-		LOG_DEBUG("Item " << item->text().toStdString() << " Checked!" << std::endl);
-		Q_EMIT itemSelected(item->text());
-	}
-}
 
 /// Start of Screenshot
 const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");

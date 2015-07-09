@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
+#include <Core/Logging/Log.h>
 #include "qbrush.h"
 
 using namespace SCIRun::Gui;
@@ -38,12 +39,15 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 {
   setupUi(this);
 
+  setHidden(true);
+  setVisible(false);
+  setEnabled(false);
   setWindowTitle(name);
   setAllowedAreas(Qt::BottomDockWidgetArea);
   setFloating(true);
-  setVisible(false);
-  setEnabled(false);
   setStyleSheet(parent->styleSheet());
+  
+  setupObjectListWidget();
 
   parent->menuMouseControlChanged(mouseControlComboBox_->currentIndex());
 
@@ -55,9 +59,14 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(updateSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeUpdate(bool)));
   connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
 
+  connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotChanged(QListWidgetItem*)));
+  connect(this, SIGNAL(itemUnselected(const QString&)), parent, SLOT(handleUnselectedItem(const QString&)));
+  connect(this, SIGNAL(itemSelected(const QString&)), parent, SLOT(handleSelectedItem(const QString&)));
+
   setSampleColor(Qt::black);
 
   WidgetStyleMixin::tabStyle(tabWidget);
+
 
   /////Set unused widgets to be not visible
   ////Clipping tab
@@ -68,7 +77,9 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   //groupBox_4->setVisible(false);
   //groupBox_5->setVisible(false);
 
-  tabWidget->removeTab(1);
+  ///Object Tab
+  //tabWidget->removeTab(1);
+
   ////View Tab
   //groupBox->setVisible(false);
 
@@ -85,14 +96,68 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }
 
-
-void ViewSceneControlsDock::setObjectModel(QAbstractItemModel* model)
+void ViewSceneControlsDock::addItem(const QString& name, bool checked)
 {
-  //objectListView_->setItemDelegate(new FixMacCheckBoxes);
-  objectListView_->setModel(model);
+  auto items = objectListWidget_->findItems(name, Qt::MatchExactly);
+  if (items.count() > 0)
+  {
+    return;
+  }
+
+  QListWidgetItem* item = new QListWidgetItem(name, objectListWidget_);
+
+  if (checked) 
+    item->setCheckState(Qt::Checked);
+  else 
+    item->setCheckState(Qt::Unchecked);
+
+  objectListWidget_->addItem(item);
 }
 
-void ViewSceneControlsDock::addObject(QWidget* item)
+void ViewSceneControlsDock::removeItem(const QString& name)
 {
-  //objectListWidget_->addItem(
+  auto items = objectListWidget_->findItems(name, Qt::MatchExactly);
+  Q_FOREACH(QListWidgetItem* item, items)
+  {
+    objectListWidget_->removeItemWidget(item);
+  }
+}
+
+void ViewSceneControlsDock::removeAllItems()
+{
+  if (objectListWidget_->count() > 1)
+  {
+    LOG_DEBUG("ViewScene items cleared" << std::endl);
+    objectListWidget_->clear();
+  }
+}
+
+void ViewSceneControlsDock::slotChanged(QListWidgetItem* item)
+{
+  if (item->checkState() == Qt::Unchecked)
+  {
+    LOG_DEBUG("Item " << item->text().toStdString() << " Unchecked!" << std::endl);
+    Q_EMIT itemUnselected(item->text());
+  }
+  else if (item->checkState() == Qt::Checked)
+  {
+    LOG_DEBUG("Item " << item->text().toStdString() << " Checked!" << std::endl);
+    Q_EMIT itemSelected(item->text());
+  }
+}
+
+class FixMacCheckBoxes : public QStyledItemDelegate
+{
+public:
+  void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+  {
+    QStyleOptionViewItem& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option);
+    refToNonConstOption.showDecorationSelected = false;
+    QStyledItemDelegate::paint(painter, refToNonConstOption, index);
+  }
+};
+
+void ViewSceneControlsDock::setupObjectListWidget()
+{
+  objectListWidget_->setItemDelegate(new FixMacCheckBoxes);
 }
