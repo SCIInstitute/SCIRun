@@ -102,6 +102,8 @@ namespace SCIRun {
       void setTransparencySortTypeLists(bool index);
       void handleUnselectedItem(const QString& name);
       void handleSelectedItem(const QString& name);
+      void selectAllClicked();
+      void deselectAllClicked();
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
       void sendGeometryFeedbackToState(int x, int y);

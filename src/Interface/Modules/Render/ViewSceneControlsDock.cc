@@ -66,6 +66,9 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(contSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeContinuous(bool)));
   connect(updateSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeUpdate(bool)));
   connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
+  connect(selectAllPushButton_, SIGNAL(clicked()), parent, SLOT(selectAllClicked()));
+  connect(deselectAllPushButton_, SIGNAL(clicked()), parent, SLOT(deselectAllClicked()));
+
 
   connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotChanged(QListWidgetItem*)));
   connect(this, SIGNAL(itemUnselected(const QString&)), parent, SLOT(handleUnselectedItem(const QString&)));
@@ -102,6 +105,16 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
     QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
 
   currentBackgroundLabel_->setStyleSheet(styleSheet);
+}
+
+void ViewSceneControlsDock::selectAllItems()
+{
+
+}
+
+void ViewSceneControlsDock::deselectAllItems()
+{
+
 }
 
 void ViewSceneControlsDock::addItem(const QString& name, bool checked)

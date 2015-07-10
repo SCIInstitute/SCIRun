@@ -52,6 +52,8 @@ namespace SCIRun {
     public:
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
       void setSampleColor(const QColor& color);
+      void selectAllItems();
+      void deselectAllItems();
 
     public Q_SLOTS:
       void addItem(const QString& name, bool checked); 
