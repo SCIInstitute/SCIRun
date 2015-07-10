@@ -483,12 +483,7 @@ void ShowFieldGlyphs::renderScalars(
   double resolution = static_cast<double>(my_state->getValue(ScalarsResolution).toInt());
   if (scale < 0) scale = 1.0;
   if (resolution < 3) resolution = 5;
-
-  std::stringstream ss;
-  ss << state.mGlyphType << resolution << scale << colorScheme;
-
-  std::string uniqueNodeID = id + "scalar_glyphs" + ss.str();
- 
+    
   bool usePoints = state.mGlyphType == RenderState::GlyphType::POINT_GLYPH;
    
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;;
@@ -604,6 +599,11 @@ void ShowFieldGlyphs::renderScalars(
       }
     }
   }
+
+  std::stringstream ss;
+  ss << state.mGlyphType << resolution << scale << colorScheme;
+
+  std::string uniqueNodeID = id + "scalar_glyphs" + ss.str();
 
   glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_NODES),
     my_state->getValue(ScalarsTransparencyValue).toDouble(), colorScheme, state, primIn, mesh->get_bounding_box());
