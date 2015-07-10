@@ -351,6 +351,7 @@ void ShowFieldGlyphs::renderVectors(
       Point p1 = cell.center();
       Point p2 = p1 + v;
       std::cout << "center: " << p1 << " end: " << p2 << std::endl;
+      std::cout << "radius: " << radius << std::endl;
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
         if (colorScheme == GeometryObject::COLOR_MAP)
@@ -401,7 +402,6 @@ void ShowFieldGlyphs::renderVectors(
       done = true;
     }
   }
-  std::cout << "done = " << done << std::endl;
 
   // Render linear data
   if (!done)
@@ -423,6 +423,9 @@ void ShowFieldGlyphs::renderVectors(
       double radius = v.length() * secondaryScalar;
       Point p1 = node.point();
       Point p2 = p1 + v;
+      std::cout << "center: " << p1 << " end: " << p2 << std::endl;
+      std::cout << "radius: " << radius << std::endl;
+      std::cout << "resolution: " << resolution << std::endl;
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
         if (colorScheme == GeometryObject::COLOR_MAP)
@@ -443,31 +446,40 @@ void ShowFieldGlyphs::renderVectors(
       switch (state.mGlyphType)
       {
       case RenderState::GlyphType::LINE_GLYPH:
+        std::cout << "LINE_GLYPH" << std::endl;
         glyphs.addNeedle(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::NEEDLE_GLYPH:
+        std::cout << "NEEDLE_GLYPH" << std::endl;
         glyphs.addNeedle(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::COMET_GLYPH:
+        std::cout << "COMET_GLYPH" << std::endl;
         glyphs.addSphere(p2, radius, resolution, node_color);
         glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::CONE_GLYPH:
+        std::cout << "CONE_GLYPH" << std::endl;
         glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::ARROW_GLYPH:
+        std::cout << "ARROW_GLYPH" << std::endl;
         glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::DISK_GLYPH:
+        std::cout << "DISK_GLYPH" << std::endl;
         glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::RING_GLYPH:
+        std::cout << "RING_GLYPH" << std::endl;
         THROW_ALGORITHM_INPUT_ERROR("Ring Geom is not supported yet.");
         break;
       case RenderState::GlyphType::SPRING_GLYPH:
+        std::cout << "SPRING_GLYPH" << std::endl;
         THROW_ALGORITHM_INPUT_ERROR("Spring Geom is not supported yet.");
         break;
       default:
+        std::cout << "default" << std::endl;
         if (useLines)
           glyphs.addNeedle(p1, p2, node_color, node_color);
         else
