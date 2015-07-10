@@ -283,66 +283,16 @@ void ShowFieldGlyphs::renderVectors(
   
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
-
-  std::cout << std::endl;
-  std::cout << std::endl;
-
-  std::cout << "Field Type: " << finfo.get_container_type() << std::endl;
-  std::cout << "Mesh Type: " << finfo.get_mesh_type() << std::endl;
-  std::cout << "Mesh Basis Type: " << finfo.get_mesh_basis_type() << std::endl;
-  std::cout << "Point Type: " << finfo.get_point_type() << std::endl;
-  std::cout << "Basis Type: " << finfo.get_basis_type() << std::endl;
-  std::cout << "Data Basis Type: " << finfo.get_data_basis_type() << std::endl;
-  std::cout << "Data Type: " << finfo.get_data_type() << std::endl;
-  std::cout << "Container Type: " << finfo.get_container_type() << std::endl;
-
-  if (finfo.is_char())
-  {
-    std::cout << "is_char" << std::endl;
-  }
-  if (finfo.is_constantdata())
-  {
-    std::cout << "is_constantdata" << std::endl;
-  }
-  if (finfo.is_constantmesh())
-  {
-    std::cout << "is_constantmesh" << std::endl;
-  }
-  if (finfo.is_crv_element())
-  {
-    std::cout << "is_crv_element" << std::endl;
-  }
-  if (finfo.is_cubicdata())
-  {
-    std::cout << "is_cubicdata" << std::endl;
-  }
-  if (finfo.is_cubicmesh())
-  {
-    std::cout << "is_cubicmesh" << std::endl;
-  }
-  if (finfo.is_curve())
-  {
-    std::cout << "is_curve" << std::endl;
-  }
-  if (finfo.is_curvemesh())
-  {
-    std::cout << "is_curvemesh" << std::endl;
-  }
-  if (finfo.is_double())
-  {
-    std::cout << "is_double" <<std::endl;
-  }
-
+  
   //Temporary fix for cloud field data until after IBBM
   bool done = false;
   // Render cell data
   if (!finfo.is_linear())
   {
-    std::cout << "in vector else pre-loop" << std::endl;
-    std::cout << "done = " << done << std::endl;
+    //std::cout << "in vector else pre-loop" << std::endl;
     for (const auto& cell : facade->cells())
     {
-      std::cout << "in vector else loop" << std::endl;
+      //std::cout << "in vector else loop" << std::endl;
       checkForInterruption();
       Vector v, inputVector;
       fld->get_value(inputVector, cell.index());
@@ -350,8 +300,8 @@ void ShowFieldGlyphs::renderVectors(
       double radius = v.length() * secondaryScalar;
       Point p1 = cell.center();
       Point p2 = p1 + v;
-      std::cout << "center: " << p1 << " end: " << p2 << std::endl;
-      std::cout << "radius: " << radius << std::endl;
+      //std::cout << "center: " << p1 << " end: " << p2 << std::endl;
+      //std::cout << "radius: " << radius << std::endl;
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
         if (colorScheme == GeometryObject::COLOR_MAP)
@@ -406,7 +356,7 @@ void ShowFieldGlyphs::renderVectors(
   // Render linear data
   if (!done)
   {
-    std::cout << "in vector linear pre loop" << std::endl;
+    //std::cout << "in vector linear pre loop" << std::endl;
 
     if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
     {
@@ -423,9 +373,9 @@ void ShowFieldGlyphs::renderVectors(
       double radius = v.length() * secondaryScalar;
       Point p1 = node.point();
       Point p2 = p1 + v;
-      std::cout << "center: " << p1 << " end: " << p2 << std::endl;
-      std::cout << "radius: " << radius << std::endl;
-      std::cout << "resolution: " << resolution << std::endl;
+      //std::cout << "center: " << p1 << " end: " << p2 << std::endl;
+      //std::cout << "radius: " << radius << std::endl;
+      //std::cout << "resolution: " << resolution << std::endl;
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
         if (colorScheme == GeometryObject::COLOR_MAP)
@@ -446,40 +396,40 @@ void ShowFieldGlyphs::renderVectors(
       switch (state.mGlyphType)
       {
       case RenderState::GlyphType::LINE_GLYPH:
-        std::cout << "LINE_GLYPH" << std::endl;
+        //std::cout << "LINE_GLYPH" << std::endl;
         glyphs.addNeedle(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::NEEDLE_GLYPH:
-        std::cout << "NEEDLE_GLYPH" << std::endl;
+        //std::cout << "NEEDLE_GLYPH" << std::endl;
         glyphs.addNeedle(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::COMET_GLYPH:
-        std::cout << "COMET_GLYPH" << std::endl;
+        //std::cout << "COMET_GLYPH" << std::endl;
         glyphs.addSphere(p2, radius, resolution, node_color);
         glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::CONE_GLYPH:
-        std::cout << "CONE_GLYPH" << std::endl;
+        //std::cout << "CONE_GLYPH" << std::endl;
         glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::ARROW_GLYPH:
-        std::cout << "ARROW_GLYPH" << std::endl;
+        //std::cout << "ARROW_GLYPH" << std::endl;
         glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::DISK_GLYPH:
-        std::cout << "DISK_GLYPH" << std::endl;
+        //std::cout << "DISK_GLYPH" << std::endl;
         glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::RING_GLYPH:
-        std::cout << "RING_GLYPH" << std::endl;
+        //std::cout << "RING_GLYPH" << std::endl;
         THROW_ALGORITHM_INPUT_ERROR("Ring Geom is not supported yet.");
         break;
       case RenderState::GlyphType::SPRING_GLYPH:
-        std::cout << "SPRING_GLYPH" << std::endl;
+        //std::cout << "SPRING_GLYPH" << std::endl;
         THROW_ALGORITHM_INPUT_ERROR("Spring Geom is not supported yet.");
         break;
       default:
-        std::cout << "default" << std::endl;
+        //std::cout << "default" << std::endl;
         if (useLines)
           glyphs.addNeedle(p1, p2, node_color, node_color);
         else
@@ -550,8 +500,59 @@ void ShowFieldGlyphs::renderScalars(
 
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
+
+  bool done = false;
+  // Render cell data
+  if (!finfo.is_linear())
+  {
+    for (const auto& cell : facade->cells())
+    {
+      checkForInterruption();
+      double v;
+      fld->get_value(v, cell.index());
+      Point p = cell.center();
+      double radius = std::abs(v) * scale;
+
+      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      {
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(v);
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+        }
+      }
+      switch (state.mGlyphType)
+      {
+      case RenderState::GlyphType::POINT_GLYPH:
+        glyphs.addPoint(p, node_color);
+        break;
+      case RenderState::GlyphType::SPHERE_GLYPH:
+        glyphs.addSphere(p, radius, resolution, node_color);
+        break;
+      case RenderState::GlyphType::BOX_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::AXIS_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Axis Geom is not supported yet.");
+        break;
+      default:
+        if (usePoints)
+          glyphs.addPoint(p, node_color);
+        else
+          glyphs.addSphere(p, radius, resolution, node_color);
+        break;
+      }
+      done = true;
+    }
+  }
+
   // Render linear data
-  if (finfo.is_linear())
+  if (!done)
   {
     if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
     {
@@ -589,53 +590,6 @@ void ShowFieldGlyphs::renderScalars(
         break;
       case RenderState::GlyphType::BOX_GLYPH:
         //glyphs.addEllipsoid(p, radius, 2*radius, resolution, node_color);
-        THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
-        break;
-      case RenderState::GlyphType::AXIS_GLYPH:
-        THROW_ALGORITHM_INPUT_ERROR("Axis Geom is not supported yet.");
-        break;
-      default:
-        if (usePoints)
-          glyphs.addPoint(p, node_color);
-        else
-          glyphs.addSphere(p, radius, resolution, node_color);
-        break;
-      }
-    }
-  }
-  // Render cell data
-  else 
-  {
-    for (const auto& cell : facade->cells())
-    {
-      checkForInterruption();
-      double v;
-      fld->get_value(v, cell.index());
-      Point p = cell.center();
-      double radius = std::abs(v) * scale;
-
-      if (colorScheme != GeometryObject::COLOR_UNIFORM)
-      {
-        if (colorScheme == GeometryObject::COLOR_MAP)
-        {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(v);
-        }
-        if (colorScheme == GeometryObject::COLOR_IN_SITU)
-        {
-          Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
-      }
-      switch (state.mGlyphType)
-      {
-      case RenderState::GlyphType::POINT_GLYPH:
-        glyphs.addPoint(p, node_color);
-        break;
-      case RenderState::GlyphType::SPHERE_GLYPH:
-        glyphs.addSphere(p, radius, resolution, node_color);
-        break;
-      case RenderState::GlyphType::BOX_GLYPH:
         THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
         break;
       case RenderState::GlyphType::AXIS_GLYPH:

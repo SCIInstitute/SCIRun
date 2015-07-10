@@ -58,8 +58,6 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string uniqueNodeID,
 
   bool useTriangles = primIn == GeometryObject::SpireIBO::TRIANGLES;
 
-  std::cout << "useTriangles: " << useTriangles << std::endl;
-
   // Construct VBO.
   std::string shader = "Shaders/UniformColor";
   std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
@@ -231,7 +229,7 @@ void GlyphGeom::addCylinder(const Point p1, const Point& p2, double radius, doub
 void GlyphGeom::addCone(const Point p1, const Point& p2, double radius, double resolution,
   const ColorRGB& color1, const ColorRGB& color2)
 {
-  std::cout << "p1: " << p1 << " p2 " << p2 << " radius: " << radius << " resolution: " << resolution << " color1: " << color1 << " color2: " << color2 << std::endl;
+  //std::cout << "p1: " << p1 << " p2 " << p2 << " radius: " << radius << " resolution: " << resolution << " color1: " << color1 << " color2: " << color2 << std::endl;
   generateCylinder(p1, p2, radius, 0.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
 }
 
