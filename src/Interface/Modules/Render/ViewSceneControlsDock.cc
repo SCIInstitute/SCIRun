@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include "qbrush.h"
 
@@ -49,7 +50,14 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   
   setupObjectListWidget();
 
-  parent->menuMouseControlChanged(mouseControlComboBox_->currentIndex());
+  if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
+  {
+    mouseControlComboBox_->setCurrentIndex(1);
+  }
+  else
+  {
+    mouseControlComboBox_->setCurrentIndex(0);
+  }
 
   connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
