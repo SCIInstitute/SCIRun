@@ -143,16 +143,16 @@ public:
 
   virtual void makePotential() override
   {
-    Base::setOpacity(0.5);
-    Base::setPen(QPen(color(), 5.0, Qt::DotLine));
+    Base::setOpacity(0.3);
+    Base::setPen(QPen(color(), 3.0, Qt::DotLine));
   }
 
   virtual void highlight(bool on) override
   {
     if (on)
-      Base::setPen(QPen(Qt::red, 8.0, Qt::SolidLine));
+      Base::setPen(QPen(Qt::red, 7.0, Qt::SolidLine));
     else
-      Base::setPen(QPen(fromPort_->color(), 5.0, Qt::DotLine));
+      Base::setPen(QPen(fromPort_->color(), 3.0, Qt::DotLine));
     isHighlighted_ = on;
   }
 

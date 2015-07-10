@@ -63,22 +63,21 @@ ELSEIF(WIN32)
   # TODO: probably need this for Xcode
   IF(WIN32 AND MSVC)
     # TODO: more build types to be supported?
-    FOREACH(BUILD_TYPE Debug Release)
-      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-                         POST_BUILD
-                           COMMAND ${CMAKE_COMMAND}
-                           ARGS -E copy_directory
-                           ${SCIRun_BINARY_DIR}/Shaders
-                           ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/Shaders
-      )
-      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-                         POST_BUILD
-                           COMMAND ${CMAKE_COMMAND}
-                           ARGS -E copy_directory
-                           ${SCIRun_BINARY_DIR}/Assets
-                           ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/Assets
-      )
-    ENDFOREACH()
+    # TODO: change $<CONFIGURATION> to $<CONFIG> when upgrading to cmake 3
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND}
+      ARGS -E copy_directory
+      ${SCIRun_BINARY_DIR}/Shaders
+      ${SCIRun_BINARY_DIR}/$<CONFIGURATION>/Shaders
+   )
+   ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+     POST_BUILD
+     COMMAND ${CMAKE_COMMAND}
+     ARGS -E copy_directory
+     ${SCIRun_BINARY_DIR}/Assets
+     ${SCIRun_BINARY_DIR}/$<CONFIGURATION>/Assets
+    )
   ENDIF()
 
 ELSE()
