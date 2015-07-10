@@ -107,16 +107,6 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }
 
-void ViewSceneControlsDock::selectAllItems()
-{
-
-}
-
-void ViewSceneControlsDock::deselectAllItems()
-{
-
-}
-
 void ViewSceneControlsDock::addItem(const QString& name, bool checked)
 {
   auto items = objectListWidget_->findItems(name, Qt::MatchExactly);
