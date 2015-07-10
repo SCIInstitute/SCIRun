@@ -465,6 +465,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   colorLocked_(false),
   isMini_(globalMiniMode_),
   errored_(false),
+  executedOnce_(false),
+  skipExecute_(false),
   theModule_(theModule),
   previousModuleState_(UNSET),
   moduleId_(theModule->get_id()),
@@ -679,7 +681,12 @@ void ModuleWidget::replaceModuleWith()
 
 void ModuleWidget::replaceMe()
 {
-  Q_EMIT replaceModuleWith(theModule_, theModule_->get_module_name());
+  if (!executedOnce_)
+    Q_EMIT replaceModuleWith(theModule_, theModule_->get_module_name());
+  else
+  {
+    setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nPlease manually replace module for proper execution.");
+  }
 }
 
 void ModuleWidget::addPortLayouts(int index)
@@ -985,6 +992,9 @@ void ModuleWidget::trackConnections()
 
 void ModuleWidget::execute()
 {
+  executedOnce_ = true;
+  if (skipExecute_)
+    return;
   {
     Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
@@ -1153,7 +1163,7 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
   }
   else
   {
-    if (dockable_)
+    if (dockable_ && !dockable_->isHidden())
     {
       dockable_->setFloating(true);
     }
@@ -1349,13 +1359,15 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
 
 void ModuleWidget::handleDialogFatalError(const QString& message)
 {
+  skipExecute_ = true;
   qDebug() << "Dialog error: " << message;
   updateBackgroundColor(colorStateLookup.right.at((int)ModuleExecutionState::Errored));
   colorLocked_ = true;
   setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nClick \"Refresh\" button to replace module for proper execution.");
 
-  //This is entirely ViewScene-specific.
   disconnect(currentDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
+
+  //This is entirely ViewScene-specific.
   currentDisplay_->getOptionsButton()->setText("");
   currentDisplay_->getOptionsButton()->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
   connect(currentDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(replaceMe()));
