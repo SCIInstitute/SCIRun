@@ -45,11 +45,6 @@ ShortcutsInterface::ShortcutsInterface(QWidget* parent) : QDialog(parent)
   {
     setFixedSize(minimumWidth(), minimumHeight());
   }
-
-  // Python Shortcut visible
-#ifdef BUILD_WITH_PYTHON
-  this->private_->ui_.python_shortcut_label_->show();
-#endif
 }
 
 void ShortcutsInterface::updateFontsAndText()
