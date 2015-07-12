@@ -510,7 +510,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>2.22534061963221952e-01</value>
+										<value>1.52444544465131393e-01</value>
 									</value>
 								</second>
 							</item>
@@ -522,7 +522,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>-2.01915110031086198e-01</value>
+										<value>-1.60109338158152120e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2842,7 +2842,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ViewScene:0</first>
+				<first>ViewScene:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -2851,7 +2851,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>1</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2862,35 +2862,6 @@
 									<value>
 										<which>2</which>
 										<value>Color(0,0,0)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>GeometryFeedbackInfo</name>
-								</first>
-								<second>
-									<name>GeometryFeedbackInfo</name>
-									<value>
-										<which>5</which>
-										<value>
-											<count>2</count>
-											<item_version>0</item_version>
-											<item>
-												<name>x</name>
-												<value>
-													<which>0</which>
-													<value>151</value>
-												</value>
-											</item>
-											<item>
-												<name>y</name>
-												<value>
-													<which>0</which>
-													<value>494</value>
-												</value>
-											</item>
-										</value>
 									</value>
 								</second>
 							</item>
@@ -3220,7 +3191,7 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>0</id>
@@ -3391,10 +3362,10 @@
 			</second>
 		</item>
 		<item>
-			<first>ViewScene:0</first>
+			<first>ViewScene:1</first>
 			<second>
-				<first>-2.28000000000000000e+02</first>
-				<second>8.36000000000000000e+02</second>
+				<first>-1.54000000000000000e+02</first>
+				<second>8.47000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -3533,7 +3504,7 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
-			<first>ViewScene:0</first>
+			<first>ViewScene:1</first>
 			<second>0</second>
 		</item>
 	</moduleTags>
