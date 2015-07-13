@@ -207,18 +207,18 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QSlider" name="probeSizeHorizontalSlider_">
+       <widget class="QDoubleSpinBox" name="sizeDoubleSpinBox_">
+        <property name="decimals">
+         <number>4</number>
+        </property>
         <property name="maximum">
-         <number>100</number>
+         <double>100.000000000000000</double>
         </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
         </property>
-        <property name="tickPosition">
-         <enum>QSlider::TicksBelow</enum>
-        </property>
-        <property name="tickInterval">
-         <number>10</number>
+        <property name="value">
+         <double>1.000000000000000</double>
         </property>
        </widget>
       </item>

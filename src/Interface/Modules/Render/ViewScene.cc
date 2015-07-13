@@ -487,6 +487,22 @@ void ViewSceneDialog::handleSelectedItem(const QString& name)
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::selectAllClicked()
+{
+  itemValueChanged_ = true;
+  unselectedObjectNames_.clear();
+  newGeometryValue();  
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::deselectAllClicked()
+{
+  itemValueChanged_ = true;
+  unselectedObjectNames_ = previousObjectNames_;
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
 bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 {
   return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
