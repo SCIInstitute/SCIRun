@@ -252,7 +252,7 @@ void PythonInterpreter::initialize_eventhandler()
 std::wcerr << "initialize_eventhandler: program name=" << this->private_->program_name_ << std::endl;
   Py_SetProgramName( const_cast< wchar_t* >( this->private_->program_name_ ) );
   boost::filesystem::path lib_path( this->private_->program_name_ );
-  boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH;
+  boost::filesystem::path top_lib_path = lib_path.parent_path().parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH;
   boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
   boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
   std::wstringstream lib_paths;
