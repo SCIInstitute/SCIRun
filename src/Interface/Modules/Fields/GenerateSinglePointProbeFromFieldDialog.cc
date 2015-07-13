@@ -49,10 +49,10 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   addDoubleSpinBoxManager(xLocationDoubleSpinBox_, Parameters::XLocation);
   addDoubleSpinBoxManager(yLocationDoubleSpinBox_, Parameters::YLocation);
   addDoubleSpinBoxManager(zLocationDoubleSpinBox_, Parameters::ZLocation);
+  addDoubleSpinBoxManager(sizeDoubleSpinBox_, Parameters::ProbeSize);
   addLineEditManager(fieldValueLineEdit_, Parameters::FieldValue);
   addSpinBoxManager(fieldNodeSpinBox_, Parameters::FieldNode);
   addSpinBoxManager(fieldElemSpinBox_, Parameters::FieldElem);
-  addSliderManager(probeSizeHorizontalSlider_, Parameters::ProbeSize);
 
   connect(moveToComboBox_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
   connect(colorChooserPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
