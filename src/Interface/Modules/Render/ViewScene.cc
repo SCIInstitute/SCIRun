@@ -507,6 +507,7 @@ void ViewSceneDialog::adjustZoomSpeed(int value)
 {
   std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
   spire->setZoomSpeed(value);
+  mConfigurationDock->updateZoomOptionVisibility();
 }
 
 //------------------------------------------------------------------------------
