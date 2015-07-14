@@ -84,6 +84,7 @@ namespace SCIRun {
       const std::vector<std::string>& shaderDirs, 
       int frameInitLimit) :
       mMouseMode(MOUSE_OLDSCIRUN),
+      mZoomSpeed(2),
       mScreenWidth(640),
       mScreenHeight(480),
       axesFailCount_(0),
@@ -159,6 +160,12 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
+    void SRInterface::setZoomSpeed(int zoomSpeed)
+    {
+      mZoomSpeed = zoomSpeed;
+    }
+
+    //------------------------------------------------------------------------------
     void SRInterface::eventResize(size_t width, size_t height)
     {
       mScreenWidth = width;
@@ -230,7 +237,7 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseWheel(int32_t delta)
     {
-      mCamera->mouseWheelEvent(delta);
+      mCamera->mouseWheelEvent(delta, mZoomSpeed);
     }
 
     //------------------------------------------------------------------------------

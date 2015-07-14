@@ -503,6 +503,13 @@ void ViewSceneDialog::deselectAllClicked()
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::adjustZoomSpeed(int value)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setZoomSpeed(value);
+}
+
+//------------------------------------------------------------------------------
 bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 {
   return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();

@@ -104,6 +104,7 @@ namespace SCIRun {
       void handleSelectedItem(const QString& name);
       void selectAllClicked();
       void deselectAllClicked();
+      void adjustZoomSpeed(int value);
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
       void sendGeometryFeedbackToState(int x, int y);
