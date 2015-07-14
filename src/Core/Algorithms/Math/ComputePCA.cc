@@ -39,6 +39,7 @@ void ComputePCAAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftPrinMat, Den
 {
     if (matrix_is::dense(input))
     {
+        
         auto denseInput = matrix_cast::as_dense(input);
         
         auto rows = denseInput->rows();
@@ -61,6 +62,18 @@ void ComputePCAAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftPrinMat, Den
     }
 }
 
+DenseMatrix ComputePCAAlgo::centerData(DenseMatrixHandle input_matrix)
+{
+    auto denseInput = matrix_cast::as_dense(input_matrix);
+    
+    auto rows = denseInput->rows();
+    
+    auto centerMatrix = Eigen::MatrixXd::Identity(rows,rows) - (1.0/rows)*Eigen::MatrixXd::Constant(rows,rows,1);
+    
+    auto denseInputCentered = centerMatrix * *denseInput;
+        
+    return denseInputCentered.eval();
+}
 
 AlgorithmOutput ComputePCAAlgo::run_generic(const AlgorithmInput& input) const
 {
