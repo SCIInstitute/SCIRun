@@ -102,6 +102,8 @@ namespace SCIRun {
       void setTransparencySortTypeLists(bool index);
       void handleUnselectedItem(const QString& name);
       void handleSelectedItem(const QString& name);
+      void selectAllClicked();
+      void deselectAllClicked();
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
       void sendGeometryFeedbackToState(int x, int y);
@@ -112,7 +114,7 @@ namespace SCIRun {
       virtual void hideEvent(QHideEvent* evt) override;
       virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
-      bool isObjectUnselected(std::string& name);
+      bool isObjectUnselected(const std::string& name);
       void addToolBar();
       void addAutoViewButton();
       void addScreenshotButton();
@@ -141,7 +143,6 @@ namespace SCIRun {
       bool showConfiguration_;
       bool itemValueChanged_;
       QColor bgColor_;
-      std::shared_ptr<class ViewSceneItemManager> itemManager_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;
       Screenshot* screenshotTaker_;
@@ -149,28 +150,6 @@ namespace SCIRun {
 
       friend class ViewSceneControlsDock;
 		};
-
-		class ViewSceneItemManager : public QObject
-		{
-			Q_OBJECT
-		public:
-      ViewSceneItemManager();
-			QStandardItemModel* model() { return model_; }
-      void SetupConnections(ViewSceneDialog* slotHolder);
-			public Q_SLOTS:
-      void addItem(const QString& name, const QString& displayName, bool checked);
-			void removeItem(const QString& name);
-			void removeAll();
-		Q_SIGNALS:
-			void itemSelected(const QString& name);
-			void itemUnselected(const QString& name);
-			private Q_SLOTS:
-			void slotChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-		private:
-			QStandardItemModel* model_;
-			std::vector<QStandardItem*> items_;
-		};
-
 	}
 }
 

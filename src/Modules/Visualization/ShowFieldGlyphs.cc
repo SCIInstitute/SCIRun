@@ -283,9 +283,81 @@ void ShowFieldGlyphs::renderVectors(
   
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
-  // Render linear data
-  if (finfo.is_linear())
+  
+  //Temporary fix for cloud field data until after IBBM
+  bool done = false;
+  // Render cell data
+  if (!finfo.is_linear())
   {
+    //std::cout << "in vector else pre-loop" << std::endl;
+    for (const auto& cell : facade->cells())
+    {
+      //std::cout << "in vector else loop" << std::endl;
+      checkForInterruption();
+      Vector v, inputVector;
+      fld->get_value(inputVector, cell.index());
+      v = inputVector * scale;
+      double radius = v.length() * secondaryScalar;
+      Point p1 = cell.center();
+      Point p2 = p1 + v;
+      //std::cout << "center: " << p1 << " end: " << p2 << std::endl;
+      //std::cout << "radius: " << radius << std::endl;
+      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      {
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(inputVector);
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = inputVector.normal();
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+        }
+      }
+      switch (state.mGlyphType)
+      {
+      case RenderState::GlyphType::LINE_GLYPH:
+        glyphs.addNeedle(p1, p2, node_color, node_color);
+        break;
+      case RenderState::GlyphType::NEEDLE_GLYPH:
+        glyphs.addNeedle(p1, p2, node_color, node_color);
+        break;
+      case RenderState::GlyphType::COMET_GLYPH:
+        glyphs.addSphere(p2, radius, resolution, node_color);
+        glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
+        break;
+      case RenderState::GlyphType::CONE_GLYPH:
+        glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      case RenderState::GlyphType::ARROW_GLYPH:
+        glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      case RenderState::GlyphType::DISK_GLYPH:
+        glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      case RenderState::GlyphType::RING_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Ring Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::SPRING_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Spring Geom is not supported yet.");
+        break;
+      default:
+        if (useLines)
+          glyphs.addNeedle(p1, p2, node_color, node_color);
+        else
+          glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
+        break;
+      }
+      done = true;
+    }
+  }
+
+  // Render linear data
+  if (!done)
+  {
+    //std::cout << "in vector linear pre loop" << std::endl;
+
     if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
     {
       colorScheme = GeometryObject::COLOR_UNIFORM;
@@ -293,6 +365,7 @@ void ShowFieldGlyphs::renderVectors(
 
     for (const auto& node : facade->nodes())
     {
+      //std::cout << "in vector linear loop" << std::endl;
       checkForInterruption();
       Vector v, inputVector;
       fld->get_value(inputVector, node.index());
@@ -300,6 +373,9 @@ void ShowFieldGlyphs::renderVectors(
       double radius = v.length() * secondaryScalar;
       Point p1 = node.point();
       Point p2 = p1 + v;
+      //std::cout << "center: " << p1 << " end: " << p2 << std::endl;
+      //std::cout << "radius: " << radius << std::endl;
+      //std::cout << "resolution: " << resolution << std::endl;
       if (colorScheme != GeometryObject::COLOR_UNIFORM)
       {
         if (colorScheme == GeometryObject::COLOR_MAP)
@@ -320,31 +396,40 @@ void ShowFieldGlyphs::renderVectors(
       switch (state.mGlyphType)
       {
       case RenderState::GlyphType::LINE_GLYPH:
+        //std::cout << "LINE_GLYPH" << std::endl;
         glyphs.addNeedle(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::NEEDLE_GLYPH:
+        //std::cout << "NEEDLE_GLYPH" << std::endl;
         glyphs.addNeedle(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::COMET_GLYPH:
+        //std::cout << "COMET_GLYPH" << std::endl;
         glyphs.addSphere(p2, radius, resolution, node_color);
         glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::CONE_GLYPH:
+        //std::cout << "CONE_GLYPH" << std::endl;
         glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::ARROW_GLYPH:
+        //std::cout << "ARROW_GLYPH" << std::endl;
         glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::DISK_GLYPH:
+        //std::cout << "DISK_GLYPH" << std::endl;
         glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
         break;
       case RenderState::GlyphType::RING_GLYPH:
+        //std::cout << "RING_GLYPH" << std::endl;
         THROW_ALGORITHM_INPUT_ERROR("Ring Geom is not supported yet.");
         break;
       case RenderState::GlyphType::SPRING_GLYPH:
+        //std::cout << "SPRING_GLYPH" << std::endl;
         THROW_ALGORITHM_INPUT_ERROR("Spring Geom is not supported yet.");
         break;
       default:
+        //std::cout << "default" << std::endl;
         if (useLines)
           glyphs.addNeedle(p1, p2, node_color, node_color);
         else
@@ -353,68 +438,7 @@ void ShowFieldGlyphs::renderVectors(
       }
     }
   }
-  // Render cell data
-  else
-  {
-    for (const auto& cell : facade->cells())
-    {
-      checkForInterruption();
-      Vector v, inputVector;
-      fld->get_value(inputVector, cell.index()); 
-      v = inputVector * scale;
-      double radius = v.length() * secondaryScalar;
-      Point p1 = cell.center();
-      Point p2 = p1 + v;
-      if (colorScheme != GeometryObject::COLOR_UNIFORM)
-      {
-        if (colorScheme == GeometryObject::COLOR_MAP)
-        {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(inputVector);
-        }
-        if (colorScheme == GeometryObject::COLOR_IN_SITU)
-        {
-          Vector colorVector = inputVector.normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
-      }
-      switch (state.mGlyphType)
-      {
-      case RenderState::GlyphType::LINE_GLYPH:
-        glyphs.addNeedle(p1, p2, node_color, node_color);
-        break;
-      case RenderState::GlyphType::NEEDLE_GLYPH:
-        glyphs.addNeedle(p1, p2, node_color, node_color);
-        break;
-      case RenderState::GlyphType::COMET_GLYPH:
-        glyphs.addSphere(p2, radius, resolution, node_color);
-        glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
-        break;
-      case RenderState::GlyphType::CONE_GLYPH:
-        glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
-        break;
-      case RenderState::GlyphType::ARROW_GLYPH:
-        glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
-        break;
-      case RenderState::GlyphType::DISK_GLYPH:
-        glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
-        break;
-      case RenderState::GlyphType::RING_GLYPH:
-        THROW_ALGORITHM_INPUT_ERROR("Ring Geom is not supported yet.");
-        break;
-      case RenderState::GlyphType::SPRING_GLYPH:
-        THROW_ALGORITHM_INPUT_ERROR("Spring Geom is not supported yet.");
-        break;
-      default:
-        if (useLines)
-          glyphs.addNeedle(p1, p2, node_color, node_color);
-        else
-          glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
-        break;
-      }
-    }
-  }
-
+ 
   std::stringstream ss;
   ss << state.mGlyphType << resolution << scale << colorScheme;
 
@@ -459,12 +483,7 @@ void ShowFieldGlyphs::renderScalars(
   double resolution = static_cast<double>(my_state->getValue(ScalarsResolution).toInt());
   if (scale < 0) scale = 1.0;
   if (resolution < 3) resolution = 5;
-
-  std::stringstream ss;
-  ss << state.mGlyphType << resolution << scale << colorScheme;
-
-  std::string uniqueNodeID = id + "scalar_glyphs" + ss.str();
- 
+    
   bool usePoints = state.mGlyphType == RenderState::GlyphType::POINT_GLYPH;
    
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;;
@@ -476,8 +495,59 @@ void ShowFieldGlyphs::renderScalars(
 
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
+
+  bool done = false;
+  // Render cell data
+  if (!finfo.is_linear())
+  {
+    for (const auto& cell : facade->cells())
+    {
+      checkForInterruption();
+      double v;
+      fld->get_value(v, cell.index());
+      Point p = cell.center();
+      double radius = std::abs(v) * scale;
+
+      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      {
+        if (colorScheme == GeometryObject::COLOR_MAP)
+        {
+          ColorMapHandle map = colorMap.get();
+          node_color = map->valueToColor(v);
+        }
+        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        {
+          Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+        }
+      }
+      switch (state.mGlyphType)
+      {
+      case RenderState::GlyphType::POINT_GLYPH:
+        glyphs.addPoint(p, node_color);
+        break;
+      case RenderState::GlyphType::SPHERE_GLYPH:
+        glyphs.addSphere(p, radius, resolution, node_color);
+        break;
+      case RenderState::GlyphType::BOX_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
+        break;
+      case RenderState::GlyphType::AXIS_GLYPH:
+        THROW_ALGORITHM_INPUT_ERROR("Axis Geom is not supported yet.");
+        break;
+      default:
+        if (usePoints)
+          glyphs.addPoint(p, node_color);
+        else
+          glyphs.addSphere(p, radius, resolution, node_color);
+        break;
+      }
+      done = true;
+    }
+  }
+
   // Render linear data
-  if (finfo.is_linear())
+  if (!done)
   {
     if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
     {
@@ -529,53 +599,11 @@ void ShowFieldGlyphs::renderScalars(
       }
     }
   }
-  // Render cell data
-  else 
-  {
-    for (const auto& cell : facade->cells())
-    {
-      checkForInterruption();
-      double v;
-      fld->get_value(v, cell.index());
-      Point p = cell.center();
-      double radius = std::abs(v) * scale;
 
-      if (colorScheme != GeometryObject::COLOR_UNIFORM)
-      {
-        if (colorScheme == GeometryObject::COLOR_MAP)
-        {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(v);
-        }
-        if (colorScheme == GeometryObject::COLOR_IN_SITU)
-        {
-          Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
-      }
-      switch (state.mGlyphType)
-      {
-      case RenderState::GlyphType::POINT_GLYPH:
-        glyphs.addPoint(p, node_color);
-        break;
-      case RenderState::GlyphType::SPHERE_GLYPH:
-        glyphs.addSphere(p, radius, resolution, node_color);
-        break;
-      case RenderState::GlyphType::BOX_GLYPH:
-        THROW_ALGORITHM_INPUT_ERROR("Box Geom is not supported yet.");
-        break;
-      case RenderState::GlyphType::AXIS_GLYPH:
-        THROW_ALGORITHM_INPUT_ERROR("Axis Geom is not supported yet.");
-        break;
-      default:
-        if (usePoints)
-          glyphs.addPoint(p, node_color);
-        else
-          glyphs.addSphere(p, radius, resolution, node_color);
-        break;
-      }
-    }
-  }
+  std::stringstream ss;
+  ss << state.mGlyphType << resolution << scale << colorScheme;
+
+  std::string uniqueNodeID = id + "scalar_glyphs" + ss.str();
 
   glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_NODES),
     my_state->getValue(ScalarsTransparencyValue).toDouble(), colorScheme, state, primIn, mesh->get_bounding_box());

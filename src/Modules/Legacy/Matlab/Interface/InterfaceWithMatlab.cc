@@ -785,7 +785,6 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
   inetport = inet_port_.get();
   passwd = inet_passwd_.get();
   session = inet_session_.get();
-  startmatlab;
 
   if (startmatlab.empty())
     if ( sci_getenv("SCIRUN_STARTMATLAB") )
@@ -793,7 +792,7 @@ bool InterfaceWithMatlabImpl::open_matlab_engine()
 
   if ( sci_getenv("SCIRUN_MATLABLIBRARY") ) matlablibrary = sci_getenv("SCIRUN_MATLABLIBRARY");
 #endif
-  int timeout = 0;
+  int timeout = 60;
 #if 0
   std::string timeout_str = sci_getenv("SCIRUN_MATLABTIMEOUT");
   from_string(timeout_str,timeout);

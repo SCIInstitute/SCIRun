@@ -140,6 +140,19 @@ void GLWidget::wheelEvent(QWheelEvent * event)
 }
 
 //------------------------------------------------------------------------------
+void GLWidget::keyPressEvent(QKeyEvent* event)
+{
+  std::cout << "key down" << std::endl;
+  mGraphics->inputShiftKeyDown(event->key() == Qt::Key_Shift);
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::keyReleaseEvent(QKeyEvent* event)
+{
+  mGraphics->inputShiftKeyDown(false);
+}
+
+//------------------------------------------------------------------------------
 void GLWidget::resizeGL(int width, int height)
 {
   mGraphics->eventResize(static_cast<size_t>(width),

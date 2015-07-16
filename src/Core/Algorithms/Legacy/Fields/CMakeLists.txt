@@ -28,6 +28,7 @@
 
 SET(Core_Algorithms_Legacy_Fields_HEADERS
   ClipMesh/ClipMeshBySelection.h
+  ClipMesh/ClipMeshByIsovalue.h
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
   DistanceField/CalculateDistanceField.h
@@ -73,6 +74,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/ConvertFieldBasisType.h
   TransformMesh/ScaleFieldMeshAndData.h
   TransformMesh/ProjectPointsOntoMesh.h
+  TransformMesh/TransformMeshWithTransform.h
   MeshData/FlipSurfaceNormals.h
   RefineMesh/RefineMesh.h
   MarchingCubes/BaseMC.h
@@ -94,6 +96,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   StreamLines/StreamLineIntegrators.h
   StreamLines/GenerateStreamLines.h
   RegisterWithCorrespondences.h
+  SampleField/GeneratePointSamplesFromField.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -103,6 +106,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #Cleanup/RemoveUnusedNodes.cc
   #ClipMesh/ClipMeshByIsovalue.cc
   ClipMesh/ClipMeshBySelection.cc
+  ClipMesh/ClipMeshByIsovalue.cc
   #CollectFields/CollectPointClouds.cc
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.cc
   ConvertMeshType/ConvertMeshToTetVolMesh.cc
@@ -190,12 +194,12 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   RefineMesh/RefineMeshTriSurfAlgoV.cc
   ResampleMesh/ResampleRegularMesh.cc
   #ResampleMesh/PadRegularMesh.cc
-  #SampleField/GeneratePointSamplesFromField.cc
+  SampleField/GeneratePointSamplesFromField.cc
   SmoothMesh/FairMesh.cc
   StreamLines/StreamLineIntegrators.cc
   StreamLines/GenerateStreamLines.cc
   TransformMesh/AlignMeshBoundingBoxes.cc
-  #TransformMesh/TransformMeshWithTransform.cc
+  TransformMesh/TransformMeshWithTransform.cc
   #TransformMesh/ConvertMeshCoordinateSystem.cc
   TransformMesh/ScaleFieldMeshAndData.cc
   #TransformMesh/TransformPlanarMesh.cc

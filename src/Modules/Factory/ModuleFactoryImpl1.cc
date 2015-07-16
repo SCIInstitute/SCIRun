@@ -64,6 +64,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
+#include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 #include <Modules/Legacy/Fields/FairMesh.h>
 #ifdef WITH_TETGEN
@@ -87,6 +88,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h>
 #include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
+#include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
 #include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
 #include <Modules/Legacy/Bundle/ReportBundleInfo.h>
@@ -208,19 +210,21 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
   addModuleDesc<ComputeSVD>("ComputeSVD","Math","SCIRun","...","...");
 
-  addModuleDesc<InterfaceWithMatlab>("Real ported module", "...");
-  
+  //addModuleDesc<InterfaceWithMatlab>("In progress", "...");
+
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
+  addModuleDesc<TransformMeshWithTransform>("...", "...");
   addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
   addModuleDesc<RescaleColorMap>("Real ported module", "...");
   addModuleDesc<ConvertMatrixToString>("ConvertMatrixToString","Converters","SCIRun","...","...");
   addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences","ChangeFieldData","SCIRun","...","In progress--Computation is incorrect");
 
   addModuleDesc<GeneratePointSamplesFromField>("Real ported module", "in progress");
+  addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
-  addModuleDesc<ShowAndEditDipoles>("Real ported module", "in progress");
+  //addModuleDesc<ShowAndEditDipoles>("Real ported module", "in progress");
 
   // insert module desc here
 }

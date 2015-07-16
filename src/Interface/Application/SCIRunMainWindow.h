@@ -51,6 +51,7 @@ class NetworkEditor;
 class ProvenanceWindow;
 class DeveloperConsole;
 class PreferencesWindow;
+class ShortcutsInterface;
 class TagManagerWindow;
 class PythonConsoleWidget;
 class FileDownloader;
@@ -95,6 +96,7 @@ private:
   DeveloperConsole* devConsole_;
   PreferencesWindow* prefsWindow_;
   PythonConsoleWidget* pythonConsole_;
+  ShortcutsInterface* shortcuts_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
@@ -170,6 +172,7 @@ private Q_SLOTS:
   void displayAcknowledgement();
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();
+  void showKeyboardShortcutsDialog();
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void highlightPortsChanged();

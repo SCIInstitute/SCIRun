@@ -57,11 +57,15 @@ void ElectrodeCoilSetupModule::setStateDefaults()
 {
   setStateIntFromAlgo(Parameters::NumberOfPrototypes);
   setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
+  setStateBoolFromAlgo(Parameters::InvertNormalsCheckBox);
   setStateBoolFromAlgo(Parameters::AllInputsTDCS);
   setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
   setStateListFromAlgo(Parameters::TableValues);
   setStateDoubleFromAlgo(Parameters::ElectrodethicknessSpinBox);
   setStateBoolFromAlgo(Parameters::ElectrodethicknessCheckBox);
+  setStateBoolFromAlgo(Parameters::OrientTMSCoilRadialToScalpCheckBox);
+  setStateBoolFromAlgo(Parameters::PutElectrodesOnScalpCheckBox);
+  setStateBoolFromAlgo(Parameters::InterpolateElectrodeShapeCheckbox);
 }
 
 void ElectrodeCoilSetupModule::execute()
@@ -73,9 +77,13 @@ void ElectrodeCoilSetupModule::execute()
  if (needToExecute())  //newStatePresent
  {
    setAlgoBoolFromState(Parameters::ProtoTypeInputCheckbox);
+   setAlgoBoolFromState(Parameters::InvertNormalsCheckBox);
+   setAlgoBoolFromState(Parameters::OrientTMSCoilRadialToScalpCheckBox);
    setAlgoBoolFromState(Parameters::AllInputsTDCS);
    setAlgoIntFromState(Parameters::ProtoTypeInputComboBox);
    setAlgoBoolFromState(Parameters::ElectrodethicknessCheckBox);
+   setAlgoBoolFromState(Parameters::PutElectrodesOnScalpCheckBox);
+   setAlgoBoolFromState(Parameters::InterpolateElectrodeShapeCheckbox);
    setAlgoDoubleFromState(Parameters::ElectrodethicknessSpinBox);
    
    update_state(Executing);
@@ -91,13 +99,17 @@ void ElectrodeCoilSetupModule::execute()
 	
     algo().set(Parameters::TableValues, table_handle);
      
-    auto output = algo().run_generic(input);
+    auto output = algo().run_generic(input);  
+
     auto table = output.additionalAlgoOutput();
+
     if (table)
      get_state()->setValue(Parameters::TableValues, table->value());
+
     sendOutputFromAlgorithm(FINAL_ELECTRODES_FIELD, output);
     sendOutputFromAlgorithm(MOVED_ELECTRODES_FIELD, output);
     sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
     sendOutputFromAlgorithm(COILS_FIELD, output);
+
  }
 }

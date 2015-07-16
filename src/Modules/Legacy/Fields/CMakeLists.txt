@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
 #  in all copies or substantial portions of the Software.
-# 
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -30,6 +30,7 @@
 
 SET(Modules_Legacy_Fields_HEADERS
   RefineMesh.h
+  ClipVolumeByIsovalue.h
   CreateLatVol.h
   GetFieldBoundary.h
   BuildMappingMatrix.h
@@ -77,10 +78,13 @@ SET(Modules_Legacy_Fields_HEADERS
   GetSliceFromStructuredFieldByIndices.h
   GenerateSinglePointProbeFromField.h
   GeneratePointSamplesFromField.h
+  GeneratePointSamplesFromFieldOrWidget.h
+  TransformMeshWithTransform.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
   FlipSurfaceNormals.cc
+  ClipVolumeByIsovalue.cc
   #GenerateElectrode.cc
   #PadRegularMesh.cc
   ResampleRegularMesh.cc
@@ -149,7 +153,7 @@ SET(Modules_Legacy_Fields_SRCS
   #TransformPlanarMesh.cc
   #BuildPointCloudToLatVolMappingMatrix.cc
   GenerateSinglePointProbeFromField.cc
-  #GeneratePointSamplesFromFieldOrWidget.cc
+  GeneratePointSamplesFromFieldOrWidget.cc
   CreateLatVol.cc
   #CreateImage.cc
   #CreateStructHex.cc
@@ -168,7 +172,7 @@ SET(Modules_Legacy_Fields_SRCS
   #CalculateFieldDataMetric.cc
   #CalculateMeshNodes.cc
   #QueryFieldData.cc
-  #TransformMeshWithTransform.cc
+  TransformMeshWithTransform.cc
   CalculateVectorMagnitudes.cc
   #GenerateLinearSegments.cc
   CalculateDistanceToField.cc
@@ -196,7 +200,7 @@ SET(Modules_Legacy_Fields_SRCS
   CollectFields.cc
   ScaleFieldMeshAndData.cc
   #CalculateProfile.cc
-  MapFieldDataFromElemToNode.cc  
+  MapFieldDataFromElemToNode.cc
   MapFieldDataFromNodeToElem.cc
   ExtractSimpleIsosurface.cc
 )
@@ -211,8 +215,8 @@ IF(WITH_TETGEN)
     InterfaceWithTetGenImpl.h
 	)
 ENDIF(WITH_TETGEN)
-    
-SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields 
+
+SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields
   ${Modules_Legacy_Fields_HEADERS}
   ${Modules_Legacy_Fields_SRCS}
 )
@@ -240,6 +244,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
   #Core_Persistent
   #Core_Thread
   Core_Util_Legacy
+  Graphics_Glyphs
   #${TK_LIBRARY}
   #${GL_LIBRARY}
   #${LEX_LIBRARY}
@@ -257,4 +262,3 @@ ENDIF(WITH_TETGEN)
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Fields)
 ENDIF(BUILD_SHARED_LIBS)
-

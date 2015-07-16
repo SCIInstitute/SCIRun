@@ -77,7 +77,8 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
-  zLevelManager_(new ZLevelManager(scene_))
+  zLevelManager_(new ZLevelManager(scene_)),
+  fileLoading_(false)
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
@@ -157,6 +158,10 @@ void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::N
   moduleEventProxy_->trackModule(module);
 
   setupModuleWidget(moduleWidget);
+  if (!fileLoading_)
+  {
+    moduleWidget->postLoadAction();
+  }
   count.increment();
   //std::cout << "\tNE modules done (end): " << *count.count << std::endl;
   Q_EMIT modified();
@@ -226,32 +231,30 @@ void NetworkEditor::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHan
 
 void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName)
 {
-  //add new module
-
   auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
   lastModulePosition_ = oldModule->scenePos();
-  //qDebug() << "replace: adding new";
   controller_->addModule(newModuleName);
 
   // connect up same ports
-  //qDebug() << "TODO: replace module: " << moduleToReplace->get_id().id_.c_str() << " with " << latestModuleId_.c_str();
   auto newModule = findById(scene_->items(), latestModuleId_);
 
-  auto oldModPorts = oldModule->getModuleWidget()->ports();
-  auto newModPorts = newModule->getModuleWidget()->ports();
+  const auto& oldModPorts = oldModule->getModuleWidget()->ports();
+  const auto& newModPorts = newModule->getModuleWidget()->ports();
 
   {
     int nextInputIndex = 0;
-    auto newInputs = newModPorts.inputs();
     for (const auto& iport : oldModPorts.inputs())
     {
-      //qDebug() << port->get_portname().c_str();
       if (iport->isConnected())
       {
+        const auto& newInputs = newModPorts.inputs();
         auto toConnect = std::find_if(newInputs.begin(), newInputs.end(),
           [&](const PortWidget* port) { return port->get_typename() == iport->get_typename() && port->getIndex() >= nextInputIndex; });
         if (toConnect == newInputs.end())
-          throw "logical error";
+        {
+          qDebug() << "Logical error: could not find input port to connect to" << iport << nextInputIndex;
+          break;
+        }
         requestConnection(iport->connectedPorts()[0], *toConnect);
         nextInputIndex = (*toConnect)->getIndex() + 1;
       }
@@ -263,13 +266,15 @@ void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHa
     auto newOutputs = newModPorts.outputs();
     for (const auto& oport : oldModPorts.outputs())
     {
-      //qDebug() << port->get_portname().c_str();
       if (oport->isConnected())
       {
         auto toConnect = std::find_if(newOutputs.begin(), newOutputs.end(),
           [&](const PortWidget* port) { return port->get_typename() == oport->get_typename() && port->getIndex() >= nextOutputIndex; });
         if (toConnect == newOutputs.end())
-          throw "logical error";
+        {
+          qDebug() << "Logical error: could not find output port to connect to" << oport;
+          break;
+        }
         auto connectedPorts = oport->connectedPorts();
         std::vector<PortWidget*> dynamicPortsNeedSpecialHandling;
         std::copy_if(connectedPorts.begin(), connectedPorts.end(), std::back_inserter(dynamicPortsNeedSpecialHandling), [](const PortWidget* p) { return p->isDynamic(); });
@@ -284,8 +289,6 @@ void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHa
     }
   }
 
-  //qDebug() << "replace: deleting old";
-  // delete old module
   oldModule->deleteLater();
 }
 
@@ -928,7 +931,17 @@ SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork() const
 
 void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
 {
+  fileLoading_ = true;
   controller_->loadNetwork(xml);
+  fileLoading_ = false;
+
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      w->getModuleWidget()->postLoadAction();
+    }
+  }
 
   //TODO: duplication
   const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";
@@ -1304,31 +1317,34 @@ void ErrorItem::animate(qreal val)
 
 void NetworkEditor::displayError(const QString& msg, std::function<void()> showModule)
 {
-  auto errorItem = new ErrorItem(msg, showModule);
-  scene()->addItem(errorItem);
+  if (Core::Preferences::Instance().showModuleErrorInlineMessages)
+  {
+    auto errorItem = new ErrorItem(msg, showModule);
+    scene()->addItem(errorItem);
 
-  QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
-  QPointF br = tl + viewport()->rect().bottomRight();
-  QMatrix mat = matrix().inverted();
-  auto rect = mat.mapRect(QRectF(tl,br));
+    QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
+    QPointF br = tl + viewport()->rect().bottomRight();
+    QMatrix mat = matrix().inverted();
+    auto rect = mat.mapRect(QRectF(tl, br));
 
-  auto corner = rect.bottomLeft();
-  errorItem->setPos(corner + QPointF(100, -(40*errorItem->num() + 100)));
+    auto corner = rect.bottomLeft();
+    errorItem->setPos(corner + QPointF(100, -(40*errorItem->num() + 100)));
 
 #if 0
-  auto xMin = rect.topLeft().x();
-  auto xMax = rect.topRight().x();
-  auto yMin = rect.topLeft().y();
-  auto yMax = rect.bottomLeft().y();
-  for (double x = xMin; x < xMax; x += 100)
-    for (double y = yMin; y < yMax; y += 100)
+    auto xMin = rect.topLeft().x();
+    auto xMax = rect.topRight().x();
+    auto yMin = rect.topLeft().y();
+    auto yMax = rect.bottomLeft().y();
+    for (double x = xMin; x < xMax; x += 100)
+      for (double y = yMin; y < yMax; y += 100)
       {
         QString xy = QString::number(x) + "," + QString::number(y);
         auto item = scene()->addText(xy);
         item->setDefaultTextColor(Qt::white);
         item->setPos(x, y);
-      }
+  }
 #endif
+  }
 }
 
 NetworkEditor::~NetworkEditor()

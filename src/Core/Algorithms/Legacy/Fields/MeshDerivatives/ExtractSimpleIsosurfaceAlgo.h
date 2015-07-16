@@ -39,14 +39,18 @@ namespace Core {
 namespace Algorithms {
 namespace Fields {
 
+  ALGORITHM_PARAMETER_DECL(SingleIsoValue);
+  ALGORITHM_PARAMETER_DECL(ListOfIsovalues);
+  ALGORITHM_PARAMETER_DECL(QuantityOfIsovalues);
+  ALGORITHM_PARAMETER_DECL(Isovalues);
+  ALGORITHM_PARAMETER_DECL(IsovalueChoice);
+  ALGORITHM_PARAMETER_DECL(IsovalueListString);
+
 class SCISHARE ExtractSimpleIsosurfaceAlgo : public AlgorithmBase
 {
 public:
   ExtractSimpleIsosurfaceAlgo();
   
-  static AlgorithmInputName InputField;
-  static AlgorithmOutputName OutputField;
-  static AlgorithmParameterName GUIIsoValue;
   bool run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& output) const;
 
   AlgorithmOutput run_generic(const AlgorithmInput& input) const;

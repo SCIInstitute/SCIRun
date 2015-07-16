@@ -144,7 +144,8 @@ SET(APPLICATION_EXTENSION ".srn5" CACHE INTERNAL "Network file extension" FORCE)
 SET(APPLICATION_URL "www.scirun.org" CACHE INTERNAL "Project URL" FORCE)
 SET(APPLICATION_VENDOR "SCI" CACHE INTERNAL "Vendor information" FORCE)
 SET(APPLICATION_CONTACT "scirun-users@sci.utah.edu" CACHE INTERNAL "Contact information" FORCE)
-SET(APPLICATION_WINDOWS_ICON "${CMAKE_SOURCE_DIR}/Interface/Application\\\\scirun-icon-large.ico" CACHE INTERNAL "Windows icon" FORCE)
+SET(APPLICATION_WINDOWS_ICON "${CMAKE_SOURCE_DIR}/Resources/Icons\\\\scirun5_32.ico" CACHE INTERNAL "Windows icon" FORCE)
+SET(APPLICATION_WINDOWS_RC "${CMAKE_SOURCE_DIR}/Resources/Icons\\\\SCIRun.rc" CACHE INTERNAL "Windows icon" FORCE)
 SET(APPLICATION_OSX_ICON_FULL_PATH "${CMAKE_SOURCE_DIR}/Resources/Icons/scirun5.icns" CACHE INTERNAL "OSX icon" FORCE)
 SET(APPLICATION_OSX_ICON "scirun5.icns" CACHE INTERNAL "OSX icon" FORCE)
 
@@ -783,6 +784,7 @@ SET_PROPERTY(TARGET Modules_Legacy_Visualization   PROPERTY FOLDER "Modules/Visu
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
 SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
+SET_PROPERTY(TARGET Graphics_Widgets   PROPERTY FOLDER "Graphics")
 
 IF(BUILD_TESTING)
   SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
@@ -840,6 +842,8 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
   SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO_Tests PROPERTY FOLDER "Modules/DataIO")
   SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
+  
+  SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
 ENDIF()
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
@@ -864,6 +868,7 @@ ENDIF()
 
 IF(DOWNLOAD_TOOLKITS)
   SET_PROPERTY(TARGET BrainStimulator_external   PROPERTY FOLDER "Externals")
+  SET_PROPERTY(TARGET FwdInvToolkit_external   PROPERTY FOLDER "Externals")
 ENDIF()
 
 ########################################################################

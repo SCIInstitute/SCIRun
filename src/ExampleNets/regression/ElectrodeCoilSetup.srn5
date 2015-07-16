@@ -4,29 +4,286 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>6</count>
+			<count>12</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ElectrodeCoilSetup:0</first>
+				<first>CalculateFieldData:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CalculateFieldData</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>2</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>FormatString</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>FormatString</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = tensor(1);</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CalculateFieldData:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CalculateFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = vector(0,0,1);</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value>33.6654 34.625 10.60661
+</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateStandardColorMap:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ColorMapInvert</name>
+								</first>
+								<second>
+									<name>ColorMapInvert</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapName</name>
+								</first>
+								<second>
+									<name>ColorMapName</name>
+									<value>
+										<which>2</which>
+										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapResolution</name>
+								</first>
+								<second>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ElectrodeCoilSetup:1</first>
+				<second>
+					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>BrainStimulator</category_name_>
 						<module_name_>ElectrodeCoilSetup</module_name_>
 					</module>
-					<state class_id="6" tracking_level="0" version="0">
-						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>3</count>
+					<state>
+						<stateMap>
+							<count>11</count>
 							<item_version>0</item_version>
-							<item class_id="8" tracking_level="0" version="0">
-								<first class_id="9" tracking_level="0" version="0">
+							<item>
+								<first>
+									<name>AllInputsTDCS</name>
+								</first>
+								<second>
+									<name>AllInputsTDCS</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ElectrodethicknessCheckBox</name>
+								</first>
+								<second>
+									<name>ElectrodethicknessCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ElectrodethicknessSpinBox</name>
+								</first>
+								<second>
+									<name>ElectrodethicknessSpinBox</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InterpolateElectrodeShapeCheckbox</name>
+								</first>
+								<second>
+									<name>InterpolateElectrodeShapeCheckbox</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InvertNormalsCheckBox</name>
+								</first>
+								<second>
+									<name>InvertNormalsCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>NumberOfPrototypes</name>
 								</first>
-								<second class_id="10" tracking_level="0" version="0">
+								<second>
 									<name>NumberOfPrototypes</name>
-									<value class_id="11" tracking_level="0" version="0">
+									<value>
 										<which>0</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OrientTMSCoilRadialToScalpCheckBox</name>
+								</first>
+								<second>
+									<name>OrientTMSCoilRadialToScalpCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProtoTypeInputCheckbox</name>
+								</first>
+								<second>
+									<name>ProtoTypeInputCheckbox</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -37,8 +294,20 @@
 								<second>
 									<name>ProtoTypeInputComboBox</name>
 									<value>
-										<which>2</which>
-										<value>USE_MODULE_INPUTPORT_3</value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PutElectrodesOnScalpCheckBox</name>
+								</first>
+								<second>
+									<name>PutElectrodesOnScalpCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -51,8 +320,88 @@
 									<value>
 										<which>5</which>
 										<value class_id="12" tracking_level="0" version="0">
-											<count>0</count>
+											<count>1</count>
 											<item_version>0</item_version>
+											<item>
+												<name>row0</name>
+												<value>
+													<which>5</which>
+													<value>
+														<count>10</count>
+														<item_version>0</item_version>
+														<item>
+															<name>Input #</name>
+															<value>
+																<which>2</which>
+																<value>1</value>
+															</value>
+														</item>
+														<item>
+															<name>Type</name>
+															<value>
+																<which>2</which>
+																<value>1</value>
+															</value>
+														</item>
+														<item>
+															<name>X</name>
+															<value>
+																<which>2</which>
+																<value>33.665</value>
+															</value>
+														</item>
+														<item>
+															<name>Y</name>
+															<value>
+																<which>2</which>
+																<value>34.625</value>
+															</value>
+														</item>
+														<item>
+															<name>Z</name>
+															<value>
+																<which>2</which>
+																<value>10.607</value>
+															</value>
+														</item>
+														<item>
+															<name>Angle</name>
+															<value>
+																<which>2</which>
+																<value>???</value>
+															</value>
+														</item>
+														<item>
+															<name>NX</name>
+															<value>
+																<which>2</which>
+																<value>???</value>
+															</value>
+														</item>
+														<item>
+															<name>NY</name>
+															<value>
+																<which>2</which>
+																<value>???</value>
+															</value>
+														</item>
+														<item>
+															<name>NZ</name>
+															<value>
+																<which>2</which>
+																<value>???</value>
+															</value>
+														</item>
+														<item>
+															<name>thickness</name>
+															<value>
+																<which>2</which>
+																<value>???</value>
+															</value>
+														</item>
+													</value>
+												</value>
+											</item>
 										</value>
 									</value>
 								</second>
@@ -93,7 +442,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/coilsetup/scalp.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/mickey_mouse/scalp_surf_mesh.fld</value>
 									</value>
 								</second>
 							</item>
@@ -102,7 +451,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ReadField:3</first>
+				<first>ReadField:2</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -133,7 +482,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/coilsetup/elc_prototype_matlab.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/BrainStim/mickey_tms_coil.fld</value>
 									</value>
 								</second>
 							</item>
@@ -142,12 +491,556 @@
 				</second>
 			</item>
 			<item>
-				<first>ReadMatrix:2</first>
+				<first>RescaleColorMap:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadMatrix</module_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>2.19714383775782736e-02</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>5.85698553903195617e-06</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowField:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>18</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CylinderRadius</name>
+								</first>
+								<second>
+									<name>CylinderRadius</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000006e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CylinderResolution</name>
+								</first>
+								<second>
+									<name>CylinderResolution</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(0.5,0.5,0.5)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparency</name>
+								</first>
+								<second>
+									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparencyValue</name>
+								</first>
+								<second>
+									<name>EdgeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparencyValue</name>
+								</first>
+								<second>
+									<name>NodeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>2.99999999999999989e-02</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowField:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>18</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CylinderRadius</name>
+								</first>
+								<second>
+									<name>CylinderRadius</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000006e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CylinderResolution</name>
+								</first>
+								<second>
+									<name>CylinderResolution</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(0.494118,0.490684,0.28069)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparency</name>
+								</first>
+								<second>
+									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparencyValue</name>
+								</first>
+								<second>
+									<name>EdgeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparencyValue</name>
+								</first>
+								<second>
+									<name>NodeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>SimulateForwardMagneticField:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>BrainStimulator</category_name_>
+						<module_name_>SimulateForwardMagneticField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ViewScene:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>ViewScene</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -155,89 +1048,146 @@
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>FileTypeName</name>
+									<name>BackgroundColor</name>
 								</first>
 								<second>
-									<name>FileTypeName</name>
+									<name>BackgroundColor</name>
 									<value>
 										<which>2</which>
-										<value>SCIRun Matrix File</value>
+										<value>Color(0,0,0)</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>Filename</name>
+									<name>GeometryFeedbackInfo</name>
 								</first>
 								<second>
-									<name>Filename</name>
+									<name>GeometryFeedbackInfo</name>
 									<value>
-										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/coilsetup/locations.mat</value>
+										<which>5</which>
+										<value>
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name>x</name>
+												<value>
+													<which>0</which>
+													<value>161</value>
+												</value>
+											</item>
+											<item>
+												<name>y</name>
+												<value>
+													<which>0</which>
+													<value>141</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportFieldInfo:4</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>MiscField</category_name_>
-						<module_name_>ReportFieldInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportMatrixInfo:5</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>5</count>
+			<count>16</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
-				<moduleId1_>ElectrodeCoilSetup:0</moduleId1_>
+				<moduleId1_>CalculateFieldData:0</moduleId1_>
 				<port1_ class_id="15" tracking_level="0" version="0">
-					<name>COILS_FIELD</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportFieldInfo:4</moduleId2_>
+				<moduleId2_>SimulateForwardMagneticField:0</moduleId2_>
 				<port2_>
-					<name>InputField</name>
+					<name>ConductivityTensor</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ElectrodeCoilSetup:0</moduleId1_>
+				<moduleId1_>CalculateFieldData:1</moduleId1_>
 				<port1_>
-					<name>ELECTRODE_SPONGE_LOCATION_AVR</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportMatrixInfo:5</moduleId2_>
+				<moduleId2_>SimulateForwardMagneticField:0</moduleId2_>
 				<port2_>
-					<name>InputMatrix</name>
+					<name>DetectorLocations</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ElectrodeCoilSetup:1</moduleId2_>
+				<port2_>
+					<name>LOCATIONS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ElectrodeCoilSetup:1</moduleId1_>
+				<port1_>
+					<name>COILS_FIELD</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CalculateFieldData:0</moduleId2_>
+				<port2_>
+					<name>InputFields</name>
+					<id>2</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ElectrodeCoilSetup:1</moduleId1_>
+				<port1_>
+					<name>COILS_FIELD</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:1</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ElectrodeCoilSetup:1</moduleId1_>
+				<port1_>
+					<name>COILS_FIELD</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SimulateForwardMagneticField:0</moduleId2_>
+				<port2_>
+					<name>DipoleSources</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ElectrodeCoilSetup:1</moduleId1_>
+				<port1_>
+					<name>COILS_FIELD</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SimulateForwardMagneticField:0</moduleId2_>
+				<port2_>
+					<name>ElectricField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -247,81 +1197,183 @@
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ElectrodeCoilSetup:0</moduleId2_>
+				<moduleId2_>CalculateFieldData:1</moduleId2_>
+				<port2_>
+					<name>InputFields</name>
+					<id>2</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadField:1</moduleId1_>
+				<port1_>
+					<name>Field</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ElectrodeCoilSetup:1</moduleId2_>
 				<port2_>
 					<name>SCALP_SURF</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadField:3</moduleId1_>
+				<moduleId1_>ReadField:2</moduleId1_>
 				<port1_>
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ElectrodeCoilSetup:0</moduleId2_>
+				<moduleId2_>ElectrodeCoilSetup:1</moduleId2_>
 				<port2_>
 					<name>ELECTRODECOILPROTOTYPES</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadMatrix:2</moduleId1_>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
 				<port1_>
-					<name>Matrix</name>
+					<name>ColorMapOutput</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ElectrodeCoilSetup:0</moduleId2_>
+				<moduleId2_>ShowField:0</moduleId2_>
 				<port2_>
-					<name>LOCATIONS</name>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:0</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:1</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>1</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SimulateForwardMagneticField:0</moduleId1_>
+				<port1_>
+					<name>MagneticField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>1</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SimulateForwardMagneticField:0</moduleId1_>
+				<port1_>
+					<name>MagneticField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
 					<id>0</id>
 				</port2_>
 			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>6</count>
+		<count>12</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
-			<first>ElectrodeCoilSetup:0</first>
+			<first>CalculateFieldData:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-3.80000000000000000e+02</first>
-				<second>-2.28000000000000000e+02</second>
+				<first>2.28000000000000000e+02</first>
+				<second>7.60000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>CalculateFieldData:1</first>
+			<second>
+				<first>-2.28000000000000000e+02</first>
+				<second>7.60000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateMatrix:0</first>
+			<second>
+				<first>1.52000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:0</first>
+			<second>
+				<first>7.60000000000000000e+01</first>
+				<second>6.08000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ElectrodeCoilSetup:1</first>
+			<second>
+				<first>7.60000000000000000e+01</first>
+				<second>-7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:1</first>
 			<second>
-				<first>-6.84000000000000000e+02</first>
-				<second>-3.80000000000000000e+02</second>
+				<first>-2.17000000000000000e+02</first>
+				<second>-3.00000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReadField:3</first>
+			<first>ReadField:2</first>
+			<second>
+				<first>4.56000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:0</first>
+			<second>
+				<first>-2.28000000000000000e+02</first>
+				<second>5.32000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:0</first>
+			<second>
+				<first>-1.52000000000000000e+02</first>
+				<second>8.36000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:1</first>
+			<second>
+				<first>1.52000000000000000e+02</first>
+				<second>9.12000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>SimulateForwardMagneticField:0</first>
 			<second>
 				<first>-7.60000000000000000e+01</first>
-				<second>-3.80000000000000000e+02</second>
+				<second>3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReadMatrix:2</first>
+			<first>ViewScene:0</first>
 			<second>
-				<first>-3.80000000000000000e+02</first>
-				<second>-3.80000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportFieldInfo:4</first>
-			<second>
-				<first>-3.04000000000000000e+02</first>
-				<second>-7.60000000000000000e+01</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:5</first>
-			<second>
-				<first>-6.08000000000000000e+02</first>
-				<second>-7.60000000000000000e+01</second>
+				<first>0.00000000000000000e+00</first>
+				<second>1.06400000000000000e+03</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -334,10 +1386,26 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>6</count>
+		<count>12</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
-			<first>ElectrodeCoilSetup:0</first>
+			<first>CalculateFieldData:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CalculateFieldData:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateMatrix:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ElectrodeCoilSetup:1</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -345,19 +1413,27 @@
 			<second>0</second>
 		</item>
 		<item>
-			<first>ReadField:3</first>
+			<first>ReadField:2</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>ReadMatrix:2</first>
+			<first>RescaleColorMap:0</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>ReportFieldInfo:4</first>
+			<first>ShowField:0</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:5</first>
+			<first>ShowField:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>SimulateForwardMagneticField:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ViewScene:0</first>
 			<second>0</second>
 		</item>
 	</moduleTags>
