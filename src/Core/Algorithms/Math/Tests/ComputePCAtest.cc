@@ -26,6 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+//ComputePCA algorithm test.
 #include <gtest/gtest.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
@@ -121,12 +122,14 @@ TEST(ComputePCAtest, checkOutputs)
     ASSERT_EQ(1,PrinVals_S->cols());
     ASSERT_EQ(2,RightPrinMat_V->cols());
     
+    
+    
     //Eigen does not create a diagonal matrix when it computes SVD, it just has a column with the principal values, so we must put it into a diagonal matrix to be able to do some matrix multiplication later.
     DenseMatrix sDiag = Eigen::MatrixXd::Constant(12,2,0);
     sDiag.diagonal() = PrinVals_S->col(0);
     
     //Multiplying back together and comparing to the centered matrix. They should be equal to each other with some tolerance.
-    auto product = (*LeftPrinMat_U) * sDiag * (*RightPrinMat_V).transpose();
+    DenseMatrix product = (*LeftPrinMat_U) * sDiag * (*RightPrinMat_V).transpose();
     
     auto expected = *centeredInputMatrix();
     
