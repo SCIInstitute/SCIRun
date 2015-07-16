@@ -42,6 +42,10 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 void ComputeSVDAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftSingMat, DenseMatrixHandle& SingVals, DenseMatrixHandle& RightSingMat) const
 {
+  if (input->nrows() == 0 || input->ncols() == 0){
+        
+    THROW_ALGORITHM_INPUT_ERROR("Input has a zero dimension.");
+}
   if (matrix_is::dense(input))
   {
     auto denseInput = matrix_cast::as_dense(input);

@@ -26,6 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+//ComputePCA module test.
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Modules/Math/ComputePCA.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -43,6 +44,7 @@ class ComputePCAtest : public ModuleTest
 {
 };
 
+//Checks for null input.
 TEST_F(ComputePCAtest, CheckInputNull)
 {
     auto pcaMod = makeModule("ComputePCA");
@@ -52,6 +54,19 @@ TEST_F(ComputePCAtest, CheckInputNull)
     EXPECT_THROW(pcaMod -> execute(), NullHandleOnPortException);
 }
 
+//Checks for dense input.
+TEST_F(ComputePCAtest, CheckInputDense)
+{
+    auto pcaMod = makeModule("ComputePCA");
+    MatrixHandle denseMatrix = MAKE_DENSE_MATRIX_HANDLE((1,2,5,6)(3,4,7,9)(7,8,9,1)(2,3,5,9));
+    stubPortNWithThisData(pcaMod, 0, denseMatrix);
+    
+    EXPECT_NO_THROW(pcaMod -> execute());
+}
+
+//ComputePCA currently only supports dense input, but we will leave these if we want to change it later.
+//There is a check for this in the algorithm.
+//Checks for column input.
 TEST_F(ComputePCAtest, CheckInputColumn)
 {
     auto pcaMod = makeModule("ComputePCA");
@@ -62,15 +77,7 @@ TEST_F(ComputePCAtest, CheckInputColumn)
     EXPECT_NO_THROW(pcaMod -> execute());
 }
 
-TEST_F(ComputePCAtest, CheckInputDense)
-{
-    auto pcaMod = makeModule("ComputePCA");
-    MatrixHandle denseMatrix = MAKE_DENSE_MATRIX_HANDLE((1,2,5,6)(3,4,7,9)(7,8,9,1)(2,3,5,9));
-    stubPortNWithThisData(pcaMod, 0, denseMatrix);
-    
-    EXPECT_NO_THROW(pcaMod -> execute());
-}
-
+//Checks for sparse input.
 TEST_F(ComputePCAtest, CheckInputSparse)
 {
     auto pcaMod = makeModule("ComputePCA");
