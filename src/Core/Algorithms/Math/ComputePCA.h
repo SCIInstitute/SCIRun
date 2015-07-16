@@ -21,6 +21,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+//ComputePCA Algortithm Header
 #ifndef ComputePCA_ComputePCA_h_1
 #define ComputePCA_ComputePCA_h_1
 
@@ -43,7 +44,7 @@ namespace SCIRun {
                     static AlgorithmOutputName RightPrincipalMatrix;
                     void run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle& LeftPrinMat, Datatypes::DenseMatrixHandle& PrinVals, Datatypes::DenseMatrixHandle& RightPrinMat) const;
                     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-                    static Datatypes::DenseMatrix centerData(Datatypes::DenseMatrixHandle input_matrix);
+                    static Datatypes::DenseMatrix centerData(Datatypes::MatrixHandle input_matrix);
                 };
                 
             }}}}
