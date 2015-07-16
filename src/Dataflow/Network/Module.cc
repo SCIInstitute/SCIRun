@@ -274,6 +274,12 @@ bool Module::do_execute() throw()
   {
     error("MODULE ERROR: bad_alloc caught");
   }
+  catch (PortNotFoundException& e)
+  {
+    std::ostringstream ostr;
+    ostr << "Port not found, it may need initializing the module constructor. " << std::endl << "Message: " << e.what() << std::endl;
+    error(ostr.str());
+  }
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
@@ -639,6 +645,11 @@ void Module::setAlgoBoolFromState(const AlgorithmParameterName& name)
 void Module::setStateIntFromAlgo(const AlgorithmParameterName& name)
 {
   get_state()->setValue(name, algo().get(name).toInt());
+}
+
+void Module::setStateStringFromAlgo(const AlgorithmParameterName& name)
+{
+  get_state()->setValue(name, algo().get(name).toString());
 }
 
 void Module::setStateDoubleFromAlgo(const AlgorithmParameterName& name)

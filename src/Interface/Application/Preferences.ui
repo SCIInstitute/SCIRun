@@ -28,6 +28,9 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QToolBox" name="toolBox">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
      <widget class="QWidget" name="toolBoxPage1">
       <property name="geometry">
        <rect>
@@ -68,7 +71,7 @@
          <x>0</x>
          <y>0</y>
          <width>531</width>
-         <height>231</height>
+         <height>291</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -295,7 +298,7 @@
           <item row="0" column="1">
            <widget class="QCheckBox" name="dockableModulesCheckBox_">
             <property name="text">
-             <string>Enable Module Dock</string>
+             <string>Enable module dock</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -311,7 +314,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Modules Snap To Grid</string>
+             <string>Modules snap to grid</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -321,7 +324,7 @@
           <item row="1" column="0">
            <widget class="QCheckBox" name="portSizeEffectsCheckBox_">
             <property name="text">
-             <string>Highlight Ports on Hover</string>
+             <string>Highlight ports on hover</string>
             </property>
            </widget>
           </item>
@@ -338,6 +341,16 @@
             </property>
            </widget>
           </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="errorGraphicItemsCheckBox_">
+            <property name="text">
+             <string>Display errors inline</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -348,8 +361,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>552</width>
-        <height>508</height>
+        <width>140</width>
+        <height>50</height>
        </rect>
       </property>
       <attribute name="label">
@@ -523,8 +536,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>552</width>
-        <height>508</height>
+        <width>228</width>
+        <height>58</height>
        </rect>
       </property>
       <attribute name="label">

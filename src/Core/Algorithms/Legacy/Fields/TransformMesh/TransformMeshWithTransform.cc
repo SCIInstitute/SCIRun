@@ -26,87 +26,108 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/TransformMesh/TransformMeshWithTransform.h>
-#include <Core/Datatypes/VField.h>
-#include <Core/Datatypes/VMesh.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/TransformMeshWithTransform.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-
-namespace SCIRunAlgo {
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
 
-bool 
-TransformMeshWithTransformAlgo::
-run(FieldHandle input, MatrixHandle transform_matrix, FieldHandle& output)
+TransformMeshWithTransformAlgo::TransformMeshWithTransformAlgo()
 {
-  // Mark that we are starting the algorithm, but do not report progress
-  algo_start("TransformMeshWithTransform");
+//  add_bool("rotate_data", true);
+}
+
+bool TransformMeshWithTransformAlgo::run(FieldHandle input, DenseMatrixHandle transform_matrix, FieldHandle& output) const
+{
+  ScopedAlgorithmStatusReporter asr(this, "TransformMeshWithTransform");
   
-  bool rotate_data = get_bool("rotate_data");
+  const bool rotate_data = true;  //  get_bool("rotate_data"); //No gui so this is always constant
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
   
-  if (transform_matrix.get_rep() == 0)
+  if (!transform_matrix)
   {
     error("No input transform matrix");
-    algo_end(); return (false);
+    return (false);
   }
   
-  if ((transform_matrix->ncols() != 4 && transform_matrix->nrows()) || 
-      !(matrix_is::dense(transform_matrix)))
+  if (!(transform_matrix->ncols() == 4 && transform_matrix->nrows() == 4))
   {
     error("Input matrix needs to be a 4 by 4 dense matrix");
-    algo_end(); return (false);  
+    return (false);  
   }
-  output = input;
-  output.detach();
-  output->mesh_detach();
+
+  output.reset(input->deep_clone());
   
-  VMesh* mesh = output->vmesh();
-  VField* field = output->vfield();
+  VMesh* vmesh = output->vmesh();
+  VField* vfield = output->vfield();
   
   Transform transform;
-  transform.set(transform_matrix->get_data_pointer());
+  transform.set(transform_matrix->data());
   
-  mesh->vmesh()->transform(transform);
+  vmesh->transform(transform);
   
-  if (field->is_vector() || field->is_tensor())
+  if (vfield->is_vector() || vfield->is_tensor())
   {
-    if (rotate_data == true)
+    if (rotate_data)
     {
-      if (field->is_vector())
+      if (vfield->is_vector())
       {
-        VMesh::size_type sz = field->num_values();
+        VMesh::size_type sz = vfield->num_values();
         for (VMesh::index_type i=0; i < sz; i++)
         {
           Vector v;
-          field->get_value(v,i);
+          vfield->get_value(v,i);
           v = transform*v;
-          field->set_value(v,i);
+          vfield->set_value(v,i);
         }
       }
-      if (field->is_tensor())
+      if (vfield->is_tensor())
       {
-        VMesh::size_type sz = field->num_values();
+        VMesh::size_type sz = vfield->num_values();
         for (VMesh::index_type i=0; i < sz; i++)
         {
           Tensor v;
-          field->get_value(v,i);
+          vfield->get_value(v,i);
           v = transform*v*transform;
-          field->set_value(v,i);
+          vfield->set_value(v,i);
         }
       }    
     }
   }
   
-  output->copy_properties(input.get_rep());
+  CopyProperties(*input, *output);
 
-  algo_end(); return (true);
+  return (true);
 }
 
-} // End namespace SCIRunAlgo
+const AlgorithmInputName TransformMeshWithTransformAlgo::TransformMatrix("TransformMatrix");
+const AlgorithmOutputName TransformMeshWithTransformAlgo::Transformed_Field("Transformed_Field");
+
+AlgorithmOutput TransformMeshWithTransformAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(Variables::InputField);
+  auto transform = input.get<DenseMatrix>(TransformMatrix);
+
+  FieldHandle outputField;
+  if (!run(inputField, transform, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Transformed_Field] = outputField;
+  return output;
+}

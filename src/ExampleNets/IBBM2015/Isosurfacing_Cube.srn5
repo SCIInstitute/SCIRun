@@ -232,7 +232,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -242,7 +242,62 @@
 									<name>GUIIsoValue</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>2.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>IsovalueChoice</name>
+								</first>
+								<second>
+									<name>IsovalueChoice</name>
+									<value>
+										<which>2</which>
+										<value>Quantity</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>IsovalueListString</name>
+								</first>
+								<second>
+									<name>IsovalueListString</name>
+									<value>
+										<which>2</which>
+										<value>0
+0.57735
+1.1547
+1.73205
+2.3094
+2.88675
+3.4641
+</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>QuantityOfIsovalues</name>
+								</first>
+								<second>
+									<name>QuantityOfIsovalues</name>
+									<value>
+										<which>0</which>
+										<value>7</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SingleIsoValue</name>
+								</first>
+								<second>
+									<name>SingleIsoValue</name>
+									<value>
+										<which>1</which>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -260,8 +315,80 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>6</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FieldElem</name>
+								</first>
+								<second>
+									<name>FieldElem</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FieldNode</name>
+								</first>
+								<second>
+									<name>FieldNode</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FieldValue</name>
+								</first>
+								<second>
+									<name>FieldValue</name>
+									<value>
+										<which>2</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XLocation</name>
+								</first>
+								<second>
+									<name>XLocation</name>
+									<value>
+										<which>1</which>
+										<value>-1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YLocation</name>
+								</first>
+								<second>
+									<name>YLocation</name>
+									<value>
+										<which>1</which>
+										<value>-1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ZLocation</name>
+								</first>
+								<second>
+									<name>ZLocation</name>
+									<value>
+										<which>1</which>
+										<value>-1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -314,7 +441,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>3.46410161513775439e+00</value>
 									</value>
 								</second>
 							</item>
@@ -356,7 +483,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -432,6 +559,18 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -451,6 +590,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -487,6 +638,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -552,7 +715,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>15</count>
+							<count>18</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -628,13 +791,25 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
 									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -647,6 +822,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -683,6 +870,18 @@
 									<value>
 										<which>1</which>
 										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -748,7 +947,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -762,17 +961,46 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>GeometryFeedbackInfo</name>
+								</first>
+								<second>
+									<name>GeometryFeedbackInfo</name>
+									<value>
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name>x</name>
+												<value>
+													<which>0</which>
+													<value>110</value>
+												</value>
+											</item>
+											<item>
+												<name>y</name>
+												<value>
+													<which>0</which>
+													<value>233</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
+		<connections class_id="13" tracking_level="0" version="0">
 			<count>13</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
+			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CalculateDistanceToField:0</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
+				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>DistanceField</name>
 					<id>0</id>
 				</port1_>
@@ -928,14 +1156,14 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
+	<modulePositions class_id="16" tracking_level="0" version="0">
 		<count>10</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
+		<item class_id="17" tracking_level="0" version="0">
 			<first>CalculateDistanceToField:0</first>
-			<second class_id="17" tracking_level="0" version="0">
-				<first>-8.29000000000000000e+02</first>
-				<second>-9.14000000000000000e+02</second>
+			<second class_id="18" tracking_level="0" version="0">
+				<first>-8.30000000000000000e+02</first>
+				<second>-9.12000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -948,15 +1176,15 @@
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>-1.05700000000000000e+03</first>
-				<second>-7.85000000000000000e+02</second>
+				<first>-8.18000000000000000e+02</first>
+				<second>-8.10000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ExtractSimpleIsosurface:0</first>
 			<second>
-				<first>-1.44400000000000000e+03</first>
-				<second>-6.84000000000000000e+02</second>
+				<first>-1.42900000000000000e+03</first>
+				<second>-7.37000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -976,8 +1204,8 @@
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>-1.11000000000000000e+03</first>
-				<second>-6.76000000000000000e+02</second>
+				<first>-1.11100000000000000e+03</first>
+				<second>-6.74000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -990,8 +1218,8 @@
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-8.07000000000000000e+02</first>
-				<second>-5.62000000000000000e+02</second>
+				<first>-7.66000000000000000e+02</first>
+				<second>-6.47000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -1002,12 +1230,12 @@
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
+	<moduleNotes class_id="19" tracking_level="0" version="0">
 		<count>2</count>
 		<item_version>0</item_version>
-		<item class_id="19" tracking_level="0" version="0">
+		<item class_id="20" tracking_level="0" version="0">
 			<first>ShowField:0</first>
-			<second class_id="20" tracking_level="0" version="0">
+			<second class_id="21" tracking_level="0" version="0">
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -1036,10 +1264,10 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="21" tracking_level="0" version="0">
+	<moduleTags class_id="22" tracking_level="0" version="0">
 		<count>10</count>
 		<item_version>0</item_version>
-		<item class_id="22" tracking_level="0" version="0">
+		<item class_id="23" tracking_level="0" version="0">
 			<first>CalculateDistanceToField:0</first>
 			<second>0</second>
 		</item>

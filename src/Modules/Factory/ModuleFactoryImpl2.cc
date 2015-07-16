@@ -52,6 +52,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
 #include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
+#include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
 #include <Modules/Legacy/Math/EvaluateLinAlgGeneral.h>
 #include <Modules/Math/ComputePCA.h>
 
@@ -95,6 +96,11 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
   addModuleDesc<ExtractSimpleIsosurfaceModule>("ExtractSimpleIsosurface","NewField","SCIRun","...","...");
+<<<<<<< HEAD
   addModuleDesc<ComputePCA>("ComputePCA","Math","SCIRun","...","...");
   addModuleDesc<EvaluateLinearAlgebraGeneral>("Real ported module", "BUGGY--DO NOT USE");
+=======
+  //addModuleDesc<EvaluateLinearAlgebraGeneral>("Real ported module", "BUGGY--DO NOT USE");
+  addModuleDesc<ClipVolumeByIsovalueModule>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
+>>>>>>> master
 }

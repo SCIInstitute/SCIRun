@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>scirun-icon-small.ico</normaloff>scirun-icon-small.ico</iconset>
+    <normaloff>../../Resources/Icons/scirun5_32.ico</normaloff>../../Resources/Icons/scirun5_32.ico</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>

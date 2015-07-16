@@ -337,6 +337,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
   renState.defaultColor = ColorRGB(1, 1, 1);
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
   renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::IS_WIDGET, true);
 
   Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr, *this, "BoundingBox"));
 

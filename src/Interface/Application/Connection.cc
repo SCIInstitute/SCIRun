@@ -193,8 +193,8 @@ namespace SCIRun
       {
         deleteAction_ = addAction(deleteAction);
         addWidgetToExecutionDisableList(deleteAction_);
-        addAction(insertModuleAction)->setDisabled(true);
-        addAction(disableEnableAction)->setDisabled(true);
+        //addAction(insertModuleAction)->setDisabled(true);
+        //addAction(disableEnableAction)->setDisabled(true);
         notesAction_ = addAction(editNotesAction);
       }
       ~ConnectionMenu()
@@ -263,7 +263,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
 
-  setPositionObject(boost::make_shared<MidpointPositioner>(fromPort_->getPositionObject(), toPort_->getPositionObject()));
+  setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
 
   trackNodes();
   GuiLogger::Instance().logInfoStd("Connection made: " + id_.id_);
@@ -312,6 +312,7 @@ void ConnectionLine::trackNodes()
 {
   if (fromPort_ && toPort_)
   {
+    //qDebug() << "trackNodes";
     drawer_->draw(this, fromPort_->position(), toPort_->position());
     updateNotePosition();
   }
@@ -460,6 +461,7 @@ ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, Con
 
 void ConnectionInProgressStraight::update(const QPointF& end)
 {
+  lastEnd_ = end;
   //TODO: use strategy object. probably need to improve first parameter: templatized? or just change this case to use QGraphicsPathItem directly
   //drawStrategy_->draw(this, fromPort_->position(), end);
 
@@ -473,6 +475,7 @@ ConnectionInProgressCurved::ConnectionInProgressCurved(PortWidget* port, Connect
 
 void ConnectionInProgressCurved::update(const QPointF& end)
 {
+  lastEnd_ = end;
   drawStrategy_->draw(this, fromPort_->position(), end);
 }
 
@@ -483,21 +486,22 @@ ConnectionInProgressManhattan::ConnectionInProgressManhattan(PortWidget* port, C
 
 void ConnectionInProgressManhattan::update(const QPointF& end)
 {
+  lastEnd_ = end;
   if (fromPort_->isInput())
     drawStrategy_->draw(this, end, fromPort_->position());
   else
     drawStrategy_->draw(this, fromPort_->position(), end);
 }
 
-MidpointPositioner::MidpointPositioner(PositionProviderPtr p1, PositionProviderPtr p2) : p1_(p1), p2_(p2)
+MidpointPositionerFromPorts::MidpointPositionerFromPorts(NeedsScenePositionProvider* p1, NeedsScenePositionProvider* p2) : p1_(p1), p2_(p2)
 {
   ENSURE_NOT_NULL(p1, "port1");
   ENSURE_NOT_NULL(p2, "port2");
 }
 
-QPointF MidpointPositioner::currentPosition() const
+QPointF MidpointPositionerFromPorts::currentPosition() const
 {
-  return (p1_->currentPosition() + p2_->currentPosition()) / 2;
+  return (p1_->getPositionObject()->currentPosition() + p2_->getPositionObject()->currentPosition()) / 2;
 }
 
 ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) :
@@ -536,6 +540,14 @@ ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* po
       return 0;
   }
 }
+
+ConnectionInProgress* ConnectionFactory::makePotentialConnection(PortWidget* port) const
+{
+  auto conn = makeConnectionInProgress(port);
+  conn->makePotential();
+  return conn;
+}
+
 
 void ConnectionFactory::activate(QGraphicsItem* item) const
 {
