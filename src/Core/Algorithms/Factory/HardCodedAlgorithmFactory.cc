@@ -184,17 +184,13 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 	    ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgo)
 		  ADD_MODULE_ALGORITHM(ConvertMatrixToString, ConvertMatrixToStringAlgo)
       ADD_MODULE_ALGORITHM(ConvertHexVolToTetVol, ConvertMeshToTetVolMeshAlgo)
-<<<<<<< HEAD
      ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
 	 ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
       ADD_MODULE_ALGORITHM(ComputePCA, ComputePCAAlgo)
-    ;
-=======
       ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
 	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
       ADD_MODULE_ALGORITHM(ClipVolumeByIsovalue, ClipMeshByIsovalueAlgo)
      ;
->>>>>>> master
   }
 }
 
