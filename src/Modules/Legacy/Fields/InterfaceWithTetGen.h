@@ -64,6 +64,7 @@ namespace SCIRun {
 
         virtual void execute();
         virtual void setStateDefaults();
+        virtual bool hasDynamicPorts() const override { return true; }
 
         INPUT_PORT(0, Main, LegacyField);
         INPUT_PORT(1, Points, LegacyField);

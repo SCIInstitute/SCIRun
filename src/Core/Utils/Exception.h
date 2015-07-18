@@ -77,6 +77,7 @@ namespace Core
   /// @todo move these exceptions to new exception header file once it exists
   struct SCISHARE DimensionMismatch : virtual ExceptionBase
   {
+    virtual const char* what() const throw() override;
   };
 
   /// @todo should not need this in production code.
