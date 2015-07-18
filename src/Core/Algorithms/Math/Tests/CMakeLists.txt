@@ -39,6 +39,7 @@ SET(Algorithms_Math_Tests_SRCS
   ConvertMatrixTypeTests.cc
   SelectSubMatrixTests.cc
   GetMatrixSliceAlgoTests.cc
+  ComputePCAtest.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS

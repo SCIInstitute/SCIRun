@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>6</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>ComputePCA:0</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ComputePCA</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>TextEntry</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>TextEntry</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>5 7
+4 6
+7 9
+8 8
+10 5
+10 7
+4 9
+6 3
+8 4
+7 5
+9 5
+6 9</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>5</count>
+			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>ComputePCA:0</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>LeftPrincipalMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:1</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ComputePCA:0</moduleId1_>
+				<port1_>
+					<name>PrincipalValues</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ComputePCA:0</moduleId1_>
+				<port1_>
+					<name>RightPrincipalMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ComputePCA:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:3</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="15" tracking_level="0" version="0">
+		<count>6</count>
+		<item_version>0</item_version>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>ComputePCA:0</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-1.52000000000000000e+02</first>
+				<second>-7.60000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateMatrix:0</first>
+			<second>
+				<first>-1.52000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:0</first>
+			<second>
+				<first>1.52000000000000000e+02</first>
+				<second>7.60000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:1</first>
+			<second>
+				<first>-5.32000000000000000e+02</first>
+				<second>7.60000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>
+				<first>-1.52000000000000000e+02</first>
+				<second>7.60000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:3</first>
+			<second>
+				<first>-5.32000000000000000e+02</first>
+				<second>-7.60000000000000000e+01</second>
+			</second>
+		</item>
+	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>6</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>ComputePCA:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateMatrix:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:3</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
+</networkFile>
+</boost_serialization>
+
