@@ -44,7 +44,7 @@ Preferences::Preferences() :
   showModuleErrorDialogs("showModuleErrorDialogs", true),
   saveBeforeExecute("saveBeforeExecute", false),
   showModuleErrorInlineMessages("showModuleErrorInlineMessages", true),
-  useNewViewSceneMouseControls("useNewViewSceneMouseControls", false),
+  useNewViewSceneMouseControls("useNewViewSceneMouseControls", true),
   modulesSnapToGrid("modulesSnapToGrid", true),
   highlightPorts("highlightPorts", false),
   autoNotes("autoNotes", false),

@@ -113,7 +113,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(FieldValue, std::string());
   state->setValue(FieldNode, 0);
   state->setValue(FieldElem, 0);
-  state->setValue(ProbeSize, 50);
+  state->setValue(ProbeSize, 1.0);
   state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
 }

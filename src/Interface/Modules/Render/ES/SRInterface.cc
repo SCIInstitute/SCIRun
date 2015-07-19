@@ -96,7 +96,7 @@ namespace SCIRun {
 
       showOrientation_ = true;
       autoRotate_ = false;
-      selectWidget_ = true;
+      selectWidget_ = false;
       widgetSelected_ = false;
       widgetExists_ = false;
       mRenderSortType = RenderState::TransparencySortType::UPDATE_SORT;

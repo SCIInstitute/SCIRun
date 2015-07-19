@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include "qbrush.h"
 
@@ -49,7 +50,14 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   
   setupObjectListWidget();
 
-  parent->menuMouseControlChanged(mouseControlComboBox_->currentIndex());
+  if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
+  {
+    mouseControlComboBox_->setCurrentIndex(1);
+  }
+  else
+  {
+    mouseControlComboBox_->setCurrentIndex(0);
+  }
 
   connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
@@ -58,6 +66,9 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(contSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeContinuous(bool)));
   connect(updateSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeUpdate(bool)));
   connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
+  connect(selectAllPushButton_, SIGNAL(clicked()), parent, SLOT(selectAllClicked()));
+  connect(deselectAllPushButton_, SIGNAL(clicked()), parent, SLOT(deselectAllClicked()));
+
 
   connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotChanged(QListWidgetItem*)));
   connect(this, SIGNAL(itemUnselected(const QString&)), parent, SLOT(handleUnselectedItem(const QString&)));
