@@ -125,7 +125,7 @@ void SRCamera::mouseWheelEvent(int32_t delta, int zoomSpeed)
 {
   if (mInterface.getMouseMode() != SRInterface::MOUSE_OLDSCIRUN)
   {
-    mArcLookAt->doZoom(-static_cast<float>(delta) / 100.0f);// , zoomSpeed);
+    mArcLookAt->doZoom(-static_cast<float>(delta) / 100.0f, zoomSpeed);
   }
 }
 

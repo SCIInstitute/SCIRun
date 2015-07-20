@@ -84,7 +84,7 @@ namespace SCIRun {
       const std::vector<std::string>& shaderDirs, 
       int frameInitLimit) :
       mMouseMode(MOUSE_OLDSCIRUN),
-      mZoomSpeed(2),
+      mZoomSpeed(65),
       mScreenWidth(640),
       mScreenHeight(480),
       axesFailCount_(0),
