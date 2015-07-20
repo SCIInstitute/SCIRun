@@ -29,7 +29,6 @@
 
 #include <iostream>
 #include <boost/thread.hpp>
-#include <boost/foreach.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Dataflow/Network/Connection.h>
@@ -136,7 +135,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 
-  BOOST_FOREACH(InputPortHandle input, module->inputPorts())
+  for (const auto& input : module->inputPorts())
   {
     if (input->nconnections() == 1)
     {
