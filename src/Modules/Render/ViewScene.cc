@@ -150,3 +150,4 @@ void ViewScene::processViewSceneObjectFeedback()
 }
 
 AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+AlgorithmParameterName ViewScene::InvertMouseZoom("InvertMouseZoom");

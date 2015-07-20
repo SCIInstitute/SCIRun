@@ -79,7 +79,7 @@
            <x>10</x>
            <y>293</y>
            <width>241</width>
-           <height>25</height>
+           <height>32</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
@@ -900,6 +900,19 @@
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="invertZoomCheckBox_">
+         <property name="geometry">
+          <rect>
+           <x>110</x>
+           <y>3</y>
+           <width>151</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Invert Zoom</string>
          </property>
         </widget>
        </widget>

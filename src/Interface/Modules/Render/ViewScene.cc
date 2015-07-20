@@ -89,6 +89,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 	  if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
 	  {
 		  spire->setMouseMode(Render::SRInterface::MOUSE_NEWSCIRUN);
+      
 	  }
 	  else
 	  {
@@ -508,6 +509,12 @@ void ViewSceneDialog::adjustZoomSpeed(int value)
 {
   std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
   spire->setZoomSpeed(value);
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::invertZoomClicked(bool value)
+{
+  
 }
 
 //------------------------------------------------------------------------------
