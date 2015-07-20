@@ -30,7 +30,6 @@
 
 #include <iostream>
 #include <boost/assign.hpp>
-#include <boost/foreach.hpp>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
@@ -123,11 +122,11 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   else
     builder.with_name(desc.lookupInfo_.module_name_);
 
-  BOOST_FOREACH(const InputPortDescription& input, desc.input_ports_)
+  for (const InputPortDescription& input : desc.input_ports_)
   {
     builder.add_input_port(Port::ConstructionParams(input.id, input.datatype, input.isDynamic));
   }
-  BOOST_FOREACH(const OutputPortDescription& output, desc.output_ports_)
+  for (const OutputPortDescription& output : desc.output_ports_)
   {
     builder.add_output_port(Port::ConstructionParams(output.id, output.datatype, output.isDynamic));
   }

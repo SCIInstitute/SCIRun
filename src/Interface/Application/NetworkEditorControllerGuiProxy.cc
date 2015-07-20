@@ -31,6 +31,8 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/NetworkSettings.h>
 #include <Dataflow/Network/Network.h>
+#include <QDebug>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Gui;
@@ -52,7 +54,14 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
 
 void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
 {
-  controller_->addModule(moduleName);
+  try
+  {
+    controller_->addModule(moduleName);
+  }
+  catch (SCIRun::Core::InvalidArgumentException& e)
+  {
+    Core::Logging::Log::get() << Core::Logging::ERROR_LOG << e.what() << std::endl;
+  }
 }
 
 void NetworkEditorControllerGuiProxy::removeModule(const ModuleId& id)

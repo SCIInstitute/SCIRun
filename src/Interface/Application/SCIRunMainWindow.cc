@@ -1013,6 +1013,43 @@ namespace {
     return 0;
   }
 
+	void addSnippetMenu(QTreeWidget* tree)
+	{
+		auto snips = new QTreeWidgetItem();
+		snips->setText(0, "Snippets");
+		snips->setForeground(0, favesColor());
+
+		//hard-code a few popular ones.
+
+		auto snipItem = new QTreeWidgetItem();
+		snipItem->setText(0, "ReadField->ShowField->ViewScene");
+		snips->addChild(snipItem);
+		snipItem = new QTreeWidgetItem();
+		snipItem->setText(0, "CreateLatVol->ShowField->ViewScene");
+		snips->addChild(snipItem);
+		snipItem = new QTreeWidgetItem();
+		snipItem->setText(0, "ReadField->ReportFieldInfo");
+		snips->addChild(snipItem);
+		snipItem = new QTreeWidgetItem();
+		snipItem->setText(0, "CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene");
+		snips->addChild(snipItem);
+
+		tree->addTopLevelItem(snips);
+	}
+
+	QTreeWidgetItem* getSnippetMenu(QTreeWidget* tree)
+	{
+		for (int i = 0; i < tree->topLevelItemCount(); ++i)
+		{
+			auto top = tree->topLevelItem(i);
+			if (top->text(0) == "Snippets")
+			{
+				return top;
+			}
+		}
+		return 0;
+	}
+
   void addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
   {
     LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
@@ -1084,6 +1121,7 @@ void SCIRunMainWindow::fillModuleSelector()
   auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
 
   addFavoriteMenu(moduleSelectorTreeWidget_);
+	addSnippetMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
   sortFavorites(moduleSelectorTreeWidget_);
 
