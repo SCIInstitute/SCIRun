@@ -41,6 +41,7 @@ SET(Algorithms_Math_SRCS
   BuildNoiseColumnMatrix.cc
   ComputeSVD.cc
   ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.cc
+  ComputePCA.cc
 )
 
 SET(Algorithms_Math_HEADERS
@@ -59,6 +60,7 @@ SET(Algorithms_Math_HEADERS
   BuildNoiseColumnMatrix.h
   ComputeSVD.h
   ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h
+  ComputePCA.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_Math 

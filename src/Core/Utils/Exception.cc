@@ -48,6 +48,24 @@ const char* ExceptionBase::what() const throw()
   }
 }
 
+//TODO: crappy duplication, need a smarter way to extract any boost error message (need to erase the type provided in get_error_info)
+const char* DimensionMismatch::what() const throw()
+{
+  try
+  {
+    if (auto msg = boost::get_error_info<Core::DimensionMismatchInfo>(*this))
+      return msg->c_str();
+    if (auto msg = boost::get_error_info<Core::ErrorMessage>(*this))
+      return msg->c_str();
+    else
+      return std::exception::what();
+  }
+  catch (...)
+  {
+    return "<error retrieving what>";
+  }
+}
+
 std::string ExceptionBase::typeName() const
 {
   try

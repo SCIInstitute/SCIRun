@@ -116,7 +116,7 @@
 				</second>
 			</item>
 			<item>
-				<first>CreateStandardColorMap:0</first>
+				<first>CreateStandardColorMap:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -519,7 +519,7 @@
 				</second>
 			</item>
 			<item>
-				<first>RescaleColorMap:0</first>
+				<first>RescaleColorMap:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -583,7 +583,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ShowField:0</first>
+				<first>ShowField:2</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -815,7 +815,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ShowField:1</first>
+				<first>ShowField:3</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -858,7 +858,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(0.494118,0.490684,0.28069)</value>
+										<value>Color(0.498039,0.00587472,0)</value>
 									</value>
 								</second>
 							</item>
@@ -966,7 +966,7 @@
 									<name>NodeTransparency</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1101,14 +1101,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>126</value>
+													<value>87</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>358</value>
+													<value>211</value>
 												</value>
 											</item>
 										</value>
@@ -1160,12 +1160,12 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
+				<moduleId1_>CreateStandardColorMap:1</moduleId1_>
 				<port1_>
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<moduleId2_>RescaleColorMap:1</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -1189,7 +1189,7 @@
 					<name>COILS_FIELD</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:1</moduleId2_>
+				<moduleId2_>ShowField:3</moduleId2_>
 				<port2_>
 					<name>Field</name>
 					<id>0</id>
@@ -1256,19 +1256,19 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<moduleId1_>RescaleColorMap:1</moduleId1_>
 				<port1_>
 					<name>ColorMapOutput</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:0</moduleId2_>
+				<moduleId2_>ShowField:2</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ShowField:0</moduleId1_>
+				<moduleId1_>ShowField:2</moduleId1_>
 				<port1_>
 					<name>SceneGraph</name>
 					<id>0</id>
@@ -1280,7 +1280,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ShowField:1</moduleId1_>
+				<moduleId1_>ShowField:3</moduleId1_>
 				<port1_>
 					<name>SceneGraph</name>
 					<id>0</id>
@@ -1297,10 +1297,10 @@
 					<name>MagneticField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<moduleId2_>RescaleColorMap:1</moduleId2_>
 				<port2_>
 					<name>Field</name>
-					<id>1</id>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -1309,7 +1309,7 @@
 					<name>MagneticField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:0</moduleId2_>
+				<moduleId2_>ShowField:2</moduleId2_>
 				<port2_>
 					<name>Field</name>
 					<id>0</id>
@@ -1342,10 +1342,10 @@
 			</second>
 		</item>
 		<item>
-			<first>CreateStandardColorMap:0</first>
+			<first>CreateStandardColorMap:1</first>
 			<second>
-				<first>5.32000000000000000e+02</first>
-				<second>6.08000000000000000e+02</second>
+				<first>4.56000000000000000e+02</first>
+				<second>5.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -1377,24 +1377,24 @@
 			</second>
 		</item>
 		<item>
-			<first>RescaleColorMap:0</first>
+			<first>RescaleColorMap:1</first>
+			<second>
+				<first>3.04000000000000000e+02</first>
+				<second>6.84000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:2</first>
 			<second>
 				<first>1.52000000000000000e+02</first>
-				<second>6.08000000000000000e+02</second>
+				<second>8.36000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ShowField:0</first>
+			<first>ShowField:3</first>
 			<second>
-				<first>7.60000000000000000e+01</first>
-				<second>9.88000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ShowField:1</first>
-			<second>
-				<first>3.80000000000000000e+02</first>
-				<second>9.12000000000000000e+02</second>
+				<first>6.08000000000000000e+02</first>
+				<second>8.36000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -1407,8 +1407,8 @@
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>7.60000000000000000e+01</first>
-				<second>1.14000000000000000e+03</second>
+				<first>2.58000000000000000e+02</first>
+				<second>9.51000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1451,7 +1451,7 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
-			<first>CreateStandardColorMap:0</first>
+			<first>CreateStandardColorMap:1</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -1471,15 +1471,15 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
-			<first>RescaleColorMap:0</first>
+			<first>RescaleColorMap:1</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>ShowField:0</first>
+			<first>ShowField:2</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>ShowField:1</first>
+			<first>ShowField:3</first>
 			<second>0</second>
 		</item>
 		<item>
