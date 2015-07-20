@@ -72,7 +72,7 @@ public:
   void mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
 
   /// Handle mouse wheel event.
-  void mouseWheelEvent(int32_t delta);
+  void mouseWheelEvent(int32_t delta, int zoomSpeed);
 
   /// Perform autoview.
   void doAutoView(const Core::Geometry::BBox& bbox);
