@@ -54,7 +54,7 @@ void SolveLinearSystemModule::setStateDefaults()
 {
   auto state = get_state();
   setStateDoubleFromAlgo(Variables::TargetError);
-  setStateDoubleFromAlgo(Variables::MaxIterations);
+  setStateIntFromAlgo(Variables::MaxIterations);
   setStateStringFromAlgoOption(Variables::Method);
   setStateStringFromAlgoOption(Variables::Preconditioner);
 }

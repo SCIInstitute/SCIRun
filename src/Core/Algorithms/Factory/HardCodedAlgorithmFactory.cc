@@ -94,6 +94,7 @@
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
 #include <boost/functional/factory.hpp>
 #include <boost/assign.hpp>
+#include <Core/Algorithms/Math/ComputePCA.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -183,6 +184,9 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 	    ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgo)
 		  ADD_MODULE_ALGORITHM(ConvertMatrixToString, ConvertMatrixToStringAlgo)
       ADD_MODULE_ALGORITHM(ConvertHexVolToTetVol, ConvertMeshToTetVolMeshAlgo)
+     ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
+	 ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
+      ADD_MODULE_ALGORITHM(ComputePCA, ComputePCAAlgo)
       ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
 	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
       ADD_MODULE_ALGORITHM(ClipVolumeByIsovalue, ClipMeshByIsovalueAlgo)

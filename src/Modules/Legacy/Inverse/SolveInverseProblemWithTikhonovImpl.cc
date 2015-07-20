@@ -199,10 +199,13 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
   {
     BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Input matrix dimensions must agree: Underdetermined case, rows are unequal."));
   }
+  //TODO @JCOLLFONT: this check breaks the Toolkit network. I will comment it out until we can discuss further
+#if 0
   if (M >= N && N != measuredData_->nrows())
   {
     BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Input matrix dimensions must agree: Overdetermined case, columns are unequal."));
   }
+#endif
   if (1 != measuredData_->ncols())
   {
     BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Measured data must be a vector"));
