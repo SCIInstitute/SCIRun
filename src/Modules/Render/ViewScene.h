@@ -72,7 +72,6 @@ namespace Render {
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
     static Core::Algorithms::AlgorithmParameterName BackgroundColor;
-    static Core::Algorithms::AlgorithmParameterName InvertMouseZoom;
     
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
 

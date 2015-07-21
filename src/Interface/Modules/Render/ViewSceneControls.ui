@@ -846,7 +846,7 @@
           </rect>
          </property>
          <property name="minimum">
-          <number>2</number>
+          <number>1</number>
          </property>
          <property name="maximum">
           <number>100</number>
@@ -902,19 +902,19 @@
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
-        <widget class="QCheckBox" name="invertZoomCheckBox_">
-         <property name="geometry">
-          <rect>
-           <x>110</x>
-           <y>3</y>
-           <width>151</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Invert Zoom</string>
-         </property>
-        </widget>
+       </widget>
+       <widget class="QCheckBox" name="invertZoomCheckBox_">
+        <property name="geometry">
+         <rect>
+          <x>160</x>
+          <y>10</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Invert Zoom</string>
+        </property>
        </widget>
       </widget>
      </widget>
