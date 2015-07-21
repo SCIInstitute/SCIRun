@@ -105,6 +105,7 @@ namespace SCIRun {
       void selectAllClicked();
       void deselectAllClicked();
       void adjustZoomSpeed(int value);
+      void invertZoomClicked(bool value);
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
       void sendGeometryFeedbackToState(int x, int y);
@@ -143,6 +144,7 @@ namespace SCIRun {
       bool hideViewBar_;
       bool showConfiguration_;
       bool itemValueChanged_;
+      bool invertZoom_;
       QColor bgColor_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;
