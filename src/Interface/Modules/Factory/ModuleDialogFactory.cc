@@ -217,5 +217,7 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
       return makerPair.second(moduleId, state, parentToUse_);
   }
 
+  QMessageBox::critical(nullptr, "Module/Dialog Inconsistency", "The module with ID \"" +
+    QString::fromStdString(moduleId) + "\" cannot find its dialog implementation. SCIRun is constructing a basic dialog so your network still is functional. Please update your network file by hand.");
   return new ModuleDialogBasic(moduleId, parentToUse_);
 }
