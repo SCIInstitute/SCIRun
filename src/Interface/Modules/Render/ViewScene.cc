@@ -235,6 +235,7 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 		spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
 		SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
 	}
+  mConfigurationDock->updateZoomOptionVisibility();
 }
 
 //------------------------------------------------------------------------------
@@ -500,6 +501,13 @@ void ViewSceneDialog::deselectAllClicked()
   itemValueChanged_ = true;
   unselectedObjectNames_ = previousObjectNames_;
   newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::adjustZoomSpeed(int value)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setZoomSpeed(value);
 }
 
 //------------------------------------------------------------------------------
