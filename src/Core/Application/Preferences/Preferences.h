@@ -79,6 +79,7 @@ namespace SCIRun
       BooleanVariable saveBeforeExecute;
       BooleanVariable showModuleErrorInlineMessages;
       BooleanVariable useNewViewSceneMouseControls;
+      BooleanVariable invertMouseZoom;
       BooleanVariable modulesSnapToGrid;
       BooleanVariable highlightPorts;
       BooleanVariable autoNotes;

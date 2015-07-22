@@ -176,6 +176,14 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().logInfo("Setting read: newViewSceneMouseControls = " + QString::number(mode));
     Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(mode);
   }
+  
+  const QString invertMouseZoom = "invertMouseZoom";
+  if (settings.contains(invertMouseZoom))
+  {
+    bool mode = settings.value(invertMouseZoom).toBool();
+    GuiLogger::Instance().logInfo("Setting read: invertMouseZoom = " + QString::number(mode));
+    Core::Preferences::Instance().invertMouseZoom.setValue(mode);
+  }
 
   const QString favoriteModules = "favoriteModules";
   if (settings.contains(favoriteModules))
@@ -243,6 +251,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefsWindow_->saveBeforeExecute());
   settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
+  settings.setValue("invertMouseZoom", prefs.invertMouseZoom.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
   settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));
   settings.setValue("dataPath", convertPathList(prefs.dataPath()));

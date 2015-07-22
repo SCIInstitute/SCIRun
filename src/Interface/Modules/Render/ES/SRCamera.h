@@ -80,6 +80,9 @@ public:
   /// Sets the selected View of the window to given up axis and view axis
   void setView(const glm::vec3& view, const glm::vec3& up);
 
+  /// Toggles the zoom controls on New Mouse Controls Inverted/Not Inverted
+  void setZoomInverted(bool value);
+
   /// Default camera settings
   /// @{
   static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
@@ -101,6 +104,7 @@ private:
 
   bool                  mPerspective; ///< True if we are using a perspective 
                                       ///< transformation. 
+  int                   mInvertVal;   ///< Invert multiplier
   float                 mFOV;         ///< Field of view.
   float                 mZNear;       ///< Position of near plane along view vec.
   float                 mZFar;        ///< Position of far plane along view vec.
