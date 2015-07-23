@@ -88,13 +88,33 @@ namespace
   class SnippetHandler
   {
   public:
+    explicit SnippetHandler(NetworkEditorController& nec) : nec_(nec) {}
     bool isSnippetName(const std::string& label) const
     {
       if (label.empty())
         return false;
       return label.front() == '[' && label.back() == ']';
     }
+    ModuleHandle create(const std::string& label)
+    {
+      std::cout << "found snippet: " << label << std::endl;
 
+      auto modsNeeded = parseModules(label);
+
+      for (const auto& m : modsNeeded)
+      {
+        mods_.push_back(nec_.addModule(m));
+      }
+
+      auto connsNeeded = parseConnections(label);
+      for (const auto& c : connsNeeded)
+      {
+        nec_.requestConnection(c.first, c.second);
+      }
+
+      return mods_.back();
+    }
+  private:
     std::vector<std::string> parseModules(const std::string& label) const
     {
       if (!isSnippetName(label))
@@ -122,10 +142,18 @@ namespace
         if (i + 1 != mods.end())
         {
           std::cout << "Need connection (" << *i << "->" << *(i+1) << ")" << std::endl;
+
+
+
+
+
         }
       }
       return {};
     }
+
+    NetworkEditorController& nec_;
+    std::vector<ModuleHandle> mods_;
   };
 }
 
@@ -136,26 +164,10 @@ ModuleHandle NetworkEditorController::addModule(const std::string& name)
   //TODO: 3. call connection code
   //TODO: 4. move modules around nicely. this one might be difficult, use a separate signal when snippet is done loading. pass a string of module ids
 
-  SnippetHandler snippet;
+  SnippetHandler snippet(*this);
   if (snippet.isSnippetName(name))
   {
-    std::cout << "found snippet: " << name << std::endl;
-
-    auto modsNeeded = snippet.parseModules(name);
-
-    ModuleHandle mod;
-    for (const auto& m : modsNeeded)
-    {
-      mod = addModule(m);
-    }
-
-    auto connsNeeded = snippet.parseConnections(name);
-    for (const auto& c : connsNeeded)
-    {
-      requestConnection(c.first, c.second);
-    }
-
-    return mod;
+    return snippet.create(name);
   }
 
   return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
