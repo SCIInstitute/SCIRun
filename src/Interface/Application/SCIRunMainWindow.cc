@@ -1014,7 +1014,6 @@ namespace {
   }
 
 //TODO working on this
-#if 0
 	void addSnippetMenu(QTreeWidget* tree)
 	{
 		auto snips = new QTreeWidgetItem();
@@ -1024,16 +1023,16 @@ namespace {
 		//hard-code a few popular ones.
 
 		auto snipItem = new QTreeWidgetItem();
-		snipItem->setText(0, "ReadField->ShowField->ViewScene");
+		snipItem->setText(0, "[ReadField->ShowField->ViewScene]");
 		snips->addChild(snipItem);
 		snipItem = new QTreeWidgetItem();
-		snipItem->setText(0, "CreateLatVol->ShowField->ViewScene");
+		snipItem->setText(0, "[CreateLatVol->ShowField->ViewScene]");
 		snips->addChild(snipItem);
 		snipItem = new QTreeWidgetItem();
-		snipItem->setText(0, "ReadField->ReportFieldInfo");
+		snipItem->setText(0, "[ReadField->ReportFieldInfo]");
 		snips->addChild(snipItem);
 		snipItem = new QTreeWidgetItem();
-		snipItem->setText(0, "CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene");
+		snipItem->setText(0, "[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]");
 		snips->addChild(snipItem);
 
 		tree->addTopLevelItem(snips);
@@ -1051,7 +1050,6 @@ namespace {
 		}
 		return 0;
 	}
-#endif
 
   void addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
   {
@@ -1124,7 +1122,7 @@ void SCIRunMainWindow::fillModuleSelector()
   auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
 
   addFavoriteMenu(moduleSelectorTreeWidget_);
-	//addSnippetMenu(moduleSelectorTreeWidget_);
+	addSnippetMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
   sortFavorites(moduleSelectorTreeWidget_);
 

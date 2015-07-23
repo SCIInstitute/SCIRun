@@ -33,6 +33,9 @@
 #include <Dataflow/Network/Network.h>
 #include <QDebug>
 #include <Core/Logging/Log.h>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Gui;
@@ -52,8 +55,48 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
   controller_->connectNetworkDoneLoading(boost::bind(&NetworkEditorControllerGuiProxy::networkDoneLoading, this, _1));
 }
 
+namespace
+{
+  class SnippetHandler
+  {
+  public:
+    bool isSnippetName(const std::string& label) const
+    {
+      if (label.empty())
+        return false;
+      return label.front() == '[' && label.back() == ']';
+    }
+
+    std::vector<std::string> parseModules(const std::string& label) const
+    {
+      if (!isSnippetName(label))
+        return {};
+
+      std::vector<std::string> mods;
+      std::string strippedLabel(label.begin() + 1, label.end() - 1);
+      boost::split(mods, strippedLabel, boost::is_any_of("->"), boost::token_compress_on);
+      return mods;
+    }
+  };
+}
+
 void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
 {
+  SnippetHandler snippet;
+  if (snippet.isSnippetName(moduleName))
+  {
+    qDebug() << "found snippet:" << moduleName.c_str();
+
+    auto modsNeeded = snippet.parseModules(moduleName);
+
+    for (const auto& m : modsNeeded)
+    {
+      addModule(m);
+    }
+
+    return;
+  }
+
   try
   {
     controller_->addModule(moduleName);

@@ -81,6 +81,10 @@ NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::Net
 
 ModuleHandle NetworkEditorController::addModule(const std::string& name)
 {
+  //TODO: 1. snippet checker move here
+  //TODO: 2. parse snippet string for connections
+  //TODO: 3. call connection code
+  //TODO: 4. move modules around nicely. this one might be difficult, use a separate signal when snippet is done loading. pass a string of module ids
   return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
 }
 
