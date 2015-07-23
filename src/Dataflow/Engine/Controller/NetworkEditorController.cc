@@ -40,6 +40,10 @@
 #include <Dataflow/Engine/Controller/DynamicPortManager.h>
 #include <Core/Logging/Log.h>
 
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
@@ -79,12 +83,54 @@ NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::Net
 {
 }
 
+namespace
+{
+  class SnippetHandler
+  {
+  public:
+    bool isSnippetName(const std::string& label) const
+    {
+      if (label.empty())
+        return false;
+      return label.front() == '[' && label.back() == ']';
+    }
+
+    std::vector<std::string> parseModules(const std::string& label) const
+    {
+      if (!isSnippetName(label))
+        return {};
+
+      std::vector<std::string> mods;
+      std::string strippedLabel(label.begin() + 1, label.end() - 1);
+      boost::split(mods, strippedLabel, boost::is_any_of("->"), boost::token_compress_on);
+      return mods;
+    }
+  };
+}
+
 ModuleHandle NetworkEditorController::addModule(const std::string& name)
 {
-  //TODO: 1. snippet checker move here
+  //XTODO: 1. snippet checker move here
   //TODO: 2. parse snippet string for connections
   //TODO: 3. call connection code
   //TODO: 4. move modules around nicely. this one might be difficult, use a separate signal when snippet is done loading. pass a string of module ids
+
+  SnippetHandler snippet;
+  if (snippet.isSnippetName(name))
+  {
+    std::cout << "found snippet: " << name << std::endl;
+
+    auto modsNeeded = snippet.parseModules(name);
+
+    ModuleHandle mod;
+    for (const auto& m : modsNeeded)
+    {
+      mod = addModule(m);
+    }
+
+    return mod;
+  }
+
   return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
 }
 
