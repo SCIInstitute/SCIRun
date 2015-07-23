@@ -105,13 +105,34 @@ namespace
       boost::split(mods, strippedLabel, boost::is_any_of("->"), boost::token_compress_on);
       return mods;
     }
+
+    std::vector<std::pair<PortDescriptionInterface*,PortDescriptionInterface*>> parseConnections(const std::string& label) const
+    {
+      if (!isSnippetName(label))
+        return {};
+
+      //TODO: need a way to specify more than just linear connections.
+      auto mods = parseModules(label);
+
+      if (mods.size() < 2)
+        return {};
+
+      for (auto i = mods.begin(); i != mods.end(); ++i)
+      {
+        if (i + 1 != mods.end())
+        {
+          std::cout << "Need connection (" << *i << "->" << *(i+1) << ")" << std::endl;
+        }
+      }
+      return {};
+    }
   };
 }
 
 ModuleHandle NetworkEditorController::addModule(const std::string& name)
 {
   //XTODO: 1. snippet checker move here
-  //TODO: 2. parse snippet string for connections
+  //XTODO: 2. parse snippet string for connections
   //TODO: 3. call connection code
   //TODO: 4. move modules around nicely. this one might be difficult, use a separate signal when snippet is done loading. pass a string of module ids
 
@@ -126,6 +147,12 @@ ModuleHandle NetworkEditorController::addModule(const std::string& name)
     for (const auto& m : modsNeeded)
     {
       mod = addModule(m);
+    }
+
+    auto connsNeeded = snippet.parseConnections(name);
+    for (const auto& c : connsNeeded)
+    {
+      requestConnection(c.first, c.second);
     }
 
     return mod;
@@ -199,7 +226,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   return newModule;
 }
 
-void NetworkEditorController::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+void NetworkEditorController::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   auto newMod = addModule(newModuleName);
 
@@ -241,7 +268,7 @@ void NetworkEditorController::printNetwork() const
   }
 }
 
-void NetworkEditorController::requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to)
+void NetworkEditorController::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
   ENSURE_NOT_NULL(from, "from port");
   ENSURE_NOT_NULL(to, "to port");
