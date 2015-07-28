@@ -144,7 +144,7 @@ namespace
       {
         if (i + 1 != mods_.end())
         {
-          std::cout << "Need connection (" << (*i)->get_module_name() << "->" << (*(i+1))->get_module_name() << ")" << std::endl;
+          //std::cout << "Need connection (" << (*i)->get_module_name() << "->" << (*(i+1))->get_module_name() << ")" << std::endl;
 
           portPairs.push_back(findFirstMatchingPortPair(*i, *(i+1)));
         }
@@ -154,6 +154,15 @@ namespace
 
     PortPair findFirstMatchingPortPair(ModuleHandle from, ModuleHandle to) const
     {
+      //std::cout << "findFirstMatchingPortPair " << from->get_module_name() << " -> " << to->get_module_name() << std::endl;
+      for (const auto& output : from->outputPorts())
+      {
+        for (const auto& input : to->inputPorts())
+        {
+          if (output->get_typename() == input->get_typename())
+            return PortPair(input.get(), output.get());
+        }
+      }
       return PortPair();
     }
 
@@ -166,7 +175,7 @@ ModuleHandle NetworkEditorController::addModule(const std::string& name)
 {
   //XTODO: 1. snippet checker move here
   //XTODO: 2. parse snippet string for connections
-  //TODO: 3. call connection code
+  //XTODO: 3. call connection code
   //TODO: 4. move modules around nicely. this one might be difficult, use a separate signal when snippet is done loading. pass a string of module ids
 
   SnippetHandler snippet(*this);
@@ -253,7 +262,7 @@ void NetworkEditorController::connectNewModule(const ModuleHandle& moduleToConne
   /// @todo duplication
   if (portToConnect->isInput())
   {
-    BOOST_FOREACH(OutputPortHandle p, newMod->outputPorts())
+    for (const auto& p : newMod->outputPorts())
     {
       if (p->get_typename() == portToConnect->get_typename())
       {
@@ -264,7 +273,7 @@ void NetworkEditorController::connectNewModule(const ModuleHandle& moduleToConne
   }
   else
   {
-    BOOST_FOREACH(InputPortHandle p, newMod->inputPorts())
+    for (const auto& p : newMod->inputPorts())
     {
       if (p->get_typename() == portToConnect->get_typename())
       {
