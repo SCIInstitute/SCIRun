@@ -73,6 +73,7 @@ namespace Gui {
     void executionStarted();
     void executionFinished(int returnCode);
     void networkDoneLoading(int nMod);
+    void snippetNeedsMoving(const std::string& name);
   private:
     boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
   };

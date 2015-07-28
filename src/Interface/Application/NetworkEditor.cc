@@ -123,6 +123,8 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
     disconnect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
       this, SLOT(connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+
+    disconnect(controller_.get(), SIGNAL(snippetNeedsMoving(const std::string&)), this, SLOT(moveSnippet(const std::string&)));
   }
 
   controller_ = controller;
@@ -137,6 +139,8 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
     connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
       this, SLOT(connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+
+    connect(controller_.get(), SIGNAL(snippetNeedsMoving(const std::string&)), this, SLOT(moveSnippet(const std::string&)));
 
     //TODO: duplication
     const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";
@@ -369,6 +373,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setVisible(visibleItems_);
 
   GuiLogger::Instance().logInfoStd("Module added: " + module->getModuleId());
+
+  qDebug() << "setup module done";
 }
 
 void NetworkEditor::setMouseAsDragMode()
@@ -1116,6 +1122,11 @@ int NetworkEditor::currentZoomPercentage() const
 bool NetworkEditor::containsViewScene() const
 {
   return findFirstByName(scene_->items(), "ViewScene") != nullptr;
+}
+
+void NetworkEditor::moveSnippet(const std::string& name)
+{
+  std::cout << "NE SLOT moveSnippet " << name << std::endl;
 }
 
 void NetworkEditor::setModuleMini(bool mini)

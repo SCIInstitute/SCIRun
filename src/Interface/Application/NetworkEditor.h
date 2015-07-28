@@ -235,6 +235,7 @@ Q_SIGNALS:
     void centerView();
     void setModuleMini(bool mini);
     void highlightTaggedItem(int tagValue);
+    void moveSnippet(const std::string& name);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);

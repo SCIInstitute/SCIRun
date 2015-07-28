@@ -181,7 +181,8 @@ ModuleHandle NetworkEditorController::addModule(const std::string& name)
   SnippetHandler snippet(*this);
   if (snippet.isSnippetName(name))
   {
-    return snippet.create(name);
+    auto lastMod = snippet.create(name);
+    snippetNeedsMoving_(name);
   }
 
   return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
@@ -378,6 +379,11 @@ boost::signals2::connection NetworkEditorController::connectPortRemoved(const Po
 boost::signals2::connection NetworkEditorController::connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber)
 {
   return networkDoneLoading_.connect(subscriber);
+}
+
+boost::signals2::connection NetworkEditorController::connectSnippetNeedsMoving(const SnippetNeedsMovingSignalType::slot_type& subscriber)
+{
+  return snippetNeedsMoving_.connect(subscriber);
 }
 
 NetworkFileHandle NetworkEditorController::saveNetwork() const
