@@ -97,8 +97,6 @@ namespace
     }
     ModuleHandle create(const std::string& label)
     {
-      std::cout << "found snippet: " << label << std::endl;
-
       auto modsNeeded = parseModules(label);
 
       ModulePositions positions;
@@ -185,7 +183,7 @@ ModuleHandle NetworkEditorController::addModule(const std::string& name)
   SnippetHandler snippet(*this);
   if (snippet.isSnippetName(name))
   {
-    auto lastMod = snippet.create(name);
+    return snippet.create(name);
   }
 
   return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
