@@ -50,7 +50,6 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
   controller_->connectNetworkExecutionStarts([&]() { executionStarted(); });
   controller_->connectNetworkExecutionFinished(boost::bind(&NetworkEditorControllerGuiProxy::executionFinished, this, _1));
   controller_->connectNetworkDoneLoading(boost::bind(&NetworkEditorControllerGuiProxy::networkDoneLoading, this, _1));
-  controller_->connectSnippetNeedsMoving(boost::bind(&NetworkEditorControllerGuiProxy::snippetNeedsMoving, this, _1));
 }
 
 void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
@@ -64,7 +63,6 @@ void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
     qDebug() << "CAUGHT EXCEPTION";
     Core::Logging::Log::get() << Core::Logging::ERROR_LOG << e.what() << std::endl;
   }
-  qDebug() << "addModule done";
 }
 
 void NetworkEditorControllerGuiProxy::removeModule(const ModuleId& id)

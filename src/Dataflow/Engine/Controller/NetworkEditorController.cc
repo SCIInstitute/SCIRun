@@ -101,9 +101,14 @@ namespace
 
       auto modsNeeded = parseModules(label);
 
+      ModulePositions positions;
+      int i = 0;
+      const double moduleSpacing = 120;
       for (const auto& m : modsNeeded)
       {
-        mods_.push_back(nec_.addModule(m));
+        auto mod = nec_.addModule(m);
+        mods_.push_back(mod);
+        positions.modulePositions[mod->get_id().id_] = std::make_pair(0.0, moduleSpacing * i++);
       }
 
       auto connsNeeded = parseConnections(label);
@@ -111,6 +116,8 @@ namespace
       {
         nec_.requestConnection(c.first, c.second);
       }
+
+      nec_.updateModulePositions(positions);
 
       return mods_.back();
     }
@@ -144,8 +151,6 @@ namespace
       {
         if (i + 1 != mods_.end())
         {
-          //std::cout << "Need connection (" << (*i)->get_module_name() << "->" << (*(i+1))->get_module_name() << ")" << std::endl;
-
           portPairs.push_back(findFirstMatchingPortPair(*i, *(i+1)));
         }
       }
@@ -154,7 +159,6 @@ namespace
 
     PortPair findFirstMatchingPortPair(ModuleHandle from, ModuleHandle to) const
     {
-      //std::cout << "findFirstMatchingPortPair " << from->get_module_name() << " -> " << to->get_module_name() << std::endl;
       for (const auto& output : from->outputPorts())
       {
         for (const auto& input : to->inputPorts())
@@ -176,13 +180,12 @@ ModuleHandle NetworkEditorController::addModule(const std::string& name)
   //XTODO: 1. snippet checker move here
   //XTODO: 2. parse snippet string for connections
   //XTODO: 3. call connection code
-  //TODO: 4. move modules around nicely. this one might be difficult, use a separate signal when snippet is done loading. pass a string of module ids
+  //XTODO: 4. move modules around nicely. this one might be difficult, use a separate signal when snippet is done loading. pass a string of module ids
 
   SnippetHandler snippet(*this);
   if (snippet.isSnippetName(name))
   {
     auto lastMod = snippet.create(name);
-    snippetNeedsMoving_(name);
   }
 
   return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
@@ -381,11 +384,6 @@ boost::signals2::connection NetworkEditorController::connectNetworkDoneLoading(c
   return networkDoneLoading_.connect(subscriber);
 }
 
-boost::signals2::connection NetworkEditorController::connectSnippetNeedsMoving(const SnippetNeedsMovingSignalType::slot_type& subscriber)
-{
-  return snippetNeedsMoving_.connect(subscriber);
-}
-
 NetworkFileHandle NetworkEditorController::saveNetwork() const
 {
   NetworkToXML conv(serializationManager_);
@@ -543,4 +541,12 @@ const ModuleLookupInfoSet& NetworkEditorController::possibleReplacements(ModuleH
     replacementFilter_ = builder.build();
   }
   return replacementFilter_->findReplacements(makeConnectedPortInfo(module));
+}
+
+void NetworkEditorController::updateModulePositions(const ModulePositions& modulePositions)
+{
+  if (serializationManager_)
+  {
+    serializationManager_->updateModulePositions(modulePositions);
+  }
 }
