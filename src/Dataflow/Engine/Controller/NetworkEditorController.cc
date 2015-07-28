@@ -126,30 +126,35 @@ namespace
       return mods;
     }
 
-    std::vector<std::pair<PortDescriptionInterface*,PortDescriptionInterface*>> parseConnections(const std::string& label) const
+    typedef std::pair<PortDescriptionInterface*,PortDescriptionInterface*> PortPair;
+    typedef std::vector<PortPair> PortPairVector;
+    PortPairVector parseConnections(const std::string& label) const
     {
       if (!isSnippetName(label))
         return {};
 
       //TODO: need a way to specify more than just linear connections.
-      auto mods = parseModules(label);
+      parseModules(label);
 
-      if (mods.size() < 2)
+      if (mods_.size() < 2)
         return {};
 
-      for (auto i = mods.begin(); i != mods.end(); ++i)
+      PortPairVector portPairs;
+      for (auto i = mods_.begin(); i != mods_.end(); ++i)
       {
-        if (i + 1 != mods.end())
+        if (i + 1 != mods_.end())
         {
-          std::cout << "Need connection (" << *i << "->" << *(i+1) << ")" << std::endl;
+          std::cout << "Need connection (" << (*i)->get_module_name() << "->" << (*(i+1))->get_module_name() << ")" << std::endl;
 
-
-
-
-
+          portPairs.push_back(findFirstMatchingPortPair(*i, *(i+1)));
         }
       }
-      return {};
+      return portPairs;
+    }
+
+    PortPair findFirstMatchingPortPair(ModuleHandle from, ModuleHandle to) const
+    {
+      return PortPair();
     }
 
     NetworkEditorController& nec_;
