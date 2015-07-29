@@ -101,14 +101,17 @@ namespace
 
       ModulePositions positions;
       int i = 0;
-      const double moduleSpacing = 120;
+      const double moduleVerticalSpacing = 120;
+      const double moduleHorizontalSpacing = 264;
       const double moduleSpacingOffset = 10;
+      static int numSnips = 0;
       for (const auto& m : modsNeeded)
       {
         auto mod = nec_.addModule(m);
         mods_.push_back(mod);
-        positions.modulePositions[mod->get_id().id_] = std::make_pair(0.0, moduleSpacing * i++ + moduleSpacingOffset);
+        positions.modulePositions[mod->get_id().id_] = std::make_pair(moduleSpacingOffset + numSnips*moduleHorizontalSpacing, moduleVerticalSpacing * i++ + moduleSpacingOffset);
       }
+      numSnips++;
 
       auto connsNeeded = parseConnections(label);
       for (const auto& c : connsNeeded)
