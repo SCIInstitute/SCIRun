@@ -102,11 +102,12 @@ namespace
       ModulePositions positions;
       int i = 0;
       const double moduleSpacing = 120;
+      const double moduleSpacingOffset = 10;
       for (const auto& m : modsNeeded)
       {
         auto mod = nec_.addModule(m);
         mods_.push_back(mod);
-        positions.modulePositions[mod->get_id().id_] = std::make_pair(0.0, moduleSpacing * i++);
+        positions.modulePositions[mod->get_id().id_] = std::make_pair(0.0, moduleSpacing * i++ + moduleSpacingOffset);
       }
 
       auto connsNeeded = parseConnections(label);
