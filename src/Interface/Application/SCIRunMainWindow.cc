@@ -1013,7 +1013,13 @@ namespace {
     return 0;
   }
 
-//TODO working on this
+  void addSnippet(const QString& code, QTreeWidgetItem* snips)
+  {
+    auto snipItem = new QTreeWidgetItem();
+    snipItem->setText(0, code);
+    snips->addChild(snipItem);
+  }
+
 	void addSnippetMenu(QTreeWidget* tree)
 	{
 		auto snips = new QTreeWidgetItem();
@@ -1022,18 +1028,11 @@ namespace {
 
 		//hard-code a few popular ones.
 
-		auto snipItem = new QTreeWidgetItem();
-		snipItem->setText(0, "[ReadField->ShowField->ViewScene]");
-		snips->addChild(snipItem);
-		snipItem = new QTreeWidgetItem();
-		snipItem->setText(0, "[CreateLatVol->ShowField->ViewScene]");
-		snips->addChild(snipItem);
-		snipItem = new QTreeWidgetItem();
-		snipItem->setText(0, "[ReadField->ReportFieldInfo]");
-		snips->addChild(snipItem);
-		snipItem = new QTreeWidgetItem();
-		snipItem->setText(0, "[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]");
-		snips->addChild(snipItem);
+    addSnippet("[ReadField->ShowField->ViewScene]", snips);
+    addSnippet("[CreateLatVol->ShowField->ViewScene]", snips);
+    addSnippet("[ReadField->ReportFieldInfo]", snips);
+    addSnippet("[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]", snips);
+    addSnippet("[GetFieldBoundary->FairMesh->ShowField]", snips);
 
 		tree->addTopLevelItem(snips);
 	}
