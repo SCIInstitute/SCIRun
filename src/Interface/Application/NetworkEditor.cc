@@ -884,8 +884,10 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
 
 void NetworkEditor::executeAll()
 {
-  QtConcurrent::run([this]() { controller_->executeAll(*this); });
-  
+  // explicit type needed for older Qt and/or clang
+  std::function<void()> exec = [this]() { controller_->executeAll(*this); };
+  QtConcurrent::run(exec);
+
   //TODO: not sure about this right now.
   //Q_EMIT modified();
   Q_EMIT networkExecuted();
@@ -893,7 +895,9 @@ void NetworkEditor::executeAll()
 
 void NetworkEditor::executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
 {
-  QtConcurrent::run([this, &module]() { controller_->executeModule(module, *this); });
+  // explicit type needed for older Qt and/or clang
+  std::function<void()> exec = [this, &module]() { controller_->executeModule(module, *this); };
+  QtConcurrent::run(exec);
   //TODO: not sure about this right now.
   //Q_EMIT modified();
   Q_EMIT networkExecuted();
