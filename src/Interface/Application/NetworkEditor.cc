@@ -350,6 +350,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(snapToModules()), proxy, SLOT(snapToGrid()));
   connect(this, SIGNAL(highlightPorts(int)), proxy, SLOT(highlightPorts(int)));
+  connect(this, SIGNAL(resetModulesDueToCycle()), module, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
   connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
   connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
@@ -901,6 +902,12 @@ ExecutableObject* NetworkEditor::lookupExecutable(const ModuleId& id) const
 {
   auto widget = findById(scene_->items(), id.id_);
   return widget ? widget->getModuleWidget() : 0;
+}
+
+void NetworkEditor::resetNetworkDueToCycle()
+{
+  Q_EMIT resetModulesDueToCycle();
+  //TODO: ??reset module colors--right now they stay yellow
 }
 
 void NetworkEditor::removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId& id)

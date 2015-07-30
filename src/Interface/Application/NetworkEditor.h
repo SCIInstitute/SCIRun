@@ -235,6 +235,7 @@ Q_SIGNALS:
     void centerView();
     void setModuleMini(bool mini);
     void highlightTaggedItem(int tagValue);
+    void resetNetworkDueToCycle();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -251,6 +252,7 @@ Q_SIGNALS:
     void zoomLevelChanged(int zoom);
     void disableWidgetDisabling();
     void reenableWidgetDisabling();
+    void resetModulesDueToCycle();
   private Q_SLOTS:
     void cut();
     void copy();

@@ -166,6 +166,7 @@ private Q_SLOTS:
   void showPythonWarning(bool visible);
   void makeModulesLargeSize();
   void makeModulesSmallSize();
+  void alertForNetworkCycles(int code);
   void setDataDirectoryFromGUI();
   void toolkitDownload();
   void addToPathFromGUI();

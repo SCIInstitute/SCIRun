@@ -373,6 +373,7 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), &WidgetDisablingService::Instance(), SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), &WidgetDisablingService::Instance(), SLOT(enableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(changeExecuteActionIconToPlay()));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(alertForNetworkCycles(int)));
 
 	connect(networkEditor_, SIGNAL(disableWidgetDisabling()), &WidgetDisablingService::Instance(), SLOT(temporarilyDisableService()));
   connect(networkEditor_, SIGNAL(reenableWidgetDisabling()), &WidgetDisablingService::Instance(), SLOT(temporarilyEnableService()));
@@ -1560,6 +1561,15 @@ void SCIRunMainWindow::adjustExecuteButtonAppearance()
     prefsWindow_->actionTextIconCheckBox_->setText("Execute Button Text+Icon");
 		executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     break;
+  }
+}
+
+void SCIRunMainWindow::alertForNetworkCycles(int code)
+{
+  if (code == -1)
+  {
+    QMessageBox::warning(this, "Network graph has a cycle", "Your network contains a cycle. The execution scheduler cannot handle cycles at this time. Please ensure all cycles are broken before executing.");
+    networkEditor_->resetNetworkDueToCycle();
   }
 }
 
