@@ -530,16 +530,25 @@ void NetworkEditor::cut()
 
 void NetworkEditor::copy()
 {
-  //Module* node = selectedModule();
-  //if (!node)
-  //  return;
+  qDebug() << "COPY CONTENTS";
+  for (const auto& item : scene_->selectedItems())
+  {
+    qDebug() << item;
+  }
 
-  //QString str = QString("Module %1 %2 %3 %4")
-  //              .arg(node->textColor().name())
-  //              .arg(node->outlineColor().name())
-  //              .arg(node->backgroundColor().name())
-  //              .arg(node->text());
+/*
+  auto node = selectedModule();
+  if (!node)
+    return;
+
+  QString str = QString("Module %1 %2 %3 %4")
+                .arg(node->textColor().name())
+                .arg(node->outlineColor().name())
+                .arg(node->backgroundColor().name())
+                .arg(node->text());
+  qDebug() << str;
   //QApplication::clipboard()->setText(str);
+  */
 }
 
 void NetworkEditor::paste()

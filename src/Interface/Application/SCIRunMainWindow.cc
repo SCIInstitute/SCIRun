@@ -307,6 +307,10 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
   connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
 
+	connect(actionCut_, SIGNAL(triggered()), networkEditor_, SLOT(cut()));
+	connect(actionCopy_, SIGNAL(triggered()), networkEditor_, SLOT(copy()));
+	connect(actionPaste_, SIGNAL(triggered()), networkEditor_, SLOT(paste()));
+
   connect(actionKeyboardShortcuts_, SIGNAL(triggered()), this, SLOT(showKeyboardShortcutsDialog()));
 
   //TODO: store in xml file, add to app resources
@@ -1415,14 +1419,10 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
   QList<QAction*> nonfunctioningActions;
   nonfunctioningActions <<
     actionInsert_ <<
-    actionCreate_Module_Skeleton_ <<
-    actionCut_ <<
-    actionCopy_ <<
-    actionPaste_;
+    actionCreate_Module_Skeleton_;
   QList<QMenu*> nonfunctioningMenus;
   nonfunctioningMenus <<
     menuSubnets_;
-		//<< menuToolkits_;
   QList<QWidget*> nonfunctioningWidgets;
   nonfunctioningWidgets <<
     prefsWindow_->scirunNetsLabel_ <<
