@@ -396,6 +396,9 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)),
     commandConverter_.get(), SLOT(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
+  connect(networkEditor_, SIGNAL(newModule(const QString&, bool)), this, SLOT(addModuleToWindowList(const QString&, bool)));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)), 
+    this, SLOT(removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId&)));
 }
 
 void SCIRunMainWindow::setTipsAndWhatsThis()
@@ -1571,6 +1574,20 @@ void SCIRunMainWindow::alertForNetworkCycles(int code)
     QMessageBox::warning(this, "Network graph has a cycle", "Your network contains a cycle. The execution scheduler cannot handle cycles at this time. Please ensure all cycles are broken before executing.");
     networkEditor_->resetNetworkDueToCycle();
   }
+}
+
+void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
+{
+  qDebug() << "add module to window list: " << modId << hasUI;
+  auto modAction = new QAction(this);
+  modAction->setText(modId);
+  modAction->setEnabled(hasUI);
+  menuCurrent_->addAction(modAction);
+}
+
+void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
+{
+  qDebug() << "remove module from window list: " << QString::fromStdString(modId.id_);
 }
 
 void SCIRunMainWindow::setupTagManagerWindow()

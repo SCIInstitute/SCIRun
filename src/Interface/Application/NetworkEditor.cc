@@ -165,6 +165,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::N
   count.increment();
   //std::cout << "\tNE modules done (end): " << *count.count << std::endl;
   Q_EMIT modified();
+  Q_EMIT newModule(QString::fromStdString(module->get_id()), module->has_ui());
 }
 
 void NetworkEditor::connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)

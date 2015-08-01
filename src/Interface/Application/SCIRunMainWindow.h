@@ -40,6 +40,9 @@ class QToolButton;
 
 namespace SCIRun {
   namespace Dataflow {
+    namespace Networks {
+      struct ModuleId;
+    }
     namespace Engine {
       class NetworkEditorController;
     }}}
@@ -183,6 +186,8 @@ private Q_SLOTS:
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
+  void addModuleToWindowList(const QString& id, bool hasUI);
+  void removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId& modId);
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
   void toggleTagLayer(bool toggle);

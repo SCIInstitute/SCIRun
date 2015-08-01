@@ -253,6 +253,7 @@ Q_SIGNALS:
     void disableWidgetDisabling();
     void reenableWidgetDisabling();
     void resetModulesDueToCycle();
+    void newModule(const QString& modId, bool hasUI);
   private Q_SLOTS:
     void cut();
     void copy();
