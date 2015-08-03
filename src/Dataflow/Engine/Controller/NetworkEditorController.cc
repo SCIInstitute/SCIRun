@@ -116,7 +116,8 @@ namespace
       auto connsNeeded = parseConnections(label);
       for (const auto& c : connsNeeded)
       {
-        nec_.requestConnection(c.first, c.second);
+        if (c.first && c.second)
+          nec_.requestConnection(c.first, c.second);
       }
 
       nec_.updateModulePositions(positions);
@@ -131,7 +132,7 @@ namespace
 
       std::vector<std::string> mods;
       std::string strippedLabel(label.begin() + 1, label.end() - 1);
-      boost::split(mods, strippedLabel, boost::is_any_of("->"), boost::token_compress_on);
+      boost::split(mods, strippedLabel, boost::is_any_of("->()"), boost::token_compress_on);
       return mods;
     }
 
