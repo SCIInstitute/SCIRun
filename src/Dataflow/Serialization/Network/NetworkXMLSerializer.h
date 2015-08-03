@@ -30,7 +30,7 @@
 
 
 #ifndef CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H
-#define CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H 
+#define CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
@@ -45,7 +45,7 @@ namespace Networks {
   class SCISHARE NetworkXMLConverter : boost::noncopyable
   {
   public:
-    NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, Core::Algorithms::AlgorithmFactoryHandle algoFactory, 
+    NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       ReexecuteStrategyFactoryHandle reexFactory,
       NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm = 0);
     NetworkHandle from_xml_data(const NetworkXML& data);
@@ -64,6 +64,7 @@ namespace Networks {
   public:
     explicit NetworkToXML(NetworkEditorSerializationManager* nesm = 0);
     NetworkFileHandle to_xml_data(const NetworkHandle& network);
+    NetworkFileHandle to_xml_data(const NetworkHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter);
   private:
     NetworkEditorSerializationManager* nesm_;
   };

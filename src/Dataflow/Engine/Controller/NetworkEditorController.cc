@@ -389,7 +389,8 @@ boost::signals2::connection NetworkEditorController::connectNetworkDoneLoading(c
 
 NetworkFileHandle NetworkEditorController::serializeNetworkFragment(ModuleFilter modFilter, ConnectionFilter connFilter) const
 {
-  return nullptr;
+  NetworkToXML conv(serializationManager_);
+  return conv.to_xml_data(theNetwork_, modFilter, connFilter);
 }
 
 NetworkFileHandle NetworkEditorController::saveNetwork() const

@@ -38,6 +38,7 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/lambda/lambda.hpp>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
@@ -108,22 +109,34 @@ NetworkFileHandle NetworkXMLConverter::to_xml_data(const NetworkHandle& network)
 
 NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 {
+  return to_xml_data(network, boost::lambda::constant(true), boost::lambda::constant(true));
+}
+
+NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter)
+{
   NetworkXML networkXML;
   Network::ConnectionDescriptionList conns = network->connections();
   for (const auto& desc : conns)
-    networkXML.connections.push_back(ConnectionDescriptionXML(desc));
+  {
+    if (connFilter(desc))
+      networkXML.connections.push_back(ConnectionDescriptionXML(desc));
+  }
   for (size_t i = 0; i < network->nmodules(); ++i)
   {
     ModuleHandle module = network->module(i);
-    ModuleStateHandle state = module->get_state();
-    boost::shared_ptr<SimpleMapModuleStateXML> stateXML = make_state_xml(state);
-    networkXML.modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
+    if (modFilter(module))
+    {
+      ModuleStateHandle state = module->get_state();
+      boost::shared_ptr<SimpleMapModuleStateXML> stateXML = make_state_xml(state);
+      networkXML.modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
+    }
   }
 
   NetworkFileHandle file(boost::make_shared<NetworkFile>());
   file->network = networkXML;
   if (nesm_)
   {
+    //TODO: need to filter these too
     file->modulePositions = *nesm_->dumpModulePositions();
     file->moduleNotes = *nesm_->dumpModuleNotes();
     file->connectionNotes = *nesm_->dumpConnectionNotes();
@@ -131,7 +144,6 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
   }
   return file;
 }
-
 
 void NetworkXMLSerializer::save_xml(const NetworkXML& data, const std::string& filename)
 {

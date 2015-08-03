@@ -88,6 +88,7 @@ namespace Gui {
         << new QAction("Duplicate", parent)
         << new QAction("Replace With", parent)
         << new QAction("Collapse", parent)
+        << disabled(new QAction("Ignore*", parent))
         << new QAction("Show Log", parent)
         //<< disabled(new QAction("Make Sub-Network", parent))  // Issue #287
         << separatorAction(parent)

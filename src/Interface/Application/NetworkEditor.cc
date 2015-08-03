@@ -46,6 +46,7 @@
 #include <Dataflow/Network/NetworkSettings.h> //TODO: push
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Application.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
@@ -565,6 +566,19 @@ void NetworkEditor::copy()
 
   NetworkFileHandle file = controller_->serializeNetworkFragment(modSelected, connSelected);
 
+  if (file)
+  {
+    qDebug() << "obtained net file xml";
+    //TODO encapsulate
+    std::ostringstream ostr;
+    XMLSerializer::save_xml(*file, ostr, "networkFragment");
+    std::string xml = ostr.str();
+    qDebug() << QString::fromStdString(xml);
+  }
+  else
+  {
+    qDebug() << "null net fragment";
+  }
 /*
   auto node = selectedModule();
   if (!node)
