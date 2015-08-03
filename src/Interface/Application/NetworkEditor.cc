@@ -537,6 +537,34 @@ void NetworkEditor::copy()
     qDebug() << item;
   }
 
+  auto selected = scene_->selectedItems();
+  auto modSelected = [=](ModuleHandle mod)
+  {
+    for (const auto& item : selected)
+    {
+      if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        if (w->getModuleWidget()->getModuleId() == mod->get_id().id_)
+          return true;
+      }
+    }
+    return false;
+  };
+  auto connSelected = [=](const ConnectionDescription& conn)
+  {
+    for (const auto& item : selected)
+    {
+      if (auto connLine = dynamic_cast<ConnectionLine*>(item))
+      {
+        if (connLine->id().describe() == conn)
+          return true;
+      }
+    }
+    return false;
+  };
+
+  NetworkFileHandle file = controller_->serializeNetworkFragment(modSelected, connSelected);
+
 /*
   auto node = selectedModule();
   if (!node)

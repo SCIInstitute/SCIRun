@@ -100,9 +100,9 @@ namespace Engine {
     void interruptModule(const Networks::ModuleId& id);
 
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
-    void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+    void connectNewModule(const Networks::ModuleHandle& moduleToConnectTo, const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
 
-    void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
+    void requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to);
     void removeConnection(const Networks::ConnectionId& id);
 
     void executeAll(const Networks::ExecutableLookup* lookup);
@@ -110,6 +110,8 @@ namespace Engine {
 
     virtual Networks::NetworkFileHandle saveNetwork() const;
     virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
+
+    Networks::NetworkFileHandle serializeNetworkFragment(Networks::ModuleFilter modFilter, Networks::ConnectionFilter connFilter) const;
 //////////////////////End: To be Pythonized///////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 

@@ -38,7 +38,6 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <boost/foreach.hpp>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
@@ -111,7 +110,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 {
   NetworkXML networkXML;
   Network::ConnectionDescriptionList conns = network->connections();
-  BOOST_FOREACH(ConnectionDescription& desc, conns)
+  for (const auto& desc : conns)
     networkXML.connections.push_back(ConnectionDescriptionXML(desc));
   for (size_t i = 0; i < network->nmodules(); ++i)
   {

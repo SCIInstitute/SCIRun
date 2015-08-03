@@ -90,6 +90,11 @@ NetworkFileHandle NetworkEditorControllerGuiProxy::saveNetwork() const
   return controller_->saveNetwork();
 }
 
+NetworkFileHandle NetworkEditorControllerGuiProxy::serializeNetworkFragment(ModuleFilter modFilter, ConnectionFilter connFilter) const
+{
+  return controller_->serializeNetworkFragment(modFilter, connFilter);
+}
+
 void NetworkEditorControllerGuiProxy::loadNetwork(const NetworkFileHandle& xml)
 {
   controller_->loadNetwork(xml);
