@@ -267,7 +267,7 @@ TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
 
   EXPECT_EQ(0, net->nconnections());
   size_t port = 0;
-  BOOST_FOREACH(ModuleHandle show, showFields)
+  for (ModuleHandle show : showFields)
   {
     std::cout << "Attempting to connect to view scene on " << port << std::endl;
     controller.requestConnection(show->outputPorts()[0].get(), view->inputPorts()[port++].get());
@@ -280,7 +280,6 @@ TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
 
   std::ostringstream ostr;
   XMLSerializer::save_xml(*xml, ostr, "network");
-  //std::cout << ostr.str() << std::endl;
 
   NetworkEditorController controller2(mf, sf, ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
   controller2.loadNetwork(xml);

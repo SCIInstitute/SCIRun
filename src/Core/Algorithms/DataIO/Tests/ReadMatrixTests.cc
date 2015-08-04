@@ -36,7 +36,6 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Utils/StringUtil.h>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;

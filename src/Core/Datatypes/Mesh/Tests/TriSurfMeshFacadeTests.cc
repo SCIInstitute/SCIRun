@@ -30,7 +30,6 @@
 #include <gmock/gmock.h>
 
 #include <boost/assign.hpp>
-#include <boost/foreach.hpp>
 
 //#include <Core/Datatypes/Legacy/Field/MeshFactory.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -208,7 +207,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleEdgeIterationTest)
   auto facade(basicTriangleMesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const EdgeInfo<VMesh>& edge, facade->edges())
+  for (const auto& edge : facade->edges())
   {
     auto nodesFromEdge = edge.nodeIndices();
     auto nodePoints = edge.nodePoints();
@@ -228,7 +227,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
   auto facade(basicTriangleMesh_->getFacade());
   ASSERT_TRUE(facade.get() != nullptr);
   std::ostringstream ostr;
-  BOOST_FOREACH(const FaceInfo<VMesh>& face, facade->faces())
+  for (const FaceInfo<VMesh>& face : facade->faces())
   {
     auto faceID = face.index();
     auto edges = face.edgeIndices();
@@ -247,7 +246,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleNodeIterationTest)
   auto facade(basicTriangleMesh_->getFacade());
   ASSERT_TRUE(facade.get() != nullptr);
   std::ostringstream ostr;
-  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
+  for (const NodeInfo<VMesh>& node : facade->nodes())
   {
     // special case, since this is essentially a 2D mesh with a single element,
     // the last edge value is not filled

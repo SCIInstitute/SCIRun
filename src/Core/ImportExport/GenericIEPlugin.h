@@ -36,7 +36,6 @@
 #include <map>
 #include <vector>
 #include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
 #include <Core/ImportExport/share.h>
 
 namespace SCIRun {
@@ -181,7 +180,7 @@ void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& r
   }
 
   Core::Thread::Guard s(map_.getLock().get());
-  BOOST_FOREACH(const typename PluginMap<Data>::Map::value_type& plugin, map_.getMap())
+  for (const auto& plugin : map_.getMap())
   {
     if (plugin.second->hasReader())
       results.push_back(plugin.first);
@@ -197,7 +196,7 @@ void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& r
   }
 
   Core::Thread::Guard s(map_.getLock().get());
-  BOOST_FOREACH(const typename PluginMap<Data>::Map::value_type& plugin, map_.getMap())
+  for (const auto& plugin : map_.getMap())
   {
     if (plugin.second->hasWriter())
       results.push_back(plugin.first);
@@ -342,7 +341,7 @@ std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>&
   std::ostringstream types;
   types << defaultType;
 
-  BOOST_FOREACH(const std::string& name, pluginNames)
+  for (const std::string& name : pluginNames)
   {
     auto pl = mgr.get_plugin(name);
     types << ";;" << name;

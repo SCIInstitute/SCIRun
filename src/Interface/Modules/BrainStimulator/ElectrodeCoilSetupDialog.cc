@@ -325,7 +325,7 @@ void ElectrodeCoilSetupDialog::pullSpecial()
       {
         auto row = (all_elc_values[i]).toVector();
         int j=0;
-        BOOST_FOREACH(const AlgorithmParameter& ap, row)
+        for (const AlgorithmParameter& ap : row)
         {
           auto tmpstr = ap.toString();
           auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));

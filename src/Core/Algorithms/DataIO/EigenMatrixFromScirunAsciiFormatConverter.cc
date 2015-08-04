@@ -27,7 +27,6 @@
 */
 
 #include <boost/timer.hpp>
-#include <boost/foreach.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>

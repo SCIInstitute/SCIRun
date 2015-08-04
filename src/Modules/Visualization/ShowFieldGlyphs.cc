@@ -47,8 +47,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
-#include <boost/foreach.hpp>
-
 #include <glm/glm.hpp>
 
 using namespace SCIRun::Modules::Visualization;

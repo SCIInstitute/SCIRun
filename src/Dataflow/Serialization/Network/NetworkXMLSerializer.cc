@@ -76,7 +76,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 
   {
     ScopedControllerSignalDisabler scsd(controller_);
-    BOOST_FOREACH(const ModuleMapXML::value_type& modPair, data.modules)
+    for (const auto& modPair : data.modules)
     {
       ModuleHandle module = controller_->addModule(modPair.second.module);
       module->set_id(modPair.first);
@@ -87,7 +87,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 
   std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
   std::sort(connectionsSorted.begin(), connectionsSorted.end());
-  BOOST_FOREACH(const ConnectionDescriptionXML& conn, connectionsSorted)
+  for (const auto& conn : connectionsSorted)
   {
     ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
     ModuleHandle to = network->lookupModule(conn.in_.moduleId_);

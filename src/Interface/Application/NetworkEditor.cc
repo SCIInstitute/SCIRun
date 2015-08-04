@@ -138,10 +138,6 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
     connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
       this, SLOT(connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-
-    //TODO: duplication
-    const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";
-    controller_->getSettings().setValue("networkStateUpdateThread", value);
   }
 }
 
@@ -1006,10 +1002,6 @@ void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHan
       w->getModuleWidget()->postLoadAction();
     }
   }
-
-  //TODO: duplication
-  const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";
-  controller_->getSettings().setValue("networkStateUpdateThread", value);
 
   setSceneRect(QRectF());
 }

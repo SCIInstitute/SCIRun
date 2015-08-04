@@ -67,7 +67,6 @@
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/visitors.hpp>
-#include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 
 using namespace SCIRun;
@@ -650,7 +649,7 @@ namespace ThreadingPrototype
     auto end = done.begin();
     std::advance(end, 10);
     std::copy(done.begin(), end, std::ostream_iterator<UnitPtr>(std::cout, "\n"));
-    BOOST_FOREACH(const UnitPtr& u, done)
+    for (const UnitPtr& u : done)
     {
       EXPECT_TRUE(u->done);
     }
@@ -794,7 +793,7 @@ namespace ThreadingPrototype
     auto end = done.begin();
     std::advance(end, 10);
     std::copy(done.begin(), end, std::ostream_iterator<UnitPtr>(std::cout, "\n"));
-    BOOST_FOREACH(const UnitPtr& u, done)
+    for (const UnitPtr& u : done)
     {
       EXPECT_TRUE(u->done);
     }
