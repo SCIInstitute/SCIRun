@@ -136,11 +136,10 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, Module
   file->network = networkXML;
   if (nesm_)
   {
-    //TODO: need to filter these too
-    file->modulePositions = *nesm_->dumpModulePositions();
-    file->moduleNotes = *nesm_->dumpModuleNotes();
-    file->connectionNotes = *nesm_->dumpConnectionNotes();
-    file->moduleTags = *nesm_->dumpModuleTags();
+    file->modulePositions = *nesm_->dumpModulePositions(modFilter);
+    file->moduleNotes = *nesm_->dumpModuleNotes(modFilter);
+    file->connectionNotes = *nesm_->dumpConnectionNotes(connFilter);
+    file->moduleTags = *nesm_->dumpModuleTags(modFilter);
   }
   return file;
 }

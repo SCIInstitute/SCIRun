@@ -52,6 +52,7 @@
 #endif
 
 #include <boost/bind.hpp>
+#include <boost/lambda/lambda.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -784,20 +785,21 @@ void NetworkEditor::unselectConnectionGroup()
 	}
 }
 
-ModulePositionsHandle NetworkEditor::dumpModulePositions() const
+ModulePositionsHandle NetworkEditor::dumpModulePositions(ModuleFilter filter) const
 {
   ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
-  fillModulePositionMap(*positions);
+  fillModulePositionMap(*positions, filter);
   return positions;
 }
 
-void NetworkEditor::fillModulePositionMap(ModulePositions& positions) const
+void NetworkEditor::fillModulePositionMap(ModulePositions& positions, ModuleFilter filter) const
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      positions.modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
+      if (filter(w->getModuleWidget()->getModule()))
+        positions.modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
     }
   }
 }
@@ -805,11 +807,11 @@ void NetworkEditor::fillModulePositionMap(ModulePositions& positions) const
 void NetworkEditor::centerView()
 {
   ModulePositions positions;
-  fillModulePositionMap(positions);
+  fillModulePositionMap(positions, boost::lambda::constant(true));
   centerOn(findCenterOfNetwork(positions));
 }
 
-ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
+ModuleNotesHandle NetworkEditor::dumpModuleNotes(ModuleFilter filter) const
 {
   ModuleNotesHandle notes(boost::make_shared<ModuleNotes>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
@@ -817,7 +819,8 @@ ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
       auto note = w->currentNote();
-      if (!note.plainText_.isEmpty())
+      if (filter(w->getModuleWidget()->getModule()) &&
+        !note.plainText_.isEmpty())
         notes->notes[w->getModuleWidget()->getModuleId()] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
     }
   }
@@ -832,7 +835,7 @@ namespace
   }
 }
 
-ConnectionNotesHandle NetworkEditor::dumpConnectionNotes() const
+ConnectionNotesHandle NetworkEditor::dumpConnectionNotes(ConnectionFilter filter) const
 {
   ConnectionNotesHandle notes(boost::make_shared<ConnectionNotes>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
@@ -840,7 +843,8 @@ ConnectionNotesHandle NetworkEditor::dumpConnectionNotes() const
     if (auto conn = dynamic_cast<ConnectionLine*>(item))
     {
       auto note = conn->currentNote();
-      if (!note.plainText_.isEmpty())
+      if (filter(conn->id().describe()) &&
+        !note.plainText_.isEmpty())
       {
         //TODO hacky
         auto id = connectionNoteId(conn->getConnectedToModuleIds());
@@ -851,14 +855,15 @@ ConnectionNotesHandle NetworkEditor::dumpConnectionNotes() const
   return notes;
 }
 
-ModuleTagsHandle NetworkEditor::dumpModuleTags() const
+ModuleTagsHandle NetworkEditor::dumpModuleTags(ModuleFilter filter) const
 {
   ModuleTagsHandle tags(boost::make_shared<ModuleTags>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto mod = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      tags->tags[mod->getModuleWidget()->getModuleId()] = mod->data(TagDataKey).toInt();
+      if (filter(mod->getModuleWidget()->getModule()))
+        tags->tags[mod->getModuleWidget()->getModuleId()] = mod->data(TagDataKey).toInt();
     }
   }
   return tags;
@@ -1073,8 +1078,9 @@ void NetworkEditor::selectAll()
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
-      mpw->setSelected(true);
+    //if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
+    //mpw->setSelected(true);
+    item->setSelected(true);
   }
 }
 

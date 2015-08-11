@@ -159,16 +159,16 @@ Q_SIGNALS:
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);
 
-    virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions() const;
+    virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions(SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     virtual void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
 
-    virtual SCIRun::Dataflow::Networks::ModuleNotesHandle dumpModuleNotes() const;
+    virtual SCIRun::Dataflow::Networks::ModuleNotesHandle dumpModuleNotes(SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     virtual void updateModuleNotes(const SCIRun::Dataflow::Networks::ModuleNotes& moduleNotes);
 
-    virtual SCIRun::Dataflow::Networks::ConnectionNotesHandle dumpConnectionNotes() const;
+    virtual SCIRun::Dataflow::Networks::ConnectionNotesHandle dumpConnectionNotes(SCIRun::Dataflow::Networks::ConnectionFilter filter) const;
     virtual void updateConnectionNotes(const SCIRun::Dataflow::Networks::ConnectionNotes& notes);
 
-    virtual SCIRun::Dataflow::Networks::ModuleTagsHandle dumpModuleTags() const override;
+    virtual SCIRun::Dataflow::Networks::ModuleTagsHandle dumpModuleTags(SCIRun::Dataflow::Networks::ModuleFilter filter) const override;
     virtual void updateModuleTags(const SCIRun::Dataflow::Networks::ModuleTags& notes) override;
 
     size_t numModules() const;
@@ -276,7 +276,7 @@ Q_SIGNALS:
     void addNewModuleAtPosition(const QPointF& position);
     ConnectionLine* getSingleConnectionSelected();
     void unselectConnectionGroup();
-    void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions) const;
+    void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
