@@ -98,6 +98,34 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
   return network;
 }
 
+size_t NetworkXMLConverter::appendXmlData(const NetworkXML& data)
+{
+  auto network = controller_->getNetwork();
+  size_t existingModuleCount = network->nmodules();
+  {
+    ScopedControllerSignalDisabler scsd(controller_);
+    for (const auto& modPair : data.modules)
+    {
+      ModuleHandle module = controller_->addModule(modPair.second.module);
+      module->set_id(modPair.first);
+      ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
+      module->set_state(state);
+    }
+  }
+
+  std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
+  std::sort(connectionsSorted.begin(), connectionsSorted.end());
+  
+  for (const auto& conn : connectionsSorted)
+  {
+    ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
+    ModuleHandle to = network->lookupModule(conn.in_.moduleId_);
+
+    controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+  }
+  return existingModuleCount;
+}
+
 NetworkToXML::NetworkToXML(NetworkEditorSerializationManager* nesm)
   : nesm_(nesm)
 {}

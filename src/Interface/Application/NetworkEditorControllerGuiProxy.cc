@@ -100,6 +100,11 @@ void NetworkEditorControllerGuiProxy::loadNetwork(const NetworkFileHandle& xml)
   controller_->loadNetwork(xml);
 }
 
+void NetworkEditorControllerGuiProxy::appendToNetwork(const NetworkFileHandle& xml)
+{
+  controller_->appendToNetwork(xml);
+}
+
 void NetworkEditorControllerGuiProxy::executeAll(const ExecutableLookup& lookup)
 {
   controller_->executeAll(&lookup);

@@ -112,6 +112,7 @@ namespace Engine {
     virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
 
     Networks::NetworkFileHandle serializeNetworkFragment(Networks::ModuleFilter modFilter, Networks::ConnectionFilter connFilter) const;
+    void appendToNetwork(const Networks::NetworkFileHandle& xml);
 //////////////////////End: To be Pythonized///////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 

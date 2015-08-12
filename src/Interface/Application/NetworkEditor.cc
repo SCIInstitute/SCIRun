@@ -529,12 +529,6 @@ void NetworkEditor::cut()
 
 void NetworkEditor::copy()
 {
-  qDebug() << "COPY CONTENTS";
-  for (const auto& item : scene_->selectedItems())
-  {
-    qDebug() << item;
-  }
-
   auto selected = scene_->selectedItems();
   auto modSelected = [=](ModuleHandle mod)
   {
@@ -565,12 +559,15 @@ void NetworkEditor::copy()
 
   if (file)
   {
+    qDebug() << "COPY CONTENTS";
     qDebug() << "obtained net file xml";
     //TODO encapsulate
     std::ostringstream ostr;
     XMLSerializer::save_xml(*file, ostr, "networkFragment");
-    std::string xml = ostr.str();
-    qDebug() << QString::fromStdString(xml);
+    auto xml = QString::fromStdString(ostr.str());
+    qDebug() << xml;
+
+    QApplication::clipboard()->setText(xml);
   }
   else
   {
@@ -593,7 +590,14 @@ void NetworkEditor::copy()
 
 void NetworkEditor::paste()
 {
-  //QString str = QApplication::clipboard()->text();
+  QString str = QApplication::clipboard()->text();
+
+  qDebug() << "NEED TO PASTE: " << str;
+
+  std::istringstream istr(str.toStdString());
+  auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
+  appendToNetwork(xml);
+
   //QStringList parts = str.split(" ");
   //if (parts.count() >= 5 && parts.first() == "Node")
   //{
@@ -1006,6 +1010,25 @@ void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHan
     {
       w->getModuleWidget()->postLoadAction();
     }
+  }
+
+  setSceneRect(QRectF());
+}
+
+void NetworkEditor::appendToNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
+{
+  auto originalItems = scene_->items();
+  fileLoading_ = true;
+  controller_->appendToNetwork(xml);
+  fileLoading_ = false;
+
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (!originalItems.contains(item))
+      if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        w->getModuleWidget()->postLoadAction();
+      }
   }
 
   setSceneRect(QRectF());

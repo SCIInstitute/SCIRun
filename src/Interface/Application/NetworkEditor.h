@@ -158,6 +158,7 @@ Q_SIGNALS:
 
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);
+    void appendToNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
 
     virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions(SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     virtual void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
