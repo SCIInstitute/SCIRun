@@ -67,7 +67,6 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   : QGraphicsView(parent),
   deleteAction_(0),
   sendToBackAction_(0),
-  propertiesAction_(0),
   modulesSelectedByCL_(false),
   currentScale_(1),
   tagLayerActive_(false),
@@ -499,24 +498,6 @@ void NetworkEditor::del()
   Q_EMIT modified();
 }
 
-void NetworkEditor::properties()
-{
-  ModuleWidget* node = selectedModule();
-  ConnectionLine* link = selectedLink();
-
-  if (node)
-  {
-    //PropertiesDialog dialog(node, this);
-    //dialog.exec();
-  }
-  else if (link)
-  {
-    //QColor color = QColorDialog::getColor(link->color(), this);
-    //if (color.isValid())
-    //  link->setColor(color);
-  }
-}
-
 void NetworkEditor::cut()
 {
   //Module* node = selectedModule();
@@ -573,19 +554,6 @@ void NetworkEditor::copy()
   {
     qDebug() << "null net fragment";
   }
-/*
-  auto node = selectedModule();
-  if (!node)
-    return;
-
-  QString str = QString("Module %1 %2 %3 %4")
-                .arg(node->textColor().name())
-                .arg(node->outlineColor().name())
-                .arg(node->backgroundColor().name())
-                .arg(node->text());
-  qDebug() << str;
-  //QApplication::clipboard()->setText(str);
-  */
 }
 
 void NetworkEditor::paste()
@@ -597,17 +565,6 @@ void NetworkEditor::paste()
   std::istringstream istr(str.toStdString());
   auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
   appendToNetwork(xml);
-
-  //QStringList parts = str.split(" ");
-  //if (parts.count() >= 5 && parts.first() == "Node")
-  //{
-  //  Module* node = new Module;
-  //  node->setText(QStringList(parts.mid(4)).join(" "));
-  //  node->setTextColor(QColor(parts[1]));
-  //  node->setOutlineColor(QColor(parts[2]));
-  //  node->setBackgroundColor(QColor(parts[3]));
-  //  setupNode(node);
-  //}
 }
 
 void NetworkEditor::updateActions()
@@ -622,7 +579,6 @@ void NetworkEditor::updateActions()
   //addLinkAction_->setEnabled(isNodePair);
   deleteAction_->setEnabled(hasSelection);
   sendToBackAction_->setEnabled(isNode);
-  propertiesAction_->setEnabled(isNode || isLink);
 
   Q_FOREACH (QAction* action, actions())
     removeAction(action);
@@ -657,10 +613,6 @@ void NetworkEditor::createActions()
   sendToBackAction_->setIcon(QIcon(":/images/sendtoback.png"));
   connect(sendToBackAction_, SIGNAL(triggered()),
     this, SLOT(sendToBack()));
-
-  propertiesAction_ = new QAction(tr("P&roperties..."), this);
-  connect(propertiesAction_, SIGNAL(triggered()),
-    this, SLOT(properties()));
 }
 
 QList<QAction*> NetworkEditor::getModuleSpecificActions() const
@@ -668,8 +620,6 @@ QList<QAction*> NetworkEditor::getModuleSpecificActions() const
   return QList<QAction*>()
     << sendToBackAction_
     << deleteAction_;
-  //widget->addAction(addNodeAction_);
-  //widget->addAction(addLinkAction_);
   //widget->addAction(cutAction_);
   //widget->addAction(copyAction_);
   //widget->addAction(pasteAction_);

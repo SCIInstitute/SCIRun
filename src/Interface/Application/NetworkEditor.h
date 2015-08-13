@@ -261,14 +261,11 @@ Q_SIGNALS:
     void paste();
     void bringToFront();
     void sendToBack();
-    void properties();
     void updateActions();
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
     void createActions();
-    //void createMenus();
-    //void createToolBars();
     void setZValue(int z);
     void setupModuleWidget(ModuleWidget* node);
     ModuleWidget* selectedModule() const;
@@ -279,14 +276,11 @@ Q_SIGNALS:
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
-    //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;
     //QAction* pasteAction_;
     QAction* deleteAction_;
     QAction* sendToBackAction_;
-    QAction* propertiesAction_;
-    //QAction* executeAction_;
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
