@@ -50,7 +50,14 @@ namespace Networks {
       NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm = 0);
     NetworkHandle from_xml_data(const NetworkXML& data);
     NetworkFileHandle to_xml_data(const NetworkHandle& network);
-    size_t appendXmlData(const NetworkXML& data);
+
+    struct NetworkAppendInfo
+    {
+      size_t newModuleStartIndex;
+      std::map<std::string, std::string> moduleIdMapping;
+    };
+
+    NetworkAppendInfo appendXmlData(const NetworkXML& data);
   private:
     ModuleFactoryHandle moduleFactory_;
     ModuleStateFactoryHandle stateFactory_;

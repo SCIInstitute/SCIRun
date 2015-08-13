@@ -399,6 +399,10 @@ NetworkFileHandle NetworkEditorController::saveNetwork() const
   return conv.to_xml_data(theNetwork_);
 }
 
+////////
+// TODO: refactor the next two functions into one
+///////
+
 void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
   if (xml)
@@ -455,7 +459,8 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
 
       auto originalConnections = theNetwork_->connections();
 
-      size_t startIndex = conv.appendXmlData(xml->network);
+      auto info = conv.appendXmlData(xml->network);
+      size_t startIndex = info.newModuleStartIndex;
       ModuleCounter modulesDone;
       for (size_t i = startIndex; i < theNetwork_->nmodules(); ++i)
       {
@@ -477,19 +482,19 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
         }
       }
 
-
-      /*
       if (serializationManager_)
       {
-        serializationManager_->updateModulePositions(xml->modulePositions);
+        // ids need shifting for everything
+        //serializationManager_->updateModulePositions(xml->modulePositions); // need to shift everything.
+        xml->moduleNotes.notes = remapIdBasedContainer(xml->moduleNotes.notes, info.moduleIdMapping);
         serializationManager_->updateModuleNotes(xml->moduleNotes);
+        xml->connectionNotes.notes = remapIdBasedContainer(xml->connectionNotes.notes, info.moduleIdMapping);
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
+        xml->moduleTags.tags = remapIdBasedContainer(xml->moduleTags.tags, info.moduleIdMapping);
         serializationManager_->updateModuleTags(xml->moduleTags);
       }
       else
         Log::get() << INFO << "module position editor unavailable, module positions at default" << std::endl;
-      networkDoneLoading_(static_cast<int>(theNetwork_->nmodules()) + 1);
-      */
     }
     catch (ExceptionBase& e)
     {

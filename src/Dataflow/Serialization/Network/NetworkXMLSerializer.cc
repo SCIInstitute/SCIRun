@@ -68,6 +68,10 @@ NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, Modu
 {
 }
 
+////////
+// TODO: refactor the next two functions into one
+///////
+
 NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
   /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
@@ -98,11 +102,11 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
   return network;
 }
 
-size_t NetworkXMLConverter::appendXmlData(const NetworkXML& data)
+NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const NetworkXML& data)
 {
   auto network = controller_->getNetwork();
-  size_t existingModuleCount = network->nmodules();
-  std::map<ModuleId, ModuleId> oldToNewModuleIds;
+  NetworkAppendInfo info;
+  info.newModuleStartIndex = network->nmodules();
   {
     ScopedControllerSignalDisabler scsd(controller_);
     for (const auto& modPair : data.modules)
@@ -110,14 +114,14 @@ size_t NetworkXMLConverter::appendXmlData(const NetworkXML& data)
       ModuleId newId(modPair.first);
       while (network->lookupModule(newId))
       {
-        std::cout << "found module by ID : " << modPair.first << std::endl;
+        //std::cout << "found module by ID : " << modPair.first << std::endl;
         ++newId;
       }
 
       ModuleHandle module = controller_->addModule(modPair.second.module);
 
-      std::cout << "setting module id to " << newId << std::endl;
-      oldToNewModuleIds[ModuleId(modPair.first)] = newId;
+      //std::cout << "setting module id to " << newId << std::endl;
+      info.moduleIdMapping[modPair.first] = newId;
       module->set_id(newId);
       ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
       module->set_state(state);
@@ -129,12 +133,17 @@ size_t NetworkXMLConverter::appendXmlData(const NetworkXML& data)
   
   for (const auto& conn : connectionsSorted)
   {
-    ModuleHandle from = network->lookupModule(oldToNewModuleIds[conn.out_.moduleId_]);
-    ModuleHandle to = network->lookupModule(oldToNewModuleIds[conn.in_.moduleId_]);
-
-    controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+    auto modOut = info.moduleIdMapping.find(conn.out_.moduleId_);
+    auto modIn = info.moduleIdMapping.find(conn.in_.moduleId_);
+    if (modOut != info.moduleIdMapping.end() && modIn != info.moduleIdMapping.end())
+    {
+      ModuleHandle from = network->lookupModule(ModuleId(modOut->second));
+      ModuleHandle to = network->lookupModule(ModuleId(modIn->second));
+      if (from && to)
+        controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+    }
   }
-  return existingModuleCount;
+  return info;
 }
 
 NetworkToXML::NetworkToXML(NetworkEditorSerializationManager* nesm)

@@ -136,6 +136,19 @@ namespace Networks {
     }
   };
 
+  template <class Value>
+  std::map<std::string, Value> remapIdBasedContainer(const std::map<std::string, Value>& keyedByOriginalId, const std::map<std::string, std::string>& idMapping)
+  {
+    std::map<std::string, Value> remapped;
+    for (const auto& pair : keyedByOriginalId)
+    {
+      auto newKeyIter = idMapping.find(pair.first);
+      std::string newKey = newKeyIter != idMapping.end() ? newKeyIter->second : pair.first;
+      remapped[newKey] = pair.second;
+    }
+    return remapped;
+  }
+
 }}}
 
 BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 3)
