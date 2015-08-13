@@ -452,27 +452,33 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
     try
     {
       NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, reexFactory_, this);
+
+      auto originalConnections = theNetwork_->connections();
+
       size_t startIndex = conv.appendXmlData(xml->network);
       ModuleCounter modulesDone;
       for (size_t i = startIndex; i < theNetwork_->nmodules(); ++i)
       {
         ModuleHandle module = theNetwork_->module(i);
         moduleAdded_(module->get_module_name(), module, modulesDone);
-        //networkDoneLoading_(static_cast<int>(i));
       }
 
-      /*
       {
         auto disable(createDynamicPortSwitch());
         //this is handled by NetworkXMLConverter now--but now the logic is convoluted.
         //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
         for (const ConnectionDescription& cd : theNetwork_->connections())
         {
-          ConnectionId id = ConnectionId::create(cd);
-          connectionAdded_(cd);
+          if (std::find(originalConnections.begin(), originalConnections.end(), cd) == originalConnections.end())
+          {
+            ConnectionId id = ConnectionId::create(cd);
+            connectionAdded_(cd);
+          }
         }
       }
-      
+
+
+      /*
       if (serializationManager_)
       {
         serializationManager_->updateModulePositions(xml->modulePositions);
