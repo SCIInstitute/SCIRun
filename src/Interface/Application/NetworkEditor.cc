@@ -546,7 +546,7 @@ void NetworkEditor::copy()
     std::ostringstream ostr;
     XMLSerializer::save_xml(*file, ostr, "networkFragment");
     auto xml = QString::fromStdString(ostr.str());
-    qDebug() << xml;
+    //qDebug() << xml;
 
     QApplication::clipboard()->setText(xml);
   }
@@ -560,7 +560,7 @@ void NetworkEditor::paste()
 {
   QString str = QApplication::clipboard()->text();
 
-  qDebug() << "NEED TO PASTE: " << str;
+  //qDebug() << "NEED TO PASTE: " << str;
 
   std::istringstream istr(str.toStdString());
   auto xml = XMLSerializer::load_xml<NetworkFile>(istr);

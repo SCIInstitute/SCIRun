@@ -102,12 +102,23 @@ size_t NetworkXMLConverter::appendXmlData(const NetworkXML& data)
 {
   auto network = controller_->getNetwork();
   size_t existingModuleCount = network->nmodules();
+  std::map<ModuleId, ModuleId> oldToNewModuleIds;
   {
     ScopedControllerSignalDisabler scsd(controller_);
     for (const auto& modPair : data.modules)
     {
+      ModuleId newId(modPair.first);
+      while (network->lookupModule(newId))
+      {
+        std::cout << "found module by ID : " << modPair.first << std::endl;
+        ++newId;
+      }
+
       ModuleHandle module = controller_->addModule(modPair.second.module);
-      module->set_id(modPair.first);
+
+      std::cout << "setting module id to " << newId << std::endl;
+      oldToNewModuleIds[ModuleId(modPair.first)] = newId;
+      module->set_id(newId);
       ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
       module->set_state(state);
     }
@@ -118,8 +129,8 @@ size_t NetworkXMLConverter::appendXmlData(const NetworkXML& data)
   
   for (const auto& conn : connectionsSorted)
   {
-    ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
-    ModuleHandle to = network->lookupModule(conn.in_.moduleId_);
+    ModuleHandle from = network->lookupModule(oldToNewModuleIds[conn.out_.moduleId_]);
+    ModuleHandle to = network->lookupModule(oldToNewModuleIds[conn.in_.moduleId_]);
 
     controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
   }
