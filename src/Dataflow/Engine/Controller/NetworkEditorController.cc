@@ -449,6 +449,17 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
   }
 }
 
+namespace
+{
+  void shiftAppendedModules(ModulePositions::Data& positions)
+  {
+    for (auto& pos : positions)
+    {
+      pos.second.first += 300;
+    }
+  }
+}
+
 void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
 {
   if (xml)
@@ -484,8 +495,9 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
 
       if (serializationManager_)
       {
-        // ids need shifting for everything
-        //serializationManager_->updateModulePositions(xml->modulePositions); // need to shift everything.
+        xml->modulePositions.modulePositions = remapIdBasedContainer(xml->modulePositions.modulePositions, info.moduleIdMapping);
+        shiftAppendedModules(xml->modulePositions.modulePositions);
+        serializationManager_->updateModulePositions(xml->modulePositions); // need to shift everything.
         xml->moduleNotes.notes = remapIdBasedContainer(xml->moduleNotes.notes, info.moduleIdMapping);
         serializationManager_->updateModuleNotes(xml->moduleNotes);
         xml->connectionNotes.notes = remapIdBasedContainer(xml->connectionNotes.notes, info.moduleIdMapping);

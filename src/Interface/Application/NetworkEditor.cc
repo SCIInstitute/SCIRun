@@ -500,12 +500,8 @@ void NetworkEditor::del()
 
 void NetworkEditor::cut()
 {
-  //Module* node = selectedModule();
-  //if (!node)
-  //  return;
-
-  //copy();
-  //delete node;
+  copy();
+  del();
 }
 
 void NetworkEditor::copy()
@@ -540,13 +536,10 @@ void NetworkEditor::copy()
 
   if (file)
   {
-    qDebug() << "COPY CONTENTS";
-    qDebug() << "obtained net file xml";
     //TODO encapsulate
     std::ostringstream ostr;
     XMLSerializer::save_xml(*file, ostr, "networkFragment");
     auto xml = QString::fromStdString(ostr.str());
-    //qDebug() << xml;
 
     QApplication::clipboard()->setText(xml);
   }
@@ -559,8 +552,6 @@ void NetworkEditor::copy()
 void NetworkEditor::paste()
 {
   QString str = QApplication::clipboard()->text();
-
-  //qDebug() << "NEED TO PASTE: " << str;
 
   std::istringstream istr(str.toStdString());
   auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
