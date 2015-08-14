@@ -65,8 +65,6 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   TagColorFunc tagColor,
   QWidget* parent)
   : QGraphicsView(parent),
-  deleteAction_(0),
-  sendToBackAction_(0),
   modulesSelectedByCL_(false),
   currentScale_(1),
   tagLayerActive_(false),
@@ -88,14 +86,8 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   setScene(scene_);
   setDragMode(QGraphicsView::RubberBandDrag);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-  //setContextMenuPolicy(Qt::ActionsContextMenu);
 
-  createActions();
-
-  connect(scene_, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
-
-  updateActions();
 
   setSceneRect(QRectF(-1000, -1000, 2000, 2000));
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -558,62 +550,11 @@ void NetworkEditor::paste()
   appendToNetwork(xml);
 }
 
-void NetworkEditor::updateActions()
+void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
 {
-  const bool hasSelection = !scene_->selectedItems().isEmpty();
-  const bool isNode = (selectedModule() != 0);
-  const bool isLink = (selectedLink() != 0);
-  //const bool isNodePair = (selectedModulePair() != ModulePair());
-
-  //cutAction_->setEnabled(isNode);
-  //copyAction_->setEnabled(isNode);
-  //addLinkAction_->setEnabled(isNodePair);
-  deleteAction_->setEnabled(hasSelection);
-  sendToBackAction_->setEnabled(isNode);
-
-  Q_FOREACH (QAction* action, actions())
-    removeAction(action);
-}
-
-void NetworkEditor::createActions()
-{
-  //exitAction_ = new QAction(tr("E&xit"), this);
-  //exitAction_->setShortcut(tr("Ctrl+Q"));
-  //connect(exitAction_, SIGNAL(triggered()), this, SLOT(close()));
-
-  deleteAction_ = new QAction(tr("&Delete selected objects"), this);
-  deleteAction_->setIcon(QIcon(":/images/delete.png"));
-  connect(deleteAction_, SIGNAL(triggered()), this, SLOT(del()));
-
-  //cutAction_ = new QAction(tr("Cu&t"), this);
-  //cutAction_->setIcon(QIcon(":/images/cut.png"));
-  //cutAction_->setShortcut(tr("Ctrl+X"));
-  //connect(cutAction_, SIGNAL(triggered()), this, SLOT(cut()));
-
-  //copyAction_ = new QAction(tr("&Copy"), this);
-  //copyAction_->setIcon(QIcon(":/images/copy.png"));
-  //copyAction_->setShortcut(tr("Ctrl+C"));
-  //connect(copyAction_, SIGNAL(triggered()), this, SLOT(copy()));
-
-  //pasteAction_ = new QAction(tr("&Paste"), this);
-  //pasteAction_->setIcon(QIcon(":/images/paste.png"));
-  //pasteAction_->setShortcut(tr("Ctrl+V"));
-  //connect(pasteAction_, SIGNAL(triggered()), this, SLOT(paste()));
-
-  sendToBackAction_ = new QAction(tr("&Send selected to back"), this);
-  sendToBackAction_->setIcon(QIcon(":/images/sendtoback.png"));
-  connect(sendToBackAction_, SIGNAL(triggered()),
-    this, SLOT(sendToBack()));
-}
-
-QList<QAction*> NetworkEditor::getModuleSpecificActions() const
-{
-  return QList<QAction*>()
-    << sendToBackAction_
-    << deleteAction_;
-  //widget->addAction(cutAction_);
-  //widget->addAction(copyAction_);
-  //widget->addAction(pasteAction_);
+  QMenu menu(this);
+  menu.addActions(actions());
+  menu.exec(event->globalPos());
 }
 
 void NetworkEditor::dropEvent(QDropEvent* event)
@@ -1013,12 +954,12 @@ void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle modu
 
 void NetworkEditor::disableInputWidgets()
 {
-  deleteAction_->setDisabled(true);
+  //deleteAction_->setDisabled(true);
 }
 
 void NetworkEditor::enableInputWidgets()
 {
-  deleteAction_->setEnabled(true);
+  //deleteAction_->setEnabled(true);
 }
 
 void NetworkEditor::setBackground(const QBrush& brush)

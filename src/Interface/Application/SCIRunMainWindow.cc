@@ -171,14 +171,12 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   standardBar->addAction(actionZoomOut_);
   //TODO: requires some real code
   actionZoomBestFit_->setDisabled(true);
-  //standardBar->addAction(actionZoomBestFit_);
-	menuNetwork->removeAction(actionZoomBestFit_);
+  standardBar->addAction(actionZoomBestFit_);
   standardBar->addAction(actionResetNetworkZoom_);
   standardBar->addAction(actionDragMode_);
   standardBar->addAction(actionSelectMode_);
   standardBar->addAction(actionToggleMetadataLayer_);
   standardBar->addAction(actionToggleTagLayer_);
-  //standardBar->setStyleSheet(styleSheet());
   //setUnifiedTitleAndToolBarOnMac(true);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
@@ -195,19 +193,17 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
 		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
 		);
-  //executeBar->setStyleSheet(styleSheet());
   executeBar->setAutoFillBackground(true);
 
-  scrollAreaWidgetContents_->addAction(actionExecute_All_);
+  networkEditor_->addAction(actionExecute_All_);
   auto sep = new QAction(this);
   sep->setSeparator(true);
-  scrollAreaWidgetContents_->addAction(sep);
-  scrollAreaWidgetContents_->addActions(networkEditor_->getModuleSpecificActions());
-  scrollAreaWidgetContents_->setStyleSheet(styleSheet());
+  networkEditor_->addAction(sep);
+  networkEditor_->addAction(actionCut_);
+  networkEditor_->addAction(actionCopy_);
+  networkEditor_->addAction(actionPaste_);
 
-  //TODO???????
   setContextMenuPolicy(Qt::NoContextMenu);
-  //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
 
   scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
   scrollArea_->viewport()->setAutoFillBackground(true);
@@ -280,9 +276,6 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
 
   makeFilterButtonMenu();
 
-  //connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
-  //connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
-  //connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
   if (newInterface())
     networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
 
@@ -310,6 +303,9 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
 	connect(actionCut_, SIGNAL(triggered()), networkEditor_, SLOT(cut()));
 	connect(actionCopy_, SIGNAL(triggered()), networkEditor_, SLOT(copy()));
 	connect(actionPaste_, SIGNAL(triggered()), networkEditor_, SLOT(paste()));
+  actionCut_->setIcon(QPixmap(":/general/Resources/cut.png"));
+  actionCopy_->setIcon(QPixmap(":/general/Resources/copy.png"));
+  actionPaste_->setIcon(QPixmap(":/general/Resources/paste.png"));
 
   connect(actionKeyboardShortcuts_, SIGNAL(triggered()), this, SLOT(showKeyboardShortcutsDialog()));
 
@@ -318,11 +314,13 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   actionForwardInverse_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png"));
   actionForwardInverse_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.zip"));
   actionForwardInverse_->setProperty(ToolkitFilename, QString("FwdInvToolkit_v1.zip"));
+  actionForwardInverse_->setIcon(QPixmap(":/general/Resources/download.png"));
 
 	connect(actionBrainStimulator_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
   actionBrainStimulator_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png"));
   actionBrainStimulator_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip"));
   actionBrainStimulator_->setProperty(ToolkitFilename, QString("BrainStimulator_v1.2.zip"));
+  actionBrainStimulator_->setIcon(QPixmap(":/general/Resources/download.png"));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
@@ -1636,7 +1634,7 @@ void SCIRunMainWindow::showKeyboardShortcutsDialog()
   shortcuts_->show();
 }
 
-FileDownloader::FileDownloader(QUrl imageUrl, QObject *parent) : QObject(parent), reply_(0)
+FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(0), statusBar_(statusBar)
 {
  	connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
 
@@ -1657,7 +1655,8 @@ void FileDownloader::fileDownloaded(QNetworkReply* reply)
 
 void FileDownloader::downloadProgress(qint64 received, qint64 total)
 {
-  //qDebug() << "File progress: " << received << " / " << total;
+  if (statusBar_)
+    statusBar_->showMessage(tr("File progress: %1 / %2").arg(received).arg(total), 1000);
 }
 
 void SCIRunMainWindow::toolkitDownload()
@@ -1665,10 +1664,10 @@ void SCIRunMainWindow::toolkitDownload()
 	QAction* action = qobject_cast<QAction*>(sender());
 
 	static std::vector<ToolkitDownloader*> downloaders;
-	downloaders.push_back(new ToolkitDownloader(action, this));
+  downloaders.push_back(new ToolkitDownloader(action, statusBar(), this));
 }
 
-ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QWidget* parent) : QObject(parent), iconDownloader_(0), zipDownloader_(0)
+ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent) : QObject(parent), iconDownloader_(0), zipDownloader_(0), statusBar_(statusBar)
 {
   if (infoObject)
   {
@@ -1685,7 +1684,7 @@ ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QWidget* parent) : QOb
 
 void ToolkitDownloader::downloadIcon()
 {
-  iconDownloader_ = new FileDownloader(iconUrl_, this);
+  iconDownloader_ = new FileDownloader(iconUrl_, nullptr, this);
   connect(iconDownloader_, SIGNAL(downloaded()), this, SLOT(showMessageBox()));
 }
 
@@ -1717,7 +1716,7 @@ void ToolkitDownloader::showMessageBox()
     {
       //qDebug() << "directory selected " << dir;
       toolkitDir_ = dir;
-      zipDownloader_ = new FileDownloader(fileUrl_, this);
+      zipDownloader_ = new FileDownloader(fileUrl_, statusBar_, this);
       connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
     }
   }

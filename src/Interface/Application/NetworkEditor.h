@@ -150,7 +150,6 @@ Q_SIGNALS:
         TagColorFunc tagColor = defaultTagColor,
         QWidget* parent = 0);
     ~NetworkEditor();
-    QList<QAction*> getModuleSpecificActions() const;
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
     virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const SCIRun::Dataflow::Networks::ModuleId& id) const;
@@ -208,6 +207,7 @@ Q_SIGNALS:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void wheelEvent(QWheelEvent* event) override;
+    virtual void contextMenuEvent(QContextMenuEvent *event) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
@@ -261,11 +261,9 @@ Q_SIGNALS:
     void paste();
     void bringToFront();
     void sendToBack();
-    void updateActions();
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
-    void createActions();
     void setZValue(int z);
     void setupModuleWidget(ModuleWidget* node);
     ModuleWidget* selectedModule() const;
@@ -276,11 +274,6 @@ Q_SIGNALS:
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
-    //QAction* cutAction_;
-    //QAction* copyAction_;
-    //QAction* pasteAction_;
-    QAction* deleteAction_;
-    QAction* sendToBackAction_;
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
