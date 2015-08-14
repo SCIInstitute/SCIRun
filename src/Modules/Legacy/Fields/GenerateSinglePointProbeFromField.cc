@@ -151,7 +151,7 @@ void GenerateSinglePointProbeFromField::execute()
 {
   FieldHandle field = GenerateOutputField();
   sendOutput(GeneratedPoint, field);
-  
+
   index_type index = GenerateIndex();
   sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
 
@@ -170,7 +170,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
   auto state = get_state();
   using namespace Parameters;
 
-  std::cout << "Size: " << state->getValue(ProbeSize).toInt() << std::endl;
+  //std::cout << "Size: " << state->getValue(ProbeSize).toInt() << std::endl;
 
   // Maybe update the widget.
   BBox bbox;
@@ -427,7 +427,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
     state->setValue(FieldValue, valstr.str());
   }
 
-  return ofield; 
+  return ofield;
 }
 
 index_type GenerateSinglePointProbeFromField::GenerateIndex()
@@ -435,7 +435,7 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
 
   auto ifieldOption = getRequiredInput(InputField);
   index_type index = 0;
-  
+
   auto state = get_state();
   using namespace Parameters;
   if (ifieldOption)
@@ -449,7 +449,7 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
       index = state->getValue(FieldElem).toInt();
     }
   }
-  
+
   return index;
 }
 
@@ -458,9 +458,9 @@ GeometryHandle GenerateSinglePointProbeFromField::BuildWidgetObject(SCIRun::Fiel
   GeometryHandle geom(new GeometryObject(field, *this, "EntireSinglePointProbeFromField"));
 
   VMesh*  mesh = field->vmesh();
-  
+
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
-  ColorRGB node_color;  
+  ColorRGB node_color;
 
   mesh->synchronize(Mesh::NODES_E);
 
@@ -476,11 +476,11 @@ GeometryHandle GenerateSinglePointProbeFromField::BuildWidgetObject(SCIRun::Fiel
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
   ss << radius << num_strips << colorScheme;
-  
+
   std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
-  
-  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;    
-  
+
+  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;
+
   Graphics::GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
@@ -488,17 +488,17 @@ GeometryHandle GenerateSinglePointProbeFromField::BuildWidgetObject(SCIRun::Fiel
 
     Core::Geometry::Point p;
     mesh->get_point(p, *eiter);
-   
+
     glyphs.addSphere(p, radius, num_strips, node_color);
 
     ++eiter;
   }
 
-  RenderState renState = GetWidgetRenderState(my_state);  
+  RenderState renState = GetWidgetRenderState(my_state);
 
-  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0, 
+  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, primIn, mesh->get_bounding_box());
-  
+
   return geom;
 }
 

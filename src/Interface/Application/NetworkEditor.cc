@@ -46,6 +46,7 @@
 #include <Dataflow/Network/NetworkSettings.h> //TODO: push
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Application.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
@@ -165,6 +166,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::N
   count.increment();
   //std::cout << "\tNE modules done (end): " << *count.count << std::endl;
   Q_EMIT modified();
+  Q_EMIT newModule(QString::fromStdString(module->get_id()), module->has_ui());
 }
 
 void NetworkEditor::connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
@@ -350,6 +352,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(snapToModules()), proxy, SLOT(snapToGrid()));
   connect(this, SIGNAL(highlightPorts(int)), proxy, SLOT(highlightPorts(int)));
+  connect(this, SIGNAL(resetModulesDueToCycle()), module, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
   connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
   connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
@@ -529,16 +532,66 @@ void NetworkEditor::cut()
 
 void NetworkEditor::copy()
 {
-  //Module* node = selectedModule();
-  //if (!node)
-  //  return;
+  qDebug() << "COPY CONTENTS";
+  for (const auto& item : scene_->selectedItems())
+  {
+    qDebug() << item;
+  }
 
-  //QString str = QString("Module %1 %2 %3 %4")
-  //              .arg(node->textColor().name())
-  //              .arg(node->outlineColor().name())
-  //              .arg(node->backgroundColor().name())
-  //              .arg(node->text());
+  auto selected = scene_->selectedItems();
+  auto modSelected = [=](ModuleHandle mod)
+  {
+    for (const auto& item : selected)
+    {
+      if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        if (w->getModuleWidget()->getModuleId() == mod->get_id().id_)
+          return true;
+      }
+    }
+    return false;
+  };
+  auto connSelected = [=](const ConnectionDescription& conn)
+  {
+    for (const auto& item : selected)
+    {
+      if (auto connLine = dynamic_cast<ConnectionLine*>(item))
+      {
+        if (connLine->id().describe() == conn)
+          return true;
+      }
+    }
+    return false;
+  };
+
+  NetworkFileHandle file = controller_->serializeNetworkFragment(modSelected, connSelected);
+
+  if (file)
+  {
+    qDebug() << "obtained net file xml";
+    //TODO encapsulate
+    std::ostringstream ostr;
+    XMLSerializer::save_xml(*file, ostr, "networkFragment");
+    std::string xml = ostr.str();
+    qDebug() << QString::fromStdString(xml);
+  }
+  else
+  {
+    qDebug() << "null net fragment";
+  }
+/*
+  auto node = selectedModule();
+  if (!node)
+    return;
+
+  QString str = QString("Module %1 %2 %3 %4")
+                .arg(node->textColor().name())
+                .arg(node->outlineColor().name())
+                .arg(node->backgroundColor().name())
+                .arg(node->text());
+  qDebug() << str;
   //QApplication::clipboard()->setText(str);
+  */
 }
 
 void NetworkEditor::paste()
@@ -883,7 +936,10 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
 
 void NetworkEditor::executeAll()
 {
-  controller_->executeAll(*this);
+  // explicit type needed for older Qt and/or clang
+  std::function<void()> exec = [this]() { controller_->executeAll(*this); };
+  QtConcurrent::run(exec);
+
   //TODO: not sure about this right now.
   //Q_EMIT modified();
   Q_EMIT networkExecuted();
@@ -891,7 +947,9 @@ void NetworkEditor::executeAll()
 
 void NetworkEditor::executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
 {
-  controller_->executeModule(module, *this);
+  // explicit type needed for older Qt and/or clang
+  std::function<void()> exec = [this, &module]() { controller_->executeModule(module, *this); };
+  QtConcurrent::run(exec);
   //TODO: not sure about this right now.
   //Q_EMIT modified();
   Q_EMIT networkExecuted();
@@ -901,6 +959,12 @@ ExecutableObject* NetworkEditor::lookupExecutable(const ModuleId& id) const
 {
   auto widget = findById(scene_->items(), id.id_);
   return widget ? widget->getModuleWidget() : 0;
+}
+
+void NetworkEditor::resetNetworkDueToCycle()
+{
+  Q_EMIT resetModulesDueToCycle();
+  //TODO: ??reset module colors--right now they stay yellow
 }
 
 void NetworkEditor::removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId& id)
@@ -1121,7 +1185,7 @@ bool NetworkEditor::containsViewScene() const
 void NetworkEditor::setModuleMini(bool mini)
 {
   ModuleWidget::setGlobalMiniMode(mini);
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  for (const auto& item : scene_->items())
   {
     auto module = getModule(item);
     if (module)

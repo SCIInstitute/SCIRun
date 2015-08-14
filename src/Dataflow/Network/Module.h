@@ -400,7 +400,7 @@ namespace Networks {
   class SCISHARE ModuleWithAsyncDynamicPorts : public Module
   {
   public:
-    explicit ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info);
+    explicit ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info, bool hasUI);
     virtual bool hasDynamicPorts() const override { return true; }
     virtual void execute() override;
     virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) = 0;

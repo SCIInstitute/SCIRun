@@ -137,6 +137,9 @@ namespace SCIRun {
 
             /// Sets zoom speed
             void setZoomSpeed(int zoomSpeed);
+
+            /// Sets zoom inverted/not inverted
+            void setZoomInverted(bool value);
             
             /// Performs an autoview.
             void doAutoView();

@@ -52,7 +52,7 @@ Mutex ViewScene::mutex_("ViewScene");
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 
-ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_)
+ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
   INITIALIZE_PORT(GeneralGeom);
 }
@@ -135,7 +135,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 
 void ViewScene::processViewSceneObjectFeedback()
 {
-  //TODO: match ID of touched geom object with port id, and send that info back too. 
+  //TODO: match ID of touched geom object with port id, and send that info back too.
   //std::cout << "slot for state change in VS module" << std::endl;
   auto state = get_state();
   auto newInfo = state->getValue(Parameters::GeometryFeedbackInfo).toVector();

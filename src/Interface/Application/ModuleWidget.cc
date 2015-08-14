@@ -88,6 +88,7 @@ namespace Gui {
         << new QAction("Duplicate", parent)
         << new QAction("Replace With", parent)
         << new QAction("Collapse", parent)
+        << disabled(new QAction("Ignore*", parent))
         << new QAction("Show Log", parent)
         //<< disabled(new QAction("Make Sub-Network", parent))  // Issue #287
         << separatorAction(parent)
@@ -96,12 +97,12 @@ namespace Gui {
     QMenu* getMenu() { return menu_; }
     QAction* getAction(const char* name) const
     {
-      BOOST_FOREACH(QAction* action, menu_->actions())
+      for (const auto& action : menu_->actions())
       {
         if (action->text().contains(name))
           return action;
       }
-      return 0;
+      return nullptr;
     }
   private:
     QMenu* menu_;

@@ -440,9 +440,10 @@ void PortWidget::dragImpl(const QPointF& endPos)
   }
   currentConnection_->update(endPos);
 
-  auto isCompatible = [this](const std::string& mid, bool isInput, const PortWidget* port)
+  auto isCompatible = [this](const PortWidget* port)
   {
-    return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename() && (!isInput || !port->isConnected());
+    PortConnectionDeterminer q;
+    return q.canBeConnected(*port, *this);
   };
 
   forEachPort([this](PortWidget* p) { this->makePotentialConnectionLine(p); }, isCompatible);
@@ -478,7 +479,7 @@ void PortWidget::forEachPort(Func func, Pred pred)
     {
       for (auto& p3 : p2.second)
       {
-        if (pred(p1.first, p2.first, p3.second))
+        if (pred(p3.second))
           func(p3.second);
       }
     }

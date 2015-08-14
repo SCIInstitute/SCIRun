@@ -166,6 +166,12 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
+    void SRInterface::setZoomInverted(bool value)
+    {
+      mCamera->setZoomInverted(value);
+    }
+
+    //------------------------------------------------------------------------------
     void SRInterface::eventResize(size_t width, size_t height)
     {
       mScreenWidth = width;

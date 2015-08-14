@@ -307,6 +307,10 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
   connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
 
+	connect(actionCut_, SIGNAL(triggered()), networkEditor_, SLOT(cut()));
+	connect(actionCopy_, SIGNAL(triggered()), networkEditor_, SLOT(copy()));
+	connect(actionPaste_, SIGNAL(triggered()), networkEditor_, SLOT(paste()));
+
   connect(actionKeyboardShortcuts_, SIGNAL(triggered()), this, SLOT(showKeyboardShortcutsDialog()));
 
   //TODO: store in xml file, add to app resources
@@ -373,6 +377,7 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), &WidgetDisablingService::Instance(), SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), &WidgetDisablingService::Instance(), SLOT(enableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(changeExecuteActionIconToPlay()));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(alertForNetworkCycles(int)));
 
 	connect(networkEditor_, SIGNAL(disableWidgetDisabling()), &WidgetDisablingService::Instance(), SLOT(temporarilyDisableService()));
   connect(networkEditor_, SIGNAL(reenableWidgetDisabling()), &WidgetDisablingService::Instance(), SLOT(temporarilyEnableService()));
@@ -391,6 +396,9 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)),
     commandConverter_.get(), SLOT(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
+  connect(networkEditor_, SIGNAL(newModule(const QString&, bool)), this, SLOT(addModuleToWindowList(const QString&, bool)));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
+    this, SLOT(removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId&)));
 }
 
 void SCIRunMainWindow::setTipsAndWhatsThis()
@@ -1013,6 +1021,44 @@ namespace {
     return 0;
   }
 
+  void addSnippet(const QString& code, QTreeWidgetItem* snips)
+  {
+    auto snipItem = new QTreeWidgetItem();
+    snipItem->setText(0, code);
+    snips->addChild(snipItem);
+  }
+
+	void addSnippetMenu(QTreeWidget* tree)
+	{
+		auto snips = new QTreeWidgetItem();
+		snips->setText(0, "Snippets");
+		snips->setForeground(0, favesColor());
+
+		//hard-code a few popular ones.
+
+    addSnippet("[ReadField->ShowField->ViewScene]", snips);
+    addSnippet("[CreateLatVol->ShowField->ViewScene]", snips);
+    addSnippet("[ReadField->ReportFieldInfo]", snips);
+    addSnippet("[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]", snips);
+    addSnippet("[GetFieldBoundary->FairMesh->ShowField]", snips);
+		addSnippet("[CreateLatVol->(CreateStandardColorMap->RescaleColorMap->ShowField)->ViewScene]", snips);
+
+		tree->addTopLevelItem(snips);
+	}
+
+	QTreeWidgetItem* getSnippetMenu(QTreeWidget* tree)
+	{
+		for (int i = 0; i < tree->topLevelItemCount(); ++i)
+		{
+			auto top = tree->topLevelItem(i);
+			if (top->text(0) == "Snippets")
+			{
+				return top;
+			}
+		}
+		return 0;
+	}
+
   void addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
   {
     LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
@@ -1084,6 +1130,7 @@ void SCIRunMainWindow::fillModuleSelector()
   auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
 
   addFavoriteMenu(moduleSelectorTreeWidget_);
+	addSnippetMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
   sortFavorites(moduleSelectorTreeWidget_);
 
@@ -1376,14 +1423,10 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
   QList<QAction*> nonfunctioningActions;
   nonfunctioningActions <<
     actionInsert_ <<
-    actionCreate_Module_Skeleton_ <<
-    actionCut_ <<
-    actionCopy_ <<
-    actionPaste_;
+    actionCreate_Module_Skeleton_;
   QList<QMenu*> nonfunctioningMenus;
   nonfunctioningMenus <<
     menuSubnets_;
-		//<< menuToolkits_;
   QList<QWidget*> nonfunctioningWidgets;
   nonfunctioningWidgets <<
     prefsWindow_->scirunNetsLabel_ <<
@@ -1523,6 +1566,29 @@ void SCIRunMainWindow::adjustExecuteButtonAppearance()
 		executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     break;
   }
+}
+
+void SCIRunMainWindow::alertForNetworkCycles(int code)
+{
+  if (code == -1)
+  {
+    QMessageBox::warning(this, "Network graph has a cycle", "Your network contains a cycle. The execution scheduler cannot handle cycles at this time. Please ensure all cycles are broken before executing.");
+    networkEditor_->resetNetworkDueToCycle();
+  }
+}
+
+void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
+{
+  qDebug() << "add module to window list: " << modId << hasUI;
+  auto modAction = new QAction(this);
+  modAction->setText(modId);
+  modAction->setEnabled(hasUI);
+  menuCurrent_->addAction(modAction);
+}
+
+void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
+{
+  qDebug() << "remove module from window list: " << QString::fromStdString(modId.id_);
 }
 
 void SCIRunMainWindow::setupTagManagerWindow()
