@@ -1075,6 +1075,19 @@ void NetworkEditor::zoomReset()
   Q_EMIT zoomLevelChanged(currentZoomPercentage());
 }
 
+void NetworkEditor::zoomBestFit()
+{
+  //TODO not quite working yet.
+  auto oldRect = sceneRect();
+  setSceneRect(QRectF());
+  fitInView(sceneRect(), Qt::KeepAspectRatio);
+  qDebug() << "old rect: " << oldRect << "new rect:" << sceneRect();
+  currentScale_ *= sceneRect().x() / oldRect.x();
+  //scale(1.0 / currentScale_, 1.0 / currentScale_);
+  //currentScale_ = 1;
+  Q_EMIT zoomLevelChanged(currentZoomPercentage());
+}
+
 int NetworkEditor::currentZoomPercentage() const
 {
   return static_cast<int>(currentScale_ * 100);

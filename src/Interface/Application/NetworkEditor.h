@@ -233,6 +233,7 @@ Q_SIGNALS:
     void zoomIn();
     void zoomOut();
     void zoomReset();
+    void zoomBestFit();
     void centerView();
     void setModuleMini(bool mini);
     void highlightTaggedItem(int tagValue);

@@ -169,9 +169,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   standardBar->addAction(actionCenterNetworkViewer_);
   standardBar->addAction(actionZoomIn_);
   standardBar->addAction(actionZoomOut_);
-  //TODO: requires some real code
+  //standardBar->addAction(actionZoomBestFit_);
   actionZoomBestFit_->setDisabled(true);
-  standardBar->addAction(actionZoomBestFit_);
   standardBar->addAction(actionResetNetworkZoom_);
   standardBar->addAction(actionDragMode_);
   standardBar->addAction(actionSelectMode_);
@@ -831,10 +830,14 @@ void SCIRunMainWindow::zoomNetwork()
     {
       networkEditor_->zoomReset();
     }
+    else if (name == "Zoom Best Fit")
+    {
+      networkEditor_->zoomBestFit();
+    }
   }
   else
   {
-    std::cerr << "Sender was null or not an action" << std::endl;
+    qDebug() << "Sender was null or not an action";
   }
 }
 
@@ -1641,15 +1644,12 @@ FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *pa
  	QNetworkRequest request(imageUrl);
 	reply_ = webCtrl_.get(request);
   connect(reply_, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
-  //qDebug() << "request filed: " << imageUrl;
 }
 
 void FileDownloader::fileDownloaded(QNetworkReply* reply)
 {
-  //qDebug() << "slot called";
   downloadedData_ = reply->readAll();
 	reply->deleteLater();
-	//qDebug() << "file downloaded";
   Q_EMIT downloaded();
 }
 
