@@ -1404,7 +1404,7 @@ class tetgenmesh {
     int toparraylen;
     char **toparray;
     long objects;
-    unsigned long totalmemory;
+    uintptr_t totalmemory;
 
     void restart();
     void poolinit(int sizeofobject, int log2objperblk);
@@ -3039,13 +3039,13 @@ inline void tetgenmesh::setshellpbcgroup(face& s, int value) {
 inline void tetgenmesh::sinfect(face& s) {
   ((int *) ((s).sh))[shmarkindex] = 
     (((int *) ((s).sh))[shmarkindex] | (int) 1);
-  // s.sh[6] = (shellface) ((unsigned long) s.sh[6] | (unsigned long) 4l);
+  // s.sh[6] = (shellface) ((uintptr_t) s.sh[6] | (uintptr_t) 4l);
 }
 
 inline void tetgenmesh::suninfect(face& s) {
   ((int *) ((s).sh))[shmarkindex] = 
     (((int *) ((s).sh))[shmarkindex] & ~(int) 1);
-  // s.sh[6] = (shellface)((unsigned long) s.sh[6] & ~(unsigned long) 4l);
+  // s.sh[6] = (shellface)((uintptr_t) s.sh[6] & ~(uintptr_t) 4l);
 }
 
 // Test a subface for viral infection.

@@ -4005,7 +4005,7 @@ char* tetgenmesh::arraypool::getblock(int objectindex)
       toparray[i] = (char *) NULL;
     }
     // Account for the memory.
-    totalmemory = newsize * (unsigned long) sizeof(char *);
+    totalmemory = newsize * (uintptr_t) sizeof(char *);
   } else if (topindex >= toparraylen) {
     // Resize the top array, making sure it holds 'topindex'.
     newsize = 3 * toparraylen;
@@ -4360,7 +4360,7 @@ poolinit(int bytecount, int itemcount, enum wordtype wtype, int alignment)
 
 void tetgenmesh::memorypool::restart()
 {
-  // unsigned long alignptr;
+  // uintptr_t alignptr;
   uintptr_t alignptr;
 
   items = 0;
@@ -4369,12 +4369,12 @@ void tetgenmesh::memorypool::restart()
   // Set the currently active block.
   nowblock = firstblock;
   // Find the first item in the pool.  Increment by the size of (void *).
-  // alignptr = (unsigned long) (nowblock + 1);
+  // alignptr = (uintptr_t) (nowblock + 1);
   alignptr = (uintptr_t) (nowblock + 1);
   // Align the item on an `alignbytes'-byte boundary.
   // nextitem = (void *)
-  //   (alignptr + (unsigned long) alignbytes -
-  //    (alignptr % (unsigned long) alignbytes));
+  //   (alignptr + (uintptr_t) alignbytes -
+  //    (alignptr % (uintptr_t) alignbytes));
   nextitem = (void *)
     (alignptr + (uintptr_t) alignbytes -
      (alignptr % (uintptr_t) alignbytes));
@@ -4394,7 +4394,7 @@ void* tetgenmesh::memorypool::alloc()
 {
   void *newitem;
   void **newblock;
-  // unsigned long alignptr;
+  // uintptr_t alignptr;
   uintptr_t alignptr;
 
   // First check the linked list of dead items.  If the list is not 
@@ -4421,12 +4421,12 @@ void* tetgenmesh::memorypool::alloc()
       nowblock = (void **) *nowblock;
       // Find the first item in the block.
       //   Increment by the size of (void *).
-      // alignptr = (unsigned long) (nowblock + 1);
+      // alignptr = (uintptr_t) (nowblock + 1);
       alignptr = (uintptr_t) (nowblock + 1);
       // Align the item on an `alignbytes'-byte boundary.
       // nextitem = (void *)
-      //   (alignptr + (unsigned long) alignbytes -
-      //    (alignptr % (unsigned long) alignbytes));
+      //   (alignptr + (uintptr_t) alignbytes -
+      //    (alignptr % (uintptr_t) alignbytes));
       nextitem = (void *)
         (alignptr + (uintptr_t) alignbytes -
          (alignptr % (uintptr_t) alignbytes));
@@ -4474,18 +4474,18 @@ void tetgenmesh::memorypool::dealloc(void *dyingitem)
 
 void tetgenmesh::memorypool::traversalinit()
 {
-  // unsigned long alignptr;
+  // uintptr_t alignptr;
   uintptr_t alignptr;
 
   // Begin the traversal in the first block.
   pathblock = firstblock;
   // Find the first item in the block.  Increment by the size of (void *).
-  // alignptr = (unsigned long) (pathblock + 1);
+  // alignptr = (uintptr_t) (pathblock + 1);
   alignptr = (uintptr_t) (pathblock + 1);
   // Align with item on an `alignbytes'-byte boundary.
   // pathitem = (void *)
-  //   (alignptr + (unsigned long) alignbytes -
-  //    (alignptr % (unsigned long) alignbytes));
+  //   (alignptr + (uintptr_t) alignbytes -
+  //    (alignptr % (uintptr_t) alignbytes));
   pathitem = (void *)
     (alignptr + (uintptr_t) alignbytes -
      (alignptr % (uintptr_t) alignbytes));
@@ -4508,7 +4508,7 @@ void tetgenmesh::memorypool::traversalinit()
 void* tetgenmesh::memorypool::traverse()
 {
   void *newitem;
-  // unsigned long alignptr;
+  // uintptr_t alignptr;
   uintptr_t alignptr;
 
   // Stop upon exhausting the list of items.
@@ -4520,12 +4520,12 @@ void* tetgenmesh::memorypool::traverse()
     // Find the next block.
     pathblock = (void **) *pathblock;
     // Find the first item in the block.  Increment by the size of (void *).
-    // alignptr = (unsigned long) (pathblock + 1);
+    // alignptr = (uintptr_t) (pathblock + 1);
     alignptr = (uintptr_t) (pathblock + 1);
     // Align with item on an `alignbytes'-byte boundary.
     // pathitem = (void *)
-    //   (alignptr + (unsigned long) alignbytes -
-    //    (alignptr % (unsigned long) alignbytes));
+    //   (alignptr + (uintptr_t) alignbytes -
+    //    (alignptr % (uintptr_t) alignbytes));
     pathitem = (void *)
       (alignptr + (uintptr_t) alignbytes -
        (alignptr % (uintptr_t) alignbytes));
@@ -4843,16 +4843,16 @@ void tetgenmesh::maketetrahedronmap(int*& idx2tetlist,
 
 void tetgenmesh::dummyinit(int tetwords, int shwords)
 {
-  unsigned long alignptr;
+  uintptr_t alignptr;
 
   // Set up 'dummytet', the 'tetrahedron' that occupies "outer space".
   dummytetbase = (tetrahedron *) new char[tetwords * sizeof(tetrahedron)
                                           + tetrahedrons->alignbytes];
   // Align 'dummytet' on a 'tetrahedrons->alignbytes'-byte boundary.
-  alignptr = (unsigned long) dummytetbase;
+  alignptr = (uintptr_t) dummytetbase;
   dummytet = (tetrahedron *)
-    (alignptr + (unsigned long) tetrahedrons->alignbytes
-     - (alignptr % (unsigned long) tetrahedrons->alignbytes));
+    (alignptr + (uintptr_t) tetrahedrons->alignbytes
+     - (alignptr % (uintptr_t) tetrahedrons->alignbytes));
   // Initialize the four adjoining tetrahedra to be "outer space". These
   //   will eventually be changed by various bonding operations, but their
   //   values don't really matter, as long as they can legally be
@@ -4874,10 +4874,10 @@ void tetgenmesh::dummyinit(int tetwords, int shwords)
     dummyshbase = (shellface *) new char[shwords * sizeof(shellface)
                                          + subfaces->alignbytes];
     // Align 'dummysh' on a 'subfaces->alignbytes'-byte boundary.
-    alignptr = (unsigned long) dummyshbase;
+    alignptr = (uintptr_t) dummyshbase;
     dummysh = (shellface *)
-      (alignptr + (unsigned long) subfaces->alignbytes
-       - (alignptr % (unsigned long) subfaces->alignbytes));
+      (alignptr + (uintptr_t) subfaces->alignbytes
+       - (alignptr % (uintptr_t) subfaces->alignbytes));
     // Initialize the three adjoining subfaces to be the omnipresent
     //   subface. These will eventually be changed by various bonding
     //   operations, but their values don't really matter, as long as they
@@ -21115,7 +21115,7 @@ bool tetgenmesh::delaunizecavity(arraypool *cavpoints, arraypool *cavfaces,
         if (checksh.sh != dummysh) {
           if (b->verbose > 1) {
             printf("    Queue a subface x%lx (%d, %d, %d).\n", 
-              (unsigned long) checksh.sh, pointmark(sorg(checksh)),
+              (uintptr_t) checksh.sh, pointmark(sorg(checksh)),
               pointmark(sdest(checksh)), pointmark(sapex(checksh)));
           }
           stdissolve(checksh);
@@ -21165,7 +21165,7 @@ bool tetgenmesh::delaunizecavity(arraypool *cavpoints, arraypool *cavfaces,
             if (checksh.sh != dummysh) {
               if (b->verbose > 1) {
                 printf("    Queue a subface x%lx (%d, %d, %d).\n", 
-                  (unsigned long) checksh.sh, pointmark(sorg(checksh)),
+                  (uintptr_t) checksh.sh, pointmark(sorg(checksh)),
                   pointmark(sdest(checksh)), pointmark(sapex(checksh)));
               }
               stdissolve(checksh);
@@ -23558,7 +23558,7 @@ bool tetgenmesh::carvecavity(list* newtetlist, list* outtetlist,
             // Found an inversed inside tet. Stop and return.
             if (b->verbose > 1) {
               printf("    Intet x%lx %d (%d, %d, %d, %d) is iversed.\n", 
-                (unsigned long) intet.tet, intet.loc, pointmark(pa),
+                (uintptr_t) intet.tet, intet.loc, pointmark(pa),
                 pointmark(pb), pointmark(pc), pointmark(oppo(intet)));
             }
             success = false;
@@ -23628,7 +23628,7 @@ bool tetgenmesh::carvecavity(list* newtetlist, list* outtetlist,
         if (infected(neightet)) {
           printf("Error:  A front face (%d, %d, %d) x%lx got deleted.\n",
             pointmark(org(neightet)), pointmark(dest(neightet)),
-            pointmark(apex(neightet)), (unsigned long) auxsh.sh);
+            pointmark(apex(neightet)), (uintptr_t) auxsh.sh);
           printf("  p:draw_tet(%d, %d, %d, %d) -- in\n",
             pointmark(org(neightet)), pointmark(dest(neightet)), 
             pointmark(apex(neightet)), pointmark(oppo(neightet)));
@@ -33805,9 +33805,9 @@ int tetgenmesh::checksegments()
                 ((org(tetloop) == pb) && (dest(tetloop) == pa)))) {
             printf("  !! Wrong tet-seg connection.\n");
             printf("    Tet: x%lx (%d, %d, %d, %d) - Seg: x%lx (%d, %d).\n", 
-              (unsigned long) tetloop.tet, pointmark(org(tetloop)),
+              (uintptr_t) tetloop.tet, pointmark(org(tetloop)),
               pointmark(dest(tetloop)), pointmark(apex(tetloop)),
-              pointmark(oppo(tetloop)), (unsigned long) sseg.sh,
+              pointmark(oppo(tetloop)), (uintptr_t) sseg.sh,
               pointmark(pa), pointmark(pb));
             horrors++;
           } else {
@@ -33819,11 +33819,11 @@ int tetgenmesh::checksegments()
               if (checkseg.sh != sseg.sh) {
                 printf("  !! Wrong tet-seg connection.\n");
                 printf("    Tet: x%lx (%d, %d, %d, %d) - ", 
-                  (unsigned long) tetloop.tet, pointmark(org(tetloop)),
+                  (uintptr_t) tetloop.tet, pointmark(org(tetloop)),
                   pointmark(dest(tetloop)), pointmark(apex(tetloop)),
                   pointmark(oppo(tetloop)));
                 if (checkseg.sh != NULL) {
-                  printf("Seg x%lx (%d, %d).\n", (unsigned long) checkseg.sh,
+                  printf("Seg x%lx (%d, %d).\n", (uintptr_t) checkseg.sh,
                   pointmark(sorg(checkseg)), pointmark(sdest(checkseg))); 
                 } else {
                   printf("Seg: NULL.\n");
