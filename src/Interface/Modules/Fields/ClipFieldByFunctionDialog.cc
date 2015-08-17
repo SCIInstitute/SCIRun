@@ -37,7 +37,7 @@ typedef SCIRun::Modules::Fields::ClipFieldByFunction ClipFieldDataModule;
 
 ClipFieldByFunctionDialog::ClipFieldByFunctionDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : HasParserHelpDialog(state, parent)
+  : ModuleDialogWithParserHelp(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));

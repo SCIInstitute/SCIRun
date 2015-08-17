@@ -36,7 +36,7 @@ typedef SCIRun::Modules::Fields::CalculateFieldData CalculateFieldDataModule;
 
 CalculateFieldDataDialog::CalculateFieldDataDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : HasParserHelpDialog(state, parent)
+  : ModuleDialogWithParserHelp(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));

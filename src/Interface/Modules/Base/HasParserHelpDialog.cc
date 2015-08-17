@@ -31,7 +31,7 @@
 
 using namespace SCIRun::Gui;
 
-void HasParserHelpDialog::popUpParserHelp()
+void ModuleDialogWithParserHelp::popUpParserHelp()
 {
   qDebug() << "show dialog";
   if (!help_)
@@ -40,7 +40,7 @@ void HasParserHelpDialog::popUpParserHelp()
   help_->show();
 }
 
-void HasParserHelpDialog::connectParserHelpButton(QPushButton* button)
+void ModuleDialogWithParserHelp::connectParserHelpButton(QPushButton* button)
 {
   connect(button, SIGNAL(clicked()), this, SLOT(popUpParserHelp()));
 }

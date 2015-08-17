@@ -36,7 +36,7 @@
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE ClipFieldByFunctionDialog : public HasParserHelpDialog, 
+class SCISHARE ClipFieldByFunctionDialog : public ModuleDialogWithParserHelp, 
   public Ui::ClipFieldByFunction
 {
 	Q_OBJECT

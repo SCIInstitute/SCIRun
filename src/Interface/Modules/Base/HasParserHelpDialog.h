@@ -37,13 +37,13 @@
 namespace SCIRun {
 namespace Gui {
 
-  class SCISHARE HasParserHelpDialog : public ModuleDialogGeneric
+  class SCISHARE ModuleDialogWithParserHelp : public ModuleDialogGeneric
   {
     Q_OBJECT
   public Q_SLOTS:
     virtual void popUpParserHelp();
   protected:
-    explicit HasParserHelpDialog(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0) : ModuleDialogGeneric(state, parent), help_(nullptr) {}
+    explicit ModuleDialogWithParserHelp(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0) : ModuleDialogGeneric(state, parent), help_(nullptr) {}
     void connectParserHelpButton(QPushButton* button);
   private:
     QDialog* help_;

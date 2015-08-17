@@ -36,7 +36,7 @@
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE CalculateFieldDataDialog : public HasParserHelpDialog,
+class SCISHARE CalculateFieldDataDialog : public ModuleDialogWithParserHelp,
   public Ui::CalculateFieldData
 {
 	Q_OBJECT
