@@ -26,24 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
-#include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
-#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
+#ifndef INTERFACE_APPLICATION_HASPARSERHELPDIALOG_H
+#define INTERFACE_APPLICATION_HASPARSERHELPDIALOG_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
-typedef SCIRun::Modules::Fields::ClipFieldByFunction ClipFieldDataModule;
+#include <QPushButton>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include "Interface/Modules/Base/ui_ParserHelp.h"
+#include <Interface/Modules/Base/share.h>
 
-ClipFieldByFunctionDialog::ClipFieldByFunctionDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : HasParserHelpDialog(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
+namespace SCIRun {
+namespace Gui {
 
-  addTextEditManager(expressionTextEdit_, ClipFieldDataModule::FunctionString);
-  addComboBoxManager(clippingLocationComboBox_, Parameters::ClipMethod);
-  connectParserHelpButton(parserHelpButton_);
-}
+  class SCISHARE HasParserHelpDialog : public ModuleDialogGeneric
+  {
+    Q_OBJECT
+  public Q_SLOTS:
+    virtual void popUpParserHelp();
+  protected:
+    explicit HasParserHelpDialog(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0) : ModuleDialogGeneric(state, parent), help_(nullptr) {}
+    void connectParserHelpButton(QPushButton* button);
+  private:
+    QDialog* help_;
+  };
+
+  class SCISHARE ParserHelpDialog : public QDialog, public Ui::ParserHelp
+  {
+  public:
+    ParserHelpDialog(QWidget* parent = 0);
+  };
+
+}}
+
+#endif

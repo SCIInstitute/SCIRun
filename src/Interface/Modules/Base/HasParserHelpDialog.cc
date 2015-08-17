@@ -26,24 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
-#include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
-#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
+#include <QtGui>
+#include <Interface/Modules/Base/HasParserHelpDialog.h>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
-typedef SCIRun::Modules::Fields::ClipFieldByFunction ClipFieldDataModule;
 
-ClipFieldByFunctionDialog::ClipFieldByFunctionDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : HasParserHelpDialog(state, parent)
+void HasParserHelpDialog::popUpParserHelp()
+{
+  qDebug() << "show dialog";
+  if (!help_)
+    help_ = new ParserHelpDialog(this);
+
+  help_->show();
+}
+
+void HasParserHelpDialog::connectParserHelpButton(QPushButton* button)
+{
+  connect(button, SIGNAL(clicked()), this, SLOT(popUpParserHelp()));
+}
+
+ParserHelpDialog::ParserHelpDialog(QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-
-  addTextEditManager(expressionTextEdit_, ClipFieldDataModule::FunctionString);
-  addComboBoxManager(clippingLocationComboBox_, Parameters::ClipMethod);
-  connectParserHelpButton(parserHelpButton_);
 }
