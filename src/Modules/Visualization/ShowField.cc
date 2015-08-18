@@ -28,7 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/HasId.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -61,6 +61,92 @@ using namespace SCIRun;
 ALGORITHM_PARAMETER_DEF(Visualization, CylinderRadius);
 
 const ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
+
+namespace SCIRun {
+  namespace Modules {
+    namespace Visualization {
+namespace detail
+{
+class GeometryBuilder
+{
+public:
+  //GeometryBuilder();
+  /// Constructs a geometry object (essentially a spire object) from the given
+  /// field data.
+  Core::Datatypes::GeometryHandle buildGeometryObject(
+    FieldHandle field,
+    boost::optional<Core::Datatypes::ColorMapHandle> colorMap,
+    Dataflow::Networks::ModuleStateHandle state,
+    const Core::GeometryIDGenerator& gid,
+    Core::Thread::Interruptible* interruptible);
+
+  /// Mesh construction. Any of the functions below can modify the renderState.
+  /// This modified render state will be passed onto the renderer.
+  void renderNodes(
+    SCIRun::FieldHandle field,
+    boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
+    Dataflow::Networks::ModuleStateHandle moduleState,
+    Core::Thread::Interruptible* interruptible,
+    RenderState state, Core::Datatypes::GeometryHandle geom,
+    const std::string& id);
+
+  void renderFaces(
+    SCIRun::FieldHandle field,
+    boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
+    Dataflow::Networks::ModuleStateHandle moduleState,
+    Core::Thread::Interruptible* interruptible,
+    RenderState state, Core::Datatypes::GeometryHandle geom,
+    unsigned int approx_div,
+    const std::string& id);
+
+  void renderFacesLinear(
+    SCIRun::FieldHandle field,
+    boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
+    Dataflow::Networks::ModuleStateHandle moduleState,
+    Core::Thread::Interruptible* interruptible,
+    RenderState state, Core::Datatypes::GeometryHandle geom,
+    unsigned int approxDiv,
+    const std::string& id);
+
+  void addFaceGeom(
+    const std::vector<Core::Geometry::Point>  &points,
+    const std::vector<Core::Geometry::Vector> &normals,
+    bool withNormals,
+    uint32_t& iboBufferIndex,
+    CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
+    CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
+    Core::Datatypes::GeometryObject::ColorScheme colorScheme,
+    const std::vector<SCIRun::Core::Datatypes::ColorRGB> &face_colors,
+    const RenderState& state);
+
+  void renderEdges(
+    SCIRun::FieldHandle field,
+    boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
+    Dataflow::Networks::ModuleStateHandle moduleState,
+    Core::Thread::Interruptible* interruptible,
+    RenderState state,
+    Core::Datatypes::GeometryHandle geom,
+    const std::string& id);
+
+  RenderState getNodeRenderState(
+    Dataflow::Networks::ModuleStateHandle state,
+    boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
+
+  RenderState getEdgeRenderState(
+    Dataflow::Networks::ModuleStateHandle state,
+    boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
+
+  RenderState getFaceRenderState(
+    Dataflow::Networks::ModuleStateHandle state,
+    boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
+private:
+  float faceTransparencyValue_ = 0.65;
+  float edgeTransparencyValue_ = 0.65;
+  float nodeTransparencyValue_ = 0.65;
+};
+}}}}
+
+using namespace SCIRun::Modules::Visualization::detail;
 
 ShowFieldModule::ShowFieldModule() : GeometryGeneratingModule(staticInfo_),
   builder_(new GeometryBuilder)
@@ -95,9 +181,6 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(SphereScaleValue, 0.03);
   state->setValue(CylinderRadius, 0.1);
   state->setValue(CylinderResolution, 5);
-  //faceTransparencyValue_ = 0.65f;
-  //edgeTransparencyValue_ = 0.65f;
-  //nodeTransparencyValue_ = 0.65f;
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT

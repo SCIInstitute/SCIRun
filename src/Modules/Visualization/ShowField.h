@@ -51,10 +51,13 @@ namespace SCIRun {
     }
   }
 
-
-
   namespace Modules {
     namespace Visualization {
+
+      namespace detail
+      {
+        class GeometryBuilder;
+      }
 
       class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
@@ -98,86 +101,10 @@ namespace SCIRun {
       private:
         void updateAvailableRenderOptions(SCIRun::FieldHandle field);
 
-        std::unique_ptr<class GeometryBuilder> builder_;
+        std::unique_ptr<detail::GeometryBuilder> builder_;
       };
 
-      class SCISHARE GeometryBuilder
-      {
-      public:
-        //GeometryBuilder();
-        /// Constructs a geometry object (essentially a spire object) from the given
-        /// field data.
-        Core::Datatypes::GeometryHandle buildGeometryObject(
-          FieldHandle field,
-          boost::optional<Core::Datatypes::ColorMapHandle> colorMap,
-          Dataflow::Networks::ModuleStateHandle state,
-          const Core::GeometryIDGenerator& gid,
-          Core::Thread::Interruptible* interruptible);
 
-        /// Mesh construction. Any of the functions below can modify the renderState.
-        /// This modified render state will be passed onto the renderer.
-        void renderNodes(
-          SCIRun::FieldHandle field,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
-          Dataflow::Networks::ModuleStateHandle moduleState,
-          Core::Thread::Interruptible* interruptible,
-          RenderState state, Core::Datatypes::GeometryHandle geom,
-          const std::string& id);
-
-        void renderFaces(
-          SCIRun::FieldHandle field,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
-          Dataflow::Networks::ModuleStateHandle moduleState,
-          Core::Thread::Interruptible* interruptible,
-          RenderState state, Core::Datatypes::GeometryHandle geom,
-          unsigned int approx_div,
-          const std::string& id);
-
-        void renderFacesLinear(
-          SCIRun::FieldHandle field,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
-          Dataflow::Networks::ModuleStateHandle moduleState,
-          Core::Thread::Interruptible* interruptible,
-          RenderState state, Core::Datatypes::GeometryHandle geom,
-          unsigned int approxDiv,
-          const std::string& id);
-
-        void addFaceGeom(
-          const std::vector<Core::Geometry::Point>  &points,
-          const std::vector<Core::Geometry::Vector> &normals,
-          bool withNormals,
-          uint32_t& iboBufferIndex,
-          CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
-          CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
-          Core::Datatypes::GeometryObject::ColorScheme colorScheme,
-          const std::vector<SCIRun::Core::Datatypes::ColorRGB> &face_colors,
-          const RenderState& state);
-
-        void renderEdges(
-          SCIRun::FieldHandle field,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
-          Dataflow::Networks::ModuleStateHandle moduleState,
-          Core::Thread::Interruptible* interruptible,
-          RenderState state,
-          Core::Datatypes::GeometryHandle geom,
-          const std::string& id);
-
-        RenderState getNodeRenderState(
-          Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
-
-        RenderState getEdgeRenderState(
-          Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
-
-        RenderState getFaceRenderState(
-          Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
-      private:
-        float faceTransparencyValue_ = 0.65;
-        float edgeTransparencyValue_ = 0.65;
-        float nodeTransparencyValue_ = 0.65;
-      };
 
     } // Visualization
   } // Modules
