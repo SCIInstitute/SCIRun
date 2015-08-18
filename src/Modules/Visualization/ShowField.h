@@ -63,7 +63,7 @@ namespace SCIRun {
       {
       public:
         ShowFieldModule();
-        virtual void execute();
+        virtual void execute() override;
 
         static const Core::Algorithms::AlgorithmParameterName NodesAvailable;
         static const Core::Algorithms::AlgorithmParameterName EdgesAvailable;
@@ -92,33 +92,43 @@ namespace SCIRun {
         INPUT_PORT(1, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
-        virtual void setStateDefaults();
+        virtual void setStateDefaults() override;
       private:
         void updateAvailableRenderOptions(SCIRun::FieldHandle field);
+
+        std::unique_ptr<class GeometryBuilder> builder_;
+      };
+
+      class SCISHARE GeometryBuilder
+      {
+      public:
+        //GeometryBuilder();
         /// Constructs a geometry object (essentially a spire object) from the given
         /// field data.
-        /// \param field    Field from which to construct geometry.
-        /// \param state
-        /// \param id       Ends up becoming the name of the spire object.
         Core::Datatypes::GeometryHandle buildGeometryObject(
-          SCIRun::FieldHandle field,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
-          Dataflow::Networks::ModuleStateHandle state);
+          FieldHandle field,
+          boost::optional<Core::Datatypes::ColorMapHandle> colorMap,
+          Dataflow::Networks::ModuleStateHandle state,
+          const Core::GeometryIDGenerator& gid,
+          Core::Thread::Interruptible* interruptible);
 
         /// Mesh construction. Any of the functions below can modify the renderState.
         /// This modified render state will be passed onto the renderer.
-        /// @{
         void renderNodes(
           SCIRun::FieldHandle field,
           boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
+          Dataflow::Networks::ModuleStateHandle moduleState,
+          Core::Thread::Interruptible* interruptible,
           RenderState state, Core::Datatypes::GeometryHandle geom,
           const std::string& id);
 
         void renderFaces(
           SCIRun::FieldHandle field,
           boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
+          Dataflow::Networks::ModuleStateHandle moduleState,
+          Core::Thread::Interruptible* interruptible,
           RenderState state, Core::Datatypes::GeometryHandle geom,
           unsigned int approx_div,
           const std::string& id);
@@ -126,6 +136,8 @@ namespace SCIRun {
         void renderFacesLinear(
           SCIRun::FieldHandle field,
           boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
+          Dataflow::Networks::ModuleStateHandle moduleState,
+          Core::Thread::Interruptible* interruptible,
           RenderState state, Core::Datatypes::GeometryHandle geom,
           unsigned int approxDiv,
           const std::string& id);
@@ -144,13 +156,12 @@ namespace SCIRun {
         void renderEdges(
           SCIRun::FieldHandle field,
           boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
+          Dataflow::Networks::ModuleStateHandle moduleState,
+          Core::Thread::Interruptible* interruptible,
           RenderState state,
           Core::Datatypes::GeometryHandle geom,
           const std::string& id);
-        /// @}
 
-        /// State evaluation
-        /// @{
         RenderState getNodeRenderState(
           Dataflow::Networks::ModuleStateHandle state,
           boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
@@ -162,12 +173,10 @@ namespace SCIRun {
         RenderState getFaceRenderState(
           Dataflow::Networks::ModuleStateHandle state,
           boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
-        /// @}
-
-        float faceTransparencyValue_;
-        float edgeTransparencyValue_;
-        float nodeTransparencyValue_;
-
+      private:
+        float faceTransparencyValue_ = 0.65;
+        float edgeTransparencyValue_ = 0.65;
+        float nodeTransparencyValue_ = 0.65;
       };
 
     } // Visualization

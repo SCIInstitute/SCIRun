@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/HasId.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -48,6 +49,8 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Visualization;
@@ -57,9 +60,10 @@ using namespace SCIRun;
 
 ALGORITHM_PARAMETER_DEF(Visualization, CylinderRadius);
 
-ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
+const ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
 
-ShowFieldModule::ShowFieldModule() : GeometryGeneratingModule(staticInfo_)
+ShowFieldModule::ShowFieldModule() : GeometryGeneratingModule(staticInfo_),
+  builder_(new GeometryBuilder)
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
@@ -91,9 +95,9 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(SphereScaleValue, 0.03);
   state->setValue(CylinderRadius, 0.1);
   state->setValue(CylinderResolution, 5);
-  faceTransparencyValue_ = 0.65f;
-  edgeTransparencyValue_ = 0.65f;
-  nodeTransparencyValue_ = 0.65f;
+  //faceTransparencyValue_ = 0.65f;
+  //edgeTransparencyValue_ = 0.65f;
+  //nodeTransparencyValue_ = 0.65f;
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
@@ -108,12 +112,12 @@ void ShowFieldModule::execute()
   if (needToExecute())
   {
     updateAvailableRenderOptions(field);
-    GeometryHandle geom = buildGeometryObject(field, colorMap, get_state());
+    GeometryHandle geom = builder_->buildGeometryObject(field, colorMap, get_state(), *this, this);
     sendOutput(SceneGraph, geom);
   }
 }
 
-RenderState ShowFieldModule::getNodeRenderState(
+RenderState GeometryBuilder::getNodeRenderState(
   ModuleStateHandle state,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
 {
@@ -149,7 +153,7 @@ RenderState ShowFieldModule::getNodeRenderState(
   return renState;
 }
 
-RenderState ShowFieldModule::getEdgeRenderState(
+RenderState GeometryBuilder::getEdgeRenderState(
   ModuleStateHandle state,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
 {
@@ -183,7 +187,7 @@ RenderState ShowFieldModule::getEdgeRenderState(
   return renState;
 }
 
-RenderState ShowFieldModule::getFaceRenderState(
+RenderState GeometryBuilder::getFaceRenderState(
   ModuleStateHandle state,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
 {
@@ -216,21 +220,20 @@ RenderState ShowFieldModule::getFaceRenderState(
   return renState;
 }
 
-GeometryHandle ShowFieldModule::buildGeometryObject(
+GeometryHandle GeometryBuilder::buildGeometryObject(
   boost::shared_ptr<SCIRun::Field> field,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-  ModuleStateHandle state)
+  ModuleStateHandle state, const GeometryIDGenerator& gid, Interruptible* interruptible)
 {
-  // Function for reporting progress.
-  SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc =
-    getUpdaterFunc();
+  // Function for reporting progress. TODO: use this variable somewhere!
+  //auto progressFunc = getUpdaterFunc();
 
   /// \todo Determine a better way of handling all of the various object state.
   bool showNodes = state->getValue(ShowFieldModule::ShowNodes).toBool();
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
   // Resultant geometry type (representing a spire object and a number of passes).
-  GeometryHandle geom(new GeometryObject(field, *this, "EntireField"));
+  GeometryHandle geom(new GeometryObject(field, gid, "EntireField"));
 
   /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
@@ -250,27 +253,29 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   if (showNodes)
   {
     // Construct node geometry.
-    renderNodes(field, colorMap, getNodeRenderState(state, colorMap), geom, geom->uniqueID());
+    renderNodes(field, colorMap, state, interruptible, getNodeRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   if (showFaces)
   {
     int approxDiv = 1;
-    renderFaces(field, colorMap, getFaceRenderState(state, colorMap), geom, approxDiv, geom->uniqueID());
+    renderFaces(field, colorMap, state, interruptible, getFaceRenderState(state, colorMap), geom, approxDiv, geom->uniqueID());
   }
 
   if (showEdges)
   {
-    renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, geom->uniqueID());
+    renderEdges(field, colorMap, state, interruptible, getEdgeRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   return geom;
 }
 
 
-void ShowFieldModule::renderFaces(
+void GeometryBuilder::renderFaces(
   boost::shared_ptr<SCIRun::Field> field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  ModuleStateHandle moduleState,
+  Interruptible* interruptible,
   RenderState state, Core::Datatypes::GeometryHandle geom,
   unsigned int approxDiv,
   const std::string& id)
@@ -289,7 +294,7 @@ void ShowFieldModule::renderFaces(
 
   if (doLinear)
   {
-    return renderFacesLinear(field, colorMap, state, geom, approxDiv, id);
+    return renderFacesLinear(field, colorMap, moduleState, interruptible, state, geom, approxDiv, id);
   }
   else
   {
@@ -298,9 +303,11 @@ void ShowFieldModule::renderFaces(
 }
 
 
-void ShowFieldModule::renderFacesLinear(
+void GeometryBuilder::renderFacesLinear(
   boost::shared_ptr<SCIRun::Field> field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  ModuleStateHandle moduleState,
+  Interruptible* interruptible,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   unsigned int approxDiv,
@@ -321,8 +328,7 @@ void ShowFieldModule::renderFacesLinear(
   bool withNormals = (state.get(RenderState::USE_NORMALS));
   if (withNormals) { mesh->synchronize(Mesh::NORMALS_E); }
 
-  auto st = get_state();
-  bool invertNormals = st->getValue(FaceInvertNormals).toBool();
+  bool invertNormals = moduleState->getValue(ShowFieldModule::FaceInvertNormals).toBool();
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   std::vector<double> svals;
   std::vector<Core::Geometry::Vector> vvals;
@@ -376,7 +382,7 @@ void ShowFieldModule::renderFacesLinear(
 
   while (fiter != fiterEnd)
   {
-    checkForInterruption();
+    interruptible->checkForInterruption();
 
     mesh->get_nodes(nodes, *fiter);
 
@@ -743,7 +749,7 @@ void ShowFieldModule::renderFacesLinear(
 // we get rid of the quads renderer pointers. Additionally, we can re-order
 // the triangles in ES and perform different rendering based on the
 // transparency of the triangles.
-void ShowFieldModule::addFaceGeom(
+void GeometryBuilder::addFaceGeom(
   const std::vector<Core::Geometry::Point>  &points,
   const std::vector<Core::Geometry::Vector> &normals,
   bool withNormals,
@@ -1060,9 +1066,11 @@ void ShowFieldModule::addFaceGeom(
   }
 }
 
-void ShowFieldModule::renderNodes(
+void GeometryBuilder::renderNodes(
   boost::shared_ptr<SCIRun::Field> field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  ModuleStateHandle moduleState,
+  Interruptible* interruptible,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   const std::string& id)
@@ -1091,9 +1099,8 @@ void ShowFieldModule::renderNodes(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  auto my_state = this->get_state();
-  double radius = my_state->getValue(SphereScaleValue).toDouble();
-  double num_strips = static_cast<double>(my_state->getValue(SphereResolution).toInt());
+  double radius = moduleState->getValue(ShowFieldModule::SphereScaleValue).toDouble();
+  double num_strips = static_cast<double>(moduleState->getValue(ShowFieldModule::SphereResolution).toInt());
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
@@ -1101,8 +1108,7 @@ void ShowFieldModule::renderNodes(
 
   std::string uniqueNodeID = id + "node" + ss.str();
 
-  auto st = get_state();
-  nodeTransparencyValue_ = static_cast<float>(st->getValue(NodeTransparencyValue).toDouble());
+  nodeTransparencyValue_ = static_cast<float>(moduleState->getValue(ShowFieldModule::NodeTransparencyValue).toDouble());
 
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::POINTS;
   // Use spheres...
@@ -1112,7 +1118,7 @@ void ShowFieldModule::renderNodes(
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    checkForInterruption();
+    interruptible->checkForInterruption();
 
     Core::Geometry::Point p;
     mesh->get_point(p, *eiter);
@@ -1154,9 +1160,11 @@ void ShowFieldModule::renderNodes(
 }
 
 
-void ShowFieldModule::renderEdges(
+void GeometryBuilder::renderEdges(
   boost::shared_ptr<SCIRun::Field> field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  ModuleStateHandle moduleState,
+  Interruptible* interruptible,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   const std::string& id)
@@ -1186,9 +1194,8 @@ void ShowFieldModule::renderEdges(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  auto my_state = this->get_state();
-  double num_strips = double(my_state->getValue(CylinderResolution).toInt());
-  double radius = my_state->getValue(CylinderRadius).toDouble();
+  double num_strips = static_cast<double>(moduleState->getValue(ShowFieldModule::CylinderResolution).toInt());
+  double radius = moduleState->getValue(ShowFieldModule::CylinderRadius).toDouble();
   if (num_strips < 0) num_strips = 50.;
   if (radius < 0) radius = 1.;
 
@@ -1205,7 +1212,7 @@ void ShowFieldModule::renderEdges(
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    checkForInterruption();
+    interruptible->checkForInterruption();
 
     VMesh::Node::array_type nodes;
     mesh->get_nodes(nodes, *eiter);
