@@ -33,7 +33,6 @@
 #include <QGraphicsTextItem>
 #ifndef Q_MOC_RUN
 #include <boost/shared_ptr.hpp>
-#include <map>
 #include <atomic>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/NetworkInterface.h>
@@ -107,7 +106,7 @@ namespace Gui {
   public:
     ModuleEventProxy();
     void trackModule(SCIRun::Dataflow::Networks::ModuleHandle module);
-Q_SIGNALS:
+  Q_SIGNALS:
     void moduleExecuteStart(const std::string& id);
     void moduleExecuteEnd(const std::string& id);
   };
@@ -136,10 +135,10 @@ Q_SIGNALS:
 	class DialogErrorControl;
 
   class NetworkEditor : public QGraphicsView,
-    public SCIRun::Dataflow::Networks::ExecutableLookup,
-    public SCIRun::Dataflow::Networks::NetworkEditorSerializationManager,
-    public SCIRun::Dataflow::Engine::NetworkIOInterface<SCIRun::Dataflow::Networks::NetworkFileHandle>,
-    public SCIRun::Dataflow::Networks::ConnectionMakerService,
+    public Dataflow::Networks::ExecutableLookup,
+    public Dataflow::Networks::NetworkEditorSerializationManager,
+    public Dataflow::Engine::NetworkIOInterface<Dataflow::Networks::NetworkFileHandle>,
+    public Dataflow::Networks::ConnectionMakerService,
     public ModuleErrorDisplayer
   {
 	  Q_OBJECT
@@ -152,29 +151,29 @@ Q_SIGNALS:
     ~NetworkEditor();
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
-    virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const SCIRun::Dataflow::Networks::ModuleId& id) const;
-    virtual bool containsViewScene() const;
+    virtual Dataflow::Networks::ExecutableObject* lookupExecutable(const Dataflow::Networks::ModuleId& id) const override;
+    virtual bool containsViewScene() const override;
 
-    SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
-    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);
-    void appendToNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
+    virtual Dataflow::Networks::NetworkFileHandle saveNetwork() const override;
+    virtual void loadNetwork(const Dataflow::Networks::NetworkFileHandle& file) override;
+    void appendToNetwork(const Dataflow::Networks::NetworkFileHandle& xml);
 
-    virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions(SCIRun::Dataflow::Networks::ModuleFilter filter) const;
-    virtual void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+    virtual Dataflow::Networks::ModulePositionsHandle dumpModulePositions(Dataflow::Networks::ModuleFilter filter) const override;
+    virtual void updateModulePositions(const Dataflow::Networks::ModulePositions& modulePositions) override;
 
-    virtual SCIRun::Dataflow::Networks::ModuleNotesHandle dumpModuleNotes(SCIRun::Dataflow::Networks::ModuleFilter filter) const;
-    virtual void updateModuleNotes(const SCIRun::Dataflow::Networks::ModuleNotes& moduleNotes);
+    virtual Dataflow::Networks::ModuleNotesHandle dumpModuleNotes(Dataflow::Networks::ModuleFilter filter) const override;
+    virtual void updateModuleNotes(const Dataflow::Networks::ModuleNotes& moduleNotes) override;
 
-    virtual SCIRun::Dataflow::Networks::ConnectionNotesHandle dumpConnectionNotes(SCIRun::Dataflow::Networks::ConnectionFilter filter) const;
-    virtual void updateConnectionNotes(const SCIRun::Dataflow::Networks::ConnectionNotes& notes);
+    virtual Dataflow::Networks::ConnectionNotesHandle dumpConnectionNotes(Dataflow::Networks::ConnectionFilter filter) const override;
+    virtual void updateConnectionNotes(const Dataflow::Networks::ConnectionNotes& notes) override;
 
-    virtual SCIRun::Dataflow::Networks::ModuleTagsHandle dumpModuleTags(SCIRun::Dataflow::Networks::ModuleFilter filter) const override;
-    virtual void updateModuleTags(const SCIRun::Dataflow::Networks::ModuleTags& notes) override;
+    virtual Dataflow::Networks::ModuleTagsHandle dumpModuleTags(Dataflow::Networks::ModuleFilter filter) const override;
+    virtual void updateModuleTags(const Dataflow::Networks::ModuleTags& notes) override;
 
     size_t numModules() const;
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
-    virtual int errorCode() const;
+    virtual int errorCode() const override;
 
     void disableInputWidgets();
     void enableInputWidgets();
@@ -211,14 +210,14 @@ Q_SIGNALS:
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
-    void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
+    virtual void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to) override;
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
     void replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName);
     void executeAll();
     void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId& id);
-    virtual void clear();
+    virtual void clear() override;
     void setConnectionPipelineType(int type);
     void addModuleViaDoubleClickedTreeItem();
     void selectAll();
@@ -238,6 +237,7 @@ Q_SIGNALS:
     void setModuleMini(bool mini);
     void highlightTaggedItem(int tagValue);
     void resetNetworkDueToCycle();
+    void moduleWindowAction();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -265,7 +265,6 @@ Q_SIGNALS:
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
-    void setZValue(int z);
     void setupModuleWidget(ModuleWidget* node);
     ModuleWidget* selectedModule() const;
     ConnectionLine* selectedLink() const;

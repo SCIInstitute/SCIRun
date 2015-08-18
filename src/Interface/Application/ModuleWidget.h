@@ -92,7 +92,7 @@ class ModuleWidget : public QStackedWidget,
 
 public:
   ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
   ~ModuleWidget();
 
   void trackConnections();
@@ -103,7 +103,7 @@ public:
   const PortWidgetManager& ports() const { return *ports_; }
 
   std::string getModuleId() const { return moduleId_; }
-  SCIRun::Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
+  Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
 
   void setDeletedFromGui(bool b) { deletedFromGui_ = b; }
 
@@ -124,19 +124,21 @@ public:
   void createStartupNote();
   void postLoadAction();
 
+  bool guiVisible() const;
+
   static const int SMALL_PORT_SPACING = 3;
   static const int LARGE_PORT_SPACING = SMALL_PORT_SPACING * 2;
   int portSpacing() const;
   void setPortSpacing(bool highlighted);
 
-  virtual boost::signals2::connection connectExecuteBegins(const SCIRun::Dataflow::Networks::ExecuteBeginsSignalType::slot_type& subscriber);
-  virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber);
-  virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber);
+  virtual boost::signals2::connection connectExecuteBegins(const SCIRun::Dataflow::Networks::ExecuteBeginsSignalType::slot_type& subscriber) override;
+  virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber) override;
+  virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber) override;
 
   void updateNoteFromFile(const Note& note);
 
 public Q_SLOTS:
-  virtual void execute();
+  virtual void execute() override;
   void toggleOptionsDialog();
   void setLogButtonColor(const QColor& color);
   void resetLogButtonColor();

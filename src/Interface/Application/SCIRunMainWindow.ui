@@ -112,7 +112,6 @@
      <property name="title">
       <string>Current</string>
      </property>
-     <addaction name="actionDummy"/>
     </widget>
     <addaction name="menuActions"/>
     <addaction name="actionTagManager_"/>

@@ -655,6 +655,13 @@ void ModuleWidget::postLoadAction()
   connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
 }
 
+bool ModuleWidget::guiVisible() const
+{
+  if (dockable_)
+    return dockable_->isVisible();
+  return false;
+}
+
 void ModuleWidget::fillReplaceWithMenu()
 {
   auto menu = getReplaceWithMenu();

@@ -137,6 +137,7 @@ private:
   bool firstTimePythonShown_;
   int returnCode_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
+  QMap<QString, QAction*> currentModuleActions_;
   boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;

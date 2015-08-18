@@ -1063,19 +1063,6 @@ namespace {
 	  tree->addTopLevelItem(snips);
 	}
 
-	QTreeWidgetItem* getSnippetMenu(QTreeWidget* tree)
-	{
-		for (int i = 0; i < tree->topLevelItemCount(); ++i)
-		{
-			auto top = tree->topLevelItem(i);
-			if (top->text(0) == "Snippets")
-			{
-				return top;
-			}
-		}
-		return nullptr;
-	}
-
   void addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
   {
     LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
@@ -1485,16 +1472,24 @@ void SCIRunMainWindow::alertForNetworkCycles(int code)
 
 void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
 {
-  qDebug() << "add module to window list: " << modId << hasUI;
+  if (menuCurrent_->actions().isEmpty())
+    menuCurrent_->setEnabled(true);
   auto modAction = new QAction(this);
   modAction->setText(modId);
   modAction->setEnabled(hasUI);
+  connect(modAction, SIGNAL(triggered()), networkEditor_, SLOT(moduleWindowAction()));
+  currentModuleActions_.insert(modId, modAction);
   menuCurrent_->addAction(modAction);
 }
 
 void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
 {
-  qDebug() << "remove module from window list: " << QString::fromStdString(modId.id_);
+  auto name = QString::fromStdString(modId.id_);
+  auto action = currentModuleActions_[name];
+  menuCurrent_->removeAction(action);
+  currentModuleActions_.remove(name);
+  if (menuCurrent_->actions().isEmpty())
+    menuCurrent_->setEnabled(false);
 }
 
 void SCIRunMainWindow::setupTagManagerWindow()

@@ -1098,6 +1098,24 @@ bool NetworkEditor::containsViewScene() const
   return findFirstByName(scene_->items(), "ViewScene") != nullptr;
 }
 
+void NetworkEditor::moduleWindowAction()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  qDebug() << "moduleWindowAction: " << action->text();
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module && module->getModuleId() == action->text().toStdString())
+    {
+      if (module->guiVisible())
+        module->hideUI();
+      else
+        module->showUI();
+      break;
+    }
+  }
+}
+
 void NetworkEditor::setModuleMini(bool mini)
 {
   ModuleWidget::setGlobalMiniMode(mini);
