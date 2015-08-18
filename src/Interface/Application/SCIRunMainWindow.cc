@@ -43,14 +43,11 @@
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/TagManagerWindow.h>
 #include <Interface/Application/ShortcutsInterface.h>
-#include <Interface/Application/PythonConsoleWidget.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommandFactory.h>
 #include <Interface/Application/GuiCommands.h>
-#include <Interface/Application/Utility.h>
 #include <Interface/Application/ModuleProxyWidget.h>
-#include <Core/Logging/LoggerInterface.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
@@ -69,7 +66,6 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #include <Core/Command/CommandFactory.h>
-#include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -1019,7 +1015,7 @@ namespace {
         return top;
       }
     }
-    return 0;
+    return nullptr;
   }
 
   void addSnippet(const QString& code, QTreeWidgetItem* snips)
@@ -1029,7 +1025,24 @@ namespace {
     snips->addChild(snipItem);
   }
 
-	void addSnippetMenu(QTreeWidget* tree)
+  void readCustomSnippets(QTreeWidgetItem* snips)
+  {
+    QFile inputFile("snippets.txt");
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+      GuiLogger::Instance().logInfo("Snippet file opened: " + inputFile.fileName());
+      QTextStream in(&inputFile);
+      while (!in.atEnd())
+      {
+        QString line = in.readLine();
+        addSnippet(line, snips);
+        GuiLogger::Instance().logInfo("Snippet read: " + line);
+      }
+      inputFile.close();
+    }
+  }
+
+  void addSnippetMenu(QTreeWidget* tree)
 	{
 		auto snips = new QTreeWidgetItem();
 		snips->setText(0, "Snippets");
@@ -1042,9 +1055,12 @@ namespace {
     addSnippet("[ReadField->ReportFieldInfo]", snips);
     addSnippet("[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]", snips);
     addSnippet("[GetFieldBoundary->FairMesh->ShowField]", snips);
-		addSnippet("[CreateLatVol->(CreateStandardColorMap->RescaleColorMap->ShowField)->ViewScene]", snips);
+    //TODO coming later, with grammar
+		//addSnippet("[CreateLatVol->(CreateStandardColorMap->RescaleColorMap->ShowField)->ViewScene]", snips);
 
-		tree->addTopLevelItem(snips);
+	  readCustomSnippets(snips);
+
+	  tree->addTopLevelItem(snips);
 	}
 
 	QTreeWidgetItem* getSnippetMenu(QTreeWidget* tree)
@@ -1057,7 +1073,7 @@ namespace {
 				return top;
 			}
 		}
-		return 0;
+		return nullptr;
 	}
 
   void addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
@@ -1073,7 +1089,7 @@ namespace {
     QTreeWidgetItem* faves = getFavoriteMenu(tree);
 		for (const auto& package : moduleMap)
     {
-      const std::string& packageName = package.first;
+      const auto& packageName = package.first;
       auto packageItem = new QTreeWidgetItem();
       packageItem->setText(0, QString::fromStdString(packageName));
       packageItem->setForeground(0, packageColor());
@@ -1081,14 +1097,14 @@ namespace {
       size_t totalModules = 0;
       for (const auto& category : package.second)
       {
-        const std::string& categoryName = category.first;
+        const auto& categoryName = category.first;
         auto categoryItem = new QTreeWidgetItem();
         categoryItem->setText(0, QString::fromStdString(categoryName));
         categoryItem->setForeground(0, categoryColor());
         packageItem->addChild(categoryItem);
 				for (const auto& module : category.second)
         {
-          const std::string& moduleName = module.first;
+          const auto& moduleName = module.first;
           auto moduleItem = new QTreeWidgetItem();
           auto name = QString::fromStdString(moduleName);
           moduleItem->setText(0, name);
@@ -1250,117 +1266,6 @@ bool SCIRunMainWindow::newInterface() const
   return Core::Application::Instance().parameters()->entireCommandLine().find("--originalGUI") == std::string::npos;
 }
 
-namespace {
-
-  void addElementDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map)
-  {
-    if (xml.tokenType() != QXmlStreamReader::StartElement)
-    {
-      std::cout << "didn't find start" << std::endl;
-      return;
-    }
-    QString elementName = xml.name().toString();
-    xml.readNext();
-    if (xml.tokenType() != QXmlStreamReader::Characters)
-    {
-      std::cout << "not char data" << std::endl;
-      return;
-    }
-    map.insert(elementName, xml.text().toString());
-  }
-
-  void addItemDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map)
-  {
-    if (xml.tokenType() != QXmlStreamReader::StartElement)
-    {
-      std::cout << "didn't find start 2" << std::endl;
-      return;
-    }
-    xml.readNext();
-    if (xml.tokenType() != QXmlStreamReader::Characters)
-    {
-      std::cout << "not char data 2" << std::endl;
-      return;
-    }
-    QXmlStreamAttributes attributes = xml.attributes();
-    if (attributes.hasAttribute("key") && attributes.hasAttribute("value"))
-    {
-      map[attributes.value("key").toString()] = attributes.value("value").toString();
-    }
-    else
-      std::cout << 333 << std::endl;
-  }
-
-  QMap<QString, QString> parseStyle(QXmlStreamReader& xml)
-  {
-    QMap<QString, QString> style;
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "style")
-    {
-      std::cout << "didn't find style" << std::endl;
-      return style;
-    }
-
-    xml.readNext();
-
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "style"))
-    {
-      if (xml.tokenType() == QXmlStreamReader::StartElement)
-      {
-        if (xml.name() == "template")
-          addElementDataToMap(xml, style);
-        if (xml.name() == "item")
-          addItemDataToMap(xml, style);
-      }
-      else
-        std::cout << 222 << std::endl;
-      xml.readNext();
-    }
-    return style;
-  }
-
-}
-
-void SCIRunMainWindow::parseStyleXML()
-{
-  std::cout << "parsing style xml" << std::endl;
-  QFile file("./styleSheetDetails.xml");
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-  {
-    QMessageBox::critical(this, "SCIRun", "Couldn't open styleSheetDetails.xml", QMessageBox::Ok);
-    return;
-  }
-  QXmlStreamReader xml(&file);
-  while (!xml.atEnd() && !xml.hasError())
-  {
-    QXmlStreamReader::TokenType token = xml.readNext();
-    if (token == QXmlStreamReader::StartDocument) {
-      continue;
-    }
-    if (token == QXmlStreamReader::StartElement) {
-      if(xml.name() == "styles") {
-        continue;
-      }
-      std::cout << "found: " << xml.name().toString().toStdString() << std::endl;
-      if(xml.name() == "style") {
-        QXmlStreamAttributes attributes = xml.attributes();
-        if (attributes.hasAttribute("widgetType"))
-        {
-          styleSheetDetails_[attributes.value("widgetType").toString()] = parseStyle(xml);
-        }
-        else
-          std::cout << "111" << std::endl;
-      }
-    }
-  }
-
-  if (xml.hasError())
-  {
-    QMessageBox::critical(this, "SCIRun", xml.errorString(), QMessageBox::Ok);
-  }
-  xml.clear();
-  printStyleSheet();
-}
-
 void SCIRunMainWindow::printStyleSheet() const
 {
   std::cout << "Printing style sheet details map" << std::endl;
@@ -1416,7 +1321,7 @@ void SCIRunMainWindow::resetWindowLayout()
   moduleSelectorDockWidget_->setFloating(false);
   addDockWidget(Qt::LeftDockWidgetArea, moduleSelectorDockWidget_);
 
-  std::cout << "TODO: toolbars" << std::endl;
+  qDebug() << "TODO: toolbars";
 }
 
 void SCIRunMainWindow::hideNonfunctioningWidgets()

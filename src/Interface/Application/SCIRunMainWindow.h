@@ -124,7 +124,6 @@ private:
   void setupPythonConsole();
   void fillModuleSelector();
   void setupInputWidgets();
-  void parseStyleXML();
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
   void showStatusMessage(const QString& str);
