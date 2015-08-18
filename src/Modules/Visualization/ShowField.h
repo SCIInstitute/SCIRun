@@ -31,10 +31,6 @@ DEALINGS IN THE SOFTWARE.
 #define MODULES_VISUALIZATION_SHOW_FIELD_H
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/ColorMap.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
 
