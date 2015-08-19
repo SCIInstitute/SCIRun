@@ -33,7 +33,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Scalar.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 
@@ -43,11 +42,11 @@
 //#include <Dataflow/Widgets/PointWidget.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Fields;
+using namespace Core::Datatypes;
+using namespace Core::Geometry;
+using namespace Core::Algorithms::Fields;
+using namespace Dataflow::Networks;
+using namespace Modules::Fields;
 
 const ModuleLookupInfo GenerateSinglePointProbeFromField::staticInfo_("GenerateSinglePointProbeFromField", "NewField", "SCIRun");
 ALGORITHM_PARAMETER_DEF(Fields, XLocation);

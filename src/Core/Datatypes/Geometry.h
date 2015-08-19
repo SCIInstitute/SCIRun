@@ -111,7 +111,7 @@ namespace Datatypes {
         bool        normalize;
       };
 
-      SpireVBO(){}
+      SpireVBO() : numElements(0), onGPU(false) {}
       SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
         std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboData,
         int64_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
@@ -140,7 +140,7 @@ namespace Datatypes {
         TRIANGLES,
       };
 
-      SpireIBO() {}
+      SpireIBO() : indexSize(0), prim(POINTS) {}
       SpireIBO(const std::string& iboName, PRIMITIVE primIn, size_t iboIndexSize,
         std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboData) :
         name(iboName),
@@ -161,7 +161,7 @@ namespace Datatypes {
     /// Defines a Spire object 'pass'.
     struct SpireSubPass
     {
-      SpireSubPass() {}
+      SpireSubPass() : renderType(RENDER_VBO_IBO), scalar(0), mColorScheme(COLOR_UNIFORM) {}
       SpireSubPass(const std::string& name, const std::string& vboName,
         const std::string& iboName, const std::string& program,
         ColorScheme scheme, const RenderState& state,
@@ -204,7 +204,7 @@ namespace Datatypes {
           UNIFORM_VEC4
         };
 
-        Uniform(){}
+        Uniform() : type(UNIFORM_SCALAR) {}
         Uniform(const std::string& nameIn, float d) :
           name(nameIn),
           type(UNIFORM_SCALAR),
