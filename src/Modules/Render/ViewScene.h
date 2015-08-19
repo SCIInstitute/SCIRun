@@ -77,9 +77,9 @@ namespace Render {
 
     static Core::Thread::Mutex mutex_;
 
-    typedef std::set<Core::Datatypes::GeometryHandle> GeomList;
+    typedef std::set<Core::Datatypes::GeometryBaseHandle> GeomList;
     typedef boost::shared_ptr<GeomList> GeomListPtr;
-    typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryHandle> ActiveGeometryMap;
+    typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryBaseHandle> ActiveGeometryMap;
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
     virtual void postStateChangeInternalSignalHookup() override;

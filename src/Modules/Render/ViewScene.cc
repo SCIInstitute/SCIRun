@@ -27,9 +27,9 @@
 */
 
 #include <Modules/Render/ViewScene.h>
-#include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Logging/Log.h>
+#include <Core/Datatypes/Color.h>
 
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
@@ -37,11 +37,9 @@
 #  undef Success
 #endif
 
-#include <Core/Datatypes/DenseMatrix.h>
-
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Render;
+using namespace Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
@@ -120,7 +118,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 
     LOG_DEBUG("ViewScene::asyncExecute after locking");
 
-    GeometryHandle geom = boost::dynamic_pointer_cast<GeometryObject>(data);
+    auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)
     {
       error("Logical error: not a geometry object on ViewScene");

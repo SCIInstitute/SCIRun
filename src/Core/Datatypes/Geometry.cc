@@ -32,19 +32,11 @@ using namespace SCIRun::Core;
 using namespace Datatypes;
 
 GeometryObject::GeometryObject(const GeometryIDGenerator& idGenerator, const std::string& tag) :
-  objectName_(idGenerator.generateGeometryID(tag)), 
-  impl_(new GeometryImpl)
+  objectName_(idGenerator.generateGeometryID(tag))
 {
 }
 
 GeometryObject* GeometryObject::clone() const
 {
   return nullptr; //TODO
-}
-
-GeometryImpl::GeometryImpl() : mLowestValue(0.0),
-mHighestValue(0.0),
-isVisible(true)
-{
-  
 }

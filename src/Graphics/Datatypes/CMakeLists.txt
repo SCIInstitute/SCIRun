@@ -26,64 +26,30 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Datatypes_SRCS
-  BlockMatrix.cc
-  Color.cc
-  ColorMap.cc
-  Datatype.cc
-  Geometry.cc
-  Material.cc
-  Matrix.cc
-  MatrixTypeConversions.cc
-  PropertyManagerExtensions.cc
-  Scalar.cc
-  SparseRowMatrixFromMap.cc
-  String.cc
+SET(Graphics_Datatypes_SRCS
+  GeometryImpl.cc
 )
 
-SET(Core_Datatypes_HEADERS
-  BlockMatrix.h
-  Color.h
-  ColorMap.h
-  Datatype.h
-  DatatypeFwd.h
-  DenseMatrix.h
-  DenseColumnMatrix.h
-  Geometry.h
-  HasId.h
-  Material.h
-  Matrix.h
-  MatrixComparison.h
-  MatrixFwd.h
-  MatrixIO.h
-  MatrixTypeConversions.h
-  MatrixMathVisitors.h
-  PropertyManagerExtensions.h
-  Scalar.h
+SET(Graphics_Datatypes_HEADERS
+  GeometryImpl.h
   share.h
-  SparseRowMatrix.h
-  SparseRowMatrixFromMap.h
-  String.h
 )
 
-SCIRUN_ADD_LIBRARY(Core_Datatypes 
-  ${Core_Datatypes_HEADERS}
-  ${Core_Datatypes_SRCS}
+SCIRUN_ADD_LIBRARY(Graphics_Datatypes
+  ${Graphics_Datatypes_HEADERS}
+  ${Graphics_Datatypes_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Core_Datatypes
-  Core_Persistent
-  Core_Datatypes_Legacy_Base
+TARGET_LINK_LIBRARIES(Graphics_Datatypes
+  Core_Datatypes
   Core_Geometry_Primitives
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Datatypes)
+  ADD_DEFINITIONS(-DBUILD_Graphics_Datatypes)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_DEPENDENCIES(Core_Datatypes Boost_external)
+ADD_DEPENDENCIES(Graphics_Datatypes Boost_external)
 
-SCIRUN_ADD_TEST_DIR(Tests)
-ADD_SUBDIRECTORY(Mesh)
-ADD_SUBDIRECTORY(Legacy)
+#SCIRUN_ADD_TEST_DIR(Tests)
 

@@ -29,13 +29,11 @@ DEALINGS IN THE SOFTWARE.
 #ifndef Graphics_Graphics_Glyphs_GlyphGeom_H
 #define Graphics_Graphics_Glyphs_GlyphGeom_H
 
-
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Transform.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Math/TrigTable.h>
-
+#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/Datatypes/Color.h>
 
 #include <Graphics/Glyphs/share.h>
@@ -53,9 +51,9 @@ namespace SCIRun {
       void getBufferInfo(int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points,
         std::vector<Core::Geometry::Vector>& normals, std::vector<Core::Datatypes::ColorRGB>& colors, std::vector<uint32_t>& indices);
       
-      void buildObject(Core::Datatypes::GeometryHandle geom, const std::string uniqueNodeID, const bool isTransparent, const double transparencyValue,
-        const SCIRun::Core::Datatypes::GeometryImpl::ColorScheme& colorScheme, SCIRun::RenderState state,
-        const SCIRun::Core::Datatypes::GeometryImpl::SpireIBO::PRIMITIVE& primIn, const Core::Geometry::BBox& bbox);
+      void buildObject(Datatypes::GeometryHandle geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
+        const Datatypes::ColorScheme& colorScheme, RenderState state,
+        const Datatypes::SpireIBO::PRIMITIVE& primIn, const Core::Geometry::BBox& bbox);
 
       void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution, 
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);

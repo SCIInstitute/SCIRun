@@ -57,7 +57,7 @@ namespace Datatypes {
   class Bundle;
 
   typedef boost::shared_ptr<String> StringHandle;
-  typedef boost::shared_ptr<GeometryObject> GeometryHandle;
+  typedef boost::shared_ptr<GeometryObject> GeometryBaseHandle;
   typedef boost::shared_ptr<ColorMap> ColorMapHandle;
   typedef boost::shared_ptr<Bundle> BundleHandle;
 }}

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,29 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
-#define MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
+#undef SCISHARE
 
-#include <Core/GeometryPrimitives/Vector.h>
-#include <vector>
-
-namespace SCIRun {
-namespace Modules {
-namespace Visualization {
-
-class TextBuilder {
-  public:
-  explicit TextBuilder(const std::string& text = "", const double scale = 1.,
-                const Core::Geometry::Vector& shift = Core::Geometry::Vector());
-    void reset(const std::string& text, const double scale,
-            const Core::Geometry::Vector& shift);
-    void getStringVerts(std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
-  private:
-    std::string text_;
-    double scale_;
-    Core::Geometry::Vector shift_;
-    void getCharVerts(const char c, std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
-  };
-}}}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Graphics_Datatypes
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

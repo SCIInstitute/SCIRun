@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
+#include <Core/Datatypes/Scalar.h>
 
 //
 //#include <Core/Thread/CrowdMonitor.h>

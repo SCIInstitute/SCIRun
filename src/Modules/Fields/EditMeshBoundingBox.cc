@@ -33,12 +33,13 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Graphics;
+using namespace Modules::Fields;
+using namespace Core::Datatypes;
+using namespace Dataflow::Networks;
+using namespace Core::Algorithms;
+using namespace Core::Geometry;
+using namespace Graphics;
+using namespace Datatypes;
 
 const ModuleLookupInfo EditMeshBoundingBox::staticInfo_("EditMeshBoundingBox", "ChangeMesh", "SCIRun");
 
@@ -280,9 +281,9 @@ bool EditMeshBoundingBox::isBoxEmpty() const
   return (c == r) || (c == d) || (c == b);
 }
 
-Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
+GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
 {
-  GeometryImpl::ColorScheme colorScheme(GeometryImpl::COLOR_UNIFORM);
+  ColorScheme colorScheme(COLOR_UNIFORM);
   std::vector<std::pair<Point,Point>> bounding_edges;
   //get all the bbox edges
   Point c,r,d,b;
@@ -306,7 +307,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
   };
   auto state = get_state();
   double scale = state->getValue(Scale).toDouble();
-  int num_strips = 50.;
+  int num_strips = 50;
   std::vector<Vector> tri_points;
   std::vector<Vector> tri_normals;
   std::vector<uint32_t> tri_indices;
@@ -339,10 +340,10 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
 
-  GeometryHandle geom(new GeometryObject(*this, "BoundingBox"));
+  GeometryHandle geom(new GeometryImpl(*this, "BoundingBox"));
 
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, GeometryImpl::SpireIBO::TRIANGLES, bbox_);
+    colorScheme, renState, SpireIBO::TRIANGLES, bbox_);
 
   return geom;
 }
