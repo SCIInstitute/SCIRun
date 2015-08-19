@@ -31,7 +31,7 @@
 using namespace SCIRun::Core;
 using namespace Datatypes;
 
-GeometryObject::GeometryObject(DatatypeConstHandle dh, const GeometryIDGenerator& idGenerator, const std::string& tag) :
+GeometryObject::GeometryObject(const GeometryIDGenerator& idGenerator, const std::string& tag) :
   objectName_(idGenerator.generateGeometryID(tag)), 
   impl_(new GeometryImpl)
 {

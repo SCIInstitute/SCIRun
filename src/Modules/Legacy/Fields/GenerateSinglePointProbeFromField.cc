@@ -432,7 +432,6 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
 
 index_type GenerateSinglePointProbeFromField::GenerateIndex()
 {
-
   auto ifieldOption = getRequiredInput(InputField);
   index_type index = 0;
 
@@ -455,9 +454,9 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
 
 GeometryHandle GenerateSinglePointProbeFromField::BuildWidgetObject(SCIRun::FieldHandle field)
 {
-  GeometryHandle geom(new GeometryObject(field, *this, "EntireSinglePointProbeFromField"));
+  GeometryHandle geom(new GeometryObject(*this, "EntireSinglePointProbeFromField"));
 
-  VMesh*  mesh = field->vmesh();
+  VMesh* mesh = field->vmesh();
 
   GeometryImpl::ColorScheme colorScheme = GeometryImpl::COLOR_UNIFORM;
   ColorRGB node_color;

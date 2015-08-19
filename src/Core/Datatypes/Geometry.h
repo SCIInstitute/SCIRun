@@ -53,7 +53,7 @@ namespace Datatypes {
   class SCISHARE GeometryObject : public Datatype
   {
   public:
-    GeometryObject(DatatypeConstHandle dh, const GeometryIDGenerator& idGenerator, const std::string& tag);
+    GeometryObject(const GeometryIDGenerator& idGenerator, const std::string& tag);
     GeometryObject(const GeometryObject& other) = delete;
     GeometryObject& operator=(const GeometryObject& other) = delete;
     virtual GeometryObject* clone() const override;

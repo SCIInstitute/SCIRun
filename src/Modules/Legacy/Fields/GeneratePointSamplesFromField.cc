@@ -298,7 +298,7 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 
 GeometryHandle GeneratePointSamplesFromField::BuildWidgetObject(SCIRun::FieldHandle field)
 {
-  GeometryHandle geom(new GeometryObject(field, *this, "EntireSinglePointProbeFromField"));
+  GeometryHandle geom(new GeometryObject(*this, "EntireSinglePointProbeFromField"));
 
   VMesh*  mesh = field->vmesh();
 

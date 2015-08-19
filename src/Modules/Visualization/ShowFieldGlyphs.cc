@@ -180,7 +180,7 @@ GeometryHandle ShowFieldGlyphs::buildGeometryObject(
   bool showScalars = state->getValue(ShowFieldGlyphs::ShowScalars).toBool();
   bool showTensors = state->getValue(ShowFieldGlyphs::ShowTensors).toBool();
 
-  GeometryHandle geom(new GeometryObject(field, *this, "EntireGlyphField"));
+  GeometryHandle geom(new GeometryObject(*this, "EntireGlyphField"));
 
   FieldInformation finfo(field);
 
