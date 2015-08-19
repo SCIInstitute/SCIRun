@@ -302,7 +302,7 @@ GeometryHandle GeneratePointSamplesFromField::BuildWidgetObject(SCIRun::FieldHan
 
   VMesh*  mesh = field->vmesh();
 
-  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  GeometryImpl::ColorScheme colorScheme = GeometryImpl::COLOR_UNIFORM;
   ColorRGB node_color;  
 
   mesh->synchronize(Mesh::NODES_E);
@@ -322,14 +322,14 @@ GeometryHandle GeneratePointSamplesFromField::BuildWidgetObject(SCIRun::FieldHan
 
   std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
 
-  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;
+  GeometryImpl::SpireIBO::PRIMITIVE primIn = GeometryImpl::SpireIBO::TRIANGLES;
 
   Graphics::GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
     //checkForInterruption();
 
-    Core::Geometry::Point p;
+    Point p;
     mesh->get_point(p, *eiter);
 
     glyphs.addSphere(p, radius, num_strips, node_color);

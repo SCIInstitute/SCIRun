@@ -84,7 +84,7 @@ class RenderBasicSysTrans :
                              ren::MatUniform,
                              ren::Shader,
 														 ren::GLState,
-														 Core::Datatypes::GeometryObject::SpireSubPass,
+														 Core::Datatypes::GeometryImpl::SpireSubPass,
                              StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
@@ -149,7 +149,7 @@ private:
 
   GLuint sortObjects(const Core::Geometry::Vector& dir,
     const es::ComponentGroup<ren::IBO>& ibo,
-    const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
+    const es::ComponentGroup<Core::Datatypes::GeometryImpl::SpireSubPass>& pass,
     const es::ComponentGroup<ren::StaticIBOMan>& iboMan)
   {
     char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
@@ -219,7 +219,7 @@ private:
       const es::ComponentGroup<ren::MatUniform>& matUniforms,
       const es::ComponentGroup<ren::Shader>& shader,
 			const es::ComponentGroup<ren::GLState>& state,
-			const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
+			const es::ComponentGroup<Core::Datatypes::GeometryImpl::SpireSubPass>& pass,
       const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
@@ -239,7 +239,7 @@ private:
       return;
     }
 
-    bool drawLines = (ibo.front().primMode == Core::Datatypes::GeometryObject::SpireIBO::LINES);
+    bool drawLines = (ibo.front().primMode == Core::Datatypes::GeometryImpl::SpireIBO::LINES);
     GLuint iboID = ibo.front().glid;
 
     Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],

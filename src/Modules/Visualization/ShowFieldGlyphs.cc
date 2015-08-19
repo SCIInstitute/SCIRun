@@ -32,22 +32,15 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
-#include <Core/Datatypes/Material.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
-#include <Core/Logging/Log.h>
-#include <Core/Math/MiscMath.h>
-#include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
-#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-
-#include <glm/glm.hpp>
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
@@ -245,31 +238,31 @@ void ShowFieldGlyphs::renderVectors(
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
-  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  GeometryImpl::ColorScheme colorScheme = GeometryImpl::COLOR_UNIFORM;
   ColorRGB node_color;  
 
   if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
   {
-    colorScheme = GeometryObject::COLOR_UNIFORM;
+    colorScheme = GeometryImpl::COLOR_UNIFORM;
   }
   else if (state.get(RenderState::USE_COLORMAP))
   {
-    colorScheme = GeometryObject::COLOR_MAP;
+    colorScheme = GeometryImpl::COLOR_MAP;
   }
   else
   {
-    colorScheme = GeometryObject::COLOR_IN_SITU;
+    colorScheme = GeometryImpl::COLOR_IN_SITU;
   }
 
   mesh->synchronize(Mesh::EDGES_E);
 
   bool useLines = state.mGlyphType == RenderState::GlyphType::LINE_GLYPH || state.mGlyphType == RenderState::GlyphType::NEEDLE_GLYPH;
 
-  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;;
+  GeometryImpl::SpireIBO::PRIMITIVE primIn = GeometryImpl::SpireIBO::TRIANGLES;;
   // Use Lines
   if (useLines)
   {
-    primIn = GeometryObject::SpireIBO::LINES;
+    primIn = GeometryImpl::SpireIBO::LINES;
   }
 
   auto my_state = get_state();
@@ -300,14 +293,14 @@ void ShowFieldGlyphs::renderVectors(
       Point p2 = p1 + v;
       //std::cout << "center: " << p1 << " end: " << p2 << std::endl;
       //std::cout << "radius: " << radius << std::endl;
-      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      if (colorScheme != GeometryImpl::COLOR_UNIFORM)
       {
-        if (colorScheme == GeometryObject::COLOR_MAP)
+        if (colorScheme == GeometryImpl::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(inputVector);
         }
-        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        if (colorScheme == GeometryImpl::COLOR_IN_SITU)
         {
           Vector colorVector = inputVector.normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -358,7 +351,7 @@ void ShowFieldGlyphs::renderVectors(
 
     if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
     {
-      colorScheme = GeometryObject::COLOR_UNIFORM;
+      colorScheme = GeometryImpl::COLOR_UNIFORM;
     }
 
     for (const auto& node : facade->nodes())
@@ -374,14 +367,14 @@ void ShowFieldGlyphs::renderVectors(
       //std::cout << "center: " << p1 << " end: " << p2 << std::endl;
       //std::cout << "radius: " << radius << std::endl;
       //std::cout << "resolution: " << resolution << std::endl;
-      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      if (colorScheme != GeometryImpl::COLOR_UNIFORM)
       {
-        if (colorScheme == GeometryObject::COLOR_MAP)
+        if (colorScheme == GeometryImpl::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(inputVector);
         }
-        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        if (colorScheme == GeometryImpl::COLOR_IN_SITU)
         {
           Vector colorVector = inputVector.normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -458,20 +451,20 @@ void ShowFieldGlyphs::renderScalars(
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
-  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  GeometryImpl::ColorScheme colorScheme = GeometryImpl::COLOR_UNIFORM;
   ColorRGB node_color;
 
   if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
   {
-    colorScheme = GeometryObject::COLOR_UNIFORM;
+    colorScheme = GeometryImpl::COLOR_UNIFORM;
   }
   else if (state.get(RenderState::USE_COLORMAP))
   {
-    colorScheme = GeometryObject::COLOR_MAP;
+    colorScheme = GeometryImpl::COLOR_MAP;
   }
   else
   {
-    colorScheme = GeometryObject::COLOR_IN_SITU;
+    colorScheme = GeometryImpl::COLOR_IN_SITU;
   }
 
   mesh->synchronize(Mesh::NODES_E);
@@ -484,11 +477,11 @@ void ShowFieldGlyphs::renderScalars(
     
   bool usePoints = state.mGlyphType == RenderState::GlyphType::POINT_GLYPH;
    
-  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;;
+  GeometryImpl::SpireIBO::PRIMITIVE primIn = GeometryImpl::SpireIBO::TRIANGLES;;
   // Use Points
   if (usePoints)
   {
-    primIn = GeometryObject::SpireIBO::POINTS;
+    primIn = GeometryImpl::SpireIBO::POINTS;
   }
 
   GlyphGeom glyphs;
@@ -506,14 +499,14 @@ void ShowFieldGlyphs::renderScalars(
       Point p = cell.center();
       double radius = std::abs(v) * scale;
 
-      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      if (colorScheme != GeometryImpl::COLOR_UNIFORM)
       {
-        if (colorScheme == GeometryObject::COLOR_MAP)
+        if (colorScheme == GeometryImpl::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(v);
         }
-        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        if (colorScheme == GeometryImpl::COLOR_IN_SITU)
         {
           Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -549,7 +542,7 @@ void ShowFieldGlyphs::renderScalars(
   {
     if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
     {
-      colorScheme = GeometryObject::COLOR_UNIFORM;
+      colorScheme = GeometryImpl::COLOR_UNIFORM;
     }
 
     for (const auto& node : facade->nodes())
@@ -560,14 +553,14 @@ void ShowFieldGlyphs::renderScalars(
       Point p = node.point();
       double radius = std::abs(v) * scale;
 
-      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      if (colorScheme != GeometryImpl::COLOR_UNIFORM)
       {
-        if (colorScheme == GeometryObject::COLOR_MAP)
+        if (colorScheme == GeometryImpl::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(v);
         }
-        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        if (colorScheme == GeometryImpl::COLOR_IN_SITU)
         {
           Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -619,20 +612,20 @@ void ShowFieldGlyphs::renderTensors(
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
-  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  GeometryImpl::ColorScheme colorScheme = GeometryImpl::COLOR_UNIFORM;
   ColorRGB node_color;
 
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
   {
-    colorScheme = GeometryObject::COLOR_UNIFORM;
+    colorScheme = GeometryImpl::COLOR_UNIFORM;
   }
   else if (state.get(RenderState::USE_COLORMAP))
   {
-    colorScheme = GeometryObject::COLOR_MAP;
+    colorScheme = GeometryImpl::COLOR_MAP;
   }
   else
   {
-    colorScheme = GeometryObject::COLOR_IN_SITU;
+    colorScheme = GeometryImpl::COLOR_IN_SITU;
   }
 
   mesh->synchronize(Mesh::NODES_E);
@@ -643,14 +636,12 @@ void ShowFieldGlyphs::renderTensors(
   if (radius < 0) radius = 0.1;
   if (resolution < 3) resolution = 5;
 
-  double radius2 = radius * 1.5;
-
   std::stringstream ss;
   ss << state.mGlyphType << resolution << radius << colorScheme;
 
   std::string uniqueNodeID = id + "tensor_glyphs" + ss.str();
   
-  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::TRIANGLES;;
+  GeometryImpl::SpireIBO::PRIMITIVE primIn = GeometryImpl::SpireIBO::TRIANGLES;;
  
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
@@ -666,14 +657,14 @@ void ShowFieldGlyphs::renderTensors(
       double eigen1, eigen2, eigen3;
       t.get_eigenvalues(eigen1, eigen2, eigen3);
 
-      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      if (colorScheme != GeometryImpl::COLOR_UNIFORM)
       {
-        if (colorScheme == GeometryObject::COLOR_MAP)
+        if (colorScheme == GeometryImpl::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(t);
         }
-        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        if (colorScheme == GeometryImpl::COLOR_IN_SITU)
         {
           Vector colorVector = t.get_eigenvector1().normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -705,14 +696,14 @@ void ShowFieldGlyphs::renderTensors(
       double eigen1, eigen2, eigen3;
       t.get_eigenvalues(eigen1, eigen2, eigen3);
 
-      if (colorScheme != GeometryObject::COLOR_UNIFORM)
+      if (colorScheme != GeometryImpl::COLOR_UNIFORM)
       {
-        if (colorScheme == GeometryObject::COLOR_MAP)
+        if (colorScheme == GeometryImpl::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(t);
         }
-        if (colorScheme == GeometryObject::COLOR_IN_SITU)
+        if (colorScheme == GeometryImpl::COLOR_IN_SITU)
         {
           Vector colorVector = t.get_eigenvector1().normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -739,18 +730,18 @@ void ShowFieldGlyphs::renderTensors(
 
 RenderState ShowFieldGlyphs::getVectorsRenderState(
   ModuleStateHandle state,
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
+  boost::optional<boost::shared_ptr<ColorMap>> colorMap)
 {
   RenderState renState;
 
-  bool useColorMap = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 1;
-  bool rgbConversion = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 2;
+  bool useColorMap = state->getValue(VectorsColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(VectorsColoring).toInt() == 2;
   renState.set(RenderState::USE_NORMALS, true);
   
-  renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowVectors).toBool());
-  renState.set(RenderState::USE_TRANSPARENT_EDGES, state->getValue(ShowFieldGlyphs::VectorsTransparency).toBool());
+  renState.set(RenderState::IS_ON, state->getValue(ShowVectors).toBool());
+  renState.set(RenderState::USE_TRANSPARENT_EDGES, state->getValue(VectorsTransparency).toBool());
 
-  switch (state->getValue(ShowFieldGlyphs::VectorsDisplayType).toInt())
+  switch (state->getValue(VectorsDisplayType).toInt())
   {
   case 0:
     renState.mGlyphType = RenderState::GlyphType::LINE_GLYPH;

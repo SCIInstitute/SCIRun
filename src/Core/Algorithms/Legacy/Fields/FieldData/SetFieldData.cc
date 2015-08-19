@@ -428,7 +428,6 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
   if (!found)
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix dimensions do not match any of the fields dimensions");
-    return FieldHandle();
   }
 
   FieldHandle output = CreateField(fi, input_field->mesh());
@@ -436,7 +435,6 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
   if (!output)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not create output field and output interface");
-    return FieldHandle();
   }
 
   VField* ofield = output->vfield();

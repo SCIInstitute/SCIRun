@@ -31,7 +31,6 @@
 #include <Interface/Modules/Render/UndefiningX11Cruft.h>
 #include <QtOpenGL/QGLWidget>
 
-#include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
@@ -39,14 +38,11 @@
 
 // CPM modules.
 
-#include <gl-state/GLState.hpp>
 #include <es-general/comp/StaticScreenDims.hpp>
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/StaticOrthoCamera.hpp>
 #include <es-general/comp/StaticObjRefID.hpp>
-#include <es-general/comp/StaticGlobalTime.hpp>
 #include <es-general/comp/Transform.hpp>
-#include <es-render/comp/StaticGeomMan.hpp>
 #include <es-render/comp/StaticIBOMan.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticShaderMan.hpp>
@@ -56,7 +52,6 @@
 #include <es-render/comp/IBO.hpp>
 #include <es-render/comp/Shader.hpp>
 #include <es-fs/fscomp/StaticFS.hpp>
-#include <es-fs/Filesystem.hpp>
 #include <es-fs/FilesystemSync.hpp>
 
 #include "CoreBootstrap.h"
@@ -66,11 +61,9 @@
 #include "comp/RenderList.h"
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
-#include "systems/RenderBasicSys.h"
-#include "systems/RenderTransBasicSys.h"
-#include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 using namespace std::placeholders;
 
@@ -306,18 +299,15 @@ namespace SCIRun {
       mContext->makeCurrent();
 
       std::string objectName = obj->uniqueID();
-      Core::Geometry::BBox bbox; // Bounding box containing all vertex buffer objects.
+      BBox bbox; // Bounding box containing all vertex buffer objects.
 
       // Check to see if the object already exists in our list. If so, then
       // remove the object. We will re-add it.
       auto foundObject = std::find_if(
         mSRObjects.begin(), mSRObjects.end(),
-        [&objectName, this](const SRObject& obj) -> bool
+        [&objectName](const SRObject& sro)
       {
-        if (obj.mName == objectName)
-          return true;
-        else
-          return false;
+        return (sro.mName == objectName);
       });
 
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
@@ -355,9 +345,9 @@ namespace SCIRun {
               std::vector<size_t> stride_vbo;
 
               int nameIndex = 0;
-              for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
+              for (auto it = obj->getImpl().mVBOs.cbegin(); it != obj->getImpl().mVBOs.cend(); ++it, ++nameIndex)
               {
-                const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
+                const Core::Datatypes::GeometryImpl::SpireVBO& vbo = *it;
 
                 if (vbo.onGPU)
                 {
@@ -384,9 +374,9 @@ namespace SCIRun {
 
               // Add index buffer objects.
               nameIndex = 0;
-              for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
+              for (auto it = obj->getImpl().mIBOs.cbegin(); it != obj->getImpl().mIBOs.cend(); ++it, ++nameIndex)
               {
-                const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
+                const GeometryImpl::SpireIBO& ibo = *it;
                 GLenum primType = GL_UNSIGNED_SHORT;
                 switch (ibo.indexSize)
                 {
@@ -411,15 +401,15 @@ namespace SCIRun {
                 GLenum primitive = GL_TRIANGLES;
                 switch (ibo.prim)
                 {
-                case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
+                case Core::Datatypes::GeometryImpl::SpireIBO::POINTS:
                   primitive = GL_POINTS;
                   break;
 
-                case Core::Datatypes::GeometryObject::SpireIBO::LINES:
+                case Core::Datatypes::GeometryImpl::SpireIBO::LINES:
                   primitive = GL_LINES;
                   break;
 
-                case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
+                case Core::Datatypes::GeometryImpl::SpireIBO::TRIANGLES:
                 default:
                   primitive = GL_TRIANGLES;
                   break;
@@ -519,19 +509,19 @@ namespace SCIRun {
 
               // Add default identity transform to the object globally (instead of per-pass)
               glm::mat4 xform;
-              mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap, port));
+              mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->getImpl().mColorMap, port));
               SRObject& elem = mSRObjects.back();
 
               std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
               if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) {
                   // Add passes
-                  for (auto it = obj->mPasses.begin(); it != obj->mPasses.end(); ++it)
+                for (auto it = obj->getImpl().mPasses.begin(); it != obj->getImpl().mPasses.end(); ++it)
                   {
-                    Core::Datatypes::GeometryObject::SpireSubPass& pass = *it;
+                    Core::Datatypes::GeometryImpl::SpireSubPass& pass = *it;
 
                     uint64_t entityID = getEntityIDForName(pass.passName, port);
 
-                    if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_VBO_IBO)
+                    if (pass.renderType == Core::Datatypes::GeometryImpl::RENDER_VBO_IBO)
                     {
                       addVBOToEntity(entityID, pass.vboName);
                       if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
@@ -565,9 +555,9 @@ namespace SCIRun {
                       // We will be constructing a render list from the VBO and IBO.
                       RenderList list;
 
-                      for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+                      for (auto it = obj->getImpl().mVBOs.cbegin(); it != obj->getImpl().mVBOs.cend(); ++it)
                       {
-                        const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
+                        const Core::Datatypes::GeometryImpl::SpireVBO& vbo = *it;
                         if (vbo.name == pass.vboName)
                         {
                           list.data = vbo.data;
@@ -583,12 +573,12 @@ namespace SCIRun {
                       // and add them to our entity in question.
                       std::string assetName = "Assets/sphere.geom";
 
-                      if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
+                      if (pass.renderType == Core::Datatypes::GeometryImpl::RENDER_RLIST_SPHERE)
                       {
                         assetName = "Assets/sphere.geom";
                       }
 
-                      if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_CYLINDER)
+                      if (pass.renderType == Core::Datatypes::GeometryImpl::RENDER_RLIST_CYLINDER)
                       {
                         assetName = "Assests/arrow.geom";
                       }
@@ -609,7 +599,7 @@ namespace SCIRun {
                       widgetExists_ = true;
                     }
 
-                    if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
+                    if (pass.renderType == Core::Datatypes::GeometryImpl::RENDER_RLIST_SPHERE)
                     {
                       double scale = pass.scalar;
                       trafo.transform[0].x = scale;
@@ -713,15 +703,15 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
-    void SRInterface::applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform)
+    void SRInterface::applyUniform(uint64_t entityID, const Core::Datatypes::GeometryImpl::SpireSubPass::Uniform& uniform)
     {
       switch (uniform.type)
       {
-      case Core::Datatypes::GeometryObject::SpireSubPass::Uniform::UNIFORM_SCALAR:
+      case Core::Datatypes::GeometryImpl::SpireSubPass::Uniform::UNIFORM_SCALAR:
         ren::addGLUniform(mCore, entityID, uniform.name.c_str(), static_cast<float>(uniform.data.x));
         break;
 
-      case Core::Datatypes::GeometryObject::SpireSubPass::Uniform::UNIFORM_VEC4:
+      case Core::Datatypes::GeometryImpl::SpireSubPass::Uniform::UNIFORM_VEC4:
         ren::addGLUniform(mCore, entityID, uniform.name.c_str(), uniform.data);
         break;
       }
@@ -893,8 +883,6 @@ namespace SCIRun {
 
             // Ensure shader attributes are setup appropriately.
             mArrowAttribs.setup(arrowVBO, shader, *vboMan);
-
-            glm::mat4 trafo;
 
             GL(glUseProgram(shader));
 

@@ -162,38 +162,38 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
 
   // Construct VBO.
   std::string shader = "Shaders/ColorMapLegend";
-  std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
-  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-  std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uXTranslate",static_cast<float>(xTrans)));
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uYTranslate",static_cast<float>(yTrans)));
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
+  std::vector<GeometryImpl::SpireVBO::AttributeData> attribs;
+  attribs.push_back(GeometryImpl::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  attribs.push_back(GeometryImpl::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+  std::vector<GeometryImpl::SpireSubPass::Uniform> uniforms;
+  uniforms.push_back(GeometryImpl::SpireSubPass::Uniform("uXTranslate",static_cast<float>(xTrans)));
+  uniforms.push_back(GeometryImpl::SpireSubPass::Uniform("uYTranslate",static_cast<float>(yTrans)));
+  uniforms.push_back(GeometryImpl::SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
   int displayLength = state->getValue(DisplayLength).toInt();
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
-  GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+  uniforms.push_back(GeometryImpl::SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
+  GeometryImpl::SpireVBO geomVBO = GeometryImpl::SpireVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, Core::Geometry::BBox(), true);
 
   // Construct IBO.
 
-  GeometryObject::SpireIBO geomIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+  GeometryImpl::SpireIBO geomIBO(iboName, GeometryImpl::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   RenderState renState;
   renState.set(RenderState::IS_ON, true);
   renState.set(RenderState::HAS_DATA, true);
   
-  GeometryObject::SpireSubPass pass(passName, vboName, iboName, shader,
-    GeometryObject::COLOR_MAP, renState, GeometryObject::RENDER_VBO_IBO, geomVBO, geomIBO);
+  GeometryImpl::SpireSubPass pass(passName, vboName, iboName, shader,
+    GeometryImpl::COLOR_MAP, renState, GeometryImpl::RENDER_VBO_IBO, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
   Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr, *this, "ShowColorMap"));
 
-  geom->mColorMap = cm->getColorMapName();
-  geom->mIBOs.push_back(geomIBO);
-  geom->mVBOs.push_back(geomVBO);
-  geom->mPasses.push_back(pass);
+  geom->getImpl().mColorMap = cm->getColorMapName();
+  geom->getImpl().mIBOs.push_back(geomIBO);
+  geom->getImpl().mVBOs.push_back(geomVBO);
+  geom->getImpl().mPasses.push_back(pass);
   {
     //########################################
     // Now render the numbers for the scale bar
@@ -275,33 +275,33 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
     // Construct VBO.
     shader = "Shaders/ColorMapLegendText";
     attribs.clear();
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aTexCoord", 2 * sizeof(float)));
+    attribs.push_back(GeometryImpl::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+    attribs.push_back(GeometryImpl::SpireVBO::AttributeData("aTexCoord", 2 * sizeof(float)));
     uniforms.clear();
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uXTranslate", static_cast<float>(xTrans)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uYTranslate", static_cast<float>(yTrans)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uColor", glm::vec4(red, green, blue, 1.0f)));
-    GeometryObject::SpireVBO geomVBO2 = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr2,
+    uniforms.push_back(GeometryImpl::SpireSubPass::Uniform("uXTranslate", static_cast<float>(xTrans)));
+    uniforms.push_back(GeometryImpl::SpireSubPass::Uniform("uYTranslate", static_cast<float>(yTrans)));
+    uniforms.push_back(GeometryImpl::SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
+    uniforms.push_back(GeometryImpl::SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
+    uniforms.push_back(GeometryImpl::SpireSubPass::Uniform("uColor", glm::vec4(red, green, blue, 1.0f)));
+    GeometryImpl::SpireVBO geomVBO2 = GeometryImpl::SpireVBO(vboName, attribs, vboBufferSPtr2,
       numVBOElements, Core::Geometry::BBox(), true);
 
-    geom->mVBOs.push_back(geomVBO2);
+    geom->getImpl().mVBOs.push_back(geomVBO2);
 
     // Construct IBO.
 
-    GeometryObject::SpireIBO geomIBO2(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
-    geom->mIBOs.push_back(geomIBO2);
+    GeometryImpl::SpireIBO geomIBO2(iboName, GeometryImpl::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
+    geom->getImpl().mIBOs.push_back(geomIBO2);
     renState.set(RenderState::USE_COLORMAP, false);
     renState.set(RenderState::USE_TRANSPARENCY, true);
-    GeometryObject::SpireSubPass pass2(passName, vboName, iboName, shader,
-      GeometryObject::COLOR_MAP, renState, GeometryObject::RENDER_VBO_IBO, geomVBO2, geomIBO2);
+    GeometryImpl::SpireSubPass pass2(passName, vboName, iboName, shader,
+      GeometryImpl::COLOR_MAP, renState, GeometryImpl::RENDER_VBO_IBO, geomVBO2, geomIBO2);
 
     // Add all uniforms generated above to the pass.
     for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
     //******************************************************************************************
     // TODO we're not adding this geometry (font) until we debug for it to work on Windows.
-    geom->mPasses.push_back(pass2);
+    geom->getImpl().mPasses.push_back(pass2);
     //******************************************************************************************
   }
   return geom;

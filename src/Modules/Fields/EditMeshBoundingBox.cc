@@ -282,7 +282,7 @@ bool EditMeshBoundingBox::isBoxEmpty() const
 
 Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
 {
-  GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
+  GeometryImpl::ColorScheme colorScheme(GeometryImpl::COLOR_UNIFORM);
   std::vector<std::pair<Point,Point>> bounding_edges;
   //get all the bbox edges
   Point c,r,d,b;
@@ -342,7 +342,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
   Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr, *this, "BoundingBox"));
 
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, GeometryObject::SpireIBO::TRIANGLES, bbox_);
+    colorScheme, renState, GeometryImpl::SpireIBO::TRIANGLES, bbox_);
 
   return geom;
 }

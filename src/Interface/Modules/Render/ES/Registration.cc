@@ -58,7 +58,7 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
 	core.registerComponent<RenderBasicGeom>();
   core.registerComponent<SRRenderState>();
   core.registerComponent<RenderList>();
-  core.registerComponent<Core::Datatypes::GeometryObject::SpireSubPass>();
+  core.registerComponent<Core::Datatypes::GeometryImpl::SpireSubPass>();
 }
 
 } // namespace Render

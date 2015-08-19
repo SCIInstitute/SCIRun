@@ -203,14 +203,14 @@ namespace SCIRun {
                 
                 struct SRPass
                 {
-                    SRPass(const std::string& name, Core::Datatypes::GeometryObject::RenderType renType) :
+                    SRPass(const std::string& name, Core::Datatypes::GeometryImpl::RenderType renType) :
                     passName(name),
                     renderType(renType)
                     {}
                     
                     std::string                 passName;
                     std::list<ObjectTransforms> transforms;
-                    Core::Datatypes::GeometryObject::RenderType renderType;
+                    Core::Datatypes::GeometryImpl::RenderType renderType;
                 };
                 
                 std::string                     mName;
@@ -253,7 +253,7 @@ namespace SCIRun {
             void addShaderToEntity(uint64_t entityID, const std::string& shaderName);
             
             // Apply uniform.
-            void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform);
+            void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryImpl::SpireSubPass::Uniform& uniform);
 
             // search for a widget at mouse position
             bool foundWidget(const glm::ivec2& pos);

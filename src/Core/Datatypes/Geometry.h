@@ -48,10 +48,32 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
+  class GeometryImpl;
+
   class SCISHARE GeometryObject : public Datatype
   {
   public:
+    GeometryObject(DatatypeConstHandle dh, const GeometryIDGenerator& idGenerator, const std::string& tag);
+    GeometryObject(const GeometryObject& other) = delete;
+    GeometryObject& operator=(const GeometryObject& other) = delete;
+    virtual GeometryObject* clone() const override;
 
+    const std::string& uniqueID() const { return objectName_; }
+
+    virtual std::string dynamic_type_name() const override { return "GeometryObject"; }
+
+    GeometryImpl& getImpl() { return *impl_; }
+
+  private:
+    boost::shared_ptr<GeometryImpl> impl_;
+
+    const std::string objectName_;     ///< Name of this object. Should be unique across all modules in the network.
+  };
+
+  class SCISHARE GeometryImpl
+  {
+  public:
+    GeometryImpl();
     // Schemes individually describing how the data is to be colored.
     // This enumeration may belong in Core/Algorithms/Visualization.
     enum ColorScheme
@@ -73,24 +95,15 @@ namespace Datatypes {
       RENDER_RLIST_CYLINDER,
     };
 
-    GeometryObject(DatatypeConstHandle dh, const GeometryIDGenerator& idGenerator, const std::string& tag);
-    GeometryObject(const GeometryObject& other);
-    GeometryObject& operator=(const GeometryObject& other);
-    virtual GeometryObject* clone() const { return new GeometryObject(*this); }
-
-    const std::string& uniqueID() const { return objectName_; }
-
-    virtual std::string dynamic_type_name() const override { return "GeometryObject"; }
-
     // Could require rvalue references...
     struct SpireVBO
     {
       struct AttributeData
       {
         AttributeData(const std::string& nameIn, size_t sizeIn, bool normalizeIn = false) :
-            name(nameIn),
-            sizeInBytes(sizeIn),
-            normalize(normalizeIn)
+          name(nameIn),
+          sizeInBytes(sizeIn),
+          normalize(normalizeIn)
         {}
 
         std::string name;
@@ -98,16 +111,16 @@ namespace Datatypes {
         bool        normalize;
       };
 
-			SpireVBO(){}
+      SpireVBO(){}
       SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
-               std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboData,
-               int64_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
-          name(vboName),
-          attributes(attribs),
-          data(vboData),
-          numElements(numVBOElements),
-          boundingBox(bbox),
-          onGPU(placeOnGPU)
+        std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboData,
+        int64_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
+        name(vboName),
+        attributes(attribs),
+        data(vboData),
+        numElements(numVBOElements),
+        boundingBox(bbox),
+        onGPU(placeOnGPU)
       {}
 
       std::string                           name;
@@ -127,13 +140,13 @@ namespace Datatypes {
         TRIANGLES,
       };
 
-			SpireIBO() {}
+      SpireIBO() {}
       SpireIBO(const std::string& iboName, PRIMITIVE primIn, size_t iboIndexSize,
-               std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboData) :
-          name(iboName),
-          indexSize(iboIndexSize),
-          prim(primIn),
-          data(iboData)
+        std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboData) :
+        name(iboName),
+        indexSize(iboIndexSize),
+        prim(primIn),
+        data(iboData)
       {}
 
       std::string                           name;
@@ -148,30 +161,30 @@ namespace Datatypes {
     /// Defines a Spire object 'pass'.
     struct SpireSubPass
     {
-			SpireSubPass() {}
+      SpireSubPass() {}
       SpireSubPass(const std::string& name, const std::string& vboName,
-                   const std::string& iboName, const std::string& program,
-                   ColorScheme scheme, const RenderState& state,
-                   RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo) :
-          passName(name),
-          vboName(vboName),
-          iboName(iboName),
-          programName(program),
-          renderState(state),
-          renderType(renType),
-					vbo(vbo),
-					ibo(ibo),
-          scalar(1.0),
-          mColorScheme(scheme)
+        const std::string& iboName, const std::string& program,
+        ColorScheme scheme, const RenderState& state,
+        RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo) :
+        passName(name),
+        vboName(vboName),
+        iboName(iboName),
+        programName(program),
+        renderState(state),
+        renderType(renType),
+        vbo(vbo),
+        ibo(ibo),
+        scalar(1.0),
+        mColorScheme(scheme)
       {}
 
-			static const char* getName() { return "SpireSubPass"; }
+      static const char* getName() { return "SpireSubPass"; }
 
-			bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
-			{
-				// No need to serialize.
-				return true;
-			}
+      bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+      {
+        // No need to serialize.
+        return true;
+      }
 
       std::string   passName;
       std::string   vboName;
@@ -179,8 +192,8 @@ namespace Datatypes {
       std::string   programName;
       RenderState   renderState;
       RenderType    renderType;
-			SpireVBO			vbo;
-			SpireIBO			ibo;
+      SpireVBO			vbo;
+      SpireIBO			ibo;
       double        scalar;
 
       struct Uniform
@@ -191,17 +204,17 @@ namespace Datatypes {
           UNIFORM_VEC4
         };
 
-				Uniform(){}
+        Uniform(){}
         Uniform(const std::string& nameIn, float d) :
-            name(nameIn),
-            type(UNIFORM_SCALAR),
-            data(d, 0.0f, 0.0f, 0.0f)
+          name(nameIn),
+          type(UNIFORM_SCALAR),
+          data(d, 0.0f, 0.0f, 0.0f)
         {}
 
         Uniform(const std::string& nameIn, const glm::vec4& vec) :
-            name(nameIn),
-            type(UNIFORM_VEC4),
-            data(vec)
+          name(nameIn),
+          type(UNIFORM_VEC4),
+          data(vec)
         {}
 
         std::string   name;
@@ -238,13 +251,7 @@ namespace Datatypes {
     double mHighestValue;   ///< Highest value a field takes on.
 
     bool isVisible;
-
-  private:
-    DatatypeConstHandle data_;
-
-    const std::string objectName_;     ///< Name of this object. Should be unique across all modules in the network.
   };
-
 }}}
 
 
