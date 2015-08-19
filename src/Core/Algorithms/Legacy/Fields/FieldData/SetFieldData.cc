@@ -31,8 +31,6 @@
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/GeometryPrimitives/Vector.h>

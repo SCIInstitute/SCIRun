@@ -97,7 +97,7 @@ namespace SCIRun {
       private:
         void updateAvailableRenderOptions(SCIRun::FieldHandle field);
 
-        std::unique_ptr<detail::GeometryBuilder> builder_;
+        boost::shared_ptr<detail::GeometryBuilder> builder_;
       };
 
 
