@@ -48,11 +48,13 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Algorithms::Fields;
+using namespace Core;
+using namespace Datatypes;
+using namespace Dataflow::Networks;
+using namespace Modules::Fields;
+using namespace Geometry;
+using namespace Algorithms::Fields;
+using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Fields, NumSeeds);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeScale);
@@ -83,6 +85,8 @@ namespace SCIRun
         std::vector<PointWidgetPtr>     pointWidgets_;
         double l2norm_;
 
+        GeometryHandle buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator);
+        RenderState getWidgetRenderState() const;
       };
     }
   }
@@ -109,7 +113,7 @@ void GeneratePointSamplesFromField::execute()
   FieldHandle field = GenerateOutputField();
   sendOutput(GeneratedPoints, field);
 
-  GeometryHandle geom = BuildWidgetObject(field);
+  auto geom = impl_->buildWidgetObject(field, get_state()->getValue(Parameters::ProbeScale).toDouble(), *this);
   sendOutput(GeneratedWidget, geom);
 }
 
@@ -296,13 +300,13 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   return ofield;
 }
 
-GeometryHandle GeneratePointSamplesFromField::BuildWidgetObject(SCIRun::FieldHandle field)
+GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle field, double radius, const Core::GeometryIDGenerator& idGenerator)
 {
-  GeometryHandle geom(new GeometryObject(*this, "EntireSinglePointProbeFromField"));
+  GeometryHandle geom(new GeometryImpl(idGenerator, "EntireSinglePointProbeFromField"));
 
   VMesh*  mesh = field->vmesh();
 
-  GeometryImpl::ColorScheme colorScheme = GeometryImpl::COLOR_UNIFORM;
+  ColorScheme colorScheme = COLOR_UNIFORM;
   ColorRGB node_color;  
 
   mesh->synchronize(Mesh::NODES_E);
@@ -311,9 +315,6 @@ GeometryHandle GeneratePointSamplesFromField::BuildWidgetObject(SCIRun::FieldHan
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  auto my_state = this->get_state();
-  using namespace Parameters;
-  double radius = my_state->getValue(ProbeScale).toDouble();
   double num_strips = 10;
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
@@ -322,7 +323,7 @@ GeometryHandle GeneratePointSamplesFromField::BuildWidgetObject(SCIRun::FieldHan
 
   std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
 
-  GeometryImpl::SpireIBO::PRIMITIVE primIn = GeometryImpl::SpireIBO::TRIANGLES;
+  SpireIBO::PRIMITIVE primIn = SpireIBO::TRIANGLES;
 
   Graphics::GlyphGeom glyphs;
   while (eiter != eiter_end)
@@ -337,7 +338,7 @@ GeometryHandle GeneratePointSamplesFromField::BuildWidgetObject(SCIRun::FieldHan
     ++eiter;
   }
 
-  RenderState renState = GetWidgetRenderState(my_state);
+  RenderState renState = getWidgetRenderState();
 
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, primIn, mesh->get_bounding_box());
@@ -345,7 +346,7 @@ GeometryHandle GeneratePointSamplesFromField::BuildWidgetObject(SCIRun::FieldHan
   return geom;
 }
 
-RenderState GeneratePointSamplesFromField::GetWidgetRenderState(Dataflow::Networks::ModuleStateHandle state)
+RenderState GeneratePointSamplesFromFieldImpl::getWidgetRenderState() const
 {
   RenderState renState;
 

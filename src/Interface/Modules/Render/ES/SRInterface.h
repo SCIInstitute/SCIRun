@@ -31,22 +31,14 @@
 
 #include <cstdint>
 #include <memory>
-
-#include <Core/Datatypes/Geometry.h>
-#include <boost/shared_ptr.hpp>
-
 #include <Interface/Modules/Render/GLContext.h>
-#include <Interface/Modules/Render/namespaces.h>
-
 #include "Core.h"
-#include "AssetBootstrap.h"
 
 // CPM Modules
-#include <gl-state/GLState.hpp>
 #include <es-render/util/Shader.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
-#include <glm/glm.hpp>
 
+#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
 
 namespace SCIRun {
@@ -124,7 +116,7 @@ namespace SCIRun {
             void gcInvalidObjects(const std::vector<std::string>& validObjects);
             
             /// Handles a new geometry object.
-            void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object, int port);
+            void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port);
             
             /// Performs a frame.
             void doFrame(double currentTime, double constantDeltaTime);
@@ -203,14 +195,14 @@ namespace SCIRun {
                 
                 struct SRPass
                 {
-                    SRPass(const std::string& name, Core::Datatypes::GeometryImpl::RenderType renType) :
+                    SRPass(const std::string& name, Graphics::Datatypes::RenderType renType) :
                     passName(name),
                     renderType(renType)
                     {}
                     
                     std::string                 passName;
                     std::list<ObjectTransforms> transforms;
-                    Core::Datatypes::GeometryImpl::RenderType renderType;
+                    Graphics::Datatypes::RenderType renderType;
                 };
                 
                 std::string                     mName;
@@ -253,7 +245,7 @@ namespace SCIRun {
             void addShaderToEntity(uint64_t entityID, const std::string& shaderName);
             
             // Apply uniform.
-            void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryImpl::SpireSubPass::Uniform& uniform);
+            void applyUniform(uint64_t entityID, const Graphics::Datatypes::SpireSubPass::Uniform& uniform);
 
             // search for a widget at mouse position
             bool foundWidget(const glm::ivec2& pos);

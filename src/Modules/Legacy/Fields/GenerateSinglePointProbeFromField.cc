@@ -43,11 +43,13 @@
 //#include <Dataflow/Widgets/PointWidget.h>
 
 using namespace SCIRun;
-using namespace Core::Datatypes;
-using namespace Core::Geometry;
-using namespace Core::Algorithms::Fields;
+using namespace Core;
+using namespace Datatypes;
 using namespace Dataflow::Networks;
 using namespace Modules::Fields;
+using namespace Geometry;
+using namespace Algorithms::Fields;
+using namespace Graphics::Datatypes;
 
 const ModuleLookupInfo GenerateSinglePointProbeFromField::staticInfo_("GenerateSinglePointProbeFromField", "NewField", "SCIRun");
 ALGORITHM_PARAMETER_DEF(Fields, XLocation);
@@ -87,6 +89,8 @@ namespace SCIRun
         int widgetid_;
         double l2norm_;
         bool color_changed_;
+        GeometryHandle buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator);
+        RenderState getWidgetRenderState(ModuleStateHandle state);
       };
     }}}
 
@@ -155,7 +159,7 @@ void GenerateSinglePointProbeFromField::execute()
   index_type index = GenerateIndex();
   sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
 
-  GeometryHandle geom = BuildWidgetObject(field);
+  auto geom = impl_->buildWidgetObject(field, get_state(), *this);
   sendOutput(GeneratedWidget, geom);
 }
 
@@ -452,13 +456,13 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
   return index;
 }
 
-GeometryHandle GenerateSinglePointProbeFromField::BuildWidgetObject(SCIRun::FieldHandle field)
+GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
 {
-  GeometryHandle geom(new GeometryObject(*this, "EntireSinglePointProbeFromField"));
+  GeometryHandle geom(new GeometryImpl(idGenerator, "EntireSinglePointProbeFromField"));
 
   VMesh* mesh = field->vmesh();
 
-  GeometryImpl::ColorScheme colorScheme = GeometryImpl::COLOR_UNIFORM;
+  ColorScheme colorScheme = COLOR_UNIFORM;
   ColorRGB node_color;
 
   mesh->synchronize(Mesh::NODES_E);
@@ -467,9 +471,8 @@ GeometryHandle GenerateSinglePointProbeFromField::BuildWidgetObject(SCIRun::Fiel
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  auto my_state = this->get_state();
   using namespace Parameters;
-  double radius = my_state->getValue(ProbeSize).toDouble();
+  double radius = state->getValue(ProbeSize).toDouble();
   double num_strips = 10;
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
@@ -478,14 +481,14 @@ GeometryHandle GenerateSinglePointProbeFromField::BuildWidgetObject(SCIRun::Fiel
 
   std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
 
-  GeometryImpl::SpireIBO::PRIMITIVE primIn = GeometryImpl::SpireIBO::TRIANGLES;
+  SpireIBO::PRIMITIVE primIn = SpireIBO::TRIANGLES;
 
   Graphics::GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
     //checkForInterruption();
 
-    Core::Geometry::Point p;
+    Point p;
     mesh->get_point(p, *eiter);
 
     glyphs.addSphere(p, radius, num_strips, node_color);
@@ -493,7 +496,7 @@ GeometryHandle GenerateSinglePointProbeFromField::BuildWidgetObject(SCIRun::Fiel
     ++eiter;
   }
 
-  RenderState renState = GetWidgetRenderState(my_state);
+  RenderState renState = getWidgetRenderState(state);
 
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, primIn, mesh->get_bounding_box());
@@ -501,7 +504,7 @@ GeometryHandle GenerateSinglePointProbeFromField::BuildWidgetObject(SCIRun::Fiel
   return geom;
 }
 
-RenderState GenerateSinglePointProbeFromField::GetWidgetRenderState(ModuleStateHandle state)
+RenderState GenerateSinglePointProbeFromFieldImpl::getWidgetRenderState(ModuleStateHandle state)
 {
   RenderState renState;
 
