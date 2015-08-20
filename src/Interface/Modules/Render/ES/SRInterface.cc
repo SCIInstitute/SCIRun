@@ -75,10 +75,9 @@ namespace SCIRun {
 
     //------------------------------------------------------------------------------
     SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
-      const std::vector<std::string>& shaderDirs, 
       int frameInitLimit) :
-      mMouseMode(MOUSE_OLDSCIRUN),
       mZoomSpeed(65),
+      mMouseMode(MOUSE_OLDSCIRUN),
       mScreenWidth(640),
       mScreenHeight(480),
       axesFailCount_(0),
@@ -127,9 +126,9 @@ namespace SCIRun {
       {
         // Generate synchronous filesystem, manually add its static component,
         // then mark it as non-serializable.
-        std::string filesystemRoot = SCIRun::Core::Application::Instance().executablePath().string();
+        std::string filesystemRoot = Core::Application::Instance().executablePath().string();
         filesystemRoot += boost::filesystem::path::preferred_separator;
-        fs::StaticFS fileSystem(std::shared_ptr<fs::FilesystemSync>(new fs::FilesystemSync(filesystemRoot)));
+        fs::StaticFS fileSystem((std::make_shared<fs::FilesystemSync>(filesystemRoot)));
         mCore.addStaticComponent(fileSystem);
         mCore.disableComponentSerialization<fs::StaticFS>();
       }
@@ -148,7 +147,7 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
-    SRInterface::MouseMode SRInterface::getMouseMode()
+    SRInterface::MouseMode SRInterface::getMouseMode() const
     {
       return mMouseMode;
     }

@@ -31,7 +31,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
-#include <Core/Datatypes/Geometry.h>
 #include <Core/Math/TrigTable.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/Datatypes/Color.h>

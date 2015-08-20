@@ -34,8 +34,6 @@
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Render/share.h>
 
-
-
 namespace SCIRun 
 {
   namespace Core
@@ -61,14 +59,14 @@ namespace Render {
 /// indirectly initiates new iterations of the simulation steps important to
 /// computational steering. 
 
-  class SCISHARE ViewScene : public SCIRun::Dataflow::Networks::ModuleWithAsyncDynamicPorts,
+  class SCISHARE ViewScene : public Dataflow::Networks::ModuleWithAsyncDynamicPorts,
     public Has1InputPort<AsyncDynamicPortTag<GeometryPortTag>>,
     public HasNoOutputPorts
   {
   public:
     ViewScene();
     virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
-    virtual void setStateDefaults();
+    virtual void setStateDefaults() override;
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
     static Core::Algorithms::AlgorithmParameterName BackgroundColor;

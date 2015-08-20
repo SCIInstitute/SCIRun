@@ -340,7 +340,7 @@ GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
 
-  GeometryHandle geom(new GeometryImpl(*this, "BoundingBox"));
+  GeometryHandle geom(new GeometryObjectSpire(*this, "BoundingBox"));
 
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::TRIANGLES, bbox_);

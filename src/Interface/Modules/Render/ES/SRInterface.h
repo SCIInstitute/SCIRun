@@ -62,8 +62,7 @@ namespace SCIRun {
             ///< This can be removed if we use a static
             ///< component for assigning entity IDs.
         public:
-            SRInterface(std::shared_ptr<Gui::GLContext> context,
-                        const std::vector<std::string>& shaderDirs, int frameInitLimit = 100);
+            explicit SRInterface(std::shared_ptr<Gui::GLContext> context, int frameInitLimit = 100);
             ~SRInterface();
             
             /// Call this whenever the window is resized. This will modify the viewport
@@ -104,11 +103,6 @@ namespace SCIRun {
             size_t getScreenWidthPixels() const       { return mScreenWidth; }
             size_t getScreenHeightPixels() const      { return mScreenHeight; }
             
-            /// Reads an asset file and returns the associated vertex buffer and index
-            /// buffer.
-            void readAsset(const std::string& filename,
-                           std::vector<uint8_t> vbo, std::vector<uint8_t> ibo);
-            
             /// Remove all SCIRun 5 objects.
             void removeAllGeomObjects();
             
@@ -125,7 +119,7 @@ namespace SCIRun {
             void setMouseMode(MouseMode mode);
             
             /// Retrieves mouse interaction mode.
-            MouseMode getMouseMode();
+            MouseMode getMouseMode() const;
 
             /// Sets zoom speed
             void setZoomSpeed(int zoomSpeed);

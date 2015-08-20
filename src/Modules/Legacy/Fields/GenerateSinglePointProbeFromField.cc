@@ -458,7 +458,7 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
 
 GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
 {
-  GeometryHandle geom(new GeometryImpl(idGenerator, "EntireSinglePointProbeFromField"));
+  GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField"));
 
   VMesh* mesh = field->vmesh();
 

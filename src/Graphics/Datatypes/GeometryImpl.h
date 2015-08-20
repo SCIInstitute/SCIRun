@@ -207,10 +207,10 @@ namespace SCIRun {
         }
       };
 
-      class SCISHARE GeometryImpl : public Core::Datatypes::GeometryObject
+      class SCISHARE GeometryObjectSpire : public Core::Datatypes::GeometryObject
       {
       public:
-        GeometryImpl(const Core::GeometryIDGenerator& idGenerator, const std::string& tag);
+        GeometryObjectSpire(const Core::GeometryIDGenerator& idGenerator, const std::string& tag);
 
         std::list<SpireVBO> mVBOs;  ///< Array of vertex buffer objects.
         std::list<SpireIBO> mIBOs;  ///< Array of index buffer objects.
@@ -227,7 +227,7 @@ namespace SCIRun {
         bool isVisible;
       };
 
-      typedef boost::shared_ptr<GeometryImpl> GeometryHandle;
+      typedef boost::shared_ptr<GeometryObjectSpire> GeometryHandle;
     }
   }
 }

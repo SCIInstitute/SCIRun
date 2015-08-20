@@ -31,7 +31,7 @@
 using namespace SCIRun::Core;
 using namespace SCIRun::Graphics::Datatypes;
 
-GeometryImpl::GeometryImpl(const GeometryIDGenerator& idGenerator, const std::string& tag) : 
+GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator, const std::string& tag) : 
 GeometryObject(idGenerator, tag),
 mLowestValue(0.0),
 mHighestValue(0.0),

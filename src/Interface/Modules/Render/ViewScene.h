@@ -40,7 +40,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
-#include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/share.h>
 
 #include <glm/glm.hpp>
@@ -64,10 +63,11 @@ namespace SCIRun {
     {
       Q_OBJECT
     public:
-      explicit Screenshot(QGLWidget *glwidget, QObject *parent = 0);
+      explicit Screenshot(QGLWidget *glwidget, QObject *parent = nullptr);
       void takeScreenshot();
       void saveScreenshot();
       QString screenshotFile() const;
+      Core::Datatypes::DenseMatrixHandle toMatrix() const;
     private:
       QGLWidget* viewport_;
       QImage screenshot_;
@@ -82,7 +82,7 @@ namespace SCIRun {
     public:
       ViewSceneDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = 0);
+        QWidget* parent = nullptr);
 
     Q_SIGNALS:
       void newGeometryValueForwarder();
@@ -120,7 +120,6 @@ namespace SCIRun {
       void addToolBar();
       void addAutoViewButton();
       void addScreenshotButton();
-      void addObjectToggleMenu();
       void addViewBarButton();
       void addViewBar();
       void addViewOptions();

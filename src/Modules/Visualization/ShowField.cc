@@ -309,7 +309,7 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
   // Resultant geometry type (representing a spire object and a number of passes).
-  GeometryHandle geom(new GeometryImpl(gid, "EntireField"));
+  GeometryHandle geom(new GeometryObjectSpire(gid, "EntireField"));
 
   /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
