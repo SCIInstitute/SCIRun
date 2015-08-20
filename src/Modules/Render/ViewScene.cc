@@ -53,6 +53,9 @@ ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
   INITIALIZE_PORT(GeneralGeom);
+#ifdef BUILD_TESTING
+  INITIALIZE_PORT(ScreenshotData);
+#endif
 }
 
 void ViewScene::setStateDefaults()

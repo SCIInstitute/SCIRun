@@ -61,7 +61,11 @@ namespace Render {
 
   class SCISHARE ViewScene : public Dataflow::Networks::ModuleWithAsyncDynamicPorts,
     public Has1InputPort<AsyncDynamicPortTag<GeometryPortTag>>,
+#ifdef BUILD_TESTING
+    public Has1OutputPort<MatrixPortTag>
+#else
     public HasNoOutputPorts
+#endif
   {
   public:
     ViewScene();
@@ -72,6 +76,9 @@ namespace Render {
     static Core::Algorithms::AlgorithmParameterName BackgroundColor;
     
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
+#ifdef BUILD_TESTING
+    OUTPUT_PORT(0, ScreenshotData, DenseMatrix);
+#endif
 
     static Core::Thread::Mutex mutex_;
 

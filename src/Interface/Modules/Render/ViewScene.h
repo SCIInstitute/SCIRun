@@ -81,7 +81,7 @@ namespace SCIRun {
 
     public:
       ViewSceneDialog(const std::string& name,
-        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
 
     Q_SIGNALS:
