@@ -59,20 +59,6 @@ namespace SCIRun {
     class GLWidget;
     class ViewSceneControlsDock;
 
-    class Screenshot : public QObject
-    {
-      Q_OBJECT
-    public:
-      explicit Screenshot(QGLWidget *glwidget, QObject *parent = nullptr);
-      void takeScreenshot();
-      void saveScreenshot();
-      QString screenshotFile() const;
-      Core::Datatypes::DenseMatrixHandle toMatrix() const;
-    private:
-      QGLWidget* viewport_;
-      QImage screenshot_;
-      uint index_;
-    };
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric,
       public Ui::ViewScene
@@ -147,7 +133,7 @@ namespace SCIRun {
       QColor bgColor_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;
-      Screenshot* screenshotTaker_;
+      class Screenshot* screenshotTaker_;
       bool saveScreenshotOnNewGeometry_;
 
       friend class ViewSceneControlsDock;

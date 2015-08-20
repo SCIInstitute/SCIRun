@@ -30,7 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
-#include "qbrush.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;

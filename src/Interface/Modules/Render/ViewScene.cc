@@ -34,8 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
-#include <Core/Datatypes/DenseMatrix.h>
-
+#include <Interface/Modules/Render/Screenshot.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -698,54 +697,4 @@ void ViewSceneDialog::screenshotClicked()
 
   screenshotTaker_->takeScreenshot();
   screenshotTaker_->saveScreenshot();
-}
-
-
-/// Start of Screenshot
-const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
-
-Screenshot::Screenshot(QGLWidget *glwidget, QObject *parent)
-  : QObject(parent),
-  viewport_(glwidget),
-  index_(0)
-{
-  QDir dir(filePath);
-  if (!dir.exists())
-  {
-    dir.mkpath(filePath);
-  }
-}
-
-void Screenshot::takeScreenshot()
-{
-  screenshot_ = viewport_->grabFrameBuffer();
-}
-
-void Screenshot::saveScreenshot()
-{
-  index_++;
-  QString fileName = screenshotFile();
-	QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
-  screenshot_.save(fileName);
-}
-
-QString Screenshot::screenshotFile() const
-{
-  return filePath + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
-}
-
-DenseMatrixHandle Screenshot::toMatrix() const
-{
-  DenseMatrixHandle image(new DenseMatrix(screenshot_.height(), screenshot_.width()));
-  for (int i = 0; i < screenshot_.height(); i++) 
-  {
-    const uchar* scan = screenshot_.scanLine(i);
-    const int depth = 4;
-    for (int j = 0; j < screenshot_.width(); j++) 
-    {
-      auto pixel = scan + j*depth;
-      (*image)(i, j) = *pixel;
-    }
-  }
-  return image;
 }
