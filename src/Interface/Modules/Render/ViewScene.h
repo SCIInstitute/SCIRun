@@ -112,6 +112,8 @@ namespace SCIRun {
       void addConfigurationButton();
       void addConfigurationDock(const QString& viewName);
       void hideConfigurationDock();
+      void takeScreenshot();
+      void sendScreenshotDownstreamForTesting();
 
       void lookDownAxisX(int upIndex, glm::vec3& up);
       void lookDownAxisY(int upIndex, glm::vec3& up);

@@ -214,6 +214,10 @@ void ViewSceneDialog::newGeometryValue()
     screenshotClicked();
   }
 
+#ifdef BUILD_TESTING
+  //sendScreenshotDownstreamForTesting();
+#endif
+
   //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
   //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
@@ -690,11 +694,24 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   state_->setValue(Parameters::GeometryFeedbackInfo, coords);
 }
 
-void ViewSceneDialog::screenshotClicked()
+void ViewSceneDialog::takeScreenshot()
 {
   if (!screenshotTaker_)
     screenshotTaker_ = new Screenshot(mGLWidget, this);
 
   screenshotTaker_->takeScreenshot();
+
+}
+
+void ViewSceneDialog::screenshotClicked()
+{
+  takeScreenshot();
   screenshotTaker_->saveScreenshot();
+}
+
+void ViewSceneDialog::sendScreenshotDownstreamForTesting()
+{
+  qDebug() << "sendScreenshotDownstreamForTesting";
+  takeScreenshot();
+  state_->setTransientValue("ViewSceneScreenshot", screenshotTaker_->toMatrix());
 }
