@@ -38,6 +38,8 @@
 #include <vector>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/DatatypeFwd.h>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
@@ -59,9 +61,9 @@ namespace Networks {
       ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       ReexecuteStrategyFactoryHandle reexFactory = defaultReexFactory_,
       const std::string& version = "1.0");
-    virtual ~Module();
+    virtual ~Module() override;
 
-    std::string get_module_name() const { return info_.module_name_; }
+    virtual std::string get_module_name() const override { return info_.module_name_; }
     std::string get_categoryname() const { return info_.category_name_; }
     std::string get_packagename() const { return info_.package_name_; }
     ModuleId get_id() const { return id_; }
