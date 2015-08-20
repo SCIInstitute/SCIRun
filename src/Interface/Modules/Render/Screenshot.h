@@ -34,6 +34,8 @@
 #include <Core/Datatypes/MatrixFwd.h>
 #endif
 
+class QGLWidget;
+
 namespace SCIRun
 {
   namespace Gui
