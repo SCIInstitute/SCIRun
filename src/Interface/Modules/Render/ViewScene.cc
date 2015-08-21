@@ -54,7 +54,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
 
   addToolBar();
-  
+
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
   fmt.setAlpha(true);
@@ -89,7 +89,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 	  if (Core::Preferences::Instance().useNewViewSceneMouseControls)
 	  {
 		  spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
-      spire->setZoomInverted(Core::Preferences::Instance().invertMouseZoom);      
+      spire->setZoomInverted(Core::Preferences::Instance().invertMouseZoom);
 	  }
 	  else
 	  {
@@ -113,9 +113,9 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     auto spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
   }
-  
+
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
-  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue())); 
+  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 }
 
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
@@ -181,7 +181,7 @@ void ViewSceneDialog::newGeometryValue()
     sort(objectNames.begin(), objectNames.end());
     if (previousObjectNames_ != objectNames)
     {
-      itemValueChanged_ = true;      
+      itemValueChanged_ = true;
       previousObjectNames_ = objectNames;
     }
     if (itemValueChanged_ && mConfigurationDock)
@@ -214,9 +214,9 @@ void ViewSceneDialog::newGeometryValue()
     screenshotClicked();
   }
 
-#ifdef BUILD_TESTING
-  //sendScreenshotDownstreamForTesting();
-#endif
+	#ifdef BUILD_TESTING
+		sendScreenshotDownstreamForTesting();
+	#endif
 
   //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
   //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
@@ -267,7 +267,6 @@ void ViewSceneDialog::viewBarButtonClicked()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewAxisSelected(int index)
 {
-
 	mUpVectorBox->clear();
 	mUpVectorBox->addItem("------");
 	switch (index)
@@ -496,7 +495,7 @@ void ViewSceneDialog::selectAllClicked()
 {
   itemValueChanged_ = true;
   unselectedObjectNames_.clear();
-  newGeometryValue();  
+  newGeometryValue();
 }
 
 //------------------------------------------------------------------------------
@@ -539,7 +538,7 @@ void ViewSceneDialog::addToolBar()
 	//addObjectToggleMenu();
 
 	glLayout->addWidget(mToolBar);
-  
+
   addViewBar();
 }
 
@@ -700,7 +699,6 @@ void ViewSceneDialog::takeScreenshot()
     screenshotTaker_ = new Screenshot(mGLWidget, this);
 
   screenshotTaker_->takeScreenshot();
-
 }
 
 void ViewSceneDialog::screenshotClicked()
@@ -711,7 +709,6 @@ void ViewSceneDialog::screenshotClicked()
 
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
-  qDebug() << "sendScreenshotDownstreamForTesting";
   takeScreenshot();
-  state_->setTransientValue("ViewSceneScreenshot", screenshotTaker_->toMatrix());
+  state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }

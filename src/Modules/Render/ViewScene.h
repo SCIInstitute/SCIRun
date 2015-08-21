@@ -34,7 +34,7 @@
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Render/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
@@ -44,6 +44,7 @@ namespace SCIRun
       {
         ALGORITHM_PARAMETER_DECL(GeomData);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
+        ALGORITHM_PARAMETER_DECL(ScreenshotData);
       }
     }
   }
@@ -57,7 +58,7 @@ namespace Render {
 /// Use the ViewScene to see a geometry, or spatial data. The ViewScene
 /// provides access to many simulation parameters and controls, thus,
 /// indirectly initiates new iterations of the simulation steps important to
-/// computational steering. 
+/// computational steering.
 
   class SCISHARE ViewScene : public Dataflow::Networks::ModuleWithAsyncDynamicPorts,
     public Has1InputPort<AsyncDynamicPortTag<GeometryPortTag>>,
@@ -74,10 +75,11 @@ namespace Render {
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
     static Core::Algorithms::AlgorithmParameterName BackgroundColor;
-    
+
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
 #ifdef BUILD_TESTING
     OUTPUT_PORT(0, ScreenshotData, DenseMatrix);
+    virtual void execute() override;
 #endif
 
     static Core::Thread::Mutex mutex_;

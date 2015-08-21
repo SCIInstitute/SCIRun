@@ -40,7 +40,6 @@ namespace SCIRun
 {
   namespace Gui
   {
-
     class Screenshot : public QObject
     {
       Q_OBJECT
