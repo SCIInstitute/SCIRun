@@ -562,7 +562,7 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename)
     if (command.execute())
     {
       setCurrentFile(filename);
-      statusBar()->showMessage(tr("File loaded"), 2000);
+      statusBar()->showMessage(tr("File loaded: ") + filename, 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
       provenanceWindow_->clear();
       provenanceWindow_->showFile(command.openedFile_);
