@@ -47,6 +47,7 @@
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
@@ -56,6 +57,7 @@
 #include <Dataflow/Network/Module.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
@@ -1132,6 +1134,12 @@ void ModuleWidget::makeOptionsDialog()
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
       connect(dockable_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
+
+      if (isViewScene_ && Application::Instance().parameters()->isRegressionMode())
+      {
+        dockable_->show();
+        dockable_->setFloating(true);
+      }
 
       dialog_->pull();
     }

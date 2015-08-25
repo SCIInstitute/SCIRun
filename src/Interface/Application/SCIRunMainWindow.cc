@@ -676,7 +676,7 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 
 bool SCIRunMainWindow::okToContinue()
 {
-  if (isWindowModified() && !prefsWindow_->isRegression())  //TODO: regressionMode
+  if (isWindowModified() && !Application::Instance().parameters()->isRegressionMode())
   {
     int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"),
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
