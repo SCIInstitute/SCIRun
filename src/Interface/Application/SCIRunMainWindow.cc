@@ -493,6 +493,12 @@ void SCIRunMainWindow::executeAll()
     saveNetwork();
   }
 
+	if (Application::Instance().parameters()->isRegressionMode())
+	{
+		auto timeout = Application::Instance().parameters()->regressionTimeoutSeconds();
+		QTimer::singleShot(1000 * *timeout, this, SLOT(networkTimedOut()));
+	}
+
   networkEditor_->executeAll();
 }
 
@@ -512,6 +518,11 @@ void SCIRunMainWindow::exitApplication(int code)
 void SCIRunMainWindow::quit()
 {
   exitApplication(0);
+}
+
+void SCIRunMainWindow::networkTimedOut()
+{
+	exitApplication(2);
 }
 
 void SCIRunMainWindow::saveNetwork()

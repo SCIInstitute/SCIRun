@@ -183,6 +183,7 @@ private Q_SLOTS:
   void openLogFolder();
   void resetWindowLayout();
   void zoomNetwork();
+  void networkTimedOut();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
