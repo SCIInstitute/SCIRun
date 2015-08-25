@@ -140,18 +140,21 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 #ifdef BUILD_TESTING
 void ViewScene::execute()
 {
-  DenseMatrixHandle screenshotData;
-  auto state = get_state();
-  do
+  if (inputPorts().size() > 1) // only send screenshot if input is present
   {
-    auto transient = state->getTransientValue(Parameters::ScreenshotData);
-    screenshotData = optional_any_cast_or_default<DenseMatrixHandle>(transient);
-    if (screenshotData)
+    DenseMatrixHandle screenshotData;
+    auto state = get_state();
+    do
     {
-      sendOutput(ScreenshotData, screenshotData);
+      auto transient = state->getTransientValue(Parameters::ScreenshotData);
+      screenshotData = optional_any_cast_or_default<DenseMatrixHandle>(transient);
+      if (screenshotData)
+      {
+        sendOutput(ScreenshotData, screenshotData);
+      }
     }
+    while (!screenshotData);
   }
-  while (!screenshotData);
 }
 #endif
 
