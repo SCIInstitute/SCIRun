@@ -197,7 +197,15 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   networkEditor_->addAction(actionCut_);
   networkEditor_->addAction(actionCopy_);
   networkEditor_->addAction(actionPaste_);
-
+	sep = new QAction(this);
+  sep->setSeparator(true);
+	networkEditor_->addAction(sep);
+	networkEditor_->addAction(actionResetNetworkZoom_);
+	networkEditor_->addAction(actionDragMode_);
+  networkEditor_->addAction(actionSelectMode_);
+  networkEditor_->addAction(actionToggleMetadataLayer_);
+  networkEditor_->addAction(actionToggleTagLayer_);
+  
   setContextMenuPolicy(Qt::NoContextMenu);
 
   scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
