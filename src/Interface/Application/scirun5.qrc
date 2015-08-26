@@ -27,6 +27,10 @@
     <file>Resources/align_center.png</file>
     <file>Resources/tagLayer.png</file>
     <file>Resources/metadataLayer.png</file>
+    <file>Resources/cut.png</file>
+    <file>Resources/copy.png</file>
+    <file>Resources/paste.png</file>
+    <file>Resources/download.png</file>
     <file>Resources/new/general/folder.png</file>
     <file>Resources/new/general/header-divider.png</file>
     <file>Resources/new/general/help.png</file>

@@ -68,8 +68,6 @@ namespace SCIRun {
       private:
         boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
         FieldHandle GenerateOutputField();
-        Core::Datatypes::GeometryHandle BuildWidgetObject(SCIRun::FieldHandle field);
-        RenderState GetWidgetRenderState(Dataflow::Networks::ModuleStateHandle state);
       };
 
     }

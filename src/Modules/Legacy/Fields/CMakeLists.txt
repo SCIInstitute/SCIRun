@@ -223,35 +223,18 @@ SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
   Dataflow_Network
-  #Dataflow_Widgets
-  #Dataflow_GuiInterface
-  #Dataflow_TkExtensions
   Core_Algorithms_Legacy_Fields
   Algorithms_Base
-  #Core_Algorithms_Visualization
-  #Core_Algorithms_Geometry
-  #Core_Algorithms_Converter
   Core_Basis
   Core_Datatypes
   Core_Datatypes_Legacy_Bundle
   Core_Exceptions_Legacy
-  #Core_Geom
   Core_Geometry_Primitives
-  #Core_GeomInterface
-  #Core_ImportExport
   Core_Math
   Core_Parser
-  #Core_Persistent
-  #Core_Thread
   Core_Util_Legacy
   Graphics_Glyphs
-  #${TK_LIBRARY}
-  #${GL_LIBRARY}
-  #${LEX_LIBRARY}
-  #${M_LIBRARY}
-  #${THREAD_LIBRARY}
-  #${SCI_TEEM_LIBRARY}
-  #${SLIVR_LIBRARY}
+  Graphics_Datatypes
 )
 
 IF(WITH_TETGEN)

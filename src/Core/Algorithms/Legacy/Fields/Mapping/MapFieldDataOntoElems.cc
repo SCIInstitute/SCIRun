@@ -1015,6 +1015,12 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
 
   FieldInformation fi(source);
   FieldInformation fo(destination);
+
+  if (fo.is_pointcloud())
+  {
+    THROW_ALGORITHM_INPUT_ERROR("Destination field cannot be a point cloud.");
+  }
+
   fo.make_constantdata();
 
   std::string quantity = get_option(Parameters::Quantity);

@@ -38,7 +38,7 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <boost/foreach.hpp>
+#include <boost/lambda/lambda.hpp>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
@@ -68,6 +68,10 @@ NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, Modu
 {
 }
 
+////////
+// TODO: refactor the next two functions into one
+///////
+
 NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
   /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
@@ -76,7 +80,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 
   {
     ScopedControllerSignalDisabler scsd(controller_);
-    BOOST_FOREACH(const ModuleMapXML::value_type& modPair, data.modules)
+    for (const auto& modPair : data.modules)
     {
       ModuleHandle module = controller_->addModule(modPair.second.module);
       module->set_id(modPair.first);
@@ -87,7 +91,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 
   std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
   std::sort(connectionsSorted.begin(), connectionsSorted.end());
-  BOOST_FOREACH(const ConnectionDescriptionXML& conn, connectionsSorted)
+  for (const auto& conn : connectionsSorted)
   {
     ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
     ModuleHandle to = network->lookupModule(conn.in_.moduleId_);
@@ -96,6 +100,50 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
   }
 
   return network;
+}
+
+NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const NetworkXML& data)
+{
+  auto network = controller_->getNetwork();
+  NetworkAppendInfo info;
+  info.newModuleStartIndex = network->nmodules();
+  {
+    ScopedControllerSignalDisabler scsd(controller_);
+    for (const auto& modPair : data.modules)
+    {
+      ModuleId newId(modPair.first);
+      while (network->lookupModule(newId))
+      {
+        //std::cout << "found module by ID : " << modPair.first << std::endl;
+        ++newId;
+      }
+
+      ModuleHandle module = controller_->addModule(modPair.second.module);
+
+      //std::cout << "setting module id to " << newId << std::endl;
+      info.moduleIdMapping[modPair.first] = newId;
+      module->set_id(newId);
+      ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
+      module->set_state(state);
+    }
+  }
+
+  std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
+  std::sort(connectionsSorted.begin(), connectionsSorted.end());
+  
+  for (const auto& conn : connectionsSorted)
+  {
+    auto modOut = info.moduleIdMapping.find(conn.out_.moduleId_);
+    auto modIn = info.moduleIdMapping.find(conn.in_.moduleId_);
+    if (modOut != info.moduleIdMapping.end() && modIn != info.moduleIdMapping.end())
+    {
+      ModuleHandle from = network->lookupModule(ModuleId(modOut->second));
+      ModuleHandle to = network->lookupModule(ModuleId(modIn->second));
+      if (from && to)
+        controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+    }
+  }
+  return info;
 }
 
 NetworkToXML::NetworkToXML(NetworkEditorSerializationManager* nesm)
@@ -109,30 +157,40 @@ NetworkFileHandle NetworkXMLConverter::to_xml_data(const NetworkHandle& network)
 
 NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 {
+  return to_xml_data(network, boost::lambda::constant(true), boost::lambda::constant(true));
+}
+
+NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter)
+{
   NetworkXML networkXML;
   Network::ConnectionDescriptionList conns = network->connections();
-  BOOST_FOREACH(ConnectionDescription& desc, conns)
-    networkXML.connections.push_back(ConnectionDescriptionXML(desc));
+  for (const auto& desc : conns)
+  {
+    if (connFilter(desc))
+      networkXML.connections.push_back(ConnectionDescriptionXML(desc));
+  }
   for (size_t i = 0; i < network->nmodules(); ++i)
   {
     ModuleHandle module = network->module(i);
-    ModuleStateHandle state = module->get_state();
-    boost::shared_ptr<SimpleMapModuleStateXML> stateXML = make_state_xml(state);
-    networkXML.modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
+    if (modFilter(module))
+    {
+      ModuleStateHandle state = module->get_state();
+      boost::shared_ptr<SimpleMapModuleStateXML> stateXML = make_state_xml(state);
+      networkXML.modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
+    }
   }
 
   NetworkFileHandle file(boost::make_shared<NetworkFile>());
   file->network = networkXML;
   if (nesm_)
   {
-    file->modulePositions = *nesm_->dumpModulePositions();
-    file->moduleNotes = *nesm_->dumpModuleNotes();
-    file->connectionNotes = *nesm_->dumpConnectionNotes();
-    file->moduleTags = *nesm_->dumpModuleTags();
+    file->modulePositions = *nesm_->dumpModulePositions(modFilter);
+    file->moduleNotes = *nesm_->dumpModuleNotes(modFilter);
+    file->connectionNotes = *nesm_->dumpConnectionNotes(connFilter);
+    file->moduleTags = *nesm_->dumpModuleTags(modFilter);
   }
   return file;
 }
-
 
 void NetworkXMLSerializer::save_xml(const NetworkXML& data, const std::string& filename)
 {

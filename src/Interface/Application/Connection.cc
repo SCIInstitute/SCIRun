@@ -193,8 +193,8 @@ namespace SCIRun
       {
         deleteAction_ = addAction(deleteAction);
         addWidgetToExecutionDisableList(deleteAction_);
-        //addAction(insertModuleAction)->setDisabled(true);
-        //addAction(disableEnableAction)->setDisabled(true);
+        addAction(insertModuleAction)->setDisabled(true);
+        addAction(disableEnableAction)->setDisabled(true);
         notesAction_ = addAction(editNotesAction);
       }
       ~ConnectionMenu()

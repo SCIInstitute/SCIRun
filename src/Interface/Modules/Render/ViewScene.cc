@@ -34,7 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
-
+#include <Interface/Modules/Render/Screenshot.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -47,14 +47,14 @@ using namespace SCIRun::Modules::Render;
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), mConfigurationDock(0), shown_(false), itemValueChanged_(true),
-  screenshotTaker_(0), saveScreenshotOnNewGeometry_(false)
+  : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false), itemValueChanged_(true),
+  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
 
   addToolBar();
-  
+
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
   fmt.setAlpha(true);
@@ -74,7 +74,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     glLayout->update();
 
     // Set spire transient value (should no longer be used).
-    mSpire = std::weak_ptr<Render::SRInterface>(mGLWidget->getSpire());
+    mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
   }
   else
   {
@@ -83,16 +83,17 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   }
 
   {
-	  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    auto spire = mSpire.lock();
 	  if (!spire)
 		  return;
-	  if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
+	  if (Core::Preferences::Instance().useNewViewSceneMouseControls)
 	  {
-		  spire->setMouseMode(Render::SRInterface::MOUSE_NEWSCIRUN);
+		  spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
+      spire->setZoomInverted(Core::Preferences::Instance().invertMouseZoom);
 	  }
 	  else
 	  {
-		  spire->setMouseMode(Render::SRInterface::MOUSE_OLDSCIRUN);
+		  spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
 	  }
   }
 
@@ -109,12 +110,12 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     {
       bgColor_ = Qt::black;
     }
-    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    auto spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
   }
-  
+
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
-  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue())); 
+  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 }
 
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
@@ -129,16 +130,13 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 
 void ViewSceneDialog::newGeometryValue()
 {
-
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
-
-  Guard lock(SCIRun::Modules::Render::ViewScene::mutex_.get());
-
+  Guard lock(Modules::Render::ViewScene::mutex_.get());
 
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
-  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
   if (!spire)
     return;
   spire->removeAllGeomObjects();
@@ -147,13 +145,12 @@ void ViewSceneDialog::newGeometryValue()
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
-    auto geomData = optional_any_cast_or_default<SCIRun::Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+    auto geomData = optional_any_cast_or_default<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
     if (!geomData)
     {
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
       return;
     }
-    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (!spire)
     {
       LOG_DEBUG("Logical error: Spire lock not acquired.");
@@ -165,22 +162,29 @@ void ViewSceneDialog::newGeometryValue()
     std::vector<std::string> validObjects;
     for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
     {
-      boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
+      auto obj = *it;
 			auto name = obj->uniqueID();
       auto displayName = QString::fromStdString(name).split('_').at(1);
       objectNames.push_back(displayName.toStdString());
       if (!isObjectUnselected(displayName.toStdString()))
       {
-        spire->handleGeomObject(obj, port);
-        validObjects.push_back(name);
+        auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
+        if (realObj)
+        {
+          spire->handleGeomObject(realObj, port);
+          validObjects.push_back(name);
+				#ifdef BUILD_TESTING
+					sendScreenshotDownstreamForTesting();
+				#endif
+        }
       }
     }
     spire->gcInvalidObjects(validObjects);
 
-    std::sort(objectNames.begin(), objectNames.end());
+    sort(objectNames.begin(), objectNames.end());
     if (previousObjectNames_ != objectNames)
     {
-      itemValueChanged_ = true;      
+      itemValueChanged_ = true;
       previousObjectNames_ = objectNames;
     }
     if (itemValueChanged_ && mConfigurationDock)
@@ -203,7 +207,6 @@ void ViewSceneDialog::newGeometryValue()
   }
   else
   {
-    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (!spire)
       return;
     spire->removeAllGeomObjects();
@@ -221,19 +224,19 @@ void ViewSceneDialog::newGeometryValue()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::menuMouseControlChanged(int index)
 {
-	std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
 	if (!spire)
 		return;
 
 	if (index == 0)
 	{
 		spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
-		SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
+		Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
 	}
 	else
 	{
 		spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
-		SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
+		Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
 	}
   mConfigurationDock->updateZoomOptionVisibility();
 }
@@ -241,14 +244,14 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::autoViewClicked()
 {
-	std::shared_ptr<Render::SRInterface> spireLock = mSpire.lock();
+  auto spireLock = mSpire.lock();
 	spireLock->doAutoView();
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::showOrientationChecked(bool value)
 {
-	std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
 	spire->showOrientation(value);
 }
 
@@ -263,7 +266,6 @@ void ViewSceneDialog::viewBarButtonClicked()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewAxisSelected(int index)
 {
-
 	mUpVectorBox->clear();
 	mUpVectorBox->addItem("------");
 	switch (index)
@@ -347,7 +349,7 @@ void ViewSceneDialog::viewVectorSelected(int index)
 	}
 	if (index > 0)
 	{
-		std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+		std::shared_ptr<SRInterface> spire = mSpire.lock();
 		spire->setView(view, up);
 		viewBarButtonClicked();
 	}
@@ -442,7 +444,7 @@ void ViewSceneDialog::assignBackgroundColor()
     bgColor_ = newColor;
     mConfigurationDock->setSampleColor(bgColor_);
     state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
-    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    std::shared_ptr<SRInterface> spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
   }
 }
@@ -450,7 +452,7 @@ void ViewSceneDialog::assignBackgroundColor()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
 {
-  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  std::shared_ptr<SRInterface> spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::CONTINUOUS_SORT);
   newGeometryValue();
 }
@@ -458,7 +460,7 @@ void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
 {
-  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  std::shared_ptr<SRInterface> spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::UPDATE_SORT);
   newGeometryValue();
 }
@@ -466,7 +468,7 @@ void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::setTransparencySortTypeLists(bool index)
 {
-  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  std::shared_ptr<SRInterface> spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::LISTS_SORT);
   newGeometryValue();
 }
@@ -483,7 +485,7 @@ void ViewSceneDialog::handleUnselectedItem(const QString& name)
 void ViewSceneDialog::handleSelectedItem(const QString& name)
 {
   itemValueChanged_ = true;
-  unselectedObjectNames_.erase(std::remove(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name.toStdString()), unselectedObjectNames_.end());
+  unselectedObjectNames_.erase(remove(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name.toStdString()), unselectedObjectNames_.end());
   newGeometryValue();
 }
 
@@ -492,7 +494,7 @@ void ViewSceneDialog::selectAllClicked()
 {
   itemValueChanged_ = true;
   unselectedObjectNames_.clear();
-  newGeometryValue();  
+  newGeometryValue();
 }
 
 //------------------------------------------------------------------------------
@@ -506,8 +508,16 @@ void ViewSceneDialog::deselectAllClicked()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::adjustZoomSpeed(int value)
 {
-  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  std::shared_ptr<SRInterface> spire = mSpire.lock();
   spire->setZoomSpeed(value);
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::invertZoomClicked(bool value)
+{
+  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  spire->setZoomInverted(value);
+  Core::Preferences::Instance().invertMouseZoom.setValue(value);
 }
 
 //------------------------------------------------------------------------------
@@ -527,7 +537,7 @@ void ViewSceneDialog::addToolBar()
 	//addObjectToggleMenu();
 
 	glLayout->addWidget(mToolBar);
-  
+
   addViewBar();
 }
 
@@ -675,52 +685,29 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
 
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
 {
-  using namespace SCIRun::Core::Algorithms;
+  using namespace Core::Algorithms;
   Variable::List coords;
   coords.push_back(makeVariable("x", x));
   coords.push_back(makeVariable("y", y));
   state_->setValue(Parameters::GeometryFeedbackInfo, coords);
 }
 
-void ViewSceneDialog::screenshotClicked()
+void ViewSceneDialog::takeScreenshot()
 {
   if (!screenshotTaker_)
     screenshotTaker_ = new Screenshot(mGLWidget, this);
 
   screenshotTaker_->takeScreenshot();
+}
+
+void ViewSceneDialog::screenshotClicked()
+{
+  takeScreenshot();
   screenshotTaker_->saveScreenshot();
 }
 
-
-/// Start of Screenshot
-const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
-
-Screenshot::Screenshot(QGLWidget *glwidget, QObject *parent)
-  : QObject(parent),
-  viewport_(glwidget),
-  index_(0)
+void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
-  QDir dir(filePath);
-  if (!dir.exists())
-  {
-    dir.mkpath(filePath);
-  }
-}
-
-void Screenshot::takeScreenshot()
-{
-  screenshot_ = viewport_->grabFrameBuffer();
-}
-
-void Screenshot::saveScreenshot()
-{
-  index_++;
-  QString fileName = screenshotFile();
-	QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
-  screenshot_.save(fileName);
-}
-
-QString Screenshot::screenshotFile() const
-{
-  return filePath + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
+  takeScreenshot();
+  state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }

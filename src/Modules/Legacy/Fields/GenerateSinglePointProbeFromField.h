@@ -85,8 +85,7 @@ namespace SCIRun {
         
         FieldHandle GenerateOutputField();
         index_type GenerateIndex();
-        Core::Datatypes::GeometryHandle BuildWidgetObject(SCIRun::FieldHandle field);
-        RenderState GetWidgetRenderState(Dataflow::Networks::ModuleStateHandle state);
+        
       };
 
       class SCISHARE PointWidgetStub

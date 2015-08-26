@@ -34,12 +34,9 @@ last change: 04/10/2014
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 #include <Core/Algorithms/Field/Tests/LoadFieldsForAlgoCoreTests.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Utils/StringUtil.h>
-#include <Core/Algorithms/Field/Tests/LoadFieldsForAlgoCoreTests.h>
 
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -255,4 +252,38 @@ TEST(SetFieldDataTest, DISABLED_TriSurfOnElemTensorMat)
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
+TEST(SetFieldDataTest, TriSurfOnNodeScalarMatrixTooSmall)
+{
+  SetFieldDataAlgo algo;
 
+  FieldHandle tetmesh = LoadTri();
+
+  DenseMatrixHandle matrix = TriSurfOnNodeScalarMat();
+  matrix->resize(matrix->rows() - 1, matrix->cols());
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
+}
+
+TEST(SetFieldDataTest, TriSurfOnNodeScalarMatrixTooLarge)
+{
+  SetFieldDataAlgo algo;
+
+  FieldHandle tetmesh = LoadTri();
+
+  DenseMatrixHandle matrix = TriSurfOnNodeScalarMat();
+  matrix->resize(matrix->rows() + 1, matrix->cols());
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
+}

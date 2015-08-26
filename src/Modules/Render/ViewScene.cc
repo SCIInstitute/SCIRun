@@ -27,9 +27,10 @@
 */
 
 #include <Modules/Render/ViewScene.h>
-#include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Logging/Log.h>
+#include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
@@ -37,11 +38,9 @@
 #  undef Success
 #endif
 
-#include <Core/Datatypes/DenseMatrix.h>
-
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Render;
+using namespace Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
@@ -51,10 +50,14 @@ Mutex ViewScene::mutex_("ViewScene");
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
+ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
 
-ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_)
+ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
   INITIALIZE_PORT(GeneralGeom);
+#ifdef BUILD_TESTING
+  INITIALIZE_PORT(ScreenshotData);
+#endif
 }
 
 void ViewScene::setStateDefaults()
@@ -117,10 +120,11 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   {
     LOG_DEBUG("ViewScene::asyncExecute before locking");
     Guard lock(mutex_.get());
+    get_state()->setTransientValue(Parameters::ScreenshotData, nullptr, false);
 
     LOG_DEBUG("ViewScene::asyncExecute after locking");
 
-    GeometryHandle geom = boost::dynamic_pointer_cast<GeometryObject>(data);
+    auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)
     {
       error("Logical error: not a geometry object on ViewScene");
@@ -133,9 +137,30 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   get_state()->fireTransientStateChangeSignal();
 }
 
+#ifdef BUILD_TESTING
+void ViewScene::execute()
+{
+  if (inputPorts().size() > 1) // only send screenshot if input is present
+  {
+    DenseMatrixHandle screenshotData;
+    auto state = get_state();
+    do
+    {
+      auto transient = state->getTransientValue(Parameters::ScreenshotData);
+      screenshotData = optional_any_cast_or_default<DenseMatrixHandle>(transient);
+      if (screenshotData)
+      {
+        sendOutput(ScreenshotData, screenshotData);
+      }
+    }
+    while (!screenshotData);
+  }
+}
+#endif
+
 void ViewScene::processViewSceneObjectFeedback()
 {
-  //TODO: match ID of touched geom object with port id, and send that info back too. 
+  //TODO: match ID of touched geom object with port id, and send that info back too.
   //std::cout << "slot for state change in VS module" << std::endl;
   auto state = get_state();
   auto newInfo = state->getValue(Parameters::GeometryFeedbackInfo).toVector();

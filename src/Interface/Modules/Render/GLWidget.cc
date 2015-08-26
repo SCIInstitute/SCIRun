@@ -59,10 +59,7 @@ GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
 
   // Call gl platform init.
   CPM_GL_PLATFORM_NS::glPlatformInit();
-
-  auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
-  shaderSearchDirs.push_back(shadersInBinDirectory.string());
-
+  
   auto frameInitLimitFromCommandLine = Core::Application::Instance().parameters()->frameInitLimit();
   if (frameInitLimitFromCommandLine)
   {
@@ -70,7 +67,7 @@ GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
   }
   const int frameInitLimit = frameInitLimitFromCommandLine.get_value_or(100);
 
-  mGraphics.reset(new Render::SRInterface(mContext, shaderSearchDirs, frameInitLimit));
+  mGraphics.reset(new Render::SRInterface(mContext, frameInitLimit));
 
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));

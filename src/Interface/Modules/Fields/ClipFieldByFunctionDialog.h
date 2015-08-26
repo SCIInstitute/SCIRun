@@ -30,13 +30,13 @@
 #define INTERFACE_MODULES_CLIPFIELDBYFUNCTIONDIALOG_H
 
 #include "Interface/Modules/Fields/ui_ClipFieldByFunction.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/HasParserHelpDialog.h>
 #include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE ClipFieldByFunctionDialog : public ModuleDialogGeneric,
+class SCISHARE ClipFieldByFunctionDialog : public ModuleDialogWithParserHelp, 
   public Ui::ClipFieldByFunction
 {
 	Q_OBJECT

@@ -47,6 +47,7 @@
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
@@ -56,6 +57,7 @@
 #include <Dataflow/Network/Module.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
@@ -88,6 +90,7 @@ namespace Gui {
         << new QAction("Duplicate", parent)
         << new QAction("Replace With", parent)
         << new QAction("Collapse", parent)
+        << disabled(new QAction("Ignore*", parent))
         << new QAction("Show Log", parent)
         //<< disabled(new QAction("Make Sub-Network", parent))  // Issue #287
         << separatorAction(parent)
@@ -96,12 +99,12 @@ namespace Gui {
     QMenu* getMenu() { return menu_; }
     QAction* getAction(const char* name) const
     {
-      BOOST_FOREACH(QAction* action, menu_->actions())
+      for (const auto& action : menu_->actions())
       {
         if (action->text().contains(name))
           return action;
       }
-      return 0;
+      return nullptr;
     }
   private:
     QMenu* menu_;
@@ -654,6 +657,13 @@ void ModuleWidget::postLoadAction()
   connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
 }
 
+bool ModuleWidget::guiVisible() const
+{
+  if (dockable_)
+    return dockable_->isVisible();
+  return false;
+}
+
 void ModuleWidget::fillReplaceWithMenu()
 {
   auto menu = getReplaceWithMenu();
@@ -808,7 +818,7 @@ void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
   if (inputPorts_.empty())
     layout->addWidget(new BlankPort(layout->parentWidget()));
 
-  BOOST_FOREACH(PortWidget* port, inputPorts_)
+  for (PortWidget* port : inputPorts_)
     layout->addWidget(port);
 
   layout->setSizeConstraint(QLayout::SetMinimumSize);
@@ -821,7 +831,7 @@ void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
   if (outputPorts_.empty())
     layout->addWidget(new BlankPort(layout->parentWidget()));
 
-  BOOST_FOREACH(PortWidget* port, outputPorts_)
+  for (PortWidget* port : outputPorts_)
     layout->addWidget(port);
 
   layout->setSizeConstraint(QLayout::SetMinimumSize);
@@ -1124,6 +1134,12 @@ void ModuleWidget::makeOptionsDialog()
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
       connect(dockable_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
+
+      if (isViewScene_ && Application::Instance().parameters()->isRegressionMode())
+      {
+        dockable_->show();
+        dockable_->setFloating(true);
+      }
 
       dialog_->pull();
     }

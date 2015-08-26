@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1081</width>
-         <height>443</height>
+         <width>1093</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -108,8 +108,15 @@
      <addaction name="actionAddModule_"/>
      <addaction name="actionSelectModule_"/>
     </widget>
+    <widget class="QMenu" name="menuCurrent_">
+     <property name="title">
+      <string>Current</string>
+     </property>
+    </widget>
     <addaction name="menuActions"/>
     <addaction name="actionTagManager_"/>
+    <addaction name="separator"/>
+    <addaction name="menuCurrent_"/>
    </widget>
    <widget class="QMenu" name="menuSubnets_">
     <property name="enabled">
@@ -656,26 +663,35 @@
   </action>
   <action name="actionCut_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Cut</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
   </action>
   <action name="actionCopy_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Copy</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
   </action>
   <action name="actionPaste_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
   <action name="actionDelete_">
@@ -895,6 +911,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+Shift+K</string>
+   </property>
+  </action>
+  <action name="actionDummy">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </action>
  </widget>

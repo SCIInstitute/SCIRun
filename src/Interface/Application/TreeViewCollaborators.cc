@@ -46,6 +46,17 @@ void HideItemsNotMatchingString::operator()(QTreeWidgetItem* item)
     if (0 == item->childCount())
     {
       item->setHidden(shouldHide(item));
+      if (!shouldHide(item))
+      {
+        if (item->parent())
+        {
+          item->parent()->setExpanded(true);
+          if (item->parent()->parent())
+          {
+            item->parent()->parent()->setExpanded(true);
+          }
+        }
+      }
     }
     else
     {
@@ -64,7 +75,7 @@ void HideItemsNotMatchingString::operator()(QTreeWidgetItem* item)
   }
 }
 
-bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item) 
+bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item)
 {
   auto text = item->text(0);
   if (useRegex_)

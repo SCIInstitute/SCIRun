@@ -729,7 +729,7 @@ void Module::addPortConnection(const boost::signals2::connection& con)
   portConnections_.emplace_back(new boost::signals2::scoped_connection(con));
 }
 
-ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info) : Module(info)
+ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info, bool hasUI) : Module(info, hasUI)
 {
 }
 

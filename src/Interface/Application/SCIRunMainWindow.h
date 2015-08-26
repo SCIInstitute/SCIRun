@@ -40,6 +40,9 @@ class QToolButton;
 
 namespace SCIRun {
   namespace Dataflow {
+    namespace Networks {
+      struct ModuleId;
+    }
     namespace Engine {
       class NetworkEditorController;
     }}}
@@ -121,7 +124,6 @@ private:
   void setupPythonConsole();
   void fillModuleSelector();
   void setupInputWidgets();
-  void parseStyleXML();
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
   void showStatusMessage(const QString& str);
@@ -135,6 +137,7 @@ private:
   bool firstTimePythonShown_;
   int returnCode_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
+  QMap<QString, QAction*> currentModuleActions_;
   boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
@@ -166,6 +169,7 @@ private Q_SLOTS:
   void showPythonWarning(bool visible);
   void makeModulesLargeSize();
   void makeModulesSmallSize();
+  void alertForNetworkCycles(int code);
   void setDataDirectoryFromGUI();
   void toolkitDownload();
   void addToPathFromGUI();
@@ -179,9 +183,12 @@ private Q_SLOTS:
   void openLogFolder();
   void resetWindowLayout();
   void zoomNetwork();
+  void networkTimedOut();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
+  void addModuleToWindowList(const QString& id, bool hasUI);
+  void removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId& modId);
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
   void toggleTagLayer(bool toggle);

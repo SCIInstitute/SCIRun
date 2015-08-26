@@ -35,14 +35,11 @@
 #include <es-general/comp/Transform.hpp>
 #include <es-general/comp/StaticGlobalTime.hpp>
 #include <es-general/comp/StaticCamera.hpp>
-#include <es-general/comp/StaticOrthoCamera.hpp>
-#include <es-general/comp/CameraSelect.hpp>
 
 #include <es-render/comp/VBO.hpp>
 #include <es-render/comp/IBO.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
 #include <es-render/comp/Shader.hpp>
-#include <es-render/comp/Texture.hpp>
 #include <es-render/comp/GLState.hpp>
 #include <es-render/comp/VecUniform.hpp>
 #include <es-render/comp/MatUniform.hpp>
@@ -138,7 +135,7 @@ public:
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been
     // setup (including uniforms) if the simple geom hasn't been setup.
-    if (geom.front().attribs.isSetup() == false)
+    if (!geom.front().attribs.isSetup())
     {
       // We use const cast to get around a 'modify' call for 2 reasons:
       // 1) This is populating system specific GL data. It has no bearing on the

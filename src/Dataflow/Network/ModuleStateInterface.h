@@ -110,7 +110,7 @@ namespace Networks {
   {
   public:
     StateChangeObserver();
-    ~StateChangeObserver();
+    virtual ~StateChangeObserver();
     void initStateObserver(ModuleStateInterface* state);
     void stateChanged();
     void resetStateChanged();

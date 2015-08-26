@@ -85,6 +85,11 @@ namespace Networks {
     explicit ModuleId(const std::string& nameIdStr);
 
     operator std::string() const { return id_; }
+
+    ModuleId& operator++();
+    ModuleId operator++(int);
+  private:
+    void setIdString();
   };
 
   SCISHARE bool operator==(const ModuleId& lhs, const ModuleId& rhs);

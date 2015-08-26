@@ -46,7 +46,6 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Logging/LoggerInterface.h>
-#include <boost/foreach.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Forward;
@@ -73,7 +72,7 @@ MatrixHandle BuildBEMatrixImpl::executeImpl(const FieldList& inputs)
 {
   bemfield_vector fields;
 
-  BOOST_FOREACH(FieldHandle input, inputs)
+  for (FieldHandle input : inputs)
   {
     bemfield field(input);
 

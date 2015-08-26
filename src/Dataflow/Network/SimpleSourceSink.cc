@@ -30,7 +30,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include <iostream>
 #include <Dataflow/Network/SimpleSourceSink.h>
-#include <boost/foreach.hpp>
 #include <Core/Logging/Log.h>
 // don't really like this dependency
 #include <Core/Algorithms/Describe/DescribeDatatype.h>
@@ -74,7 +73,7 @@ void SimpleSink::setGlobalPortCachingFlag(bool value)
 
 void SimpleSink::invalidateAll()
 {
-  BOOST_FOREACH(SimpleSink* sink, instances_)
+  for (SimpleSink* sink : instances_)
     sink->invalidateProvider();
 }
 
@@ -163,7 +162,7 @@ std::set<SimpleSource*> SimpleSource::instances_;
 
 void SimpleSource::clearAllSources()
 {
-  BOOST_FOREACH(SimpleSource* source, instances_)
+  for (SimpleSource* source : instances_)
     source->data_.reset();
 }
 

@@ -63,18 +63,18 @@ namespace Datatypes {
       return *this;
     }
 
-    virtual DenseColumnMatrixGeneric* clone() const 
+    virtual DenseColumnMatrixGeneric* clone() const override
     {
       return new DenseColumnMatrixGeneric(*this);
     }
 
-    virtual void accept(MatrixVisitorGeneric<T>& visitor)
+    virtual void accept(MatrixVisitorGeneric<T>& visitor) override
     {
       visitor.visit(*this);
     }
 
-    virtual size_t nrows() const { return this->rows(); }
-    virtual size_t ncols() const { return this->cols(); }
+    virtual size_t nrows() const override { return this->rows(); }
+    virtual size_t ncols() const override { return this->cols(); }
     virtual T get(int i, int j) const override
     {
       return (*this)(i,j);
@@ -85,12 +85,12 @@ namespace Datatypes {
     }
 
     /// Persistent representation...
-    virtual std::string dynamic_type_name() const { return type_id.type; }
-    virtual void io(Piostream&);
+    virtual std::string dynamic_type_name() const override { return type_id.type; }
+    virtual void io(Piostream&) override;
     static PersistentTypeID type_id;
 
   private:
-    virtual void print(std::ostream& o) const
+    virtual void print(std::ostream& o) const override
     {
       o << static_cast<const EigenBase&>(*this);
     }

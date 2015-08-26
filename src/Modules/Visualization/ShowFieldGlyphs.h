@@ -31,17 +31,14 @@ DEALINGS IN THE SOFTWARE.
 #define MODULES_VISUALIZATION_SHOW_FIELD_GLYPHS_H
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/ColorMap.h>
 #include <Core/Thread/Interruptible.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE ShowFieldGlyphs : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE ShowFieldGlyphs : public Dataflow::Networks::GeometryGeneratingModule,
         //public Has6InputPorts<FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag>,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort < GeometryPortTag >,
@@ -49,44 +46,44 @@ namespace SCIRun {
       {
       public:
         ShowFieldGlyphs();
-        virtual void execute();
+        virtual void execute() override;
 
         // Vector Tab
-        static Core::Algorithms::AlgorithmParameterName ShowVectors;
-        static Core::Algorithms::AlgorithmParameterName VectorsTransparency;
-        static Core::Algorithms::AlgorithmParameterName VectorsTransparencyValue;
-        static Core::Algorithms::AlgorithmParameterName VectorsScale;
-        static Core::Algorithms::AlgorithmParameterName VectorsResolution;
-        static Core::Algorithms::AlgorithmParameterName VectorsColoring;
-        static Core::Algorithms::AlgorithmParameterName VectorsDisplayType;
+        static const Core::Algorithms::AlgorithmParameterName ShowVectors;
+        static const Core::Algorithms::AlgorithmParameterName VectorsTransparency;
+        static const Core::Algorithms::AlgorithmParameterName VectorsTransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName VectorsScale;
+        static const Core::Algorithms::AlgorithmParameterName VectorsResolution;
+        static const Core::Algorithms::AlgorithmParameterName VectorsColoring;
+        static const Core::Algorithms::AlgorithmParameterName VectorsDisplayType;
 
         // Scalar Tab
-        static Core::Algorithms::AlgorithmParameterName ShowScalars;
-        static Core::Algorithms::AlgorithmParameterName ScalarsTransparency;
-        static Core::Algorithms::AlgorithmParameterName ScalarsTransparencyValue;
-        static Core::Algorithms::AlgorithmParameterName ScalarsScale;
-        static Core::Algorithms::AlgorithmParameterName ScalarsResolution;
-        static Core::Algorithms::AlgorithmParameterName ScalarsColoring;
-        static Core::Algorithms::AlgorithmParameterName ScalarsDisplayType;
+        static const Core::Algorithms::AlgorithmParameterName ShowScalars;
+        static const Core::Algorithms::AlgorithmParameterName ScalarsTransparency;
+        static const Core::Algorithms::AlgorithmParameterName ScalarsTransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName ScalarsScale;
+        static const Core::Algorithms::AlgorithmParameterName ScalarsResolution;
+        static const Core::Algorithms::AlgorithmParameterName ScalarsColoring;
+        static const Core::Algorithms::AlgorithmParameterName ScalarsDisplayType;
 
         // Tensor Tab
-        static Core::Algorithms::AlgorithmParameterName ShowTensors;
-        static Core::Algorithms::AlgorithmParameterName TensorsTransparency;
-        static Core::Algorithms::AlgorithmParameterName TensorsTransparencyValue;
-        static Core::Algorithms::AlgorithmParameterName TensorsScale;
-        static Core::Algorithms::AlgorithmParameterName TensorsResolution;
-        static Core::Algorithms::AlgorithmParameterName TensorsColoring;
-        static Core::Algorithms::AlgorithmParameterName TensorsDisplayType;
+        static const Core::Algorithms::AlgorithmParameterName ShowTensors;
+        static const Core::Algorithms::AlgorithmParameterName TensorsTransparency;
+        static const Core::Algorithms::AlgorithmParameterName TensorsTransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName TensorsScale;
+        static const Core::Algorithms::AlgorithmParameterName TensorsResolution;
+        static const Core::Algorithms::AlgorithmParameterName TensorsColoring;
+        static const Core::Algorithms::AlgorithmParameterName TensorsDisplayType;
 
         // Mesh Color
-        static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
+        static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
 
         // Tab Control
-        static Core::Algorithms::AlgorithmParameterName ShowVectorTab;
-        static Core::Algorithms::AlgorithmParameterName ShowScalarTab;
-        static Core::Algorithms::AlgorithmParameterName ShowTensorTab;
-        static Core::Algorithms::AlgorithmParameterName ShowSecondaryTab;
-        static Core::Algorithms::AlgorithmParameterName ShowTertiaryTab;
+        static const Core::Algorithms::AlgorithmParameterName ShowVectorTab;
+        static const Core::Algorithms::AlgorithmParameterName ShowScalarTab;
+        static const Core::Algorithms::AlgorithmParameterName ShowTensorTab;
+        static const Core::Algorithms::AlgorithmParameterName ShowSecondaryTab;
+        static const Core::Algorithms::AlgorithmParameterName ShowTertiaryTab;
 
         INPUT_PORT(0, PrimaryData, LegacyField);
         INPUT_PORT(1, PrimaryColorMap, ColorMap);
@@ -96,61 +93,21 @@ namespace SCIRun {
         //INPUT_PORT(5, TertiaryColorMap, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
-        virtual void setStateDefaults();
+        virtual void setStateDefaults() override;
 
       private:
         void configureInputs(
-          boost::shared_ptr<SCIRun::Field> pfield,
-          boost::optional<boost::shared_ptr<SCIRun::Field>> sfield,
-          boost::optional<boost::shared_ptr<SCIRun::Field>> tfield,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> pcolormap,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> scolormap,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> tcolormap);
+          FieldHandle pfield,
+          boost::optional<FieldHandle> sfield,
+          boost::optional<FieldHandle> tfield,
+          boost::optional<Core::Datatypes::ColorMapHandle> pcolormap,
+          boost::optional<Core::Datatypes::ColorMapHandle> scolormap,
+          boost::optional<Core::Datatypes::ColorMapHandle> tcolormap);
 
-        /// Constructs a geometry object (essentially a spire object) from the given
-        /// field data.
-        /// \param field    Field from which to construct geometry.
-        /// \param state
-        /// \param id       Ends up becoming the name of the spire object.
-        Core::Datatypes::GeometryHandle buildGeometryObject(
-          boost::shared_ptr<SCIRun::Field> field,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-          Dataflow::Networks::ModuleStateHandle state);
+        boost::shared_ptr<class GlyphBuilder> builder_;
 
-        void renderVectors(
-          boost::shared_ptr<SCIRun::Field> field,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-          RenderState state,
-          Core::Datatypes::GeometryHandle geom,
-          const std::string& id);
-
-        void renderScalars(
-          boost::shared_ptr<SCIRun::Field> field,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-          RenderState state,
-          Core::Datatypes::GeometryHandle geom,
-          const std::string& id);
-
-        void renderTensors(
-          boost::shared_ptr<SCIRun::Field> field,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-          RenderState state,
-          Core::Datatypes::GeometryHandle geom,
-          const std::string& id);
-
-        RenderState getVectorsRenderState(
-          Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);   
-
-        RenderState getScalarsRenderState(
-          Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
-
-        RenderState getTensorsRenderState(
-          Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
       };
     } // Visualization
   } // Modules

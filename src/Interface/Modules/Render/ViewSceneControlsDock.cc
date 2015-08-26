@@ -30,7 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
-#include "qbrush.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;
@@ -58,6 +57,8 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   {
     mouseControlComboBox_->setCurrentIndex(0);
   }
+  
+  invertZoomCheckBox_->setChecked(SCIRun::Core::Preferences::Instance().invertMouseZoom);
 
   updateZoomOptionVisibility();
 
@@ -70,6 +71,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
   connect(selectAllPushButton_, SIGNAL(clicked()), parent, SLOT(selectAllClicked()));
   connect(deselectAllPushButton_, SIGNAL(clicked()), parent, SLOT(deselectAllClicked()));
+  connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
   connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
 
   connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotChanged(QListWidgetItem*)));
@@ -114,10 +116,12 @@ void ViewSceneControlsDock::updateZoomOptionVisibility()
   if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
   {
     zoomBox_->setVisible(true);
+    invertZoomCheckBox_->setVisible(true);
   }
   else
   {
     zoomBox_->setVisible(false);
+    invertZoomCheckBox_->setVisible(false);
   }
 }
 

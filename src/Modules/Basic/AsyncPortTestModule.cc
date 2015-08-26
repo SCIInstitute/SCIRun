@@ -39,13 +39,13 @@ using namespace SCIRun::Core::Algorithms::Fields;
 ModuleLookupInfo AsyncPortTestModule::staticInfo_("AsyncPortTestModule", "Testing", "SCIRun");
 
 AsyncPortTestModule::AsyncPortTestModule()
-  : ModuleWithAsyncDynamicPorts(staticInfo_),
+  : ModuleWithAsyncDynamicPorts(staticInfo_, false),
   counter_(0)
 {
   INITIALIZE_PORT(AsyncField);
 }
 
-void AsyncPortTestModule::execute() 
+void AsyncPortTestModule::execute()
 {
   // point of module is to receive some async data before it's executed (which should do nothing).
   // this error condition will catch bugs with the port framework.
@@ -75,5 +75,5 @@ void AsyncPortTestModule::asyncExecute(const PortId& pid, DatatypeHandle data)
   {
     std::cout << "null field." << std::endl;
   }
-  
+
 }

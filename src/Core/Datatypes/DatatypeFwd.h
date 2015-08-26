@@ -31,10 +31,10 @@
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <boost/make_shared.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
@@ -57,7 +57,7 @@ namespace Datatypes {
   class Bundle;
 
   typedef boost::shared_ptr<String> StringHandle;
-  typedef boost::shared_ptr<GeometryObject> GeometryHandle;
+  typedef boost::shared_ptr<GeometryObject> GeometryBaseHandle;
   typedef boost::shared_ptr<ColorMap> ColorMapHandle;
   typedef boost::shared_ptr<Bundle> BundleHandle;
 }}

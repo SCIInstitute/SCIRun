@@ -127,7 +127,6 @@ DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const N
   network_(network),
   threadGroup_(new DynamicExecutor::ExecutionThreadGroup)
 {
-  //std::cout << "DMNE()" << std::endl;
 }
 
 void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
@@ -138,7 +137,6 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
     LOG_DEBUG("DMTNE::executeAll order received: " << order << std::endl);
 
   threadGroup_->clear();
-  //std::cout << "address of threadGroup: " << threadGroup_.get() << std::endl;
   DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size(), &executionLock, threadGroup_);
   boost::thread execution(runner);
 }

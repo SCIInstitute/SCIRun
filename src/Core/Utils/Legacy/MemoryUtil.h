@@ -31,7 +31,6 @@
 #define CORE_UTIL_MEMORYUTIL_H 
 
 #include <vector>
-#include <boost/foreach.hpp>
 #include <boost/shared_array.hpp>
 #include <Core/Utils/Legacy/share.h>
 
@@ -40,14 +39,14 @@ namespace SCIRun {
 template <class Cont>
 void delete_all_items(Cont& cont)
 {
-  BOOST_FOREACH(const typename Cont::value_type& t, cont)
+  for (const auto& t : cont)
     delete t;
 }
 
 template <class MapType>
 void delete_all_values(MapType& cont)
 {
-  BOOST_FOREACH(const typename MapType::value_type& t, cont)
+  for (const auto& t : cont)
     delete t.second;
 }
 

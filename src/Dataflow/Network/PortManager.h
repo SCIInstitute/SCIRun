@@ -35,7 +35,6 @@
 #include <Dataflow/Network/Port.h>
 #include <Core/Utils/Exception.h>
 
-#include <boost/foreach.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <string>
@@ -116,7 +115,7 @@ PortManager<T>::checkDynamicPortInvariant(const std::string& name)
     if (0 == port->nconnections() && i != lastIndex)
       toRemove.push_back(port->id());
   }
-  BOOST_FOREACH(const PortId& id, toRemove)
+  for (const PortId& id : toRemove)
     remove(id);
 }
 
@@ -133,7 +132,7 @@ PortManager<T>::remove(const PortId& id)
   }
   ports_.erase(it);
   size_t i = 0;
-  BOOST_FOREACH(typename PortMap::value_type& portPair, ports_)
+  for (auto& portPair : ports_)
     portPair.second->setIndex(i++);
 }
 

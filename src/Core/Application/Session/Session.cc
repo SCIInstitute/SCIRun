@@ -34,7 +34,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/foreach.hpp>
 #include <fstream>
 #include <locale>
 
@@ -250,7 +249,7 @@ class CompositeSessionBackEnd : public SessionBackEnd
 public:
   virtual void consume(const std::string& statement, const std::string& message)
   {
-    BOOST_FOREACH(SessionBackEndHandle backEnd, backEnds_)
+    for (const auto& backEnd : backEnds_)
     {
       backEnd->consume(statement, message);
     }

@@ -35,7 +35,6 @@
 #include <boost/graph/topological_sort.hpp>
 #include <boost/graph/copy.hpp>
 #include <boost/graph/connected_components.hpp>
-#include <boost/foreach.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Engine::NetworkGraph;
@@ -92,7 +91,7 @@ EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork()
 
   std::vector<Edge> edges;
 
-  BOOST_FOREACH(const ConnectionDescription& cd, network_.connections())
+  for (const ConnectionDescription& cd : network_.connections())
   {
     if (moduleIdLookup_.left.find(cd.out_.moduleId_) != moduleIdLookup_.left.end()
       && moduleIdLookup_.left.find(cd.in_.moduleId_) != moduleIdLookup_.left.end())
