@@ -40,7 +40,6 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Logging/Log.h>
 
-//#include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
 
