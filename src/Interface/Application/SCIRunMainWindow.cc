@@ -356,6 +356,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
 
   hideNonfunctioningWidgets();
 
+  connect(moduleSelectorDockWidget_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
+
   statusBar()->addPermanentWidget(new QLabel("Version: " + QString::fromStdString(VersionInfo::GIT_VERSION_TAG)));
 
 	WidgetStyleMixin::tabStyle(optionsTabWidget_);
@@ -673,6 +675,7 @@ void SCIRunMainWindow::loadRecentNetwork()
 
 void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 {
+  windowState_ = saveState();
   if (okToContinue())
   {
     writeSettings();
@@ -1366,6 +1369,28 @@ void SCIRunMainWindow::adjustModuleDock(int state)
   bool dockable = prefsWindow_->dockableModulesCheckBox_->isChecked();
   actionPinAllModuleUIs_->setEnabled(dockable);
   Preferences::Instance().modulesAreDockable.setValue(dockable);
+}
+
+void SCIRunMainWindow::showEvent(QShowEvent* event)
+{
+  restoreState(windowState_);
+  QMainWindow::showEvent(event);
+}
+
+void SCIRunMainWindow::hideEvent(QHideEvent * event)
+{
+  windowState_ = saveState();
+  QMainWindow::hideEvent(event);
+}
+
+void SCIRunMainWindow::updateDockWidgetProperties(bool isFloating)
+{
+  auto dock = qobject_cast<QDockWidget*>(sender());
+  if (dock && isFloating)
+  {
+    dock->setWindowFlags(Qt::Window);
+    dock->show();
+  }
 }
 
 #ifdef __APPLE__
