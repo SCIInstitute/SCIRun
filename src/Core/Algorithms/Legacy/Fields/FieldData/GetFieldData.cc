@@ -31,7 +31,6 @@
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/GeometryPrimitives/Vector.h>
@@ -39,13 +38,13 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Utility;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Logging;
 using namespace SCIRun;
+using namespace Core::Algorithms::Fields;
+using namespace Core::Geometry;
+using namespace Core::Datatypes;
+using namespace Core::Utility;
+using namespace Core::Algorithms;
+using namespace Core::Logging;
 
 GetFieldDataAlgo::GetFieldDataAlgo()
 {
@@ -90,17 +89,12 @@ DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
 
   if (vfield1->is_scalar())
     return (GetScalarFieldDataV(input_field));
-  else
-    if (vfield1->is_vector())
-      return (GetVectorFieldDataV(input_field));
-    else
-      if (vfield1->is_tensor())
-        return (GetTensorFieldDataV(input_field));
-      else
-      {
-        THROW_ALGORITHM_INPUT_ERROR("Unknown field data type!");
-      }
-
+  if (vfield1->is_vector())
+    return (GetVectorFieldDataV(input_field));
+  if (vfield1->is_tensor())
+    return (GetTensorFieldDataV(input_field));
+  
+  THROW_ALGORITHM_INPUT_ERROR("Unknown field data type!");
 }
 
 
@@ -202,12 +196,12 @@ DenseMatrixHandle GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle& input) cons
   for (VMesh::index_type idx=0; idx<size; idx++)
   {
     vfield->get_value(val,idx);
-    (*output)(idx, 0) = static_cast<double>(val.mat_[0][0]);
-    (*output)(idx, 1) = static_cast<double>(val.mat_[0][1]);
-    (*output)(idx, 2) = static_cast<double>(val.mat_[0][2]);
-    (*output)(idx, 3) = static_cast<double>(val.mat_[1][1]);
-    (*output)(idx, 4) = static_cast<double>(val.mat_[1][2]);
-    (*output)(idx, 5) = static_cast<double>(val.mat_[2][2]);   
+    (*output)(idx, 0) = val.val(0,0);
+    (*output)(idx, 1) = val.val(0,1);
+    (*output)(idx, 2) = val.val(0,2);
+    (*output)(idx, 3) = val.val(1,1);
+    (*output)(idx, 4) = val.val(1,2);
+    (*output)(idx, 5) = val.val(2,2);   
   }
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (vfield->basis_order() == 2)
