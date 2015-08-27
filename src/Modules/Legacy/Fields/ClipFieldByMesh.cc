@@ -33,6 +33,7 @@
 
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateIsInsideField.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
@@ -77,14 +78,23 @@ void ClipFieldByMesh::execute()
     insideAlgo.set_option(Parameters::SamplingScheme, "regular2");
 
     if (!insideAlgo.runImpl(input,object,selection))
-      return;
+    {
+      THROW_ALGORITHM_PROCESSING_ERROR("False returned from inside algo");
+    }
 
     ClipMeshBySelectionAlgo clipAlgo;
+    if (!selection || !selection->vfield() || !input->vmesh())
+    {
+      THROW_ALGORITHM_PROCESSING_ERROR("Selection output field is null");
+    }
+
     if (input->vmesh()->num_elems() == selection->vfield()->num_values())
-      clipAlgo.set_option(Parameters::ClipMethod, "element");
+      clipAlgo.set_option(Parameters::ClipMethod, "Element Center");
 
     if (!clipAlgo.runImpl(input,selection,output,interpolant))
-      return;
+    {
+      THROW_ALGORITHM_PROCESSING_ERROR("False returned from clip algo");
+    }
 
     sendOutput(OutputField, output);
     sendOutput(Mapping, interpolant);
