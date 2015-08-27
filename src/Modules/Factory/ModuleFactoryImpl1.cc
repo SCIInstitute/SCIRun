@@ -74,6 +74,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
+#include <Modules/Legacy/Fields/ClipFieldByMesh.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
 #include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
@@ -225,6 +226,8 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
   //addModuleDesc<ShowAndEditDipoles>("Real ported module", "in progress");
+
+  addModuleDesc<ClipFieldByMesh>("Real ported module", "...");
 
   // insert module desc here
 }
