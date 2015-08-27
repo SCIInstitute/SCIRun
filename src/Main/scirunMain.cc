@@ -41,13 +41,6 @@ using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Console;
 
-//#ifdef BUILD_WITH_PYTHON
-//BOOST_PYTHON_MODULE( SCIRun )
-//{
-//}
-//#endif
-
-
 int mainImpl(int argc, const char* argv[])
 {
 #ifdef LOOK_FOR_MEMORY_LEAKS
