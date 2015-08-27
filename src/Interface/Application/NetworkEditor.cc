@@ -1229,6 +1229,13 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
   }
 }
 
+void NetworkEditor::cleanUpNetwork()
+{
+  qDebug() << "clean up network";
+  controller_->cleanUpNetwork();
+  centerView();
+}
+
 std::atomic<int> ErrorItem::instanceCounter_(0);
 
 ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent) : QGraphicsTextItem(text, parent),

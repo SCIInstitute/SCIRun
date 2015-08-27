@@ -40,7 +40,7 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Engine::NetworkGraph;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, const ModuleFilter& moduleFilter, bool precompute) 
+NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, const ModuleFilter& moduleFilter, bool precompute)
   : network_(network), moduleFilter_(moduleFilter), moduleCount_(0)
 {
   if (precompute)
@@ -69,7 +69,7 @@ const DirectedGraph& NetworkGraphAnalyzer::graph()
   return graph_;
 }
 
-int NetworkGraphAnalyzer::moduleCount() const 
+int NetworkGraphAnalyzer::moduleCount() const
 {
   return moduleCount_;
 }
@@ -125,22 +125,17 @@ ComponentMap NetworkGraphAnalyzer::connectedComponents()
   UndirectedGraph undirected(edges.begin(), edges.end(), moduleCount_);
 
   std::vector<int> component(boost::num_vertices(undirected));
-  int num = boost::connected_components(undirected, &component[0]);
+  boost::connected_components(undirected, &component[0]);
 
   ComponentMap componentMap;
-  //std::ostringstream ostr;
-  //ostr << "Total number of components: " << num << std::endl;
   for (size_t i = 0; i < component.size(); ++i)
   {
     componentMap[moduleAt(i)] = component[i];
-    //ostr << "Module " << moduleAt(i) <<" is in component " << component[i] << std::endl;
   }
-  //ostr << std::endl;
-  //LOG_DEBUG("NetworkGraphAnalyzer produced connected components as follow: " << ostr.str() << std::endl);
   return componentMap;
 }
 
-ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod, const SCIRun::Dataflow::Networks::NetworkInterface& network) : module_(mod) 
+ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod, const SCIRun::Dataflow::Networks::NetworkInterface& network) : module_(mod)
 {
   //TODO: composite with which filter?
   NetworkGraphAnalyzer analyze(network, ExecuteAllModules::Instance(), false);

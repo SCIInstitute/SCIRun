@@ -61,6 +61,7 @@ namespace Gui {
     size_t numModules() const;
     int errorCode() const;
     void setExecutorType(int type);
+    void cleanUpNetwork();
   public:
     const SCIRun::Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();

@@ -39,10 +39,14 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/DynamicPortManager.h>
 #include <Core/Logging/Log.h>
+#include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
+#include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/foreach.hpp>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
@@ -629,5 +633,30 @@ void NetworkEditorController::updateModulePositions(const ModulePositions& modul
   if (serializationManager_)
   {
     serializationManager_->updateModulePositions(modulePositions);
+  }
+}
+
+void NetworkEditorController::cleanUpNetwork()
+{
+  std::cout << "NETWORK CLEAN UP ALGO\n" << std::endl;
+  auto all = boost::lambda::constant(true);
+  BoostGraphParallelScheduler scheduleAll(all);
+  auto order = scheduleAll.schedule(*theNetwork_);
+  for (int group = order.minGroup(); group <= order.maxGroup(); ++group)
+  {
+    auto groupIter = order.getGroup(group);
+    std::cout << "group: " << group << std::endl;
+    BOOST_FOREACH(auto g, groupIter)
+    {
+      std::cout << "\t" << g.second << " -- " << g.first << std::endl;
+    }
+  }
+
+  NetworkGraphAnalyzer analyze(*theNetwork_, all, true);
+  auto connected = analyze.connectedComponents();
+  std::cout << "\nCONNECTED COMPONENTS:\n" << std::endl;
+  for (const auto& comp : connected)
+  {
+    std::cout << "\t" << comp.first << " : " << comp.second << std::endl;
   }
 }

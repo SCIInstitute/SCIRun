@@ -205,7 +205,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   networkEditor_->addAction(actionSelectMode_);
   networkEditor_->addAction(actionToggleMetadataLayer_);
   networkEditor_->addAction(actionToggleTagLayer_);
-  
+
   setContextMenuPolicy(Qt::NoContextMenu);
 
   scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
@@ -221,6 +221,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   actionQuit_->setShortcut(QKeySequence::Quit);
   connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
   actionDelete_->setShortcuts(QList<QKeySequence>() << QKeySequence::Delete << Qt::Key_Backspace);
+	connect(actionCleanUpNetwork_, SIGNAL(triggered()), networkEditor_, SLOT(cleanUpNetwork()));
 
   connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
   connect(actionPinAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(pinAllModuleUIs()));
