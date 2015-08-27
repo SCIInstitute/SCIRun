@@ -38,7 +38,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/moritz/pts_tensor.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tensors/pts_tensor.fld</value>
 									</value>
 								</second>
 							</item>
@@ -78,7 +78,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/moritz/tet_tensor_on_elem.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tensors/tet_tensor_on_elem.fld</value>
 									</value>
 								</second>
 							</item>
@@ -118,7 +118,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/moritz/tet_tensor_on_node.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tensors/tet_tensor_on_node.fld</value>
 									</value>
 								</second>
 							</item>
@@ -222,43 +222,43 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ReadField:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>1.00000000000000000e+001</first>
-				<second>1.00000000000000000e+001</second>
+				<first>1.00000000000000000e+01</first>
+				<second>1.00000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:1</first>
 			<second>
-				<first>2.74000000000000000e+002</first>
-				<second>1.00000000000000000e+001</second>
+				<first>2.74000000000000000e+02</first>
+				<second>1.00000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:2</first>
 			<second>
-				<first>5.38000000000000000e+002</first>
-				<second>1.00000000000000000e+001</second>
+				<first>5.38000000000000000e+02</first>
+				<second>1.00000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:0</first>
 			<second>
-				<first>1.00000000000000000e+001</first>
-				<second>1.30000000000000000e+002</second>
+				<first>1.00000000000000000e+01</first>
+				<second>1.30000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:1</first>
 			<second>
-				<first>2.74000000000000000e+002</first>
-				<second>1.30000000000000000e+002</second>
+				<first>2.74000000000000000e+02</first>
+				<second>1.30000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:2</first>
 			<second>
-				<first>5.38000000000000000e+002</first>
-				<second>1.30000000000000000e+002</second>
+				<first>5.38000000000000000e+02</first>
+				<second>1.30000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
