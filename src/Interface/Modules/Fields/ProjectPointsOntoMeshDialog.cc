@@ -55,7 +55,7 @@ void ProjectPointsOntoMeshDialog::push()
   }
 }
 
-void ProjectPointsOntoMeshDialog::pullSpecial()
+void ProjectPointsOntoMeshDialog::pullSpecial() //TODO refactor away
 {
   using namespace Parameters;
   auto method = state_->getValue(ProjectMethod).toString();

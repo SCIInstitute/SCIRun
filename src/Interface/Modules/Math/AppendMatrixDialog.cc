@@ -59,7 +59,7 @@ void AppendMatrixDialog::isCols()
   state_->setValue(Variables::RowsOrColumns, AppendMatrixAlgorithm::COLUMNS);
 }
 
-void AppendMatrixDialog::pullSpecial()
+void AppendMatrixDialog::pullSpecial() //TODO refactor away
 {
   //TODO convert to new widget managers
   if (AppendMatrixAlgorithm::ROWS == state_->getValue(Variables::RowsOrColumns).toInt())

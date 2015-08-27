@@ -38,7 +38,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -200,15 +199,15 @@ FEMBuilder::build_matrix(FieldHandle input,
         for (size_type p=0; p<m;p++)
         {
           // Set the diagonals to the proper version.
-          tensor.mat_[0][0] = data[p*n+0];
-          tensor.mat_[1][0] = 0.0;
-          tensor.mat_[2][0] = 0.0;
-          tensor.mat_[0][1] = 0.0;
-          tensor.mat_[1][1] = data[p*n+0];
-          tensor.mat_[2][1] = 0.0;
-          tensor.mat_[0][2] = 0.0;
-          tensor.mat_[1][2] = 0.0;
-          tensor.mat_[2][2] = data[p*n+0];
+          tensor.val(0,0) = data[p*n+0];
+          tensor.val(1,0) = 0.0;
+          tensor.val(2,0) = 0.0;
+          tensor.val(0,1) = 0.0;
+          tensor.val(1,1) = data[p*n+0];
+          tensor.val(2,1) = 0.0;
+          tensor.val(0,2) = 0.0;
+          tensor.val(1,2) = 0.0;
+          tensor.val(2,2) = data[p*n+0];
           tensors_.push_back(std::make_pair("",tensor));
         }
       }
@@ -218,15 +217,15 @@ FEMBuilder::build_matrix(FieldHandle input,
       {
         for (size_type p=0; p<m;p++)
         {
-          tensor.mat_[0][0] = data[0+p*n];
-          tensor.mat_[1][0] = data[1+p*n];
-          tensor.mat_[2][0] = data[2+p*n];
-          tensor.mat_[0][1] = data[1+p*n];
-          tensor.mat_[1][1] = data[3+p*n];
-          tensor.mat_[2][1] = data[4+p*n];
-          tensor.mat_[0][2] = data[2+p*n];
-          tensor.mat_[1][2] = data[4+p*n];
-          tensor.mat_[2][2] = data[5+p*n];
+          tensor.val(0,0) = data[0+p*n];
+          tensor.val(1,0) = data[1+p*n];
+          tensor.val(2,0) = data[2+p*n];
+          tensor.val(0,1) = data[1+p*n];
+          tensor.val(1,1) = data[3+p*n];
+          tensor.val(2,1) = data[4+p*n];
+          tensor.val(0,2) = data[2+p*n];
+          tensor.val(1,2) = data[4+p*n];
+          tensor.val(2,2) = data[5+p*n];
           tensors_.push_back(std::make_pair("",tensor));
         }
       }
@@ -236,15 +235,15 @@ FEMBuilder::build_matrix(FieldHandle input,
       {
         for (size_type p=0; p<m;p++)
         {
-          tensor.mat_[0][0] = data[0+p*n];
-          tensor.mat_[1][0] = data[1+p*n];
-          tensor.mat_[2][0] = data[2+p*n];
-          tensor.mat_[0][1] = data[1+p*n];
-          tensor.mat_[1][1] = data[4+p*n];
-          tensor.mat_[2][1] = data[5+p*n];
-          tensor.mat_[0][2] = data[2+p*n];
-          tensor.mat_[1][2] = data[5+p*n];
-          tensor.mat_[2][2] = data[8+p*n];
+          tensor.val(0,0) = data[0+p*n];
+          tensor.val(1,0) = data[1+p*n];
+          tensor.val(2,0) = data[2+p*n];
+          tensor.val(0,1) = data[1+p*n];
+          tensor.val(1,1) = data[4+p*n];
+          tensor.val(2,1) = data[5+p*n];
+          tensor.val(0,2) = data[2+p*n];
+          tensor.val(1,2) = data[5+p*n];
+          tensor.val(2,2) = data[8+p*n];
           tensors_.push_back(std::make_pair("",tensor));
         }
       }
@@ -336,12 +335,12 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
     T = tensors_[tensor_index].second;
   }
   
-  double Ca = T.mat_[0][0];
-  double Cb = T.mat_[0][1];
-  double Cc = T.mat_[0][2];
-  double Cd = T.mat_[1][1];
-  double Ce = T.mat_[1][2];
-  double Cf = T.mat_[2][2];
+  double Ca = T.val(0,0);
+  double Cb = T.val(0,1);
+  double Cc = T.val(0,2);
+  double Cd = T.val(1,1);
+  double Ce = T.val(1,2);
+  double Cf = T.val(2,2);
   
   if ( (Ca==0) && (Cb==0) && (Cc==0) && (Cd==0) && (Ce==0) && (Cf==0) )
   {
@@ -455,12 +454,12 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
     T = tensors_[tensor_index].second;
   }
   
-  double Ca = T.mat_[0][0];
-  double Cb = T.mat_[0][1];
-  double Cc = T.mat_[0][2];
-  double Cd = T.mat_[1][1];
-  double Ce = T.mat_[1][2];
-  double Cf = T.mat_[2][2];
+  double Ca = T.val(0,0);
+  double Cb = T.val(0,1);
+  double Cc = T.val(0,2);
+  double Cd = T.val(1,1);
+  double Ce = T.val(1,2);
+  double Cf = T.val(2,2);
   
   if ( (Ca==0) && (Cb==0) && (Cc==0) && (Cd==0) && (Ce==0) && (Cf==0) )
   {
@@ -1134,7 +1133,7 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
         double* data = ctable->data();
         for (size_t i=0; i<tens.size();i++)
         {
-          double t = tens[i].second.mat_[0][0];
+          double t = tens[i].second.val(0,0);
           data[i] = t;
         }
       }
@@ -1163,11 +1162,11 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
         }
         
         basis_values_.resize(nconds);
-        for (size_type s=0; s < nconds; s++)
+        for (size_type i=0; i < nconds; i++)
         {
           SparseRowMatrixHandle temp;
           /// @todo: can initialize array using std::fill
-          data[s] = 1.0;
+          data[i] = 1.0;
           
           if (! builder.build_matrix(input, con, temp) )
           {
@@ -1181,12 +1180,12 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
             return false;
           }
           
-          basis_values_[s].resize(temp->nonZeros());
+          basis_values_[i].resize(temp->nonZeros());
           for (size_type p=0; p< temp->nonZeros(); p++)
           {
-            basis_values_[s][p] = temp->valuePtr()[p];
+            basis_values_[i][p] = temp->valuePtr()[p];
           }
-          data[s] = 0.0;
+          data[i] = 0.0;
         }
         
         generation_ = input->vmesh()->generation();
@@ -1204,12 +1203,12 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
           sum[p] = 0.0;
       }
       
-      for (int s=0; s<nconds; s++)
+      for (int i=0; i<nconds; i++)
       {
-        double weight = cdata[s*n];
-        for (size_t p=0; p < basis_values_[s].size(); p++)
+        double weight = cdata[i*n];
+        for (size_t p=0; p < basis_values_[i].size(); p++)
         {
-          sum[p] += weight * basis_values_[s][p];
+          sum[p] += weight * basis_values_[i][p];
         }
       }
       

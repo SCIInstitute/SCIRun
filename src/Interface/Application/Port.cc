@@ -257,18 +257,19 @@ void PortWidget::mouseMoveEvent(QMouseEvent* event)
   doMouseMove(event->buttons(), event->pos());
 }
 
-void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
+QGraphicsItem* PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
 {
   if (buttons & Qt::LeftButton && (!isConnected() || !isInput()))
   {
     int distance = (pos - startPos_).manhattanLength();
     if (distance >= QApplication::startDragDistance())
-      dragImpl(pos);
+      return dragImpl(pos);
   }
   else
   {
     //qDebug() << "mouse move sth else";
   }
+  return nullptr;
 }
 
 void PortWidget::mouseReleaseEvent(QMouseEvent* event)
@@ -432,7 +433,7 @@ bool PortWidget::isFullInputPort() const
   return isInput() && !connections_.empty();
 }
 
-void PortWidget::dragImpl(const QPointF& endPos)
+QGraphicsItem* PortWidget::dragImpl(const QPointF& endPos)
 {
   if (!currentConnection_)
   {
@@ -468,6 +469,7 @@ void PortWidget::dragImpl(const QPointF& endPos)
       minPotential->highlight(true);
     }
   }
+  return dynamic_cast<QGraphicsItem*>(currentConnection_);
 }
 
 template <typename Func, typename Pred>

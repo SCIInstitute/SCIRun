@@ -47,9 +47,4 @@ ClipVolumeByIsovalueDialog::ClipVolumeByIsovalueDialog(const std::string& name, 
   fixSize();
   addDoubleSpinBoxManager(IsoValueSpinBox_, ClipMeshByIsovalueAlgo::ScalarIsoValue);
   addRadioButtonGroupManager({ lessthanRadioButton_,  greaterthanRadioButton_}, ClipMeshByIsovalueAlgo::LessThanIsoValue);
-  
-}
-
-void ClipVolumeByIsovalueDialog::pullSpecial()
-{
 }
