@@ -67,6 +67,11 @@
 
 #include <Core/Command/CommandFactory.h>
 
+#ifdef BUILD_WITH_PYTHON
+#include <Interface/Application/PythonConsoleWidget.h>
+#include <Core/Python/PythonInterpreter.h>
+#endif
+
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Engine;
@@ -205,7 +210,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true
   networkEditor_->addAction(actionSelectMode_);
   networkEditor_->addAction(actionToggleMetadataLayer_);
   networkEditor_->addAction(actionToggleTagLayer_);
-  
+
   setContextMenuPolicy(Qt::NoContextMenu);
 
   scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);

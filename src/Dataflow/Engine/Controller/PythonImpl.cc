@@ -69,7 +69,7 @@ namespace
     {
       return port_ ? port_->isInput() : false;
     }
-    
+
     virtual void connect(const PyPort& other) const
     {
       auto otherPort = dynamic_cast<const PyPortImpl*>(&other);
@@ -93,18 +93,18 @@ namespace
     PyPortsImpl(ModuleHandle mod, bool input, NetworkEditorController& nec) : nec_(nec)
     {
       //wish:
-      //boost::push_back(ports_, 
+      //boost::push_back(ports_,
       //  (input ? mod->inputPorts() : mod->outputPorts())
       //  | boost::adaptors::transformed([&](boost::shared_ptr<PortDescriptionInterface> p) { return boost::make_shared<PyPortImpl>(p, nec_); })
       //  );
       if (input)
       {
-        BOOST_FOREACH(InputPortHandle p, mod->inputPorts())
+        for (const auto& p : mod->inputPorts())
           ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
       }
       else
       {
-        BOOST_FOREACH(OutputPortHandle p, mod->outputPorts())
+        for (const auto& p : mod->outputPorts())
           ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
       }
     }
@@ -136,7 +136,7 @@ namespace
       return ports_.size();
     }
 
-    void reset() 
+    void reset()
     {
       std::for_each(ports_.begin(), ports_.end(), [](boost::shared_ptr<PyPortImpl> p) { p->reset(); p.reset(); });
       ports_.clear();
@@ -177,7 +177,7 @@ namespace
         module_->setUiVisible(false);
     }
 
-    virtual void reset() 
+    virtual void reset()
     {
       module_.reset();
       input_->reset();
@@ -221,7 +221,7 @@ namespace
         state->setValue(apn, convert(object));
       }
     }
-    
+
     virtual std::vector<std::string> stateVars() const
     {
       if (module_)
