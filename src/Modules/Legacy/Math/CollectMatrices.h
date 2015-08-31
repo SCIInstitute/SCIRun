@@ -46,7 +46,7 @@ namespace SCIRun {
 					virtual void execute() override;
 
 					INPUT_PORT(0, Optional_BaseMatrix, Matrix);
-					INPUT_PORT(1, Submatrix, Matrix);
+					INPUT_PORT(1, SubMatrix, Matrix);
 					OUTPUT_PORT(0, CompositeMatrix, Matrix);
 
           const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
