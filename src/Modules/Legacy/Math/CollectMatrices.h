@@ -50,7 +50,8 @@ namespace SCIRun {
 					OUTPUT_PORT(0, CompositeMatrix, Matrix);
 
           const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
+        private:
+          boost::shared_ptr<class CollectMatricesImpl> impl_;
 			};
 
 }}};

@@ -36,24 +36,37 @@
 ///@date  July 2002
 
 #include <Modules/Legacy/Math/CollectMatrices.h>
-//#include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Datatypes/SparseRowMatrix.h>
-//#include <Core/Datatypes/MatrixTypeConverter.h>
-//#include <Core/Algorithms/Math/CollectMatrices/CollectMatricesAlgorithm.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Math/CollectMatrices/CollectMatricesAlgorithm.h>
 
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 
-/// @class EvaluateLinAlgGeneral
-/// @brief This module performs a user defined linear algebra operation on up to five input matrices.
+/// @class CollectMatrices
+/// @detail This module appends/replaces rows or columns of a matrix while
+/// looping through a network.
 
 const ModuleLookupInfo CollectMatrices::staticInfo_("CollectMatrices", "Math", "SCIRun");
 
-CollectMatrices::CollectMatrices() : Module(staticInfo_)
+namespace SCIRun {
+	namespace Modules {
+		namespace Math {
+class CollectMatricesImpl
+{
+public:
+  MatrixHandle matrixH_;
+  boost::shared_ptr<CollectMatricesAlgorithmBase> create_algo(MatrixHandle aH, MatrixHandle bH) const;
+};
+}}}
+
+CollectMatrices::CollectMatrices() : Module(staticInfo_), impl_(new CollectMatricesImpl)
 {
   INITIALIZE_PORT(Optional_BaseMatrix);
   INITIALIZE_PORT(SubMatrix);
@@ -62,20 +75,16 @@ CollectMatrices::CollectMatrices() : Module(staticInfo_)
 
 void CollectMatrices::setStateDefaults()
 {
-  //TODO
-}
-
-void CollectMatrices::execute()
-{
-  //TODO
+  auto state = get_state();
+  //TODO: these might need to be all 1s
+  state->setValue(Parameters::CollectAppendIndicator, 0);
+  state->setValue(Parameters::CollectRowIndicator, 0);
+  state->setValue(Parameters::CollectPrependIndicator, 0);
 }
 
 #if 0
 namespace SCIRun {
 
-/// @class CollectMatrices
-/// @detail This module appends/replaces rows or columns of a matrix while
-/// looping through a network.
 
 class CollectMatrices : public Module
 {
@@ -92,7 +101,6 @@ private:
   Algo::CollectMatricesAlgorithmBase* create_algo(MatrixHandle aH, MatrixHandle bH) const;
 };
 
-DECLARE_MAKER(CollectMatrices)
 CollectMatrices::CollectMatrices(GuiContext* ctx)
 : Module("CollectMatrices", ctx, Filter,"Math", "SCIRun"),
   append_(get_ctx()->subVar("append"), 0),
@@ -100,7 +108,7 @@ CollectMatrices::CollectMatrices(GuiContext* ctx)
   front_(get_ctx()->subVar("front"), 0)
 {
 }
-
+#endif
 
 /// @todo: match output matrix type with input type.
 void
@@ -108,41 +116,39 @@ CollectMatrices::execute()
 {
   update_state(NeedData);
 
-  MatrixHandle aH, bH;
-  get_input_handle("Optional BaseMatrix", aH, false);
+  //MatrixHandle aH, bH;
+  auto aHOpt = getOptionalInput(Optional_BaseMatrix);
+  auto bH = getRequiredInput(SubMatrix);
 
-  if (!get_input_handle("SubMatrix", bH))
-    return;
-
-  bool append = append_.get();
-  bool row = row_.get();
-  bool front = front_.get();
-
+  auto state = get_state();
+  bool append = state->getValue(Parameters::CollectAppendIndicator).toInt() != 0;
+  bool row = state->getValue(Parameters::CollectRowIndicator).toInt() != 0;
+  bool front = state->getValue(Parameters::CollectPrependIndicator).toInt() != 0;
 
   MatrixHandle omatrix;
 
   if (!append)               // Replace -- just send B matrix
   {
-    matrixH_ = bH;
-    send_output_handle("CompositeMatrix", matrixH_, true);
+    impl_->matrixH_ = bH;
+    sendOutput(CompositeMatrix, impl_->matrixH_);
     return;
   }
-  else if (!aH.get_rep())    // No A matrix
+  else if (!aHOpt || !*aHOpt)    // No A matrix
   {
-    if (!matrixH_.get_rep())
+    if (!impl_->matrixH_)
     {
       // No previous CompositeMatrix, so send B
-      matrixH_ = bH;
-      send_output_handle("CompositeMatrix", matrixH_, true);
+      impl_->matrixH_ = bH;
+      sendOutput(CompositeMatrix, impl_->matrixH_);
       return;
     }
     else
     {
-      boost::scoped_ptr<Algo::CollectMatricesAlgorithmBase> algo(create_algo(matrixH_, bH));
+      auto algo = impl_->create_algo(impl_->matrixH_, bH);
       // Previous CompositeMatrix exists, concatenate with B
       if (row)
       {
-        if (matrixH_->ncols() != bH->ncols())
+        if (impl_->matrixH_->ncols() != bH->ncols())
         {
           warning("SubMatrix and CompositeMatrix must have same number of columns");
           return;
@@ -150,14 +156,14 @@ CollectMatrices::execute()
         else
         {
           if (front)
-            omatrix = algo->concat_rows(bH,matrixH_);
+            omatrix = algo->concat_rows(bH, impl_->matrixH_);
           else
-            omatrix = algo->concat_rows(matrixH_,bH);
+            omatrix = algo->concat_rows(impl_->matrixH_, bH);
         }
       }
       else
       {
-        if (matrixH_->nrows() != bH->nrows())
+        if (impl_->matrixH_->nrows() != bH->nrows())
         {
           warning("SubMatrix and CompositeMatrix must have same number of rows");
           return;
@@ -165,16 +171,17 @@ CollectMatrices::execute()
         else
         {
           if (front)
-            omatrix = algo->concat_cols(bH,matrixH_);
+            omatrix = algo->concat_cols(bH, impl_->matrixH_);
           else
-            omatrix = algo->concat_cols(matrixH_,bH);
+            omatrix = algo->concat_cols(impl_->matrixH_, bH);
         } // columns
       } // rows - columns
     } // previous matrix exists
   }
   else
   { // A exists
-    boost::scoped_ptr<Algo::CollectMatricesAlgorithmBase> algo(create_algo(aH, bH));
+    auto aH = *aHOpt;
+    auto algo = impl_->create_algo(aH, bH);
     if (row)
     {
       if (aH->ncols() != bH->ncols())
@@ -207,14 +214,14 @@ CollectMatrices::execute()
     } // rows - columns
   } // A exists
 
-  if (omatrix.get_rep())
+  if (omatrix)
   {
-    matrixH_ = omatrix;
-    send_output_handle("CompositeMatrix", matrixH_, true);
+    impl_->matrixH_ = omatrix;
+    sendOutput(CompositeMatrix, impl_->matrixH_);
   }
 }
 
-
+#if 0
 void
 CollectMatrices::tcl_command(GuiArgs& args, void* userdata)
 {
@@ -229,14 +236,14 @@ CollectMatrices::tcl_command(GuiArgs& args, void* userdata)
   }
 }
 
-Algo::CollectMatricesAlgorithmBase*
-CollectMatrices::create_algo(MatrixHandle aH, MatrixHandle bH) const
-{
-  if (matrix_is::sparse(aH) && matrix_is::sparse(bH))
-    return new Algo::CollectSparseRowMatricesAlgorithm;
-  else
-    return new Algo::CollectDenseMatricesAlgorithm;
-}
-
 } // End namespace SCIRun
 #endif
+
+boost::shared_ptr<CollectMatricesAlgorithmBase>
+CollectMatricesImpl::create_algo(MatrixHandle aH, MatrixHandle bH) const
+{
+  if (matrix_is::sparse(aH) && matrix_is::sparse(bH))
+    return boost::make_shared<CollectSparseRowMatricesAlgorithm>();
+  else
+    return boost::make_shared<CollectDenseMatricesAlgorithm>();
+}
