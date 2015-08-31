@@ -31554,27 +31554,40 @@ void tetgenmesh::outelements(tetgenio* out)
     //   tetrahedron. Count the edge only if the tetrahedron's pointer is
     //   smaller than those of all other tetrahedra that share the edge.
     worktet.tet = tptr;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < 6; i++)
+    {
       worktet.loc = edge2locver[i][0];
       worktet.ver = edge2locver[i][1];
       adjustedgering(worktet, CW);
       spintet = worktet;
       hitbdry = 0;
-      while (hitbdry < 2) {
-        if (fnextself(spintet)) {
+      int infiniteLoopPreventer = 0;
+      const int loopMAX = 1000;
+      while (hitbdry < 2 && infiniteLoopPreventer < loopMAX)
+      {
+        infiniteLoopPreventer++;
+        if (fnextself(spintet))
+        {
           if (apex(spintet) == apex(worktet)) break;
           if (spintet.tet < worktet.tet) break;
-        } else {
+        }
+        else
+        {
           hitbdry++;
-          if (hitbdry < 2) {
+          if (hitbdry < 2)
+          {
             esym(worktet, spintet);
             fnextself(spintet); // In the same tet.
-	  }
+          }
         }
       }
-      // Count this edge if no adjacent tets are smaller than this tet.
-      if (spintet.tet >= worktet.tet) {
-        meshedges++;
+      if (infiniteLoopPreventer < loopMAX)
+      {
+        // Count this edge if no adjacent tets are smaller than this tet.
+        if (spintet.tet >= worktet.tet)
+        {
+          meshedges++;
+        }
       }
     }
     tptr = tetrahedrontraverse();
@@ -34077,12 +34090,13 @@ void tetgenmesh::qualitystatistics()
   REAL smallfaangle, bigfaangle;
   int radiustable[12];
   int aspecttable[16];
-  int dihedangletable[18];
+  const int dihedangletableLENGTH = 18;
+  int dihedangletable[dihedangletableLENGTH];
   int faceangletable[18];
   int indx[4];
   int radiusindex;
   int aspectindex;
-  int tendegree;
+  int tendegree = 0;
   int i, j;
 
   printf("Mesh quality statistics:\n\n");
@@ -34246,7 +34260,8 @@ void tetgenmesh::qualitystatistics()
         tendegree--;  // In the right column.
       }
     }
-    dihedangletable[tendegree]++;
+    if (tendegree < dihedangletableLENGTH)
+      dihedangletable[tendegree]++;
     if (bigdiangle >= 80.0 && bigdiangle < 110.0) {
       tendegree = 9; // Angles between 80 to 110 degree are in one entry.
     } else if (bigdiangle >= 170.0 && bigdiangle < 175.0) {
@@ -34261,7 +34276,8 @@ void tetgenmesh::qualitystatistics()
         tendegree--;  // In the right column.
       }
     }
-    dihedangletable[tendegree]++;
+    if (tendegree < dihedangletableLENGTH)
+      dihedangletable[tendegree]++;
 
     // Calulate the largest and smallest face angles.
     tetloop.ver = 0;
