@@ -28,13 +28,11 @@
 
 #include <Interface/Modules/Math/CollectMatricesDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Core/Algorithms/Math/AppendMatrix.h>
+#include <Core/Algorithms/Math/CollectMatrices/CollectMatricesAlgorithm.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::Math;
 
 CollectMatricesDialog::CollectMatricesDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -43,4 +41,7 @@ CollectMatricesDialog::CollectMatricesDialog(const std::string& name, ModuleStat
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  addRadioButtonGroupManager({ rowRadioButton_, columnRadioButton_ }, Parameters::CollectAppendIndicator);
+  addRadioButtonGroupManager({ appendRadioButton_, replaceRadioButton_ }, Parameters::CollectRowIndicator);
+  addRadioButtonGroupManager({ prependRadioButton_, postpendRadioButton_ }, Parameters::CollectPrependIndicator);
 }
