@@ -31,7 +31,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
-//#include <Core/Datatypes/SparseRowMatrixFromMap.h>  //TODO: remove
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
@@ -67,7 +67,8 @@ namespace Math {
       virtual Datatypes::MatrixHandle concat_rows(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const override;
     private:
       void check_args(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const;
-      //void copy_shifted_contents(SparseRowMatrix* sparse, SparseRowMatrixFromMap::Values& shiftedValues, size_type rowShift, size_type columnShift) const;
+      void copy_shifted_contents(Datatypes::SparseRowMatrixHandle sparse,
+        Datatypes::SparseRowMatrixFromMap::Values& shiftedValues, size_type rowShift, size_type columnShift) const;
     };
   }
 }

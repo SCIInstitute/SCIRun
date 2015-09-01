@@ -31,9 +31,8 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/SparseRowMatrixFromMap.h>
-//#include <Core/Datatypes/MatrixOperations.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -54,7 +53,7 @@ CollectDenseMatricesAlgorithm::concat_cols(MatrixHandle m1H, MatrixHandle m2H) c
   {
     for (index_type c = m1H->ncols(); c < m1H->ncols()+m2H->ncols(); c++)
     {
-      out->put(r, c, m2H->get(r,c - m1H->ncols()));
+      (*out)(r, c) = m2H->get(r,c - m1H->ncols());
     }
   }
   return out;
@@ -70,7 +69,7 @@ CollectDenseMatricesAlgorithm::concat_rows(MatrixHandle m1H, MatrixHandle m2H) c
   {
     for (index_type c = 0; c < m2H->ncols(); c++)
     {
-      out->put(r, c, m2H->get(r - m1H->nrows(), c));
+      (*out)(r, c) = m2H->get(r - m1H->nrows(), c);
     }
   }
   return out;
@@ -81,7 +80,7 @@ CollectDenseMatricesAlgorithm::copy_matrix(MatrixHandle mh, DenseMatrix& out) co
 {
   for (index_type r = 0; r < mh->nrows(); r++)
     for (index_type c = 0; c < mh->ncols(); c++)
-      out.put(r, c, mh->get(r,c));
+      out(r, c) = mh->get(r,c);
 }
 
 MatrixHandle
@@ -91,16 +90,14 @@ CollectSparseRowMatricesAlgorithm::concat_cols(MatrixHandle m1H, MatrixHandle m2
 
   const size_type newRows = m1H->nrows();
   const size_type newCols = m1H->ncols() + m2H->ncols();
-  throw "not implemented yet";
-  #if 0
+
   SparseRowMatrixFromMap::Values shiftedValues;
-  SparseRowMatrix* m1sparse = m1H->sparse();
-  SparseRowMatrix* m2sparse = m2H->sparse();
+  auto m1sparse = matrix_cast::as_sparse(m1H);
+  auto m2sparse = matrix_cast::as_sparse(m2H);
 
   copy_shifted_contents(m2sparse, shiftedValues, 0, m1sparse->ncols());
 
   return SparseRowMatrixFromMap::appendToSparseMatrix(newRows, newCols, *m1sparse, shiftedValues);
-  #endif
 }
 
 MatrixHandle
@@ -110,28 +107,26 @@ CollectSparseRowMatricesAlgorithm::concat_rows(MatrixHandle m1H, MatrixHandle m2
 
   const size_type newRows = m1H->nrows() + m2H->nrows();
   const size_type newCols = m1H->ncols();
-throw "not implemented yet";
-#if 0
+
   SparseRowMatrixFromMap::Values shiftedValues;
-  SparseRowMatrix* m1sparse = m1H->sparse();
-  SparseRowMatrix* m2sparse = m2H->sparse();
+  auto m1sparse = matrix_cast::as_sparse(m1H);
+  auto m2sparse = matrix_cast::as_sparse(m2H);
 
   copy_shifted_contents(m2sparse, shiftedValues, m1sparse->nrows(), 0);
 
   return SparseRowMatrixFromMap::appendToSparseMatrix(newRows, newCols, *m1sparse, shiftedValues);
-  #endif
 }
 
 void
 CollectSparseRowMatricesAlgorithm::check_args(MatrixHandle m1H, MatrixHandle m2H) const
 {
   if (!matrix_is::sparse(m1H) || !matrix_is::sparse(m2H))
-    throw std::invalid_argument("Both matrices to concatenate must be sparse.");
+    THROW_ALGORITHM_INPUT_ERROR("Both matrices to concatenate must be sparse.");
 }
 
-#if 0
 void
-CollectSparseRowMatricesAlgorithm::copy_shifted_contents(SparseRowMatrix* sparse, SparseRowMatrixFromMap::Values& shiftedValues, size_type rowShift, size_type columnShift) const
+CollectSparseRowMatricesAlgorithm::copy_shifted_contents(SparseRowMatrixHandle sparse, SparseRowMatrixFromMap::Values& shiftedValues,
+  size_type rowShift, size_type columnShift) const
 {
   index_type count = 0;
   index_type nextRow;
@@ -140,9 +135,8 @@ CollectSparseRowMatricesAlgorithm::copy_shifted_contents(SparseRowMatrix* sparse
     nextRow = sparse->get_rows()[r+1];
     while (count < nextRow)
     {
-      shiftedValues[r + rowShift][sparse->get_cols()[count] + columnShift] = sparse->get_vals()[count];
+      shiftedValues[r + rowShift][sparse->get_cols()[count] + columnShift] = sparse->valuePtr()[count];
       count++;
     }
   }
 }
-#endif
