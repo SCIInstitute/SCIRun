@@ -44,7 +44,7 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
-using namespace SCIRun::Core::Commands;
+using namespace Commands;
 using namespace SCIRun::Dataflow::Networks;
 
 bool LoadFileCommandGui::execute()
@@ -179,7 +179,7 @@ bool FileOpenCommand::execute()
       QPointF center = findCenterOfNetworkFile(*openedFile_);
       networkEditor_->centerOn(center);
 
-      GuiLogger::Instance().logInfo("File load done.");
+      GuiLogger::Instance().logInfoStd("File load done (" + filename_ + ").");
       return true;
     }
     else
@@ -193,17 +193,17 @@ bool FileOpenCommand::execute()
   catch (ExceptionBase& e)
   {
     if (!filename_.empty())
-      GuiLogger::Instance().logError("File load failed: exception in load_xml, " + QString(e.what()));
+      GuiLogger::Instance().logErrorStd("File load failed (" + filename_ + "): exception in load_xml, " + e.what());
   }
   catch (std::exception& ex)
   {
     if (!filename_.empty())
-      GuiLogger::Instance().logError("File load failed: exception in load_xml, " + QString(ex.what()));
+      GuiLogger::Instance().logErrorStd("File load failed(" + filename_ + "): exception in load_xml, " + ex.what());
   }
   catch (...)
   {
     if (!filename_.empty())
-      GuiLogger::Instance().logError("File load failed: Unknown exception in load_xml.");
+      GuiLogger::Instance().logErrorStd("File load failed(" + filename_ + "): Unknown exception in load_xml.");
   }
   return false;
 }
