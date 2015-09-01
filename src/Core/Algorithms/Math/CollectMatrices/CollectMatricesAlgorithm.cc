@@ -105,8 +105,8 @@ CollectSparseRowMatricesAlgorithm::concat_rows(MatrixHandle m1H, MatrixHandle m2
 {
   check_args(m1H, m2H);
 
-  const size_type newRows = m1H->nrows() + m2H->nrows();
-  const size_type newCols = m1H->ncols();
+  auto newRows = m1H->nrows() + m2H->nrows();
+  auto newCols = m1H->ncols();
 
   SparseRowMatrixFromMap::Values shiftedValues;
   auto m1sparse = matrix_cast::as_sparse(m1H);
@@ -126,11 +126,11 @@ CollectSparseRowMatricesAlgorithm::check_args(MatrixHandle m1H, MatrixHandle m2H
 
 void
 CollectSparseRowMatricesAlgorithm::copy_shifted_contents(SparseRowMatrixHandle sparse, SparseRowMatrixFromMap::Values& shiftedValues,
-  size_type rowShift, size_type columnShift) const
+  size_t rowShift, size_t columnShift) const
 {
-  index_type count = 0;
-  index_type nextRow;
-  for (index_type r = 0; r < sparse->nrows(); ++r)
+  size_t count = 0;
+  size_t nextRow;
+  for (size_t r = 0; r < sparse->nrows(); ++r)
   {
     nextRow = sparse->get_rows()[r+1];
     while (count < nextRow)

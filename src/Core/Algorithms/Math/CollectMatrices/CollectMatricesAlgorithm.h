@@ -68,7 +68,7 @@ namespace Math {
     private:
       void check_args(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const;
       void copy_shifted_contents(Datatypes::SparseRowMatrixHandle sparse,
-        Datatypes::SparseRowMatrixFromMap::Values& shiftedValues, size_type rowShift, size_type columnShift) const;
+        Datatypes::SparseRowMatrixFromMap::Values& shiftedValues, size_t rowShift, size_t columnShift) const;
     };
   }
 }
