@@ -32,7 +32,6 @@
 #include <Dataflow/Network/Module.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
