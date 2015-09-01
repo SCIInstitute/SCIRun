@@ -638,25 +638,33 @@ void NetworkEditorController::updateModulePositions(const ModulePositions& modul
 
 void NetworkEditorController::cleanUpNetwork()
 {
-  std::cout << "NETWORK CLEAN UP ALGO\n" << std::endl;
   auto all = boost::lambda::constant(true);
+  NetworkGraphAnalyzer analyze(*theNetwork_, all, true);
+  auto connected = analyze.connectedComponents();
+
+  std::map<int, std::map<int, std::string>> modulesByComponentAndGroup;
+
   BoostGraphParallelScheduler scheduleAll(all);
   auto order = scheduleAll.schedule(*theNetwork_);
   for (int group = order.minGroup(); group <= order.maxGroup(); ++group)
   {
     auto groupIter = order.getGroup(group);
-    std::cout << "group: " << group << std::endl;
     BOOST_FOREACH(auto g, groupIter)
     {
-      std::cout << "\t" << g.second << " -- " << g.first << std::endl;
+      modulesByComponentAndGroup[connected[g.second]][g.first] = g.second;
     }
   }
 
-  NetworkGraphAnalyzer analyze(*theNetwork_, all, true);
-  auto connected = analyze.connectedComponents();
-  std::cout << "\nCONNECTED COMPONENTS:\n" << std::endl;
-  for (const auto& comp : connected)
+  ModulePositions cleanedUp;
+  //std::cout << "COMPONENT--GROUP--MODULE MAP" << std::endl;
+  for (const auto& c : modulesByComponentAndGroup)
   {
-    std::cout << "\t" << comp.first << " : " << comp.second << std::endl;
+    for (const auto& g : c.second)
+    {
+      //std::cout << "component " << c.first << " group " << g.first << " module " << g.second << std::endl;
+      cleanedUp.modulePositions[g.second] = { c.first * 400.0, g.first * 150.0 };
+    }
   }
+
+  updateModulePositions(cleanedUp);
 }
