@@ -47,6 +47,7 @@
 #include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Interface/Modules/Math/GetMatrixSliceDialog.h>
 #include <Interface/Modules/Math/BuildNoiseColumnMatrixDialog.h>
+#include <Interface/Modules/Math/CollectMatricesDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/NetworkNotesDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
@@ -192,6 +193,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(BuildNoiseColumnMatrix, BuildNoiseColumnMatrixDialog)
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
+    ADD_MODULE_DIALOG(CollectMatrices, CollectMatricesDialog)
     ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
     ADD_MODULE_DIALOG(GenerateSinglePointProbeFromField, GenerateSinglePointProbeFromFieldDialog)
     ADD_MODULE_DIALOG(GeneratePointSamplesFromField, GeneratePointSamplesFromFieldDialog)

@@ -41,7 +41,7 @@ SET(Modules_Legacy_Math_SRCS
   #ChooseMatrix.cc
   ComputeSVD.cc
   ConvertMatrixType.cc
-  #CollectMatrices.cc
+  CollectMatrices.cc
   ReportColumnMatrixMisfit.cc
   #EvaluateLinAlgBinary.cc
   #EvaluateLinAlgUnary.cc
@@ -77,7 +77,7 @@ SET(Modules_Legacy_Math_HEADERS
   #ChooseMatrix.h
   ComputeSVD.h
   ConvertMatrixType.h
-  #CollectMatrices.h
+  CollectMatrices.h
   ReportColumnMatrixMisfit.h
   #EvaluateLinAlgBinary.h
   #EvaluateLinAlgUnary.h
