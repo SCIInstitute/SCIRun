@@ -552,9 +552,13 @@ void NetworkEditor::paste()
 
 void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
 {
-  QMenu menu(this);
-  menu.addActions(actions());
-  menu.exec(event->globalPos());
+  auto items = scene_->items(mapToScene(event->pos()));
+  if (items.isEmpty())
+  {
+    QMenu menu(this);
+    menu.addActions(actions());
+    menu.exec(event->globalPos());
+  }
 }
 
 void NetworkEditor::dropEvent(QDropEvent* event)
