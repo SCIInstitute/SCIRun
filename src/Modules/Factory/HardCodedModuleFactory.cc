@@ -36,6 +36,7 @@
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
 using namespace Factory;
@@ -103,7 +104,7 @@ void HardCodedModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFacto
   Module::defaultStateFactory_ = stateFactory_;
 }
 
-void HardCodedModuleFactory::setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory)
+void HardCodedModuleFactory::setAlgorithmFactory(AlgorithmFactoryHandle algoFactory)
 {
   Module::defaultAlgoFactory_ = algoFactory;
 }
