@@ -27,7 +27,6 @@
 */
 
 #include <Interface/Modules/Math/CollectMatricesDialog.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/Algorithms/Math/CollectMatrices/CollectMatricesAlgorithm.h>
 
 using namespace SCIRun::Gui;
@@ -41,7 +40,7 @@ CollectMatricesDialog::CollectMatricesDialog(const std::string& name, ModuleStat
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addRadioButtonGroupManager({ rowRadioButton_, columnRadioButton_ }, Parameters::CollectAppendIndicator);
-  addRadioButtonGroupManager({ appendRadioButton_, replaceRadioButton_ }, Parameters::CollectRowIndicator);
+  addRadioButtonGroupManager({ rowRadioButton_, columnRadioButton_ }, Parameters::CollectRowIndicator);
+  addRadioButtonGroupManager({ appendRadioButton_, replaceRadioButton_ }, Parameters::CollectAppendIndicator);
   addRadioButtonGroupManager({ prependRadioButton_, postpendRadioButton_ }, Parameters::CollectPrependIndicator);
 }

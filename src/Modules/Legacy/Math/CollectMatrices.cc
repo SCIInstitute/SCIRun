@@ -116,15 +116,14 @@ CollectMatrices::execute()
 {
   update_state(NeedData);
 
-  //MatrixHandle aH, bH;
   auto aHOpt = getOptionalInput(Optional_BaseMatrix);
   auto bH = getRequiredInput(SubMatrix);
 
   auto state = get_state();
-  bool append = state->getValue(Parameters::CollectAppendIndicator).toInt() != 0;
-  bool row = state->getValue(Parameters::CollectRowIndicator).toInt() != 0;
-  bool front = state->getValue(Parameters::CollectPrependIndicator).toInt() != 0;
-
+  bool append = state->getValue(Parameters::CollectAppendIndicator).toInt() == 0;
+  bool row = state->getValue(Parameters::CollectRowIndicator).toInt() == 0;
+  bool front = state->getValue(Parameters::CollectPrependIndicator).toInt() == 0;
+  
   MatrixHandle omatrix;
 
   if (!append)               // Replace -- just send B matrix
