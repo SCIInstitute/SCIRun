@@ -28,6 +28,7 @@
 
 SET(Modules_Factory_Tests_SRCS
   ModuleReplaceBuilderTests.cc
+  FactoryGeneratorTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Factory_Tests
@@ -35,11 +36,8 @@ SCIRUN_ADD_UNIT_TEST(Modules_Factory_Tests
 )
 
 TARGET_LINK_LIBRARIES(Modules_Factory_Tests
-  #Modules_Fields
   Modules_Factory
-  #Core_Datatypes
   Dataflow_Network
-  #Dataflow_State
   Engine_Network
   Testing_Utils
   Testing_ModuleTestBase
