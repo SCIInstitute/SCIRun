@@ -70,13 +70,6 @@ TEST(FactoryGeneratorTests, GenerateSomeJsonFromModuleProperties)
     std::string json = buf.str(); // {"foo":"bar"}
     std::cout << json << std::endl;
 
-    // Read json.
-    /*ptree pt2;
-    std::istringstream is(json);
-    read_json(is, pt2);
-    std::string foo = pt2.get<std::string>("foo");
-*/
-
 
 
     if (i > 3)
@@ -84,29 +77,52 @@ TEST(FactoryGeneratorTests, GenerateSomeJsonFromModuleProperties)
   }
 
 
-  FAIL() << "foo";
+  //FAIL() << "foo";
 }
 
 TEST(FactoryGeneratorTests, ReadFullModuleJsonDescription)
 {
   std::string moduleJson =
-    "{"
-    "\"module\": {"
-    "\"name\": \"CreateLatVol\","
-    "\"namespace\" : \"Fields\","
-    "\"status\" : \"Ported module\","
-    "\"description\" : \"Creates Lattice Volumes\","
-    "\"header\" : \"Modules/Legacy/Fields/CreateLatVol.h\""
-    "}"
-    "\"algorithm\": {"
-    "\"name\": \"CreateLatVolAlgo\","
-    "\"namespace\" : \"Fields\","
-    "\"header\" : \"Core/Algorithms/Legacy/Fields/CreateLatVolAlgo.h\""
-    "}"
-    "\"UI\" : {"
-    "\"name\": \"CreateLatVolDialog\","
-    "\"header\" : \"Interface/Modules/Fields/CreateLatVolDialog.h\""
-    "}"
-    "}";
+    "{\n"
+    "\t\"module\": {\n"
+    "\t\t\"name\": \"CreateLatVol\",\n"
+    "\t\t\"namespace\" : \"Fields\",\n"
+    "\t\t\"status\" : \"Ported module\",\n"
+    "\t\t\"description\" : \"Creates Lattice Volumes\",\n"
+    "\t\t\"header\" : \"Modules/Legacy/Fields/CreateLatVol.h\"\n"
+    "\t},\n"
+    "\t\"algorithm\": {\n"
+    "\t\t\"name\": \"CreateLatVolAlgo\",\n"
+    "\t\t\"namespace\" : \"Fields\",\n"
+    "\t\t\"header\" : \"Core/Algorithms/Legacy/Fields/CreateLatVolAlgo.h\"\n"
+    "\t},\n"
+    "\t\"UI\" : {\n"
+    "\t\t\"name\": \"CreateLatVolDialog\",\n"
+    "\t\t\"header\" : \"Interface/Modules/Fields/CreateLatVolDialog.h\"\n"
+    "\t}\n"
+    "}\n";
 
+  std::cout << moduleJson << std::endl;
+
+
+  ptree modProps;
+  std::istringstream is(moduleJson);
+  read_json(is, modProps);
+
+  EXPECT_EQ("CreateLatVol", modProps.get<std::string>("module.name"));
+  EXPECT_EQ("Fields", modProps.get<std::string>("module.namespace"));
+  EXPECT_EQ("Ported module", modProps.get<std::string>("module.status"));
+  EXPECT_EQ("Creates Lattice Volumes", modProps.get<std::string>("module.description"));
+  EXPECT_EQ("Modules/Legacy/Fields/CreateLatVol.h", modProps.get<std::string>("module.header"));
+
+  EXPECT_EQ("CreateLatVolAlgo", modProps.get<std::string>("algorithm.name"));
+  EXPECT_EQ("Fields", modProps.get<std::string>("algorithm.namespace"));
+  EXPECT_EQ("Core/Algorithms/Legacy/Fields/CreateLatVolAlgo.h", modProps.get<std::string>("algorithm.header"));
+
+  EXPECT_EQ("CreateLatVolDialog", modProps.get<std::string>("UI.name"));
+  EXPECT_EQ("Interface/Modules/Fields/CreateLatVolDialog.h", modProps.get<std::string>("UI.header"));
+
+  EXPECT_THROW(modProps.get<std::string>("UI.namespace"), std::exception);
+
+  //FAIL() << "json";
 }
