@@ -126,3 +126,15 @@ TEST(FactoryGeneratorTests, ReadFullModuleJsonDescription)
 
   //FAIL() << "json";
 }
+
+/*
+Steps:
+1. CMake flag for "build module list" is turned on
+2. CMake gets path to .module descriptor files, and passes it to C++ program
+3. C++ program receives path and iterates over all .module files
+4. For each json.module, call read code above and construct a map of structures (worry about lookup efficiency later)
+5. Loop over map of module desc structures and generate code lines
+6. Output of C++ code is ModuleFactory_Generated.cc file with one generated method, to be called by existing C++ factory impl
+7. Once that's working, extend to generate Algo and Dialog factory functions as well
+8. Then start converting old HardCodedModuleFactory lines to new way. Write some python code for this
+*/
