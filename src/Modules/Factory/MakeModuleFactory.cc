@@ -26,13 +26,13 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-// A simple program that builds a sqrt table 
+// A simple program that builds a sqrt table
 #include <cstdio>
 #include <cmath>
 #include <string>
 #include <Modules/Factory/MakeModuleFactory.h>
 
-int SCIRun::Modules::Factory::MakeModuleFactory(const std::string& filename)
+int SCIRun::Modules::Factory::MakeSquareRootTableForTesting(const std::string& filename)
 {
   // open the output file
   FILE *fout = fopen(filename.c_str(), "w");
@@ -43,7 +43,7 @@ int SCIRun::Modules::Factory::MakeModuleFactory(const std::string& filename)
 
   // create a source file with a table of square roots
   fprintf(fout, "double sqrtTable[] = {\n");
-  for (int i = 0; i < 49; ++i)
+  for (int i = 0; i < 26; ++i)
   {
     double result = sqrt(static_cast<double>(i));
     fprintf(fout, "%g,\n", result);
@@ -63,5 +63,5 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  return SCIRun::Modules::Factory::MakeModuleFactory(argv[1]);
+  return SCIRun::Modules::Factory::MakeSquareRootTableForTesting(argv[1]);
 }

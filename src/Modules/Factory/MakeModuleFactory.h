@@ -29,13 +29,29 @@
 #ifndef MAKE_MODULE_FACTORY_H
 #define MAKE_MODULE_FACTORY_H
 
+#include <map>
+#include <vector>
+#include <string>
 #include <Modules/Factory/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Factory {
 
-      SCISHARE int MakeModuleFactory(const std::string& filename);
+      SCISHARE int MakeSquareRootTableForTesting(const std::string& filename);
+
+      SCISHARE std::vector<std::string> GetListOfModuleDescriptorFiles(const std::string& descriptorPath);
+
+      struct SCISHARE ModuleDescriptor
+      {
+        std::string name_, namespace_, status_, description_, header_;
+      };
+
+      typedef std::map<std::string, ModuleDescriptor> ModuleDescriptorMap;
+
+      SCISHARE ModuleDescriptorMap BuildModuleDescriptorMap(const std::vector<std::string>& descriptorFiles);
+
+      SCISHARE std::string GenerateCodeFile(const ModuleDescriptorMap& descriptors);
     }
   }
 }
