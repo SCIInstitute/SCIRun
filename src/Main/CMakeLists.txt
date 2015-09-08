@@ -120,6 +120,7 @@ IF(APPLE AND BUILD_BUNDLE)
       POST_BUILD
        # configure Qt libs
        # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
+       COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCIRun_BINARY_DIR}/lib ${APPLICATION_NAME}.app/Contents/Frameworks
        COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
        COMMAND ${CMAKE_COMMAND} ARGS -E copy ${SCIRun_SOURCE_DIR}/CMake/qt.conf ${APPLICATION_NAME}.app/Contents/Resources
        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
