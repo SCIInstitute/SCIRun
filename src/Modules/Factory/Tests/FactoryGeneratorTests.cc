@@ -172,9 +172,9 @@ TEST(FactoryGeneratorTests, CanReadDirectoryOfDescriptorFiles)
   auto files = GetListOfModuleDescriptorFiles(path.string());
 
   EXPECT_THAT(files, ElementsAre(
-    (path / "CreateLatVol.module").string()),
+    (path / "CreateLatVol.module").string(),
     (path / "test1.module").string(), 
-    (path / "test2.module").string());
+    (path / "test2.module").string()));
 }
 
 TEST(FactoryGeneratorTests, CanBuildModuleDescriptorFromString)
