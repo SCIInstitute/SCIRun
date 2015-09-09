@@ -200,5 +200,6 @@ std::vector<std::string> Generator::GetListOfModuleDescriptorFiles(const std::st
   catch (const filesystem_error&)
   {
   }
+  std::sort(files.begin(), files.end());
   return files;
 }
