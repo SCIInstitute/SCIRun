@@ -33,6 +33,7 @@
 #include <map>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 using boost::property_tree::ptree;
 using boost::property_tree::read_json;
@@ -46,6 +47,8 @@ using namespace Dataflow::Networks;
 using namespace ReplacementImpl;
 using namespace Dataflow::Engine;
 using namespace Core::Algorithms;
+using namespace TestUtils;
+using namespace ::testing;
 
 
 TEST(FactoryGeneratorTests, GenerateSomeJsonFromModuleProperties)
@@ -164,10 +167,14 @@ Steps:
 
 TEST(FactoryGeneratorTests, CanReadDirectoryOfDescriptorFiles)
 {
-  
+  auto path = TestResources::rootDir() / "Other" / "Factory" / "Config";
 
+  auto files = GetListOfModuleDescriptorFiles(path.string());
 
-  FAIL() << "todo";
+  EXPECT_THAT(files, ElementsAre(
+    (path / "test1.module").string(), 
+    (path / "test2.module").string(),
+    (path / "CreateLatVol.module").string()));
 }
 
 TEST(FactoryGeneratorTests, CanBuildModuleDescriptorFromString)

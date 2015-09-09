@@ -35,8 +35,14 @@
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
+
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/filesystem/operations.hpp>
+
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Modules::Factory::Generator;
 using namespace SCIRun::Core::Algorithms;
@@ -171,4 +177,28 @@ ModuleDescriptor ModuleDescriptorJsonParser::readJsonString(const std::string& j
     modProps.get<std::string>("module.description"),
     modProps.get<std::string>("module.header")
   };
+}
+
+std::vector<std::string> Generator::GetListOfModuleDescriptorFiles(const std::string& path)
+{
+  using namespace boost::filesystem;
+  std::vector<std::string> files;
+  try
+  {
+    if (exists(path))
+    {
+      if (is_directory(path))
+      {
+        BOOST_FOREACH(const auto& file, std::make_pair(directory_iterator(path), directory_iterator()))
+        {
+          if (file.path().extension() == ".module")
+            files.push_back(file.path().string());
+        }
+      }
+    }
+  }
+  catch (const filesystem_error&)
+  {
+  }
+  return files;
 }
