@@ -41,6 +41,7 @@ using boost::property_tree::write_json;
 using namespace SCIRun;
 using namespace Testing;
 using namespace Modules::Factory;
+using namespace Generator;
 using namespace Dataflow::Networks;
 using namespace ReplacementImpl;
 using namespace Dataflow::Engine;
@@ -75,12 +76,9 @@ TEST(FactoryGeneratorTests, GenerateSomeJsonFromModuleProperties)
     if (i > 3)
       break;
   }
-
-
-  //FAIL() << "foo";
 }
 
-TEST(FactoryGeneratorTests, ReadFullModuleJsonDescription)
+namespace
 {
   std::string moduleJson =
     "{\n"
@@ -101,9 +99,11 @@ TEST(FactoryGeneratorTests, ReadFullModuleJsonDescription)
     "\t\t\"header\" : \"Interface/Modules/Fields/CreateLatVolDialog.h\"\n"
     "\t}\n"
     "}\n";
+}
 
+TEST(FactoryGeneratorTests, ReadFullModuleJsonDescription)
+{
   std::cout << moduleJson << std::endl;
-
 
   ptree modProps;
   std::istringstream is(moduleJson);
@@ -123,8 +123,31 @@ TEST(FactoryGeneratorTests, ReadFullModuleJsonDescription)
   EXPECT_EQ("Interface/Modules/Fields/CreateLatVolDialog.h", modProps.get<std::string>("UI.header"));
 
   EXPECT_THROW(modProps.get<std::string>("UI.namespace"), std::exception);
+}
 
-  //FAIL() << "json";
+TEST(FactoryGeneratorTests, ReadFullModuleJsonDescriptionUsingObject)
+{
+  std::cout << moduleJson << std::endl;
+
+  ModuleDescriptorJsonParser parser;
+
+  auto desc = parser.readJsonString(moduleJson);
+  
+  EXPECT_EQ("CreateLatVol", desc.name_);
+  EXPECT_EQ("Fields", desc.namespace_);
+  EXPECT_EQ("Ported module", desc.status_);
+  EXPECT_EQ("Creates Lattice Volumes", desc.description_);
+  EXPECT_EQ("Modules/Legacy/Fields/CreateLatVol.h", desc.header_);
+
+  //TODO
+  //EXPECT_EQ("CreateLatVolAlgo", modProps.get<std::string>("algorithm.name"));
+  //EXPECT_EQ("Fields", modProps.get<std::string>("algorithm.namespace"));
+  //EXPECT_EQ("Core/Algorithms/Legacy/Fields/CreateLatVolAlgo.h", modProps.get<std::string>("algorithm.header"));
+
+  //EXPECT_EQ("CreateLatVolDialog", modProps.get<std::string>("UI.name"));
+  //EXPECT_EQ("Interface/Modules/Fields/CreateLatVolDialog.h", modProps.get<std::string>("UI.header"));
+
+  //EXPECT_THROW(modProps.get<std::string>("UI.namespace"), std::exception);
 }
 
 /*
@@ -138,3 +161,35 @@ Steps:
 7. Once that's working, extend to generate Algo and Dialog factory functions as well
 8. Then start converting old HardCodedModuleFactory lines to new way. Write some python code for this
 */
+
+TEST(FactoryGeneratorTests, CanReadDirectoryOfDescriptorFiles)
+{
+  
+
+
+  FAIL() << "todo";
+}
+
+TEST(FactoryGeneratorTests, CanBuildModuleDescriptorFromString)
+{
+
+
+
+  FAIL() << "todo";
+}
+
+TEST(FactoryGeneratorTests, CanBuildModuleDescriptorFromFile)
+{
+
+
+
+  FAIL() << "todo";
+}
+
+TEST(FactoryGeneratorTests, CanGenerateCodeFileFromMap)
+{
+
+
+
+  FAIL() << "todo";
+}

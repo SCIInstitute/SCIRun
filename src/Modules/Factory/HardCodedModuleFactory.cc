@@ -35,7 +35,10 @@
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
+using namespace SCIRun::Modules::Factory::Generator;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -150,4 +153,22 @@ const ModuleDescriptionMap& HardCodedModuleFactory::getAllAvailableModuleDescrip
 const DirectModuleDescriptionLookupMap& HardCodedModuleFactory::getDirectModuleDescriptionLookupMap() const
 {
   return impl_->lookup.lookup_;
+}
+
+ModuleDescriptor ModuleDescriptorJsonParser::readJsonString(const std::string& json) const
+{
+  using boost::property_tree::ptree;
+  using boost::property_tree::read_json;
+  using boost::property_tree::write_json;
+  ptree modProps;
+  std::istringstream is(json);
+  read_json(is, modProps);
+
+  return{
+    modProps.get<std::string>("module.name"),
+    modProps.get<std::string>("module.namespace"),
+    modProps.get<std::string>("module.status"),
+    modProps.get<std::string>("module.description"),
+    modProps.get<std::string>("module.header")
+  };
 }

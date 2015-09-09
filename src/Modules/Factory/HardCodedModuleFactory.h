@@ -54,6 +54,28 @@ namespace SCIRun {
         Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
         boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;
       };
+
+      namespace Generator
+      {
+        SCISHARE std::vector<std::string> GetListOfModuleDescriptorFiles(const std::string& descriptorPath);
+
+        struct SCISHARE ModuleDescriptor
+        {
+          std::string name_, namespace_, status_, description_, header_;
+        };
+
+        class SCISHARE ModuleDescriptorJsonParser
+        {
+        public:
+          ModuleDescriptor readJsonString(const std::string& json) const;
+        };
+
+        typedef std::map<std::string, ModuleDescriptor> ModuleDescriptorMap;
+
+        SCISHARE ModuleDescriptorMap BuildModuleDescriptorMap(const std::vector<std::string>& descriptorFiles);
+
+        SCISHARE std::string GenerateCodeFile(const ModuleDescriptorMap& descriptors);
+      }
     }
   }
 }
