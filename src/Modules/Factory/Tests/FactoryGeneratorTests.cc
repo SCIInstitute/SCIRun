@@ -135,7 +135,7 @@ TEST(FactoryGeneratorTests, ReadFullModuleJsonDescriptionUsingObject)
   ModuleDescriptorJsonParser parser;
 
   auto desc = parser.readJsonString(moduleJson);
-  
+
   EXPECT_EQ("CreateLatVol", desc.name_);
   EXPECT_EQ("Fields", desc.namespace_);
   EXPECT_EQ("Ported module", desc.status_);
@@ -173,24 +173,53 @@ TEST(FactoryGeneratorTests, CanReadDirectoryOfDescriptorFiles)
 
   EXPECT_THAT(files, ElementsAre(
     (path / "CreateLatVol.module").string(),
-    (path / "test1.module").string(), 
+    (path / "test1.module").string(),
     (path / "test2.module").string()));
 }
 
 TEST(FactoryGeneratorTests, CanBuildModuleDescriptorFromString)
 {
+  ModuleDescriptorJsonParser parser;
 
+  auto desc = parser.readJsonString(moduleJson);
 
-
-  FAIL() << "todo";
+  EXPECT_EQ("CreateLatVol", desc.name_);
+  EXPECT_EQ("Fields", desc.namespace_);
+  EXPECT_EQ("Ported module", desc.status_);
+  EXPECT_EQ("Creates Lattice Volumes", desc.description_);
+  EXPECT_EQ("Modules/Legacy/Fields/CreateLatVol.h", desc.header_);
 }
 
 TEST(FactoryGeneratorTests, CanBuildModuleDescriptorFromFile)
 {
+  auto realJson = TestResources::rootDir() / "Other" / "Factory" / "Config" / "CreateLatVol.module";
 
+  auto desc = MakeDescriptorFromFile(realJson.string());
 
+  EXPECT_EQ("CreateLatVol", desc.name_);
+  EXPECT_EQ("Fields", desc.namespace_);
+  EXPECT_EQ("Ported module", desc.status_);
+  EXPECT_EQ("Creates Lattice Volumes", desc.description_);
+  EXPECT_EQ("Modules/Legacy/Fields/CreateLatVol.h", desc.header_);
+}
 
-  FAIL() << "todo";
+TEST(FactoryGeneratorTests, CanGenerateMapFromFileList)
+{
+  auto path = TestResources::rootDir() / "Other" / "Factory" / "Config" / "Real";
+
+  auto files = GetListOfModuleDescriptorFiles(path.string());
+
+  auto map = BuildModuleDescriptorMap(files);
+
+  ASSERT_EQ(1, map.size());
+  auto el = *map.begin();
+  EXPECT_EQ("CreateLatVol", el.first);
+  auto desc = el.second;
+  EXPECT_EQ("CreateLatVol", desc.name_);
+  EXPECT_EQ("Fields", desc.namespace_);
+  EXPECT_EQ("Ported module", desc.status_);
+  EXPECT_EQ("Creates Lattice Volumes", desc.description_);
+  EXPECT_EQ("Modules/Legacy/Fields/CreateLatVol.h", desc.header_);
 }
 
 TEST(FactoryGeneratorTests, CanGenerateCodeFileFromMap)

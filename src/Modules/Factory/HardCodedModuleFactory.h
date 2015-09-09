@@ -70,6 +70,8 @@ namespace SCIRun {
           ModuleDescriptor readJsonString(const std::string& json) const;
         };
 
+        SCISHARE ModuleDescriptor MakeDescriptorFromFile(const std::string& filename);
+
         typedef std::map<std::string, ModuleDescriptor> ModuleDescriptorMap;
 
         SCISHARE ModuleDescriptorMap BuildModuleDescriptorMap(const std::vector<std::string>& descriptorFiles);

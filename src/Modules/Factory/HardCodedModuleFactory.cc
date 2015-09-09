@@ -203,3 +203,31 @@ std::vector<std::string> Generator::GetListOfModuleDescriptorFiles(const std::st
   std::sort(files.begin(), files.end());
   return files;
 }
+
+ModuleDescriptor Generator::MakeDescriptorFromFile(const std::string& filename)
+{
+  if (!boost::filesystem::exists(filename))
+    throw "file does not exist";
+  std::ifstream in(filename);
+  //TODO forgot how to read an entire file to string
+  std::string line;
+  std::ostringstream ostr;
+  while (std::getline(in,line,'\n'))
+  {
+    ostr << line << '\n';
+  }
+
+  ModuleDescriptorJsonParser parser;
+  return parser.readJsonString(ostr.str());
+}
+
+ModuleDescriptorMap Generator::BuildModuleDescriptorMap(const std::vector<std::string>& descriptorFiles)
+{
+  ModuleDescriptorMap mdm;
+  for (const auto& file : descriptorFiles)
+  {
+    auto desc = MakeDescriptorFromFile(file);
+    mdm[desc.name_] = desc;
+  }
+  return mdm;
+}
