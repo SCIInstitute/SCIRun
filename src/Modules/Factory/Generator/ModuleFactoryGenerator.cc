@@ -40,27 +40,31 @@
 
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Factory::Generator;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Modules;
-//using namespace Factory;
 
 ModuleDescriptor ModuleDescriptorJsonParser::readJsonString(const std::string& json) const
 {
-  using boost::property_tree::ptree;
-  using boost::property_tree::read_json;
-  using boost::property_tree::write_json;
-  ptree modProps;
-  std::istringstream is(json);
-  read_json(is, modProps);
+  try
+  {
+    using boost::property_tree::ptree;
+    using boost::property_tree::read_json;
+    using boost::property_tree::write_json;
+    ptree modProps;
+    std::istringstream is(json);
+    read_json(is, modProps);
 
-  return{
-    modProps.get<std::string>("module.name"),
-    modProps.get<std::string>("module.namespace"),
-    modProps.get<std::string>("module.status"),
-    modProps.get<std::string>("module.description"),
-    modProps.get<std::string>("module.header")
-  };
+    return{
+      modProps.get<std::string>("module.name"),
+      modProps.get<std::string>("module.namespace"),
+      modProps.get<std::string>("module.status"),
+      modProps.get<std::string>("module.description"),
+      modProps.get<std::string>("module.header")
+    };
+  }
+  catch (...)
+  {
+    std::cerr << "ModuleDescriptorJsonParser failed:\n" << json << std::endl;
+    return {};
+  }
 }
 
 std::vector<std::string> Generator::GetListOfModuleDescriptorFiles(const std::string& path)
@@ -91,7 +95,7 @@ std::vector<std::string> Generator::GetListOfModuleDescriptorFiles(const std::st
 ModuleDescriptor Generator::MakeDescriptorFromFile(const std::string& filename)
 {
   if (!boost::filesystem::exists(filename))
-    throw "file does not exist";
+    return {};
   std::ifstream in(filename);
   std::string str((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
   ModuleDescriptorJsonParser parser;
@@ -167,8 +171,13 @@ std::string Generator::GenerateCodeFileFromDescriptorPath(const std::string& des
 
 std::string Generator::GenerateCodeFileFromSourcePath(const std::string& sourcePath)
 {
-  boost::filesystem::path base(sourcePath);
-  auto files = GetListOfModuleDescriptorFiles((base / "Modules" / "Factory" / "Config").string());
+  boost::filesystem::path base(sourcePath); // should be src/Modules/Factory
+  //std::cout << "__GENERATOR__ " << base << std::endl;
+  auto configPath = base / "Config";
+  //std::cout << "__GENERATOR__ " << configPath << std::endl;
+  auto files = GetListOfModuleDescriptorFiles(configPath.string());
+  //std::cout << "__GENERATOR__ " << files.size() << std::endl;
   auto map = BuildModuleDescriptorMap(files);
+  //std::cout << "__GENERATOR__ " << map.size() << std::endl;
   return GenerateCodeFileFromMap(map);
 }

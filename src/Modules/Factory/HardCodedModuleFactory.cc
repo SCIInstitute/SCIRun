@@ -64,7 +64,7 @@ ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(fals
 
   addBrainSpecificModules();
   addMoreModules();
-  //addGeneratedModules();
+  addGeneratedModules();
 }
 
 
