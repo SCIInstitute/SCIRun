@@ -32,6 +32,7 @@ DEALINGS IN THE SOFTWARE.
 #include <string>
 #include <Modules/Factory/MakeModuleFactory.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
+#include <fstream>
 
 int SCIRun::Modules::Factory::MakeSquareRootTableForTesting(const std::string& filename)
 {
@@ -58,8 +59,7 @@ int SCIRun::Modules::Factory::MakeSquareRootTableForTesting(const std::string& f
 
 int SCIRun::Modules::Factory::MakeGeneratedModuleFactoryCode(const std::string& sourcePath, const std::string& generatedFilename)
 {
-  boost::filesystem::path base(sourcePath);
-  auto code = GenerateCodeFileFromDescriptorPath((base / "Modules" / "Factory" / "Config").string());
+  auto code = SCIRun::Modules::Factory::Generator::GenerateCodeFileFromSourcePath(sourcePath);
   std::ofstream out(generatedFilename);
   out << code;
   return 0;

@@ -94,6 +94,8 @@ namespace SCIRun {
         SCISHARE std::string GenerateCodeFileFromMap(const ModuleDescriptorMap& descriptors);
 
         SCISHARE std::string GenerateCodeFileFromDescriptorPath(const std::string& descriptorPath);
+
+        SCISHARE std::string GenerateCodeFileFromSourcePath(const std::string& srcPath);
       }
     }
   }

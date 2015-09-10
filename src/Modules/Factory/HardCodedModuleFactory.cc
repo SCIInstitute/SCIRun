@@ -281,3 +281,11 @@ std::string Generator::GenerateCodeFileFromDescriptorPath(const std::string& des
   auto map = BuildModuleDescriptorMap(files);
   return GenerateCodeFileFromMap(map);
 }
+
+std::string Generator::GenerateCodeFileFromSourcePath(const std::string& descriptorPath)
+{
+  boost::filesystem::path base(sourcePath);
+  auto files = GetListOfModuleDescriptorFiles((base / "Modules" / "Factory" / "Config").string());
+  auto map = BuildModuleDescriptorMap(files);
+  return GenerateCodeFileFromMap(map);
+}
