@@ -26,9 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
-#include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Modules/Factory/Generator/ModuleFactoryGenerator.h>
 #include <sstream>
 #include <map>
 #include <boost/property_tree/ptree.hpp>
@@ -40,13 +39,8 @@ using boost::property_tree::read_json;
 using boost::property_tree::write_json;
 
 using namespace SCIRun;
-using namespace Testing;
 using namespace Modules::Factory;
 using namespace Generator;
-using namespace Dataflow::Networks;
-using namespace ReplacementImpl;
-using namespace Dataflow::Engine;
-using namespace Core::Algorithms;
 using namespace TestUtils;
 using namespace ::testing;
 

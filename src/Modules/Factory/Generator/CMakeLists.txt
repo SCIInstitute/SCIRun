@@ -26,23 +26,41 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_Factory_Tests_SRCS
-  ModuleReplaceBuilderTests.cc
-  FactoryGeneratorTests.cc
+SET(Modules_Factory_Generator_SRCS
+  ModuleFactoryGenerator.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Modules_Factory_Tests
-  ${Modules_Factory_Tests_SRCS}
+SET(Modules_Factory_Generator_HEADERS
+  ModuleFactoryGenerator.h
+  share.h
 )
 
-TARGET_LINK_LIBRARIES(Modules_Factory_Tests
-  Modules_Factory
-  Modules_Factory_Generator
-  Dataflow_Network
-  Engine_Network
-  Testing_Utils
-  Testing_ModuleTestBase
-  gtest_main
-  gtest
-  gmock
+SCIRUN_ADD_LIBRARY(Modules_Factory_Generator
+  ${Modules_Factory_Generator_HEADERS}
+  ${Modules_Factory_Generator_SRCS}
 )
+
+TARGET_LINK_LIBRARIES(Modules_Factory_Generator
+  ${SCI_BOOST_LIBRARY}
+)
+
+OPTION(GENERATE_MODULE_FACTORY_CODE "Generate module factory code from config files" ON)
+MARK_AS_ADVANCED(GENERATE_MODULE_FACTORY_CODE)
+
+#IF(GENERATE_MODULE_FACTORY_CODE)
+
+# first we add the executable that generates the table
+#add_executable(MakeModuleFactory MakeModuleFactory.h MakeModuleFactory.cc)
+#SET_PROPERTY(TARGET MakeModuleFactory   PROPERTY FOLDER "Modules")
+
+# add the command to generate the source code
+#add_custom_command (
+#  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ModuleFactoryImpl_Generated.cc
+#  COMMAND MakeModuleFactory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/ModuleFactoryImpl_Generated.cc
+#  DEPENDS MakeModuleFactory
+#  )
+
+# add the main library
+#SET(ModuleFactoryImpl_Generated ${CMAKE_CURRENT_BINARY_DIR}/ModuleFactoryImpl_Generated.cc)
+
+#ENDIF(GENERATE_MODULE_FACTORY_CODE)

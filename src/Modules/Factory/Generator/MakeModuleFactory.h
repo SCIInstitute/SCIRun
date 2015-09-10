@@ -30,7 +30,7 @@
 #define MAKE_MODULE_FACTORY_H
 
 #include <string>
-#include <Modules/Factory/share.h>
+#include <Modules/Factory/Generator/share.h>
 
 namespace SCIRun {
   namespace Modules {

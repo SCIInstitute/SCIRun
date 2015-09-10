@@ -30,8 +30,8 @@ DEALINGS IN THE SOFTWARE.
 #include <cstdio>
 #include <cmath>
 #include <string>
-#include <Modules/Factory/MakeModuleFactory.h>
-#include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Modules/Factory/Generator/MakeModuleFactory.h>
+#include <Modules/Factory/Generator/ModuleFactoryGenerator.h>
 #include <fstream>
 
 int SCIRun::Modules::Factory::MakeSquareRootTableForTesting(const std::string& filename)
