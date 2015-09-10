@@ -222,10 +222,39 @@ TEST(FactoryGeneratorTests, CanGenerateMapFromFileList)
   EXPECT_EQ("Modules/Legacy/Fields/CreateLatVol.h", desc.header_);
 }
 
+////// FORMAT
+/*
+
+#include <Modules/Factory/ModuleDescriptionLookup.h>
+#include <[includes...]>
+
+using namespace SCIRun::Modules::Factory;
+using namespace [namespaces...]
+
+void ModuleDescriptionLookup::addGeneratedModules()
+{
+  [addModuleDesc<ModuleName>("Status", "Description")];
+  ...
+}
+
+*/
+
 TEST(FactoryGeneratorTests, CanGenerateCodeFileFromMap)
 {
+  auto path = TestResources::rootDir() / "Other" / "Factory" / "Config" / "Real";
+  auto files = GetListOfModuleDescriptorFiles(path.string());
+  auto map = BuildModuleDescriptorMap(files);
 
+/*
+  ModuleFactoryCodeBuilder builder(map);
 
+  builder.start();
 
+  auto partial = builder.build();
+
+  std::string firstPart = "...";
+
+  ASSERT_EQ(firstPart, partial);
+*/
   FAIL() << "todo";
 }

@@ -73,6 +73,7 @@ ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(fals
 
   addBrainSpecificModules();
   addMoreModules();
+  //addGeneratedModules();
 }
 
 
@@ -209,16 +210,9 @@ ModuleDescriptor Generator::MakeDescriptorFromFile(const std::string& filename)
   if (!boost::filesystem::exists(filename))
     throw "file does not exist";
   std::ifstream in(filename);
-  //TODO forgot how to read an entire file to string
-  std::string line;
-  std::ostringstream ostr;
-  while (std::getline(in,line,'\n'))
-  {
-    ostr << line << '\n';
-  }
-
+  std::string str((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
   ModuleDescriptorJsonParser parser;
-  return parser.readJsonString(ostr.str());
+  return parser.readJsonString(str);
 }
 
 ModuleDescriptorMap Generator::BuildModuleDescriptorMap(const std::vector<std::string>& descriptorFiles)

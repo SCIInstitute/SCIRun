@@ -76,6 +76,19 @@ namespace SCIRun {
 
         SCISHARE ModuleDescriptorMap BuildModuleDescriptorMap(const std::vector<std::string>& descriptorFiles);
 
+        class SCISHARE ModuleFactoryCodeBuilder
+        {
+        public:
+          explicit ModuleFactoryCodeBuilder(const ModuleDescriptorMap& descriptors);
+          void start();
+          void addIncludes();
+          void addNamespaces();
+          void addDescriptionInserters();
+          std::string build();
+        private:
+          ModuleDescriptorMap descMap_;
+        };
+
         SCISHARE std::string GenerateCodeFile(const ModuleDescriptorMap& descriptors);
       }
     }
