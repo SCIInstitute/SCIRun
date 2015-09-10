@@ -117,7 +117,7 @@ ModuleFactoryCodeBuilder::ModuleFactoryCodeBuilder(const ModuleDescriptorMap& de
 
 void ModuleFactoryCodeBuilder::start()
 {
-  buffer_ << "#include <Modules/Factory/ModuleDescriptionLookup.h>\n";
+  buffer_ << "#include <Modules/Factory/ModuleDescriptionLookup.h>\n\n";
 }
 
 void ModuleFactoryCodeBuilder::addIncludes()
@@ -130,7 +130,7 @@ void ModuleFactoryCodeBuilder::addIncludes()
 
 void ModuleFactoryCodeBuilder::addNamespaces()
 {
-  buffer_ << "using namespace SCIRun::Modules::Factory;\n";
+  buffer_ << "\nusing namespace SCIRun::Modules::Factory;\n";
   for (const auto& desc : descMap_)
   {
     buffer_ << "using namespace SCIRun::Modules::" << desc.second.namespace_ << ";\n";
@@ -139,7 +139,7 @@ void ModuleFactoryCodeBuilder::addNamespaces()
 
 void ModuleFactoryCodeBuilder::addDescriptionInserters()
 {
-  buffer_ << "void ModuleDescriptionLookup::addGeneratedModules()\n{\n";
+  buffer_ << "\nvoid ModuleDescriptionLookup::addGeneratedModules()\n{\n";
   for (const auto& desc : descMap_)
   {
     buffer_ << "  addModuleDesc<" << desc.first << ">(\"" << desc.second.status_ << "\", \"" << desc.second.description_ << "\");\n";

@@ -244,14 +244,14 @@ TEST(FactoryGeneratorTests, CanGenerateCodeFileFromMap)
   builder.start();
 
   auto partial = builder.build();
-  std::string expected = "#include <Modules/Factory/ModuleDescriptionLookup.h>\n";
+  std::string expected = "#include <Modules/Factory/ModuleDescriptionLookup.h>\n\n";
   ASSERT_EQ(expected, partial);
 
   builder.addIncludes();
 
   partial = builder.build();
   expected =
-    "#include <Modules/Factory/ModuleDescriptionLookup.h>\n"
+    "#include <Modules/Factory/ModuleDescriptionLookup.h>\n\n"
     "#include <Modules/Legacy/Fields/CreateLatVol.h>\n";
   ASSERT_EQ(expected, partial);
 
@@ -259,8 +259,8 @@ TEST(FactoryGeneratorTests, CanGenerateCodeFileFromMap)
 
   partial = builder.build();
   expected =
-    "#include <Modules/Factory/ModuleDescriptionLookup.h>\n"
-    "#include <Modules/Legacy/Fields/CreateLatVol.h>\n"
+    "#include <Modules/Factory/ModuleDescriptionLookup.h>\n\n"
+    "#include <Modules/Legacy/Fields/CreateLatVol.h>\n\n"
     "using namespace SCIRun::Modules::Factory;\n"
     "using namespace SCIRun::Modules::Fields;\n";
   ASSERT_EQ(expected, partial);
@@ -269,10 +269,10 @@ TEST(FactoryGeneratorTests, CanGenerateCodeFileFromMap)
 
   partial = builder.build();
   expected =
-    "#include <Modules/Factory/ModuleDescriptionLookup.h>\n"
-    "#include <Modules/Legacy/Fields/CreateLatVol.h>\n"
+    "#include <Modules/Factory/ModuleDescriptionLookup.h>\n\n"
+    "#include <Modules/Legacy/Fields/CreateLatVol.h>\n\n"
     "using namespace SCIRun::Modules::Factory;\n"
-    "using namespace SCIRun::Modules::Fields;\n"
+    "using namespace SCIRun::Modules::Fields;\n\n"
     "void ModuleDescriptionLookup::addGeneratedModules()\n"
     "{\n"
     "  addModuleDesc<CreateLatVol>(\"Ported module\", \"Creates Lattice Volumes\");\n"
@@ -287,10 +287,10 @@ TEST(FactoryGeneratorTests, CanGenerateCodeFileFromMapWithFunction)
   auto map = BuildModuleDescriptorMap(files);
   auto code = GenerateCodeFileFromMap(map);
 
-  std::string expectedCode = "#include <Modules/Factory/ModuleDescriptionLookup.h>\n"
-  "#include <Modules/Legacy/Fields/CreateLatVol.h>\n"
+  std::string expectedCode = "#include <Modules/Factory/ModuleDescriptionLookup.h>\n\n"
+  "#include <Modules/Legacy/Fields/CreateLatVol.h>\n\n"
   "using namespace SCIRun::Modules::Factory;\n"
-  "using namespace SCIRun::Modules::Fields;\n"
+  "using namespace SCIRun::Modules::Fields;\n\n"
   "void ModuleDescriptionLookup::addGeneratedModules()\n"
   "{\n"
   "  addModuleDesc<CreateLatVol>(\"Ported module\", \"Creates Lattice Volumes\");\n"
@@ -302,10 +302,10 @@ TEST(FactoryGeneratorTests, FullProgram)
 {
   auto code = GenerateCodeFileFromDescriptorPath((TestResources::rootDir() / "Other" / "Factory" / "Config" / "Real").string());
 
-  std::string expectedCode = "#include <Modules/Factory/ModuleDescriptionLookup.h>\n"
-  "#include <Modules/Legacy/Fields/CreateLatVol.h>\n"
+  std::string expectedCode = "#include <Modules/Factory/ModuleDescriptionLookup.h>\n\n"
+  "#include <Modules/Legacy/Fields/CreateLatVol.h>\n\n"
   "using namespace SCIRun::Modules::Factory;\n"
-  "using namespace SCIRun::Modules::Fields;\n"
+  "using namespace SCIRun::Modules::Fields;\n\n"
   "void ModuleDescriptionLookup::addGeneratedModules()\n"
   "{\n"
   "  addModuleDesc<CreateLatVol>(\"Ported module\", \"Creates Lattice Volumes\");\n"
