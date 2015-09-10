@@ -91,7 +91,9 @@ namespace SCIRun {
           std::ostringstream buffer_;
         };
 
-        SCISHARE std::string GenerateCodeFile(const ModuleDescriptorMap& descriptors);
+        SCISHARE std::string GenerateCodeFileFromMap(const ModuleDescriptorMap& descriptors);
+
+        SCISHARE std::string GenerateCodeFileFromDescriptorPath(const std::string& descriptorPath);
       }
     }
   }

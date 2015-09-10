@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #include <cmath>
 #include <string>
 #include <Modules/Factory/MakeModuleFactory.h>
+#include <Modules/Factory/HardCodedModuleFactory.h>
 
 int SCIRun::Modules::Factory::MakeSquareRootTableForTesting(const std::string& filename)
 {
@@ -55,13 +56,22 @@ int SCIRun::Modules::Factory::MakeSquareRootTableForTesting(const std::string& f
   return 0;
 }
 
+int SCIRun::Modules::Factory::MakeGeneratedModuleFactoryCode(const std::string& sourcePath, const std::string& generatedFilename)
+{
+  boost::filesystem::path base(sourcePath);
+  auto code = GenerateCodeFileFromDescriptorPath((base / "Modules" / "Factory" / "Config").string());
+  std::ofstream out(generatedFilename);
+  out << code;
+  return 0;
+}
+
 int main(int argc, char *argv[])
 {
   // make sure we have enough arguments
-  if (argc < 2)
+  if (argc < 3)
   {
     return 1;
   }
 
-  return SCIRun::Modules::Factory::MakeSquareRootTableForTesting(argv[1]);
+  return SCIRun::Modules::Factory::MakeGeneratedModuleFactoryCode(argv[1], argv[2]);
 }

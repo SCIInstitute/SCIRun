@@ -38,8 +38,7 @@ namespace SCIRun {
 
       SCISHARE int MakeSquareRootTableForTesting(const std::string& filename);
 
-      //TODO: main entry point
-
+      SCISHARE int MakeGeneratedModuleFactoryCode(const std::string& basePath);
     }
   }
 }

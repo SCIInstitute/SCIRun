@@ -264,3 +264,20 @@ std::string ModuleFactoryCodeBuilder::build()
 {
   return buffer_.str();
 }
+
+std::string Generator::GenerateCodeFileFromMap(const ModuleDescriptorMap& descriptors)
+{
+  ModuleFactoryCodeBuilder builder(descriptors);
+  builder.start();
+  builder.addIncludes();
+  builder.addNamespaces();
+  builder.addDescriptionInserters();
+  return builder.build();
+}
+
+std::string Generator::GenerateCodeFileFromDescriptorPath(const std::string& descriptorPath)
+{
+  auto files = GetListOfModuleDescriptorFiles(descriptorPath);
+  auto map = BuildModuleDescriptorMap(files);
+  return GenerateCodeFileFromMap(map);
+}
