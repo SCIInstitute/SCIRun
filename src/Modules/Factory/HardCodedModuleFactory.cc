@@ -225,3 +225,42 @@ ModuleDescriptorMap Generator::BuildModuleDescriptorMap(const std::vector<std::s
   }
   return mdm;
 }
+
+ModuleFactoryCodeBuilder::ModuleFactoryCodeBuilder(const ModuleDescriptorMap& descriptors) : descMap_(descriptors) {}
+
+void ModuleFactoryCodeBuilder::start()
+{
+  buffer_ << "#include <Modules/Factory/ModuleDescriptionLookup.h>\n";
+}
+
+void ModuleFactoryCodeBuilder::addIncludes()
+{
+  for (const auto& desc : descMap_)
+  {
+    buffer_ << "#include <" << desc.second.header_ << ">\n";
+  }
+}
+
+void ModuleFactoryCodeBuilder::addNamespaces()
+{
+  buffer_ << "using namespace SCIRun::Modules::Factory;\n";
+  for (const auto& desc : descMap_)
+  {
+    buffer_ << "using namespace SCIRun::Modules::" << desc.second.namespace_ << ";\n";
+  }
+}
+
+void ModuleFactoryCodeBuilder::addDescriptionInserters()
+{
+  buffer_ << "void ModuleDescriptionLookup::addGeneratedModules()\n{\n";
+  for (const auto& desc : descMap_)
+  {
+    buffer_ << "  addModuleDesc<" << desc.first << ">(\"" << desc.second.status_ << "\", \"" << desc.second.description_ << "\");\n";
+  }
+  buffer_ << "}\n";
+}
+
+std::string ModuleFactoryCodeBuilder::build()
+{
+  return buffer_.str();
+}

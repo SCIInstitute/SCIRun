@@ -33,6 +33,7 @@
 
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
+#include <sstream>
 #include <Modules/Factory/share.h>
 
 namespace SCIRun {
@@ -87,6 +88,7 @@ namespace SCIRun {
           std::string build();
         private:
           ModuleDescriptorMap descMap_;
+          std::ostringstream buffer_;
         };
 
         SCISHARE std::string GenerateCodeFile(const ModuleDescriptorMap& descriptors);
