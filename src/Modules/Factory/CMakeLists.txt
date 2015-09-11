@@ -40,7 +40,6 @@ SET(Modules_Factory_HEADERS
 
 ADD_SUBDIRECTORY(Generator)
 
-
 OPTION(GENERATE_MODULE_FACTORY_CODE "Generate module factory code from config files" ON)
 MARK_AS_ADVANCED(GENERATE_MODULE_FACTORY_CODE)
 
@@ -58,6 +57,7 @@ add_custom_command (
   )
 
 SET(ModuleFactoryImpl_Generated ${CMAKE_CURRENT_BINARY_DIR}/ModuleFactoryImpl_Generated.cc)
+MESSAGE(STATUS "Generated ModuleFactory")
 
 ENDIF(GENERATE_MODULE_FACTORY_CODE)
 
