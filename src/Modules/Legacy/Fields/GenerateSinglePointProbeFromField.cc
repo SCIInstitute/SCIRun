@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Scalar.h>
 
 //
@@ -436,12 +437,12 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
 
 index_type GenerateSinglePointProbeFromField::GenerateIndex()
 {
-  auto ifieldOption = getRequiredInput(InputField);
+  auto ifieldOption = getOptionalInput(InputField);
   index_type index = 0;
 
   auto state = get_state();
   using namespace Parameters;
-  if (ifieldOption)
+  if (ifieldOption && *ifieldOption)
   {
     if (state->getValue(DisplayNode).toBool())
     {

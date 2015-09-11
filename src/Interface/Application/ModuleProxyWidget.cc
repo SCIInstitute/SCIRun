@@ -126,8 +126,10 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
-  connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureVisible()));
+  connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureThisVisible()));
   connect(module, SIGNAL(deleteMeLater()), this, SLOT(deleteLater()));
+
+  stackDepth_ = 0;
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
@@ -139,7 +141,12 @@ void ModuleProxyWidget::createStartupNote()
   module_->createStartupNote();
 }
 
-void ModuleProxyWidget::ensureVisible()
+void ModuleProxyWidget::ensureThisVisible()
+{
+  ensureItemVisible(this);
+}
+
+void ModuleProxyWidget::ensureItemVisible(QGraphicsItem* item)
 {
   auto views = scene()->views();
   if (!views.isEmpty())
@@ -149,7 +156,7 @@ void ModuleProxyWidget::ensureVisible()
     {
       return; // the call below led to a crash when too zoomed in to fit a module.
     }
-    views[0]->ensureVisible(this);
+    views[0]->ensureVisible(item);
   }
 }
 
@@ -211,6 +218,7 @@ static int snapTo(int oldPos)
 
 void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+  stackDepth_ = 0;
   auto taggingOn = data(TagLayerKey).toBool();
   if (taggingOn)
     return;
@@ -246,15 +254,25 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
   if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
-    p->doMouseMove(event->buttons(), mapToScene(event->pos()));
+    auto conn = p->doMouseMove(event->buttons(), mapToScene(event->pos()));
+    if (conn)
+    {
+      stackDepth_++;
+      if (stackDepth_ > 1)
+        return;
+      ensureItemVisible(conn);
+    }
+    stackDepth_ = 0;
     return;
   }
   if (grabbedByWidget_)
   {
     return;
   }
-  ensureVisible();
+  if (stackDepth_ == 0)
+    ensureThisVisible();
   QGraphicsItem::mouseMoveEvent(event);
+  stackDepth_ = 0;
 }
 
 bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const

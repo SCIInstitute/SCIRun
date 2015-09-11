@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,28 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ClipVolumeByIsovalueDialog_H
-#define INTERFACE_MODULES_ClipVolumeByIsovalueDialog_H
+#include <Interface/Modules/Math/CollectMatricesDialog.h>
+#include <Core/Algorithms/Math/CollectMatrices/CollectMatricesAlgorithm.h>
 
-#include "Interface/Modules/Fields/ui_ClipVolumeByIsovalue.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Math;
 
-namespace SCIRun {
-namespace Gui {
-
-class SCISHARE ClipVolumeByIsovalueDialog : public ModuleDialogGeneric,
-  public Ui::ClipVolumeByIsovalue
+CollectMatricesDialog::CollectMatricesDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-	Q_OBJECT
-
-public:
-  ClipVolumeByIsovalueDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-};
-
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  addRadioButtonGroupManager({ rowRadioButton_, columnRadioButton_ }, Parameters::CollectRowIndicator);
+  addRadioButtonGroupManager({ appendRadioButton_, replaceRadioButton_ }, Parameters::CollectAppendIndicator);
+  addRadioButtonGroupManager({ prependRadioButton_, postpendRadioButton_ }, Parameters::CollectPrependIndicator);
 }
-}
-
-#endif

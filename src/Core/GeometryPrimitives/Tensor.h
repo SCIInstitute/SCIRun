@@ -47,7 +47,6 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
 
-#include <string>
 #include <iosfwd>
 #include <vector>
 
@@ -55,7 +54,6 @@
 namespace SCIRun {
 
   class Piostream;
-  class RigorousTest;
   class TypeDescription;
 
   namespace Core {
@@ -86,24 +84,20 @@ public:
   Tensor operator-(const Tensor&) const;
   Tensor& operator-=(const Tensor&);
   Tensor operator*(const double) const;
-  Vector operator*(const Vector) const;
+  Vector operator*(const Vector&) const;
 
   static std::string type_name(int i = -1);
-  
-  double mat_[3][3];
 
   void build_mat_from_eigens();
   void build_eigens_from_mat(); 
   void get_eigenvectors(Vector &e1, Vector &e2, Vector &e3);
-  const Vector &get_eigenvector1() { ASSERT(have_eigens_); return e1_; }
-  const Vector &get_eigenvector2() { ASSERT(have_eigens_); return e2_; }
-  const Vector &get_eigenvector3() { ASSERT(have_eigens_); return e3_; }
+  const Vector &get_eigenvector1() const { ASSERT(have_eigens_); return e1_; }
+  const Vector &get_eigenvector2() const { ASSERT(have_eigens_); return e2_; }
+  const Vector &get_eigenvector3() const { ASSERT(have_eigens_); return e3_; }
   void get_eigenvalues(double &l1, double &l2, double &l3);
 
-  double norm();
+  double norm() const;
 
-  bool have_eigens() { return have_eigens_; }
- 
   void set_eigens(const Vector &e1, const Vector &e2, const Vector &e3);
 
   // This directly sets the eigenvectors and values in the tensor.  It
@@ -118,37 +112,44 @@ public:
 
   friend SCISHARE void Pio(Piostream&, Tensor&);
 
-  inline double xx() const { return mat_[0][0]; }
-  inline double xy() const { return mat_[1][0]; }
-  inline double xz() const { return mat_[2][0]; }
-  inline double yy() const { return mat_[1][1]; }
-  inline double yz() const { return mat_[2][1]; }
-  inline double zz() const { return mat_[2][2]; }
+  double xx() const { return mat_[0][0]; }
+  double xy() const { return mat_[1][0]; }
+  double xz() const { return mat_[2][0]; }
+  double yy() const { return mat_[1][1]; }
+  double yz() const { return mat_[2][1]; }
+  double zz() const { return mat_[2][2]; }
+
+  SCISHARE friend std::ostream& operator<<(std::ostream& os, const Tensor& t);
+  SCISHARE friend std::istream& operator>>(std::istream& os, Tensor& t);
+
+  double val(size_t i, size_t j) const { return mat_[i][j]; }
+  double& val(size_t i, size_t j) { return mat_[i][j]; }
 
 private:
+  double mat_[3][3];
   Vector e1_, e2_, e3_;  // these are already scaled by the eigenvalues
   double l1_, l2_, l3_;
-  bool have_eigens_;
+  int have_eigens_; //do NOT change to bool, it will break Pio system
 };
 
 SCISHARE void Pio(Piostream&, Tensor&);
 
-inline bool operator<(Tensor t1, Tensor t2)
+inline bool operator<(const Tensor& t1, const Tensor& t2)
 {
   return(t1.norm()<t2.norm());
 }
 
-inline bool operator<=(Tensor t1, Tensor t2)
+inline bool operator<=(const Tensor& t1, const Tensor& t2)
 {
   return(t1.norm()<=t2.norm());
 }
 
-inline bool operator>(Tensor t1, Tensor t2)
+inline bool operator>(const Tensor& t1, const Tensor& t2)
 {
   return(t1.norm()>t2.norm());
 }
 
-inline bool operator>=(Tensor t1, Tensor t2)
+inline bool operator>=(const Tensor& t1, const Tensor& t2)
 {
   return(t1.norm()>=t2.norm());
 }
@@ -157,9 +158,6 @@ inline
 Tensor operator*(double d, const Tensor &t) {
   return t*d;
 }
-
-SCISHARE std::ostream& operator<<(std::ostream& os, const Tensor& t);
-SCISHARE std::istream& operator>>(std::istream& os, Tensor& t);
 
 SCISHARE const TypeDescription* get_type_description(Tensor*);
     }}

@@ -82,6 +82,14 @@ inline ::testing::AssertionResult compare_with_tolerance_readable(const Core::Da
   ::testing::AssertionFailure() << "Matrix 1: \n"<< matrix_to_string(m1).substr(0, printSize) << "\nMatrix 2: \n" << matrix_to_string(m2).substr(0, printSize);
 }
 
+
+inline ::testing::AssertionResult compare_with_tolerance_readable(const Core::Datatypes::SparseRowMatrix& m1, const Core::Datatypes::SparseRowMatrix& m2, double percentTolerance, int printSize = 50)
+{
+  return compare_with_tolerance(m1, m2, percentTolerance) ?
+    ::testing::AssertionSuccess() :
+    ::testing::AssertionFailure() << "Matrix 1: \n" << sparse_matrix_to_string(m1).substr(0, printSize) << "\nMatrix 2: \n" << sparse_matrix_to_string(m2).substr(0, printSize);
+}
+
 inline double relative_infinity_norm(const Core::Datatypes::DenseColumnMatrix& x, const Core::Datatypes::DenseColumnMatrix& xhat)
 {
   Core::Datatypes::DenseColumnMatrix diff = xhat - x;
@@ -122,6 +130,7 @@ inline Core::Datatypes::SparseRowMatrixHandle toSparseHandle(const Core::Datatyp
 {
   Core::Datatypes::SparseRowMatrixHandle sp(boost::make_shared<Core::Datatypes::SparseRowMatrix>(static_cast<int>(dense.rows()), static_cast<int>(dense.cols())));
   copyDenseToSparse(dense, *sp);
+  sp->makeCompressed();
   return sp;
 }
 
@@ -142,7 +151,7 @@ inline Core::Datatypes::DenseMatrixHandle makeDense(const Core::Datatypes::Spars
 
 #define EXPECT_MATRIX_EQ_TOLERANCE(actual, expected, tolerance) EXPECT_TRUE(compare_with_tolerance_readable((actual), (expected), (tolerance)))
 #define EXPECT_MATRIX_EQ(actual, expected) EXPECT_MATRIX_EQ_TOLERANCE((actual), (expected), DEFAULT_MATRIX_PERCENT_TOLERANCE)
-//#define EXPECT_MATRIX_EQ_TO(actual, expected) EXPECT_MATRIX_EQ((actual), MAKE_DENSE_MATRIX(expected))
+#define EXPECT_MATRIX_EQ_TO(actual, expected) EXPECT_MATRIX_EQ((actual), MAKE_DENSE_MATRIX(expected))
 //
 //#define EXPECT_SPARSE_ROW_MATRIX_EQ_TO(actual, expected) EXPECT_MATRIX_EQ((actual), MAKE_SPARSE_ROW_MATRIX(expected))
 //

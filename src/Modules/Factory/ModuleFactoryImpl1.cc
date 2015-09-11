@@ -74,6 +74,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
+#include <Modules/Legacy/Fields/ClipFieldByMesh.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
 #include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
@@ -97,6 +98,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Math/ComputeSVD.h>
 #include <Modules/Legacy/Math/AddLinkedNodesToLinearSystem.h>
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
+#include <Modules/Legacy/Math/CollectMatrices.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
@@ -225,6 +227,9 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
   //addModuleDesc<ShowAndEditDipoles>("Real ported module", "in progress");
+
+  addModuleDesc<ClipFieldByMesh>("Real ported module", "...");
+  addModuleDesc<CollectMatrices>("Real ported module", "...");
 
   // insert module desc here
 }

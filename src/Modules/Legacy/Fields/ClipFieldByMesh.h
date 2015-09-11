@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,28 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ClipVolumeByIsovalueDialog_H
-#define INTERFACE_MODULES_ClipVolumeByIsovalueDialog_H
+#ifndef MODULES_LEGACY_FIELDS_ClipFieldByMesh_H__
+#define MODULES_LEGACY_FIELDS_ClipFieldByMesh_H__
 
-#include "Interface/Modules/Fields/ui_ClipVolumeByIsovalue.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Gui {
+  namespace Modules {
+    namespace Fields {
 
-class SCISHARE ClipVolumeByIsovalueDialog : public ModuleDialogGeneric,
-  public Ui::ClipVolumeByIsovalue
-{
-	Q_OBJECT
+      class SCISHARE ClipFieldByMesh : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, FieldPortTag>,
+        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
+      {
+      public:
+        ClipFieldByMesh();
 
-public:
-  ClipVolumeByIsovalueDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-};
+        virtual void execute() override;
+        virtual void setStateDefaults() override {};
 
-}
+        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(1, ObjectField, LegacyField);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+        OUTPUT_PORT(1, Mapping, Matrix);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+
+    }
+  }
 }
 
 #endif

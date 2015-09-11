@@ -45,16 +45,15 @@
 #define TETLIBRARY   // Required definition for use of tetgen library
 #include <tetgen/tetgen.h>
 
-#include <algorithm>
 #include <sstream>
 
 #include <sci_debug.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Thread;
-using namespace SCIRun::Core::Geometry;
+using namespace Dataflow::Networks;
+using namespace Modules::Fields;
+using namespace Core::Thread;
+using namespace Core::Geometry;
 
 namespace SCIRun {
 namespace Modules {
@@ -79,7 +78,7 @@ class InterfaceWithTetGenImplImpl //: public AlgorithmBase
     static Mutex TetGenMutex;
 };
 
-Mutex detail::InterfaceWithTetGenImplImpl::TetGenMutex("Protect TetGen from running in parallel");
+Mutex InterfaceWithTetGenImplImpl::TetGenMutex("Protect TetGen from running in parallel");
 }}}}
 
 detail::InterfaceWithTetGenImplImpl::InterfaceWithTetGenImplImpl(Module* module) : module_(module)
@@ -180,7 +179,7 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
 
       addin.numberofpoints = num_nodes;
       addin.pointlist = new REAL[num_nodes*3];
-      for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
+      for(VMesh::Node::index_type idx=0; idx<num_nodes; ++idx)
       {
         Point p;
         mesh->get_center(p, idx);
@@ -200,7 +199,7 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
 
       in.regionlist = new REAL[num_nodes*5];
       in.numberofregions = num_nodes;
-      for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
+      for(VMesh::Node::index_type idx=0; idx<num_nodes; ++idx)
       {
         Point p; double val;
         mesh->get_center(p, idx);
@@ -242,7 +241,7 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
 
     VMesh::index_type idx = 0;
     VMesh::index_type fidx = 0;
-    VMesh::index_type off = 0;
+    VMesh::index_type off;
 
     for (size_t j=0; j< surfaces.size(); j++)
     {
@@ -251,7 +250,7 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
       VMesh::Elem::size_type num_elems = mesh->num_elems();
 
       off = idx;
-      for(VMesh::Node::index_type nidx=0; nidx<num_nodes; nidx++)
+      for(VMesh::Node::index_type nidx=0; nidx<num_nodes; ++nidx)
       {
         Point p;
         mesh->get_center(p, nidx);
@@ -266,21 +265,21 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
       // iterate over faces.
       VMesh::Node::array_type nodes;
 
-      for(VMesh::Elem::index_type eidx=0; eidx<num_elems; eidx++)
+      for(VMesh::Elem::index_type eidx=0; eidx<num_elems; ++eidx)
       {
         tetgenio::facet *f = &in.facetlist[fidx];
         f->numberofpolygons = 1;
         f->polygonlist = new tetgenio::polygon[1];
         f->numberofholes = 0;
-        f->holelist = 0;
+        f->holelist = nullptr;
         tetgenio::polygon *p = &f->polygonlist[0];
         p->numberofvertices = vert_per_face;
         p->vertexlist = new int[p->numberofvertices];
 
         mesh->get_nodes(nodes, eidx);
-        for (size_t j=0; j<nodes.size(); j++)
+        for (size_t i=0; i<nodes.size(); i++)
         {
-          p->vertexlist[j] = VMesh::index_type(nodes[j]) + off;
+          p->vertexlist[i] = VMesh::index_type(nodes[i]) + off;
         }
 
         in.facetmarkerlist[fidx] = marker;
@@ -300,7 +299,7 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
   #if DEBUG
     std::cerr << "\nTetgen command line: " << cmmd_ln << std::endl;
   #endif
-    tetgenio *addtgio = 0;
+    tetgenio *addtgio = nullptr;
     if (add_points)
     {
        addtgio = &addin;
@@ -313,9 +312,14 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
       Guard g(TetGenMutex.get());
       try
       {
-        tetrahedralize((char*)cmmd_ln.c_str(), &in, &out, addtgio);
+        tetrahedralize(const_cast<char*>(cmmd_ln.c_str()), &in, &out, addtgio);
       }
-      catch(...)
+      catch(std::exception& e)
+      {
+        module_->error(std::string("TetGen failed to generate a mesh: ") + e.what());
+        return nullptr;
+      }
+      catch (...)
       {
         module_->error("TetGen failed to generate a mesh");
         return nullptr;
@@ -388,7 +392,7 @@ moreSwitches_("")
 {
 }
 
-InterfaceWithTetGenImpl::InterfaceWithTetGenImpl(Dataflow::Networks::Module* module, const InterfaceWithTetGenInput& input) :
+InterfaceWithTetGenImpl::InterfaceWithTetGenImpl(Module* module, const InterfaceWithTetGenInput& input) :
   impl_(new detail::InterfaceWithTetGenImplImpl(module)),
   inputFlags_(input)
 {}

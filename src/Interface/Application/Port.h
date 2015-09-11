@@ -131,7 +131,7 @@ public:
   bool isFullInputPort() const;
 
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
-  void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
+  QGraphicsItem* doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::KeyboardModifiers modifiers);
 
   SCIRun::Dataflow::Networks::PortDataDescriber getPortDataDescriber() const { return portDataDescriber_; }
@@ -160,7 +160,7 @@ private:
   template <typename Func, typename Pred>
   static void forEachPort(Func func, Pred pred);
 
-  void dragImpl(const QPointF& endPos);
+  QGraphicsItem* dragImpl(const QPointF& endPos);
   void makeConnection(const QPointF& pos);
   void tryConnectPort(const QPointF& pos, PortWidget* port, double threshold);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;

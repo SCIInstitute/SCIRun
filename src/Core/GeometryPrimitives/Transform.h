@@ -65,7 +65,6 @@ class SCISHARE Transform : public Persistent
     void build_translate(double m[4][4], const Vector&);
     void pre_mulmat(const double[4][4]);
     void post_mulmat(const double[4][4]);
-    void invmat(double[4][4]);
     void switch_rows(double m[4][4], int row1, int row2) const;
     void sub_rows(double m[4][4], int row1, int row2, double mul) const;
     void load_identity(double[4][4]);
@@ -78,7 +77,6 @@ public:
     Transform();
     Transform(const Transform&);
     Transform& operator=(const Transform&);
-    ~Transform();
     Transform(const Point&, const Vector&, const Vector&, const Vector&);
 
     double get_mat_val(int i, int j) const { return mat[i][j]; }

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,28 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ClipVolumeByIsovalueDialog_H
-#define INTERFACE_MODULES_ClipVolumeByIsovalueDialog_H
+#ifndef MODULES_LEGACY_MATH_COLLECTMATRICES_H_
+#define MODULES_LEGACY_MATH_COLLECTMATRICES_H_
 
-#include "Interface/Modules/Fields/ui_ClipVolumeByIsovalue.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Math/share.h>
 
 namespace SCIRun {
-namespace Gui {
+	namespace Modules {
+		namespace Math {
 
-class SCISHARE ClipVolumeByIsovalueDialog : public ModuleDialogGeneric,
-  public Ui::ClipVolumeByIsovalue
-{
-	Q_OBJECT
+		class SCISHARE CollectMatrices : public Dataflow::Networks::Module,
+			public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
+			public Has1OutputPort<MatrixPortTag>
+			{
+				public:
+					CollectMatrices();
+					virtual void setStateDefaults() override;
+					virtual void execute() override;
 
-public:
-  ClipVolumeByIsovalueDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-};
+					INPUT_PORT(0, Optional_BaseMatrix, Matrix);
+					INPUT_PORT(1, SubMatrix, Matrix);
+					OUTPUT_PORT(0, CompositeMatrix, Matrix);
 
-}
-}
+          const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        private:
+          boost::shared_ptr<class CollectMatricesImpl> impl_;
+			};
+
+}}};
 
 #endif
