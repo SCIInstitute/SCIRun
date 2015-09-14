@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
+#  in all copies or substantial portions of the Software.
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,15 +26,27 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-#ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Forward)
-ADD_SUBDIRECTORY(Inverse)
-#ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Converters)
-ADD_SUBDIRECTORY(Bundle)
-ADD_SUBDIRECTORY(Matlab)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(Teem)
+SET(Modules_Legacy_Teem_DataIO_HEADERS
+  ReadNrrd.h
+  share.h
+)
+SET(Modules_Legacy_Teem_DataIO_SRCS
+  ReadNrrd.cc
+)
+
+SCIRUN_ADD_LIBRARY(Modules_Legacy_Teem_DataIO
+  ${Modules_Legacy_Teem_DataIO_HEADERS}
+  ${Modules_Legacy_Teem_DataIO_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_Legacy_Teem_DataIO
+  Dataflow_Network
+  Core_Datatypes
+  #${SCI_TEEM_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Teem_DataIO)
+ENDIF(BUILD_SHARED_LIBS)
+
+SCIRUN_ADD_TEST_DIR(Tests)

@@ -26,15 +26,21 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-#ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Forward)
-ADD_SUBDIRECTORY(Inverse)
-#ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Converters)
-ADD_SUBDIRECTORY(Bundle)
-ADD_SUBDIRECTORY(Matlab)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(Teem)
+SET(Modules_Bundle_Tests_SRCS
+  GetDataFromBundleTests.cc
+  InsertDataIntoBundleTests.cc
+)
+
+SCIRUN_ADD_UNIT_TEST(Modules_Bundle_Tests
+  ${Modules_Bundle_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_Bundle_Tests
+  #Modules_Legacy_Bundle
+  Modules_Factory
+  Testing_Utils
+  Testing_ModuleTestBase
+  gtest_main
+  gtest
+  gmock
+)
