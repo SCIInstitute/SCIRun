@@ -26,23 +26,26 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_Factory_Tests_SRCS
-  ModuleReplaceBuilderTests.cc
-  FactoryGeneratorTests.cc
+SET(Modules_Factory_Generator_SRCS
+  ModuleFactoryGenerator.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Modules_Factory_Tests
-  ${Modules_Factory_Tests_SRCS}
+SET(Modules_Factory_Generator_HEADERS
+  ModuleFactoryGenerator.h
+  share.h
 )
 
-TARGET_LINK_LIBRARIES(Modules_Factory_Tests
-  Modules_Factory
-  Modules_Factory_Generator
-  Dataflow_Network
-  Engine_Network
-  Testing_Utils
-  Testing_ModuleTestBase
-  gtest_main
-  gtest
-  gmock
+SCIRUN_ADD_LIBRARY(Modules_Factory_Generator
+  ${Modules_Factory_Generator_HEADERS}
+  ${Modules_Factory_Generator_SRCS}
 )
+
+TARGET_LINK_LIBRARIES(Modules_Factory_Generator
+  ${SCI_BOOST_LIBRARY}
+)
+
+SET_PROPERTY(TARGET Modules_Factory_Generator   PROPERTY FOLDER "Modules")
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Factory_Generator)
+ENDIF(BUILD_SHARED_LIBS)

@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
 using namespace Factory;
-//
+
 using namespace boost::assign;
 
 ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(false)
@@ -64,6 +64,7 @@ ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(fals
 
   addBrainSpecificModules();
   addMoreModules();
+  addGeneratedModules();
 }
 
 

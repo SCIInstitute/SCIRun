@@ -32,12 +32,12 @@
 #include <Dataflow/Network/ConnectionId.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Testing;
-using namespace SCIRun::Modules::Factory;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Dataflow::Networks::ReplacementImpl;
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Core::Algorithms;
+using namespace Testing;
+using namespace Modules::Factory;
+using namespace Dataflow::Networks;
+using namespace ReplacementImpl;
+using namespace Dataflow::Engine;
+using namespace Core::Algorithms;
 
 class ModuleReplaceTests : public ModuleTest
 {
@@ -49,7 +49,7 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
 
   auto descMap = factory.getDirectModuleDescriptionLookupMap();
 
-  EXPECT_TRUE(descMap.size() >= 86);
+  EXPECT_GE(descMap.size(), 105);
 }
 
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
@@ -164,7 +164,7 @@ TEST_F(ModuleReplaceTests, NoConnectedPortsCanBeReplacedWithAnything)
 
   for (const auto& p : descMap)
   {
-    if (std::find(noConnectionReplacements.begin(), noConnectionReplacements.end(), p.first) == noConnectionReplacements.end())
+    if (find(noConnectionReplacements.begin(), noConnectionReplacements.end(), p.first) == noConnectionReplacements.end())
       std::cout << "replacements list did not contain " << p.first << std::endl;
   }
 }

@@ -26,35 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Factory/HardCodedModuleFactory.h
+#ifndef MAKE_MODULE_FACTORY_H
+#define MAKE_MODULE_FACTORY_H
 
-#ifndef HARD_CODED_MODULE_FACTORY_H
-#define HARD_CODED_MODULE_FACTORY_H
-
-#include <Dataflow/Network/ModuleFactory.h>
-#include <Dataflow/Network/ModuleDescription.h>
-#include <sstream>
-#include <Modules/Factory/share.h>
+#include <string>
+#include <Modules/Factory/Generator/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Factory {
 
-      class SCISHARE HardCodedModuleFactory : public Dataflow::Networks::ModuleFactory
-      {
-      public:
-        HardCodedModuleFactory();
-        virtual Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) override;
-        virtual Dataflow::Networks::ModuleHandle create(const Dataflow::Networks::ModuleDescription& info) override;
-        virtual void setStateFactory(Dataflow::Networks::ModuleStateFactoryHandle stateFactory) override;
-        virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) override;
-        virtual void setReexecutionFactory(Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory) override;
-        virtual const Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const override;
-        virtual const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const override;
-      private:
-        Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
-        boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;
-      };
+      SCISHARE int MakeSquareRootTableForTesting(const std::string& filename);
+
+      SCISHARE int MakeGeneratedModuleFactoryCode(const std::string& sourcePath, const std::string& generatedFilename);
     }
   }
 }

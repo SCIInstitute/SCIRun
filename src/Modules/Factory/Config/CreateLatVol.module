@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CreateLatVol",
+    "namespace": "Fields",
+    "status": "Ported module",
+    "description": "Creates Lattice Volumes",
+    "header": "Modules/Legacy/Fields/CreateLatVol.h"
+  },
+  "algorithm": {
+    "name": "CreateLatVolAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/CreateLatVolAlgo.h"
+  },
+  "UI": {
+    "name": "CreateLatVolDialog",
+    "header": "Interface/Modules/Fields/CreateLatVolDialog.h"
+  }
+}

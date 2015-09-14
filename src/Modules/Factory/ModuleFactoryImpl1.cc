@@ -163,7 +163,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
   addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
   addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
-  addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
+  //addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
   addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
@@ -176,7 +176,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   //addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<CreateStandardColorMap>("In progress: four color maps available", "...");
-  addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
+  //addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
