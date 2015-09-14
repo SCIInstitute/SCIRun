@@ -145,6 +145,14 @@ namespace Datatypes {
     return o.str();
   }
 
+  template <typename T>
+  std::string sparse_matrix_to_string(const T& m)
+  {
+    std::ostringstream o;
+    o << m.castForPrinting();
+    return o.str();
+  }
+
 #define DENSEMATRIX_VERSION 4
 
   template <typename T>

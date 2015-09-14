@@ -90,6 +90,8 @@ protected:
   virtual void closeEvent(QCloseEvent* event) override;
   virtual void keyPressEvent(QKeyEvent *event) override;
   virtual void keyReleaseEvent(QKeyEvent *event) override;
+  virtual void showEvent(QShowEvent* event) override;
+  virtual void hideEvent(QHideEvent* event) override;
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
@@ -104,7 +106,7 @@ private:
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
   QToolButton* executeButton_;
-
+  QByteArray windowState_;
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
@@ -170,6 +172,7 @@ private Q_SLOTS:
   void makeModulesLargeSize();
   void makeModulesSmallSize();
   void alertForNetworkCycles(int code);
+  void updateDockWidgetProperties(bool isFloating);
   void setDataDirectoryFromGUI();
   void toolkitDownload();
   void addToPathFromGUI();

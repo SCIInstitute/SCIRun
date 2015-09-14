@@ -154,3 +154,8 @@ boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorControllerGuiProxy::cre
 {
   return controller_->createDynamicPortSwitch();
 }
+
+void NetworkEditorControllerGuiProxy::cleanUpNetwork()
+{
+  controller_->cleanUpNetwork();
+}

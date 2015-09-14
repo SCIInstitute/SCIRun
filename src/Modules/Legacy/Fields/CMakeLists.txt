@@ -51,6 +51,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateVectorMagnitudes.h
   CalculateSignedDistanceToField.h
   ClipFieldByFunction3.h
+  ClipFieldByMesh.h
   ConvertQuadSurfToTriSurf.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
@@ -113,10 +114,8 @@ SET(Modules_Legacy_Fields_SRCS
   ConvertFieldBasis.cc
   ConvertFieldDataType.cc
   #ChooseField.cc
-  #ClipFieldByFunction.cc
-  #ClipFieldByFunction2.cc
   ClipFieldByFunction3.cc
-  #ClipFieldByMesh.cc
+  ClipFieldByMesh.cc
   #ClipFieldToFieldOrWidget.cc
   #ClipLatVolByIndicesOrWidget.cc
   #ConvertMatricesToMesh.cc
@@ -131,7 +130,6 @@ SET(Modules_Legacy_Fields_SRCS
   FairMesh.cc
   #GetAllSegmentationBoundaries.cc
   GetFieldBoundary.cc
-  #ReportFieldInfo.cc
   #ReportFieldGeometryMeasures.cc
   #SetFieldProperty.cc
   GetSliceFromStructuredFieldByIndices.cc
@@ -164,10 +162,6 @@ SET(Modules_Legacy_Fields_SRCS
   #ConvertMeshToPointCloud.cc
   #ConvertMeshToIrregularMesh.cc
   #ConvertMeshToUnstructuredMesh.cc
-  #CalculateFieldData.cc
-  #CalculateFieldData2.cc
-  #CalculateFieldData3.cc
-  #CalculateFieldData4.cc
   CalculateFieldData5.cc
   #CalculateFieldDataMetric.cc
   #CalculateMeshNodes.cc
@@ -182,15 +176,10 @@ SET(Modules_Legacy_Fields_SRCS
   #CalculateInsideWhichField.cc
   ConvertIndicesToFieldData.cc
   CreateFieldData.cc
-  #GetFieldData.cc
-  #SetFieldData.cc
-  #CreateFieldData.cc
   GetFieldData.cc
   SetFieldData.cc
   GetFieldNodes.cc
   SetFieldNodes.cc
-  #MapFieldDataFromElemToNode.cc
-  #MapFieldDataFromNodeToElem.cc
   #MapFieldDataOntoNodesRadialbasis.cc
   #SelectAndSetFieldData.cc
   #SelectAndSetFieldData3.cc

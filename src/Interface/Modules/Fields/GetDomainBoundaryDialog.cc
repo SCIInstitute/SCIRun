@@ -65,7 +65,7 @@ void GetDomainBoundaryDialog::push()
   }
 }
 
-void GetDomainBoundaryDialog::pullSpecial() //TODO change to radio button manager
+void GetDomainBoundaryDialog::pullSpecial() //TODO change to radio button manager //TODO refactor away
 {
   using namespace Parameters;
   compartmentRadioButton_->setChecked(!state_->getValue(UseRange).toBool());

@@ -36,9 +36,10 @@
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
-using namespace SCIRun::Modules::Factory;
+using namespace Factory;
 //
 using namespace boost::assign;
 
@@ -97,18 +98,18 @@ HardCodedModuleFactory::HardCodedModuleFactory() : impl_(new HardCodedModuleFact
   Module::Builder::use_source_type(boost::factory<SimpleSource*>());
 }
 
-void HardCodedModuleFactory::setStateFactory(SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory)
+void HardCodedModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
 {
   stateFactory_ = stateFactory;
   Module::defaultStateFactory_ = stateFactory_;
 }
 
-void HardCodedModuleFactory::setAlgorithmFactory(SCIRun::Core::Algorithms::AlgorithmFactoryHandle algoFactory)
+void HardCodedModuleFactory::setAlgorithmFactory(AlgorithmFactoryHandle algoFactory)
 {
   Module::defaultAlgoFactory_ = algoFactory;
 }
 
-void HardCodedModuleFactory::setReexecutionFactory(SCIRun::Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory)
+void HardCodedModuleFactory::setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory)
 {
   Module::defaultReexFactory_ = reexFactory;
 }

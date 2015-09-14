@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,44 +27,31 @@
 */
 
 #ifndef CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATEISINSIDEFIELD_H
-#define CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATEISINSIDEFIELD_H 1
+#define CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATEISINSIDEFIELD_H
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+        ALGORITHM_PARAMETER_DECL(SamplingScheme);
+        ALGORITHM_PARAMETER_DECL(InsideFieldValue);
+        ALGORITHM_PARAMETER_DECL(OutsideFieldValue);
+        ALGORITHM_PARAMETER_DECL(FieldOutputType);
+        ALGORITHM_PARAMETER_DECL(CalcInsideMethod);
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE CalculateIsInsideFieldAlgo : public AlgoBase 
+class SCISHARE CalculateIsInsideFieldAlgo : public AlgorithmBase
 {
   public:
-    CalculateIsInsideFieldAlgo() 
-    {
-      // How many samples inside the elements to test for being inside the
-      // object field
-      add_option("sampling_scheme","regular2","regular1|regular2|regular3|regular4|regular5");
-      // Value for inside elements
-      add_scalar("inside_value",1.0);
-      // Value for outside elements
-      add_scalar("outside_value",0.0);
-      // Output type of the algorithm
-      add_option("output_type","same as input","same as input|char|unsigned char|short|unsigned short|int|unsigned int|float|double");
-      // How many nodes need to be inside to call it inside
-      add_option("method","all","one|most|all");
-    }
-    
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle object, FieldHandle& output);
+    CalculateIsInsideFieldAlgo();
+    bool runImpl(FieldHandle input, FieldHandle object, FieldHandle& output) const;
+
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif

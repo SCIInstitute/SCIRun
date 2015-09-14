@@ -151,6 +151,8 @@ namespace Engine {
 
     void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
 
+    void cleanUpNetwork();
+
   private:
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);

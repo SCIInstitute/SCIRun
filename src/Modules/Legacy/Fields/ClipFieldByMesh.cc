@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,76 +26,77 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/ClipFieldByMesh.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-#include <Core/Algorithms/Fields/ClipMesh/ClipMeshBySelection.h>
-#include <Core/Algorithms/Fields/DistanceField/CalculateIsInsideField.h>
+#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateIsInsideField.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+
+const ModuleLookupInfo ClipFieldByMesh::staticInfo_("ClipFieldByMesh", "NewField", "SCIRun");
 
 /// @class ClipFieldByMesh
-/// @brief Clip a mesh to another mesh. 
+/// @brief Clip a mesh to another mesh.
 
-class ClipFieldByMesh : public Module {
-  public:
-    ClipFieldByMesh(GuiContext*);
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::ClipMeshBySelectionAlgo clip_algo_;
-    SCIRunAlgo::CalculateIsInsideFieldAlgo inside_algo_;
-
-};
-
-
-DECLARE_MAKER(ClipFieldByMesh)
-ClipFieldByMesh::ClipFieldByMesh(GuiContext* ctx)
-  : Module("ClipFieldByMesh", ctx, Source, "NewField", "SCIRun")
+ClipFieldByMesh::ClipFieldByMesh() : Module(staticInfo_, false)
 {
-  clip_algo_.set_progress_reporter(this);
-  inside_algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(ObjectField);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(Mapping);
+  //clip_algo_.set_progress_reporter(this);
+  //inside_algo_.set_progress_reporter(this);
 }
 
-
-void
-ClipFieldByMesh::execute()
+void ClipFieldByMesh::execute()
 {
-  // Define local handles of data objects:
-  FieldHandle input;
+  auto input = getRequiredInput(InputField);
   FieldHandle output;
-  FieldHandle object;
+  auto object = getRequiredInput(ObjectField);
   FieldHandle selection;
   MatrixHandle interpolant;
-  
-  // Get the new input data is:  
-  get_input_handle("Field",input,true);
-  get_input_handle("Object",object,true);
 
-  // Only reexecute if the input changed. SCIRun uses simple scheduling
-  // that executes every module downstream even if no data has changed:  
-  if (inputs_changed_ || !oport_cached("Field") || !oport_cached("Mapping"))
+  if (needToExecute())
   {
     update_state(Executing);
-    inside_algo_.set_option("output_type","char");
-    inside_algo_.set_option("sampling_scheme","regular2");
-    
-    if(!(inside_algo_.run(input,object,selection))) return;
-    
-    if (input->vmesh()->num_elems() == selection->vfield()->num_values())
-      clip_algo_.set_option("method","element");
-    if(!(clip_algo_.run(input,selection,output,interpolant))) return;
 
-    // send new output if there is any:      
-    send_output_handle("Field", output);
-    send_output_handle("Mapping", interpolant);
+    //TODO: two-algo module
+
+    CalculateIsInsideFieldAlgo insideAlgo;
+    //insideAlgo.setLogger(getLogger());
+
+    insideAlgo.set_option(Parameters::FieldOutputType, "char");
+    insideAlgo.set_option(Parameters::SamplingScheme, "regular2");
+
+    if (!insideAlgo.runImpl(input,object,selection))
+    {
+      THROW_ALGORITHM_PROCESSING_ERROR("False returned from inside algo");
+    }
+
+    ClipMeshBySelectionAlgo clipAlgo;
+    if (!selection || !selection->vfield() || !input->vmesh())
+    {
+      THROW_ALGORITHM_PROCESSING_ERROR("Selection output field is null");
+    }
+
+    if (input->vmesh()->num_elems() == selection->vfield()->num_values())
+      clipAlgo.set_option(Parameters::ClipMethod, "Element Center");
+
+    if (!clipAlgo.runImpl(input,selection,output,interpolant))
+    {
+      THROW_ALGORITHM_PROCESSING_ERROR("False returned from clip algo");
+    }
+
+    sendOutput(OutputField, output);
+    sendOutput(Mapping, interpolant);
   }
 }
-
-
-} // End namespace SCIRun
-
-

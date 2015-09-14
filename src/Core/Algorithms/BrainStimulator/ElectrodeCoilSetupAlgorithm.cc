@@ -35,6 +35,7 @@
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
@@ -776,26 +777,106 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     nr_elc_sponge_triangles+=fieldnodes->nrows();
     valid_electrode_definition[i]=1;
     num_valid_electrode_definition++;   
-    
+        
     tmp_tdcs_elc_vfld->set_all_values(0.0);
+    
+    if (compute_third_output) /// a lot of code is inside this if (make sure it creates proper results)
+    {
+     BBox proto_bb = prototype->vmesh()->get_bounding_box();
+     Vector proto_diameter = proto_bb.diagonal();
+     double maxi = 2*Max(proto_diameter.x(),proto_diameter.y(),proto_diameter.z()); /// use maximum difference as diameter for sphere, make it bigger to get all needed nodes 
+
     /// since the protoype has to be centered around coordinate origin
     /// it will envelop the scalp/electrode sponge surface at its final location (it is now!)
     /// scalp needs to have data stored on nodes for clipping to prevent having frayed electrode sponge corners
     FieldHandle scalp_linear_data;
     ConvertFieldBasisTypeAlgo convert_field_basis;
-    if (!scalp_vfld->is_lineardata()) 
+    std::vector<double> tmp_field_values;
+    
+    for (VMesh::Elem::index_type l=0; l<scalp_vmesh->num_elems(); l++) 
     {
+      VMesh::Node::array_type onodes(3); 
+      scalp_vmesh->get_nodes(onodes, l);
+      Point p1,p2,p3;
+      scalp_vmesh->get_center(p1,onodes[0]);
+      scalp_vmesh->get_center(p2,onodes[1]);
+      scalp_vmesh->get_center(p3,onodes[2]);
+      
+      double x1 = (p1.x()+p2.x()+p3.x())/3 - r.x(),
+      y1 = (p1.y()+p2.y()+p3.y())/3 - r.y(),
+      z1 = (p1.z()+p2.z()+p3.z())/3 - r.z();
+      x1*=x1; y1*=y1; z1*=z1; double sum = x1+y1+z1;
+
+      if (compute_third_output)
+      { 
+       if(sum<(maxi/2*maxi/2))
+       {
+         tmp_field_values.push_back(1.0);
+       }
+          else
+           tmp_field_values.push_back(0.0); 
+      }
+     }  
+     
+     scalp_vfld->resize_values();
+     scalp_vfld->set_values(tmp_field_values);
+  
+     SplitFieldByDomainAlgo algo_splitfieldbydomain;
+     algo_splitfieldbydomain.setLogger(getLogger());
+     FieldList scalp_elc_sphere;  
+     algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortBySize, true);
+     algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortAscending, false);
+     algo_splitfieldbydomain.runImpl(scalp, scalp_elc_sphere);
+     
+     VMesh::Elem::index_type c_ind=0;
+     FieldHandle tmp_fld;
+     for(long l=0;l<scalp_elc_sphere.size();l++)
+     {
+      VField* scalp_elc_sphere_fld = scalp_elc_sphere[l]->vfield(); 
+       
+      double tmp_val=std::numeric_limits<double>::quiet_NaN();
+      scalp_elc_sphere_fld->get_value(tmp_val,c_ind);
+      if(tmp_val==1.0)
+      {
+        tmp_fld=scalp_elc_sphere[l];
+      }
+     }
+      
+     SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
+     algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
+     algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+     FieldList scalp_result = algo_splitbyconnectedregion.run(tmp_fld);
+
+     FieldHandle small_scalp_surf;
+     
+     for(int l=0;l<scalp_result.size();l++)
+     {
+      FieldHandle tmp_fld = scalp_result[l];
+      VMesh*  tmp_fld_msh  = tmp_fld->vmesh();
+
+      tmp_fld_msh->synchronize(Mesh::NODE_LOCATE_E); 
+      tmp_fld_msh->find_closest_node(distance,p,didx,r);
+      
+      if (distance==0)
+      {   
+       small_scalp_surf=tmp_fld;
+      }     
+     }
+     
+    if (!small_scalp_surf->vfield()->is_lineardata()) 
+    {
+    
      using namespace SCIRun::Core::Algorithms::Fields::Parameters;
      {
       convert_field_basis.set_option(OutputType, "Linear");
       convert_field_basis.set(BuildBasisMapping, false); 
-      convert_field_basis.runImpl(scalp, scalp_linear_data);
+      convert_field_basis.runImpl(small_scalp_surf, scalp_linear_data);
      }
     }
     CalculateSignedDistanceFieldAlgo algo_sdf;
     FieldHandle sdf_output;
-    if(scalp_vfld->is_lineardata())
-     algo_sdf.run(scalp, tmp_tdcs_elc, sdf_output);  
+    if(small_scalp_surf->vfield()->is_lineardata())
+     algo_sdf.run(small_scalp_surf, tmp_tdcs_elc, sdf_output);  
        else
          algo_sdf.run(scalp_linear_data, tmp_tdcs_elc, sdf_output); /// assumed that CalculateSignedDistanceFieldAlgo output has always values defined on nodes
     
@@ -807,9 +888,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     bool found_elc_surf=false;
     std::vector<FieldHandle> result;
     
-    if (compute_third_output) /// a lot of code is inside this if (make sure it creates proper results)
-    {
-     if(interpolate_elec_shape)
+    if(interpolate_elec_shape)
      {      
       FieldHandle sdf_output_linear;
       using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
@@ -887,8 +966,10 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
         }  
 	
 	final_electrode_sponge_surf->vfield()->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero  
-	result.push_back(final_electrode_sponge_surf);
-       
+	SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
+        algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
+        algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+	result = algo_splitbyconnectedregion.run(final_electrode_sponge_surf);
       }
       
      } else
@@ -1265,7 +1346,12 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
   VMesh::Face::size_type isize;
   output->vmesh()->size(isize);
   flipnormal_algo.run(output, output);
+ } else
+ {
+  FieldHandle tmp;
+  output=tmp;
  }
+  
  } else
  {
   std::ostringstream ostr3;

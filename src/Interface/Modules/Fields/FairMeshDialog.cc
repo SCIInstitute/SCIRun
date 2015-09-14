@@ -60,7 +60,7 @@ void FairMeshDialog::push()
   }
 }
 
-void FairMeshDialog::pullSpecial() //TODO: change to checkbox manager
+void FairMeshDialog::pullSpecial() //TODO: change to checkbox manager //TODO refactor away
 {
   using namespace Parameters;
   auto method = state_->getValue(FairMeshMethod).toString();

@@ -70,8 +70,9 @@ namespace SCIRun
       virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:
       void updateNote(const Note& note);
-      void ensureVisible();
+      void ensureThisVisible();
     private:
+      void ensureItemVisible(QGraphicsItem* item);
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
@@ -82,6 +83,7 @@ namespace SCIRun
       QPointF position_;
       QPointF cachedPosition_;
       bool doHighlight_;
+      int stackDepth_;
     };
 
     // arbitrary values

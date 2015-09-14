@@ -238,6 +238,7 @@ namespace Gui {
     void highlightTaggedItem(int tagValue);
     void resetNetworkDueToCycle();
     void moduleWindowAction();
+    void cleanUpNetwork();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);

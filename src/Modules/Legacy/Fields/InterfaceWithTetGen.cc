@@ -28,12 +28,13 @@
 
 #include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
 #include <Modules/Legacy/Fields/InterfaceWithTetGenImpl.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
+using namespace Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;

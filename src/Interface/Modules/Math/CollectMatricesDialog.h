@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,23 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ClipVolumeByIsovalueDialog_H
-#define INTERFACE_MODULES_ClipVolumeByIsovalueDialog_H
+#ifndef INTERFACE_MODULES_COLLECT_MATRICES_H
+#define INTERFACE_MODULES_COLLECT_MATRICES_H
 
-#include "Interface/Modules/Fields/ui_ClipVolumeByIsovalue.h"
+#include "Interface/Modules/Math/ui_CollectMatrices.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE ClipVolumeByIsovalueDialog : public ModuleDialogGeneric,
-  public Ui::ClipVolumeByIsovalue
+class SCISHARE CollectMatricesDialog : public ModuleDialogGeneric,
+  public Ui::CollectMatrices
 {
 	Q_OBJECT
 
 public:
-  ClipVolumeByIsovalueDialog(const std::string& name,
+  CollectMatricesDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
 };

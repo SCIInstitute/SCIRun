@@ -97,6 +97,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   StreamLines/GenerateStreamLines.h
   RegisterWithCorrespondences.h
   SampleField/GeneratePointSamplesFromField.h
+  DistanceField/CalculateIsInsideField.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -120,7 +121,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CreateMesh/CreateMeshFromNrrd.cc
 
   DistanceField/CalculateDistanceField.cc
-  #DistanceField/CalculateIsInsideField.cc
+  DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc
   DistanceField/CalculateSignedDistanceField.cc
   DomainFields/GetDomainBoundaryAlgo.cc

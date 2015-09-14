@@ -552,9 +552,13 @@ void NetworkEditor::paste()
 
 void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
 {
-  QMenu menu(this);
-  menu.addActions(actions());
-  menu.exec(event->globalPos());
+  auto items = scene_->items(mapToScene(event->pos()));
+  if (items.isEmpty())
+  {
+    QMenu menu(this);
+    menu.addActions(actions());
+    menu.exec(event->globalPos());
+  }
 }
 
 void NetworkEditor::dropEvent(QDropEvent* event)
@@ -1227,6 +1231,13 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
     colorize->setColor(color);
     item->setGraphicsEffect(colorize);
   }
+}
+
+void NetworkEditor::cleanUpNetwork()
+{
+  qDebug() << "clean up network";
+  controller_->cleanUpNetwork();
+  centerView();
 }
 
 std::atomic<int> ErrorItem::instanceCounter_(0);

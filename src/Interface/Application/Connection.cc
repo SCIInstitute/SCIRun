@@ -31,7 +31,6 @@
 #include <QtGui>
 #include <boost/bind.hpp>
 #include <Interface/Application/Connection.h>
-#include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/MainWindowCollaborators.h>

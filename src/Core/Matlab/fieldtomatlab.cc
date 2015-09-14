@@ -889,15 +889,15 @@ FieldToMatlabAlgo::mladdfielddata(VField* field, VMesh* /*mesh*/, matlabarray& m
     {
       Tensor v;
       field->get_value(v,VMesh::index_type(p));
-      data[q++] = v.mat_[0][0];
-      data[q++] = v.mat_[0][1];
-      data[q++] = v.mat_[0][2];
-      data[q++] = v.mat_[1][0];
-      data[q++] = v.mat_[1][1];
-      data[q++] = v.mat_[1][2];
-      data[q++] = v.mat_[2][0];
-      data[q++] = v.mat_[2][1];
-      data[q++] = v.mat_[2][2];
+      data[q++] = v.val(0,0);
+      data[q++] = v.val(0,1);
+      data[q++] = v.val(0,2);
+      data[q++] = v.val(1,0);
+      data[q++] = v.val(1,1);
+      data[q++] = v.val(1,2);
+      data[q++] = v.val(2,0);
+      data[q++] = v.val(2,1);
+      data[q++] = v.val(2,2);
     }
     mlfield.setnumericarray(data);          
     mlarray.setfield(0,"field",mlfield);
