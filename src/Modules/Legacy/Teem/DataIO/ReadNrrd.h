@@ -26,13 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Module/DataIO/ReadField.h
+#ifndef MODULES_TEEM_DATAIO_READ_NRRD_H
+#define MODULES_TEEM_DATAIO_READ_NRRD_H
 
-#ifndef MODULES_DATAIO_READ_FIELD_H
-#define MODULES_DATAIO_READ_FIELD_H
-
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+//#include <Core/Datatypes/Mesh/FieldFwd.h>
+//#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Modules/DataIO/GenericReader.h>
 #include <Modules/DataIO/share.h>
 
@@ -40,17 +38,17 @@ namespace SCIRun {
 namespace Modules {
 namespace DataIO {
 
-  class SCISHARE ReadFieldModule : public GenericReader<FieldHandle, FieldPortTag>
+  class SCISHARE ReadNrrd : public GenericReader<NrrdDataHandle, NrrdPortTag>
   {
   public:
-    typedef GenericReader<FieldHandle, FieldPortTag> my_base;
-    ReadFieldModule();
+    typedef GenericReader<NrrdDataHandle, NrrdPortTag> my_base;
+    ReadNrrd();
     virtual void execute();
     virtual void setStateDefaults() {}
     virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, FieldHandle& handle) override;
+    virtual bool call_importer(const std::string& filename, NrrdDataHandle& handle) override;
 
-    OUTPUT_PORT(0, Field, LegacyField);
+    OUTPUT_PORT(0, Output_Data, NrrdData);
 
     static std::string fileTypeList();
   };

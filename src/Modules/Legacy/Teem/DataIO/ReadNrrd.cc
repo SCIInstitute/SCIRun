@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,20 +39,18 @@
  *
  */
 
-#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Teem/DataIO/ReadNrrd.h>
 
-#include <Core/Util/StringUtil.h>
+//#include <Core/Util/StringUtil.h>
 #include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
-#include <Core/Util/sci_system.h>
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Dataflow/Network/Ports/NrrdPort.h>
+//#include <Core/Util/sci_system.h>
 
-#include <sys/stat.h>
+//#include <sys/stat.h>
 #include <sstream>
 
-#ifdef _WIN32
-#include <process.h> // for getpid
-#endif
+//#ifdef _WIN32
+//#include <process.h> // for getpid
+//#endif
 
 namespace SCITeem {
 
@@ -73,7 +71,7 @@ private:
   GuiString       filetype_;
   GuiFilename     filename_;
   GuiString       from_env_;
-  
+
   NrrdDataHandle  read_handle_;
 
   std::string     old_filename_;
@@ -88,7 +86,7 @@ using namespace SCITeem;
 
 DECLARE_MAKER(ReadNrrd)
 
-ReadNrrd::ReadNrrd(SCIRun::GuiContext* ctx) : 
+ReadNrrd::ReadNrrd(SCIRun::GuiContext* ctx) :
   Module("ReadNrrd", ctx, Filter, "DataIO", "Teem"),
   types_(get_ctx()->subVar("types", false)),
   filetype_(get_ctx()->subVar("filetype")),
@@ -102,7 +100,7 @@ ReadNrrd::ReadNrrd(SCIRun::GuiContext* ctx) :
   NrrdIEPluginManager mgr;
   std::vector<std::string> importers;
   mgr.get_importer_list(importers);
-  
+
   std::string importtypes = "{";
   importtypes += "{{Nrrd Files}    {.nhdr .nrrd .png .txt .vtk} } ";
   importtypes += "{{VFF}           {.vff} } "; // temporary
@@ -127,30 +125,30 @@ ReadNrrd::~ReadNrrd()
 // Return true if handle_ was changed, otherwise return false.  This
 // return value does not necessarily signal an error!
 bool
-ReadNrrd::read_nrrd() 
+ReadNrrd::read_nrrd()
 {
   filename_.reset();
   std::string fn(filename_.get());
-  if (fn == "") 
-  { 
+  if (fn == "")
+  {
     error("Please specify nrrd filename");
-    return (false); 
+    return (false);
   }
 
   // Read the status of this file so we can compare modification timestamps.
   struct stat buf;
-  if (stat(fn.c_str(), &buf) == - 1) 
+  if (stat(fn.c_str(), &buf) == - 1)
   {
     error(std::string("NrrdReader error - file not found: '")+fn+"'");
     return false;
   }
 
-  // If we haven't read yet, or if it's a new filename, 
+  // If we haven't read yet, or if it's a new filename,
   //  or if the datestamp has changed -- then read...
   time_t new_filemodification = buf.st_mtime;
 
-  if(!read_handle_.get_rep() || 
-     fn != old_filename_ || 
+  if(!read_handle_.get_rep() ||
+     fn != old_filename_ ||
      new_filemodification != old_filemodification_)
   {
     old_filemodification_ = new_filemodification;
@@ -171,7 +169,7 @@ ReadNrrd::read_nrrd()
 
 
     // check that the last 3 chars are .nd for us to pio
-    if (fn.substr(len - ext.size(), ext.size()) == ext) 
+    if (fn.substr(len - ext.size(), ext.size()) == ext)
     {
       PiostreamPtr stream = auto_istream(fn, this);
       if (!stream)
@@ -187,29 +185,29 @@ ReadNrrd::read_nrrd()
         error("Error reading data from file '" + fn +"'.");
         return (true);
       }
-    } 
-    else 
+    }
+    else
     { // assume it is just a nrrd
       if (fn.substr(len - vff_ext.size(), vff_ext.size()) == vff_ext)
       {
         std::string tmpfilename;
         write_tmpfile(filename, &tmpfilename, vff_conv_command);
-        return read_file(tmpfilename);		
-      } 
+        return read_file(tmpfilename);
+      }
       else if ((fn.substr(len - pic_ext.size(), pic_ext.size()) == pic_ext) ||
         fn.substr(len - pic_ext2.size(), pic_ext2.size()) == pic_ext2)
       {
         std::string tmpfilename;
         write_tmpfile(filename, &tmpfilename, pic_conv_command);
         return read_file(tmpfilename);
-      } 
+      }
       else if (fn.substr(len - vista_ext.size(), vista_ext.size()) == vista_ext)
       {
         std::string tmpfilename;
         write_tmpfile(filename, &tmpfilename, vista_conv_command);
-        return read_file(tmpfilename);	
-      } 
-      else 
+        return read_file(tmpfilename);
+      }
+      else
       {
         return read_file(fn);
       }
@@ -226,7 +224,7 @@ ReadNrrd::read_file(const std::string& fn)
   // Restrict TEEM access: it is not thread safe
   NrrdData::lock_teem();
   NrrdDataHandle n = new NrrdData;
-  if (nrrdLoad(n->nrrd_, airStrdup(fn.c_str()), 0)) 
+  if (nrrdLoad(n->nrrd_, airStrdup(fn.c_str()), 0))
   {
     // Ugly error handling
     char *err = biffGetDone(NRRD);
@@ -235,9 +233,9 @@ ReadNrrd::read_file(const std::string& fn)
     NrrdData::unlock_teem();
     return (true);
   }
-  
+
   read_handle_ = n;
-  
+
   NrrdData::unlock_teem();
   return (false);
 }
@@ -250,7 +248,7 @@ ReadNrrd::write_tmpfile(const std::string& filename, std::string* tmpfilename,
   std::string::size_type loc = filename.find_last_of("/");
   const std::string basefilename =
     (loc==std::string::npos)?filename:filename.substr(loc+1);
-	
+
   // Base filename with first extension removed.
   loc = basefilename.find_last_of(".");
   const std::string basenoext = basefilename.substr(0, loc);
@@ -265,7 +263,7 @@ ReadNrrd::write_tmpfile(const std::string& filename, std::string* tmpfilename,
   std::string tmpdir = std::string(sci_getenv("SCIRUN_TMP_DIR")) + "/";
   tmpfilename->assign(tmpdir + basenoext + "-" +
 		      to_string((unsigned int)(getpid())) + ".nhdr");
-  
+
   ASSERT(sci_getenv("SCIRUN_OBJDIR"));
   std::string command =
     std::string(sci_getenv("SCIRUN_OBJDIR")) + "/convert/" +
@@ -294,10 +292,10 @@ ReadNrrd::execute()
 
   read_nrrd();
 
-  if (!read_handle_.get_rep()) 
-  { 
+  if (!read_handle_.get_rep())
+  {
     error("Please load a nrrd.");
-    return; 
+    return;
   }
 
   // A hack to make PowerApps at least work with old types of Nrrds
@@ -315,7 +313,7 @@ ReadNrrd::execute()
       }
     }
   }
-  
+
   // Send the data downstream.
   send_output_handle("Output Data", read_handle_, true);
 
