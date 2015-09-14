@@ -38,19 +38,23 @@ namespace SCIRun {
 namespace Modules {
 namespace DataIO {
 
-  class SCISHARE ReadNrrd : public GenericReader<NrrdDataHandle, NrrdPortTag>
+  class SCISHARE ReadNrrd : public Dataflow::Networks::Module //GenericReader<NrrdDataHandle, NrrdPortTag>
   {
   public:
-    typedef GenericReader<NrrdDataHandle, NrrdPortTag> my_base;
+    //typedef GenericReader<NrrdDataHandle, NrrdPortTag> my_base;
     ReadNrrd();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, NrrdDataHandle& handle) override;
+    virtual void execute() override;
+    virtual void setStateDefaults() override {}
+    //virtual bool useCustomImporter(const std::string& filename) const override;
+    //virtual bool call_importer(const std::string& filename, NrrdDataHandle& handle) override;
 
     OUTPUT_PORT(0, Output_Data, NrrdData);
 
     static std::string fileTypeList();
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  private:
+    NrrdDataHandle read_nrrd();
   };
 
 }}}

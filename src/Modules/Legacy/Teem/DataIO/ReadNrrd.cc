@@ -40,6 +40,7 @@
  */
 
 #include <Modules/Legacy/Teem/DataIO/ReadNrrd.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 
 //#include <Core/Util/StringUtil.h>
 #include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
@@ -52,6 +53,12 @@
 //#include <process.h> // for getpid
 //#endif
 
+using namespace SCIRun;
+//using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::DataIO;
+using namespace SCIRun::Dataflow::Networks;
+
+#if 0
 namespace SCITeem {
 
 using namespace SCIRun;
@@ -85,18 +92,23 @@ private:
 using namespace SCITeem;
 
 DECLARE_MAKER(ReadNrrd)
+#endif
 
-ReadNrrd::ReadNrrd(SCIRun::GuiContext* ctx) :
-  Module("ReadNrrd", ctx, Filter, "DataIO", "Teem"),
-  types_(get_ctx()->subVar("types", false)),
-  filetype_(get_ctx()->subVar("filetype")),
-  filename_(get_ctx()->subVar("filename"), ""),
-  from_env_(get_ctx()->subVar("from-env"),""),
-  read_handle_(0),
-  old_filemodification_(0),
-  cached_label_generation_(0),
-  cached_label_(0)
+const ModuleLookupInfo ReadNrrd::staticInfo_("ReadNrrd", "DataIO", "Teem");
+
+ReadNrrd::ReadNrrd() :
+  Module(staticInfo_)
+//  types_(get_ctx()->subVar("types", false)),
+  // filetype_(get_ctx()->subVar("filetype")),
+  // filename_(get_ctx()->subVar("filename"), ""),
+  // from_env_(get_ctx()->subVar("from-env"),""),
+  // read_handle_(0),
+  // old_filemodification_(0),
+  // cached_label_generation_(0),
+  // cached_label_(0)
 {
+  INITIALIZE_PORT(Output_Data);
+  /*
   NrrdIEPluginManager mgr;
   std::vector<std::string> importers;
   mgr.get_importer_list(importers);
@@ -112,11 +124,7 @@ ReadNrrd::ReadNrrd(SCIRun::GuiContext* ctx) :
   importtypes += "}";
 
   types_.set(importtypes);
-}
-
-ReadNrrd::~ReadNrrd()
-{
-  if (cached_label_) { delete [] cached_label_; cached_label_ = 0; }
+  */
 }
 
 // TODO: read_nrrd and read_files need to be rewritten with better return value strategies
@@ -124,9 +132,9 @@ ReadNrrd::~ReadNrrd()
 //
 // Return true if handle_ was changed, otherwise return false.  This
 // return value does not necessarily signal an error!
-bool
-ReadNrrd::read_nrrd()
+NrrdDataHandle ReadNrrd::read_nrrd()
 {
+  #if 0
   filename_.reset();
   std::string fn(filename_.get());
   if (fn == "")
@@ -214,10 +222,12 @@ ReadNrrd::read_nrrd()
     }
     return true;
   }
-    return false;
+  return false;
+  #endif
+  return nullptr;
 }
 
-
+#if 0
 bool
 ReadNrrd::read_file(const std::string& fn)
 {
@@ -239,8 +249,8 @@ ReadNrrd::read_file(const std::string& fn)
   NrrdData::unlock_teem();
   return (false);
 }
-
-
+#endif
+#if 0
 bool
 ReadNrrd::write_tmpfile(const std::string& filename, std::string* tmpfilename,
                           const std::string& conv_command)
@@ -283,21 +293,22 @@ ReadNrrd::write_tmpfile(const std::string& filename, std::string* tmpfilename,
   }
   return true;
 }
-
+#endif
 
 void
 ReadNrrd::execute()
 {
   update_state(NeedData);
 
-  read_nrrd();
+  auto nrrd = read_nrrd();
 
-  if (!read_handle_.get_rep())
+  if (!nrrd)
   {
     error("Please load a nrrd.");
     return;
   }
 
+#if 0
   // A hack to make PowerApps at least work with old types of Nrrds
   Nrrd* nrrd = read_handle_->nrrd_;
   if (nrrd->spaceDim == 0)
@@ -313,9 +324,9 @@ ReadNrrd::execute()
       }
     }
   }
+#endif
 
-  // Send the data downstream.
-  send_output_handle("Output Data", read_handle_, true);
+  sendOutput(Output_Data, nrrd);
 
   update_state(Completed);
 }
