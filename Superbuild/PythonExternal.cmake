@@ -89,7 +89,7 @@ IF(UNIX)
   IF(APPLE)
     # Preserves links, permissions
     ExternalProject_Add_Step(Python_external framework_tar_archive
-      COMMAND "${CMAKE_COMMAND}" -E tar cvf ${python_FRAMEWORK_ARCHIVE} Python.framework
+      COMMAND "${CMAKE_COMMAND}" -E tar cf ${python_FRAMEWORK_ARCHIVE} Python.framework
 	DEPENDEES install
 	WORKING_DIRECTORY <INSTALL_DIR>
     )
