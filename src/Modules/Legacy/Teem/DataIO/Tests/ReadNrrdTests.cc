@@ -27,33 +27,19 @@
 */
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
-#include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
-#include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
+#include <Modules/Legacy/Teem/DataIO/ReadNrrd.h>
 
 using namespace SCIRun::Testing;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-class GetDataFromBundleModuleTest : public ModuleTest
+class ReadNrrdTests : public ModuleTest
 {
 };
 
-TEST_F(GetDataFromBundleModuleTest, DISABLED_ThrowsForNullBundlesMatrix)
+TEST_F(ReadNrrdTests, CanCreate)
 {
-  auto sls = makeModule("GetMatricesFromBundle");
-  BundleHandle nullBundle;
-  stubPortNWithThisData(sls, 0, nullBundle);
+  auto rn = makeModule("ReadNrrd");
 
-  EXPECT_THROW(sls->execute(), NullHandleOnPortException);
-}
-
-TEST_F(GetDataFromBundleModuleTest, DISABLED_ThrowsForNullBundlesField)
-{
-  auto sls = makeModule("GetFieldsFromBundle");
-  BundleHandle nullBundle;
-  stubPortNWithThisData(sls, 0, nullBundle);
-
-  EXPECT_THROW(sls->execute(), NullHandleOnPortException);
+  FAIL() << "todo";
 }
