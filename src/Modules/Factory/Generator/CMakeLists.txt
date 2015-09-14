@@ -43,3 +43,9 @@ SCIRUN_ADD_LIBRARY(Modules_Factory_Generator
 TARGET_LINK_LIBRARIES(Modules_Factory_Generator
   ${SCI_BOOST_LIBRARY}
 )
+
+SET_PROPERTY(TARGET Modules_Factory_Generator   PROPERTY FOLDER "Modules")
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Factory_Generator)
+ENDIF(BUILD_SHARED_LIBS)

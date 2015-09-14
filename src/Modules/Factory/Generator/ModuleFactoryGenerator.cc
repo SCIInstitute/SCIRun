@@ -34,12 +34,10 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/filesystem/operations.hpp>
 
-#include <boost/range/adaptors.hpp>
-#include <boost/range/algorithm/copy.hpp>
 #include <boost/foreach.hpp>
 
 using namespace SCIRun::Modules::Factory;
-using namespace SCIRun::Modules::Factory::Generator;
+using namespace Generator;
 
 ModuleDescriptor ModuleDescriptorJsonParser::readJsonString(const std::string& json) const
 {

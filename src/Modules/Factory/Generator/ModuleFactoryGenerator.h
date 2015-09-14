@@ -29,8 +29,6 @@
 #ifndef MODULE_FACTORY_GENERATOR_H
 #define MODULE_FACTORY_GENERATOR_H
 
-//#include <Dataflow/Network/ModuleFactory.h>
-//#include <Dataflow/Network/ModuleDescription.h>
 #include <sstream>
 #include <vector>
 #include <string>
