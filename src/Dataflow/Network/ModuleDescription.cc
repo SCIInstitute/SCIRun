@@ -58,6 +58,7 @@ void PortColorLookup::init()
     ("Geometry", "magenta")
     ("ColorMap", "purple")
     ("Bundle", "orange")
+    ("Nrrd", "cyan") // not quite right, it's bluer than the highlight cyan
     ("Datatype", "black");
 }
 
