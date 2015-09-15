@@ -54,7 +54,6 @@
 //#endif
 
 using namespace SCIRun;
-//using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Dataflow::Networks;
 

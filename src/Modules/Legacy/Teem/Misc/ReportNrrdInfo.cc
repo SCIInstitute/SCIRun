@@ -34,6 +34,20 @@
 //#include <Core/Util/StringUtil.h>
 #include <iostream>
 
+using namespace SCIRun;
+using namespace SCIRun::Modules::Teem;
+using namespace SCIRun::Dataflow::Networks;
+
+const ModuleLookupInfo ReportNrrdInfo::staticInfo_("ReportNrrdInfo", "Misc", "Teem");
+
+ReportNrrdInfo::ReportNrrdInfo() : Module(staticInfo_)
+    //generation_(-1),
+    //gui_name_(get_ctx()->subVar("name"), "---"),
+    //gui_type_(get_ctx()->subVar("type"), "---"),
+    //gui_dimension_(get_ctx()->subVar("dimension"), "0"),
+    //gui_origin_(get_ctx()->subVar("origin"), "0")
+{
+}
 
 #if 0
 namespace SCITeem {
@@ -61,22 +75,6 @@ private:
   GuiString           gui_origin_;
 };
 
-DECLARE_MAKER(ReportNrrdInfo)
-
-ReportNrrdInfo::ReportNrrdInfo(GuiContext* ctx)
-  : Module("ReportNrrdInfo", ctx, Source, "Misc", "Teem"),
-    generation_(-1),
-    gui_name_(get_ctx()->subVar("name"), "---"),
-    gui_type_(get_ctx()->subVar("type"), "---"),
-    gui_dimension_(get_ctx()->subVar("dimension"), "0"),
-    gui_origin_(get_ctx()->subVar("origin"), "0")
-{
-}
-
-
-ReportNrrdInfo::~ReportNrrdInfo()
-{
-}
 
 
 void
@@ -242,11 +240,12 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
   }
   if (get_ctx()->is_active()) TCLInterface::execute(get_id() + " add_tabs");
 }
-
+#endif
 
 void
 ReportNrrdInfo::execute()
 {
+#if 0
   NrrdDataHandle nh;
   if (!get_input_handle("Query Nrrd", nh, false))
   {
@@ -261,7 +260,6 @@ ReportNrrdInfo::execute()
     clear_vals();
     update_input_attributes(nh);
   }
+#endif
 }
 
-} // end SCITeem namespace
-#endif
