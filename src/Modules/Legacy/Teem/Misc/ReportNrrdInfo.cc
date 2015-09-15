@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -31,12 +31,14 @@
 //    Date   : Tue Feb  4 08:55:34 2003
 
 #include <Modules/Legacy/Teem/Misc/ReportNrrdInfo.h>
-//#include <Core/Util/StringUtil.h>
-#include <iostream>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Teem;
 using namespace SCIRun::Dataflow::Networks;
+using namespace Core::Algorithms;
 
 const ModuleLookupInfo ReportNrrdInfo::staticInfo_("ReportNrrdInfo", "Misc", "Teem");
 
@@ -47,60 +49,24 @@ ReportNrrdInfo::ReportNrrdInfo() : Module(staticInfo_)
     //gui_dimension_(get_ctx()->subVar("dimension"), "0"),
     //gui_origin_(get_ctx()->subVar("origin"), "0")
 {
+  INITIALIZE_PORT(Query_Nrrd);
 }
 
-#if 0
-namespace SCITeem {
-
-using namespace SCIRun;
-
-
-class ReportNrrdInfo : public Module {
-public:
-  ReportNrrdInfo(GuiContext* ctx);
-  virtual ~ReportNrrdInfo();
-
-  void clear_vals();
-  void update_input_attributes(NrrdDataHandle);
-  void update_axis_var(const char *name, int axis, const std::string &val,
-                       const char *pname);
-
-  virtual void execute();
-
-private:
-  int                 generation_;
-  GuiString           gui_name_;
-  GuiString           gui_type_;
-  GuiString           gui_dimension_;
-  GuiString           gui_origin_;
-};
-
-
-
-void
-ReportNrrdInfo::clear_vals() 
+void ReportNrrdInfo::setStateDefaults()
 {
-  gui_name_.set("---");
-  gui_type_.set("---");
-
-  if (get_ctx()->is_active()) TCLInterface::execute(get_id() + " delete_tabs");
+  auto state = get_state();
+  state->setValue(Variables::ObjectInfo, std::string());
 }
 
-
+template <typename T>
 void
-ReportNrrdInfo::update_axis_var(const char *name, int axis, const std::string &val,
+ReportNrrdInfo::update_axis_var(std::ostringstream& info, const char *name, int axis, const T& val,
                           const char *pname)
 {
-  std::ostringstream ostr;
-  ostr << "set " << get_id() << "-" << name << axis << " {" << val << "}";
-  TCLInterface::execute(ostr.str());
-  if (sci_getenv_p("SCI_REGRESSION_TESTING"))
-  {
-    remark("Axis " + to_string(axis) + " " + pname + ": " + val);
-  }
+  info << "set " << get_id() << "-" << name << axis << " {" << val << "}\n";
 }
 
-const char *nrrd_kind_strings[] = { // nrrdKinds, Matches teem 1.9!
+static const char *nrrd_kind_strings[] = { // nrrdKinds, Matches teem 1.9!
   "nrrdKindUnknown",
   "nrrdKindDomain",            //  1: any image domain
   "nrrdKindSpace",             //  2: a spatial domain
@@ -140,73 +106,74 @@ const char *nrrd_kind_strings[] = { // nrrdKinds, Matches teem 1.9!
   "nrrdKindLast"
 };
 
-
 void
-ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh) 
+ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
 {
-  const bool regressing = sci_getenv_p("SCI_REGRESSION_TESTING");
+  std::ostringstream info;
 
   std::string name;
-  if (!nh->get_property( "Name", name)) { 
+  if (!nh->properties().get_property( "Name", name)) {
     name = "Unknown";
   }
-  gui_name_.set(name);
-  if (regressing) { remark("Name: " + name); }
+  //gui_name_.set(name);
+  info << "Name: " << name << "\n";
 
   std::string nrrdtype, stmp;
-  get_nrrd_compile_type(nh->nrrd_->type, nrrdtype, stmp);
-  gui_type_.set(nrrdtype);
-  if (regressing) { remark("Data Type: " + nrrdtype); }
+  get_nrrd_compile_type(nh->getNrrd()->type, nrrdtype, stmp);
+  //gui_type_.set(nrrdtype);
+  info << "Type: " << nrrdtype << "\n";
 
-  gui_dimension_.set(to_string(nh->nrrd_->dim));
-  if (regressing) { remark("Dimension: " + to_string(nh->nrrd_->dim)); }
+  //gui_dimension_.set(to_string(nh->getNrrd()->dim));
+  info << "Dimension: " << nh->getNrrd()->dim << "\n";
 
   // space origin
   std::ostringstream spaceor;
   spaceor << "[ ";
-  unsigned int last_dim = nh->nrrd_->spaceDim - 1;
-  for (unsigned int p = 0; p < nh->nrrd_->spaceDim; ++p)
+  unsigned int last_dim = nh->getNrrd()->spaceDim - 1;
+  for (unsigned int p = 0; p < nh->getNrrd()->spaceDim; ++p)
   {
-    spaceor << nh->nrrd_->spaceOrigin[p];
+    spaceor << nh->getNrrd()->spaceOrigin[p];
     if (p < last_dim)
       spaceor << ", ";
   }
   spaceor << " ]";
-  gui_origin_.set(spaceor.str());
+  //gui_origin_.set(spaceor.str());
+  info << "Origin: " << spaceor.str() << "\n";
 
   // TODO: Set Origin here.
 
   bool haveSpaceInfo=false;
-  for (unsigned int i = 0; i < nh->nrrd_->dim; i++) 
-    if (airExists(nh->nrrd_->axis[i].spaceDirection[0])) haveSpaceInfo=true;
+  for (unsigned int i = 0; i < nh->getNrrd()->dim; i++)
+    if (airExists(nh->getNrrd()->axis[i].spaceDirection[0])) haveSpaceInfo=true;
 
   // Go through all axes...
-  for (unsigned int i = 0; i < nh->nrrd_->dim; i++)
+  for (unsigned int i = 0; i < nh->getNrrd()->dim; i++)
   {
     std::string labelstr;
-    if (nh->nrrd_->axis[i].label == 0 ||
-        std::string(nh->nrrd_->axis[i].label).length() == 0)
+    if (nh->getNrrd()->axis[i].label == 0 ||
+        std::string(nh->getNrrd()->axis[i].label).length() == 0)
     {
       labelstr = "---";
     }
     else
     {
-      labelstr = nh->nrrd_->axis[i].label;
+      labelstr = nh->getNrrd()->axis[i].label;
     }
-    update_axis_var("label", i, labelstr, "Label");
+    update_axis_var(info, "label", i, labelstr, "Label");
 
-    int k = nh->nrrd_->axis[i].kind;
+    int k = nh->getNrrd()->axis[i].kind;
     if (k < 0 || k >= nrrdKindLast) k = 0;
     const char *kindstr = nrrd_kind_strings[k];
-    update_axis_var("kind", i, kindstr, "Kind");
+    update_axis_var(info, "kind", i, kindstr, "Kind");
 
-    update_axis_var("size", i, to_string(nh->nrrd_->axis[i].size), "Size");
+    update_axis_var(info, "size", i, nh->getNrrd()->axis[i].size, "Size");
 
-    update_axis_var("min", i, to_string(nh->nrrd_->axis[i].min), "Min");
-    update_axis_var("max", i, to_string(nh->nrrd_->axis[i].max), "Max");
+    update_axis_var(info, "min", i, nh->getNrrd()->axis[i].min, "Min");
+    update_axis_var(info, "max", i, nh->getNrrd()->axis[i].max, "Max");
 
     std::string locstr;
-    switch (nh->nrrd_->axis[i].center) {
+    switch (nh->getNrrd()->axis[i].center)
+    {
     case nrrdCenterUnknown :
       locstr = "Unknown";
       break;
@@ -217,49 +184,33 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
       locstr = "Cell";
       break;
     }
-    update_axis_var("center", i, locstr, "Center");
+    update_axis_var(info, "center", i, locstr, "Center");
 
     if (!haveSpaceInfo) { // no "spaceDirection" info, just "spacing"
-      update_axis_var("spacing", i, to_string(nh->nrrd_->axis[i].spacing), "Spacing");
+      update_axis_var(info, "spacing", i, (nh->getNrrd()->axis[i].spacing), "Spacing");
     } else {
       std::ostringstream spacedir;
       spacedir << "[ ";
       double l2 = 0;
-      for (unsigned int p = 0; p < nh->nrrd_->spaceDim; ++p)
+      for (unsigned int p = 0; p < nh->getNrrd()->spaceDim; ++p)
       {
-        double tmp = nh->nrrd_->axis[i].spaceDirection[p];
+        double tmp = nh->getNrrd()->axis[i].spaceDirection[p];
         spacedir << tmp;
         l2 += tmp*tmp;
         if (p < last_dim)
           spacedir << ", ";
       }
       spacedir << " ]";
-      update_axis_var("spaceDir", i, spacedir.str(), "Spacing Direction");
-      update_axis_var("spacing", i, to_string(sqrt(l2)), "Spacing");
+      update_axis_var(info, "spaceDir", i, spacedir.str(), "Spacing Direction");
+      update_axis_var(info, "spacing", i, (sqrt(l2)), "Spacing");
     }
   }
-  if (get_ctx()->is_active()) TCLInterface::execute(get_id() + " add_tabs");
+  get_state()->setValue(Variables::ObjectInfo, info.str());
 }
-#endif
 
 void
 ReportNrrdInfo::execute()
 {
-#if 0
-  NrrdDataHandle nh;
-  if (!get_input_handle("Query Nrrd", nh, false))
-  {
-    clear_vals();
-    generation_ = -1;
-    return;
-  }
-
-  if (generation_ != nh.get_rep()->generation) 
-  {
-    generation_ = nh.get_rep()->generation;
-    clear_vals();
-    update_input_attributes(nh);
-  }
-#endif
+  auto nh = getRequiredInput(Query_Nrrd);
+  update_input_attributes(nh);
 }
-

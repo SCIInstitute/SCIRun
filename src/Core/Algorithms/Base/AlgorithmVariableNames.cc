@@ -47,6 +47,7 @@ PARAMETER(FileTypeList)
 PARAMETER(FileExtension)
 PARAMETER(FileTypeName)
 PARAMETER(FunctionString)
+PARAMETER(ObjectInfo)
 
 INPUT(InputMatrix)
 INPUT(FirstMatrix)

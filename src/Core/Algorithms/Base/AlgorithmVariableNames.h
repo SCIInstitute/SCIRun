@@ -36,7 +36,7 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 
-class SCISHARE Variables 
+class SCISHARE Variables
 {
 public:
   static const AlgorithmParameterName RowsOrColumns;
@@ -51,8 +51,9 @@ public:
   static const AlgorithmParameterName FileTypeList;
   static const AlgorithmParameterName FileExtension;
   static const AlgorithmParameterName FileTypeName;
-	static const AlgorithmParameterName FunctionString; 
-  
+	static const AlgorithmParameterName FunctionString;
+  static const AlgorithmParameterName ObjectInfo; 
+
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmInputName FirstMatrix;
   static const AlgorithmInputName SecondMatrix;

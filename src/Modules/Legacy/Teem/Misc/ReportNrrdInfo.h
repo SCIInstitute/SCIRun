@@ -36,18 +36,23 @@ namespace SCIRun {
 namespace Modules {
 namespace Teem {
 
-  class SCISHARE ReportNrrdInfo : public Dataflow::Networks::Module, 
+  class SCISHARE ReportNrrdInfo : public Dataflow::Networks::Module,
     public Has1InputPort<NrrdPortTag>,
     public HasNoOutputPorts
   {
   public:
     ReportNrrdInfo();
     virtual void execute() override;
-    virtual void setStateDefaults() override {}
+    virtual void setStateDefaults() override;
 
     INPUT_PORT(0, Query_Nrrd, NrrdData);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  private:
+    void update_input_attributes(NrrdDataHandle nrrd);
+    template <typename T>
+    void update_axis_var(std::ostringstream& info, const char *name, int axis, const T& val,
+                         const char *pname);
   };
 
 }}}
