@@ -31,14 +31,16 @@
 
 //#include <Core/Datatypes/Mesh/FieldFwd.h>
 //#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Teem/DataIO/share.h>
 
 namespace SCIRun {
 namespace Modules {
 namespace DataIO {
 
-  class SCISHARE ReadNrrd : public Dataflow::Networks::Module //GenericReader<NrrdDataHandle, NrrdPortTag>
+  class SCISHARE ReadNrrd : public Dataflow::Networks::Module, //GenericReader<NrrdDataHandle, NrrdPortTag>
+    public HasNoInputPorts,
+    public Has1OutputPort<NrrdPortTag>
   {
   public:
     //typedef GenericReader<NrrdDataHandle, NrrdPortTag> my_base;

@@ -88,6 +88,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_Matlab_DataIO
   Modules_Legacy_MatlabInterface
   Modules_Legacy_Converters
+  Modules_Legacy_Teem_DataIO
 )
 
 IF(BUILD_SHARED_LIBS)
