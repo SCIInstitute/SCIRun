@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -26,28 +26,37 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_Legacy_Teem_DataIO_HEADERS
-  ReadNrrd.h
+# CMakeLists.txt for Packages/Teem/Dataflow/Modules/Misc
+
+SET(Modules_Legacy_Teem_Misc_SRCS
+  #BuildDerivedNrrdWithGage.cc
+  #BuildNrrdGradient.cc
+  #BuildNrrdGradientAndMagnitude.cc
+  #ClassifyHeadTissuesFromMultiMRI.cc
+  #ChooseNrrd.cc
+  ReportNrrdInfo.cc
+  #SelectTimeStepFromNrrd.cc
+  #SetNrrdProperty.cc
+)
+
+SET(Modules_Legacy_Teem_Misc_HEADERS
+  ReportNrrdInfo.h
   share.h
 )
 
-SET(Modules_Legacy_Teem_DataIO_SRCS
-  ReadNrrd.cc
+SCIRUN_ADD_LIBRARY(Modules_Legacy_Teem_Misc 
+  ${Modules_Legacy_Teem_Misc_SRCS}
+  ${Modules_Legacy_Teem_Misc_HEADERS}
 )
 
-SCIRUN_ADD_LIBRARY(Modules_Legacy_Teem_DataIO
-  ${Modules_Legacy_Teem_DataIO_HEADERS}
-  ${Modules_Legacy_Teem_DataIO_SRCS}
-)
-
-TARGET_LINK_LIBRARIES(Modules_Legacy_Teem_DataIO
+TARGET_LINK_LIBRARIES(Modules_Legacy_Teem_Misc
   Dataflow_Network
   Core_Datatypes
-  #${SCI_TEEM_LIBRARY}
+  ${SCI_TEEM_LIBRARY}
 )
 
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Teem_DataIO)
-ENDIF(BUILD_SHARED_LIBS)
+IF(NOT BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Teem_Misc)
+ENDIF(NOT BUILD_SHARED_LIBS)
 
 SCIRUN_ADD_TEST_DIR(Tests)
