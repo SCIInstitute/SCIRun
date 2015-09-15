@@ -41,26 +41,22 @@
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/ModuleLogWindow.h>
-#include <Interface/Application/NoteEditor.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Application/PortWidgetManager.h>
-#include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 
-#include <Dataflow/Network/Module.h>
-
 using namespace SCIRun;
-using namespace SCIRun::Core;
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Logging;
+using namespace Core;
+using namespace Gui;
+using namespace Dataflow::Networks;
+using namespace Logging;
 
 ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset)
 {
@@ -460,7 +456,7 @@ void fillColorStateLookup(const QString& background);
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QStackedWidget(parent), HasNotes(theModule->get_id(), true),
-  currentDisplay_(0),
+  currentDisplay_(nullptr),
   fullWidgetDisplay_(new ModuleWidgetDisplay),
   miniWidgetDisplay_(new ModuleWidgetDisplayMini),
   ports_(new PortWidgetManager),
@@ -609,7 +605,7 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
     //qDebug() << "errored set color";
     errored_ = true;
     //Q_EMIT backgroundColorUpdated(moduleRGBA(176, 23, 31));
-    updateBackgroundColor(colorStateLookup.right.at((int)ModuleExecutionState::Errored));
+    updateBackgroundColor(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored)));
   }
   currentDisplay_->getLogButton()->setStyleSheet(
     QString("* { background-color: %1 }")
@@ -1050,19 +1046,19 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
   //qDebug() << "color slot: " << moduleState;
   switch (moduleState)
   {
-  case (int)ModuleExecutionState::Waiting:
+  case static_cast<int>(ModuleExecutionState::Waiting):
   {
     //qDebug() << "waiting color";
-    Q_EMIT backgroundColorUpdated(colorStateLookup.right.at((int)ModuleExecutionState::Waiting));
+    Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Waiting)));
   }
   break;
-  case (int)ModuleExecutionState::Executing:
+  case static_cast<int>(ModuleExecutionState::Executing):
   {
     //qDebug() << "executing color";
-    Q_EMIT backgroundColorUpdated(colorStateLookup.right.at((int)ModuleExecutionState::Executing));
+    Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Executing)));
   }
   break;
-  case (int)ModuleExecutionState::Completed:
+  case static_cast<int>(ModuleExecutionState::Completed):
   {
     if (!errored_)
     {
@@ -1109,7 +1105,7 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialog_)
     {
       if (!dialogFactory_)
-        dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
+        dialogFactory_.reset(new ModuleDialogFactory(nullptr, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       addWidgetToExecutionDisableList(dialog_->getExecuteAction());
@@ -1121,7 +1117,7 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
       connect(dialog_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
       connect(dialog_, SIGNAL(executionLoopHalted()), this, SIGNAL(reenableWidgetDisabling()));
-      dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
+      dockable_ = new QDockWidget(QString::fromStdString(moduleId_), nullptr);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
       dialog_->setDockable(dockable_);
@@ -1377,7 +1373,7 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
 {
   skipExecute_ = true;
   qDebug() << "Dialog error: " << message;
-  updateBackgroundColor(colorStateLookup.right.at((int)ModuleExecutionState::Errored));
+  updateBackgroundColor(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored)));
   colorLocked_ = true;
   setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nClick \"Refresh\" button to replace module for proper execution.");
 
