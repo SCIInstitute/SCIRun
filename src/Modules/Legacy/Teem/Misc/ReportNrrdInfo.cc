@@ -43,11 +43,6 @@ using namespace Core::Algorithms;
 const ModuleLookupInfo ReportNrrdInfo::staticInfo_("ReportNrrdInfo", "Misc", "Teem");
 
 ReportNrrdInfo::ReportNrrdInfo() : Module(staticInfo_)
-    //generation_(-1),
-    //gui_name_(get_ctx()->subVar("name"), "---"),
-    //gui_type_(get_ctx()->subVar("type"), "---"),
-    //gui_dimension_(get_ctx()->subVar("dimension"), "0"),
-    //gui_origin_(get_ctx()->subVar("origin"), "0")
 {
   INITIALIZE_PORT(Query_Nrrd);
 }
@@ -112,18 +107,13 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
   std::ostringstream info;
 
   std::string name;
-  if (!nh->properties().get_property( "Name", name)) {
+  if (!nh->properties().get_property( "Name", name))
     name = "Unknown";
-  }
-  //gui_name_.set(name);
   info << "Name: " << name << "\n";
 
   std::string nrrdtype, stmp;
   get_nrrd_compile_type(nh->getNrrd()->type, nrrdtype, stmp);
-  //gui_type_.set(nrrdtype);
   info << "Type: " << nrrdtype << "\n";
-
-  //gui_dimension_.set(to_string(nh->getNrrd()->dim));
   info << "Dimension: " << nh->getNrrd()->dim << "\n";
 
   // space origin
@@ -137,7 +127,6 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
       spaceor << ", ";
   }
   spaceor << " ]";
-  //gui_origin_.set(spaceor.str());
   info << "Origin: " << spaceor.str() << "\n";
 
   // TODO: Set Origin here.
