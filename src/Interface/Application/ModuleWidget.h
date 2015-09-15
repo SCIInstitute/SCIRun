@@ -86,7 +86,7 @@ public:
 typedef boost::shared_ptr<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
 class ModuleWidget : public QStackedWidget,
-  public SCIRun::Dataflow::Networks::ExecutableObject, public HasNotes
+  public Dataflow::Networks::ExecutableObject, public HasNotes
 {
 	Q_OBJECT
 

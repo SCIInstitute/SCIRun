@@ -457,7 +457,7 @@ typedef ColorStateLookup::value_type ColorStatePair;
 static ColorStateLookup colorStateLookup;
 void fillColorStateLookup(const QString& background);
 
-ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
+ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QStackedWidget(parent), HasNotes(theModule->get_id(), true),
   currentDisplay_(0),
@@ -508,7 +508,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   theModule_->connectExecuteSelfRequest([this]() { executeAgain(); });
   connect(this, SIGNAL(executeAgain()), this, SLOT(executeButtonPushed()));
 
-  Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
+  Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
   connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(deleteMeLater()));
 
@@ -704,7 +704,7 @@ void ModuleWidget::addPortLayouts(int index)
   widget(index)->layout()->setContentsMargins(5, 0, 5, 0);
 }
 
-void ModuleWidget::createPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
+void ModuleWidget::createPorts(const ModuleInfoProvider& moduleInfoProvider)
 {
   createInputPorts(moduleInfoProvider);
   createOutputPorts(moduleInfoProvider);
@@ -1036,11 +1036,11 @@ void fillColorStateLookup(const QString& background)
 {
   if (colorStateLookup.empty())
   {
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(205,190,112), (int)ModuleExecutionState::Waiting));
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(170, 204, 170), (int)ModuleExecutionState::Executing));
-    colorStateLookup.insert(ColorStatePair(background, (int)ModuleExecutionState::Completed));
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(0,255,255), SELECTED));
-    colorStateLookup.insert(ColorStatePair(moduleRGBA(176, 23, 31), (int)ModuleExecutionState::Errored));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(205,190,112), static_cast<int>(ModuleExecutionState::Waiting)));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(170, 204, 170), static_cast<int>(ModuleExecutionState::Executing)));
+    colorStateLookup.insert(ColorStatePair(background, static_cast<int>(ModuleExecutionState::Completed)));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(164, 211, 238), SELECTED));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(176, 23, 31), static_cast<int>(ModuleExecutionState::Errored)));
   }
 }
 
