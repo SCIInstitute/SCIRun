@@ -56,7 +56,7 @@ void
 ReportNrrdInfo::update_axis_var(std::ostringstream& info, const char *name, int axis, const T& val,
                           const char *pname)
 {
-  info << "set " << get_id() << "-" << name << axis << " {" << val << "}\n";
+  info << name << " " << axis << ": value = " << val << "\n";
 }
 
 static const char *nrrd_kind_strings[] = { // nrrdKinds, Matches teem 1.9!
