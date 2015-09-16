@@ -41,8 +41,7 @@
 
 #include <Modules/Legacy/Teem/DataIO/ReadNrrd.h>
 #include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
-
-//#include <Core/Util/StringUtil.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
 //#include <Core/Util/sci_system.h>
 
@@ -56,6 +55,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Dataflow::Networks;
+using namespace Core::Algorithms;
 
 #if 0
 namespace SCITeem {
@@ -133,15 +133,16 @@ ReadNrrd::ReadNrrd() :
 // return value does not necessarily signal an error!
 NrrdDataHandle ReadNrrd::read_nrrd()
 {
-  #if 0
-  filename_.reset();
-  std::string fn(filename_.get());
-  if (fn == "")
+  NrrdDataHandle nrrd;
+  const auto filename = get_state()->getValue(Variables::Filename).toFilename();
+  const auto filenameStr = filename.string();
+  if (filenameStr.empty())
   {
     error("Please specify nrrd filename");
-    return (false);
+    return nullptr;
   }
 
+#if 0
   // Read the status of this file so we can compare modification timestamps.
   struct stat buf;
   if (stat(fn.c_str(), &buf) == - 1)
@@ -157,14 +158,16 @@ NrrdDataHandle ReadNrrd::read_nrrd()
   if(!read_handle_.get_rep() ||
      fn != old_filename_ ||
      new_filemodification != old_filemodification_)
+#endif
   {
+    #if 0
     old_filemodification_ = new_filemodification;
     old_filename_=fn;
     read_handle_ = 0;
+    #endif
 
-    int len = fn.size();
-    // Filename as string
-    const std::string filename(fn);
+    //int len = filename.size();
+
     const std::string ext(".nd");
     const std::string vff_ext(".vff");
     const std::string vff_conv_command("vff2nrrd %f %t");
@@ -174,86 +177,77 @@ NrrdDataHandle ReadNrrd::read_nrrd()
     const std::string vista_ext(".v");
     const std::string vista_conv_command("VistaToNrrd %f %t");
 
-
     // check that the last 3 chars are .nd for us to pio
-    if (fn.substr(len - ext.size(), ext.size()) == ext)
+    if (filename.extension() == ext)
     {
-      PiostreamPtr stream = auto_istream(fn, this);
+      PiostreamPtr stream = auto_istream(filenameStr, getLogger());
       if (!stream)
       {
-        error("Error reading file '" + fn + "'.");
-        return (true);
+        error("Error reading file '" + filenameStr + "'.");
+        return nullptr;
       }
 
       // Read the file
-      Pio(*stream, read_handle_);
-      if (!read_handle_.get_rep() || stream->error())
+      Pio(*stream, nrrd);
+      if (!nrrd || stream->error())
       {
-        error("Error reading data from file '" + fn +"'.");
-        return (true);
+        error("Error reading data from file '" + filenameStr + "'.");
+        return nullptr;
       }
     }
     else
     { // assume it is just a nrrd
-      if (fn.substr(len - vff_ext.size(), vff_ext.size()) == vff_ext)
+      if (filename.extension() == vff_ext)
       {
         std::string tmpfilename;
-        write_tmpfile(filename, &tmpfilename, vff_conv_command);
+        write_tmpfile(filenameStr, &tmpfilename, vff_conv_command);
         return read_file(tmpfilename);
       }
-      else if ((fn.substr(len - pic_ext.size(), pic_ext.size()) == pic_ext) ||
-        fn.substr(len - pic_ext2.size(), pic_ext2.size()) == pic_ext2)
+      else if (filename.extension() == pic_ext || filename.extension() == pic_ext2)
       {
         std::string tmpfilename;
-        write_tmpfile(filename, &tmpfilename, pic_conv_command);
+        write_tmpfile(filenameStr, &tmpfilename, pic_conv_command);
         return read_file(tmpfilename);
       }
-      else if (fn.substr(len - vista_ext.size(), vista_ext.size()) == vista_ext)
+      else if (filename.extension() == vista_ext)
       {
         std::string tmpfilename;
-        write_tmpfile(filename, &tmpfilename, vista_conv_command);
+        write_tmpfile(filenameStr, &tmpfilename, vista_conv_command);
         return read_file(tmpfilename);
       }
       else
       {
-        return read_file(fn);
+        return read_file(filenameStr);
       }
     }
-    return true;
+    return nrrd;
   }
-  return false;
-  #endif
   return nullptr;
 }
 
-#if 0
-bool
+NrrdDataHandle
 ReadNrrd::read_file(const std::string& fn)
 {
   // Restrict TEEM access: it is not thread safe
-  NrrdData::lock_teem();
-  NrrdDataHandle n = new NrrdData;
-  if (nrrdLoad(n->nrrd_, airStrdup(fn.c_str()), 0))
+  NrrdGuard g;
+  NrrdDataHandle n(new NrrdData);
+  if (nrrdLoad(n->getNrrd(), airStrdup(fn.c_str()), 0))
   {
     // Ugly error handling
     char *err = biffGetDone(NRRD);
     error("Read error on '" + fn + "': " + err);
     free(err);
-    NrrdData::unlock_teem();
-    return (true);
+    return n;
   }
-
-  read_handle_ = n;
-
-  NrrdData::unlock_teem();
-  return (false);
+  return nullptr;
 }
-#endif
-#if 0
+
 bool
 ReadNrrd::write_tmpfile(const std::string& filename, std::string* tmpfilename,
                           const std::string& conv_command)
 {
+  return false;
+  #if 0
   std::string::size_type loc = filename.find_last_of("/");
   const std::string basefilename =
     (loc==std::string::npos)?filename:filename.substr(loc+1);
@@ -291,8 +285,8 @@ ReadNrrd::write_tmpfile(const std::string& filename, std::string* tmpfilename,
     remark("'" + command + "' failed.  Read may not work.");
   }
   return true;
+  #endif
 }
-#endif
 
 void
 ReadNrrd::execute()

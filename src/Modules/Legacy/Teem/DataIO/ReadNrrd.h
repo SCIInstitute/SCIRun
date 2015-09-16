@@ -57,6 +57,9 @@ namespace DataIO {
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   private:
     NrrdDataHandle read_nrrd();
+    NrrdDataHandle read_file(const std::string& fn);
+    bool write_tmpfile(const std::string& filename, std::string* tmpfilename,
+                              const std::string& conv_command);
   };
 
 }}}
