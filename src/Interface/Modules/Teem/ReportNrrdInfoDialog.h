@@ -29,9 +29,9 @@
 #ifndef INTERFACE_MODULES_REPORTNRRDINFO_H
 #define INTERFACE_MODULES_REPORTNRRDINFO_H
 
-#include "Interface/Modules/Teem/ui_ReportNrrdInfoDialog.h"
+#include "Interface/Modules/Teem/ui_ReportNrrdInfo.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Interface/Modules/Teem/share.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -44,8 +44,8 @@ class SCISHARE ReportNrrdInfoDialog : public ModuleDialogGeneric,
 public:
   ReportNrrdInfoDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void moduleExecuted() { pullAndDisplayInfo(); }
+    QWidget* parent = nullptr);
+  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
 private Q_SLOTS:
     void pullAndDisplayInfo();
 };

@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Nrrds/ReportNrrdInfoDialog.h>
-//#include <Core/Algorithms/Nrrd/ReportNrrdInfoAlgorithm.h>
+#include <Interface/Modules/Teem/ReportNrrdInfoDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

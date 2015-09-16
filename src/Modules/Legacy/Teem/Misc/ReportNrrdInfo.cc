@@ -49,8 +49,6 @@ ReportNrrdInfo::ReportNrrdInfo() : Module(staticInfo_)
 
 void ReportNrrdInfo::setStateDefaults()
 {
-  auto state = get_state();
-  state->setValue(Variables::ObjectInfo, std::string());
 }
 
 template <typename T>
@@ -194,7 +192,7 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
       update_axis_var(info, "spacing", i, (sqrt(l2)), "Spacing");
     }
   }
-  get_state()->setValue(Variables::ObjectInfo, info.str());
+  get_state()->setTransientValue(Variables::ObjectInfo, info.str());
 }
 
 void
