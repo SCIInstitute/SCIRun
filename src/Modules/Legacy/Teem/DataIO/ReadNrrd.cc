@@ -47,6 +47,7 @@
 
 //#include <sys/stat.h>
 #include <sstream>
+#include <Core/ImportExport/GenericIEPlugin.h>
 
 //#ifdef _WIN32
 //#include <process.h> // for getpid
@@ -107,7 +108,11 @@ ReadNrrd::ReadNrrd() :
   // cached_label_(0)
 {
   INITIALIZE_PORT(Output_Data);
-  /*
+}
+
+std::string ReadNrrd::fileTypeList()
+{
+   /*
   NrrdIEPluginManager mgr;
   std::vector<std::string> importers;
   mgr.get_importer_list(importers);
@@ -124,6 +129,9 @@ ReadNrrd::ReadNrrd() :
 
   types_.set(importtypes);
   */
+  //return ".nrrd";//TODO
+  NrrdIEPluginManager mgr;
+  return makeGuiTypesListForImport(mgr);
 }
 
 // TODO: read_nrrd and read_files need to be rewritten with better return value strategies

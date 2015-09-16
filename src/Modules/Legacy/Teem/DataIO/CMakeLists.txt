@@ -44,6 +44,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Teem_DataIO
   Dataflow_Network
   Core_Datatypes
   Core_Datatypes_Legacy_Nrrd
+  Core_ImportExport
   ${SCI_TEEM_LIBRARY}
 )
 
