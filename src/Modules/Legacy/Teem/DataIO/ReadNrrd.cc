@@ -46,7 +46,6 @@
 //#include <Core/Util/sci_system.h>
 
 //#include <sys/stat.h>
-#include <sstream>
 #include <Core/ImportExport/GenericIEPlugin.h>
 
 //#ifdef _WIN32
@@ -174,8 +173,6 @@ NrrdDataHandle ReadNrrd::read_nrrd()
     read_handle_ = 0;
     #endif
 
-    //int len = filename.size();
-
     const std::string ext(".nd");
     const std::string vff_ext(".vff");
     const std::string vff_conv_command("vff2nrrd %f %t");
@@ -188,7 +185,7 @@ NrrdDataHandle ReadNrrd::read_nrrd()
     // check that the last 3 chars are .nd for us to pio
     if (filename.extension() == ext)
     {
-      PiostreamPtr stream = auto_istream(filenameStr, getLogger());
+      auto stream = auto_istream(filenameStr, getLogger());
       if (!stream)
       {
         error("Error reading file '" + filenameStr + "'.");
@@ -211,26 +208,22 @@ NrrdDataHandle ReadNrrd::read_nrrd()
         write_tmpfile(filenameStr, &tmpfilename, vff_conv_command);
         return read_file(tmpfilename);
       }
-      else if (filename.extension() == pic_ext || filename.extension() == pic_ext2)
+      if (filename.extension() == pic_ext || filename.extension() == pic_ext2)
       {
         std::string tmpfilename;
         write_tmpfile(filenameStr, &tmpfilename, pic_conv_command);
         return read_file(tmpfilename);
       }
-      else if (filename.extension() == vista_ext)
+      if (filename.extension() == vista_ext)
       {
         std::string tmpfilename;
         write_tmpfile(filenameStr, &tmpfilename, vista_conv_command);
         return read_file(tmpfilename);
       }
-      else
-      {
-        return read_file(filenameStr);
-      }
+      return read_file(filenameStr);
     }
     return nrrd;
   }
-  return nullptr;
 }
 
 NrrdDataHandle
@@ -239,15 +232,15 @@ ReadNrrd::read_file(const std::string& fn)
   // Restrict TEEM access: it is not thread safe
   NrrdGuard g;
   NrrdDataHandle n(new NrrdData);
-  if (nrrdLoad(n->getNrrd(), airStrdup(fn.c_str()), 0))
+  if (0 != nrrdLoad(n->getNrrd(), airStrdup(fn.c_str()), nullptr))
   {
     // Ugly error handling
     char *err = biffGetDone(NRRD);
     error("Read error on '" + fn + "': " + err);
     free(err);
-    return n;
+    return nullptr;
   }
-  return nullptr;
+  return n;
 }
 
 bool
