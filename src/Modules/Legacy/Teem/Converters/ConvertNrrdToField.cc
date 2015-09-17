@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -39,18 +39,17 @@
  */
 
 #include <Modules/Legacy/Teem/Converters/ConvertNrrdToField.h>
-#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
-
 #include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::Teem;
-using namespace SCIRun::Dataflow::Networks;
+using namespace Modules::Teem;
+using namespace Dataflow::Networks;
 using namespace Core::Algorithms;
-using namespace Core::Algorithms::Teem;
+using namespace Teem;
 
 ALGORITHM_PARAMETER_DEF(Teem, DataLocation);
 ALGORITHM_PARAMETER_DEF(Teem, FieldType);
@@ -58,24 +57,7 @@ ALGORITHM_PARAMETER_DEF(Teem, ConvertParity);
 
 const ModuleLookupInfo ConvertNrrdToField::staticInfo_("ConvertNrrdToField", "Converters", "Teem");
 
-#if 0
-class ConvertNrrdToField : public Module {
-public:
-  ConvertNrrdToField(GuiContext*);
-
-  virtual void execute();
-
-private:
-  GuiString guidatalocation_;
-  GuiString guifieldtype_;
-  GuiString guiconvertparity_;
-};
-#endif
-
 ConvertNrrdToField::ConvertNrrdToField() : Module(staticInfo_)
-  //guidatalocation_(get_ctx()->subVar("datalocation")),
-  //guifieldtype_(get_ctx()->subVar("fieldtype")),
-  //guiconvertparity_(get_ctx()->subVar("convertparity"))
 {
   INITIALIZE_PORT(InputNrrd);
   INITIALIZE_PORT(OutputField);
@@ -83,15 +65,13 @@ ConvertNrrdToField::ConvertNrrdToField() : Module(staticInfo_)
 
 void ConvertNrrdToField::setStateDefaults()
 {
-  //TODO
   auto state = get_state();
   state->setValue(Parameters::DataLocation, std::string("Node"));
   state->setValue(Parameters::FieldType, std::string("Auto"));
   state->setValue(Parameters::ConvertParity, std::string("Do Not Correct"));
 }
 
-void
-ConvertNrrdToField::execute()
+void ConvertNrrdToField::execute()
 {
   auto nrrd = getRequiredInput(InputNrrd);
 

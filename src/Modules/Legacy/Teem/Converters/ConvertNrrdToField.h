@@ -30,7 +30,7 @@
 #define MODULES_TEEM_CONVERTERS_CONVERTNRRDTOFIELD_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Teem/Misc/share.h>
+#include <Modules/Legacy/Teem/Converters/share.h>
 
 namespace SCIRun {
 
