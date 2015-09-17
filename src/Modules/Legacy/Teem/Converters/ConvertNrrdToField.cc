@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,19 +38,22 @@
  *
  */
 
-#include <Core/Algorithms/Converter/ConverterAlgo.h>
-#include <Core/Datatypes/Field.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Core/Datatypes/NrrdData.h>
-#include <Dataflow/Network/Ports/NrrdPort.h>
+#include <Modules/Legacy/Teem/Converters/ConvertNrrdToField.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+//#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
-#include <Dataflow/Network/Module.h>
-
-
-namespace SCITeem {
+#include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Modules::Teem;
+using namespace SCIRun::Dataflow::Networks;
+using namespace Core::Algorithms;
 
+const ModuleLookupInfo ConvertNrrdToField::staticInfo_("ConvertNrrdToField", "Converters", "Teem");
+
+#if 0
 class ConvertNrrdToField : public Module {
 public:
   ConvertNrrdToField(GuiContext*);
@@ -62,31 +65,34 @@ private:
   GuiString guifieldtype_;
   GuiString guiconvertparity_;
 };
+#endif
 
-
-DECLARE_MAKER(ConvertNrrdToField)
-
-ConvertNrrdToField::ConvertNrrdToField(GuiContext* ctx) : 
-  Module("ConvertNrrdToField", ctx, Source, "Converters", "Teem"),
-  guidatalocation_(get_ctx()->subVar("datalocation")),
-  guifieldtype_(get_ctx()->subVar("fieldtype")),
-  guiconvertparity_(get_ctx()->subVar("convertparity"))
+ConvertNrrdToField::ConvertNrrdToField() : Module(staticInfo_)
+  //guidatalocation_(get_ctx()->subVar("datalocation")),
+  //guifieldtype_(get_ctx()->subVar("fieldtype")),
+  //guiconvertparity_(get_ctx()->subVar("convertparity"))
 {
 }
 
-void 
+void ConvertNrrdToField::setStateDefaults()
+{
+  //TODO
+}
+
+void
 ConvertNrrdToField::execute()
 {
+  #if 0
   // Define local handles of data objects:
   NrrdDataHandle nrrd;
   FieldHandle ofield;
 
-  // Get the new input data: 
+  // Get the new input data:
   if (!(get_input_handle("Nrrd",nrrd,true))) return;
 
   // Only reexecute if the input changed. SCIRun uses simple scheduling
-  // that executes every module downstream even if no data has changed:  
-  if (inputs_changed_ || guidatalocation_.changed() || guifieldtype_.changed() 
+  // that executes every module downstream even if no data has changed:
+  if (inputs_changed_ || guidatalocation_.changed() || guifieldtype_.changed()
       || !oport_cached("Field"))
   {
     SCIRunAlgo::ConverterAlgo algo(this);
@@ -95,9 +101,8 @@ ConvertNrrdToField::execute()
     std::string convertparity = guiconvertparity_.get();
     if (!(algo.NrrdToField(nrrd,ofield,datalocation,fieldtype,convertparity))) return;
 
-    // send new output if there is any:    
+    // send new output if there is any:
     send_output_handle("Field", ofield);
   }
+  #endif
 }
-
-} // End namespace SCITeem

@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,21 +38,22 @@
  *
  */
 
-#include <Dataflow/Network/Module.h>
-
-
-#include <Dataflow/Network/Ports/NrrdPort.h>
-
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Modules/Legacy/Teem/Converters/ConvertNrrdToMatrix.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+//#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-
-namespace SCITeem {
-
 using namespace SCIRun;
+using namespace SCIRun::Modules::Teem;
+using namespace SCIRun::Dataflow::Networks;
+using namespace Core::Algorithms;
 
+const ModuleLookupInfo ConvertNrrdToMatrix::staticInfo_("ConvertNrrdToMatrix", "Converters", "Teem");
+
+#if 0
 class ConvertNrrdToMatrix : public Module {
 public:
   int data_generation_;
@@ -76,7 +77,7 @@ public:
 					NrrdDataHandle colsH,
 					int cols);
 
-  template<class PTYPE> 
+  template<class PTYPE>
   MatrixHandle create_column_matrix(NrrdDataHandle dataH);
 
   template<class PTYPE>
@@ -86,27 +87,26 @@ public:
   MatrixHandle create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle rowsH,
 				    NrrdDataHandle colsH, int cols);
 };
+#endif
 
-
-DECLARE_MAKER(ConvertNrrdToMatrix)
-ConvertNrrdToMatrix::ConvertNrrdToMatrix(GuiContext* ctx)
-  : Module("ConvertNrrdToMatrix", ctx, Source, "Converters", "Teem"),
-    data_generation_(-1), rows_generation_(-1), 
-    cols_generation_(-1), has_error_(false),
-    last_matrix_(0), cols_(get_ctx()->subVar("cols")),
-    old_cols_(-1)
+ConvertNrrdToMatrix::ConvertNrrdToMatrix()
+  : Module(staticInfo_)
+//    data_generation_(-1), rows_generation_(-1),
+//    cols_generation_(-1), has_error_(false),
+//    last_matrix_(0), cols_(get_ctx()->subVar("cols")),
+//    old_cols_(-1)
 {
 }
 
-
-ConvertNrrdToMatrix::~ConvertNrrdToMatrix()
+void ConvertNrrdToMatrix::setStateDefaults()
 {
+  //TODO
 }
-
 
 void
 ConvertNrrdToMatrix::execute()
 {
+  #if 0
   NrrdDataHandle dataH;
   NrrdDataHandle rowsH;
   NrrdDataHandle colsH;
@@ -160,7 +160,7 @@ ConvertNrrdToMatrix::execute()
 
   if (has_error_)
     do_execute = true;
-  
+
   if (!last_matrix_.get_rep())
     do_execute = true;
 
@@ -172,9 +172,10 @@ ConvertNrrdToMatrix::execute()
     has_error_ = false;
     send_output_handle("Matrix", last_matrix_, true);
   }
+  #endif
 }
 
-
+#if 0
 MatrixHandle
 ConvertNrrdToMatrix::create_matrix_from_nrrds(NrrdDataHandle dataH,
                                        NrrdDataHandle rowsH,
@@ -264,14 +265,14 @@ ConvertNrrdToMatrix::create_matrix_from_nrrds(NrrdDataHandle dataH,
     }
   } else if (has_data && has_rows && has_cols) {
     // sparse matrix
-    
+
     // rows and cols should be of type nrrdTypeInt
     if (rowsH->nrrd_->type != nrrdTypeInt || colsH->nrrd_->type != nrrdTypeInt) {
       error("Rows and Columns nrrds must both be of type nrrdTypeInt");
       has_error_ = true;
       return 0;
     }
-      
+
     if (dataH->nrrd_->dim != 1 || rowsH->nrrd_->dim != 1 || colsH->nrrd_->dim != 1) {
       error("All nrrds must be 1 dimension for a SparseRowMatrix.");
       has_error_ = true;
@@ -317,15 +318,15 @@ ConvertNrrdToMatrix::create_matrix_from_nrrds(NrrdDataHandle dataH,
 }
 
 
-template<class PTYPE> 
-MatrixHandle 
+template<class PTYPE>
+MatrixHandle
 ConvertNrrdToMatrix::create_column_matrix(NrrdDataHandle dataH)
 {
   remark("Creating column matrix");
   unsigned int rows = dataH->nrrd_->axis[0].size;
 
   ColumnMatrix* matrix = new ColumnMatrix(rows);
-  
+
   PTYPE *val = (PTYPE*)dataH->nrrd_->data;
   double *data = matrix->get_data_pointer();
 
@@ -337,7 +338,7 @@ ConvertNrrdToMatrix::create_column_matrix(NrrdDataHandle dataH)
 
 
 template<class PTYPE>
-MatrixHandle 
+MatrixHandle
 ConvertNrrdToMatrix::create_dense_matrix(NrrdDataHandle dataH)
 {
   remark("Creating dense matrix");
@@ -345,7 +346,7 @@ ConvertNrrdToMatrix::create_dense_matrix(NrrdDataHandle dataH)
   unsigned int cols = dataH->nrrd_->axis[0].size;
 
   DenseMatrix* matrix = new DenseMatrix(rows,cols);
-  
+
   PTYPE *val = (PTYPE*)dataH->nrrd_->data;
   double *data = matrix->get_data_pointer();
 
@@ -363,7 +364,7 @@ ConvertNrrdToMatrix::create_dense_matrix(NrrdDataHandle dataH)
 
 
 template<class PTYPE>
-MatrixHandle 
+MatrixHandle
 ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle rowsH,
 				   NrrdDataHandle colsH, int cols)
 {
@@ -380,16 +381,16 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
 
   if (cols == -1) {
     // Auto selected...attempt to determine number of columns
-    for (index_type i=0; i<static_cast<size_type>(cols_n->axis[0].size); i++) 
+    for (index_type i=0; i<static_cast<size_type>(cols_n->axis[0].size); i++)
     {
       if (cols_d[i] > cols) cols = cols_d[i];
     }
-    cols += 1; 
+    cols += 1;
   }
-  
+
   size_type rows = static_cast<size_type>(rows_n->axis[0].size-1);
   size_type offset = 0;
-  if (rows_d[0] != 0) 
+  if (rows_d[0] != 0)
   {
     warning("First entry of rows nrrd must be a 0. Inserting 0 in first position.");
     offset = 1;
@@ -401,15 +402,15 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
   // error checking...
 
   // cols_n and dn should be of size nnz
-  if (static_cast<size_type>(cols_n->axis[0].size) != nnz) 
+  if (static_cast<size_type>(cols_n->axis[0].size) != nnz)
   {
     error("The Data and Columns nrrds should be the same size.");
     has_error_ = true;
     return 0;
   }
-  
+
   // rows values must be in increasing order
-  for (size_type i=0; i<static_cast<size_type>(rows_n->axis[0].size-1); i++) 
+  for (size_type i=0; i<static_cast<size_type>(rows_n->axis[0].size-1); i++)
   {
     if (rows_d[i] > rows_d[i+1] || rows_d[i] < 0) {
       error("Rows nrrd must contain values in increasing order and positive.");
@@ -425,9 +426,9 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
     return 0;
   }
 
-  for (size_type i=0; i<nnz; i++) 
+  for (size_type i=0; i<nnz; i++)
   {
-    if (cols_d[i] < 0) 
+    if (cols_d[i] < 0)
     {
       error("Columns nrrd must have positive values");
       has_error_ = true;
@@ -437,12 +438,12 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
 
   // for each rows[N+1] - rows[N] sections of the cols array,
   // those values must be in increasing order
-  for (index_type i=0; i<static_cast<size_type>(rows_n->axis[0].size-1); i++) 
+  for (index_type i=0; i<static_cast<size_type>(rows_n->axis[0].size-1); i++)
   {
     size_type span = rows_d[i+1] - rows_d[i];
     for(index_type j=i; j<(i+span-1); j++)
     {
-      if (cols_d[j] > cols_d[j+1]) 
+      if (cols_d[j] > cols_d[j+1])
       {
         error("Columns nrrd ordered incorrectly.");
         has_error_ = true;
@@ -455,19 +456,19 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
   const SparseRowMatrix::Rows& rr = sparseData.rows();
   const SparseRowMatrix::Columns& cc = sparseData.columns();
   const SparseRowMatrix::Storage& d = sparseData.data();
-  
+
   // copy rest of rows
-  if (offset == 1) 
+  if (offset == 1)
   {
     rr[0] = 0;
   }
-  for (index_type i=0; i<static_cast<size_type>(rows_n->axis[0].size); i++) 
+  for (index_type i=0; i<static_cast<size_type>(rows_n->axis[0].size); i++)
   {
     rr[i+offset] = rows_d[i];
   }
-	
+
   // copy data and cols
-  for(index_type i=0; i<nnz; i++) 
+  for(index_type i=0; i<nnz; i++)
   {
     cc[i] = cols_d[i];
     d[i] = data_d[i];
@@ -475,8 +476,4 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
 
   return new SparseRowMatrix(rows, cols, sparseData, nnz);
 }
-
-
-} // End namespace Teem
-
-
+#endif
