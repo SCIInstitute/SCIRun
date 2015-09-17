@@ -74,6 +74,7 @@ namespace Datatypes {
     Core::Datatypes::ColorRGB getBlackbodyColorMapVal(double f) const;
     Core::Datatypes::ColorRGB getGrayscaleColorMapVal(double f) const;
     Core::Datatypes::ColorRGB getOrangeBlackLimeColorMapVal(double f) const;
+    Core::Datatypes::ColorRGB getDarkhueColorMapVal(double f) const;
     
     ///<< The colormap's name.
     std::string name_;

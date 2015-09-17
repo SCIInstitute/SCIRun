@@ -55,7 +55,8 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
     name == "Old Rainbow" ||
     name == "Blackbody" ||
     name == "Grayscale" ||
-    name == "Orange,Black,Lime"))
+    name == "Orange,Black,Lime" ||
+    name == "Darkhue"))
     THROW_INVALID_ARGUMENT("Color map name not implemented/recognized.");
 
   return boost::make_shared<ColorMap>(name, res, shift, invert, rescale_scale, rescale_shift);
@@ -130,7 +131,9 @@ ColorRGB ColorMap::getColorMapVal(double v) const
   else if (name_ == "Orange,Black,Lime") {
     col = getOrangeBlackLimeColorMapVal(f);
   }
-
+  else if (name_ == "Darkhue") {
+    col = getDarkhueColorMapVal(f);
+  }
 
   return col;
 }
@@ -228,6 +231,8 @@ ColorRGB ColorMap::getGrayscaleColorMapVal(double f) const
   return col;
 }
 
+// This color scheme sets a transition of color that goes
+// Orange -> Black -> Lime
 ColorRGB ColorMap::getOrangeBlackLimeColorMapVal(double f) const
 {
   ColorRGB col;
@@ -235,6 +240,20 @@ ColorRGB ColorMap::getOrangeBlackLimeColorMapVal(double f) const
     col = ColorRGB((0.5 - f) * 2., 0.5 - f, 0.);
   else
     col = ColorRGB(0., (f - 0.5) * 2., 0.);
+  return col;
+}
+
+ColorRGB ColorMap::getDarkhueColorMapVal(double f) const
+{
+  ColorRGB col;
+  if (f < 0.25)
+    col = ColorRGB(0., 0., (f * 4.) * 0.333333);
+  else if (0.25 <= f && f < 0.5)
+    col = ColorRGB((f - 0.25) * 2., 0., f + ((0.5 - f) * 0.333333));
+  else if (0.5 <= f && f < 0.75)
+    col = ColorRGB(f + (f - 0.5), 0., f - ((f - 0.5) * 3.));
+  else
+    col = ColorRGB(1., (f - 0.75) * 4., (f - 0.75) * 2.6666666);
   return col;
 }
 
