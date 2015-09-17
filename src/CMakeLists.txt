@@ -70,14 +70,6 @@ MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
 OPTION(BUILD_HEADLESS "Build headless version, without Qt" OFF)
 MARK_AS_ADVANCED(BUILD_HEADLESS)
 
-########################################################################
-# Configure Windows executable to run with or without the console
-
-IF(WIN32)
-  OPTION(SCIRUN_SHOW_CONSOLE "Show Windows console when running SCIRun (useful for debugging)." ON)
-  MARK_AS_ADVANCED(SCIRUN_SHOW_CONSOLE)
-ENDIF()
-
 
 ########################################################################
 # Set default CMAKE_BUILD_TYPE

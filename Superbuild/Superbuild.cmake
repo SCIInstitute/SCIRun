@@ -60,6 +60,19 @@ OPTION(BUILD_TESTING "Build with tests." ON)
 OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 
 ###########################################
+# Configure Windows executable to run with
+# or without the console
+
+IF(WIN32)
+  OPTION(SCIRUN_SHOW_CONSOLE "Show Windows console when running SCIRun (useful for debugging)." ON)
+  MARK_AS_ADVANCED(SCIRUN_SHOW_CONSOLE)
+ENDIF()
+
+###########################################
+# Configure headless build
+OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
+
+###########################################
 # Configure Qt
 IF(NOT BUILD_HEADLESS)
   SET(QT_MIN_VERSION "4.8.1")
@@ -138,7 +151,6 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_TESTING:BOOL=${BUILD_TESTING}"
     "-DBUILD_DOCUMENTATION:BOOL=${BUILD_DOCUMENTATION}"
     "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
-    "-DSCIRUN_SHOW_CONSOLE:BOOL=${SCIRUN_SHOW_CONSOLE}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
     "-DZlib_DIR:PATH=${Zlib_DIR}"
@@ -152,6 +164,12 @@ IF(BUILD_WITH_PYTHON)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DPython_DIR:PATH=${Python_DIR}"
     "-DPYTHON_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}"
+  )
+ENDIF()
+
+IF(WIN32)
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-DSCIRUN_SHOW_CONSOLE:BOOL=${SCIRUN_SHOW_CONSOLE}"
   )
 ENDIF()
 
