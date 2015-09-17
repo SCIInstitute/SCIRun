@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertNrrdToMatrix",
+    "namespace": "Teem",
+    "status": "Ported module",
+    "description": "Converts Nrrd objects to SCIRun Matrices",
+    "header": "Modules/Legacy/Teem/Converters/ConvertNrrdToMatrix.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ConvertNrrdToMatrixDialog",
+    "header": "Interface/Modules/Teem/ConvertNrrdToMatrixDialog.h"
+  }
+}
