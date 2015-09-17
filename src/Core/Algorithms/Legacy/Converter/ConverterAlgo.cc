@@ -38,7 +38,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/String.h>
-#include <Core/Datatypes/MatrixTypeConversions.h> 
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Legacy/Converter/NrrdToField.h>
 #include <Core/Algorithms/Legacy/Converter/FieldToNrrd.h>
 //#include <Core/Algorithms/Converter/MatrixToField.h>
@@ -55,7 +55,7 @@ pr_(pr)
 {
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER
+#ifdef SCIRUN4_CODE_TO_BE_CONVERTED_LATER
 bool ConverterAlgo::MatrixToDoubleVector(MatrixHandle matrix, std::vector<double> &val)
 {
   if (matrix.get_rep() == 0)
@@ -638,7 +638,7 @@ bool ConverterAlgo::fieldToNrrd(FieldHandle input, NrrdDataHandle& output)
   return(algo.fieldToNrrd(pr_, input, output));
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER
+#ifdef SCIRUN4_CODE_TO_BE_CONVERTED_LATER
 bool ConverterAlgo::NrrdToMatrix(NrrdDataHandle input, MatrixHandle& output)
 {
   if (!(input.get_rep()))

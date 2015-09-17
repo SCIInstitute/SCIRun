@@ -65,6 +65,12 @@ namespace Teem {
     Core::Datatypes::MatrixHandle create_matrix_from_nrrds(boost::optional<NrrdDataHandle> dataH,
       boost::optional<NrrdDataHandle> rowsH,
       boost::optional<NrrdDataHandle> colsH, int cols);
+    template<class PTYPE>
+    Core::Datatypes::MatrixHandle create_column_matrix(NrrdDataHandle dataH);
+    template<class PTYPE>
+    Core::Datatypes::MatrixHandle create_dense_matrix(NrrdDataHandle dataH);
+    template<class PTYPE>
+    Core::Datatypes::MatrixHandle create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle rowsH, NrrdDataHandle colsH, int cols);
   };
 
 }}}
