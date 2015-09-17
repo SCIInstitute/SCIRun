@@ -50,6 +50,7 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::Teem;
 using namespace SCIRun::Dataflow::Networks;
 using namespace Core::Algorithms;
+using namespace Core::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Teem, MatrixType);
 ALGORITHM_PARAMETER_DEF(Teem, SparseColumns);
@@ -109,80 +110,23 @@ void ConvertNrrdToMatrix::setStateDefaults()
 void
 ConvertNrrdToMatrix::execute()
 {
-  #if 0
-  NrrdDataHandle dataH;
-  NrrdDataHandle rowsH;
-  NrrdDataHandle colsH;
+  auto data = getOptionalInput(Data);
+  auto rows = getOptionalInput(Rows);
+  auto cols = getOptionalInput(Columns);
 
-  bool do_execute = false;
-
-  if (!get_input_handle("Data", dataH, false))
+  if (needToExecute()) 
   {
-    dataH = 0;
-    if (data_generation_ != -1) {
-      data_generation_ = -1;
-      do_execute = true;
-    }
-  }
+    auto state = get_state();
 
-  if (!get_input_handle("Rows", rowsH, false))
-  {
-    rowsH = 0;
-    if (rows_generation_ != -1) {
-      rows_generation_ = -1;
-      do_execute = true;
-    }
+    auto matrix = create_matrix_from_nrrds(data, rows, cols, cols_.get());
+    sendOutput(OutputMatrix, matrix);
   }
-
-  if (!get_input_handle("Columns", colsH, false))
-  {
-    colsH = 0;
-    if (cols_generation_ != -1) {
-      cols_generation_ = -1;
-      do_execute = true;
-    }
-  }
-
-  // check the generations to see if we need to re-execute
-  if (dataH != 0 && data_generation_ != dataH->generation) {
-    data_generation_ = dataH->generation;
-    do_execute = true;
-  }
-  if (rowsH != 0 && rows_generation_ != rowsH->generation) {
-    rows_generation_ = rowsH->generation;
-    do_execute = true;
-  }
-  if (colsH != 0 && cols_generation_ != colsH->generation) {
-    cols_generation_ = colsH->generation;
-    do_execute = true;
-  }
-  if (old_cols_ != cols_.get()) {
-    old_cols_ = cols_.get();
-    do_execute = true;
-  }
-
-  if (has_error_)
-    do_execute = true;
-
-  if (!last_matrix_.get_rep())
-    do_execute = true;
-
-  if (do_execute) {
-    last_matrix_ = create_matrix_from_nrrds(dataH, rowsH, colsH, cols_.get());
-  }
-
-  if (last_matrix_ != 0) {
-    has_error_ = false;
-    send_output_handle("Matrix", last_matrix_, true);
-  }
-  #endif
 }
 
-#if 0
 MatrixHandle
-ConvertNrrdToMatrix::create_matrix_from_nrrds(NrrdDataHandle dataH,
-                                       NrrdDataHandle rowsH,
-				       NrrdDataHandle colsH, int cols)
+ConvertNrrdToMatrix::create_matrix_from_nrrds(boost::optional<NrrdDataHandle> dataH,
+boost::optional<NrrdDataHandle> rowsH,
+boost::optional<NrrdDataHandle> colsH, int cols)
 {
   // Determine if we have data, rows, columns to indicate whether it is
   // a dense or sparse matrix
@@ -320,7 +264,6 @@ ConvertNrrdToMatrix::create_matrix_from_nrrds(NrrdDataHandle dataH,
   return matrix;
 }
 
-
 template<class PTYPE>
 MatrixHandle
 ConvertNrrdToMatrix::create_column_matrix(NrrdDataHandle dataH)
@@ -338,7 +281,6 @@ ConvertNrrdToMatrix::create_column_matrix(NrrdDataHandle dataH)
   MatrixHandle result(matrix);
   return result;
 }
-
 
 template<class PTYPE>
 MatrixHandle
@@ -364,7 +306,6 @@ ConvertNrrdToMatrix::create_dense_matrix(NrrdDataHandle dataH)
   MatrixHandle result(matrix);
   return result;
 }
-
 
 template<class PTYPE>
 MatrixHandle
@@ -479,4 +420,3 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
 
   return new SparseRowMatrix(rows, cols, sparseData, nnz);
 }
-#endif
