@@ -56,7 +56,7 @@ void
 ReportNrrdInfo::update_axis_var(std::ostringstream& info, const char *name, int axis, const T& val,
                           const char *pname)
 {
-  info << name << " " << axis << ": value = " << val << "\n";
+  info << '\t' << pname << ": " << val << "\n";
 }
 
 static const char *nrrd_kind_strings[] = { // nrrdKinds, Matches teem 1.9!
@@ -136,6 +136,7 @@ ReportNrrdInfo::update_input_attributes(NrrdDataHandle nh)
   // Go through all axes...
   for (unsigned int i = 0; i < nh->getNrrd()->dim; i++)
   {
+    info << "Axis " << i << ":\n";
     std::string labelstr;
     if (nh->getNrrd()->axis[i].label == 0 ||
         std::string(nh->getNrrd()->axis[i].label).length() == 0)
