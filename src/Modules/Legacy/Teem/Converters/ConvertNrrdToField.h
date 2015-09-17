@@ -33,6 +33,15 @@
 #include <Modules/Legacy/Teem/Misc/share.h>
 
 namespace SCIRun {
+
+  namespace Core {
+    namespace Algorithms {
+      namespace Teem {
+        ALGORITHM_PARAMETER_DECL(DataLocation);
+        ALGORITHM_PARAMETER_DECL(FieldType);
+        ALGORITHM_PARAMETER_DECL(ConvertParity);
+      }}}
+
 namespace Modules {
 namespace Teem {
 

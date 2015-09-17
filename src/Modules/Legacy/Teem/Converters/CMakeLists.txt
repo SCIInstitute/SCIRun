@@ -48,6 +48,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Teem_Converters
   Dataflow_Network
   Core_Datatypes
   Core_Datatypes_Legacy_Nrrd
+  Core_Algorithms_Legacy_Converter #TODO: remove link
   ${SCI_TEEM_LIBRARY}
 )
 

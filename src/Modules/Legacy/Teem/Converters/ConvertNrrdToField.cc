@@ -50,6 +50,11 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::Teem;
 using namespace SCIRun::Dataflow::Networks;
 using namespace Core::Algorithms;
+using namespace Core::Algorithms::Teem;
+
+ALGORITHM_PARAMETER_DEF(Teem, DataLocation);
+ALGORITHM_PARAMETER_DEF(Teem, FieldType);
+ALGORITHM_PARAMETER_DEF(Teem, ConvertParity);
 
 const ModuleLookupInfo ConvertNrrdToField::staticInfo_("ConvertNrrdToField", "Converters", "Teem");
 
@@ -72,37 +77,39 @@ ConvertNrrdToField::ConvertNrrdToField() : Module(staticInfo_)
   //guifieldtype_(get_ctx()->subVar("fieldtype")),
   //guiconvertparity_(get_ctx()->subVar("convertparity"))
 {
+  INITIALIZE_PORT(InputNrrd);
+  INITIALIZE_PORT(OutputField);
 }
 
 void ConvertNrrdToField::setStateDefaults()
 {
   //TODO
+  auto state = get_state();
+  state->setValue(Parameters::DataLocation, std::string("Node"));
+  state->setValue(Parameters::FieldType, std::string("Auto"));
+  state->setValue(Parameters::ConvertParity, std::string("Do Not Correct"));
 }
 
 void
 ConvertNrrdToField::execute()
 {
-  #if 0
-  // Define local handles of data objects:
-  NrrdDataHandle nrrd;
-  FieldHandle ofield;
+  auto nrrd = getRequiredInput(InputNrrd);
 
-  // Get the new input data:
-  if (!(get_input_handle("Nrrd",nrrd,true))) return;
-
-  // Only reexecute if the input changed. SCIRun uses simple scheduling
-  // that executes every module downstream even if no data has changed:
-  if (inputs_changed_ || guidatalocation_.changed() || guifieldtype_.changed()
-      || !oport_cached("Field"))
+  if (needToExecute())
   {
-    SCIRunAlgo::ConverterAlgo algo(this);
-    std::string datalocation = guidatalocation_.get();
-    std::string fieldtype = guifieldtype_.get();
-    std::string convertparity = guiconvertparity_.get();
-    if (!(algo.NrrdToField(nrrd,ofield,datalocation,fieldtype,convertparity))) return;
+    // TODO: convert to algo factory call
+    ConverterAlgo algo(getLogger());
+    auto state = get_state();
 
-    // send new output if there is any:
-    send_output_handle("Field", ofield);
+    std::string datalocation = state->getValue(Parameters::DataLocation).toString();
+    std::string fieldtype = state->getValue(Parameters::FieldType).toString();
+    std::string convertparity = state->getValue(Parameters::ConvertParity).toString();
+    FieldHandle ofield;
+    if (!algo.nrrdToField(nrrd,ofield,datalocation,fieldtype,convertparity))
+    {
+      error("False returned on algorithm direct call.");
+      return;
+    }
+    sendOutput(OutputField, ofield);
   }
-  #endif
 }
