@@ -104,6 +104,8 @@
 #include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
 #include <Interface/Modules/Bundle/ReportBundleInfoDialog.h>
 #include <Interface/Modules/Teem/ReportNrrdInfoDialog.h>
+#include <Interface/Modules/Teem/ConvertNrrdToFieldDialog.h>
+#include <Interface/Modules/Teem/ConvertNrrdToMatrixDialog.h>
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
 #include <Interface/Modules/Fields/ClipVolumeByIsovalueDialog.h>
 #include <boost/assign.hpp>
@@ -196,6 +198,8 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
     ADD_MODULE_DIALOG(ReportNrrdInfo, ReportNrrdInfoDialog)
     ADD_MODULE_DIALOG(ReadNrrd, ReadNrrdDialog)
+    ADD_MODULE_DIALOG(ConvertNrrdToField, ConvertNrrdToFieldDialog)
+    ADD_MODULE_DIALOG(ConvertNrrdToMatrix, ConvertNrrdToMatrixDialog)
     ADD_MODULE_DIALOG(GenerateSinglePointProbeFromField, GenerateSinglePointProbeFromFieldDialog)
     ADD_MODULE_DIALOG(GeneratePointSamplesFromField, GeneratePointSamplesFromFieldDialog)
     ADD_MODULE_DIALOG(GeneratePointSamplesFromFieldOrWidget, GeneratePointSamplesFromFieldOrWidgetDialog)

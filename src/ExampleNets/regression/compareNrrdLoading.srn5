@@ -16,8 +16,44 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>0</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>ConvertParity</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>ConvertParity</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>Do Not Correct</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DataLocation</name>
+								</first>
+								<second>
+									<name>DataLocation</name>
+									<value>
+										<which>2</which>
+										<value>Node</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FieldType</name>
+								</first>
+								<second>
+									<name>FieldType</name>
+									<value>
+										<which>2</which>
+										<value>Auto</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -34,13 +70,13 @@
 						<stateMap>
 							<count>2</count>
 							<item_version>0</item_version>
-							<item class_id="8" tracking_level="0" version="0">
-								<first class_id="9" tracking_level="0" version="0">
+							<item>
+								<first>
 									<name>FileTypeName</name>
 								</first>
-								<second class_id="10" tracking_level="0" version="0">
+								<second>
 									<name>FileTypeName</name>
-									<value class_id="11" tracking_level="0" version="0">
+									<value>
 										<which>2</which>
 										<value>NrrdFile</value>
 									</value>
