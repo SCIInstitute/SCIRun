@@ -28,11 +28,11 @@
 
 #include <Interface/Modules/Teem/ConvertNrrdToMatrixDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Modules/Legacy/Teem/Converters/ConvertNrrdToMatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Teem;
 
 ConvertNrrdToMatrixDialog::ConvertNrrdToMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,5 +41,5 @@ ConvertNrrdToMatrixDialog::ConvertNrrdToMatrixDialog(const std::string& name, Mo
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   //addRadioButtonGroupManager(...);
-  //addSpinBoxManager(...);
+  addSpinBoxManager(sparseColumnsSpinBox_, Parameters::SparseColumns);
 }

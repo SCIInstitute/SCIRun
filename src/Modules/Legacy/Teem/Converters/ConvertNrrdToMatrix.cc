@@ -57,49 +57,12 @@ ALGORITHM_PARAMETER_DEF(Teem, SparseColumns);
 
 const ModuleLookupInfo ConvertNrrdToMatrix::staticInfo_("ConvertNrrdToMatrix", "Converters", "Teem");
 
-#if 0
-class ConvertNrrdToMatrix : public Module {
-public:
-  int data_generation_;
-  int rows_generation_;
-  int cols_generation_;
-  bool has_error_;
-
-  MatrixHandle last_matrix_;
-
-  GuiInt cols_;
-  int old_cols_;
-
-  ConvertNrrdToMatrix(GuiContext*);
-
-  virtual ~ConvertNrrdToMatrix();
-
-  virtual void execute();
-
-  MatrixHandle create_matrix_from_nrrds(NrrdDataHandle dataH,
-					NrrdDataHandle rowsH,
-					NrrdDataHandle colsH,
-					int cols);
-
-  template<class PTYPE>
-  MatrixHandle create_column_matrix(NrrdDataHandle dataH);
-
-  template<class PTYPE>
-  MatrixHandle create_dense_matrix(NrrdDataHandle dataH);
-
-  template<class PTYPE>
-  MatrixHandle create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle rowsH,
-				    NrrdDataHandle colsH, int cols);
-};
-#endif
-
-ConvertNrrdToMatrix::ConvertNrrdToMatrix()
-  : Module(staticInfo_)
-//    data_generation_(-1), rows_generation_(-1),
-//    cols_generation_(-1), has_error_(false),
-//    last_matrix_(0), cols_(get_ctx()->subVar("cols")),
-//    old_cols_(-1)
+ConvertNrrdToMatrix::ConvertNrrdToMatrix() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(Data);
+  INITIALIZE_PORT(Rows);
+  INITIALIZE_PORT(Columns);
+  INITIALIZE_PORT(OutputMatrix);
 }
 
 void ConvertNrrdToMatrix::setStateDefaults()
