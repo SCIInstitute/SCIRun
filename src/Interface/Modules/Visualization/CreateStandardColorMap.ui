@@ -85,6 +85,11 @@
           <string>Grayscale</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Orange,Black,Lime</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>
