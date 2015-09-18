@@ -133,10 +133,10 @@ IF(UNIX)
     SET(SCI_PYTHON_LIBRARY ${SCI_PYTHON_NAME})
 
     # required by interpreter interface
-    IF(SEG3D_BUILD_INTERFACE)
-      SET(PYTHON_MODULE_SEARCH_PATH ../Frameworks/Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/lib/${SCI_PYTHON_NAME} CACHE INTERNAL "Python modules." FORCE)
-    ELSE()
+    IF(BUILD_HEADLESS)
       SET(PYTHON_MODULE_SEARCH_PATH Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/lib/${SCI_PYTHON_NAME} CACHE INTERNAL "Python modules." FORCE)
+    ELSE()
+      SET(PYTHON_MODULE_SEARCH_PATH ../Frameworks/Python.framework/Versions/${SCI_PYTHON_VERSION_SHORT}/lib/${SCI_PYTHON_NAME} CACHE INTERNAL "Python modules." FORCE)
     ENDIF()
     SET(SCI_PYTHON_FRAMEWORK_ARCHIVE ${INSTALL_DIR}/${python_FRAMEWORK_ARCHIVE})
   ELSE()
