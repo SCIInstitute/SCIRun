@@ -41,6 +41,7 @@ ConvertNrrdToFieldDialog::ConvertNrrdToFieldDialog(const std::string& name, Modu
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
+  fixSize();
   addComboBoxManager(dataLocationComboBox_, Parameters::DataLocation);
   addComboBoxManager(fieldTypeComboBox_, Parameters::FieldType);
   addComboBoxManager(convertParityComboBox_, Parameters::ConvertParity);

@@ -40,6 +40,6 @@ ConvertNrrdToMatrixDialog::ConvertNrrdToMatrixDialog(const std::string& name, Mo
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  //addRadioButtonGroupManager(...);
+  fixSize();
   addSpinBoxManager(sparseColumnsSpinBox_, Parameters::SparseColumns);
 }

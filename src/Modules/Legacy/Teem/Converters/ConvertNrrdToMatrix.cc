@@ -66,7 +66,7 @@ ConvertNrrdToMatrix::ConvertNrrdToMatrix() : Module(staticInfo_)
 
 void ConvertNrrdToMatrix::setStateDefaults()
 {
-  //TODO
+  get_state()->setValue(Parameters::SparseColumns, 3);
 }
 
 void
