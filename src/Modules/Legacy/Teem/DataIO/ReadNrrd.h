@@ -50,7 +50,7 @@ namespace DataIO {
     //virtual bool useCustomImporter(const std::string& filename) const override;
     //virtual bool call_importer(const std::string& filename, NrrdDataHandle& handle) override;
 
-    OUTPUT_PORT(0, Output_Data, NrrdData);
+    OUTPUT_PORT(0, Output_Data, NrrdDataType);
 
     static std::string fileTypeList();
 

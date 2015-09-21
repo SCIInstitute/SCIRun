@@ -73,7 +73,7 @@ namespace Datatypes {
 
   namespace Core {
   namespace Datatypes {
-    typedef NrrdData NrrdData;
+    typedef NrrdData NrrdDataType;
   }}
 }
 

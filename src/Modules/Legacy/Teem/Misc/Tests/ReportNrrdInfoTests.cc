@@ -28,7 +28,9 @@
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Modules/Legacy/Teem/Misc/ReportNrrdInfo.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Testing;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
@@ -40,6 +42,17 @@ class ReportNrrdInfoTests : public ModuleTest
 TEST_F(ReportNrrdInfoTests, CanCreate)
 {
   auto rn = makeModule("ReportNrrdInfo");
+  NrrdDataHandle nrrd;
+  stubPortNWithThisData(rn, 0, nrrd);
 
-  FAIL() << "todo";
+  EXPECT_THROW(rn->execute(), NullHandleOnPortException);
+}
+
+TEST_F(ReportNrrdInfoTests, BasicEvaluation)
+{
+  auto rn = makeModule("ReportNrrdInfo");
+  NrrdDataHandle nrrd(new NrrdData);
+  stubPortNWithThisData(rn, 0, nrrd);
+
+  EXPECT_NO_THROW(rn->execute());
 }
