@@ -68,6 +68,13 @@ namespace Datatypes {
     ///<< Internal functions.
     Core::Datatypes::ColorRGB getColorMapVal(double v) const;
     double getTransformedColor(double v) const;
+
+    Core::Datatypes::ColorRGB getRainbowColorMapVal(double f) const;
+    Core::Datatypes::ColorRGB getOldRainbowColorMapVal(double f) const;
+    Core::Datatypes::ColorRGB getBlackbodyColorMapVal(double f) const;
+    Core::Datatypes::ColorRGB getGrayscaleColorMapVal(double f) const;
+    Core::Datatypes::ColorRGB getOrangeBlackLimeColorMapVal(double f) const;
+    Core::Datatypes::ColorRGB getDarkhueColorMapVal(double f) const;
     
     ///<< The colormap's name.
     std::string name_;
