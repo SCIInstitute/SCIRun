@@ -54,7 +54,9 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
   if (!(name == "Rainbow" ||
     name == "Old Rainbow" ||
     name == "Blackbody" ||
-    name == "Grayscale"))
+    name == "Grayscale" ||
+    name == "Orange,Black,Lime" ||
+    name == "Darkhue"))
     THROW_INVALID_ARGUMENT("Color map name not implemented/recognized.");
 
   return boost::make_shared<ColorMap>(name, res, shift, invert, rescale_scale, rescale_shift);
@@ -113,47 +115,26 @@ ColorRGB ColorMap::getColorMapVal(double v) const
   double f = getTransformedColor(v);
   //now grab the RGB
   ColorRGB col;
-  // This Rainbow takes into account scientific visualization recommendations.
-  // It tones down the yellow/cyan values so they don't appear to
-  // be "brighter" than the other colors. All colors "appear" to be the
-  // same brightness.
-  // Blue -> Dark Cyan -> Green -> Orange -> Red
+
   if (name_ == "Rainbow") {
-    if (f < 0.25)
-      col = ColorRGB(0., f*3., 1. - f);
-    else if (0.25 <= f && f < 0.5)
-      col = ColorRGB(0., f + 0.5, 1.5 - f*3.);
-    else if (0.5 <= f && f < 0.75)
-      col = ColorRGB(4.*f - 2., 2. - 2.*f, 0.);
-    else
-      col = ColorRGB(1., 2. - 2.*f, 0.);
+    col = getRainbowColorMapVal(f);
   }
-  //The Old Rainbow that simply transitions from blue to red 1 color at a time.
-  // Blue -> Cyan -> Green -> Yellow -> Red
   else if (name_ == "Old Rainbow") {
-    if (f < 0.25)
-      col = ColorRGB(0., 4.*f, 1.);
-    else if (0.25 <= f && f < 0.5)
-      col = ColorRGB(0., 1., (.5 - f)*4.);
-    else if (0.5 <= f && f < 0.75)
-      col = ColorRGB((f - 0.5)*4., 1., 0.);
-    else
-      col = ColorRGB(1., (1.-f)*4., 0.);
+    col = getOldRainbowColorMapVal(f);
   }
-  // This map is designed to appear like a heat-map, where "cooler" (lower) values
-  // are darker and approach black, and "hotter" (higher) values are lighter
-  // and approach white. In between, you have the red, orange, and yellow transitions.
   else if (name_ == "Blackbody") {
-    if (f < 0.333333)
-      col = ColorRGB(f * 3., 0., 0.);
-    else if (f < 0.6666666)
-      col = ColorRGB(1., (f - 0.333333) * 3., 0.);
-    else
-      col = ColorRGB(1., 1., (f - 0.6666666) * 3.);
+    col = getBlackbodyColorMapVal(f);
   }
-  // A very simple black to white map with grays in between.
-  else if (name_ == "Grayscale")
-    col = ColorRGB(f,f,f);
+  else if (name_ == "Grayscale") {
+    col = getGrayscaleColorMapVal(f);
+  }
+  else if (name_ == "Orange,Black,Lime") {
+    col = getOrangeBlackLimeColorMapVal(f);
+  }
+  else if (name_ == "Darkhue") {
+    col = getDarkhueColorMapVal(f);
+  }
+
   return col;
 }
 /**
@@ -190,6 +171,90 @@ ColorRGB ColorMap::valueToColor(const Vector &vector) const {
     //TODO this is probably not implemented correctly.
    // return ColorRGB(getTransformedColor(fabs(vector.x())),getTransformedColor(fabs(vector.y())), getTransformedColor(fabs(vector.z())));
   return getColorMapVal(vector.length());
+}
+
+// This Rainbow takes into account scientific visualization recommendations.
+// It tones down the yellow/cyan values so they don't appear to
+// be "brighter" than the other colors. All colors "appear" to be the
+// same brightness.
+// Blue -> Dark Cyan -> Green -> Orange -> Red
+ColorRGB ColorMap::getRainbowColorMapVal(double f) const
+{
+  ColorRGB col;
+  if (f < 0.25)
+    col = ColorRGB(0., f*3., 1. - f);
+  else if (0.25 <= f && f < 0.5)
+    col = ColorRGB(0., f + 0.5, 1.5 - f*3.);
+  else if (0.5 <= f && f < 0.75)
+    col = ColorRGB(4.*f - 2., 2. - 2.*f, 0.);
+  else
+    col = ColorRGB(1., 2. - 2.*f, 0.);
+  return col;
+}
+
+//The Old Rainbow that simply transitions from blue to red 1 color at a time.
+// Blue -> Cyan -> Green -> Yellow -> Red
+ColorRGB ColorMap::getOldRainbowColorMapVal(double f) const
+{
+  ColorRGB col;
+  if (f < 0.25)
+    col = ColorRGB(0., 4.*f, 1.);
+  else if (0.25 <= f && f < 0.5)
+    col = ColorRGB(0., 1., (.5 - f)*4.);
+  else if (0.5 <= f && f < 0.75)
+    col = ColorRGB((f - 0.5)*4., 1., 0.);
+  else
+    col = ColorRGB(1., (1. - f)*4., 0.);
+  return col;
+}
+
+// This map is designed to appear like a heat-map, where "cooler" (lower) values
+// are darker and approach black, and "hotter" (higher) values are lighter
+// and approach white. In between, you have the red, orange, and yellow transitions.
+ColorRGB ColorMap::getBlackbodyColorMapVal(double f) const
+{
+  ColorRGB col;
+  if (f < 0.333333)
+    col = ColorRGB(f * 3., 0., 0.);
+  else if (f < 0.6666666)
+    col = ColorRGB(1., (f - 0.333333) * 3., 0.);
+  else
+    col = ColorRGB(1., 1., (f - 0.6666666) * 3.);
+  return col;
+}
+
+// A very simple black to white map with grays in between.
+ColorRGB ColorMap::getGrayscaleColorMapVal(double f) const
+{
+  ColorRGB col;
+  col = ColorRGB(f, f, f);
+  return col;
+}
+
+// This color scheme sets a transition of color that goes
+// Orange -> Black -> Lime
+ColorRGB ColorMap::getOrangeBlackLimeColorMapVal(double f) const
+{
+  ColorRGB col;
+  if (f < 0.5)
+    col = ColorRGB((0.5 - f) * 2., 0.5 - f, 0.);
+  else
+    col = ColorRGB(0., (f - 0.5) * 2., 0.);
+  return col;
+}
+
+ColorRGB ColorMap::getDarkhueColorMapVal(double f) const
+{
+  ColorRGB col;
+  if (f < 0.25)
+    col = ColorRGB(0., 0., (f * 4.) * 0.333333);
+  else if (0.25 <= f && f < 0.5)
+    col = ColorRGB((f - 0.25) * 2., 0., f + ((0.5 - f) * 0.333333));
+  else if (0.5 <= f && f < 0.75)
+    col = ColorRGB(f + (f - 0.5), 0., f - ((f - 0.5) * 3.));
+  else
+    col = ColorRGB(1., (f - 0.75) * 4., (f - 0.75) * 2.6666666);
+  return col;
 }
 
 std::string ColorMap::getColorMapName() const { return name_; }
