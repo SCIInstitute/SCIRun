@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 /*
@@ -41,7 +41,6 @@
 #include <Modules/Legacy/Teem/Converters/ConvertNrrdToMatrix.h>
 #include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -110,75 +109,78 @@ boost::optional<NrrdDataHandle> colsHOpt, int cols)
     if (dataH->getNrrd()->dim == 1)
     {
       // column matrix
-      switch(dataH->getNrrd()->type)
+      switch (dataH->getNrrd()->type)
       {
       case nrrdTypeChar:
-	      matrix = create_column_matrix<char>(dataH);
-	      break;
+        matrix = create_column_matrix<char>(dataH);
+        break;
       case nrrdTypeUChar:
-	      matrix = create_column_matrix<unsigned char>(dataH);
-	      break;
+        matrix = create_column_matrix<unsigned char>(dataH);
+        break;
       case nrrdTypeShort:
-	      matrix = create_column_matrix<short>(dataH);
-	break;
+        matrix = create_column_matrix<short>(dataH);
+        break;
       case nrrdTypeUShort:
-	matrix = create_column_matrix<unsigned short>(dataH);
-	break;
+        matrix = create_column_matrix<unsigned short>(dataH);
+        break;
       case nrrdTypeInt:
-	matrix = create_column_matrix<int>(dataH);
-	break;
+        matrix = create_column_matrix<int>(dataH);
+        break;
       case nrrdTypeUInt:
-	matrix = create_column_matrix<unsigned int>(dataH);
-	break;
+        matrix = create_column_matrix<unsigned int>(dataH);
+        break;
       case nrrdTypeFloat:
-	matrix = create_column_matrix<float>(dataH);
-	break;
+        matrix = create_column_matrix<float>(dataH);
+        break;
       case nrrdTypeDouble:
-	matrix = create_column_matrix<double>(dataH);
-	break;
+        matrix = create_column_matrix<double>(dataH);
+        break;
       default:
-	      error("Unknown nrrd type.");
-	      has_error = true;
-	      return nullptr;
+        error("Unknown nrrd type.");
+        has_error = true;
+        return nullptr;
       }
-    } else if (dataH->getNrrd()->dim == 2) {
+    }
+    else if (dataH->getNrrd()->dim == 2) {
       // dense matrix
-      switch(dataH->getNrrd()->type) {
+      switch (dataH->getNrrd()->type) {
       case nrrdTypeChar:
-	matrix = create_dense_matrix<char>(dataH);
-	break;
+        matrix = create_dense_matrix<char>(dataH);
+        break;
       case nrrdTypeUChar:
-	matrix = create_dense_matrix<unsigned char>(dataH);
-	break;
+        matrix = create_dense_matrix<unsigned char>(dataH);
+        break;
       case nrrdTypeShort:
-	matrix = create_dense_matrix<short>(dataH);
-	break;
+        matrix = create_dense_matrix<short>(dataH);
+        break;
       case nrrdTypeUShort:
-	matrix = create_dense_matrix<unsigned short>(dataH);
-	break;
+        matrix = create_dense_matrix<unsigned short>(dataH);
+        break;
       case nrrdTypeInt:
-	matrix = create_dense_matrix<int>(dataH);
-	break;
+        matrix = create_dense_matrix<int>(dataH);
+        break;
       case nrrdTypeUInt:
-	matrix = create_dense_matrix<unsigned int>(dataH);
-	break;
+        matrix = create_dense_matrix<unsigned int>(dataH);
+        break;
       case nrrdTypeFloat:
-	matrix = create_dense_matrix<float>(dataH);
-	break;
+        matrix = create_dense_matrix<float>(dataH);
+        break;
       case nrrdTypeDouble:
-	matrix = create_dense_matrix<double>(dataH);
-	break;
+        matrix = create_dense_matrix<double>(dataH);
+        break;
       default:
-	error("Unknown nrrd type.");
-	has_error = true;
-	return nullptr;
+        error("Unknown nrrd type.");
+        has_error = true;
+        return nullptr;
       }
-    } else {
+    }
+    else {
       error("Can only convert data nrrds of 1 or 2D (Column or Dense Matrix).");
       has_error = true;
       return nullptr;
     }
-  } else if (has_data && has_rows && has_cols) {
+  }
+  else if (has_data && has_rows && has_cols) {
     // sparse matrix
     auto dataH = *dataHOpt;
     auto rowsH = *rowsHOpt;
@@ -195,7 +197,7 @@ boost::optional<NrrdDataHandle> colsHOpt, int cols)
       has_error = true;
       return nullptr;
     }
-    switch(dataH->getNrrd()->type) {
+    switch (dataH->getNrrd()->type) {
     case nrrdTypeChar:
       matrix = create_sparse_matrix<char>(dataH, rowsH, colsH, cols);
       break;
@@ -225,7 +227,8 @@ boost::optional<NrrdDataHandle> colsHOpt, int cols)
       has_error = true;
       return nullptr;
     }
-  } else {
+  }
+  else {
     error("Must have data to convert to any type of Matrix.  Must have rows and columns for a SparseRowMatrix.");
     has_error = true;
     return nullptr;
@@ -259,13 +262,13 @@ ConvertNrrdToMatrix::create_dense_matrix(NrrdDataHandle dataH)
   unsigned int rows = dataH->getNrrd()->axis[1].size;
   unsigned int cols = dataH->getNrrd()->axis[0].size;
 
-  DenseMatrixHandle matrix(new DenseMatrix(rows,cols));
+  DenseMatrixHandle matrix(new DenseMatrix(rows, cols));
 
   PTYPE *val = (PTYPE*)dataH->getNrrd()->data;
   double *data = matrix->data();
 
-  for(unsigned int r=0; r<rows; r++) {
-    for(unsigned int c=0; c<cols; c++) {
+  for (unsigned int r = 0; r < rows; r++) {
+    for (unsigned int c = 0; c < cols; c++) {
       *data = *val;
       ++data;
       ++val;
@@ -277,11 +280,11 @@ ConvertNrrdToMatrix::create_dense_matrix(NrrdDataHandle dataH)
 template<class PTYPE>
 MatrixHandle
 ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle rowsH,
-				   NrrdDataHandle colsH, int cols)
+NrrdDataHandle colsH, int cols)
 {
   error("Nrrd to Sparse matrix not supported yet.");
   return nullptr;
-  #ifdef SCIRUN4_CODE_TO_BE_CONVERTED_LATER
+#ifdef SCIRUN4_CODE_TO_BE_CONVERTED_LATER
   // TO DO: NEED TO FIX SCIRUN INDEX_TYPE TO NRRDTYPE CASTING AND CONVERTING
   remark("Creating sparse row matrix");
   Nrrd *data_n = dataH->getNrrd();
@@ -295,14 +298,14 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
 
   if (cols == -1) {
     // Auto selected...attempt to determine number of columns
-    for (index_type i=0; i<static_cast<size_type>(cols_n->axis[0].size); i++)
+    for (index_type i = 0; i < static_cast<size_type>(cols_n->axis[0].size); i++)
     {
       if (cols_d[i] > cols) cols = cols_d[i];
     }
     cols += 1;
   }
 
-  size_type rows = static_cast<size_type>(rows_n->axis[0].size-1);
+  size_type rows = static_cast<size_type>(rows_n->axis[0].size - 1);
   size_type offset = 0;
   if (rows_d[0] != 0)
   {
@@ -324,9 +327,9 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
   }
 
   // rows values must be in increasing order
-  for (size_type i=0; i<static_cast<size_type>(rows_n->axis[0].size-1); i++)
+  for (size_type i = 0; i < static_cast<size_type>(rows_n->axis[0].size - 1); i++)
   {
-    if (rows_d[i] > rows_d[i+1] || rows_d[i] < 0) {
+    if (rows_d[i] > rows_d[i + 1] || rows_d[i] < 0) {
       error("Rows nrrd must contain values in increasing order and positive.");
       has_error_ = true;
       return 0;
@@ -334,13 +337,13 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
   }
 
   // last rows value should be less than nnz
-  if (rows_d[rows_n->axis[0].size-1] > nnz) {
+  if (rows_d[rows_n->axis[0].size - 1] > nnz) {
     error("The last entry in the rows array must be less than the number of non zeros.");
     has_error_ = true;
     return 0;
   }
 
-  for (size_type i=0; i<nnz; i++)
+  for (size_type i = 0; i < nnz; i++)
   {
     if (cols_d[i] < 0)
     {
@@ -352,12 +355,12 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
 
   // for each rows[N+1] - rows[N] sections of the cols array,
   // those values must be in increasing order
-  for (index_type i=0; i<static_cast<size_type>(rows_n->axis[0].size-1); i++)
+  for (index_type i = 0; i < static_cast<size_type>(rows_n->axis[0].size - 1); i++)
   {
-    size_type span = rows_d[i+1] - rows_d[i];
-    for(index_type j=i; j<(i+span-1); j++)
+    size_type span = rows_d[i + 1] - rows_d[i];
+    for (index_type j = i; j < (i + span - 1); j++)
     {
-      if (cols_d[j] > cols_d[j+1])
+      if (cols_d[j] > cols_d[j + 1])
       {
         error("Columns nrrd ordered incorrectly.");
         has_error_ = true;
@@ -366,7 +369,7 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
     }
   }
 
-  SparseRowMatrix::Data sparseData(rows_n->axis[0].size+offset, nnz);
+  SparseRowMatrix::Data sparseData(rows_n->axis[0].size + offset, nnz);
   const SparseRowMatrix::Rows& rr = sparseData.rows();
   const SparseRowMatrix::Columns& cc = sparseData.columns();
   const SparseRowMatrix::Storage& d = sparseData.data();
@@ -376,18 +379,18 @@ ConvertNrrdToMatrix::create_sparse_matrix(NrrdDataHandle dataH, NrrdDataHandle r
   {
     rr[0] = 0;
   }
-  for (index_type i=0; i<static_cast<size_type>(rows_n->axis[0].size); i++)
+  for (index_type i = 0; i < static_cast<size_type>(rows_n->axis[0].size); i++)
   {
-    rr[i+offset] = rows_d[i];
+    rr[i + offset] = rows_d[i];
   }
 
   // copy data and cols
-  for(index_type i=0; i<nnz; i++)
+  for (index_type i = 0; i < nnz; i++)
   {
     cc[i] = cols_d[i];
     d[i] = data_d[i];
   }
 
   return new SparseRowMatrix(rows, cols, sparseData, nnz);
-  #endif
+#endif
 }
