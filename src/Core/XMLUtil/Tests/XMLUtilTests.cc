@@ -29,8 +29,13 @@
 #include <gtest/gtest.h>
 #include <Core/XMLUtil/XMLUtil.h>
 
+using namespace SCIRun;
 
-TEST(XMLUtilTest, Foo)
+TEST(XMLUtilTest, get_attribute_by_nameTest)
 {
+//SCISHARE xmlAttrPtr get_attribute_by_name(const xmlNodePtr p, const char *name);
+
+  //TODO: extract some code from NetworkIO to test this part
+
   FAIL() << "todo";
 }
