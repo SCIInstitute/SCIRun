@@ -3,7 +3,7 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -26,25 +26,31 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/XMLUtil classes
-
-SET(Core_XMLUtil_HEADERS
-  XMLUtil.h
+SET(Core_Serialization_Network_Importer_SRCS
+  NetworkIO.cc
 )
 
-SET(Core_XMLUtil_SRCS
-  XMLUtil.cc
+SET(Core_Serialization_Network_Importer_HEADERS
+  NetworkIO.h
+  share.h
 )
 
-SCIRUN_ADD_LIBRARY(Core_XMLUtil ${Core_XMLUtil_SRCS} ${Core_XMLUtil_HEADERS})
-
-TARGET_LINK_LIBRARIES( Core_XMLUtil
-  Core_Util_Legacy
-  ${SCI_LIBXML2_LIBRARY}
+SCIRUN_ADD_LIBRARY(Core_Serialization_Network_Importer
+  ${Core_Serialization_Network_Importer_HEADERS}
+  ${Core_Serialization_Network_Importer_SRCS}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_XMLUtil)
+  ADD_DEFINITIONS(-DBUILD_Core_Serialization_Network_Importer)
 ENDIF(BUILD_SHARED_LIBS)
 
-SCIRUN_ADD_TEST_DIR(Tests)
+#SCIRUN_ADD_TEST_DIR(Tests)
+
+TARGET_LINK_LIBRARIES(Core_Serialization_Network_Importer
+  Dataflow_Network
+  Core_Datatypes
+  Dataflow_State
+  Core_XMLUtil
+  ${SCI_LIBXML2_LIBRARY}
+  ${SCI_BOOST_LIBRARY}
+)
