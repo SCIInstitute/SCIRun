@@ -552,6 +552,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/include
   ${SCIRun_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun_SOURCE_DIR}/Externals/gmock/include
+  ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
@@ -863,6 +864,7 @@ SET_PROPERTY(TARGET sqlite PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET Zlib_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET Teem_external   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
