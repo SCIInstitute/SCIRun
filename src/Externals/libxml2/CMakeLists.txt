@@ -344,6 +344,7 @@ SET(SCI_LIBXML2_INCLUDE
      ${CMAKE_CURRENT_SOURCE_DIR}
      ${CMAKE_CURRENT_SOURCE_DIR}/include
      ${CMAKE_CURRENT_BINARY_DIR}/include
+	 ${CMAKE_CURRENT_BINARY_DIR}/include/libxml
     CACHE INTERNAL
       "Public libxml2 include directories."
     FORCE

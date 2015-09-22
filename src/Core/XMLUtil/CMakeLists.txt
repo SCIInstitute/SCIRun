@@ -41,7 +41,7 @@ SCIRUN_ADD_LIBRARY(Core_XMLUtil ${Core_XMLUtil_SRCS} ${Core_XMLUtil_HEADERS})
 TARGET_LINK_LIBRARIES( Core_XMLUtil 
   #Core_Util 
   #Core_Exceptions 
-  #${SCI_LIBXML2_LIBRARY}
+  ${SCI_LIBXML2_LIBRARY}
   #${SCI_ZLIB_LIBRARY}
 )
 
