@@ -553,6 +553,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun_SOURCE_DIR}/Externals/gmock/include
   ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
+  ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
@@ -853,7 +854,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
   SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO_Tests PROPERTY FOLDER "Modules/DataIO")
   SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
-  
+
   SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
 ENDIF()
 
