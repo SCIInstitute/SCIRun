@@ -27,7 +27,9 @@
 */
 
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
+#include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
 #include <boost/regex.hpp>
 #include <Core/Logging/Log.h>
 
@@ -37,7 +39,8 @@ using namespace SCIRun::Core::Datatypes;
 namespace SCIRun
 {
   template class GenericIEPluginManager<Field>;
-  template class GenericIEPluginManager<Core::Datatypes::Matrix>;
+  template class GenericIEPluginManager<Matrix>;
+  template class GenericIEPluginManager<NrrdData>;
 }
 
 IEPluginManagerManager::IEPluginManagerManager() {}
@@ -53,25 +56,31 @@ std::string SCIRun::fileTypeDescriptionFromDialogBoxFilter(const std::string& fi
 }
 
 template <>
-std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Field>* mgr)
+std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Field>*)
 {
   return "SCIRun Field File (*.fld)";
 }
 
 template <>
-std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Matrix>* mgr)
+std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Matrix>*)
 {
   return "SCIRun Matrix File (*.mat)";
 }
 
 template <>
-std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr)
+std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<NrrdData>*)
+{
+  return "Nrrd Files (*.nhdr *.nrrd *.png *.txt *.vtk)";
+}
+
+template <>
+std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Field>*)
 {
   return "SCIRun Field Binary (*.fld);;SCIRun Field ASCII (*.fld)";
 }
 
 template <>
-std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Matrix>* mgr)
+std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Matrix>*)
 {
   return "SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat)";
 }

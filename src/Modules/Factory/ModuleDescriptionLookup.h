@@ -84,6 +84,7 @@ namespace SCIRun {
         void addBundleModules();
         void addBrainSpecificModules();
         void addMoreModules();
+        void addGeneratedModules();
       };
     }
   }

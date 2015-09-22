@@ -38,9 +38,33 @@ SET(Modules_Factory_HEADERS
   share.h
 )
 
+ADD_SUBDIRECTORY(Generator)
+
+OPTION(GENERATE_MODULE_FACTORY_CODE "Generate module factory code from config files" ON)
+MARK_AS_ADVANCED(GENERATE_MODULE_FACTORY_CODE)
+
+IF(GENERATE_MODULE_FACTORY_CODE)
+
+add_executable(MakeModuleFactory Generator/MakeModuleFactory.h Generator/MakeModuleFactory.cc)
+TARGET_LINK_LIBRARIES(MakeModuleFactory Modules_Factory_Generator ${SCI_BOOST_LIBRARY})
+SET_PROPERTY(TARGET MakeModuleFactory   PROPERTY FOLDER "Modules")
+
+# add the command to generate the source code
+add_custom_command (
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ModuleFactoryImpl_Generated.cc
+  COMMAND MakeModuleFactory ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/ModuleFactoryImpl_Generated.cc
+  DEPENDS MakeModuleFactory
+  )
+
+SET(ModuleFactoryImpl_Generated ${CMAKE_CURRENT_BINARY_DIR}/ModuleFactoryImpl_Generated.cc)
+MESSAGE(STATUS "Generated ModuleFactory")
+
+ENDIF(GENERATE_MODULE_FACTORY_CODE)
+
 SCIRUN_ADD_LIBRARY(Modules_Factory
   ${Modules_Factory_HEADERS}
   ${Modules_Factory_SRCS}
+  ${ModuleFactoryImpl_Generated}
 )
 
 TARGET_LINK_LIBRARIES(Modules_Factory
@@ -64,6 +88,9 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_Matlab_DataIO
   Modules_Legacy_MatlabInterface
   Modules_Legacy_Converters
+  Modules_Legacy_Teem_DataIO
+  Modules_Legacy_Teem_Misc
+  Modules_Legacy_Teem_Converters
 )
 
 IF(BUILD_SHARED_LIBS)

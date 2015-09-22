@@ -30,19 +30,17 @@
 SET(Interface_Modules_DataIO_FORMS
   ReadFieldDialog.ui
   ReadBundleDialog.ui
-  ReadMatrix.ui
   ReadMatrixClassic.ui
-  ReadMesh.ui
+  ReadNrrd.ui
   WriteFieldDialog.ui
   WriteMatrix.ui
 )
 
 SET(Interface_Modules_DataIO_HEADERS
   ReadFieldDialog.h
-  ReadMatrixDialog.h
   ReadBundleDialog.h
   ReadMatrixClassicDialog.h
-  ReadMeshDialog.h
+  ReadNrrdDialog.h
   WriteFieldDialog.h
   WriteMatrixDialog.h
   share.h
@@ -51,9 +49,8 @@ SET(Interface_Modules_DataIO_HEADERS
 SET(Interface_Modules_DataIO_SOURCES
   ReadFieldDialog.cc
   ReadBundleDialog.cc
-  ReadMatrixDialog.cc
+  ReadNrrdDialog.cc
   ReadMatrixClassicDialog.cc
-  ReadMeshDialog.cc
   WriteFieldDialog.cc
   WriteMatrixDialog.cc
 )
@@ -71,6 +68,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_DataIO
 TARGET_LINK_LIBRARIES(Interface_Modules_DataIO
   Algorithms_DataIO
   Modules_DataIO
+  Modules_Legacy_Teem_DataIO
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES})

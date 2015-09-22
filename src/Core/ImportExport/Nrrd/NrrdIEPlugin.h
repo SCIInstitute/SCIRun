@@ -39,54 +39,59 @@
  *
  */
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 #ifndef SCI_project_NrrdIEPlugin_h
 #define SCI_project_NrrdIEPlugin_h 1
 
-#include <Core/Logging/LoggerFwd.h>
-#include <Core/Datatypes/NrrdData.h>
-
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+#include <Core/ImportExport/GenericIEPlugin.h>
 #include <Core/ImportExport/share.h>
 
-namespace SCIRun {
+namespace SCIRun 
+{
+  typedef GenericIEPluginInterface<NrrdData> NrrdIEPlugin;
 
-//----------------------------------------------------------------------
-class SCISHARE NrrdIEPlugin {
-public:
-  const std::string pluginname;
+  typedef IEPluginLegacyAdapter<NrrdData> NrrdIEPluginLegacyAdapter;
 
-  const std::string fileextension;
-  const std::string filemagic;
+  class SCISHARE NrrdIEPluginManager : public GenericIEPluginManager<NrrdData>
+  {
 
-  NrrdDataHandle (*fileReader_)(Core::Logging::Log& pr, const char *filename);
-  bool (*fileWriter_)(Core::Logging::Log& pr,
-		     NrrdDataHandle f, const char *filename);
-
-  NrrdIEPlugin(const std::string &name,
-		 const std::string &fileextension,
-		 const std::string &filemagic,
-		 NrrdDataHandle (*freader)(Core::Logging::Log& pr,
-					 const char *filename) = 0,
-		 bool (*fwriter)(Core::Logging::Log& pr, NrrdDataHandle f,
-				 const char *filename) = 0);
-
-  ~NrrdIEPlugin();
-
-  bool operator==(const NrrdIEPlugin &other) const;
-};
-
-
-
-class SCISHARE NrrdIEPluginManager {
-public:
-  void get_importer_list(std::vector<std::string> &results);
-  void get_exporter_list(std::vector<std::string> &results);
-  NrrdIEPlugin *get_plugin(const std::string &name);
-};
+  };
+//
+////----------------------------------------------------------------------
+//class SCISHARE NrrdIEPlugin {
+//public:
+//  const std::string pluginname;
+//
+//  const std::string fileextension;
+//  const std::string filemagic;
+//
+//  NrrdDataHandle (*fileReader_)(Core::Logging::Log& pr, const char *filename);
+//  bool (*fileWriter_)(Core::Logging::Log& pr,
+//		     NrrdDataHandle f, const char *filename);
+//
+//  NrrdIEPlugin(const std::string &name,
+//		 const std::string &fileextension,
+//		 const std::string &filemagic,
+//		 NrrdDataHandle (*freader)(Core::Logging::Log& pr,
+//					 const char *filename) = 0,
+//		 bool (*fwriter)(Core::Logging::Log& pr, NrrdDataHandle f,
+//				 const char *filename) = 0);
+//
+//  ~NrrdIEPlugin();
+//
+//  bool operator==(const NrrdIEPlugin &other) const;
+//};
+//
+//
+//
+//class SCISHARE NrrdIEPluginManager {
+//public:
+//  void get_importer_list(std::vector<std::string> &results);
+//  void get_exporter_list(std::vector<std::string> &results);
+//  NrrdIEPlugin *get_plugin(const std::string &name);
+//};
 
 
 } // End namespace SCIRun
 
-#endif
 #endif

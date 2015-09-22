@@ -71,6 +71,12 @@ TEST_F(CreateStandardColorMapModuleTest, CanCreateFromFixedSetOfColormaps)
   cbc->get_state()->setValue(Parameters::ColorMapName, std::string("Grayscale"));
   cbc->execute();
 
+  cbc->get_state()->setValue(Parameters::ColorMapName, std::string("Orange,Black,Lime"));
+  cbc->execute();
+
+  cbc->get_state()->setValue(Parameters::ColorMapName, std::string("Darkhue"));
+  cbc->execute();
+
   //"TODO: need output value collector dummy module: See Issue #499";
 }
 

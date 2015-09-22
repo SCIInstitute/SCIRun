@@ -532,7 +532,6 @@ namespace Networks {
 
 namespace Modules
 {
-
   struct SCISHARE MatrixPortTag {};
   struct SCISHARE ScalarPortTag {};
   struct SCISHARE StringPortTag {};
@@ -540,6 +539,7 @@ namespace Modules
   struct SCISHARE GeometryPortTag {};
   struct SCISHARE ColorMapPortTag {};
   struct SCISHARE BundlePortTag {};
+  struct SCISHARE NrrdPortTag {};
   struct SCISHARE DatatypePortTag {};
 
   template <typename Base>
@@ -806,6 +806,7 @@ namespace Modules
   PORT_SPEC(Geometry);
   PORT_SPEC(ColorMap);
   PORT_SPEC(Bundle);
+  PORT_SPEC(Nrrd);
   PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
