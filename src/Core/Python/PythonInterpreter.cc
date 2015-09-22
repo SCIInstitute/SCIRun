@@ -253,9 +253,6 @@ void PythonInterpreter::initialize_eventhandler()
   Py_SetProgramName( const_cast< wchar_t* >( this->private_->program_name_ ) );
 
   boost::filesystem::path lib_path( this->private_->program_name_ );
-  boost::filesystem::path top_lib_path = lib_path.parent_path().parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH;
-  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
-  boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
   std::wstringstream lib_paths;
 #if defined( _WIN32 )
   const std::wstring PATH_SEP(L";");
@@ -264,6 +261,9 @@ void PythonInterpreter::initialize_eventhandler()
 #endif
 
 #if defined( __APPLE__ )
+  boost::filesystem::path top_lib_path = lib_path.parent_path().parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH;
+  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
+  boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
   boost::filesystem::path plat_lib_path = top_lib_path / "plat-darwin";
   lib_paths << top_lib_path.wstring() << PATH_SEP
             << plat_lib_path.wstring() << PATH_SEP
@@ -283,11 +283,17 @@ void PythonInterpreter::initialize_eventhandler()
 
   Py_SetPath( lib_paths.str().c_str() );
 #elif defined (_WIN32)
+  boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH / PYTHONNAME;
+  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
+  boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
   lib_paths << top_lib_path.wstring() << PATH_SEP
             << site_lib_path.wstring();
   Py_SetPath( lib_paths.str().c_str() );
 #else
   // linux...
+  boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH;
+  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
+  boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
   boost::filesystem::path plat_lib_path = top_lib_path / "plat-linux";
   lib_paths << top_lib_path.wstring() << PATH_SEP
             << plat_lib_path.wstring() << PATH_SEP
