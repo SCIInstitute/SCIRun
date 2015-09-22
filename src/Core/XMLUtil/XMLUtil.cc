@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,10 +27,9 @@
 */
 
 
-
-//#include <Core/Util/Assert.h>
 #include <Core/XMLUtil/XMLUtil.h>
-//#include <Core/Util/StringUtil.h>
+//#include <Core/Utils/Legacy/Assert.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
@@ -39,43 +38,39 @@
 #include <strings.h>
 #endif
 
-#include <stdio.h>
-#include <string.h>
-
-
 namespace SCIRun {
 
- 
+
 xmlAttrPtr
-get_attribute_by_name(const xmlNodePtr p, const char *name) 
+get_attribute_by_name(const xmlNodePtr p, const char *name)
 {
   xmlAttr *cur = p->properties;
-  
+
   while (cur != 0) {
-    if (cur->type == XML_ATTRIBUTE_NODE && 
+    if (cur->type == XML_ATTRIBUTE_NODE &&
         !strcmp(to_char_ptr(cur->name), name)) {
       return cur;
     }
     cur = cur->next;
   }
   return 0;
-} 
+}
 
 bool
-get_attributes(std::vector<xmlNodePtr> &attr, xmlNodePtr p) 
+get_attributes(std::vector<xmlNodePtr> &attr, xmlNodePtr p)
 {
   attr.clear();
   xmlAttr *cur = p->properties;
-  
+
   while (cur != 0) {
-    if (cur->type == XML_ATTRIBUTE_NODE) 
+    if (cur->type == XML_ATTRIBUTE_NODE)
     {
       attr.push_back(cur->children);
     }
     cur = cur->next;
   }
   return attr.size() > 0;
-} 
+}
 
 
 
@@ -107,11 +102,11 @@ std::string get_serialized_children(xmlNode* d)
       str = std::string(to_char_ptr(n->content));
     } else if (n->type == XML_ELEMENT_NODE) {
       std::ostringstream strm;
-      strm << "<" << n->name << get_serialized_attributes(n) << ">" 
+      strm << "<" << n->name << get_serialized_attributes(n) << ">"
 	   << get_serialized_children(n) << "</" << n->name << ">";
       str = strm.str();
     } else {
-      ASSERTFAIL("unexpected node type, in XMLUtil.cc");
+      throw ("unexpected node type, in XMLUtil.cc");
     }
     fullstr = fullstr + str;
   }
@@ -121,7 +116,7 @@ std::string get_serialized_children(xmlNode* d)
 namespace XMLUtil {
 
 bool node_is_element(const xmlNodePtr p, const char *name) {
-  return (p->type == XML_ELEMENT_NODE && 
+  return (p->type == XML_ELEMENT_NODE &&
           !strcmp(name, xmlChar_to_char(p->name)));
 }
 
@@ -136,8 +131,8 @@ bool node_is_comment(const xmlNodePtr)
   return true;
 }
 
-bool maybe_get_att_as_int(const xmlNodePtr p, 
-      			     const std::string &name, 
+bool maybe_get_att_as_int(const xmlNodePtr p,
+      			     const std::string &name,
 			     int &val)
 {
   std::string str;
@@ -147,8 +142,8 @@ bool maybe_get_att_as_int(const xmlNodePtr p,
 
 
 bool
-maybe_get_att_as_double(const xmlNodePtr p, 
-			   const std::string &name, 
+maybe_get_att_as_double(const xmlNodePtr p,
+			   const std::string &name,
 			   double &val)
 {
   std::string str;
@@ -158,8 +153,8 @@ maybe_get_att_as_double(const xmlNodePtr p,
 
 
 bool
-maybe_get_att_as_string(const xmlNodePtr p, 
-			   const std::string &name, 
+maybe_get_att_as_string(const xmlNodePtr p,
+			   const std::string &name,
 			   std::string &val)
 {
   xmlAttrPtr attr = get_attribute_by_name(p, name.c_str());
@@ -171,7 +166,7 @@ maybe_get_att_as_string(const xmlNodePtr p,
 
 
 const char *
-maybe_get_att_as_const_char_str(const xmlNodePtr p, 
+maybe_get_att_as_const_char_str(const xmlNodePtr p,
                                 const char *name)
 {
   xmlAttrPtr attr = get_attribute_by_name(p, name);
