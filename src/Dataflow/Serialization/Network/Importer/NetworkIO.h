@@ -46,10 +46,11 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  class SCISHARE NetworkIO
+  class SCISHARE LegacyNetworkIO
   {
   public:
-    NetworkFileHandle load_net(const std::string &net);
+    LegacyNetworkIO();
+    NetworkFileHandle load_net(const std::string& legacyNetworkFile);
   private:
     bool done_writing() const { return done_writing_; }
 

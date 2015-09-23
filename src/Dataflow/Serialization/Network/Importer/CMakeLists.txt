@@ -48,6 +48,7 @@ ENDIF(BUILD_SHARED_LIBS)
 
 TARGET_LINK_LIBRARIES(Core_Serialization_Network_Importer
   Dataflow_Network
+  Core_Serialization_Network
   Core_Datatypes
   Dataflow_State
   Core_XMLUtil

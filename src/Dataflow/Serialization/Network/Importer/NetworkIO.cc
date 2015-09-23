@@ -41,6 +41,7 @@
 #include <Core/Utils/Legacy/StringUtil.h>
 //#include <Core/Util/Dir.h>
 #include <sci_debug.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #include <libxml/catalog.h>
 
@@ -49,10 +50,9 @@
 
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkIO::NetworkIO() :
+LegacyNetworkIO::LegacyNetworkIO() :
 net_file_("new.srn"),
 done_writing_(false),
-net_(net),
 doc_(0),
 out_fname_(""),
 sn_count_(0),
