@@ -808,7 +808,6 @@ LegacyNetworkIO::process_substitute(const std::string &orig)
 NetworkFileHandle
 LegacyNetworkIO::load_net(const std::string &net)
 {
-  return nullptr;
 //  FullFileName netfile(net);
   net_file_ = net;
   //sci_putenv("SCIRUN_NETFILE", net);
