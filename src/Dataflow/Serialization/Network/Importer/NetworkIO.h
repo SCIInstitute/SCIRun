@@ -49,12 +49,9 @@ namespace Networks {
   class SCISHARE NetworkIO
   {
   public:
-    explicit NetworkIO(NetworkHandle net);
-    void load_net(const std::string &net);
+    NetworkFileHandle load_net(const std::string &net);
+  private:
     bool done_writing() const { return done_writing_; }
-    bool has_file() const { return !net_file_.empty(); }
-
-    std::string net_file();
 
     bool load_network();
 
@@ -90,7 +87,6 @@ namespace Networks {
     void push_subnet_scope(const std::string &id, const std::string &name);
     void pop_subnet_scope();
 
-  private:
     void process_environment(const xmlNodePtr enode);
     void process_modules_pass1(const xmlNodePtr enode);
     void process_modules_pass2(const xmlNodePtr enode);
@@ -100,7 +96,6 @@ namespace Networks {
     std::string process_filename(const std::string &src);
     std::string process_substitute(const std::string &src);
 
-    inline
     std::string get_mod_id(const std::string &id);
 
     //! Interface from xml reading to tcl.
@@ -139,7 +134,7 @@ namespace Networks {
                                     const std::string& x,
                                     const std::string &y);
     std::string gui_push_subnet_ctx();
-    void gui_pop_subnet_ctx(std::string ctx);
+    void gui_pop_subnet_ctx(const std::string& ctx);
 
     xmlNode* get_module_node(const std::string &id);
     xmlNode* get_connection_node(const std::string &id);
@@ -155,7 +150,6 @@ namespace Networks {
     bool done_writing_;
 
     //! document for writing nets.
-    NetworkHandle                           net_;
     xmlDocPtr                          doc_;
     std::stack<xmlNodePtr>                  subnets_;
     std::string                             out_fname_;
