@@ -33,10 +33,7 @@
 #define DATAFLOW_NETWORK_NETWORKIO_H 1
 
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Core/XMLUtil/XMLUtil.h>
-//#include <Core/Util/FullFileName.h>
 #include <libxml/xmlreader.h>
-#include <string>
 #include <map>
 #include <stack>
 
@@ -50,7 +47,7 @@ namespace Networks {
   {
   public:
     LegacyNetworkIO();
-    NetworkFileHandle load_net(const std::string& legacyNetworkFile);
+    NetworkFileHandle load_net(const std::string& legacyNetworkFilename);
   private:
     bool done_writing() const { return done_writing_; }
 

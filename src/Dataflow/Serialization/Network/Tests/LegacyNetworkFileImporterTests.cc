@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Serialization/Network/ModuleDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
@@ -53,6 +54,7 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
@@ -65,6 +67,7 @@ using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::TestUtils;
 
 #include <stdexcept>
 #include <fstream>
@@ -75,5 +78,10 @@ using namespace boost::assign;
 
 TEST(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
 {
+  LegacyNetworkIO lnio;
+  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "empty.srn";
+  auto networkFile = lnio.load_net(v4file1.string());
+  ASSERT_TRUE(networkFile != nullptr);
+
   FAIL() << "todo";
 }

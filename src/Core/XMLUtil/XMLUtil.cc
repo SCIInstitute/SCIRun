@@ -33,10 +33,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-
-#ifndef _WIN32
-#include <strings.h>
-#endif
+#include <cstring>
 
 namespace SCIRun {
 

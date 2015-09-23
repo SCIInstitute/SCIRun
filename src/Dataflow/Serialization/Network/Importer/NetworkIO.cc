@@ -33,6 +33,7 @@
 
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Network/Network.h>
+#include <Core/XMLUtil/XMLUtil.h>
 //#include <Dataflow/Network/NetworkEditor.h>
 #include <Dataflow/Network/Module.h>
 //#include <Dataflow/GuiInterface/TCLInterface.h>
@@ -800,18 +801,19 @@ NetworkIO::process_substitute(const std::string &orig)
 
   return (src);
 }
+#endif
 
-
-void
-NetworkIO::load_net(const std::string &net)
+NetworkFileHandle
+LegacyNetworkIO::load_net(const std::string &net)
 {
-  FullFileName netfile(net);
-  net_file_ = netfile.get_abs_filename();
-  sci_putenv("SCIRUN_NETFILE", net);
-  load_network();
+  return nullptr;
+//  FullFileName netfile(net);
+  //net_file_ = netfile.get_abs_filename();
+  //sci_putenv("SCIRUN_NETFILE", net);
+  //load_network();
 }
 
-
+#if 0
 void
 NetworkIO::process_network_node(xmlNode* network_node)
 {
