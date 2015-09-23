@@ -49,6 +49,8 @@
 
 using namespace SCIRun::Dataflow::Networks;
 
+#if 0
+
   NetworkIO::NetworkIO(Network* net) :
   net_file_("new.srn"),
   done_writing_(false),
@@ -1610,4 +1612,4 @@ using namespace SCIRun::Dataflow::Networks;
     xmlNewProp(tmp, BAD_CAST "val", BAD_CAST val.c_str());
   }
 
-} // end namespace SCIRun
+#endif
