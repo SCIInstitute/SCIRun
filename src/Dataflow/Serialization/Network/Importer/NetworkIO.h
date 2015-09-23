@@ -53,6 +53,8 @@ namespace Networks {
 
     bool load_network();
 
+    void createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port);
+
     //! Interface to build up an xml document for saving.
     void start_net_doc(const std::string &fname, const std::string &vers, const std::string &vnetersion);
     void write_net_doc();
@@ -146,6 +148,7 @@ namespace Networks {
 
     std::string net_file_;
     bool done_writing_;
+    NetworkFileHandle xmlData_;
 
     //! document for writing nets.
     xmlDocPtr                          doc_;

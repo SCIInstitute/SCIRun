@@ -69,44 +69,44 @@ std::string NetworkIO::net_file()
   FullFileName netfile(net_file_);
   return netfile.get_abs_filename();
 }
+#endif
 
-inline
 std::string
-NetworkIO::get_mod_id(const std::string& id)
+LegacyNetworkIO::get_mod_id(const std::string& id)
 {
   id_map_t &mmap = netid_to_modid_.top();
   const std::string sn("Subnet");
   return (id == sn) ? sn : mmap[id];
 }
 
-
 std::string
-NetworkIO::gui_push_subnet_ctx()
+LegacyNetworkIO::gui_push_subnet_ctx()
 {
   std::string cmmd = "set sn_ctx $Subnet(Loading)";
-  std::string s = TCLInterface::eval(cmmd);
-  return s;
+  //std::string s = TCLInterface::eval(cmmd);
+  return cmmd;
 }
 
 
 void
-NetworkIO::gui_pop_subnet_ctx(std::string ctx)
+LegacyNetworkIO::gui_pop_subnet_ctx(const std::string& ctx)
 {
   std::string cmmd = "set Subnet(Loading) " + ctx;
-  TCLInterface::eval(cmmd);
-
+  std::cout << "TCLInterface::eval " << cmmd << std::endl;
+#if 0
   --sn_ctx_;
   netid_to_modid_.pop();
   netid_to_conid_.pop();
+  #endif
 }
 
-
 void
-NetworkIO::gui_add_subnet_at_position(const std::string &mod_id,
+LegacyNetworkIO::gui_add_subnet_at_position(const std::string &mod_id,
 const std::string &module,
 const std::string& x,
 const std::string &y)
 {
+  #if 0
   ++sn_count_;
   // map the subnet to a local var before we push maps.
   id_map_t &mmap = netid_to_modid_.top();
@@ -128,11 +128,11 @@ const std::string &y)
   std::ostringstream cmmd1;
   cmmd1 << "set Subnet(Subnet" << sn_count_ << "_Name) \"" << module << "\"";
   TCLInterface::eval(cmmd1.str());
+  #endif
 }
 
-
 void
-NetworkIO::gui_add_module_at_position(const std::string &mod_id,
+LegacyNetworkIO::gui_add_module_at_position(const std::string &mod_id,
 const std::string &cpackage,
 const std::string &ccategory,
 const std::string &cmodule,
@@ -140,12 +140,22 @@ const std::string &cversion,
 const std::string& x,
 const std::string &y)
 {
+
+  std::cout << "TO BE IMPLEMENTED: gui_add_module_at_position "
+    << "\n\t" << mod_id
+    << "\n\t" << cpackage
+    << "\n\t" << ccategory
+    << "\n\t" << cmodule
+    << "\n\t" << cversion
+    << "\n\t" << x
+    << "\n\t" << y << std::endl;
+#if 0
+
   // Create the module.
   std::string package;
   std::string category;
   std::string module;
   std::string version;
-
   ModuleHandle mod =
     net_->add_module_maybe_replace(cpackage, ccategory, cmodule, cversion,
     package, category, module, version);
@@ -162,7 +172,7 @@ const std::string &y)
     net_->incr_network_error_code();
   }
 
-  if (mod.get_rep())
+  if (mod)
   {
     // Now tell tcl about the module.
     std::string cmmd = "addModuleAtAbsolutePosition " + package + " " +
@@ -171,10 +181,17 @@ const std::string &y)
     id_map_t &mmap = netid_to_modid_.top();
     mmap[mod_id] = mid;
   }
+  #endif
 }
 
 void
-NetworkIO::gui_add_connection(const std::string &con_id,
+LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port)
+{
+  std::cout << "TO IMPLEMENT: createConnectionNew \n\t" << from << "\n\t" << to << "\n\t"  << from_port << "\n\t"  << to_port << std::endl;
+}
+
+void
+LegacyNetworkIO::gui_add_connection(const std::string &con_id,
 const std::string &from_id,
 const std::string &from_port,
 const std::string &to_id,
@@ -189,6 +206,8 @@ const std::string &to_port0)
   {
     arg = "0";
     // create the connection.
+    createConnectionNew(from, to, from_port, to_port0);
+    #if 0
     ModuleHandle omod = net_->get_module_by_id(from);
     ModuleHandle imod = net_->get_module_by_id(to);
 
@@ -228,37 +247,6 @@ const std::string &to_port0)
     std::string d0 = omod->get_oport(owhich)->get_typename();
     std::string d1 = imod->get_iport(iwhich)->get_typename();
 
-    //---------------------
-    // Compatibility with 3.0.2
-    // Hack to fix results from another ugly hack that was present here for a while
-
-    // In order to support an intermediate solution that allowed dynamic ports on
-    // CalculateFieldDataCompiled and ClipFieldByFunction
-    // For this purpose these two ports were swapped and now we swapped them back.
-    // This code should correct for this
-
-    // TODO: when intermediate networks are gone, we should remove this hack
-
-    if (d0 != d1)
-    {
-      if ((iwhich == 1 && d0 == "SCIRun::Field")||(iwhich == 1 && d0 == "Field")) { iwhich--; to_port = to_string(iwhich); }
-      if ((iwhich == 0 && d0 == "SCIRun::String")||(iwhich == 0 && d0 == "String")) { iwhich++; to_port = to_string(iwhich); }
-
-      if( imod->get_iport(iwhich) == 0 )
-      {
-        std::cerr << "Can not get " << imod->get_modulename()
-          << " input port " << iwhich
-          << " that connects to  " << omod->get_modulename()
-          << " output port " << owhich
-          << std::endl;
-
-        return;
-      }
-      d1 = imod->get_iport(iwhich)->get_typename();
-    }
-
-    //---------------------
-
     if (d0 != d1)
     {
       std::cerr << "Port type mismatch between output module "
@@ -273,19 +261,23 @@ const std::string &to_port0)
     }
 
     net_->connect(omod, owhich, imod, iwhich);
+    #endif
   }
+
   // Now tell tcl about the connection.
   // tell tcl about the connection, last argument tells it not to creat the
   // connection on the C side, since we just did that above.
   std::string cmmd = "createConnection [list " + from + " " + from_port +
     " " + to + " " + to_port + "] 0 " + arg;
-
+  std::cout << "TCLInterface::eval " << cmmd << std::endl;
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
   std::string cid = TCLInterface::eval(cmmd);
   id_map_t &cmap = netid_to_conid_.top();
   cmap[con_id] = cid;
+#endif
 }
 
-
+#if 0
 void
 NetworkIO::gui_set_connection_disabled(const std::string &con_id)
 {
@@ -313,10 +305,10 @@ NetworkIO::gui_call_module_callback(const std::string &id, const std::string &ca
   std::string cmmd = modid + " " + call;
   TCLInterface::eval(cmmd);
 }
-
+#endif
 
 void
-NetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::string &var,
+LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::string &var,
 const std::string &val)
 {
   std::string cmmd;
@@ -335,9 +327,10 @@ const std::string &val)
     v.insert(++pos, mod + "-");
     cmmd = "set " + v +  " " + val;
   }
-  TCLInterface::eval(cmmd);
+  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
 }
 
+#if 0
 void
 NetworkIO::gui_call_mod_post_read(const std::string &mod_id)
 {
@@ -356,56 +349,53 @@ const std::string &route)
   std::string cmmd = "set ConnectionRoutes(" + con + ") " + route;
   TCLInterface::eval(cmmd);
 }
-
+#endif
 
 void
-NetworkIO::gui_set_module_note(const std::string &mod_id, const std::string &pos,
+LegacyNetworkIO::gui_set_module_note(const std::string &mod_id, const std::string &pos,
 const std::string &col, const std::string &note)
 {
   std::string mod = get_mod_id(mod_id);
   std::string cmmd = "set Notes(" + mod + ") " + note;
-  TCLInterface::eval(cmmd);
+  std::cout << "TCLInterface::eval " << cmmd << std::endl;
   cmmd = "set Notes(" + mod + "-Position) " + pos;
-  TCLInterface::eval(cmmd);
+  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
   cmmd = "set Notes(" + mod + "-Color) " + col;
-  TCLInterface::eval(cmmd);
+  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
 }
 
 
 void
-NetworkIO::gui_set_connection_note(const std::string &con_id, const std::string &pos,
+LegacyNetworkIO::gui_set_connection_note(const std::string &con_id, const std::string &pos,
 const std::string &col, const std::string &note)
 {
   id_map_t &cmap = netid_to_conid_.top();
   std::string con = cmap[con_id];
   std::string cmmd = "set Notes(" + con + ") " + note;
-  TCLInterface::eval(cmmd);
+  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
   cmmd = "set Notes(" + con + "-Position) " + pos;
-  TCLInterface::eval(cmmd);
+  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
   cmmd = "set Notes(" + con + "-Color) " + col;
-  TCLInterface::eval(cmmd);
+  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
 }
 
-
 void
-NetworkIO::gui_set_variable(const std::string &var, const std::string &val)
+LegacyNetworkIO::gui_set_variable(const std::string &var, const std::string &val)
 {
-  std::string cmmd = "set " + var +  " " + val;
-  TCLInterface::eval(cmmd);
+  std::string cmd = "set " + var +  " " + val;
+  std::cout << "TCLInterface::eval " << cmd << std::endl;
 }
 
-
 void
-NetworkIO::gui_open_module_gui(const std::string &mod_id)
+LegacyNetworkIO::gui_open_module_gui(const std::string &mod_id)
 {
   std::string mod = get_mod_id(mod_id);
   std::string cmmd = mod + " initialize_ui";
-  TCLInterface::eval(cmmd);
+  std::cout << "TCLInterface::eval " << cmmd << std::endl;
 }
 
-
 void
-NetworkIO::process_environment(const xmlNodePtr enode)
+LegacyNetworkIO::process_environment(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
   for (; node != 0; node = node->next)
@@ -420,9 +410,8 @@ NetworkIO::process_environment(const xmlNodePtr enode)
   }
 }
 
-
 void
-NetworkIO::process_modules_pass1(const xmlNodePtr enode)
+LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
   for (; node != 0; node = node->next)
@@ -499,10 +488,11 @@ NetworkIO::process_modules_pass1(const xmlNodePtr enode)
             {
               xmlAttrPtr pid_att = get_attribute_by_name(pc_node, "id");
               xmlAttrPtr val_att = get_attribute_by_name(pc_node, "val");
+              #if 0
               gui_set_module_port_caching(mid,
                 std::string(to_char_ptr(pid_att->children->content)),
                 std::string(to_char_ptr(val_att->children->content)));
-
+              #endif
             }
           }
         }
@@ -511,9 +501,8 @@ NetworkIO::process_modules_pass1(const xmlNodePtr enode)
   }
 }
 
-
 void
-NetworkIO::process_modules_pass2(const xmlNodePtr enode)
+LegacyNetworkIO::process_modules_pass2(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
   for (; node != 0; node = node->next)
@@ -577,9 +566,11 @@ NetworkIO::process_modules_pass2(const xmlNodePtr enode)
             if (std::string(to_char_ptr(gc_node->name)) == std::string("callback"))
             {
               std::string call = std::string(to_char_ptr(gc_node->children->content));
+              #if 0
               gui_call_module_callback(
                 std::string(to_char_ptr(id_att->children->content)),
                 call);
+              #endif
 
             }
           }
@@ -627,7 +618,9 @@ NetworkIO::process_modules_pass2(const xmlNodePtr enode)
         }
       }
 
+      #if 0
       gui_call_mod_post_read(std::string(to_char_ptr(id_att->children->content)));
+      #endif
 
       if (visible_att &&
         std::string(to_char_ptr(visible_att->children->content)) == "yes")
@@ -638,9 +631,8 @@ NetworkIO::process_modules_pass2(const xmlNodePtr enode)
   }
 }
 
-
 void
-NetworkIO::process_connections(const xmlNodePtr enode)
+LegacyNetworkIO::process_connections(const xmlNodePtr enode)
 {
   xmlNodePtr node = enode->children;
   for (; node != 0; node = node->next) {
@@ -663,7 +655,9 @@ NetworkIO::process_connections(const xmlNodePtr enode)
       if (dis_att &&
         std::string(to_char_ptr(dis_att->children->content)) == "yes")
       {
+        #if 0
         gui_set_connection_disabled(id);
+        #endif
       }
 
 
@@ -672,8 +666,10 @@ NetworkIO::process_connections(const xmlNodePtr enode)
       {
         if (std::string(to_char_ptr(cnode->name)) == std::string("route"))
         {
+          #if 0
           gui_set_connection_route(id,
             std::string(to_char_ptr(cnode->children->content)));
+          #endif
         }
         else if (std::string(to_char_ptr(cnode->name)) == std::string("note"))
         {
@@ -693,9 +689,8 @@ NetworkIO::process_connections(const xmlNodePtr enode)
   }
 }
 
-
 std::string
-NetworkIO::process_filename(const std::string &orig)
+LegacyNetworkIO::process_filename(const std::string &orig)
 {
   // This function reinterprets a filename
 
@@ -733,16 +728,17 @@ NetworkIO::process_filename(const std::string &orig)
   // If not substitute:
 
   // Create a dynamic substitute called NETWORKDIR for relative path names
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FullFileName fnet_file(net_file_);
   std::string net_file = fnet_file.get_abs_filename();
   std::string net_path = fnet_file.get_abs_path();
   env_subs_[std::string("scisub_networkdir")] = std::string("SCIRUN_NETWORKDIR");
   sci_putenv("SCIRUN_NETWORKDIR",net_path);
 
-  id_map_t::const_iterator iter = env_subs_.begin();
+  auto iter = env_subs_.begin();
   while (iter != env_subs_.end())
   {
-    const std::pair<const std::string, std::string> &kv = *iter++;
+    const auto& kv = *iter++;
     const std::string &key = kv.first;
 
     id_map_t::size_type idx = filename.find(key);
@@ -753,27 +749,33 @@ NetworkIO::process_filename(const std::string &orig)
       const char* env = sci_getenv(env_var);
       std::string subst = (env != 0)?env:"";
 
-      if (env_var == std::string("SCIRUN_DATASET") && subst.size() == 0)
+      if (env_var == "SCIRUN_DATASET" && subst.empty())
       {
-        subst = std::string("sphere");
+        subst = "sphere";
       }
-      while (idx != std::string::npos) {
+      while (idx != std::string::npos)
+      {
         filename = filename.replace(idx, key.size(), subst);
         idx = filename.find(key);
       }
     }
   }
+  #endif
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FullFileName ffn(filename);
   filename = ffn.get_abs_filename();
+#endif
 
-  return (std::string("{")+filename+std::string("}"));
+  return "{" + filename + "}";
 }
 
-
 std::string
-NetworkIO::process_substitute(const std::string &orig)
+LegacyNetworkIO::process_substitute(const std::string &orig)
 {
+  std::cout << "TO BE IMPLEMENTED: process_substitute " << orig << std::endl;
+  return orig;
+  #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
   std::string src = orig;
   id_map_t::const_iterator iter = env_subs_.begin();
   while (iter != env_subs_.end())
@@ -800,22 +802,24 @@ NetworkIO::process_substitute(const std::string &orig)
   }
 
   return (src);
+  #endif
 }
-#endif
 
 NetworkFileHandle
 LegacyNetworkIO::load_net(const std::string &net)
 {
   return nullptr;
 //  FullFileName netfile(net);
-  //net_file_ = netfile.get_abs_filename();
+  net_file_ = net;
   //sci_putenv("SCIRUN_NETFILE", net);
-  //load_network();
+  if (!load_network())
+    return nullptr;
+
+  return xmlData_;
 }
 
-#if 0
 void
-NetworkIO::process_network_node(xmlNode* network_node)
+LegacyNetworkIO::process_network_node(xmlNode* network_node)
 {
   // have to multi pass this document to workaround tcl timing issues.
   // PASS 1 - create the modules and connections
@@ -900,9 +904,8 @@ NetworkIO::process_network_node(xmlNode* network_node)
   }
 }
 
-
 bool
-NetworkIO::load_network()
+LegacyNetworkIO::load_network()
 {
   /*
    * this initializes the library and checks potential ABI mismatches
@@ -911,19 +914,20 @@ NetworkIO::load_network()
    */
 
   // Reset some variables
-  FullFileName netfile(net_file_);
-  net_file_ = netfile.get_abs_filename();
-  sci_putenv("SCIRUN_NETFILE", net_file_);
-  sn_count_ = 0;
-  sn_ctx_ = 0;
+  // FullFileName netfile(net_file_);
+  // net_file_ = netfile.get_abs_filename();
+  // sci_putenv("SCIRUN_NETFILE", net_file_);
+  // sn_count_ = 0;
+  // sn_ctx_ = 0;
 
   LIBXML_TEST_VERSION;
 
   xmlParserCtxtPtr ctxt; /* the parser context */
   xmlDocPtr doc; /* the resulting document tree */
 
-  std::string dtd_path( sci_getenv("SCIRUN_SRCDIR") );
-  dtd_path += "/Dataflow/XML/network.dtd";
+  std::string dtd_path("/Users/dan/Desktop/Dev/SCIRunGUIPrototype/src/Dataflow/Serialization/Network/Importer");
+    //sci_getenv("SCIRUN_SRCDIR") ); //TODO obviously
+  dtd_path += "/network.dtd";
   xmlInitializeCatalog();
   xmlCatalogAdd(XMLUtil::char_to_xmlChar("public"),
     XMLUtil::char_to_xmlChar("-//SCIRun/Network DTD"),
@@ -931,8 +935,8 @@ NetworkIO::load_network()
 
   /* create a parser context */
   ctxt = xmlNewParserCtxt();
-  if (ctxt == 0) {
-    std::cerr << "ComponentNode.cc: Failed to allocate parser context"
+  if (!ctxt) {
+    std::cerr << "LegacyNetworkIO.cc: Failed to allocate parser context"
       << std::endl;
     return false;
   }
@@ -952,19 +956,19 @@ NetworkIO::load_network()
   doc = xmlCtxtReadFile(ctxt, net_file_.c_str(), 0, flags);
   /* check if parsing suceeded */
   if (doc == 0) {
-    std::cerr << "ComponentNode.cc: Failed to parse " << net_file_
+    std::cerr << "LegacyNetworkIO.cc: Failed to parse " << net_file_
       << std::endl;
     return false;
   } else {
     /* check if validation suceeded */
     if (ctxt->valid == 0) {
-      std::cerr << "ComponentNode.cc: Failed to validate " << net_file_
+      std::cerr << "LegacyNetworkIO.cc: Failed to validate " << net_file_
         << std::endl;
       return false;
     }
   }
 
-  TCLInterface::eval("netedit dontschedule");
+  // TCLInterface::eval("netedit dontschedule");
 
   // parse the doc at network node.
   process_network_node(doc->children);
@@ -978,15 +982,15 @@ NetworkIO::load_network()
   xmlCleanupParser();
 #endif
 
-  TCLInterface::eval("setGlobal NetworkChanged 0");
-  TCLInterface::eval("set netedit_savefile {" + net_file_ + "}");
-  TCLInterface::eval("netedit scheduleok");
-  TCLInterface::eval("update_network_editor_title \"" + net_file_ + "\"");
-
+  // TCLInterface::eval("setGlobal NetworkChanged 0");
+  // TCLInterface::eval("set netedit_savefile {" + net_file_ + "}");
+  // TCLInterface::eval("netedit scheduleok");
+  // TCLInterface::eval("update_network_editor_title \"" + net_file_ + "\"");
+  //
   return true;
 }
 
-
+#if 0
 // push a new network root node.
 void
 NetworkIO::push_subnet_scope(const std::string &id, const std::string &name)
