@@ -36,11 +36,8 @@
 #include <Core/XMLUtil/XMLUtil.h>
 //#include <Dataflow/Network/NetworkEditor.h>
 #include <Dataflow/Network/Module.h>
-//#include <Dataflow/GuiInterface/TCLInterface.h>
 //#include <Core/Util/Environment.h>
-//#include <Core/Util/Assert.h>
 #include <Core/Utils/Legacy/StringUtil.h>
-//#include <Core/Util/Dir.h>
 #include <sci_debug.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
@@ -51,13 +48,14 @@
 
 using namespace SCIRun::Dataflow::Networks;
 
-LegacyNetworkIO::LegacyNetworkIO() :
+LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath) :
 net_file_("new.srn"),
 done_writing_(false),
 doc_(0),
 out_fname_(""),
 sn_count_(0),
-sn_ctx_(0)
+sn_ctx_(0),
+dtdPath_(dtdpath)
 {
   netid_to_modid_.push(id_map_t());
   netid_to_conid_.push(id_map_t());
@@ -924,13 +922,11 @@ LegacyNetworkIO::load_network()
   xmlParserCtxtPtr ctxt; /* the parser context */
   xmlDocPtr doc; /* the resulting document tree */
 
-  std::string dtd_path("/Users/dan/Desktop/Dev/SCIRunGUIPrototype/src/Dataflow/Serialization/Network/Importer");
-    //sci_getenv("SCIRUN_SRCDIR") ); //TODO obviously
-  dtd_path += "/network.dtd";
+  auto dtdfile = boost::filesystem::path(dtdPath_) / "network.dtd";
   xmlInitializeCatalog();
   xmlCatalogAdd(XMLUtil::char_to_xmlChar("public"),
     XMLUtil::char_to_xmlChar("-//SCIRun/Network DTD"),
-    XMLUtil::char_to_xmlChar( dtd_path.c_str() ));
+    XMLUtil::char_to_xmlChar(dtdfile.string().c_str()));
 
   /* create a parser context */
   ctxt = xmlNewParserCtxt();

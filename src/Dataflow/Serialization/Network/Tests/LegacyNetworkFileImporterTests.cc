@@ -78,7 +78,8 @@ using namespace boost::assign;
 
 TEST(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
 {
-  LegacyNetworkIO lnio;
+  auto dtdpath = TestResources::rootDir() / "Other";
+  LegacyNetworkIO lnio(dtdpath.string());;
   auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "empty.srn";
   auto networkFile = lnio.load_net(v4file1.string());
   ASSERT_TRUE(networkFile != nullptr);

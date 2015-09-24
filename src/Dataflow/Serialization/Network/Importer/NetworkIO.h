@@ -46,7 +46,7 @@ namespace Networks {
   class SCISHARE LegacyNetworkIO
   {
   public:
-    LegacyNetworkIO();
+    explicit LegacyNetworkIO(const std::string& dtdPath);
     NetworkFileHandle load_net(const std::string& legacyNetworkFilename);
   private:
     bool done_writing() const { return done_writing_; }
@@ -156,6 +156,7 @@ namespace Networks {
     std::string                             out_fname_;
     int                                sn_count_;
     int                                sn_ctx_;
+    std::string dtdPath_;
   };
 
 }}} // end namespace SCIRun
