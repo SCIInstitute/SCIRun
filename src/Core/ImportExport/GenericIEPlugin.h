@@ -333,6 +333,9 @@ SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<Field
 template <>
 SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<Core::Datatypes::Matrix>* mgr);
 
+template <>
+SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<NrrdData>* mgr);
+
 SCISHARE std::string fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter);
 
 template <class Data>
