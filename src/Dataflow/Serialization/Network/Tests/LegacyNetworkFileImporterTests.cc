@@ -95,7 +95,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleNoState)
 {
   auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string());;
+  LegacyNetworkIO lnio(dtdpath.string());
   auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "oneModule.srn";
   auto networkFile = lnio.load_net(v4file1.string());
   ASSERT_TRUE(networkFile != nullptr);

@@ -126,6 +126,7 @@ SCIRUN_ADD_LIBRARY(Interface_Application
 
 SET(NonPythonInterface_ApplicationLinkLibraries
   Dataflow_Network
+  Core_Serialization_Network_Importer
   Core_Application
   Core_Logging
   Core_Command

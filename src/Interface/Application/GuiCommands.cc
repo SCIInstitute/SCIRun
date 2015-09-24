@@ -38,6 +38,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Interface/Application/Utility.h>
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
@@ -141,25 +142,25 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 }
 }
 
-bool FileOpenCommand::execute()
+bool NetworkFileProcessCommand::execute()
 {
   if (!filename_.empty())
     GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename_));
 
   try
   {
-    auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename_);
+    auto file = processXmlFile();
 
-    if (openedFile)
+    if (file)
     {
-      auto load = boost::bind(&FileOpenCommand::loadImpl, this, openedFile);
+      auto load = boost::bind(&NetworkFileProcessCommand::guiProcess, this, file);
       if (Core::Application::Instance().parameters()->isRegressionMode())
       {
         load();
       }
       else
       {
-        int numModules = static_cast<int>(openedFile->network.modules.size());
+        int numModules = static_cast<int>(file->network.modules.size());
         QProgressDialog progress("Loading network " + QString::fromStdString(filename_), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
         progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
         progress.setWindowModality(Qt::WindowModal);
@@ -174,9 +175,9 @@ bool FileOpenCommand::execute()
         progress.setValue(load());
         networkEditor_->setVisibility(true);
       }
-      openedFile_ = openedFile;
+      file_ = file;
 
-      QPointF center = findCenterOfNetworkFile(*openedFile_);
+      QPointF center = findCenterOfNetworkFile(*file);
       networkEditor_->centerOn(center);
 
       GuiLogger::Instance().logInfoStd("File load done (" + filename_ + ").");
@@ -208,11 +209,23 @@ bool FileOpenCommand::execute()
   return false;
 }
 
-int FileOpenCommand::loadImpl(const NetworkFileHandle& file)
+int NetworkFileProcessCommand::guiProcess(const NetworkFileHandle& file)
 {
   networkEditor_->clear();
   networkEditor_->loadNetwork(file);
   return static_cast<int>(file->network.modules.size()) + 1;
+}
+
+NetworkFileHandle FileOpenCommand::processXmlFile()
+{
+  return XMLSerializer::load_xml<NetworkFile>(filename_);
+}
+
+NetworkFileHandle FileImportCommand::processXmlFile()
+{
+  auto dtdpath = Core::Application::Instance().executablePath();
+  LegacyNetworkIO lnio(dtdpath.string());
+  return lnio.load_net(filename_);
 }
 
 bool RunPythonScriptCommandGui::execute()
