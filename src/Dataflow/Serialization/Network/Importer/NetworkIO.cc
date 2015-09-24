@@ -138,15 +138,26 @@ const std::string &cversion,
 const std::string& x,
 const std::string &y)
 {
+  //std::cout << "TO BE IMPLEMENTED: gui_add_module_at_position "
+  //  << "\n\t" << mod_id
+  //  << "\n\t" << cpackage
+  //  << "\n\t" << ccategory
+  //  << "\n\t" << cmodule
+  //  << "\n\t" << cversion
+  //  << "\n\t" << x
+  //  << "\n\t" << y << std::endl;
+  if (!xmlData_)
+    return;
 
-  std::cout << "TO BE IMPLEMENTED: gui_add_module_at_position "
-    << "\n\t" << mod_id
-    << "\n\t" << cpackage
-    << "\n\t" << ccategory
-    << "\n\t" << cmodule
-    << "\n\t" << cversion
-    << "\n\t" << x
-    << "\n\t" << y << std::endl;
+  ModuleLookupInfoXML& mod = xmlData_->network.modules[mod_id].module;
+  mod.package_name_ = cpackage;
+  mod.category_name_ = ccategory;
+  mod.module_name_= cmodule;
+  
+  xmlData_->modulePositions.modulePositions[mod_id] = 
+    { boost::lexical_cast<double>(x), 
+      boost::lexical_cast<double>(y) };
+
 #if 0
 
   // Create the module.

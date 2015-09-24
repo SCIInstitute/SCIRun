@@ -91,3 +91,63 @@ TEST(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
   EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleNoState)
+{
+  auto dtdpath = TestResources::rootDir() / "Other";
+  LegacyNetworkIO lnio(dtdpath.string());;
+  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "oneModule.srn";
+  auto networkFile = lnio.load_net(v4file1.string());
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(1, networkFile->network.modules.size());
+  auto mod = *networkFile->network.modules.begin();
+  EXPECT_EQ("m1", mod.first); //TODO: ID conversion??
+  EXPECT_EQ("CreateLatVol", mod.second.module.module_name_);
+  EXPECT_EQ("NewField", mod.second.module.category_name_);
+  EXPECT_EQ("SCIRun", mod.second.module.package_name_);
+  
+  EXPECT_EQ(0, networkFile->network.connections.size());
+
+  EXPECT_EQ(1, networkFile->modulePositions.modulePositions.size());
+  EXPECT_EQ(std::make_pair(289.0,151.0), networkFile->modulePositions.modulePositions.begin()->second);
+  
+  EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
+  EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
+  EXPECT_EQ(0, networkFile->moduleTags.tags.size());
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleWithState)
+{
+  FAIL() << "todo";
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesNoConnections)
+{
+  FAIL() << "todo";
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnection)
+{
+  FAIL() << "todo";
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesTwoConnections)
+{
+  FAIL() << "todo";
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfObjects)
+{
+  FAIL() << "todo";
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)
+{
+  FAIL() << "todo";
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithConnectionNotes)
+{
+  FAIL() << "todo";
+}
