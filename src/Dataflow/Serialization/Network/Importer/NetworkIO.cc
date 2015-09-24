@@ -153,9 +153,9 @@ const std::string &y)
   mod.package_name_ = cpackage;
   mod.category_name_ = ccategory;
   mod.module_name_= cmodule;
-  
-  xmlData_->modulePositions.modulePositions[mod_id] = 
-    { boost::lexical_cast<double>(x), 
+
+  xmlData_->modulePositions.modulePositions[mod_id] =
+    { boost::lexical_cast<double>(x),
       boost::lexical_cast<double>(y) };
 
 #if 0
@@ -197,6 +197,21 @@ void
 LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port)
 {
   std::cout << "TO IMPLEMENT: createConnectionNew \n\t" << from << "\n\t" << to << "\n\t"  << from_port << "\n\t"  << to_port << std::endl;
+  if (!xmlData_)
+    return;
+
+  auto& connections = xmlData_->network.connections;
+  OutgoingConnectionDescription out;
+  //TODO: need to have converted module ids by this point. need a map.
+  out.moduleId_ = ModuleId(from);
+  out.portId_ = PortId(boost::lexical_cast<int>(from_port));
+  IncomingConnectionDescription in;
+  in.moduleId_ = ModuleId(to);
+  in.portId_ = PortId(boost::lexical_cast<int>(to_port));
+  ConnectionDescriptionXML conn;
+  conn.out_ = out;
+  conn.in_ = in;
+  connections.push_back(conn);
 }
 
 void
@@ -215,7 +230,7 @@ const std::string &to_port0)
   {
     arg = "0";
     // create the connection.
-    createConnectionNew(from, to, from_port, to_port0);
+    createConnectionNew(from_id, to_id, from_port, to_port0);
     #if 0
     ModuleHandle omod = net_->get_module_by_id(from);
     ModuleHandle imod = net_->get_module_by_id(to);
@@ -495,9 +510,9 @@ LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
           {
             if (std::string(to_char_ptr(pc_node->name)) == std::string("port"))
             {
+              #if 0
               xmlAttrPtr pid_att = get_attribute_by_name(pc_node, "id");
               xmlAttrPtr val_att = get_attribute_by_name(pc_node, "val");
-              #if 0
               gui_set_module_port_caching(mid,
                 std::string(to_char_ptr(pid_att->children->content)),
                 std::string(to_char_ptr(val_att->children->content)));

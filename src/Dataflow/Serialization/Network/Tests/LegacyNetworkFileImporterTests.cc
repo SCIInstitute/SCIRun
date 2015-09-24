@@ -162,6 +162,34 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesNoConnectio
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnection)
 {
+  auto dtdpath = TestResources::rootDir() / "Other";
+  LegacyNetworkIO lnio(dtdpath.string());
+  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "twoModsOneConnection.srn";
+  auto networkFile = lnio.load_net(v4file1.string());
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(2, networkFile->network.modules.size());
+  auto modIter = networkFile->network.modules.begin();
+  EXPECT_EQ("m1", modIter->first); //TODO: ID conversion??
+  EXPECT_EQ("ComputeSVD", modIter->second.module.module_name_);
+  EXPECT_EQ("Math", modIter->second.module.category_name_);
+  EXPECT_EQ("SCIRun", modIter->second.module.package_name_);
+  ++modIter;
+  EXPECT_EQ("m2", modIter->first); //TODO: ID conversion??
+  EXPECT_EQ("CreateLatVol", modIter->second.module.module_name_);
+  EXPECT_EQ("NewField", modIter->second.module.category_name_);
+  EXPECT_EQ("SCIRun", modIter->second.module.package_name_);
+
+  ASSERT_EQ(1, networkFile->network.connections.size());
+  auto conn = networkFile->network.connections[0];
+  std::cout << "CONN LOOKS LIKE " << static_cast<std::string>(ConnectionId::create(conn)) << std::endl;
+
+  EXPECT_EQ(2, networkFile->modulePositions.modulePositions.size());
+
+  EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
+  EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
+  EXPECT_EQ(0, networkFile->moduleTags.tags.size());
+
   FAIL() << "todo";
 }
 
