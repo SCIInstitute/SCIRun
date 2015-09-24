@@ -84,5 +84,10 @@ TEST(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
   auto networkFile = lnio.load_net(v4file1.string());
   ASSERT_TRUE(networkFile != nullptr);
 
-  FAIL() << "todo";
+  EXPECT_EQ(0, networkFile->network.modules.size());
+  EXPECT_EQ(0, networkFile->network.connections.size());
+  EXPECT_EQ(0, networkFile->modulePositions.modulePositions.size());
+  EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
+  EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
+  EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }

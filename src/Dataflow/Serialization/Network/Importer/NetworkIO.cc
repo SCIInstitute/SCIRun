@@ -965,6 +965,8 @@ LegacyNetworkIO::load_network()
 
   // TCLInterface::eval("netedit dontschedule");
 
+  xmlData_.reset(new NetworkFile);
+
   // parse the doc at network node.
   process_network_node(doc->children);
 
