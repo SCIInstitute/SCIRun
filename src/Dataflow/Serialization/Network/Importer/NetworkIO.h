@@ -136,6 +136,8 @@ namespace Networks {
     std::string gui_push_subnet_ctx();
     void gui_pop_subnet_ctx(const std::string& ctx);
 
+    void listModuleIdMapping();
+
     xmlNode* get_module_node(const std::string &id);
     xmlNode* get_connection_node(const std::string &id);
 

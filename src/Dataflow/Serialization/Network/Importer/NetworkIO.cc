@@ -151,8 +151,8 @@ const std::string &y)
 
   //TODO: probably need a bimap here.
   std::vector<int> existingIdsWithThisModuleName;
-  boost::copy(moduleIdMap_ 
-    | boost::adaptors::map_values 
+  boost::copy(moduleIdMap_
+    | boost::adaptors::map_values
     | boost::adaptors::filtered([&](const ModuleId& mid) { return mid.name_ == cmodule; })
     | boost::adaptors::transformed([&](const ModuleId& mid) { return mid.idNumber_; }),
     std::back_inserter(existingIdsWithThisModuleName));
@@ -161,12 +161,12 @@ const std::string &y)
     nextId = *std::max_element(existingIdsWithThisModuleName.begin(), existingIdsWithThisModuleName.end()) + 1;
   moduleIdMap_[mod_id] = ModuleId(cmodule, nextId);
 
-  ModuleLookupInfoXML& mod = xmlData_->network.modules[mod_id].module;
+  ModuleLookupInfoXML& mod = xmlData_->network.modules[moduleIdMap_[mod_id]].module;
   mod.package_name_ = cpackage;
   mod.category_name_ = ccategory;
   mod.module_name_= cmodule;
 
-  xmlData_->modulePositions.modulePositions[mod_id] =
+  xmlData_->modulePositions.modulePositions[moduleIdMap_[mod_id]] =
     { boost::lexical_cast<double>(x),
       boost::lexical_cast<double>(y) };
 
@@ -215,10 +215,10 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
   auto& connections = xmlData_->network.connections;
   OutgoingConnectionDescription out;
   //TODO: need to have converted module ids by this point. need a map.
-  out.moduleId_ = ModuleId(from);
+  out.moduleId_ = moduleIdMap_[from];
   out.portId_ = PortId(boost::lexical_cast<int>(from_port));
   IncomingConnectionDescription in;
-  in.moduleId_ = ModuleId(to);
+  in.moduleId_ = moduleIdMap_[to];
   in.portId_ = PortId(boost::lexical_cast<int>(to_port));
   ConnectionDescriptionXML conn;
   conn.out_ = out;
@@ -1022,7 +1022,18 @@ LegacyNetworkIO::load_network()
   // TCLInterface::eval("netedit scheduleok");
   // TCLInterface::eval("update_network_editor_title \"" + net_file_ + "\"");
   //
+
   return true;
+}
+
+void LegacyNetworkIO::listModuleIdMapping()
+{
+  std::cout << "Module id mapping: {\n";
+  for (const auto& mm : moduleIdMap_)
+  {
+    std::cout << mm.first << " --> " << mm.second << std::endl;
+  }
+  std::cout << "}" << std::endl;
 }
 
 #if 0
