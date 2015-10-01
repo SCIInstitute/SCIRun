@@ -931,7 +931,7 @@
   </action>
   <action name="actionImportNetwork_">
    <property name="text">
-    <string>Import from v4.x...</string>
+    <string>Import 4.x network file...</string>
    </property>
   </action>
  </widget>

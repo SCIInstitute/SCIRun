@@ -150,7 +150,16 @@ const std::string &y)
     return;
 
   //TODO: probably need a bimap here.
-  moduleIdMap_[mod_id] = ModuleId(cmodule, 0);
+  std::vector<int> existingIdsWithThisModuleName;
+  boost::copy(moduleIdMap_ 
+    | boost::adaptors::map_values 
+    | boost::adaptors::filtered([&](const ModuleId& mid) { return mid.name_ == cmodule; })
+    | boost::adaptors::transformed([&](const ModuleId& mid) { return mid.idNumber_; }),
+    std::back_inserter(existingIdsWithThisModuleName));
+  int nextId = 0;
+  if (!existingIdsWithThisModuleName.empty())
+    nextId = *std::max_element(existingIdsWithThisModuleName.begin(), existingIdsWithThisModuleName.end()) + 1;
+  moduleIdMap_[mod_id] = ModuleId(cmodule, nextId);
 
   ModuleLookupInfoXML& mod = xmlData_->network.modules[mod_id].module;
   mod.package_name_ = cpackage;
