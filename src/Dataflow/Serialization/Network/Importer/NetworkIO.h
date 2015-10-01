@@ -157,6 +157,7 @@ namespace Networks {
     int                                sn_count_;
     int                                sn_ctx_;
     std::string dtdPath_;
+    std::map<std::string, ModuleId> moduleIdMap_;
   };
 
 }}} // end namespace SCIRun

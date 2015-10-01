@@ -149,6 +149,9 @@ const std::string &y)
   if (!xmlData_)
     return;
 
+  //TODO: probably need a bimap here.
+  moduleIdMap_[mod_id] = ModuleId(cmodule, 0);
+
   ModuleLookupInfoXML& mod = xmlData_->network.modules[mod_id].module;
   mod.package_name_ = cpackage;
   mod.category_name_ = ccategory;
