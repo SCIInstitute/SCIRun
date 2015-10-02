@@ -139,6 +139,9 @@ IF(APPLE AND BUILD_BUNDLE)
         COMMAND  install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
           @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
           ${APPLICATION_NAME}.app/Contents/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}SCIRunPythonAPI${CMAKE_SHARED_LIBRARY_SUFFIX}
+        COMMAND  install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
+          @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
+          ${APPLICATION_NAME}.app/Contents/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}Interface_Application${CMAKE_SHARED_LIBRARY_SUFFIX}
         WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
     ENDIF()
     ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
