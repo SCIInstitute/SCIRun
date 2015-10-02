@@ -52,6 +52,17 @@ INCLUDE( ExternalProject )
 #endif()
 
 ###########################################
+# DETERMINE ARCHITECTURE
+# In order for the code to depend on the architecture settings
+###########################################
+
+IF(CMAKE_SIZEOF_VOID_P MATCHES 8)
+  SET(SCIRUN_BITS 64)
+ELSE()
+  SET(SCIRUN_BITS 32)
+ENDIF()
+
+###########################################
 # Configure test support
 OPTION(BUILD_TESTING "Build with tests." ON)
 
