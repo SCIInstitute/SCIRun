@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -36,10 +36,41 @@ SET(Algorithms_Factory_HEADERS
   share.h
 )
 
-SCIRUN_ADD_LIBRARY(Algorithms_Factory 
+#ADD_SUBDIRECTORY(Generator)
+
+SET(AlgorithmFactoryImpl_Generated ${CMAKE_CURRENT_BINARY_DIR}/AlgorithmFactoryImpl_Generated.cc)
+
+SCIRUN_ADD_LIBRARY(Algorithms_Factory
   ${Algorithms_Factory_HEADERS}
   ${Algorithms_Factory_SRCS}
+  ${AlgorithmFactoryImpl_Generated}
 )
+
+IF(GENERATE_MODULE_FACTORY_CODE)
+
+add_executable(MakeAlgorithmFactory Generator/MakeAlgorithmFactory.h Generator/MakeAlgorithmFactory.cc)
+TARGET_LINK_LIBRARIES(MakeAlgorithmFactory
+  #Modules_Factory_Generator
+  ${SCI_BOOST_LIBRARY})
+SET_PROPERTY(TARGET MakeAlgorithmFactory   PROPERTY FOLDER "Modules")
+
+# add the command to generate the source code
+add_custom_command (
+  OUTPUT ${AlgorithmFactoryImpl_Generated}
+  COMMAND MakeAlgorithmFactory ${CMAKE_CURRENT_SOURCE_DIR} ${AlgorithmFactoryImpl_Generated}
+  DEPENDS MakeAlgorithmFactory
+  )
+
+IF(REGENERATE_MODULE_FACTORY_CODE)
+    add_custom_command(
+        TARGET Algorithms_Factory
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove -f ${AlgorithmFactoryImpl_Generated}
+        COMMENT " Running POST BUILD action "
+         )
+ENDIF(REGENERATE_MODULE_FACTORY_CODE)
+
+ENDIF(GENERATE_MODULE_FACTORY_CODE)
 
 TARGET_LINK_LIBRARIES(Algorithms_Factory
   Algorithms_Base
@@ -58,4 +89,3 @@ IF(BUILD_SHARED_LIBS)
 ENDIF(BUILD_SHARED_LIBS)
 
 SCIRUN_ADD_TEST_DIR(Tests)
-

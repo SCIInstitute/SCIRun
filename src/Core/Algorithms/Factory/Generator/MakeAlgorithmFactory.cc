@@ -26,19 +26,20 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-// A simple program that builds a sqrt table
-#include <cstdio>
-#include <cmath>
+//#include <cstdio>
+//#include <cmath>
 #include <string>
-#include <Modules/Factory/Generator/MakeModuleFactory.h>
-#include <Modules/Factory/Generator/ModuleFactoryGenerator.h>
+#include <Core/Algorithms/Factory/Generator/MakeAlgorithmFactory.h>
+//#include <Modules/Factory/Generator/ModuleFactoryGenerator.h>
 #include <fstream>
+#include <iostream>
 
-int SCIRun::Modules::Factory::MakeGeneratedModuleFactoryCode(const std::string& sourcePath, const std::string& generatedFilename)
+int SCIRun::Core::Algorithms::Factory::MakeGeneratedAlgorithmFactoryCode(const std::string& sourcePath, const std::string& generatedFilename)
 {
-  auto code = SCIRun::Modules::Factory::Generator::GenerateCodeFileFromSourcePath(sourcePath);
+  //auto code = SCIRun::Modules::Factory::Generator::GenerateCodeFileFromSourcePath(sourcePath);
   std::ofstream out(generatedFilename);
-  out << code;
+  out << "//HELLO C++ STUFF";
+  std::cout << "MakeGeneratedAlgorithmFactoryCode " << sourcePath << " , " << generatedFilename << std::endl;
   return 0;
 }
 
@@ -50,5 +51,5 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  return SCIRun::Modules::Factory::MakeGeneratedModuleFactoryCode(argv[1], argv[2]);
+  return SCIRun::Core::Algorithms::Factory::MakeGeneratedAlgorithmFactoryCode(argv[1], argv[2]);
 }
