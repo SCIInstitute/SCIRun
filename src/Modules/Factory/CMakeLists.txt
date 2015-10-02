@@ -70,7 +70,7 @@ IF(REGENERATE_MODULE_FACTORY_CODE)
     add_custom_command(
         TARGET Modules_Factory
         POST_BUILD
-        COMMAND rm -f ${ModuleFactoryImpl_Generated}
+        COMMAND ${CMAKE_COMMAND} -E remove -f ${ModuleFactoryImpl_Generated}
         COMMENT " Running POST BUILD action "
          )
 ENDIF(REGENERATE_MODULE_FACTORY_CODE)
