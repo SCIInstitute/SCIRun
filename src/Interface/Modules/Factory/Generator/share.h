@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,19 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MAKE_MODULE_FACTORY_H
-#define MAKE_MODULE_FACTORY_H
+#undef SCISHARE
 
-#include <string>
-#include <Modules/Factory/Generator/share.h>
-
-namespace SCIRun {
-  namespace Modules {
-    namespace Factory {
-	
-      SCISHARE int MakeGeneratedModuleFactoryCode(const std::string& sourcePath, const std::string& generatedFilename);
-    }
-  }
-}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_Factory_Generator
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif
