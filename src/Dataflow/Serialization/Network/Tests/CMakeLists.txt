@@ -30,6 +30,7 @@ SET(Core_Serialization_Network_Tests_SRCS
   ModuleSerializationTests.cc
   NetworkSerializationTests.cc
   StateSerializationTests.cc
+  LegacyNetworkFileImporterTests.cc
 )
 
 SET(Core_Serialization_Network_Tests_HEADERS
@@ -43,6 +44,7 @@ SCIRUN_ADD_UNIT_TEST(Core_Serialization_Network_Tests
 TARGET_LINK_LIBRARIES(Core_Serialization_Network_Tests
   Dataflow_Network
   Core_Serialization_Network
+  Core_Serialization_Network_Importer
   Core_Datatypes
   Modules_Factory
   Dataflow_State

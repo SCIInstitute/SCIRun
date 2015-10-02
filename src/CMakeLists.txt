@@ -580,6 +580,8 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/include
   ${SCIRun_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun_SOURCE_DIR}/Externals/gmock/include
+  ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
+  ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
@@ -764,11 +766,13 @@ SET_PROPERTY(TARGET Core_Services         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Math         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Matlab         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Parser         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_XMLUtil         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Exceptions_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Util_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Containers         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Thread_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Serialization_Network         PROPERTY FOLDER "Dataflow/Serialization")
+SET_PROPERTY(TARGET Core_Serialization_Network_Importer         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Dataflow_State         PROPERTY FOLDER "Dataflow")
@@ -851,6 +855,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Core_Serialization_Network_Tests         PROPERTY FOLDER "Dataflow/Serialization/Tests")
   SET_PROPERTY(TARGET Core_Thread_Tests   PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Utils_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Core_XMLUtil_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Parser_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_DatabaseManager_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_ImportExport_Tests         PROPERTY FOLDER "Core/Tests")
@@ -878,7 +883,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
   SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO_Tests PROPERTY FOLDER "Modules/DataIO")
   SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
-  
+
   SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
 ENDIF()
 
@@ -889,6 +894,7 @@ SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 #SET_PROPERTY(TARGET Zlib_external   PROPERTY FOLDER "Externals")
 #SET_PROPERTY(TARGET Teem_external   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")

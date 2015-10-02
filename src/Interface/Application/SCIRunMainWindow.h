@@ -70,6 +70,7 @@ public:
   //command access: extract an interface
   void saveNetworkFile(const QString& fileName);
   bool loadNetworkFile(const QString& filename);
+  bool importLegacyNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
@@ -155,6 +156,7 @@ private Q_SLOTS:
   void loadRecentNetwork();
   bool newNetwork();
   void runScript();
+  void importLegacyNetwork();
   void networkModified();
   void filterModuleNamesInTreeView(const QString& start);
   void makePipesEuclidean();
