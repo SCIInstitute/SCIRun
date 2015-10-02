@@ -57,7 +57,7 @@ SET_PROPERTY(TARGET MakeAlgorithmFactory   PROPERTY FOLDER "Modules")
 # add the command to generate the source code
 add_custom_command (
   OUTPUT ${AlgorithmFactoryImpl_Generated}
-  COMMAND MakeAlgorithmFactory ${CMAKE_CURRENT_SOURCE_DIR} ${AlgorithmFactoryImpl_Generated}
+  COMMAND MakeAlgorithmFactory ${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules/Factory/ ${AlgorithmFactoryImpl_Generated}
   DEPENDS MakeAlgorithmFactory
   )
 

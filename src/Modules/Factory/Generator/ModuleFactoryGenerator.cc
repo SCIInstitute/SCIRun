@@ -216,14 +216,16 @@ AlgorithmFactoryCodeBuilder::AlgorithmFactoryCodeBuilder(const ModuleDescriptorM
 
 void AlgorithmFactoryCodeBuilder::start()
 {
-  buffer_ << "#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>\n\n";
+  buffer_ << "#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>\n#include <boost/functional/factory.hpp>\n\n";
 }
 
 void AlgorithmFactoryCodeBuilder::addIncludes()
 {
   for (const auto& desc : descMap_)
   {
-    buffer_ << "#include <" << desc.second.algo_.header_ << ">\n";
+    const auto& header = desc.second.algo_.header_;
+    if (header.find("N/A") == std::string::npos)
+      buffer_ << "#include <" << header << ">\n";
   }
 }
 
@@ -232,7 +234,9 @@ void AlgorithmFactoryCodeBuilder::addNamespaces()
   buffer_ << "\nusing namespace SCIRun::Core::Algorithms;\n";
   for (const auto& desc : descMap_)
   {
-    buffer_ << "using namespace SCIRun::Core::Algorithms::" << desc.second.algo_.namespace_ << ";\n";
+    const auto& ns = desc.second.algo_.namespace_;
+    if (ns.find("N/A") == std::string::npos)
+      buffer_ << "using namespace SCIRun::Core::Algorithms::" << ns << ";\n";
   }
 }
 
@@ -241,7 +245,9 @@ void AlgorithmFactoryCodeBuilder::addDescriptionInserters()
   buffer_ << "\nvoid HardCodedAlgorithmFactory::addToMakerMapGenerated()\n{\n";
   for (const auto& desc : descMap_)
   {
-    buffer_ << "  ADD_MODULE_ALGORITHM_GENERATED(" << desc.second.name_ << ", " << desc.second.algo_.name_ << ");\n";
+    const auto& algoName = desc.second.algo_.name_;
+    if (algoName.find("N/A") == std::string::npos)
+      buffer_ << "  ADD_MODULE_ALGORITHM_GENERATED(" << desc.second.name_ << ", " << algoName << ");\n";
   }
   buffer_ << "}\n";
 }

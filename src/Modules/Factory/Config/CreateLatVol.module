@@ -7,9 +7,9 @@
     "header": "Modules/Legacy/Fields/CreateLatVol.h"
   },
   "algorithm": {
-    "name": "CreateLatVolAlgo",
-    "namespace": "Fields",
-    "header": "Core/Algorithms/Legacy/Fields/CreateLatVolAlgo.h"
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
   },
   "UI": {
     "name": "CreateLatVolDialog",

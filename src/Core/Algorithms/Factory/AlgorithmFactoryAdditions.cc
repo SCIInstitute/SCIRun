@@ -35,10 +35,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-#define ADD_MODULE_ALGORITHM(module, algorithm) factoryMap_[#module] = boost::factory<algorithm*>()
-
 void HardCodedAlgorithmFactory::addToMakerMap2()
 {
-  ADD_MODULE_ALGORITHM(BuildTDCSMatrix, BuildTDCSMatrixAlgo);
-  ADD_MODULE_ALGORITHM(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionAlgo);
+  ADD_MODULE_ALGORITHM_GENERATED(BuildTDCSMatrix, BuildTDCSMatrixAlgo);
+  ADD_MODULE_ALGORITHM_GENERATED(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionAlgo);
 }

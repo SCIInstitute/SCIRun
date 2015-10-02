@@ -316,7 +316,8 @@ TEST(FactoryGeneratorTests, FullProgram)
 TEST(AlgorithmFactoryGeneratorTests, FullProgram)
 {
   auto code = GenerateAlgorithmCodeFileFromDescriptorPath((TestResources::rootDir() / "Other" / "Factory" / "Config" / "Real").string());
-  std::string expectedCode = "#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>\n\n"
+  std::string expectedCode = "#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>\n"
+  "#include <boost/functional/factory.hpp>\n\n"
   "#include <Core/Algorithms/Legacy/Fields/CreateLatVolAlgo.h>\n\n"
   "using namespace SCIRun::Core::Algorithms;\n"
   "using namespace SCIRun::Core::Algorithms::Fields;\n\n"
