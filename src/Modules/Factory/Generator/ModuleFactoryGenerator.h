@@ -43,9 +43,15 @@ namespace SCIRun {
       {
         SCISHARE std::vector<std::string> GetListOfModuleDescriptorFiles(const std::string& descriptorPath);
 
+        struct SCISHARE AlgorithmDescriptor
+        {
+          std::string name_, namespace_, header_;
+        };
+
         struct SCISHARE ModuleDescriptor
         {
           std::string name_, namespace_, status_, description_, header_;
+          AlgorithmDescriptor algo_;
         };
 
         class SCISHARE ModuleDescriptorJsonParser
@@ -74,12 +80,28 @@ namespace SCIRun {
           std::ostringstream buffer_;
         };
 
+        class SCISHARE AlgorithmFactoryCodeBuilder
+        {
+        public:
+          explicit AlgorithmFactoryCodeBuilder(const ModuleDescriptorMap& descriptors);
+          void start();
+          void addIncludes();
+          void addNamespaces();
+          void addDescriptionInserters();
+          std::string build();
+        private:
+          ModuleDescriptorMap descMap_;
+          std::ostringstream buffer_;
+        };
+
         SCISHARE std::string GenerateModuleCodeFileFromMap(const ModuleDescriptorMap& descriptors);
 
         SCISHARE std::string GenerateModuleCodeFileFromDescriptorPath(const std::string& descriptorPath);
 
         SCISHARE std::string GenerateModuleCodeFileFromSourcePath(const std::string& srcPath);
 
+        SCISHARE std::string GenerateAlgorithmCodeFileFromMap(const ModuleDescriptorMap& descriptors);
+        SCISHARE std::string GenerateAlgorithmCodeFileFromDescriptorPath(const std::string& descriptorPath);
         SCISHARE std::string GenerateAlgorithmCodeFileFromSourcePath(const std::string& srcPath);
       }
     }

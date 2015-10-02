@@ -312,3 +312,17 @@ TEST(FactoryGeneratorTests, FullProgram)
   "}\n";
   EXPECT_EQ(expectedCode, code);
 }
+
+TEST(AlgorithmFactoryGeneratorTests, FullProgram)
+{
+  auto code = GenerateAlgorithmCodeFileFromDescriptorPath((TestResources::rootDir() / "Other" / "Factory" / "Config" / "Real").string());
+  std::string expectedCode = "#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>\n\n"
+  "#include <Core/Algorithms/Legacy/Fields/CreateLatVolAlgo.h>\n\n"
+  "using namespace SCIRun::Core::Algorithms;\n"
+  "using namespace SCIRun::Core::Algorithms::Fields;\n\n"
+  "void HardCodedAlgorithmFactory::addToMakerMapGenerated()\n"
+  "{\n"
+  "  ADD_MODULE_ALGORITHM_GENERATED(CreateLatVol, CreateLatVolAlgo);\n"
+  "}\n";
+  EXPECT_EQ(expectedCode, code);
+}

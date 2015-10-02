@@ -55,7 +55,12 @@ ModuleDescriptor ModuleDescriptorJsonParser::readJsonString(const std::string& j
       modProps.get<std::string>("module.namespace"),
       modProps.get<std::string>("module.status"),
       modProps.get<std::string>("module.description"),
-      modProps.get<std::string>("module.header")
+      modProps.get<std::string>("module.header"),
+      {
+        modProps.get<std::string>("algorithm.name"),
+        modProps.get<std::string>("algorithm.namespace"),
+        modProps.get<std::string>("algorithm.header")
+      }
     };
   }
   catch (...)
@@ -160,11 +165,28 @@ std::string Generator::GenerateModuleCodeFileFromMap(const ModuleDescriptorMap& 
   return builder.build();
 }
 
+std::string Generator::GenerateAlgorithmCodeFileFromMap(const ModuleDescriptorMap& descriptors)
+{
+  AlgorithmFactoryCodeBuilder builder(descriptors);
+  builder.start();
+  builder.addIncludes();
+  builder.addNamespaces();
+  builder.addDescriptionInserters();
+  return builder.build();
+}
+
 std::string Generator::GenerateModuleCodeFileFromDescriptorPath(const std::string& descriptorPath)
 {
   auto files = GetListOfModuleDescriptorFiles(descriptorPath);
   auto map = BuildModuleDescriptorMap(files);
   return GenerateModuleCodeFileFromMap(map);
+}
+
+std::string Generator::GenerateAlgorithmCodeFileFromDescriptorPath(const std::string& descriptorPath)
+{
+  auto files = GetListOfModuleDescriptorFiles(descriptorPath);
+  auto map = BuildModuleDescriptorMap(files);
+  return GenerateAlgorithmCodeFileFromMap(map);
 }
 
 std::string Generator::GenerateModuleCodeFileFromSourcePath(const std::string& sourcePath)
@@ -183,5 +205,48 @@ std::string Generator::GenerateModuleCodeFileFromSourcePath(const std::string& s
 std::string Generator::GenerateAlgorithmCodeFileFromSourcePath(const std::string& sourcePath)
 {
   std::cout << "TODO: GenerateAlgorithmCodeFileFromSourcePath " << sourcePath << std::endl;
-  return "";
+  boost::filesystem::path base(sourcePath);
+  auto configPath = base / "Config";
+  auto files = GetListOfModuleDescriptorFiles(configPath.string());
+  auto map = BuildModuleDescriptorMap(files);
+  return GenerateAlgorithmCodeFileFromMap(map);
+}
+
+AlgorithmFactoryCodeBuilder::AlgorithmFactoryCodeBuilder(const ModuleDescriptorMap& descriptors) : descMap_(descriptors) {}
+
+void AlgorithmFactoryCodeBuilder::start()
+{
+  buffer_ << "#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>\n\n";
+}
+
+void AlgorithmFactoryCodeBuilder::addIncludes()
+{
+  for (const auto& desc : descMap_)
+  {
+    buffer_ << "#include <" << desc.second.algo_.header_ << ">\n";
+  }
+}
+
+void AlgorithmFactoryCodeBuilder::addNamespaces()
+{
+  buffer_ << "\nusing namespace SCIRun::Core::Algorithms;\n";
+  for (const auto& desc : descMap_)
+  {
+    buffer_ << "using namespace SCIRun::Core::Algorithms::" << desc.second.algo_.namespace_ << ";\n";
+  }
+}
+
+void AlgorithmFactoryCodeBuilder::addDescriptionInserters()
+{
+  buffer_ << "\nvoid HardCodedAlgorithmFactory::addToMakerMapGenerated()\n{\n";
+  for (const auto& desc : descMap_)
+  {
+    buffer_ << "  ADD_MODULE_ALGORITHM_GENERATED(" << desc.second.name_ << ", " << desc.second.algo_.name_ << ");\n";
+  }
+  buffer_ << "}\n";
+}
+
+std::string AlgorithmFactoryCodeBuilder::build()
+{
+  return buffer_.str();
 }
