@@ -36,7 +36,7 @@ DEALINGS IN THE SOFTWARE.
 
 int SCIRun::Modules::Factory::MakeGeneratedModuleFactoryCode(const std::string& sourcePath, const std::string& generatedFilename)
 {
-  auto code = SCIRun::Modules::Factory::Generator::GenerateCodeFileFromSourcePath(sourcePath);
+  auto code = SCIRun::Modules::Factory::Generator::GenerateModuleCodeFileFromSourcePath(sourcePath);
   std::ofstream out(generatedFilename);
   out << code;
   return 0;

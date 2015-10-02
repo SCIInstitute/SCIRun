@@ -50,7 +50,7 @@ IF(GENERATE_MODULE_FACTORY_CODE)
 
 add_executable(MakeAlgorithmFactory Generator/MakeAlgorithmFactory.h Generator/MakeAlgorithmFactory.cc)
 TARGET_LINK_LIBRARIES(MakeAlgorithmFactory
-  #Modules_Factory_Generator
+  Modules_Factory_Generator
   ${SCI_BOOST_LIBRARY})
 SET_PROPERTY(TARGET MakeAlgorithmFactory   PROPERTY FOLDER "Modules")
 

@@ -150,7 +150,7 @@ std::string ModuleFactoryCodeBuilder::build()
   return buffer_.str();
 }
 
-std::string Generator::GenerateCodeFileFromMap(const ModuleDescriptorMap& descriptors)
+std::string Generator::GenerateModuleCodeFileFromMap(const ModuleDescriptorMap& descriptors)
 {
   ModuleFactoryCodeBuilder builder(descriptors);
   builder.start();
@@ -160,14 +160,14 @@ std::string Generator::GenerateCodeFileFromMap(const ModuleDescriptorMap& descri
   return builder.build();
 }
 
-std::string Generator::GenerateCodeFileFromDescriptorPath(const std::string& descriptorPath)
+std::string Generator::GenerateModuleCodeFileFromDescriptorPath(const std::string& descriptorPath)
 {
   auto files = GetListOfModuleDescriptorFiles(descriptorPath);
   auto map = BuildModuleDescriptorMap(files);
-  return GenerateCodeFileFromMap(map);
+  return GenerateModuleCodeFileFromMap(map);
 }
 
-std::string Generator::GenerateCodeFileFromSourcePath(const std::string& sourcePath)
+std::string Generator::GenerateModuleCodeFileFromSourcePath(const std::string& sourcePath)
 {
   boost::filesystem::path base(sourcePath); // should be src/Modules/Factory
   //std::cout << "__GENERATOR__ " << base << std::endl;
@@ -177,5 +177,11 @@ std::string Generator::GenerateCodeFileFromSourcePath(const std::string& sourceP
   //std::cout << "__GENERATOR__ " << files.size() << std::endl;
   auto map = BuildModuleDescriptorMap(files);
   //std::cout << "__GENERATOR__ " << map.size() << std::endl;
-  return GenerateCodeFileFromMap(map);
+  return GenerateModuleCodeFileFromMap(map);
+}
+
+std::string Generator::GenerateAlgorithmCodeFileFromSourcePath(const std::string& sourcePath)
+{
+  std::cout << "TODO: GenerateAlgorithmCodeFileFromSourcePath " << sourcePath << std::endl;
+  return "";
 }

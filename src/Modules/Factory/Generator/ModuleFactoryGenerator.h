@@ -74,11 +74,13 @@ namespace SCIRun {
           std::ostringstream buffer_;
         };
 
-        SCISHARE std::string GenerateCodeFileFromMap(const ModuleDescriptorMap& descriptors);
+        SCISHARE std::string GenerateModuleCodeFileFromMap(const ModuleDescriptorMap& descriptors);
 
-        SCISHARE std::string GenerateCodeFileFromDescriptorPath(const std::string& descriptorPath);
+        SCISHARE std::string GenerateModuleCodeFileFromDescriptorPath(const std::string& descriptorPath);
 
-        SCISHARE std::string GenerateCodeFileFromSourcePath(const std::string& srcPath);
+        SCISHARE std::string GenerateModuleCodeFileFromSourcePath(const std::string& srcPath);
+
+        SCISHARE std::string GenerateAlgorithmCodeFileFromSourcePath(const std::string& srcPath);
       }
     }
   }

@@ -285,7 +285,7 @@ TEST(FactoryGeneratorTests, CanGenerateCodeFileFromMapWithFunction)
   auto path = TestResources::rootDir() / "Other" / "Factory" / "Config" / "Real";
   auto files = GetListOfModuleDescriptorFiles(path.string());
   auto map = BuildModuleDescriptorMap(files);
-  auto code = GenerateCodeFileFromMap(map);
+  auto code = GenerateModuleCodeFileFromMap(map);
 
   std::string expectedCode = "#include <Modules/Factory/ModuleDescriptionLookup.h>\n\n"
   "#include <Modules/Legacy/Fields/CreateLatVol.h>\n\n"
@@ -300,7 +300,7 @@ TEST(FactoryGeneratorTests, CanGenerateCodeFileFromMapWithFunction)
 
 TEST(FactoryGeneratorTests, FullProgram)
 {
-  auto code = GenerateCodeFileFromDescriptorPath((TestResources::rootDir() / "Other" / "Factory" / "Config" / "Real").string());
+  auto code = GenerateModuleCodeFileFromDescriptorPath((TestResources::rootDir() / "Other" / "Factory" / "Config" / "Real").string());
 
   std::string expectedCode = "#include <Modules/Factory/ModuleDescriptionLookup.h>\n\n"
   "#include <Modules/Legacy/Fields/CreateLatVol.h>\n\n"

@@ -26,20 +26,18 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-//#include <cstdio>
-//#include <cmath>
-#include <string>
 #include <Core/Algorithms/Factory/Generator/MakeAlgorithmFactory.h>
-//#include <Modules/Factory/Generator/ModuleFactoryGenerator.h>
+#include <Modules/Factory/Generator/ModuleFactoryGenerator.h>
 #include <fstream>
 #include <iostream>
 
 int SCIRun::Core::Algorithms::Factory::MakeGeneratedAlgorithmFactoryCode(const std::string& sourcePath, const std::string& generatedFilename)
 {
-  //auto code = SCIRun::Modules::Factory::Generator::GenerateCodeFileFromSourcePath(sourcePath);
+  auto code = SCIRun::Modules::Factory::Generator::GenerateAlgorithmCodeFileFromSourcePath(sourcePath);
   std::ofstream out(generatedFilename);
-  out << "//HELLO C++ STUFF";
+  out << code;
   std::cout << "MakeGeneratedAlgorithmFactoryCode " << sourcePath << " , " << generatedFilename << std::endl;
+  std::cout << code << std::endl;
   return 0;
 }
 

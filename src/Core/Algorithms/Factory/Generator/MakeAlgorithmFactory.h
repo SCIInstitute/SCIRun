@@ -30,14 +30,13 @@
 #define MAKE_ALGORITHM_FACTORY_H
 
 #include <string>
-//#include <Core/Algorithms/Factory/Generator/share.h>
 
 namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Factory {
 
-        /*SCISHARE*/ int MakeGeneratedAlgorithmFactoryCode(const std::string& sourcePath, const std::string& generatedFilename);
+        int MakeGeneratedAlgorithmFactoryCode(const std::string& sourcePath, const std::string& generatedFilename);
       }
     }
   }
