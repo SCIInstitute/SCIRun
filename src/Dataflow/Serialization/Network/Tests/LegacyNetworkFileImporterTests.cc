@@ -102,7 +102,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleNoState)
 
   EXPECT_EQ(1, networkFile->network.modules.size());
   auto mod = *networkFile->network.modules.begin();
-  EXPECT_EQ("m1", mod.first); //TODO: ID conversion??
+  EXPECT_EQ("CreateLatVol:0", mod.first);
   EXPECT_EQ("CreateLatVol", mod.second.module.module_name_);
   EXPECT_EQ("NewField", mod.second.module.category_name_);
   EXPECT_EQ("SCIRun", mod.second.module.package_name_);
@@ -132,17 +132,17 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesNoConnectio
 
   EXPECT_EQ(3, networkFile->network.modules.size());
   auto modIter = networkFile->network.modules.begin();
-  EXPECT_EQ("m1", modIter->first); //TODO: ID conversion??
+  EXPECT_EQ("ComputeSVD:0", modIter->first);
   EXPECT_EQ("ComputeSVD", modIter->second.module.module_name_);
   EXPECT_EQ("Math", modIter->second.module.category_name_);
   EXPECT_EQ("SCIRun", modIter->second.module.package_name_);
   ++modIter;
-  EXPECT_EQ("m2", modIter->first); //TODO: ID conversion??
+  EXPECT_EQ("CreateLatVol:0", modIter->first);
   EXPECT_EQ("CreateLatVol", modIter->second.module.module_name_);
   EXPECT_EQ("NewField", modIter->second.module.category_name_);
   EXPECT_EQ("SCIRun", modIter->second.module.package_name_);
   ++modIter;
-  EXPECT_EQ("m3", modIter->first); //TODO: ID conversion??
+  EXPECT_EQ("ShowField:0", modIter->first);
   EXPECT_EQ("ShowField", modIter->second.module.module_name_);
   EXPECT_EQ("Visualization", modIter->second.module.category_name_);
   EXPECT_EQ("SCIRun", modIter->second.module.package_name_);
@@ -170,12 +170,12 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnecti
 
   EXPECT_EQ(2, networkFile->network.modules.size());
   auto modIter = networkFile->network.modules.begin();
-  EXPECT_EQ("m1", modIter->first); //TODO: ID conversion??
+  EXPECT_EQ("ComputeSVD:0", modIter->first);
   EXPECT_EQ("ComputeSVD", modIter->second.module.module_name_);
   EXPECT_EQ("Math", modIter->second.module.category_name_);
   EXPECT_EQ("SCIRun", modIter->second.module.package_name_);
   ++modIter;
-  EXPECT_EQ("m2", modIter->first); //TODO: ID conversion??
+  EXPECT_EQ("CreateLatVol:0", modIter->first);
   EXPECT_EQ("CreateLatVol", modIter->second.module.module_name_);
   EXPECT_EQ("NewField", modIter->second.module.category_name_);
   EXPECT_EQ("SCIRun", modIter->second.module.package_name_);
@@ -191,6 +191,34 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnecti
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 
   FAIL() << "todo";
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithThreeModulesSameType)
+{
+  auto dtdpath = TestResources::rootDir() / "Other";
+  LegacyNetworkIO lnio(dtdpath.string());
+  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "threeSameModulesIDTest.srn";
+  auto networkFile = lnio.load_net(v4file1.string());
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(3, networkFile->network.modules.size());
+  auto modIter = networkFile->network.modules.begin();
+  EXPECT_EQ("CreateLatVol:0", modIter->first);
+  EXPECT_EQ("CreateLatVol", modIter->second.module.module_name_);
+  EXPECT_EQ("NewField", modIter->second.module.category_name_);
+  EXPECT_EQ("SCIRun", modIter->second.module.package_name_);
+  ++modIter;
+  EXPECT_EQ("CreateLatVol:1", modIter->first);
+  EXPECT_EQ("CreateLatVol", modIter->second.module.module_name_);
+  EXPECT_EQ("NewField", modIter->second.module.category_name_);
+  EXPECT_EQ("SCIRun", modIter->second.module.package_name_);
+  ++modIter;
+  EXPECT_EQ("CreateLatVol:2", modIter->first);
+  EXPECT_EQ("CreateLatVol", modIter->second.module.module_name_);
+  EXPECT_EQ("NewField", modIter->second.module.category_name_);
+  EXPECT_EQ("SCIRun", modIter->second.module.package_name_);
+
+  EXPECT_EQ(0, networkFile->network.connections.size());
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesTwoConnections)
