@@ -34,9 +34,9 @@ install:
 # hopefully make OS X builds a bit faster
 script:
   cd bin
-  && cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../src
-  && make -j4
-  && make SCIRunTestData_external
+  cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../src
+  make -j4
+#  make SCIRunTestData_external
 #  && make test
 
 notifications:
