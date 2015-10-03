@@ -36,8 +36,6 @@ SET(Algorithms_Factory_HEADERS
   share.h
 )
 
-#ADD_SUBDIRECTORY(Generator)
-
 SET(AlgorithmFactoryImpl_Generated ${CMAKE_CURRENT_BINARY_DIR}/AlgorithmFactoryImpl_Generated.cc)
 
 SCIRUN_ADD_LIBRARY(Algorithms_Factory

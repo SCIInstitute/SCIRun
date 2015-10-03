@@ -192,19 +192,14 @@ std::string Generator::GenerateAlgorithmCodeFileFromDescriptorPath(const std::st
 std::string Generator::GenerateModuleCodeFileFromSourcePath(const std::string& sourcePath)
 {
   boost::filesystem::path base(sourcePath); // should be src/Modules/Factory
-  //std::cout << "__GENERATOR__ " << base << std::endl;
   auto configPath = base / "Config";
-  //std::cout << "__GENERATOR__ " << configPath << std::endl;
   auto files = GetListOfModuleDescriptorFiles(configPath.string());
-  //std::cout << "__GENERATOR__ " << files.size() << std::endl;
   auto map = BuildModuleDescriptorMap(files);
-  //std::cout << "__GENERATOR__ " << map.size() << std::endl;
   return GenerateModuleCodeFileFromMap(map);
 }
 
 std::string Generator::GenerateAlgorithmCodeFileFromSourcePath(const std::string& sourcePath)
 {
-  std::cout << "TODO: GenerateAlgorithmCodeFileFromSourcePath " << sourcePath << std::endl;
   boost::filesystem::path base(sourcePath);
   auto configPath = base / "Config";
   auto files = GetListOfModuleDescriptorFiles(configPath.string());

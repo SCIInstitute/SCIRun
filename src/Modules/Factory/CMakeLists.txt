@@ -40,11 +40,6 @@ SET(Modules_Factory_HEADERS
 
 ADD_SUBDIRECTORY(Generator)
 
-OPTION(GENERATE_MODULE_FACTORY_CODE "Generate module factory code from config files" ON)
-MARK_AS_ADVANCED(GENERATE_MODULE_FACTORY_CODE)
-OPTION(REGENERATE_MODULE_FACTORY_CODE "Delete generated module factory code file in order to refresh module list" ON)
-MARK_AS_ADVANCED(REGENERATE_MODULE_FACTORY_CODE)
-
 SET(ModuleFactoryImpl_Generated ${CMAKE_CURRENT_BINARY_DIR}/ModuleFactoryImpl_Generated.cc)
 
 SCIRUN_ADD_LIBRARY(Modules_Factory
