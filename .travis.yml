@@ -35,6 +35,7 @@ install:
 script:
   - cd bin
   - cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../src
+  - cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../src # factory config needs 2 cmakes ?!?
   - make -j4
 #  make SCIRunTestData_external
 #  && make test
