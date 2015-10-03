@@ -60,6 +60,10 @@ ModuleDescriptor ModuleDescriptorJsonParser::readJsonString(const std::string& j
         modProps.get<std::string>("algorithm.name"),
         modProps.get<std::string>("algorithm.namespace"),
         modProps.get<std::string>("algorithm.header")
+      },
+      {
+        modProps.get<std::string>("UI.name"),
+        modProps.get<std::string>("UI.header")
       }
     };
   }
@@ -193,18 +197,14 @@ std::string Generator::GenerateModuleCodeFileFromSourcePath(const std::string& s
 {
   boost::filesystem::path base(sourcePath); // should be src/Modules/Factory
   auto configPath = base / "Config";
-  auto files = GetListOfModuleDescriptorFiles(configPath.string());
-  auto map = BuildModuleDescriptorMap(files);
-  return GenerateModuleCodeFileFromMap(map);
+  return GenerateModuleCodeFileFromDescriptorPath(configPath.string());
 }
 
 std::string Generator::GenerateAlgorithmCodeFileFromSourcePath(const std::string& sourcePath)
 {
   boost::filesystem::path base(sourcePath);
   auto configPath = base / "Config";
-  auto files = GetListOfModuleDescriptorFiles(configPath.string());
-  auto map = BuildModuleDescriptorMap(files);
-  return GenerateAlgorithmCodeFileFromMap(map);
+  return GenerateAlgorithmCodeFileFromDescriptorPath(configPath.string());
 }
 
 AlgorithmFactoryCodeBuilder::AlgorithmFactoryCodeBuilder(const ModuleDescriptorMap& descriptors) : descMap_(descriptors) {}
@@ -248,6 +248,77 @@ void AlgorithmFactoryCodeBuilder::addDescriptionInserters()
 }
 
 std::string AlgorithmFactoryCodeBuilder::build()
+{
+  return buffer_.str();
+}
+
+std::string Generator::GenerateDialogCodeFileFromDescriptorPath(const std::string& descriptorPath)
+{
+  auto files = GetListOfModuleDescriptorFiles(descriptorPath);
+  auto map = BuildModuleDescriptorMap(files);
+  return GenerateDialogCodeFileFromMap(map);
+}
+
+std::string Generator::GenerateDialogCodeFileFromMap(const ModuleDescriptorMap& descriptors)
+{
+  DialogFactoryCodeBuilder builder(descriptors);
+  builder.start();
+  builder.addIncludes();
+  builder.addNamespaces();
+  builder.addDescriptionInserters();
+  return builder.build();
+}
+
+std::string Generator::GenerateDialogCodeFileFromSourcePath(const std::string& sourcePath)
+{
+  boost::filesystem::path base(sourcePath);
+  auto configPath = base / "Config";
+  return GenerateDialogCodeFileFromDescriptorPath(configPath.string());
+}
+
+DialogFactoryCodeBuilder::DialogFactoryCodeBuilder(const ModuleDescriptorMap& descriptors) : descMap_(descriptors) {}
+
+void DialogFactoryCodeBuilder::start()
+{
+  buffer_ << "#include <Interface/Modules/Factory/ModuleDialogFactory.h>\n"
+  "#include <boost/assign.hpp>\n"
+  "#include <boost/functional/factory.hpp>\n\n";
+}
+
+void DialogFactoryCodeBuilder::addIncludes()
+{
+  for (const auto& desc : descMap_)
+  {
+    const auto& header = desc.second.dialog_.header_;
+    if (header.find("N/A") == std::string::npos)
+      buffer_ << "#include <" << header << ">\n";
+  }
+}
+
+void DialogFactoryCodeBuilder::addNamespaces()
+{
+  buffer_ << "\nusing namespace SCIRun::Gui;\nusing namespace boost::assign;\n\n";
+  // for (const auto& desc : descMap_)
+  // {
+  //   const auto& ns = desc.second.algo_.namespace_;
+  //   if (ns.find("N/A") == std::string::npos)
+  //     buffer_ << "using namespace SCIRun::Core::Algorithms::" << ns << ";\n";
+  // }
+}
+
+void DialogFactoryCodeBuilder::addDescriptionInserters()
+{
+  buffer_ << "void ModuleDialogFactory::addDialogsToMakerMapGenerated()\n{\n  insert(dialogMakerMap_)\n";
+  for (const auto& desc : descMap_)
+  {
+    const auto& dialogName = desc.second.dialog_.name_;
+    if (dialogName.find("N/A") == std::string::npos)
+      buffer_ << "    ADD_MODULE_DIALOG(" << desc.second.name_ << ", " << dialogName << ");\n";
+  }
+  buffer_ << "}\n";
+}
+
+std::string DialogFactoryCodeBuilder::build()
 {
   return buffer_.str();
 }

@@ -327,3 +327,24 @@ TEST(AlgorithmFactoryGeneratorTests, FullProgram)
   "}\n";
   EXPECT_EQ(expectedCode, code);
 }
+
+TEST(DialogFactoryGeneratorTests, FullProgram)
+{
+  auto code = GenerateDialogCodeFileFromDescriptorPath((TestResources::rootDir() / "Other" / "Factory" / "Config" / "Real").string());
+  std::string expectedCode =
+  "#include <Interface/Modules/Factory/ModuleDialogFactory.h>\n"
+  "#include <boost/assign.hpp>\n"
+  "#include <boost/functional/factory.hpp>\n\n"
+  "#include <Interface/Modules/Fields/CreateLatVolDialog.h>\n"
+  "\nusing namespace SCIRun::Gui;\n"
+  "using namespace boost::assign;\n\n"
+  "void ModuleDialogFactory::addDialogsToMakerMapGenerated()\n"
+  "{\n"
+  "  insert(dialogMakerMap_)\n"
+  "    ADD_MODULE_DIALOG(CreateLatVol, CreateLatVolDialog);\n"
+  "}\n";
+
+  EXPECT_EQ(expectedCode, code);
+
+  //FAIL() << "todo";
+}
