@@ -121,28 +121,36 @@ IF(APPLE AND BUILD_BUNDLE)
       SET(VERSION_PATH Versions/${SCI_PYTHON_VERSION_SHORT})
       SET(FRAMEWORK_PATH Frameworks/Python.framework)
       SET(PYTHON_PATH ${APPLICATION_NAME}.app/Contents/${FRAMEWORK_PATH}/${VERSION_PATH})
-        ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
         POST_BUILD
         # macdeployqt puts frameworks in app/Content/Frameworks
         COMMAND ${CMAKE_COMMAND} ARGS -E chdir  ${APPLICATION_NAME}.app/Contents/Frameworks tar xf ${SCI_PYTHON_FRAMEWORK_ARCHIVE}
         COMMAND chmod u+w  ${PYTHON_PATH}/Python
-        COMMAND  install_name_tool -id Python ${PYTHON_PATH}/Python
-        COMMAND  install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
+        COMMAND install_name_tool -id Python ${PYTHON_PATH}/Python
+        COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
           @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
           ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
-        COMMAND  install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
-        # TODO: other executables...
-        # SCIRun shared libs that link against python library
-        COMMAND  install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
+        COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
           @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-          ${APPLICATION_NAME}.app/Contents/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}Core_Python${CMAKE_SHARED_LIBRARY_SUFFIX}
-        COMMAND  install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
-          @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-          ${APPLICATION_NAME}.app/Contents/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}SCIRunPythonAPI${CMAKE_SHARED_LIBRARY_SUFFIX}
-        COMMAND  install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
-          @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-          ${APPLICATION_NAME}.app/Contents/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}Interface_Application${CMAKE_SHARED_LIBRARY_SUFFIX}
+          ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
         WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+      SET(SCIRUN_LIBS "Core_Application"
+                      "Core_Python"
+                       "SCIRunPythonAPI"
+                       "Interface_Application"
+                       "Engine_Network"
+                       "Interface_Modules_Factory"
+                       "Interface_Modules_Render"
+                       "Core_ConsoleApplication"
+      )
+      FOREACH(lib ${SCIRUN_LIBS})
+        ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+          POST_BUILD
+          COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
+            @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
+            ${APPLICATION_NAME}.app/Contents/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
+          WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+      ENDFOREACH()
     ENDIF()
     ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
       POST_BUILD
