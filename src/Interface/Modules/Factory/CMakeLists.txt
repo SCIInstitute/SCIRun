@@ -1,23 +1,23 @@
 
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -32,17 +32,46 @@ SET(Interface_Modules_Factory_HEADERS
   share.h
 )
 
-SET(Interface_Modules_Factory_SOURCES 
+SET(Interface_Modules_Factory_SOURCES
   ModuleDialogFactory.cc
   ModuleDialogFactoryAdditional.cc
 )
 
-SCIRUN_ADD_LIBRARY(Interface_Modules_Factory 
+SET(ModuleDialogFactory_Generated ${CMAKE_CURRENT_BINARY_DIR}/ModuleDialogFactory_Generated.cc)
+
+SCIRUN_ADD_LIBRARY(Interface_Modules_Factory
   ${Interface_Modules_Factory_HEADERS}
   ${Interface_Modules_Factory_SOURCES}
+  ${ModuleDialogFactory_Generated}
 )
 
-TARGET_LINK_LIBRARIES(Interface_Modules_Factory 
+IF(GENERATE_MODULE_FACTORY_CODE)
+
+add_executable(MakeDialogFactory Generator/MakeDialogFactory.h Generator/MakeDialogFactory.cc)
+TARGET_LINK_LIBRARIES(MakeDialogFactory
+  Modules_Factory_Generator
+  ${SCI_BOOST_LIBRARY})
+SET_PROPERTY(TARGET MakeDialogFactory   PROPERTY FOLDER "Interface")
+
+# add the command to generate the source code
+add_custom_command (
+  OUTPUT ${ModuleDialogFactory_Generated}
+  COMMAND MakeDialogFactory ${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules/Factory/ ${ModuleDialogFactory_Generated}
+  DEPENDS MakeDialogFactory
+  )
+
+IF(REGENERATE_MODULE_FACTORY_CODE)
+    add_custom_command(
+        TARGET Interface_Modules_Factory
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove -f ${ModuleDialogFactory_Generated}
+        COMMENT " Running POST BUILD action "
+         )
+ENDIF(REGENERATE_MODULE_FACTORY_CODE)
+
+ENDIF(GENERATE_MODULE_FACTORY_CODE)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   Interface_Modules_Base
   Interface_Modules_DataIO
   Interface_Modules_Math
@@ -65,5 +94,5 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Factory)
 ENDIF(BUILD_SHARED_LIBS)
-  
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

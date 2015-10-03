@@ -26,19 +26,16 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-// A simple program that builds a sqrt table
-#include <cstdio>
-#include <cmath>
 #include <string>
-#include <Modules/Factory/Generator/MakeModuleFactory.h>
+#include <Interface/Modules/Factory/Generator/MakeDialogFactory.h>
 #include <Modules/Factory/Generator/ModuleFactoryGenerator.h>
 #include <fstream>
 
-int SCIRun::Modules::Factory::MakeGeneratedModuleFactoryCode(const std::string& sourcePath, const std::string& generatedFilename)
+int SCIRun::Gui::MakeGeneratedDialogFactoryCode(const std::string& sourcePath, const std::string& generatedFilename)
 {
-  auto code = SCIRun::Modules::Factory::Generator::GenerateCodeFileFromSourcePath(sourcePath);
+  //auto code = SCIRun::Modules::Factory::Generator::GenerateCodeFileFromSourcePath(sourcePath);
   std::ofstream out(generatedFilename);
-  out << code;
+  out << "HELLO WONT COMPILE";
   return 0;
 }
 
@@ -50,5 +47,5 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  return SCIRun::Modules::Factory::MakeGeneratedModuleFactoryCode(argv[1], argv[2]);
+  return SCIRun::Gui::MakeGeneratedDialogFactoryCode(argv[1], argv[2]);
 }

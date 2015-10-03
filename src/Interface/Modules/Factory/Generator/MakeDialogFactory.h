@@ -26,18 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MAKE_MODULE_FACTORY_H
-#define MAKE_MODULE_FACTORY_H
+#ifndef MAKE_DIALOG_FACTORY_H
+#define MAKE_DIALOG_FACTORY_H
 
 #include <string>
-#include <Modules/Factory/Generator/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Factory {
-	
-      SCISHARE int MakeGeneratedModuleFactoryCode(const std::string& sourcePath, const std::string& generatedFilename);
-    }
+  namespace Gui {
+
+    int MakeGeneratedDialogFactoryCode(const std::string& sourcePath, const std::string& generatedFilename);
   }
 }
 
