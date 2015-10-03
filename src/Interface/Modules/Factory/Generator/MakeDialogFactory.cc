@@ -30,13 +30,14 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Factory/Generator/MakeDialogFactory.h>
 #include <Modules/Factory/Generator/ModuleFactoryGenerator.h>
 #include <fstream>
+#include <iostream>
 
 int SCIRun::Gui::MakeGeneratedDialogFactoryCode(const std::string& sourcePath, const std::string& generatedFilename)
 {
   auto code = SCIRun::Modules::Factory::Generator::GenerateDialogCodeFileFromSourcePath(sourcePath);
   std::ofstream out(generatedFilename);
-  //out << "HELLO WONT COMPILE";
-  //out << code;
+  out << code;
+  //std::cout << code << std::endl;
   return 0;
 }
 

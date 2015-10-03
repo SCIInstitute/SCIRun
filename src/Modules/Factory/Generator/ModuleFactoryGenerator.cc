@@ -298,12 +298,6 @@ void DialogFactoryCodeBuilder::addIncludes()
 void DialogFactoryCodeBuilder::addNamespaces()
 {
   buffer_ << "\nusing namespace SCIRun::Gui;\nusing namespace boost::assign;\n\n";
-  // for (const auto& desc : descMap_)
-  // {
-  //   const auto& ns = desc.second.algo_.namespace_;
-  //   if (ns.find("N/A") == std::string::npos)
-  //     buffer_ << "using namespace SCIRun::Core::Algorithms::" << ns << ";\n";
-  // }
 }
 
 void DialogFactoryCodeBuilder::addDescriptionInserters()
@@ -313,9 +307,9 @@ void DialogFactoryCodeBuilder::addDescriptionInserters()
   {
     const auto& dialogName = desc.second.dialog_.name_;
     if (dialogName.find("N/A") == std::string::npos)
-      buffer_ << "    ADD_MODULE_DIALOG(" << desc.second.name_ << ", " << dialogName << ");\n";
+      buffer_ << "    ADD_MODULE_DIALOG(" << desc.second.name_ << ", " << dialogName << ")\n";
   }
-  buffer_ << "}\n";
+  buffer_ << "  ;\n}\n";
 }
 
 std::string DialogFactoryCodeBuilder::build()

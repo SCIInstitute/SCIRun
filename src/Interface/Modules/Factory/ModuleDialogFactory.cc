@@ -119,8 +119,10 @@ ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse,
   ExecutionDisablingServiceFunction disablerRemove) :
   parentToUse_(parentToUse)
 {
+  addDialogsToMakerMapGenerated();
   addDialogsToMakerMap1();
   addDialogsToMakerMap2();
+
   ModuleDialogGeneric::setExecutionDisablingServiceFunctionAdd(disablerAdd);
   ModuleDialogGeneric::setExecutionDisablingServiceFunctionRemove(disablerRemove);
 }
@@ -152,9 +154,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(MatrixAsVectorField, MatrixAsVectorFieldDialog)
     ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
-    ADD_MODULE_DIALOG(CreateLatVol, CreateLatVolDialog)
     ADD_MODULE_DIALOG(CreateStandardColorMap, CreateStandardColorMapDialog)
-    ADD_MODULE_DIALOG(GetDomainBoundary, GetDomainBoundaryDialog)
     ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
     ADD_MODULE_DIALOG(InsertFieldsIntoBundle, InsertFieldsIntoBundleDialog)
     ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
@@ -196,10 +196,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
     ADD_MODULE_DIALOG(CollectMatrices, CollectMatricesDialog)
     ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
-    ADD_MODULE_DIALOG(ReportNrrdInfo, ReportNrrdInfoDialog)
-    ADD_MODULE_DIALOG(ReadNrrd, ReadNrrdDialog)
-    ADD_MODULE_DIALOG(ConvertNrrdToField, ConvertNrrdToFieldDialog)
-    ADD_MODULE_DIALOG(ConvertNrrdToMatrix, ConvertNrrdToMatrixDialog)
     ADD_MODULE_DIALOG(GenerateSinglePointProbeFromField, GenerateSinglePointProbeFromFieldDialog)
     ADD_MODULE_DIALOG(GeneratePointSamplesFromField, GeneratePointSamplesFromFieldDialog)
     ADD_MODULE_DIALOG(GeneratePointSamplesFromFieldOrWidget, GeneratePointSamplesFromFieldOrWidgetDialog)

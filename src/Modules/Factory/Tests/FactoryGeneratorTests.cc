@@ -341,8 +341,8 @@ TEST(DialogFactoryGeneratorTests, FullProgram)
   "void ModuleDialogFactory::addDialogsToMakerMapGenerated()\n"
   "{\n"
   "  insert(dialogMakerMap_)\n"
-  "    ADD_MODULE_DIALOG(CreateLatVol, CreateLatVolDialog);\n"
-  "}\n";
+  "    ADD_MODULE_DIALOG(CreateLatVol, CreateLatVolDialog)\n"
+  "  ;\n}\n";
 
   EXPECT_EQ(expectedCode, code);
 
