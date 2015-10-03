@@ -39,12 +39,6 @@ SET(Interface_Modules_Factory_SOURCES
 
 SET(ModuleDialogFactory_Generated ${CMAKE_CURRENT_BINARY_DIR}/ModuleDialogFactory_Generated.cc)
 
-SCIRUN_ADD_LIBRARY(Interface_Modules_Factory
-  ${Interface_Modules_Factory_HEADERS}
-  ${Interface_Modules_Factory_SOURCES}
-  ${ModuleDialogFactory_Generated}
-)
-
 IF(GENERATE_MODULE_FACTORY_CODE)
 
 add_executable(MakeDialogFactory Generator/MakeDialogFactory.h Generator/MakeDialogFactory.cc)
@@ -59,7 +53,15 @@ add_custom_command (
   COMMAND MakeDialogFactory ${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules/Factory/ ${ModuleDialogFactory_Generated}
   DEPENDS MakeDialogFactory
   )
+ENDIF(GENERATE_MODULE_FACTORY_CODE)
 
+SCIRUN_ADD_LIBRARY(Interface_Modules_Factory
+  ${Interface_Modules_Factory_HEADERS}
+  ${Interface_Modules_Factory_SOURCES}
+  ${ModuleDialogFactory_Generated}
+)
+
+IF(GENERATE_MODULE_FACTORY_CODE)
 IF(REGENERATE_MODULE_FACTORY_CODE)
     add_custom_command(
         TARGET Interface_Modules_Factory

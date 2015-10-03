@@ -38,12 +38,6 @@ SET(Algorithms_Factory_HEADERS
 
 SET(AlgorithmFactoryImpl_Generated ${CMAKE_CURRENT_BINARY_DIR}/AlgorithmFactoryImpl_Generated.cc)
 
-SCIRUN_ADD_LIBRARY(Algorithms_Factory
-  ${Algorithms_Factory_HEADERS}
-  ${Algorithms_Factory_SRCS}
-  ${AlgorithmFactoryImpl_Generated}
-)
-
 IF(GENERATE_MODULE_FACTORY_CODE)
 
 add_executable(MakeAlgorithmFactory Generator/MakeAlgorithmFactory.h Generator/MakeAlgorithmFactory.cc)
@@ -58,7 +52,15 @@ add_custom_command (
   COMMAND MakeAlgorithmFactory ${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules/Factory/ ${AlgorithmFactoryImpl_Generated}
   DEPENDS MakeAlgorithmFactory
   )
+ENDIF(GENERATE_MODULE_FACTORY_CODE)
 
+SCIRUN_ADD_LIBRARY(Algorithms_Factory
+  ${Algorithms_Factory_HEADERS}
+  ${Algorithms_Factory_SRCS}
+  ${AlgorithmFactoryImpl_Generated}
+)
+
+IF(GENERATE_MODULE_FACTORY_CODE)
 IF(REGENERATE_MODULE_FACTORY_CODE)
     add_custom_command(
         TARGET Algorithms_Factory

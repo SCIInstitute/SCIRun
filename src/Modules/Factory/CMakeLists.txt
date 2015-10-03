@@ -42,12 +42,6 @@ ADD_SUBDIRECTORY(Generator)
 
 SET(ModuleFactoryImpl_Generated ${CMAKE_CURRENT_BINARY_DIR}/ModuleFactoryImpl_Generated.cc)
 
-SCIRUN_ADD_LIBRARY(Modules_Factory
-  ${Modules_Factory_HEADERS}
-  ${Modules_Factory_SRCS}
-  ${ModuleFactoryImpl_Generated}
-)
-
 IF(GENERATE_MODULE_FACTORY_CODE)
 
 add_executable(MakeModuleFactory Generator/MakeModuleFactory.h Generator/MakeModuleFactory.cc)
@@ -60,7 +54,15 @@ add_custom_command (
   COMMAND MakeModuleFactory ${CMAKE_CURRENT_SOURCE_DIR} ${ModuleFactoryImpl_Generated}
   DEPENDS MakeModuleFactory
   )
+ENDIF(GENERATE_MODULE_FACTORY_CODE)
 
+SCIRUN_ADD_LIBRARY(Modules_Factory
+  ${Modules_Factory_HEADERS}
+  ${Modules_Factory_SRCS}
+  ${ModuleFactoryImpl_Generated}
+)
+
+IF(GENERATE_MODULE_FACTORY_CODE)
 IF(REGENERATE_MODULE_FACTORY_CODE)
     add_custom_command(
         TARGET Modules_Factory
