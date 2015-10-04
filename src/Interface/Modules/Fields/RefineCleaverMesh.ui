@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RefineCleaverMesh</class>
+ <widget class="QDialog" name="RefineCleaverMesh">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>268</width>
+    <height>239</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>268</width>
+    <height>239</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QDoubleSpinBox" name="IsoValue_">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>10</y>
+     <width>62</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <double>-2147483647</double>
+   </property>
+   <property name="maximum">
+    <double>2147483647</double>
+   </property>
+   <property name="value">
+      <double>0.0</double>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="EdgeLength_">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>40</y>
+     <width>62</width>
+     <height>24</height>
+    </rect>
+   </property>
+    <property name="minimum">
+    <double>0</double>
+   </property>
+   <property name="maximum">
+    <double>2147483647</double>
+   </property>
+   <property name="value">
+    <double>0.0</double>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="DoNoSplitSurfaceTets_">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>200</y>
+     <width>171</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>do not split surface tets</string>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="Volume_">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>70</y>
+     <width>62</width>
+     <height>24</height>
+    </rect>
+   </property>
+    <property name="minimum">
+    <double>0</double>
+   </property>
+   <property name="maximum">
+    <double>2147483647</double>
+   </property>
+   <property name="value">
+    <double>0.0</double>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="DihedralAngleBigger_">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>130</y>
+     <width>62</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <double>0.000000000000000</double>
+   </property>
+   <property name="maximum">
+    <double>180.000000000000000</double>
+   </property>
+   <property name="value">
+    <double>0.0</double>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>130</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&gt;</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>160</y>
+     <width>16</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;</string>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="DihedralAngleSmaller_">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>160</y>
+     <width>62</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <double>0.000000000000000</double>
+   </property>
+   <property name="maximum">
+    <double>180.000000000000000</double>
+   </property>
+   <property name="value">
+    <double>180.0</double>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="IsoValueRadioButton_">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>121</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Iso Value     =</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="EdgeLengthRadioButton_">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>111</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Edge length &gt;</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="VolumeRadioButton_">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>70</y>
+     <width>121</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Volume       &gt;</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="DihedralAngleRadioButton_">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>100</y>
+     <width>241</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Dihedral angle in degree [0..180]:</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

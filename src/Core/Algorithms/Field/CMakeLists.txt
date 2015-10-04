@@ -29,11 +29,13 @@
 SET(Algorithms_Field_SRCS
   ReportFieldInfoAlgorithm.cc
   InterfaceWithCleaverAlgorithm.cc
+  RefineCleaverMeshAlgorithm.cc
 )
 
 SET(Algorithms_Field_HEADERS
   ReportFieldInfoAlgorithm.h
   InterfaceWithCleaverAlgorithm.h
+  RefineCleaverMeshAlgorithm.h
   share.h
 )
 
@@ -47,6 +49,7 @@ TARGET_LINK_LIBRARIES(Algorithms_Field
   Core_Datatypes_Legacy_Field
   Algorithms_Base
   cleaver
+  Core_Algorithms_Legacy_Fields
   ${SCI_BOOST_LIBRARY}
 )
 
