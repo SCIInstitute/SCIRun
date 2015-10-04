@@ -122,7 +122,7 @@ std::vector<bool> RefineCleaverMeshAlgorithm::SelectMeshElements(FieldHandle inp
   {
     for (long i=0;i<matrix->nrows();i++)
     {
-      if((*matrix)(i,0)!=0);
+      if((*matrix)(i,0)!=0)
        {
          result[i]=true;
 	 count++;
@@ -132,13 +132,15 @@ std::vector<bool> RefineCleaverMeshAlgorithm::SelectMeshElements(FieldHandle inp
   } else
   if ( input_vfld->num_values() == matrix->ncols() )
   {
-      if((*matrix)(0,1)!=0);
+    for (long i=0;i<matrix->ncols();i++)
+    {
+      if((*matrix)(0,i)!=0)
        {
          result[i]=true;
 	 count++;
        } else
          result[i]=false;
-  
+    }
   } else
   {
     error("Dimensions of provided MATRIX input (second module input port) does not fit provided FIELD (first module input port).");
@@ -576,7 +578,7 @@ FieldHandle RefineCleaverMeshAlgorithm::RefineMesh(FieldHandle input, std::vecto
    return result;
  } 
  double fld_val;  
- tet_field_values.resize(input_vmesh->num_elems())
+ tet_field_values.resize(input_vmesh->num_elems());
  input_vmesh->synchronize(Mesh::NODES_E);
  DenseMatrixHandle new_tets(new DenseMatrix(2*elems_to_split.size(), 4)),new_nodes(new DenseMatrix(2*elems_to_split.size(), 3)),two_new_tets(new DenseMatrix(2, 4));
  long tet_count=0,node_count=input_vmesh->num_nodes(),zz=0;
