@@ -33,6 +33,10 @@ install:
 # Not running unit tests at the moment, so turn off testing, which will
 # hopefully make OS X builds a bit faster
 script:
+  cd bin
+  && cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../Superbuild
+  && make -j4
+  && make SCIRunTestData_external
   - cd bin
   - cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../src
   - cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../src # factory config needs 2 cmakes ?!?

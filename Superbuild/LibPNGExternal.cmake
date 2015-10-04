@@ -24,32 +24,28 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-MACRO(TEST_DATA)
-  # master should be always be publicly released version
-  SET(GIT_TAG "origin/master")
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+SET(libpng_GIT_TAG "origin/seg3d_external_test")
+SET(libpng_DEPENDENCIES "Zlib_external")
 
-  SET(test_data_DIR "${CMAKE_BINARY_DIR}/SCIRunTestData")
-  SET(test_data_DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/download/SCIRunTestData")
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
+ExternalProject_Add(LibPNG_external
+  DEPENDS ${libpng_DEPENDENCIES}
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/libpng.git"
+  GIT_TAG ${libpng_GIT_TAG}
+  PATCH_COMMAND ""
+  INSTALL_DIR ""
+  INSTALL_COMMAND ""
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+    -DPNG_STATIC:BOOL=ON
+    -DZlib_DIR:PATH=${Zlib_DIR}
+)
 
-  # separate test data files from the rest of the external project files
-  SET(ep_base "${test_data_DOWNLOAD_DIR}")
-  SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+ExternalProject_Get_Property(LibPNG_external BINARY_DIR)
+SET(LibPNG_DIR ${BINARY_DIR} CACHE PATH "")
 
-  # If CMake ever allows overriding the checkout command or adding flags,
-  # git checkout -q will silence message about detached head (harmless).
-  ExternalProject_Add(SCIRunTestData_external
-    GIT_REPOSITORY "https://github.com/CIBC-Internal/SCIRunTestData.git"
-    GIT_TAG ${GIT_TAG}
-    BUILD_IN_SOURCE ON
-    SOURCE_DIR ${test_data_DIR}
-    BUILD_COMMAND ""
-    CONFIGURE_COMMAND ""
-    PATCH_COMMAND ""
-    ${DISABLED_UPDATE}
-    INSTALL_COMMAND ""
-  )
-
-  # test data location for tests
-  SET(SCIRUN_TEST_RESOURCE_DIR ${test_data_DIR} CACHE PATH "Root for all github-based testing files")
-
-ENDMACRO()
+MESSAGE(STATUS "LibPNG_DIR: ${LibPNG_DIR}")

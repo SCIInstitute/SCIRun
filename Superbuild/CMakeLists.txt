@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 # 
 #  The MIT License
@@ -24,61 +23,11 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-SET(Dataflow_Network_SRCS
-  Connection.cc
-  ConnectionId.cc
-  Module.cc
-  ModuleDescription.cc
-  ModuleFactory.cc
-  ModuleInterface.cc
-  ModuleStateInterface.cc
-  Network.cc
-  NetworkSettings.cc
-  NullModuleState.cc
-  Port.cc
-  PortInterface.cc
-  SimpleSourceSink.cc
-)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
+#CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
+#CMAKE_POLICY(SET CMP0054 NEW)
 
-SET(Dataflow_Network_HEADERS
-  Connection.h
-  ConnectionId.h
-  DataflowInterfaces.h
-  ExecutableObject.h
-  Module.h
-  ModuleFactory.h
-  ModuleDescription.h
-  ModuleInterface.h
-  ModuleStateInterface.h
-  Network.h
-  NetworkFwd.h
-  NetworkInterface.h
-  NetworkSettings.h
-  NullModuleState.h
-  Port.h
-  PortInterface.h
-  PortManager.h
-  share.h
-  SimpleSourceSink.h
-)
+PROJECT(Superbuild)
 
-SCIRUN_ADD_LIBRARY(Dataflow_Network 
-  ${Dataflow_Network_HEADERS}
-  ${Dataflow_Network_SRCS}
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Dataflow_Network)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
-
-TARGET_LINK_LIBRARIES(Dataflow_Network
-  Core_Datatypes
-  Core_Logging
-  Algorithms_Base
-  Algorithms_Describe
-  ${SCI_BOOST_LIBRARY}
-)
+INCLUDE(${CMAKE_SOURCE_DIR}/Superbuild.cmake)

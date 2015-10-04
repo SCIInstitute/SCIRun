@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 # 
 #  The MIT License
@@ -24,61 +23,23 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-SET(Dataflow_Network_SRCS
-  Connection.cc
-  ConnectionId.cc
-  Module.cc
-  ModuleDescription.cc
-  ModuleFactory.cc
-  ModuleInterface.cc
-  ModuleStateInterface.cc
-  Network.cc
-  NetworkSettings.cc
-  NullModuleState.cc
-  Port.cc
-  PortInterface.cc
-  SimpleSourceSink.cc
-)
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-SET(Dataflow_Network_HEADERS
-  Connection.h
-  ConnectionId.h
-  DataflowInterfaces.h
-  ExecutableObject.h
-  Module.h
-  ModuleFactory.h
-  ModuleDescription.h
-  ModuleInterface.h
-  ModuleStateInterface.h
-  Network.h
-  NetworkFwd.h
-  NetworkInterface.h
-  NetworkSettings.h
-  NullModuleState.h
-  Port.h
-  PortInterface.h
-  PortManager.h
-  share.h
-  SimpleSourceSink.h
-)
+SET(data_GIT_URL "https://github.com/CIBC-Internal/Seg3DData.git")
+# master should be always be publicly released version
+SET(data_GIT_TAG "origin/master")
 
-SCIRUN_ADD_LIBRARY(Dataflow_Network 
-  ${Dataflow_Network_HEADERS}
-  ${Dataflow_Network_SRCS}
-)
+SET(data_DIR "${SEG3D_BINARY_DIR}/Seg3DData")
 
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Dataflow_Network)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
-
-TARGET_LINK_LIBRARIES(Dataflow_Network
-  Core_Datatypes
-  Core_Logging
-  Algorithms_Base
-  Algorithms_Describe
-  ${SCI_BOOST_LIBRARY}
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
+ExternalProject_Add(Data_external
+  GIT_REPOSITORY ${data_GIT_URL}
+  GIT_TAG ${data_GIT_TAG}
+  SOURCE_DIR ${data_DIR}
+  BUILD_COMMAND ""
+  CONFIGURE_COMMAND ""
+  PATCH_COMMAND ""
+  INSTALL_COMMAND ""
 )

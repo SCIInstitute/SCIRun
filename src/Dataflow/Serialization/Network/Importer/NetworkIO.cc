@@ -29,7 +29,18 @@
 //    Author : Martin Cole
 //    Date   : Mon Feb  6 14:32:15 2006
 
+
 // TODO: change string concatenation to string streams
+
+// Disable concepts compliance detection for problem compiler.
+// See boost/range/concepts.hpp for other problem compilers.
+#if defined __clang__
+#if __clang_major__ == 4 && __clang_minor__ == 2
+
+#define BOOST_RANGE_ENABLE_CONCEPT_ASSERT 0
+
+#endif
+#endif
 
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Network/Network.h>

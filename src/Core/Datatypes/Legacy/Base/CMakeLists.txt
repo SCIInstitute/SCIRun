@@ -53,7 +53,5 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Datatypes_Legacy_Base)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_DEPENDENCIES(Core_Datatypes_Legacy_Base Boost_external)
-
 SCIRUN_ADD_TEST_DIR(Tests)
 
