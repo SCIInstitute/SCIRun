@@ -41,6 +41,7 @@ SET(ModuleDialogFactory_Generated ${CMAKE_CURRENT_BINARY_DIR}/ModuleDialogFactor
 
 IF(GENERATE_MODULE_FACTORY_CODE)
 
+MESSAGE(STATUS "Setting up dialog factory generator")
 add_executable(MakeDialogFactory Generator/MakeDialogFactory.h Generator/MakeDialogFactory.cc)
 TARGET_LINK_LIBRARIES(MakeDialogFactory
   Modules_Factory_Generator
