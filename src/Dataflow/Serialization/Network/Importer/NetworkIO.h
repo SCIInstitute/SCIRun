@@ -46,7 +46,7 @@ namespace Networks {
   class SCISHARE LegacyNetworkIO
   {
   public:
-    explicit LegacyNetworkIO(const std::string& dtdPath);
+    LegacyNetworkIO(const std::string& dtdPath, const Networks::ModuleFactory& modFactory);
     NetworkFileHandle load_net(const std::string& legacyNetworkFilename);
   private:
     bool done_writing() const { return done_writing_; }
@@ -159,6 +159,7 @@ namespace Networks {
     int                                sn_count_;
     int                                sn_ctx_;
     std::string dtdPath_;
+    const Networks::ModuleFactory& modFactory_;
     std::map<std::string, ModuleId> moduleIdMap_;
   };
 

@@ -44,6 +44,7 @@
 
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Network/Network.h>
+#include <Dataflow/Network/ModuleFactory.h>
 #include <Core/XMLUtil/XMLUtil.h>
 //#include <Dataflow/Network/NetworkEditor.h>
 #include <Dataflow/Network/Module.h>
@@ -59,14 +60,15 @@
 
 using namespace SCIRun::Dataflow::Networks;
 
-LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath) :
+LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath, const ModuleFactory& modFactory) :
 net_file_("new.srn"),
 done_writing_(false),
 doc_(0),
 out_fname_(""),
 sn_count_(0),
 sn_ctx_(0),
-dtdPath_(dtdpath)
+dtdPath_(dtdpath),
+modFactory_(modFactory)
 {
   netid_to_modid_.push(id_map_t());
   netid_to_conid_.push(id_map_t());
@@ -219,9 +221,13 @@ const std::string &y)
 void
 LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port)
 {
-  std::cout << "TO IMPLEMENT: createConnectionNew \n\t" << from << "\n\t" << to << "\n\t"  << from_port << "\n\t"  << to_port << std::endl;
+  std::cout << "TO IMPLEMENT: createConnectionNew \n\t" << moduleIdMap_[from] << "\n\t" << moduleIdMap_[to] <<
+    "\n\t"  << from_port << "\n\t"  << to_port << std::endl;
   if (!xmlData_)
     return;
+
+  auto fromDesc = modFactory_.lookupDescription(ModuleLookupInfo(from, "TODO", "SCIRun"));
+  auto toDesc = modFactory_.lookupDescription(ModuleLookupInfo(from, "TODO", "SCIRun"));
 
   auto& connections = xmlData_->network.connections;
   OutgoingConnectionDescription out;

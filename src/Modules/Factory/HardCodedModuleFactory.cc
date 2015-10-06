@@ -138,7 +138,7 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   return module;
 }
 
-ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupInfo& info)
+ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupInfo& info) const
 {
   return impl_->lookup.lookupDescription(info);
 }
