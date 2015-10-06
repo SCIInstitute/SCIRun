@@ -1103,7 +1103,7 @@ public:
                   if ((p_mean-r).length2()>=epsilon2_)
                   {
                     Core::Geometry::Vector f_v= Core::Geometry::Vector(p_mean-r); f_v.normalize();
-                    dtmp2 = (p - Core::Geometry::Point(p_mean+f_v)).length2();
+                    dtmp2 = (p - Core::Geometry::Point(p_mean+(f_v*epsilon_*1e6))).length2();
                   }
                   /*
                     std::cout<< "p = "<< p <<std::endl;
