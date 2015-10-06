@@ -1371,10 +1371,10 @@ void SCIRunMainWindow::resetWindowLayout()
 
 void SCIRunMainWindow::hideNonfunctioningWidgets()
 {
+	//TODO: make issues to implement these, as I don't want to forget they are there.
   QList<QAction*> nonfunctioningActions;
   nonfunctioningActions <<
-    actionInsert_ <<
-    actionCreate_Module_Skeleton_;
+    actionInsert_;
   QList<QMenu*> nonfunctioningMenus;
   nonfunctioningMenus <<
     menuSubnets_;

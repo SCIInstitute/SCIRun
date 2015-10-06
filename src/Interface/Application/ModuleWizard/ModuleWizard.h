@@ -49,7 +49,7 @@ class ClassWizard : public QWizard
 public:
     ClassWizard(QWidget *parent = 0);
 
-    void accept() Q_DECL_OVERRIDE;
+    void accept();
 };
 
 class IntroPage : public QWizardPage
@@ -91,7 +91,7 @@ public:
     CodeStylePage(QWidget *parent = 0);
 
 protected:
-    void initializePage() Q_DECL_OVERRIDE;
+    void initializePage();
 
 private:
     QCheckBox *commentCheckBox;
@@ -111,7 +111,7 @@ public:
     OutputFilesPage(QWidget *parent = 0);
 
 protected:
-    void initializePage() Q_DECL_OVERRIDE;
+    void initializePage();
 
 private:
     QLabel *outputDirLabel;
@@ -130,7 +130,7 @@ public:
     ConclusionPage(QWidget *parent = 0);
 
 protected:
-    void initializePage() Q_DECL_OVERRIDE;
+    void initializePage();
 
 private:
     QLabel *label;

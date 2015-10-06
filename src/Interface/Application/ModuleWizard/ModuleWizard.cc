@@ -65,9 +65,11 @@
 **
 ****************************************************************************/
 
-#include <QtWidgets>
+#include <QtGui>
 
-#include "classwizard.h"
+#include <Interface/Application/ModuleWizard/ModuleWizard.h>
+
+using namespace SCIRun::Gui;
 
 ClassWizard::ClassWizard(QWidget *parent)
     : QWizard(parent)
