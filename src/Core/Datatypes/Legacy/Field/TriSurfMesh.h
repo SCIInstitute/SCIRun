@@ -1061,6 +1061,7 @@ public:
     ei = bi; ej = bj; ek = bk;
 
     double dmin = maxdist;
+    double dmean = maxdist;
     bool found = true;
     bool found_one = false;
 
@@ -1094,23 +1095,104 @@ public:
                                        points_[faces_[idx  ]],
                                        points_[faces_[idx+1]],
                                        points_[faces_[idx+2]]);
-                  const double dtmp = (p - r).length2();
-                  if (dtmp < dmin)
+
+                  const Core::Geometry::Point &p_mean = (points_[faces_[idx  ]] + points_[faces_[idx+1]] + points_[faces_[idx+2]])/3;
+                  double dtmp = (p - r).length2();
+                  double dtmp2=dtmp;
+                    
+                  if ((p_mean-r).length2()>=epsilon2_)
                   {
-                    found_one = true;
-                    result = r;
-                    face = INDEX(*it);
-                    dmin = dtmp;
-
-                    if (dmin < epsilon2_)
-                    {
-                      pdist = sqrt(dmin);
-
-                      ElemData ed(*this,face);
-                      basis_.get_coords(coords,result,ed);
-                      return (true);
-                    }
+                    Core::Geometry::Vector f_v= Core::Geometry::Vector(p_mean-r); f_v.normalize();
+                    dtmp2 = (p - Core::Geometry::Point(p_mean+f_v)).length2();
                   }
+                  /*
+                    std::cout<< "p = "<< p <<std::endl;
+                    std::cout<< "r = "<< r <<std::endl;
+                    std::cout<< "p_mean = "<< p_mean <<std::endl;
+                    std::cout<< "dmin = " << dmin << ";  dtmp = "<< dtmp <<std::endl;
+                  std::cout<< "dtmp - dmin= " << dtmp - dmin <<std::endl;
+                    std::cout<< "dmean = " << dmean << ";  dtmp2 = "<< dtmp2 <<std::endl;
+                  std::cout<< "dtmp2 - dmean= " << dtmp2 - dmean <<std::endl;
+                  
+                  if (std::abs(dtmp - dmin)<= epsilon_)
+                  {
+                    //std::cout<< "machine precision problem. "<<std::endl;
+                  }
+
+                  */
+                  
+                  if (dtmp-dmin <= epsilon_)
+                  {
+                    //std::cout<<"distance less or equal"<<std::endl;
+                    
+                    if (dtmp-dmin < - epsilon_)
+                    {
+                      found_one = true;
+                      result = r;
+                      face = INDEX(*it);
+                      dmin = dtmp;
+                      dmean =dtmp2;
+                        
+                        //std::cout<< "normal.  face "<< face <<std::endl<<std::endl;
+                      
+                      if (dmin < epsilon2_)
+                      {
+                        
+                        //std::cout<< "below threshold "<< face <<std::endl<<std::endl;
+                        
+                        pdist = sqrt(dmin);
+                            
+                        ElemData ed(*this,face);
+                        basis_.get_coords(coords,result,ed);
+                        return (true);
+                      }
+                    }
+                    else if ( dtmp2-dmean < -epsilon_ )
+                    {
+                      found_one = true;
+                      result = r;
+                      face = INDEX(*it);
+                      if (dmin>=dtmp) dmin=dtmp;
+                      dmean =dtmp2;
+                    }
+                    else if ( dtmp<dmin  && std::abs(dtmp2-dmean) < epsilon_ )
+                    {
+                      found_one = true;
+                      result = r;
+                      face = INDEX(*it);
+                      dmin = dtmp;
+                      dmean =dtmp2;
+                      
+                      //std::cout<< "normal within precision.  face "<< face <<std::endl<<std::endl;
+                      
+                      if (dmin < epsilon2_)
+                      {
+                        
+                        //std::cout<< "below threshold within precision "<< face <<std::endl<<std::endl;
+                        
+                        pdist = sqrt(dmin);
+                        
+                        ElemData ed(*this,face);
+                        basis_.get_coords(coords,result,ed);
+                      }
+                    }
+                    else if (dtmp2 < dmean && dtmp-dmin > - epsilon_)
+                    {
+                      found_one = true;
+                      result = r;
+                      face = INDEX(*it);
+                      dmean =dtmp2;
+                      //std::cout<< "machine precision fix.  face "<< face <<std::endl<<std::endl;
+                    }
+                    
+                    
+                      
+                      //std::cout<< "same dist, higher mean, skipping.  index "<< idx <<std::endl<<std::endl;
+                      
+                      
+                    
+                  }
+                  
 
                   ++it;
                 }
