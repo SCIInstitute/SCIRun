@@ -186,6 +186,7 @@ private Q_SLOTS:
   void modulesSnapToChanged();
   void highlightPortsChanged();
   void openLogFolder();
+  void runNewModuleWizard();
   void resetWindowLayout();
   void zoomNetwork();
   void networkTimedOut();
