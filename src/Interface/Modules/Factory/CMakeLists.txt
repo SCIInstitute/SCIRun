@@ -53,6 +53,7 @@ add_custom_command (
   OUTPUT ${ModuleDialogFactory_Generated}
   COMMAND MakeDialogFactory ${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules/Factory/ ${ModuleDialogFactory_Generated}
   DEPENDS MakeDialogFactory
+  VERBATIM
   )
 ENDIF(GENERATE_MODULE_FACTORY_CODE)
 
