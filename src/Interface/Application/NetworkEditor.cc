@@ -1085,7 +1085,7 @@ void NetworkEditor::zoomBestFit()
   auto oldRect = sceneRect();
   setSceneRect(QRectF());
   fitInView(sceneRect(), Qt::KeepAspectRatio);
-  qDebug() << "old rect: " << oldRect << "new rect:" << sceneRect();
+  //qDebug() << "old rect: " << oldRect << "new rect:" << sceneRect();
   currentScale_ *= sceneRect().x() / oldRect.x();
   //scale(1.0 / currentScale_, 1.0 / currentScale_);
   //currentScale_ = 1;
@@ -1105,7 +1105,7 @@ bool NetworkEditor::containsViewScene() const
 void NetworkEditor::moduleWindowAction()
 {
   auto action = qobject_cast<QAction*>(sender());
-  qDebug() << "moduleWindowAction: " << action->text();
+  //qDebug() << "moduleWindowAction: " << action->text();
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
@@ -1235,7 +1235,6 @@ void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
 
 void NetworkEditor::cleanUpNetwork()
 {
-  qDebug() << "clean up network";
   controller_->cleanUpNetwork();
   centerView();
 }
