@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include <gl-platform/GLPlatform.hpp>
 #include "Registration.h"
 #include "CoreBootstrap.h"
@@ -38,7 +39,6 @@
 #include "comp/LightingUniforms.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderTransBasicSys.h"
-#include "Core/Datatypes/Geometry.h"
 
 namespace SCIRun {
 namespace Render {
@@ -58,7 +58,7 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
 	core.registerComponent<RenderBasicGeom>();
   core.registerComponent<SRRenderState>();
   core.registerComponent<RenderList>();
-  core.registerComponent<Core::Datatypes::GeometryObject::SpireSubPass>();
+  core.registerComponent<Graphics::Datatypes::SpireSubPass>();
 }
 
 } // namespace Render

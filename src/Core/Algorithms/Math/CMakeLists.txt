@@ -42,6 +42,7 @@ SET(Algorithms_Math_SRCS
   ComputeSVD.cc
   ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.cc
   ComputePCA.cc
+  CollectMatrices/CollectMatricesAlgorithm.cc
 )
 
 SET(Algorithms_Math_HEADERS
@@ -61,6 +62,7 @@ SET(Algorithms_Math_HEADERS
   ComputeSVD.h
   ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h
   ComputePCA.h
+  CollectMatrices/CollectMatricesAlgorithm.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_Math 

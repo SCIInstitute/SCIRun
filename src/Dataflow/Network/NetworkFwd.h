@@ -97,6 +97,7 @@ typedef boost::shared_ptr<NetworkFile> NetworkFileHandle;
 
 typedef std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>> ModuleDescriptionMap;
 typedef boost::function<bool(SCIRun::Dataflow::Networks::ModuleHandle)> ModuleFilter;
+typedef boost::function<bool(const SCIRun::Dataflow::Networks::ConnectionDescription&)> ConnectionFilter;
 
 }}}
 

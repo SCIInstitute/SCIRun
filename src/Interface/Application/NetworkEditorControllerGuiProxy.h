@@ -53,12 +53,15 @@ namespace Gui {
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
+    SCIRun::Dataflow::Networks::NetworkFileHandle serializeNetworkFragment(SCIRun::Dataflow::Networks::ModuleFilter modFilter, SCIRun::Dataflow::Networks::ConnectionFilter connFilter) const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
+    void appendToNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
     void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
     size_t numModules() const;
     int errorCode() const;
     void setExecutorType(int type);
+    void cleanUpNetwork();
   public:
     const SCIRun::Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
@@ -73,6 +76,7 @@ namespace Gui {
     void executionStarted();
     void executionFinished(int returnCode);
     void networkDoneLoading(int nMod);
+    void snippetNeedsMoving(const std::string& name);
   private:
     boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
   };

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -61,8 +61,10 @@ const AlgorithmParameterName CreateLatVol::PadPercent("PadPercent");
 const AlgorithmParameterName CreateLatVol::DataAtLocation("DataAtLocation");
 const AlgorithmParameterName CreateLatVol::ElementSizeNormalized("ElementSizeNormalized");
 
+const ModuleLookupInfo CreateLatVol::staticInfo_("CreateLatVol", "NewField", "SCIRun");
+
 CreateLatVol::CreateLatVol()
-  : Module(ModuleLookupInfo("CreateLatVol", "NewField", "SCIRun"))
+  : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(LatVolSize);
@@ -87,11 +89,11 @@ CreateLatVol::execute()
 {
   auto ifieldhandleOption = getOptionalInput(InputField);
   auto sizeOption = getOptionalInput(LatVolSize);
-	
+
   if (needToExecute())
   {
     update_state(Executing);
-    
+
     if (sizeOption)
     {
       auto sizeMatrix = *sizeOption;
@@ -109,23 +111,23 @@ CreateLatVol::execute()
         int size3 = static_cast<int>((*sizeMatrix)(0,2));
         get_state()->setValue(XSize, size1);
         get_state()->setValue(YSize, size2);
-        get_state()->setValue(ZSize, size3);	
+        get_state()->setValue(ZSize, size3);
       }
       else
       {
         error("LatVol size matrix needs to have either one element or three elements");
         return;
-      }	
-    }	
+      }
+    }
 
     Point minb, maxb;
     DataTypeEnum datatype;
-		
+
     // Create blank mesh.
     VField::size_type sizex = std::max(2, get_state()->getValue(XSize).toInt());
     VField::size_type sizey = std::max(2, get_state()->getValue(YSize).toInt());
-    VField::size_type sizez = std::max(2, get_state()->getValue(ZSize).toInt());		
-		
+    VField::size_type sizez = std::max(2, get_state()->getValue(ZSize).toInt());
+
     if (!ifieldhandleOption)
     {
       datatype = SCALAR;
@@ -169,7 +171,7 @@ CreateLatVol::execute()
     if (dataAtLocation == NODES) basis_order = 1;
     else if (dataAtLocation == CELLS) basis_order = 0;
     else if (dataAtLocation == NONE) basis_order = -1;
-    else 
+    else
     {
       error("Unsupported data_at location " + boost::lexical_cast<std::string>(dataAtLocation) + ".");
       return;

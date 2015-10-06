@@ -112,9 +112,8 @@ HardCodedAlgorithmFactory::HardCodedAlgorithmFactory()
 {
   addToMakerMap();
   addToMakerMap2();
+  addToMakerMapGenerated();
 }
-
-#define ADD_MODULE_ALGORITHM(module, algorithm) (#module, boost::factory<algorithm*>())
 
 void HardCodedAlgorithmFactory::addToMakerMap()
 {
@@ -146,7 +145,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(AddKnownsToLinearSystem, AddKnownsToLinearSystemAlgo)
       ADD_MODULE_ALGORITHM(CalculateVectorMagnitudes, CalculateVectorMagnitudesAlgo)
       ADD_MODULE_ALGORITHM(BuildFEMatrix, BuildFEMatrixAlgo)
-      ADD_MODULE_ALGORITHM(GetDomainBoundary, GetDomainBoundaryAlgo)
+      //ADD_MODULE_ALGORITHM(GetDomainBoundary, GetDomainBoundaryAlgo)
       ADD_MODULE_ALGORITHM(InterfaceWithCleaver, InterfaceWithCleaverAlgorithm)
       ADD_MODULE_ALGORITHM(GetFieldData, GetFieldDataAlgo)
       ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo)
@@ -184,8 +183,8 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 	    ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgo)
 		  ADD_MODULE_ALGORITHM(ConvertMatrixToString, ConvertMatrixToStringAlgo)
       ADD_MODULE_ALGORITHM(ConvertHexVolToTetVol, ConvertMeshToTetVolMeshAlgo)
-     ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
-	 ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
+      ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
+	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
       ADD_MODULE_ALGORITHM(ComputePCA, ComputePCAAlgo)
       ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
 	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)

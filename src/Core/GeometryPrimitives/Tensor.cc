@@ -42,7 +42,6 @@
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Utils/Legacy/Assert.h>
-#include <Core/Math/MiscMath.h>
 
 #include <iostream>
 
@@ -51,7 +50,7 @@
 #include <teem/ten.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Geometry;
+using namespace Core::Geometry;
 
 Tensor::Tensor() : l1_(0), l2_(0), l3_(0), have_eigens_(false)
 {
@@ -64,7 +63,6 @@ Tensor::Tensor() : l1_(0), l2_(0), l3_(0), have_eigens_(false)
   mat_[2][0] = 0.0;
   mat_[2][1] = 0.0;
   mat_[2][2] = 0.0;
-  
 }
 
 Tensor::Tensor(const Tensor& copy)
@@ -79,7 +77,8 @@ Tensor::Tensor(const Tensor& copy)
   }
 }
 
-Tensor::Tensor(const Array1<double> &t) {
+Tensor::Tensor(const Array1<double> &t) : l1_(0), l2_(0), l3_(0)
+{
   mat_[0][0]=t[0];
   mat_[0][1]=mat_[1][0]=t[1];
   mat_[0][2]=mat_[2][0]=t[2];
@@ -90,7 +89,7 @@ Tensor::Tensor(const Array1<double> &t) {
   have_eigens_=0;
 }
 
-Tensor::Tensor(const std::vector<double> &t)
+Tensor::Tensor(const std::vector<double> &t) : l1_(0), l2_(0), l3_(0)
 {
   ASSERT(t.size() > 5);
 
@@ -104,7 +103,7 @@ Tensor::Tensor(const std::vector<double> &t)
   have_eigens_=0;
 }
 
-Tensor::Tensor(const double *t)
+Tensor::Tensor(const double *t) : l1_(0), l2_(0), l3_(0)
 {
   mat_[0][0]=t[0];
   mat_[0][1]=mat_[1][0]=t[1];
@@ -117,7 +116,8 @@ Tensor::Tensor(const double *t)
 }
 
 /// Initialize the diagonal to this value
-Tensor::Tensor(double v) {
+Tensor::Tensor(double v) : l1_(0), l2_(0), l3_(0)
+{
   have_eigens_=0;
   for (int i=0; i<3; i++) 
     for (int j=0; j<3; j++)
@@ -125,7 +125,7 @@ Tensor::Tensor(double v) {
       else mat_[i][j]=0;
 }
 
-Tensor::Tensor(double v1, double v2, double v3, double v4, double v5, double v6) 
+Tensor::Tensor(double v1, double v2, double v3, double v4, double v5, double v6) : l1_(0), l2_(0), l3_(0)
 {
   have_eigens_=0;
   mat_[0][0] = v1;
@@ -140,7 +140,8 @@ Tensor::Tensor(double v1, double v2, double v3, double v4, double v5, double v6)
 }
 
 /// Initialize the diagonal to this value
-Tensor::Tensor(int v) {
+Tensor::Tensor(int v) : l1_(0), l2_(0), l3_(0)
+{
   have_eigens_=0;
   for (int i=0; i<3; i++) 
     for (int j=0; j<3; j++)
@@ -156,7 +157,8 @@ Tensor::Tensor(const Vector &e1, const Vector &e2, const Vector &e3) :
   have_eigens_=1;
 }
 
-Tensor::Tensor(const double **cmat) {
+Tensor::Tensor(const double **cmat) : l1_(0), l2_(0), l3_(0)
+{
   for (int i=0; i<3; i++)
     for (int j=0; j<3; j++)
       mat_[i][j]=cmat[i][j];
@@ -234,19 +236,19 @@ Tensor& Tensor::operator=(const double& d)
   for(int i=0;i<3;i++)
     for(int j=0;j<3;j++)
       mat_[i][j]=d;
-  have_eigens_=false;
+  have_eigens_=0;
   return *this;
 }
 
 /* matrix max norm */
-double Tensor::norm()
+double Tensor::norm() const
 {
   double a = 0.0;
   double sum;
   for (int i=0;i<3;i++)
   {
     sum = 0.0;
-    for (int j=0;j<3;j++) sum += std::fabs(mat_[i][j]);
+    for (int j=0;j<3;j++) sum += fabs(mat_[i][j]);
     if (sum > a) a = sum;
   }
   return (a);
@@ -308,7 +310,7 @@ Tensor Tensor::operator*(const double s) const
   return t1;
 }
 
-Vector Tensor::operator*(const Vector v) const
+Vector Tensor::operator*(const Vector& v) const
 {
   return Vector(v.x()*mat_[0][0]+v.y()*mat_[0][1]+v.z()*mat_[0][2],
 		v.x()*mat_[1][0]+v.y()*mat_[1][1]+v.z()*mat_[1][2],
@@ -337,7 +339,7 @@ void Tensor::build_eigens_from_mat()
   l1_ = eval[0];
   l2_ = eval[1];
   l3_ = eval[2];
-  have_eigens_ = true;
+  have_eigens_ = 1;
 }
 
 void Tensor::get_eigenvectors(Vector &e1, Vector &e2, Vector &e3)
@@ -346,7 +348,7 @@ void Tensor::get_eigenvectors(Vector &e1, Vector &e2, Vector &e3)
   e1=e1_; e2=e2_; e3=e3_;
 }
 
-void Tensor::get_eigenvalues(double &l1, double &l2, double &l3) 
+void Tensor::get_eigenvalues(double &l1, double &l2, double &l3)
 {
   if (!have_eigens_) build_eigens_from_mat();
   l1=l1_; l2=l2_; l3=l3_;
@@ -368,8 +370,8 @@ void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
   have_eigens_ = 1;
 }
 
-void SCIRun::Core::Geometry::Pio(Piostream& stream, Tensor& t){
-  
+void Core::Geometry::Pio(Piostream& stream, Tensor& t)
+{
   stream.begin_cheap_delim();
  
   Pio(stream, t.mat_[0][0]);
@@ -384,7 +386,8 @@ void SCIRun::Core::Geometry::Pio(Piostream& stream, Tensor& t){
   t.mat_[2][1]=t.mat_[1][2];
 
   Pio(stream, t.have_eigens_);
-  if (t.have_eigens_) {
+  if (t.have_eigens_) 
+  {
     Pio(stream, t.e1_);
     Pio(stream, t.e2_);
     Pio(stream, t.e3_);
@@ -402,7 +405,7 @@ Tensor::get_h_file_path() {
   return path;
 }
 
-const TypeDescription* SCIRun::Core::Geometry::get_type_description(Tensor*)
+const TypeDescription* Core::Geometry::get_type_description(Tensor*)
 {
   static TypeDescription* td = 0;
   if(!td){
@@ -414,7 +417,7 @@ const TypeDescription* SCIRun::Core::Geometry::get_type_description(Tensor*)
 }
 
 
-std::ostream& operator<<( std::ostream& os, const Tensor& t )
+std::ostream& Core::Geometry::operator<<( std::ostream& os, const Tensor& t )
 {
   os << '[' << t.mat_[0][0] << ' ' << t.mat_[0][1] << ' ' << t.mat_[0][2]
      << ' ' << t.mat_[1][0] << ' ' << t.mat_[1][1] << ' ' << t.mat_[1][2]
@@ -424,7 +427,7 @@ std::ostream& operator<<( std::ostream& os, const Tensor& t )
   return os;
 }
 
-std::istream& operator>>( std::istream& is, Tensor& t)
+std::istream& Core::Geometry::operator>>(std::istream& is, Tensor& t)
 {
   t = Tensor();
   is >> t.mat_[0][0] >> t.mat_[0][1] >> t.mat_[0][2]

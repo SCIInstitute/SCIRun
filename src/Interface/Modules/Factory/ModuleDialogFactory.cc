@@ -34,6 +34,7 @@
 #include <Interface/Modules/DataIO/ReadBundleDialog.h>
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
+#include <Interface/Modules/DataIO/ReadNrrdDialog.h>
 #include <Interface/Modules/DataIO/WriteFieldDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
@@ -47,6 +48,7 @@
 #include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Interface/Modules/Math/GetMatrixSliceDialog.h>
 #include <Interface/Modules/Math/BuildNoiseColumnMatrixDialog.h>
+#include <Interface/Modules/Math/CollectMatricesDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/NetworkNotesDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
@@ -84,7 +86,6 @@
 #include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
 #include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
-#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
 #include <Interface/Modules/Fields/ConvertIndicesToFieldDataDialog.h>
 #include <Interface/Modules/Fields/RegisterWithCorrespondencesDialog.h>
 #include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
@@ -102,11 +103,12 @@
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
 #include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
 #include <Interface/Modules/Bundle/ReportBundleInfoDialog.h>
+#include <Interface/Modules/Teem/ReportNrrdInfoDialog.h>
+#include <Interface/Modules/Teem/ConvertNrrdToFieldDialog.h>
+#include <Interface/Modules/Teem/ConvertNrrdToMatrixDialog.h>
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
 #include <Interface/Modules/Fields/ClipVolumeByIsovalueDialog.h>
 #include <boost/assign.hpp>
-#include <boost/functional/factory.hpp>
-#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -117,8 +119,10 @@ ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse,
   ExecutionDisablingServiceFunction disablerRemove) :
   parentToUse_(parentToUse)
 {
+  addDialogsToMakerMapGenerated();
   addDialogsToMakerMap1();
   addDialogsToMakerMap2();
+
   ModuleDialogGeneric::setExecutionDisablingServiceFunctionAdd(disablerAdd);
   ModuleDialogGeneric::setExecutionDisablingServiceFunctionRemove(disablerRemove);
 }
@@ -150,9 +154,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(MatrixAsVectorField, MatrixAsVectorFieldDialog)
     ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
-    ADD_MODULE_DIALOG(CreateLatVol, CreateLatVolDialog)
     ADD_MODULE_DIALOG(CreateStandardColorMap, CreateStandardColorMapDialog)
-    ADD_MODULE_DIALOG(GetDomainBoundary, GetDomainBoundaryDialog)
     ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
     ADD_MODULE_DIALOG(InsertFieldsIntoBundle, InsertFieldsIntoBundleDialog)
     ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
@@ -192,6 +194,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(BuildNoiseColumnMatrix, BuildNoiseColumnMatrixDialog)
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
+    ADD_MODULE_DIALOG(CollectMatrices, CollectMatricesDialog)
     ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
     ADD_MODULE_DIALOG(GenerateSinglePointProbeFromField, GenerateSinglePointProbeFromFieldDialog)
     ADD_MODULE_DIALOG(GeneratePointSamplesFromField, GeneratePointSamplesFromFieldDialog)
@@ -217,5 +220,7 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
       return makerPair.second(moduleId, state, parentToUse_);
   }
 
+  QMessageBox::critical(nullptr, "Module/Dialog Inconsistency", "The module with ID \"" +
+    QString::fromStdString(moduleId) + "\" cannot find its dialog implementation. SCIRun is constructing a basic dialog so your network still is functional. Please update your network file by hand.");
   return new ModuleDialogBasic(moduleId, parentToUse_);
 }

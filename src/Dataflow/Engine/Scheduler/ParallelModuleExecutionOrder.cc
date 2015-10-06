@@ -27,7 +27,6 @@
 */
 
 #include <Dataflow/Engine/Scheduler/ParallelModuleExecutionOrder.h>
-#include <boost/foreach.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -80,7 +79,7 @@ std::ostream& SCIRun::Dataflow::Engine::operator<<(std::ostream& out, const Para
   typedef std::pair<int,ModuleId> GroupModPair;
   std::vector<GroupModPair> vec(order.begin(), order.end());
   std::sort(vec.begin(), vec.end(), [](const GroupModPair& v1, const GroupModPair& v2) -> bool { if (v1.first < v2.first) return true; if (v1.first > v2.first) return false; return v1.second < v2.second; });
-  BOOST_FOREACH(const GroupModPair& v, vec)
+  for (const GroupModPair& v : vec)
   {
     out << v.first << " " << v.second << std::endl;
   }

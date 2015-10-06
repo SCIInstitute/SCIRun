@@ -257,18 +257,19 @@ void PortWidget::mouseMoveEvent(QMouseEvent* event)
   doMouseMove(event->buttons(), event->pos());
 }
 
-void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
+QGraphicsItem* PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
 {
   if (buttons & Qt::LeftButton && (!isConnected() || !isInput()))
   {
     int distance = (pos - startPos_).manhattanLength();
     if (distance >= QApplication::startDragDistance())
-      dragImpl(pos);
+      return dragImpl(pos);
   }
   else
   {
     //qDebug() << "mouse move sth else";
   }
+  return nullptr;
 }
 
 void PortWidget::mouseReleaseEvent(QMouseEvent* event)
@@ -432,7 +433,7 @@ bool PortWidget::isFullInputPort() const
   return isInput() && !connections_.empty();
 }
 
-void PortWidget::dragImpl(const QPointF& endPos)
+QGraphicsItem* PortWidget::dragImpl(const QPointF& endPos)
 {
   if (!currentConnection_)
   {
@@ -440,9 +441,10 @@ void PortWidget::dragImpl(const QPointF& endPos)
   }
   currentConnection_->update(endPos);
 
-  auto isCompatible = [this](const std::string& mid, bool isInput, const PortWidget* port)
+  auto isCompatible = [this](const PortWidget* port)
   {
-    return this->moduleId_.id_ != mid && this->isInput_ != isInput && this->get_typename() == port->get_typename() && (!isInput || !port->isConnected());
+    PortConnectionDeterminer q;
+    return q.canBeConnected(*port, *this);
   };
 
   forEachPort([this](PortWidget* p) { this->makePotentialConnectionLine(p); }, isCompatible);
@@ -467,6 +469,7 @@ void PortWidget::dragImpl(const QPointF& endPos)
       minPotential->highlight(true);
     }
   }
+  return dynamic_cast<QGraphicsItem*>(currentConnection_);
 }
 
 template <typename Func, typename Pred>
@@ -478,7 +481,7 @@ void PortWidget::forEachPort(Func func, Pred pred)
     {
       for (auto& p3 : p2.second)
       {
-        if (pred(p1.first, p2.first, p3.second))
+        if (pred(p3.second))
           func(p3.second);
       }
     }

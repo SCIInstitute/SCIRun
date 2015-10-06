@@ -75,14 +75,11 @@ TARGET_LINK_LIBRARIES(Core_Datatypes
   Core_Persistent
   Core_Datatypes_Legacy_Base
   Core_Geometry_Primitives
-  ${OPENGL_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Datatypes)
 ENDIF(BUILD_SHARED_LIBS)
-
-ADD_DEPENDENCIES(Core_Datatypes Boost_external)
 
 SCIRUN_ADD_TEST_DIR(Tests)
 ADD_SUBDIRECTORY(Mesh)

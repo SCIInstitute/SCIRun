@@ -26,36 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/Datatypes/Geometry.cc
-#include <sstream>
 #include <Core/Datatypes/Geometry.h>
 
 using namespace SCIRun::Core;
-using namespace SCIRun::Core::Datatypes;
+using namespace Datatypes;
 
-GeometryObject::GeometryObject(DatatypeConstHandle dh, const GeometryIDGenerator& idGenerator, const std::string& tag) :
-    mLowestValue(0.0),
-    mHighestValue(0.0),
-    isVisible(true),
-    data_(dh),
-    objectName_(idGenerator.generateGeometryID(tag))
+GeometryObject::GeometryObject(const GeometryIDGenerator& idGenerator, const std::string& tag) :
+  objectName_(idGenerator.generateGeometryID(tag))
 {
 }
 
-GeometryObject::GeometryObject(const GeometryObject& other) :
-    mLowestValue(0.0),
-    mHighestValue(0.0),
-    isVisible(true),
-    data_(other.data_->clone()),
-    objectName_(other.objectName_) // TODO?
-{}
-
-//TODO: rewrite
-GeometryObject& GeometryObject::operator=(const GeometryObject& other)
+GeometryObject* GeometryObject::clone() const
 {
-  if (this != &other)
-  {
-    data_.reset(other.data_->clone());
-  }
-  return *this;
+  return nullptr; //TODO
 }

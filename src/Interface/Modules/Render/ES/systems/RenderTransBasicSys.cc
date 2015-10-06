@@ -35,14 +35,11 @@
 #include <es-general/comp/Transform.hpp>
 #include <es-general/comp/StaticGlobalTime.hpp>
 #include <es-general/comp/StaticCamera.hpp>
-#include <es-general/comp/StaticOrthoCamera.hpp>
-#include <es-general/comp/CameraSelect.hpp>
 
 #include <es-render/comp/VBO.hpp>
 #include <es-render/comp/IBO.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
 #include <es-render/comp/Shader.hpp>
-#include <es-render/comp/Texture.hpp>
 #include <es-render/comp/GLState.hpp>
 #include <es-render/comp/VecUniform.hpp>
 #include <es-render/comp/MatUniform.hpp>
@@ -52,8 +49,6 @@
 
 #include <bserialize/BSerialize.hpp>
 
-#include <Core/Datatypes/Geometry.h>
-
 #include "../comp/RenderBasicGeom.h"
 #include "../comp/SRRenderState.h"
 #include "../comp/RenderList.h"
@@ -62,6 +57,7 @@
 
 namespace es = CPM_ES_NS;
 namespace shaders = CPM_GL_SHADERS_NS;
+using namespace SCIRun::Graphics::Datatypes;
 
 // Every component is self contained. It only accesses the systems and
 // components that it specifies in it's component list.
@@ -84,7 +80,7 @@ class RenderBasicSysTrans :
                              ren::MatUniform,
                              ren::Shader,
 														 ren::GLState,
-														 Core::Datatypes::GeometryObject::SpireSubPass,
+                             SpireSubPass,
                              StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
@@ -149,7 +145,7 @@ private:
 
   GLuint sortObjects(const Core::Geometry::Vector& dir,
     const es::ComponentGroup<ren::IBO>& ibo,
-    const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
+    const es::ComponentGroup<SpireSubPass>& pass,
     const es::ComponentGroup<ren::StaticIBOMan>& iboMan)
   {
     char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
@@ -219,7 +215,7 @@ private:
       const es::ComponentGroup<ren::MatUniform>& matUniforms,
       const es::ComponentGroup<ren::Shader>& shader,
 			const es::ComponentGroup<ren::GLState>& state,
-			const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
+			const es::ComponentGroup<SpireSubPass>& pass,
       const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
@@ -239,7 +235,7 @@ private:
       return;
     }
 
-    bool drawLines = (ibo.front().primMode == Core::Datatypes::GeometryObject::SpireIBO::LINES);
+    bool drawLines = (ibo.front().primMode == SpireIBO::LINES);
     GLuint iboID = ibo.front().glid;
 
     Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],

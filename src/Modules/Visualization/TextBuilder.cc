@@ -24,69 +24,65 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 #include <Modules/Visualization/TextBuilder.h>
-#include <fstream>
-#include <stdio.h>  /* TODO delete after testing!!!!! defines FILENAME_MAX */
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Geometry;
 
 TextBuilder::TextBuilder(const std::string& text, const double scale,
-            const Vector shift)
-: text_(text), scale_(scale), shift_(shift) {}
+  const Vector& shift)
+  : text_(text), scale_(scale), shift_(shift) {}
 
-TextBuilder::~TextBuilder() {}
-
-void TextBuilder::getStringVerts(std::vector<Vector> &verts,  std::vector<Vector> &coords) {
-    Vector shift = shift_;
-    for (auto a : text_) {
-        std::vector<Vector> tmp;
-        std::vector<Vector> tmp2;
-        getCharVerts(a, tmp,tmp2);
-        for (auto v : tmp) {
-            verts.push_back(v + shift);
-        }
-        for (auto v : tmp2) {
-            coords.push_back(v);
-        }
-        shift = shift + Vector(scale_,0.,0.);
+void TextBuilder::getStringVerts(std::vector<Vector> &verts, std::vector<Vector> &coords) {
+  Vector shift = shift_;
+  for (auto a : text_) {
+    std::vector<Vector> tmp;
+    std::vector<Vector> tmp2;
+    getCharVerts(a, tmp, tmp2);
+    for (auto v : tmp) {
+      verts.push_back(v + shift);
     }
+    for (auto v : tmp2) {
+      coords.push_back(v);
+    }
+    shift = shift + Vector(scale_, 0., 0.);
+  }
 }
 
 void TextBuilder::getCharVerts(const char c, std::vector<Vector> &verts, std::vector<Vector> &coords) {
-    char idx = c - 32;
-    if (idx < 0 || idx >= 96) idx = 95;
-    //get the offset into the font array.
-    size_t row = 6 - idx / 16;
-    size_t col = c % 16;
-    double left,right,top,bottom;
-    left = static_cast<double>(col) / 16.;
-    right = left + 1./16.;
-    top = static_cast<double>(row) / 6.;
-    bottom = top - 1./6.;
-    Vector ll = Vector(left,bottom,0.);
-    Vector lr = Vector(right,bottom,0.);
-    Vector ur = Vector(right,top,0.);
-    Vector ul = Vector(left,top,0.);
-    //triangle 1
-    verts.push_back(scale_ * Vector(0.,0.,0.));
-    coords.push_back(ll);
-    verts.push_back(scale_ * Vector(0.,1.,0.));
-    coords.push_back(ul);
-    verts.push_back(scale_ * Vector(1.,0.,0.));
-    coords.push_back(lr);
-    //triangle 2
-    verts.push_back(scale_ * Vector(0.,1.,0.));
-    coords.push_back(ul);
-    verts.push_back(scale_ * Vector(1.,0.,0.));
-    coords.push_back(lr);
-    verts.push_back(scale_ * Vector(1.,1.,0.));
-    coords.push_back(ur);
+  char idx = c - 32;
+  if (idx < 0 || idx >= 96) idx = 95;
+  //get the offset into the font array.
+  size_t row = 6 - idx / 16;
+  size_t col = c % 16;
+  double left, right, top, bottom;
+  left = static_cast<double>(col) / 16.;
+  right = left + 1. / 16.;
+  top = static_cast<double>(row) / 6.;
+  bottom = top - 1. / 6.;
+  Vector ll = Vector(left, bottom, 0.);
+  Vector lr = Vector(right, bottom, 0.);
+  Vector ur = Vector(right, top, 0.);
+  Vector ul = Vector(left, top, 0.);
+  //triangle 1
+  verts.push_back(scale_ * Vector(0., 0., 0.));
+  coords.push_back(ll);
+  verts.push_back(scale_ * Vector(0., 1., 0.));
+  coords.push_back(ul);
+  verts.push_back(scale_ * Vector(1., 0., 0.));
+  coords.push_back(lr);
+  //triangle 2
+  verts.push_back(scale_ * Vector(0., 1., 0.));
+  coords.push_back(ul);
+  verts.push_back(scale_ * Vector(1., 0., 0.));
+  coords.push_back(lr);
+  verts.push_back(scale_ * Vector(1., 1., 0.));
+  coords.push_back(ur);
 }
 
-void TextBuilder::reset(const std::string& text, const double scale, const Vector shift) {
-    text_ = text;
-    scale_ = scale;
-    shift_ = shift;
+void TextBuilder::reset(const std::string& text, const double scale, const Vector& shift) {
+  text_ = text;
+  scale_ = scale;
+  shift_ = shift;
 }

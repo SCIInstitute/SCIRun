@@ -227,7 +227,7 @@ NetworkGlobalSettings& Network::settings()
 
 void Network::setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter)
 {
-  BOOST_FOREACH(ModuleHandle module, modules_ | boost::adaptors::filtered(filter))
+  for (ModuleHandle module : modules_ | boost::adaptors::filtered(filter))
   {
     module->executionState().transitionTo(state);
   }

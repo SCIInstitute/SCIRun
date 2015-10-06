@@ -96,20 +96,35 @@ namespace Gui {
     static QTimer* splashTimer_;
   };
 
-  class FileOpenCommand : public Core::Commands::GuiCommand
+  class NetworkFileProcessCommand : public Core::Commands::GuiCommand
   {
   public:
-    FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
+    NetworkFileProcessCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
     virtual bool execute();
 
-    Dataflow::Networks::NetworkFileHandle openedFile_;
-  private:
-    int loadImpl(const Dataflow::Networks::NetworkFileHandle& file);
+    Dataflow::Networks::NetworkFileHandle file_;
+  protected:
+    virtual Dataflow::Networks::NetworkFileHandle processXmlFile() = 0;
+    int guiProcess(const Dataflow::Networks::NetworkFileHandle& file);
     std::string filename_;
     NetworkEditor* networkEditor_;
   };
 
+  class FileOpenCommand : public NetworkFileProcessCommand
+  {
+  public:
+    FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : NetworkFileProcessCommand(filename, networkEditor) {}
+  protected:
+    virtual Dataflow::Networks::NetworkFileHandle processXmlFile() override;
+  };
 
+  class FileImportCommand : public NetworkFileProcessCommand
+  {
+  public:
+    FileImportCommand(const std::string& filename, NetworkEditor* networkEditor) : NetworkFileProcessCommand(filename, networkEditor) {}
+  protected:
+    virtual Dataflow::Networks::NetworkFileHandle processXmlFile() override;
+  };
 }
 }
 #endif

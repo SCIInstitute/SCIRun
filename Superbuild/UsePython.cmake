@@ -1,0 +1,17 @@
+
+include_directories(${SCI_PYTHON_INCLUDE})
+link_directories(${SCI_PYTHON_LINK_LIBRARY_DIRS})
+add_definitions(-DBUILD_WITH_PYTHON)
+if(WIN32)
+  add_definitions(-DPy_ENABLE_SHARED=1)
+
+  if(WIN32 AND MSVC)
+    add_library(${SCI_PYTHON_LIBRARY} STATIC IMPORTED GLOBAL)
+    set_target_properties(${SCI_PYTHON_LIBRARY}
+      PROPERTIES
+        IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
+        IMPORTED_LOCATION_RELEASE ${SCI_PYTHON_LIBRARY_RELEASE}
+        IMPORTED_LOCATION_DEBUG ${SCI_PYTHON_LIBRARY_DEBUG}
+    )
+  endif()
+endif()

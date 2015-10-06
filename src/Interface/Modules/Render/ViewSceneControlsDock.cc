@@ -30,7 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
-#include "qbrush.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;
@@ -58,6 +57,10 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   {
     mouseControlComboBox_->setCurrentIndex(0);
   }
+  
+  invertZoomCheckBox_->setChecked(SCIRun::Core::Preferences::Instance().invertMouseZoom);
+
+  updateZoomOptionVisibility();
 
   connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
@@ -68,7 +71,8 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
   connect(selectAllPushButton_, SIGNAL(clicked()), parent, SLOT(selectAllClicked()));
   connect(deselectAllPushButton_, SIGNAL(clicked()), parent, SLOT(deselectAllClicked()));
-
+  connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
+  connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
 
   connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotChanged(QListWidgetItem*)));
   connect(this, SIGNAL(itemUnselected(const QString&)), parent, SLOT(handleUnselectedItem(const QString&)));
@@ -89,7 +93,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   //groupBox_5->setVisible(false);
 
   ///Object Tab
-  //tabWidget->removeTab(1);
+  tabWidget->setCurrentIndex(0);
 
   ////View Tab
   //groupBox->setVisible(false);
@@ -105,6 +109,20 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
     QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
 
   currentBackgroundLabel_->setStyleSheet(styleSheet);
+}
+
+void ViewSceneControlsDock::updateZoomOptionVisibility()
+{
+  if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
+  {
+    zoomBox_->setVisible(true);
+    invertZoomCheckBox_->setVisible(true);
+  }
+  else
+  {
+    zoomBox_->setVisible(false);
+    invertZoomCheckBox_->setVisible(false);
+  }
 }
 
 void ViewSceneControlsDock::addItem(const QString& name, bool checked)

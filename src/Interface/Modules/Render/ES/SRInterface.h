@@ -31,22 +31,14 @@
 
 #include <cstdint>
 #include <memory>
-
-#include <Core/Datatypes/Geometry.h>
-#include <boost/shared_ptr.hpp>
-
 #include <Interface/Modules/Render/GLContext.h>
-#include <Interface/Modules/Render/namespaces.h>
-
 #include "Core.h"
-#include "AssetBootstrap.h"
 
 // CPM Modules
-#include <gl-state/GLState.hpp>
 #include <es-render/util/Shader.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
-#include <glm/glm.hpp>
 
+#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
 
 namespace SCIRun {
@@ -70,8 +62,7 @@ namespace SCIRun {
             ///< This can be removed if we use a static
             ///< component for assigning entity IDs.
         public:
-            SRInterface(std::shared_ptr<Gui::GLContext> context,
-                        const std::vector<std::string>& shaderDirs, int frameInitLimit = 100);
+            explicit SRInterface(std::shared_ptr<Gui::GLContext> context, int frameInitLimit = 100);
             ~SRInterface();
             
             /// Call this whenever the window is resized. This will modify the viewport
@@ -112,11 +103,6 @@ namespace SCIRun {
             size_t getScreenWidthPixels() const       { return mScreenWidth; }
             size_t getScreenHeightPixels() const      { return mScreenHeight; }
             
-            /// Reads an asset file and returns the associated vertex buffer and index
-            /// buffer.
-            void readAsset(const std::string& filename,
-                           std::vector<uint8_t> vbo, std::vector<uint8_t> ibo);
-            
             /// Remove all SCIRun 5 objects.
             void removeAllGeomObjects();
             
@@ -124,7 +110,7 @@ namespace SCIRun {
             void gcInvalidObjects(const std::vector<std::string>& validObjects);
             
             /// Handles a new geometry object.
-            void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object, int port);
+            void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port);
             
             /// Performs a frame.
             void doFrame(double currentTime, double constantDeltaTime);
@@ -133,7 +119,13 @@ namespace SCIRun {
             void setMouseMode(MouseMode mode);
             
             /// Retrieves mouse interaction mode.
-            MouseMode getMouseMode();
+            MouseMode getMouseMode() const;
+
+            /// Sets zoom speed
+            void setZoomSpeed(int zoomSpeed);
+
+            /// Sets zoom inverted/not inverted
+            void setZoomInverted(bool value);
             
             /// Performs an autoview.
             void doAutoView();
@@ -197,14 +189,14 @@ namespace SCIRun {
                 
                 struct SRPass
                 {
-                    SRPass(const std::string& name, Core::Datatypes::GeometryObject::RenderType renType) :
+                    SRPass(const std::string& name, Graphics::Datatypes::RenderType renType) :
                     passName(name),
                     renderType(renType)
                     {}
                     
                     std::string                 passName;
                     std::list<ObjectTransforms> transforms;
-                    Core::Datatypes::GeometryObject::RenderType renderType;
+                    Graphics::Datatypes::RenderType renderType;
                 };
                 
                 std::string                     mName;
@@ -247,7 +239,7 @@ namespace SCIRun {
             void addShaderToEntity(uint64_t entityID, const std::string& shaderName);
             
             // Apply uniform.
-            void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform);
+            void applyUniform(uint64_t entityID, const Graphics::Datatypes::SpireSubPass::Uniform& uniform);
 
             // search for a widget at mouse position
             bool foundWidget(const glm::ivec2& pos);
@@ -259,7 +251,7 @@ namespace SCIRun {
             bool                              widgetSelected_;  ///< Whether or not a widget is currently selected.
             bool                              widgetExists_;    ///< Geometry contains a widget to find.
             
-            
+            int                               mZoomSpeed;
             MouseMode                         mMouseMode;       ///< Current mouse mode.
             
             

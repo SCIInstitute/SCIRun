@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,14 +27,14 @@
 */
 /// @todo Documentation Core/Datatypes/DatatypeFwd.h
 #ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H 
+#define CORE_DATATYPES_DATATYPE_FWD_H
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <boost/make_shared.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
@@ -57,7 +57,7 @@ namespace Datatypes {
   class Bundle;
 
   typedef boost::shared_ptr<String> StringHandle;
-  typedef boost::shared_ptr<GeometryObject> GeometryHandle;
+  typedef boost::shared_ptr<GeometryObject> GeometryBaseHandle;
   typedef boost::shared_ptr<ColorMap> ColorMapHandle;
   typedef boost::shared_ptr<Bundle> BundleHandle;
 }}
@@ -70,6 +70,11 @@ namespace Datatypes {
 
   class NrrdData;
   typedef boost::shared_ptr<NrrdData> NrrdDataHandle;
+
+  namespace Core {
+  namespace Datatypes {
+    typedef NrrdData NrrdDataType;
+  }}
 }
 
 

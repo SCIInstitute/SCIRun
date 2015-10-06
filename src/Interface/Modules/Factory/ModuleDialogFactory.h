@@ -52,6 +52,7 @@ namespace SCIRun
       ExecutionDisablingServiceFunction disabler_;
       void addDialogsToMakerMap1();
       void addDialogsToMakerMap2();
+      void addDialogsToMakerMapGenerated();
     };
   }
 }

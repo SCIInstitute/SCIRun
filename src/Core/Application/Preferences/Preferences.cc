@@ -45,6 +45,7 @@ Preferences::Preferences() :
   saveBeforeExecute("saveBeforeExecute", false),
   showModuleErrorInlineMessages("showModuleErrorInlineMessages", true),
   useNewViewSceneMouseControls("useNewViewSceneMouseControls", true),
+  invertMouseZoom("invertMouseZoom", false),
   modulesSnapToGrid("modulesSnapToGrid", true),
   highlightPorts("highlightPorts", false),
   autoNotes("autoNotes", false),

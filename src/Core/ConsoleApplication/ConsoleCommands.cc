@@ -34,8 +34,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun::Core;
-using namespace SCIRun::Core::Commands;
-using namespace SCIRun::Core::Console;
+using namespace Commands;
+using namespace Console;
 using namespace SCIRun::Dataflow::Networks;
 
 bool LoadFileCommandConsole::execute()
@@ -46,7 +46,7 @@ bool LoadFileCommandConsole::execute()
     auto filename = inputFiles[index_];
 
     /// @todo: real logger
-    std::cout << "Attempting load of " + filename << std::endl;
+    std::cout << "Attempting load of " << filename << std::endl;
 
     try
     {
@@ -57,16 +57,16 @@ bool LoadFileCommandConsole::execute()
         Application::Instance().controller()->clear();
         Application::Instance().controller()->loadNetwork(openedFile);
         /// @todo: real logger
-        std::cout << "File load done." << std::endl;
+        std::cout << "File load done: " << filename << std::endl;
         return true;
       }
-      else /// @todo: real logger
-        std::cout << "File load failed." << std::endl;
+      /// @todo: real logger
+      std::cout << "File load failed: " << filename << std::endl;
     }
     catch (...)
     {
       /// @todo: real logger
-      std::cout << "File load failed." << std::endl;
+      std::cout << "File load failed: " << filename << std::endl;
     }
     return false;
   }

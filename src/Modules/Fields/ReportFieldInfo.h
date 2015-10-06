@@ -36,7 +36,7 @@
 namespace SCIRun {
 namespace Modules {
 namespace Fields {
-  
+
   class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
     public Has6OutputPorts<StringPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag>
@@ -52,6 +52,8 @@ namespace Fields {
     OUTPUT_PORT(3, NumData, Int32);
     OUTPUT_PORT(4, DataMin, Double);
     OUTPUT_PORT(5, DataMax, Double);
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 }}}
 

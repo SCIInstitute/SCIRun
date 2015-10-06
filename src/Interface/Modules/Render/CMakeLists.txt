@@ -40,6 +40,7 @@ SET(Interface_Modules_Render_HEADERS
   GLContext.h
   GLContextPlatformCompatibility.h
   QtGLContext.h
+  Screenshot.h
   ES/SRCamera.h
   ES/SRInterface.h
   ES/SRUtil.h
@@ -60,6 +61,7 @@ SET(Interface_Modules_Render_SOURCES
   GLWidget.cc
   GLContext.cc
   QtGLContext.cc
+  Screenshot.cc
   ES/SRCamera.cc
   ES/SRInterface.cc
   ES/SRUtil.cc

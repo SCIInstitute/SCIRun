@@ -74,6 +74,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
+#include <Modules/Legacy/Fields/ClipFieldByMesh.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
 #include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
@@ -97,6 +98,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Math/ComputeSVD.h>
 #include <Modules/Legacy/Math/AddLinkedNodesToLinearSystem.h>
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
+#include <Modules/Legacy/Math/CollectMatrices.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
@@ -161,7 +163,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
   addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
   addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
-  addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
+  //addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
   addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
@@ -174,7 +176,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   //addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<CreateStandardColorMap>("In progress: four color maps available", "...");
-  addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
+  //addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
@@ -225,6 +227,9 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
   //addModuleDesc<ShowAndEditDipoles>("Real ported module", "in progress");
+
+  addModuleDesc<ClipFieldByMesh>("Real ported module", "...");
+  addModuleDesc<CollectMatrices>("Real ported module", "...");
 
   // insert module desc here
 }

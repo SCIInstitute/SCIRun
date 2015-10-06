@@ -29,7 +29,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <boost/foreach.hpp>
 #include <boost/assign/std/vector.hpp>
 
 using namespace SCIRun::Gui;
@@ -113,7 +112,7 @@ void GenerateROIStatisticsDialog::pullSpecial()
       auto col = (all_elc_values[i]).toVector();
 
       int j = 0;
-      BOOST_FOREACH(const AlgorithmParameter& ap, col)
+      for (const AlgorithmParameter& ap : col)
       {
         auto tmpstr = ap.toString();
 

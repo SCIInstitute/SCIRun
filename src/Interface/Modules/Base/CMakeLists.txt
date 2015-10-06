@@ -29,6 +29,7 @@
 
 SET(Interface_Modules_Base_FORMS
   ModuleDialogBasic.ui
+  ParserHelp.ui
 )
 
 SET(Interface_Modules_Base_HEADERS
@@ -36,6 +37,7 @@ SET(Interface_Modules_Base_HEADERS
   ModuleDialogGeneric.h
   RemembersFileDialogDirectory.h
   WidgetSlotManagers.h
+  HasParserHelpDialog.h
   share.h
 )
 
@@ -44,6 +46,7 @@ SET(Interface_Modules_Base_SOURCES
   ModuleDialogGeneric.cc
   RemembersFileDialogDirectory.cc
   WidgetSlotManagers.cc
+  HasParserHelpDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Base_FORMS_HEADERS ${Interface_Modules_Base_FORMS})

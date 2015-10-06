@@ -33,6 +33,10 @@
 #include <Interface/Application/GuiApplication.h>
 #include <Core/ConsoleApplication/ConsoleApplication.h>
 
+#ifdef BUILD_WITH_PYTHON
+#include <Core/Python/PythonInterpreter.h>
+#endif
+
 using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Console;
@@ -45,6 +49,10 @@ int mainImpl(int argc, const char* argv[])
 #endif
 
   Application::Instance().readCommandLine(argc, argv);
+
+#ifdef BUILD_WITH_PYTHON
+  SCIRun::Core::PythonInterpreter::Instance().initialize();
+#endif
 
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here
 

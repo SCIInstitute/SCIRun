@@ -82,6 +82,7 @@
     <addaction name="actionLoad_"/>
     <addaction name="recentNetworksMenu_"/>
     <addaction name="actionInsert_"/>
+    <addaction name="actionImportNetwork_"/>
     <addaction name="actionRunScript_"/>
     <addaction name="separator"/>
     <addaction name="actionSave_"/>
@@ -89,7 +90,7 @@
     <addaction name="separator"/>
     <addaction name="actionExecute_All_"/>
     <addaction name="separator"/>
-    <addaction name="actionCreate_Module_Skeleton_"/>
+    <addaction name="actionRunNewModuleWizard_"/>
     <addaction name="separator"/>
     <addaction name="actionQuit_"/>
    </widget>
@@ -108,8 +109,15 @@
      <addaction name="actionAddModule_"/>
      <addaction name="actionSelectModule_"/>
     </widget>
+    <widget class="QMenu" name="menuCurrent_">
+     <property name="title">
+      <string>Current</string>
+     </property>
+    </widget>
     <addaction name="menuActions"/>
     <addaction name="actionTagManager_"/>
+    <addaction name="separator"/>
+    <addaction name="menuCurrent_"/>
    </widget>
    <widget class="QMenu" name="menuSubnets_">
     <property name="enabled">
@@ -185,6 +193,8 @@
     <addaction name="separator"/>
     <addaction name="actionToggleMetadataLayer_"/>
     <addaction name="actionToggleTagLayer_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCleanUpNetwork_"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
@@ -516,12 +526,12 @@
     <string>Ctrl+E</string>
    </property>
   </action>
-  <action name="actionCreate_Module_Skeleton_">
+  <action name="actionRunNewModuleWizard_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
-    <string>Create Module Skeleton...</string>
+    <string>Run New Module Wizard...</string>
    </property>
   </action>
   <action name="actionQuit_">
@@ -656,26 +666,35 @@
   </action>
   <action name="actionCut_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Cut</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
   </action>
   <action name="actionCopy_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Copy</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
   </action>
   <action name="actionPaste_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
   <action name="actionDelete_">
@@ -895,6 +914,24 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+Shift+K</string>
+   </property>
+  </action>
+  <action name="actionDummy">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </action>
+  <action name="actionCleanUpNetwork_">
+   <property name="text">
+    <string>Clean Up Network</string>
+   </property>
+  </action>
+  <action name="actionImportNetwork_">
+   <property name="text">
+    <string>*Import 4.x network file...</string>
    </property>
   </action>
  </widget>

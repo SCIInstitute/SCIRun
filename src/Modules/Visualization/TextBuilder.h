@@ -24,33 +24,34 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#ifndef MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
-#define MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
+#ifndef MODULES_VISUALIZATION_TEXTBUILDER_H
+#define MODULES_VISUALIZATION_TEXTBUILDER_H
 
-#include <Core/Datatypes/Geometry.h>
-#include <cstring>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <vector>
 
 namespace SCIRun {
-namespace Modules {
-namespace Visualization {
+  namespace Modules {
+    namespace Visualization {
 
-class TextBuilder {
-  public:
-    TextBuilder(const std::string& text = "", const double scale = 1.,
-                const Core::Geometry::Vector shift = Core::Geometry::Vector());
-    virtual ~TextBuilder();
-    void reset(const std::string& text, const double scale,
-            const Core::Geometry::Vector shift);
-    void getStringVerts(std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
-  private:
-    std::string text_;
-    double scale_;
-    Core::Geometry::Vector shift_;
-    void getCharVerts(const char c, std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
-  };
-}}}
+      class TextBuilder
+      {
+      public:
+        explicit TextBuilder(const std::string& text = "", const double scale = 1.,
+          const Core::Geometry::Vector& shift = Core::Geometry::Vector());
+        void reset(const std::string& text, const double scale,
+          const Core::Geometry::Vector& shift);
+        void getStringVerts(std::vector<Core::Geometry::Vector> &verts, std::vector<Core::Geometry::Vector> &colors);
+      private:
+        std::string text_;
+        double scale_;
+        Core::Geometry::Vector shift_;
+        void getCharVerts(const char c, std::vector<Core::Geometry::Vector> &verts, std::vector<Core::Geometry::Vector> &colors);
+      };
+    }
+  }
+}
 
 #endif

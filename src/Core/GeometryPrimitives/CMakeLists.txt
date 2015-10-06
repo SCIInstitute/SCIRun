@@ -60,13 +60,13 @@ TARGET_LINK_LIBRARIES(Core_Geometry_Primitives
   Core_Math
   Core_Util_Legacy
   Core_Persistent
+  ${SCI_ZLIB_LIBRARY}
+  ${SCI_PNG_LIBRARY}
   ${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Geometry_Primitives)
 ENDIF(BUILD_SHARED_LIBS)
-
-ADD_DEPENDENCIES(Core_Geometry_Primitives Boost_external)
 
 SCIRUN_ADD_TEST_DIR(Tests)

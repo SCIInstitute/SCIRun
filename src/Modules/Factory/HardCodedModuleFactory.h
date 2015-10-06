@@ -33,25 +33,26 @@
 
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
+#include <sstream>
 #include <Modules/Factory/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Factory {
 
-      class SCISHARE HardCodedModuleFactory : public SCIRun::Dataflow::Networks::ModuleFactory
+      class SCISHARE HardCodedModuleFactory : public Dataflow::Networks::ModuleFactory
       {
       public:
         HardCodedModuleFactory();
-        virtual SCIRun::Dataflow::Networks::ModuleDescription lookupDescription(const SCIRun::Dataflow::Networks::ModuleLookupInfo& info);
-        virtual SCIRun::Dataflow::Networks::ModuleHandle create(const SCIRun::Dataflow::Networks::ModuleDescription& info);
-        virtual void setStateFactory(SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory);
-        virtual void setAlgorithmFactory(SCIRun::Core::Algorithms::AlgorithmFactoryHandle algoFactory);
-        virtual void setReexecutionFactory(SCIRun::Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory);
-        virtual const Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
-        virtual const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const;
+        virtual Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) override;
+        virtual Dataflow::Networks::ModuleHandle create(const Dataflow::Networks::ModuleDescription& info) override;
+        virtual void setStateFactory(Dataflow::Networks::ModuleStateFactoryHandle stateFactory) override;
+        virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) override;
+        virtual void setReexecutionFactory(Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory) override;
+        virtual const Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const override;
+        virtual const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const override;
       private:
-        SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
+        Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
         boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;
       };
     }

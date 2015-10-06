@@ -37,12 +37,11 @@
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Point.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Geometry;
+using namespace Core::Logging;
+using namespace Core::Algorithms;
+using namespace Core::Geometry;
 
 namespace detail 
 {
@@ -634,12 +633,12 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     {
       Tensor t;
       field->get_value(t,*it);
-      data[k] = t.mat_[0][0]; k++;
-      data[k] = t.mat_[0][1]; k++;
-      data[k] = t.mat_[0][2]; k++;
-      data[k] = t.mat_[1][1]; k++;
-      data[k] = t.mat_[1][2]; k++;
-      data[k] = t.mat_[2][2]; k++;
+      data[k] = t.val(0,0); k++;
+      data[k] = t.val(0,1); k++;
+      data[k] = t.val(0,2); k++;
+      data[k] = t.val(1,1); k++;
+      data[k] = t.val(1,2); k++;
+      data[k] = t.val(2,2); k++;
       ++it;
     }
 
@@ -678,12 +677,12 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     {
       Tensor t;
       field->get_value(t,*it);
-      data[k] = t.mat_[0][0]; k++;
-      data[k] = t.mat_[0][1]; k++;
-      data[k] = t.mat_[0][2]; k++;
-      data[k] = t.mat_[1][1]; k++;
-      data[k] = t.mat_[1][2]; k++;
-      data[k] = t.mat_[2][2]; k++;
+      data[k] = t.val(0, 0); k++;
+      data[k] = t.val(0, 1); k++;
+      data[k] = t.val(0, 2); k++;
+      data[k] = t.val(1, 1); k++;
+      data[k] = t.val(1, 2); k++;
+      data[k] = t.val(2, 2); k++;
       ++it;
     }
 
@@ -722,12 +721,12 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     {
       Tensor t;
       field->get_value(t,*it);
-      data[k] = t.mat_[0][0]; k++;
-      data[k] = t.mat_[0][1]; k++;
-      data[k] = t.mat_[0][2]; k++;
-      data[k] = t.mat_[1][1]; k++;
-      data[k] = t.mat_[1][2]; k++;
-      data[k] = t.mat_[2][2]; k++;
+      data[k] = t.val(0, 0); k++;
+      data[k] = t.val(0, 1); k++;
+      data[k] = t.val(0, 2); k++;
+      data[k] = t.val(1, 1); k++;
+      data[k] = t.val(1, 2); k++;
+      data[k] = t.val(2, 2); k++;
       ++it;
     }
 
@@ -765,12 +764,12 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     {
       Tensor t;
       field->get_value(t,*it);
-      data[k] = t.mat_[0][0]; k++;
-      data[k] = t.mat_[0][1]; k++;
-      data[k] = t.mat_[0][2]; k++;
-      data[k] = t.mat_[1][1]; k++;
-      data[k] = t.mat_[1][2]; k++;
-      data[k] = t.mat_[2][2]; k++;
+      data[k] = t.val(0, 0); k++;
+      data[k] = t.val(0, 1); k++;
+      data[k] = t.val(0, 2); k++;
+      data[k] = t.val(1, 1); k++;
+      data[k] = t.val(1, 2); k++;
+      data[k] = t.val(2, 2); k++;
       ++it;
     }
 
@@ -808,12 +807,12 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     {
       Tensor t;
       field->get_value(t,*it);
-      data[k] = t.mat_[0][0]; k++;
-      data[k] = t.mat_[0][1]; k++;
-      data[k] = t.mat_[0][2]; k++;
-      data[k] = t.mat_[1][1]; k++;
-      data[k] = t.mat_[1][2]; k++;
-      data[k] = t.mat_[2][2]; k++;
+      data[k] = t.val(0, 0); k++;
+      data[k] = t.val(0, 1); k++;
+      data[k] = t.val(0, 2); k++;
+      data[k] = t.val(1, 1); k++;
+      data[k] = t.val(1, 2); k++;
+      data[k] = t.val(2, 2); k++;
       ++it;
     }
 
@@ -834,7 +833,7 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     dim[1] = static_cast<size_t>(sz[0]);
     nrrdAlloc_nva(nrrd,nrrdTypeDouble,nrrddim,dim);
 
-    if (nrrd->data == 0)
+    if (!nrrd->data)
     {
       pr->error("FieldToNrrd: Could not allocate enough space for new Nrrd");
       return (false);
@@ -850,12 +849,12 @@ bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, Nrrd
     {
       Tensor t;
       field->get_value(t,*it);
-      data[k] = t.mat_[0][0]; k++;
-      data[k] = t.mat_[0][1]; k++;
-      data[k] = t.mat_[0][2]; k++;
-      data[k] = t.mat_[1][1]; k++;
-      data[k] = t.mat_[1][2]; k++;
-      data[k] = t.mat_[2][2]; k++;
+      data[k] = t.val(0, 0); k++;
+      data[k] = t.val(0, 1); k++;
+      data[k] = t.val(0, 2); k++;
+      data[k] = t.val(1, 1); k++;
+      data[k] = t.val(1, 2); k++;
+      data[k] = t.val(2, 2); k++;
       ++it;
     }
 

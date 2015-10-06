@@ -28,38 +28,121 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Mesh/MeshFacade.h>
-#include <Core/Datatypes/Material.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
-#include <Core/Logging/Log.h>
-#include <Core/Math/MiscMath.h>
-#include <Core/Algorithms/Visualization/DataConversions.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 
-#include <glm/glm.hpp>
-
-using namespace SCIRun::Modules::Visualization;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Visualization;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Graphics;
 using namespace SCIRun;
+using namespace Modules::Visualization;
+using namespace Core;
+using namespace Core::Datatypes;
+using namespace Thread;
+using namespace Dataflow::Networks;
+using namespace Algorithms;
+using namespace Visualization;
+using namespace Geometry;
+using namespace Graphics;
+using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Visualization, CylinderRadius);
 
-ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
+const ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
 
-ShowFieldModule::ShowFieldModule() : GeometryGeneratingModule(staticInfo_)
+namespace SCIRun {
+  namespace Modules {
+    namespace Visualization {
+namespace detail
+{
+class GeometryBuilder
+{
+public:
+  //GeometryBuilder();
+  /// Constructs a geometry object (essentially a spire object) from the given
+  /// field data.
+  GeometryHandle buildGeometryObject(
+    FieldHandle field,
+    boost::optional<ColorMapHandle> colorMap,
+    ModuleStateHandle state,
+    const GeometryIDGenerator& gid,
+    Interruptible* interruptible);
+
+  /// Mesh construction. Any of the functions below can modify the renderState.
+  /// This modified render state will be passed onto the renderer.
+  void renderNodes(
+    FieldHandle field,
+    boost::optional<ColorMapHandle> colorMap,
+    ModuleStateHandle moduleState,
+    Interruptible* interruptible,
+    RenderState state, GeometryHandle geom,
+    const std::string& id);
+
+  void renderFaces(
+    FieldHandle field,
+    boost::optional<ColorMapHandle> colorMap,
+    ModuleStateHandle moduleState,
+    Interruptible* interruptible,
+    RenderState state, GeometryHandle geom,
+    unsigned int approx_div,
+    const std::string& id);
+
+  void renderFacesLinear(
+    FieldHandle field,
+    boost::optional<ColorMapHandle> colorMap,
+    ModuleStateHandle moduleState,
+    Interruptible* interruptible,
+    RenderState state, GeometryHandle geom,
+    unsigned int approxDiv,
+    const std::string& id);
+
+  void addFaceGeom(
+    const std::vector<Point>  &points,
+    const std::vector<Vector> &normals,
+    bool withNormals,
+    uint32_t& iboBufferIndex,
+    CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
+    CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
+    ColorScheme colorScheme,
+    const std::vector<ColorRGB> &face_colors,
+    const RenderState& state);
+
+  void renderEdges(
+    FieldHandle field,
+    boost::optional<ColorMapHandle> colorMap,
+    ModuleStateHandle moduleState,
+    Interruptible* interruptible,
+    RenderState state,
+    GeometryHandle geom,
+    const std::string& id);
+
+  RenderState getNodeRenderState(
+    ModuleStateHandle state,
+    boost::optional<ColorMapHandle> colorMap);
+
+  RenderState getEdgeRenderState(
+    ModuleStateHandle state,
+    boost::optional<ColorMapHandle> colorMap);
+
+  RenderState getFaceRenderState(
+    ModuleStateHandle state,
+    boost::optional<ColorMapHandle> colorMap);
+private:
+  float faceTransparencyValue_ = 0.65f;
+  float edgeTransparencyValue_ = 0.65f;
+  float nodeTransparencyValue_ = 0.65f;
+};
+}}}}
+
+using namespace detail;
+
+ShowFieldModule::ShowFieldModule() : GeometryGeneratingModule(staticInfo_),
+  builder_(new GeometryBuilder)
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
@@ -91,9 +174,6 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(SphereScaleValue, 0.03);
   state->setValue(CylinderRadius, 0.1);
   state->setValue(CylinderResolution, 5);
-  faceTransparencyValue_ = 0.65f;
-  edgeTransparencyValue_ = 0.65f;
-  nodeTransparencyValue_ = 0.65f;
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
@@ -108,14 +188,14 @@ void ShowFieldModule::execute()
   if (needToExecute())
   {
     updateAvailableRenderOptions(field);
-    GeometryHandle geom = buildGeometryObject(field, colorMap, get_state());
+    GeometryHandle geom = builder_->buildGeometryObject(field, colorMap, get_state(), *this, this);
     sendOutput(SceneGraph, geom);
   }
 }
 
-RenderState ShowFieldModule::getNodeRenderState(
+RenderState GeometryBuilder::getNodeRenderState(
   ModuleStateHandle state,
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
+  boost::optional<boost::shared_ptr<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -149,9 +229,9 @@ RenderState ShowFieldModule::getNodeRenderState(
   return renState;
 }
 
-RenderState ShowFieldModule::getEdgeRenderState(
+RenderState GeometryBuilder::getEdgeRenderState(
   ModuleStateHandle state,
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
+  boost::optional<boost::shared_ptr<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -183,9 +263,9 @@ RenderState ShowFieldModule::getEdgeRenderState(
   return renState;
 }
 
-RenderState ShowFieldModule::getFaceRenderState(
+RenderState GeometryBuilder::getFaceRenderState(
   ModuleStateHandle state,
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
+  boost::optional<boost::shared_ptr<ColorMap>> colorMap)
 {
   RenderState renState;
 
@@ -216,21 +296,20 @@ RenderState ShowFieldModule::getFaceRenderState(
   return renState;
 }
 
-GeometryHandle ShowFieldModule::buildGeometryObject(
-  boost::shared_ptr<SCIRun::Field> field,
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-  ModuleStateHandle state)
+GeometryHandle GeometryBuilder::buildGeometryObject(
+  boost::shared_ptr<Field> field,
+  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  ModuleStateHandle state, const GeometryIDGenerator& gid, Interruptible* interruptible)
 {
-  // Function for reporting progress.
-  SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc =
-    getUpdaterFunc();
+  // Function for reporting progress. TODO: use this variable somewhere!
+  //auto progressFunc = getUpdaterFunc();
 
   /// \todo Determine a better way of handling all of the various object state.
   bool showNodes = state->getValue(ShowFieldModule::ShowNodes).toBool();
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
   // Resultant geometry type (representing a spire object and a number of passes).
-  GeometryHandle geom(new GeometryObject(field, *this, "EntireField"));
+  GeometryHandle geom(new GeometryObjectSpire(gid, "EntireField"));
 
   /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
@@ -250,28 +329,30 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   if (showNodes)
   {
     // Construct node geometry.
-    renderNodes(field, colorMap, getNodeRenderState(state, colorMap), geom, geom->uniqueID());
+    renderNodes(field, colorMap, state, interruptible, getNodeRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   if (showFaces)
   {
     int approxDiv = 1;
-    renderFaces(field, colorMap, getFaceRenderState(state, colorMap), geom, approxDiv, geom->uniqueID());
+    renderFaces(field, colorMap, state, interruptible, getFaceRenderState(state, colorMap), geom, approxDiv, geom->uniqueID());
   }
 
   if (showEdges)
   {
-    renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, geom->uniqueID());
+    renderEdges(field, colorMap, state, interruptible, getEdgeRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   return geom;
 }
 
 
-void ShowFieldModule::renderFaces(
-  boost::shared_ptr<SCIRun::Field> field,
+void GeometryBuilder::renderFaces(
+  boost::shared_ptr<Field> field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  RenderState state, Core::Datatypes::GeometryHandle geom,
+  ModuleStateHandle moduleState,
+  Interruptible* interruptible,
+  RenderState state, GeometryHandle geom,
   unsigned int approxDiv,
   const std::string& id)
 {
@@ -289,7 +370,7 @@ void ShowFieldModule::renderFaces(
 
   if (doLinear)
   {
-    return renderFacesLinear(field, colorMap, state, geom, approxDiv, id);
+    return renderFacesLinear(field, colorMap, moduleState, interruptible, state, geom, approxDiv, id);
   }
   else
   {
@@ -298,11 +379,13 @@ void ShowFieldModule::renderFaces(
 }
 
 
-void ShowFieldModule::renderFacesLinear(
-  boost::shared_ptr<SCIRun::Field> field,
+void GeometryBuilder::renderFacesLinear(
+  boost::shared_ptr<Field> field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  ModuleStateHandle moduleState,
+  Interruptible* interruptible,
   RenderState state,
-  Core::Datatypes::GeometryHandle geom,
+  GeometryHandle geom,
   unsigned int approxDiv,
   const std::string& id)
 {
@@ -321,25 +404,24 @@ void ShowFieldModule::renderFacesLinear(
   bool withNormals = (state.get(RenderState::USE_NORMALS));
   if (withNormals) { mesh->synchronize(Mesh::NORMALS_E); }
 
-  auto st = get_state();
-  bool invertNormals = st->getValue(FaceInvertNormals).toBool();
-  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  bool invertNormals = moduleState->getValue(ShowFieldModule::FaceInvertNormals).toBool();
+  ColorScheme colorScheme = COLOR_UNIFORM;
   std::vector<double> svals;
-  std::vector<Core::Geometry::Vector> vvals;
-  std::vector<Core::Geometry::Tensor> tvals;
+  std::vector<Vector> vvals;
+  std::vector<Tensor> tvals;
   std::vector<ColorRGB> face_colors;
 
   if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
   {
-    colorScheme = GeometryObject::COLOR_UNIFORM;
+    colorScheme = COLOR_UNIFORM;
   }
   else if (state.get(RenderState::USE_COLORMAP))
   {
-    colorScheme = GeometryObject::COLOR_MAP;
+    colorScheme = COLOR_MAP;
   }
   else // if (fld->basis_order() >= 0)
   {
-    colorScheme = GeometryObject::COLOR_IN_SITU;
+    colorScheme = COLOR_IN_SITU;
   }
 
   // Three 32 bit ints to index into the VBO
@@ -370,18 +452,18 @@ void ShowFieldModule::renderFacesLinear(
   mesh->begin(fiter);
   mesh->end(fiterEnd);
 
-  Core::Geometry::Point idpt;
+  Point idpt;
   mesh->get_nodes(nodes, *fiter);
   mesh->get_point(idpt, nodes[0]);
 
   while (fiter != fiterEnd)
   {
-    checkForInterruption();
+    interruptible->checkForInterruption();
 
     mesh->get_nodes(nodes, *fiter);
 
-    std::vector<Core::Geometry::Point> points(nodes.size());
-    std::vector<Core::Geometry::Vector> normals(nodes.size());
+    std::vector<Point> points(nodes.size());
+    std::vector<Vector> normals(nodes.size());
 
     //std::cout << "Node Size: " << nodes.size() << std::endl;
 
@@ -396,12 +478,12 @@ void ShowFieldModule::renderFacesLinear(
       /// Fix normal of Quads
       if (points.size() == 4)
       {
-        Core::Geometry::Vector edge1 = points[1] - points[0];
-        Core::Geometry::Vector edge2 = points[2] - points[1];
-        Core::Geometry::Vector edge3 = points[3] - points[2];
-        Core::Geometry::Vector edge4 = points[0] - points[3];
+        Vector edge1 = points[1] - points[0];
+        Vector edge2 = points[2] - points[1];
+        Vector edge3 = points[3] - points[2];
+        Vector edge4 = points[0] - points[3];
 
-        Core::Geometry::Vector norm = Cross(edge1, edge2) + Cross(edge2, edge3) + Cross(edge3, edge4) + Cross(edge4, edge1);
+        Vector norm = Cross(edge1, edge2) + Cross(edge2, edge3) + Cross(edge3, edge4) + Cross(edge4, edge1);
 
         norm.normalize();
 
@@ -413,9 +495,9 @@ void ShowFieldModule::renderFacesLinear(
       /// Fix Normals of Tris
       else
       {
-        Core::Geometry::Vector edge1 = points[1] - points[0];
-        Core::Geometry::Vector edge2 = points[2] - points[1];
-        Core::Geometry::Vector norm = Cross(edge1, edge2);
+        Vector edge1 = points[1] - points[0];
+        Vector edge2 = points[2] - points[1];
+        Vector norm = Cross(edge1, edge2);
 
         norm.normalize();
 
@@ -434,7 +516,7 @@ void ShowFieldModule::renderFacesLinear(
     }
 
     // Default color single face no matter the element data.
-    if (colorScheme == GeometryObject::COLOR_UNIFORM)
+    if (colorScheme == COLOR_UNIFORM)
     {
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
         colorScheme, face_colors, state);
@@ -442,7 +524,7 @@ void ShowFieldModule::renderFacesLinear(
     // Element data (Cells) so two sided faces.
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
     {
-      ColorMap * map = colorMap.get().get();
+      auto map = colorMap.get();
       //two possible colors.
       svals.resize(2);
       vvals.resize(2);
@@ -508,7 +590,7 @@ void ShowFieldModule::renderFacesLinear(
     // Element data (faces)
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 2)
     {
-      ColorMap * map = colorMap.get().get();
+      auto map = colorMap.get();
       //one possible color, each node that color.
       svals.resize(1);
       vvals.resize(1);
@@ -543,7 +625,7 @@ void ShowFieldModule::renderFacesLinear(
     // Data at nodes
     else if (fld->basis_order() == 1)
     {
-      ColorMap * map = colorMap.get().get();
+      auto map = colorMap.get();
       svals.resize(nodes.size());
       vvals.resize(nodes.size());
       tvals.resize(nodes.size());
@@ -595,20 +677,20 @@ void ShowFieldModule::renderFacesLinear(
 
   // Construct VBO.
   std::string shader = "Shaders/UniformColor";
-  std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
-  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
+  std::vector<SpireVBO::AttributeData> attribs;
+  attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  std::vector<SpireSubPass::Uniform> uniforms;
   if (withNormals)
   {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
+    attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
   }
 
   if (state.get(RenderState::USE_TRANSPARENCY))
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", faceTransparencyValue_));
+    uniforms.push_back(SpireSubPass::Uniform("uTransparency", faceTransparencyValue_));
 
-  if (colorScheme == GeometryObject::COLOR_MAP)
+  if (colorScheme == COLOR_MAP)
   {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+    attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
 
     if (!state.get(RenderState::IS_DOUBLE_SIDED))
     {
@@ -616,11 +698,11 @@ void ShowFieldModule::renderFacesLinear(
       {
         // Use colormapping lit shader.
         shader = "Shaders/DirPhongCMap";
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+        uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+        uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+        uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
       {
@@ -630,17 +712,17 @@ void ShowFieldModule::renderFacesLinear(
     }
     else
     {
-      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColorSecondary", 4 * sizeof(float)));
+      attribs.push_back(SpireVBO::AttributeData("aColorSecondary", 4 * sizeof(float)));
 
       if (withNormals)
       {
         // Use colormapping lit shader.
         shader = "Shaders/DblSided_DirPhongCMap";
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+        uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+        uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+        uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
       {
@@ -649,20 +731,20 @@ void ShowFieldModule::renderFacesLinear(
       }
     }
   }
-  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+  else if (colorScheme == COLOR_IN_SITU)
   {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float), true));
+    attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float), true));
 
     if (state.get(RenderState::IS_DOUBLE_SIDED) == false)
     {
       if (withNormals)
       {
         shader = "Shaders/InSituPhongColor";
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+        uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+        uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+        uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
       {
@@ -672,16 +754,16 @@ void ShowFieldModule::renderFacesLinear(
     }
     else
     {
-      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColorSecondary", 4 * sizeof(float), true));
+      attribs.push_back(SpireVBO::AttributeData("aColorSecondary", 4 * sizeof(float), true));
 
       if (withNormals)
       {
         shader = "Shaders/DblSided_InSituPhongColor";
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+        uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+        uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+        uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
       {
@@ -690,44 +772,43 @@ void ShowFieldModule::renderFacesLinear(
       }
     }
   }
-  else if (colorScheme == GeometryObject::COLOR_UNIFORM)
+  else if (colorScheme == COLOR_UNIFORM)
   {
     ColorRGB defaultColor = state.defaultColor;
 
     if (withNormals)
     {
       shader = "Shaders/DirPhong";
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
+      uniforms.push_back(SpireSubPass::Uniform(
         "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
     }
     else
     {
       shader = "Shaders/UniformColor";
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+      uniforms.push_back(SpireSubPass::Uniform(
         "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
     }
   }
 
-  GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+  SpireVBO geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, mesh->get_bounding_box(), true);
 
   geom->mVBOs.push_back(geomVBO);
 
   // Construct IBO.
 
-  GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName,
-                GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+  SpireIBO geomIBO = SpireIBO(iboName,
+                SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   geom->mIBOs.push_back(geomIBO);
 
-  GeometryObject::SpireSubPass pass =
-    GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
-    colorScheme, state, GeometryObject::RENDER_VBO_IBO, geomVBO, geomIBO);
+  SpireSubPass pass(passName, vboName, iboName, shader,
+    colorScheme, state, RENDER_VBO_IBO, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -743,25 +824,25 @@ void ShowFieldModule::renderFacesLinear(
 // we get rid of the quads renderer pointers. Additionally, we can re-order
 // the triangles in ES and perform different rendering based on the
 // transparency of the triangles.
-void ShowFieldModule::addFaceGeom(
-  const std::vector<Core::Geometry::Point>  &points,
-  const std::vector<Core::Geometry::Vector> &normals,
+void GeometryBuilder::addFaceGeom(
+  const std::vector<Point>  &points,
+  const std::vector<Vector> &normals,
   bool withNormals,
   uint32_t& iboIndex,
   CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
   CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
-  GeometryObject::ColorScheme colorScheme,
+  ColorScheme colorScheme,
   const std::vector<ColorRGB> &face_colors,
   const RenderState& state)
 {
-  auto writeVBOPoint = [&vboBuffer](const Core::Geometry::Point& point)
+  auto writeVBOPoint = [&vboBuffer](const Point& point)
   {
     vboBuffer->write(static_cast<float>(point.x()));
     vboBuffer->write(static_cast<float>(point.y()));
     vboBuffer->write(static_cast<float>(point.z()));
   };
 
-  auto writeVBONormal = [&vboBuffer](const Core::Geometry::Vector& normal)
+  auto writeVBONormal = [&vboBuffer](const Vector& normal)
   {
     vboBuffer->write(static_cast<float>(normal.x()));
     vboBuffer->write(static_cast<float>(normal.y()));
@@ -783,7 +864,7 @@ void ShowFieldModule::addFaceGeom(
 
   bool doubleSided = state.get(RenderState::IS_DOUBLE_SIDED);
 
-  if (colorScheme == GeometryObject::COLOR_UNIFORM)
+  if (colorScheme == COLOR_UNIFORM)
   {
     if (points.size() == 4)
     {
@@ -852,7 +933,7 @@ void ShowFieldModule::addFaceGeom(
       iboIndex += points.size();
     }
   }
-  else if (colorScheme == GeometryObject::COLOR_MAP)
+  else if (colorScheme == COLOR_MAP)
   {
     if (points.size() == 4)
     {
@@ -958,7 +1039,7 @@ void ShowFieldModule::addFaceGeom(
       iboIndex += points.size();
     }
   }
-  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+  else if (colorScheme == COLOR_IN_SITU)
   {
     if (points.size() == 4)
     {
@@ -1060,11 +1141,13 @@ void ShowFieldModule::addFaceGeom(
   }
 }
 
-void ShowFieldModule::renderNodes(
-  boost::shared_ptr<SCIRun::Field> field,
+void GeometryBuilder::renderNodes(
+  boost::shared_ptr<Field> field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  ModuleStateHandle moduleState,
+  Interruptible* interruptible,
   RenderState state,
-  Core::Datatypes::GeometryHandle geom,
+  GeometryHandle geom,
   const std::string& id)
 {
 
@@ -1072,18 +1155,18 @@ void ShowFieldModule::renderNodes(
   VMesh*  mesh = field->vmesh();
 
   double sval;
-  Core::Geometry::Vector vval;
-  Core::Geometry::Tensor tval;
+  Vector vval;
+  Tensor tval;
 
-  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  ColorScheme colorScheme;
   ColorRGB node_color;
 
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
-    colorScheme = GeometryObject::COLOR_UNIFORM;
+    colorScheme = COLOR_UNIFORM;
   else if (state.get(RenderState::USE_COLORMAP))
-    colorScheme = GeometryObject::COLOR_MAP;
+    colorScheme = COLOR_MAP;
   else
-    colorScheme = GeometryObject::COLOR_IN_SITU;
+    colorScheme = COLOR_IN_SITU;
 
   mesh->synchronize(Mesh::NODES_E);
 
@@ -1091,9 +1174,8 @@ void ShowFieldModule::renderNodes(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  auto my_state = this->get_state();
-  double radius = my_state->getValue(SphereScaleValue).toDouble();
-  double num_strips = static_cast<double>(my_state->getValue(SphereResolution).toInt());
+  double radius = moduleState->getValue(ShowFieldModule::SphereScaleValue).toDouble();
+  double num_strips = static_cast<double>(moduleState->getValue(ShowFieldModule::SphereResolution).toInt());
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
@@ -1101,23 +1183,22 @@ void ShowFieldModule::renderNodes(
 
   std::string uniqueNodeID = id + "node" + ss.str();
 
-  auto st = get_state();
-  nodeTransparencyValue_ = static_cast<float>(st->getValue(NodeTransparencyValue).toDouble());
+  nodeTransparencyValue_ = static_cast<float>(moduleState->getValue(ShowFieldModule::NodeTransparencyValue).toDouble());
 
-  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::POINTS;
+  SpireIBO::PRIMITIVE primIn = SpireIBO::POINTS;
   // Use spheres...
   if (state.get(RenderState::USE_SPHERE))
-    primIn = GeometryObject::SpireIBO::TRIANGLES;
+    primIn = SpireIBO::TRIANGLES;
 
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    checkForInterruption();
+    interruptible->checkForInterruption();
 
-    Core::Geometry::Point p;
+    Point p;
     mesh->get_point(p, *eiter);
     //coloring options
-    if (colorScheme != GeometryObject::COLOR_UNIFORM)
+    if (colorScheme != COLOR_UNIFORM)
     {
       ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
@@ -1154,31 +1235,33 @@ void ShowFieldModule::renderNodes(
 }
 
 
-void ShowFieldModule::renderEdges(
-  boost::shared_ptr<SCIRun::Field> field,
+void GeometryBuilder::renderEdges(
+  boost::shared_ptr<Field> field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
+  ModuleStateHandle moduleState,
+  Interruptible* interruptible,
   RenderState state,
-  Core::Datatypes::GeometryHandle geom,
+  GeometryHandle geom,
   const std::string& id)
 {
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
   double sval0, sval1;
-  Core::Geometry::Vector vval0, vval1;
-  Core::Geometry::Tensor tval0, tval1;
+  Vector vval0, vval1;
+  Tensor tval0, tval1;
 
-  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  ColorScheme colorScheme;
   ColorRGB edge_colors[2];
 
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
     state.get(RenderState::USE_DEFAULT_COLOR))
-    colorScheme = GeometryObject::COLOR_UNIFORM;
+    colorScheme = COLOR_UNIFORM;
   else if (state.get(RenderState::USE_COLORMAP))
-    colorScheme = GeometryObject::COLOR_MAP;
+    colorScheme = COLOR_MAP;
   else
-    colorScheme = GeometryObject::COLOR_IN_SITU;
+    colorScheme = COLOR_IN_SITU;
 
   mesh->synchronize(Mesh::EDGES_E);
 
@@ -1186,9 +1269,8 @@ void ShowFieldModule::renderEdges(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  auto my_state = this->get_state();
-  double num_strips = double(my_state->getValue(CylinderResolution).toInt());
-  double radius = my_state->getValue(CylinderRadius).toDouble();
+  double num_strips = static_cast<double>(moduleState->getValue(ShowFieldModule::CylinderResolution).toInt());
+  double radius = moduleState->getValue(ShowFieldModule::CylinderRadius).toDouble();
   if (num_strips < 0) num_strips = 50.;
   if (radius < 0) radius = 1.;
 
@@ -1197,24 +1279,24 @@ void ShowFieldModule::renderEdges(
 
   std::string uniqueNodeID = id + "edge" + ss.str();
 
-  GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;
+  SpireIBO::PRIMITIVE primIn = SpireIBO::LINES;
   // Use cylinders...
   if (state.get(RenderState::USE_CYLINDER))
-    primIn = GeometryObject::SpireIBO::TRIANGLES;
+    primIn = SpireIBO::TRIANGLES;
 
   GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    checkForInterruption();
+    interruptible->checkForInterruption();
 
     VMesh::Node::array_type nodes;
     mesh->get_nodes(nodes, *eiter);
 
-    Core::Geometry::Point p0, p1;
+    Point p0, p1;
     mesh->get_point(p0, nodes[0]);
     mesh->get_point(p1, nodes[1]);
     //coloring options
-    if (colorScheme != GeometryObject::COLOR_UNIFORM)
+    if (colorScheme != COLOR_UNIFORM)
     {
       ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())

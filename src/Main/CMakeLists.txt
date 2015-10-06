@@ -34,6 +34,8 @@ IF(BUILD_HEADLESS)
   ADD_DEFINITIONS(-DBUILD_HEADLESS)
 ENDIF(BUILD_HEADLESS)
 
+ADD_DEFINITIONS(-DAPPLICATION_NAME=${APPLICATION_NAME})
+
 IF(APPLE)
   # TODO: temporary - until testing can be configured with app bundle
   ADD_EXECUTABLE(${TEST_APPLICATION_NAME}
@@ -61,32 +63,36 @@ ELSEIF(WIN32)
   # TODO: probably need this for Xcode
   IF(WIN32 AND MSVC)
     # TODO: more build types to be supported?
-    FOREACH(BUILD_TYPE Debug Release)
-      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-                         POST_BUILD
-                           COMMAND ${CMAKE_COMMAND}
-                           ARGS -E copy_directory
-                           ${SCIRun_BINARY_DIR}/Shaders
-                           ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/Shaders
-      )
-      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-                         POST_BUILD
-                           COMMAND ${CMAKE_COMMAND}
-                           ARGS -E copy_directory
-                           ${SCIRun_BINARY_DIR}/Assets
-                           ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/Assets
-      )
-    ENDFOREACH()
+    # TODO: change $<CONFIGURATION> to $<CONFIG> when upgrading to cmake 3
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND}
+      ARGS -E copy_directory
+      ${SCIRun_BINARY_DIR}/Shaders
+      ${SCIRun_BINARY_DIR}/$<CONFIGURATION>/Shaders
+   )
+   ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+     POST_BUILD
+     COMMAND ${CMAKE_COMMAND}
+     ARGS -E copy_directory
+     ${SCIRun_BINARY_DIR}/Assets
+     ${SCIRun_BINARY_DIR}/$<CONFIGURATION>/Assets
+    )
   ENDIF()
 
 ELSE()
   ADD_EXECUTABLE(${APPLICATION_NAME} ${SCIRunMain_SOURCES})
 ENDIF()
 
-# TODO: Spire library linked against executable (shouldn't be necessary)?
 TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
   Interface_Application
 )
+
+IF(BUILD_WITH_PYTHON)
+  TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
+    Core_Python
+  )
+ENDIF()
 
 IF(APPLE)
   SET(BUILD_BUNDLE TRUE)
@@ -103,14 +109,50 @@ IF(APPLE AND BUILD_BUNDLE)
 # IF(${CMAKE_GENERATOR} MATCHES "Xcode")
 
   IF(${CMAKE_GENERATOR} MATCHES "Unix Makefiles")
-    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-      POST_BUILD
-      # clean out libraries
-      COMMAND ${CMAKE_COMMAND} ARGS -E remove ${APPLICATION_NAME}.app/Contents/Contents/Frameworks/*.dylib
-      WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-
     # otool can be used to check list of dependent dylibs
     ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME} 
+      POST_BUILD
+      # clean out libraries
+      COMMAND ${CMAKE_COMMAND} ARGS -E remove -f ${APPLICATION_NAME}.app/Contents/Contents/Frameworks/*${CMAKE_SHARED_LIBRARY_SUFFIX}
+      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCIRun_BINARY_DIR}/lib ${APPLICATION_NAME}.app/Contents/Frameworks
+      WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    )
+    IF(BUILD_WITH_PYTHON)
+      SET(VERSION_PATH Versions/${SCI_PYTHON_VERSION_SHORT})
+      SET(FRAMEWORK_PATH Frameworks/Python.framework)
+      SET(PYTHON_PATH ${APPLICATION_NAME}.app/Contents/${FRAMEWORK_PATH}/${VERSION_PATH})
+      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+        POST_BUILD
+        # macdeployqt puts frameworks in app/Content/Frameworks
+        COMMAND ${CMAKE_COMMAND} ARGS -E chdir  ${APPLICATION_NAME}.app/Contents/Frameworks tar xf ${SCI_PYTHON_FRAMEWORK_ARCHIVE}
+        COMMAND chmod u+w  ${PYTHON_PATH}/Python
+        COMMAND install_name_tool -id Python ${PYTHON_PATH}/Python
+        COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
+          @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
+          ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
+        COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
+          @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
+          ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
+        WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+      SET(SCIRUN_LIBS "Core_Application"
+                      "Core_Python"
+                       "SCIRunPythonAPI"
+                       "Interface_Application"
+                       "Engine_Network"
+                       "Interface_Modules_Factory"
+                       "Interface_Modules_Render"
+                       "Core_ConsoleApplication"
+      )
+      FOREACH(lib ${SCIRUN_LIBS})
+        ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+          POST_BUILD
+          COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
+            @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
+            ${APPLICATION_NAME}.app/Contents/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
+          WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+      ENDFOREACH()
+    ENDIF()
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
       POST_BUILD
        # configure Qt libs
        # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
@@ -126,26 +168,51 @@ IF(APPLE AND BUILD_BUNDLE)
 
   INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION . BUNDLE DESTINATION . )
 
-ELSEIF(WIN32)
+ELSE()
 
-  # Note: installer is created from Release build only!
+  IF(WIN32)
+    IF(BUILD_WITH_PYTHON)
+    # TODO: change $<CONFIGURATION> to $<CONFIG> when upgrading to cmake 3
+    # TODO: copy python dll
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} ARGS -E make_directory $<CONFIGURATION>/${PYTHON_MODULE_SEARCH_PATH}
+      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCI_PYTHON_MODULE_LIBRARY_PATH} $<CONFIGURATION>/${PYTHON_MODULE_SEARCH_PATH}
+      WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+  ENDIF()
 
-  GET_FILENAME_COMPONENT(QTCORENAME ${QT_QTCORE_LIBRARY_RELEASE} NAME_WE)
-  GET_FILENAME_COMPONENT(QTGUINAME ${QT_QTGUI_LIBRARY_RELEASE} NAME_WE)
-  GET_FILENAME_COMPONENT(QTOPENGLNAME ${QT_QTOPENGL_LIBRARY_RELEASE} NAME_WE)
-  GET_FILENAME_COMPONENT(QTNETWORKNAME ${QT_QTNETWORK_LIBRARY_RELEASE} NAME_WE)
+    # Note: installer is created from Release build only!
+    GET_FILENAME_COMPONENT(QTCORENAME ${QT_QTCORE_LIBRARY_RELEASE} NAME_WE)
+    GET_FILENAME_COMPONENT(QTGUINAME ${QT_QTGUI_LIBRARY_RELEASE} NAME_WE)
+    GET_FILENAME_COMPONENT(QTOPENGLNAME ${QT_QTOPENGL_LIBRARY_RELEASE} NAME_WE)
+    GET_FILENAME_COMPONENT(QTNETWORKNAME ${QT_QTNETWORK_LIBRARY_RELEASE} NAME_WE)
 
-  INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION bin)
-  INSTALL(PROGRAMS
-    ${QT_BINARY_DIR}/${QTCORENAME}.dll
-    ${QT_BINARY_DIR}/${QTGUINAME}.dll
-    ${QT_BINARY_DIR}/${QTOPENGLNAME}.dll
-	${QT_BINARY_DIR}/${QTNETWORKNAME}.dll
+    INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION bin)
+    INSTALL(PROGRAMS
+      ${QT_BINARY_DIR}/${QTCORENAME}.dll
+      ${QT_BINARY_DIR}/${QTGUINAME}.dll
+      ${QT_BINARY_DIR}/${QTOPENGLNAME}.dll
+      ${QT_BINARY_DIR}/${QTNETWORKNAME}.dll
       DESTINATION bin)
 
-  INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Shaders" DESTINATION bin USE_SOURCE_PERMISSIONS)
-  INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)
-
+    INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Shaders" DESTINATION bin USE_SOURCE_PERMISSIONS)
+    INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)
+  ELSE()
+    IF(BUILD_WITH_PYTHON)
+      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${PYTHON_MODULE_SEARCH_PATH}
+        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCI_PYTHON_MODULE_LIBRARY_PATH} ${PYTHON_MODULE_SEARCH_PATH}
+        WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+      IF(SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH AND EXISTS ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH})
+        ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+          POST_BUILD
+          COMMAND echo "${CMAKE_COMMAND} ARGS -E copy_directory ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH} ${PYTHON_MODULE_SEARCH_PATH}"
+          COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory  ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH} ${PYTHON_MODULE_SEARCH_PATH}
+          WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+      ENDIF()
+    ENDIF()
+  ENDIF()
 ENDIF()
 
 SET(NETWORKS_DESTINATION_DIR  "./SCIRunNetworks")

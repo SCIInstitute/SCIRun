@@ -41,8 +41,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
-#include <boost/foreach.hpp>
-
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Testing;
@@ -71,7 +69,7 @@ namespace
   void printInputPorts(ModuleHandle m)
   {
     std::cout << "INPUTS: " << m->get_module_name() << std::endl;
-    BOOST_FOREACH(InputPortHandle input, m->inputPorts())
+    for (InputPortHandle input : m->inputPorts())
     {
       std::cout << input->id() << " " << input->getIndex() << std::endl;
     }

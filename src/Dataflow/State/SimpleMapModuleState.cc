@@ -30,7 +30,6 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Core/Utils/StringUtil.h>
 #include <Core/Logging/Log.h>
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Dataflow::State;
@@ -115,7 +114,7 @@ boost::signals2::connection SimpleMapModuleState::connect_state_changed(state_ch
 ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
 {
   Keys keys;
-  BOOST_FOREACH(const StateMap::value_type& p, stateMap_)
+  for (const auto& p : stateMap_)
     keys.push_back(p.first);
   return keys;
 }

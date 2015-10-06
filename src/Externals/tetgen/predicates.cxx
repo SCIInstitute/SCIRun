@@ -113,6 +113,7 @@
 /*                                                                           */
 /*****************************************************************************/
 
+#include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -2265,6 +2266,8 @@ REAL orient3dadapt(REAL *pa, REAL *pb, REAL *pc, REAL *pd, REAL permanent)
 
 REAL orient3d(REAL *pa, REAL *pb, REAL *pc, REAL *pd)
 {
+  if (!pa || !pb || !pc || !pd)
+    throw std::runtime_error("tetgen::orient3d received a null pointer.");
   REAL adx, bdx, cdx, ady, bdy, cdy, adz, bdz, cdz;
   REAL bdxcdy, cdxbdy, cdxady, adxcdy, adxbdy, bdxady;
   REAL det;

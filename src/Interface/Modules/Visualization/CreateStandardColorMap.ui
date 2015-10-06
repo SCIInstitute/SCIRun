@@ -77,12 +77,22 @@
         </item>
         <item>
          <property name="text">
+          <string>Darkhue</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>Blackbody</string>
          </property>
         </item>
         <item>
          <property name="text">
           <string>Grayscale</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Orange,Black,Lime</string>
          </property>
         </item>
        </widget>
