@@ -90,7 +90,7 @@
     <addaction name="separator"/>
     <addaction name="actionExecute_All_"/>
     <addaction name="separator"/>
-    <addaction name="actionCreate_Module_Skeleton_"/>
+    <addaction name="actionRunNewModuleWizard_"/>
     <addaction name="separator"/>
     <addaction name="actionQuit_"/>
    </widget>
@@ -526,12 +526,12 @@
     <string>Ctrl+E</string>
    </property>
   </action>
-  <action name="actionCreate_Module_Skeleton_">
+  <action name="actionRunNewModuleWizard_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
-    <string>Create Module Skeleton...</string>
+    <string>Run New Module Wizard...</string>
    </property>
   </action>
   <action name="actionQuit_">
