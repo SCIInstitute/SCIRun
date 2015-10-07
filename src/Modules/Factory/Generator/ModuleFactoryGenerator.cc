@@ -49,23 +49,22 @@ ModuleDescriptor ModuleDescriptorJsonParser::readJsonString(const std::string& j
     ptree modProps;
     std::istringstream is(json);
     read_json(is, modProps);
-
-    return{
-      modProps.get<std::string>("module.name"),
-      modProps.get<std::string>("module.namespace"),
-      modProps.get<std::string>("module.status"),
-      modProps.get<std::string>("module.description"),
-      modProps.get<std::string>("module.header"),
-      {
-        modProps.get<std::string>("algorithm.name"),
-        modProps.get<std::string>("algorithm.namespace"),
-        modProps.get<std::string>("algorithm.header")
-      },
-      {
-        modProps.get<std::string>("UI.name"),
-        modProps.get<std::string>("UI.header")
-      }
-    };
+    ModuleDescriptor moduleDesc;
+    moduleDesc.name_ = modProps.get<std::string>("module.name");
+    moduleDesc.namespace_ = modProps.get<std::string>("module.namespace");
+    moduleDesc.status_ = modProps.get<std::string>("module.status");
+    moduleDesc.description_ = modProps.get<std::string>("module.description");
+    moduleDesc.header_ = modProps.get<std::string>("module.header");
+    moduleDesc.algo_ = {
+                    modProps.get<std::string>("algorithm.name"),
+                    modProps.get<std::string>("algorithm.namespace"),
+                    modProps.get<std::string>("algorithm.header")
+                 };
+    moduleDesc.dialog_ = {
+                      modProps.get<std::string>("UI.name"),
+                      modProps.get<std::string>("UI.header")
+                   };
+    return moduleDesc;
   }
   catch (...)
   {
