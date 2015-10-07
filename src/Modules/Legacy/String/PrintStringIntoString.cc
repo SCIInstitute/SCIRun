@@ -26,23 +26,51 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/String/PrintStringIntoString.h>
 #include <stdio.h>
-#include <Dataflow/Network/Module.h>
 
 #include <Core/Datatypes/String.h>
-#include <Dataflow/Network/Ports/StringPort.h>
 
 #ifdef _WIN32
 #define snprintf _snprintf
 #endif
 
-namespace SCIRun {
 
-using namespace SCIRun;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+
+const ModuleLookupInfo PrintStringIntoString::staticInfo_("PrintStringIntoString", "String", "SCIRun");
+
+PrintStringIntoString::PrintStringIntoString() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(Format);
+  INITIALIZE_PORT(Input);
+  INITIALIZE_PORT(Output);
+}
+
+/*
+void FieldInfoPrinter::execute()
+{
+  auto field = getRequiredInput(InputField);
+  
+  ReportFieldInfoAlgorithm algo;
+  auto output = algo.run_generic(withInputData((InputField, field)));
+  
+  auto info = optional_any_cast_or_default<SCIRun::Core::Algorithms::Fields::ReportFieldInfoAlgorithm::Outputs>(output.getTransient());
+  remark("Field type: " + info.type);
+  
+  //std::cout << "field type: " << info.type << std::endl;
+  
+  sendOutput(OutputField, field);
+}
+*/
+
 
 /// @class PrintStringIntoString
 /// @brief This module does a sprintf with input strings into a new string. 
 
+/*
 class PrintStringIntoString : public Module {
   public:
     PrintStringIntoString(GuiContext*);
@@ -54,11 +82,17 @@ class PrintStringIntoString : public Module {
 };
 
 
-DECLARE_MAKER(PrintStringIntoString)
 PrintStringIntoString::PrintStringIntoString(GuiContext* ctx)
   : Module("PrintStringIntoString", ctx, Source, "String", "SCIRun"),
     formatstring_(get_ctx()->subVar("formatstring"), "my string: %s")
 {
+}
+*/
+
+void PrintStringIntoString::setStateDefaults()
+{
+  //TODO
+  
 }
 
 void
@@ -73,17 +107,22 @@ PrintStringIntoString::execute()
   std::vector<char> buffer(256);
   bool    lastport = false;
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   format = formatstring_.get();
+#endif
 
-  StringHandle  stringH;
+  auto  stringH = getRequiredInput(Format);
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (get_input_handle("Format", stringH, false))
   {
     format = stringH->get();
   }
-
+#endif
+  
   // Get the dynamic handles
-  std::vector<StringHandle> stringsH;
-  get_dynamic_input_handles("Input",stringsH,false);
+  auto stringsH = getOptionalDynamicInputs(Input);
+//  get_dynamic_input_handles("Input",stringsH,false);
 
   size_t i = 0;
   while(i < format.size())
@@ -134,9 +173,9 @@ PrintStringIntoString::execute()
               else
               {
                 currentstring = stringsH[inputport]; inputport++;
-                if (currentstring.get_rep() != nullptr)
+                if (currentstring)
                 {
-                  str = currentstring->get();
+                  str = currentstring->value();
                 }
               }
             }
@@ -203,9 +242,7 @@ PrintStringIntoString::execute()
   }
 
   StringHandle handle(new String(output));
-  send_output_handle("Output", handle);
+  sendOutput(Output, handle);
 }
-
-} // End namespace SCIRun
 
 
