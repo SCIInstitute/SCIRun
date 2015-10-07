@@ -108,6 +108,15 @@ ENDIF()
 OPTION(BUILD_DOCUMENTATION "Build documentation" OFF)
 MARK_AS_ADVANCED(BUILD_DOCUMENTATION)
 
+########################################################################
+# Factory code generation options
+
+OPTION(GENERATE_MODULE_FACTORY_CODE "Generate module factory code from config files" ON)
+MARK_AS_ADVANCED(GENERATE_MODULE_FACTORY_CODE)
+
+OPTION(REGENERATE_MODULE_FACTORY_CODE "Delete generated module factory code file in order to refresh module list" ON)
+MARK_AS_ADVANCED(REGENERATE_MODULE_FACTORY_CODE)
+
 ###########################################
 # Configure externals
 
@@ -164,6 +173,8 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
+    "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
+    "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
     "-DZlib_DIR:PATH=${Zlib_DIR}"
     "-DLibPNG_DIR:PATH=${LibPNG_DIR}"
     "-DSQLite_DIR:PATH=${SQLite_DIR}"
