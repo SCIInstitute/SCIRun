@@ -137,6 +137,7 @@ namespace Networks {
     void gui_pop_subnet_ctx(const std::string& ctx);
 
     void listModuleIdMapping();
+    static std::string checkForModuleRename(const std::string& originalName);
 
     xmlNode* get_module_node(const std::string &id);
     xmlNode* get_connection_node(const std::string &id);
@@ -161,6 +162,7 @@ namespace Networks {
     std::string dtdPath_;
     const Networks::ModuleFactory& modFactory_;
     std::map<std::string, ModuleId> moduleIdMap_;
+    static const std::map<std::string, std::string> moduleRenameMap_;
   };
 
 }}} // end namespace SCIRun

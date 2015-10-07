@@ -79,14 +79,18 @@ using namespace boost::assign;
 namespace
 {
   HardCodedModuleFactory mf;
+  NetworkFileHandle load(const std::string& file)
+  {
+    auto dtdpath = TestResources::rootDir() / "Other";
+    LegacyNetworkIO lnio(dtdpath.string(), mf);
+    auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / file;
+    return lnio.load_net(v4file1.string());
+  }
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
 {
-  auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf);
-  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "empty.srn";
-  auto networkFile = lnio.load_net(v4file1.string());
+  auto networkFile = load("empty.srn");
   ASSERT_TRUE(networkFile != nullptr);
 
   EXPECT_EQ(0, networkFile->network.modules.size());
@@ -194,8 +198,6 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnecti
   EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
   EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
-
-  FAIL() << "todo";
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithThreeModulesSameType)
@@ -226,7 +228,51 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithThreeModulesSameType)
   EXPECT_EQ(0, networkFile->network.connections.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesTwoConnections)
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithMultipleConnections)
+{
+  auto dtdpath = TestResources::rootDir() / "Other";
+  LegacyNetworkIO lnio(dtdpath.string(), mf);
+  auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "multiConnections.srn";
+  auto networkFile = lnio.load_net(v4file1.string());
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(5, networkFile->network.modules.size());
+
+  EXPECT_EQ(4, networkFile->network.connections.size());
+  std::string expected[] = {
+  "ReadMatrix:0_p#Matrix:0#_@to@_ComputeSVD:0_p#InputMatrix:0#",
+  "FairMesh:0_p#Faired_Mesh:0#_@to@_BuildFEMatrix:0_p#InputField:0#",
+  "FairMesh:0_p#Faired_Mesh:0#_@to@_ReportFieldInfo:0_p#InputField:0#",
+  "ComputeSVD:0_p#SingularValues:0#_@to@_BuildFEMatrix:0_p#Conductivity_Table:0#" };
+  std::string* expectedPtr = expected;
+  for (const auto& c : networkFile->network.connections)
+  {
+    std::cout << static_cast<std::string>(ConnectionId::create(c)) << std::endl;
+    EXPECT_EQ(static_cast<std::string>(ConnectionId::create(c)), *expectedPtr++);
+  }
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithRenamedModules)
+{
+  auto networkFile = load("forward_problem.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(0, networkFile->network.modules.size());
+  EXPECT_EQ(0, networkFile->network.connections.size());
+  EXPECT_EQ(0, networkFile->modulePositions.modulePositions.size());
+  EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
+  EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
+  EXPECT_EQ(0, networkFile->moduleTags.tags.size());
+
+
+
+
+
+
+  FAIL() << "todo";
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicConnections)
 {
   FAIL() << "todo";
 }

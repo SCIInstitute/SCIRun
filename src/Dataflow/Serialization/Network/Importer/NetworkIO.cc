@@ -146,7 +146,7 @@ void
 LegacyNetworkIO::gui_add_module_at_position(const std::string &mod_id,
 const std::string &cpackage,
 const std::string &ccategory,
-const std::string &cmodule,
+const std::string &moduleNameOrig,
 const std::string &cversion,
 const std::string& x,
 const std::string &y)
@@ -161,6 +161,8 @@ const std::string &y)
   //  << "\n\t" << y << std::endl;
   if (!xmlData_)
     return;
+
+  const std::string cmodule = checkForModuleRename(moduleNameOrig);
 
   //TODO: probably need a bimap here.
   std::vector<int> existingIdsWithThisModuleName;
@@ -218,33 +220,50 @@ const std::string &y)
   #endif
 }
 
+//TODO: move into a config file
+const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
+  {
+    {"MapFieldDataOntoElems", "MapFieldDataOntoElements"},
+    {"GetColumnOrRowFromMatrix", "GetMatrixSlice"},
+    {"CreateStandardColorMaps", "CreateStandardColorMap"}
+  };
+
+std::string LegacyNetworkIO::checkForModuleRename(const std::string& originalName)
+{
+  auto rename = moduleRenameMap_.find(originalName);
+  if (rename != moduleRenameMap_.end())
+    return rename->second;
+  return originalName;
+}
+
 void
 LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port)
 {
   auto fromId = moduleIdMap_[from];
   auto toId = moduleIdMap_[to];
-  std::cout << "TO IMPLEMENT: createConnectionNew \n\t" << fromId << "\n\t" << toId <<
-    "\n\t"  << from_port << "\n\t"  << to_port << std::endl;
+  //std::cout << "TO IMPLEMENT: createConnectionNew \n\t" << fromId << "\n\t" << toId << "\n\t"  << from_port << "\n\t"  << to_port << std::endl;
   if (!xmlData_)
     return;
 
   auto fromDesc = modFactory_.lookupDescription(ModuleLookupInfo(fromId.name_, "TODO", "SCIRun"));
-  std::cout << "SANITY CHECK: " << fromId << " -> " << fromDesc.lookupInfo_.module_name_ << std::endl;
+  //std::cout << "SANITY CHECK: " << fromId << " -> " << fromDesc.lookupInfo_.module_name_ << std::endl;
   auto toDesc = modFactory_.lookupDescription(ModuleLookupInfo(toId.name_, "TODO", "SCIRun"));
-  std::cout << "SANITY CHECK: " << toId << " -> " << toDesc.lookupInfo_.module_name_ << std::endl;
+  //std::cout << "SANITY CHECK: " << toId << " -> " << toDesc.lookupInfo_.module_name_ << std::endl;
 
-  std::cout << "from port: " << fromId << "\n\t" << toId <<
-    "\n\t"  << from_port << " " << fromDesc.output_ports_[boost::lexical_cast<int>(from_port)].id.name
-    << "\n\t"  << to_port << " " << toDesc.input_ports_[boost::lexical_cast<int>(to_port)].id.name << std::endl;
+  // std::cout << "from port: " << fromId << "\n\t" << toId <<
+  //   "\n\t"  << from_port << " " << fromDesc.output_ports_[boost::lexical_cast<int>(from_port)].id.name
+  //   << "\n\t"  << to_port << " " << toDesc.input_ports_[boost::lexical_cast<int>(to_port)].id.name << std::endl;
 
   auto& connections = xmlData_->network.connections;
   OutgoingConnectionDescription out;
   //TODO: need to have converted module ids by this point. need a map.
   out.moduleId_ = fromId;
-  out.portId_ = fromDesc.output_ports_[boost::lexical_cast<int>(from_port)].id;
+  auto fromIndex = boost::lexical_cast<int>(from_port);
+  out.portId_ = fromDesc.output_ports_.at(fromIndex).id;
   IncomingConnectionDescription in;
   in.moduleId_ = toId;
-  in.portId_ = toDesc.input_ports_[boost::lexical_cast<int>(to_port)].id;
+  auto toIndex = boost::lexical_cast<int>(to_port);
+  in.portId_ = toDesc.input_ports_.at(toIndex).id;
   ConnectionDescriptionXML conn;
   conn.out_ = out;
   conn.in_ = in;
