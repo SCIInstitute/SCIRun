@@ -45,11 +45,13 @@ namespace SCIRun {
 
         struct SCISHARE AlgorithmDescriptor
         {
+          ~AlgorithmDescriptor() {}
           std::string name_, namespace_, header_;
         };
 
         struct SCISHARE DialogDescriptor
         {
+          ~DialogDescriptor() {}
           std::string name_, header_;
         };
 
