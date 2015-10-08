@@ -1062,7 +1062,7 @@ public:
 
     double dmin = maxdist;
     double dmean = maxdist;
-    double perturb= epsilon_*1e6; //value to move to find new point.
+    const double perturb= epsilon_*1e6; //value to move to find new point.
     bool found = true;
     bool found_one = false;
 
