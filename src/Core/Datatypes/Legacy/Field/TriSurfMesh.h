@@ -1062,6 +1062,7 @@ public:
 
     double dmin = maxdist;
     double dmean = maxdist;
+    double perturb= epsilon_*1e6; //value to move to find new point.
     bool found = true;
     bool found_one = false;
 
@@ -1105,7 +1106,7 @@ public:
                   {
                     // check a second point on the triangle to confirm it is really closest
                     Core::Geometry::Vector f_v= Core::Geometry::Vector(p_mean-r); f_v.normalize();
-                    dtmp2 = (p - Core::Geometry::Point(p_mean+(f_v*epsilon_*1e6))).length2();
+                    dtmp2 = (p - Core::Geometry::Point(p_mean+(f_v*perturb))).length2();
                   }
                   
                   //check for closest face and check within precision
