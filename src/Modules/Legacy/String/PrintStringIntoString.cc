@@ -124,125 +124,129 @@ PrintStringIntoString::execute()
   auto stringsH = getOptionalDynamicInputs(Input);
 //  get_dynamic_input_handles("Input",stringsH,false);
 
-  size_t i = 0;
-  while(i < format.size())
+  if (needToExecute())
   {
-    if (format[i] == '%')
-    {
-      if (i == format.size()-1)
-      {
-        error("Improper format string '%' is last character");
-        return;
-    }
-            
-      if (format[i+1] == '%')
-      {
-          output += '%'; i += 2;
-      }
-      else
-      {
-        size_t j = i+1;
-        // Just to name a few printing options
-        while((j < format.size())&&(format[j] != 'd')&&(format[j] != 'e')&&(format[j] != 'g')&&(format[j] != 'c')
-            &&(format[j] != 'i')&&(format[j] != 'E')&&(format[j] != 'x')&&(format[j] != 'X')&&(format[j] != 's')
-            &&(format[j] != 'u')&&(format[j] != 'o')&&(format[j] != 'g')&&(format[j] != 'G')&&(format[j] != 'f')
-            &&(format[j] != 'F')&&(format[j] != 'A')&&(format[j] != 'a')&&(format[j] != 's')&&(format[j] != 'C')&&(format[j] != 'p')&&(format[j] != 'P')) j++;
     
-        if (j == format.size())
+    size_t i = 0;
+    while(i < format.size())
+    {
+      if (format[i] == '%')
+      {
+        if (i == format.size()-1)
         {
-            error("Improper format string '%..type' clause was incomplete");
-            return;
-        }
+          error("Improper format string '%' is last character");
+          return;
+      }
               
-        std::string fstr = format.substr(i,j-i+1);
-        
+        if (format[i+1] == '%')
         {
-          str = "";
-          if (lastport == false)
+            output += '%'; i += 2;
+        }
+        else
+        {
+          size_t j = i+1;
+          // Just to name a few printing options
+          while((j < format.size())&&(format[j] != 'd')&&(format[j] != 'e')&&(format[j] != 'g')&&(format[j] != 'c')
+              &&(format[j] != 'i')&&(format[j] != 'E')&&(format[j] != 'x')&&(format[j] != 'X')&&(format[j] != 's')
+              &&(format[j] != 'u')&&(format[j] != 'o')&&(format[j] != 'g')&&(format[j] != 'G')&&(format[j] != 'f')
+              &&(format[j] != 'F')&&(format[j] != 'A')&&(format[j] != 'a')&&(format[j] != 's')&&(format[j] != 'C')&&(format[j] != 'p')&&(format[j] != 'P')) j++;
+      
+          if (j == format.size())
           {
-            if (inputport == stringsH.size())
+              error("Improper format string '%..type' clause was incomplete");
+              return;
+          }
+                
+          std::string fstr = format.substr(i,j-i+1);
+          
+          {
+            str = "";
+            if (lastport == false)
             {
-              lastport = true;
-            }
-            else
-            {
-              if (stringsH.size() == static_cast<size_t>(inputport))
+              if (inputport == stringsH.size())
               {
                 lastport = true;
               }
               else
               {
-                currentstring = stringsH[inputport]; inputport++;
-                if (currentstring)
+                if (stringsH.size() == static_cast<size_t>(inputport))
                 {
-                  str = currentstring->value();
+                  lastport = true;
+                }
+                else
+                {
+                  currentstring = stringsH[inputport]; inputport++;
+                  if (currentstring)
+                  {
+                    str = currentstring->value();
+                  }
                 }
               }
             }
           }
-        }
-        
-        if ((format[j] == 's')||(format[j] == 'S')||(format[j] == 'c')||(format[j] == 'C'))
-        {
-          // We put the %s %S back in the string so it can be filled out lateron
-          // By a different module
           
-          if (j == i+1)
+          if ((format[j] == 's')||(format[j] == 'S')||(format[j] == 'c')||(format[j] == 'C'))
           {
-            output += str;
+            // We put the %s %S back in the string so it can be filled out lateron
+            // By a different module
+            
+            if (j == i+1)
+            {
+              output += str;
+            }
+            else
+            {   
+              // there is some modifier or so
+              // This implementation is naive in assuming only
+              // a buffer of 256 bytes. This needs to be altered one
+              // day.
+              snprintf(&(buffer[0]),256,fstr.c_str(),str.c_str());
+              output += std::string(static_cast<char *>(&(buffer[0])));
+            }
+            i = j+1;
+          
           }
-          else
-          {   
-            // there is some modifier or so
-            // This implementation is naive in assuming only
-            // a buffer of 256 bytes. This needs to be altered one
-            // day.
-            snprintf(&(buffer[0]),256,fstr.c_str(),str.c_str());
-            output += std::string(static_cast<char *>(&(buffer[0])));
+          else if ((format[j] == 'd')||(format[j] == 'o')||(format[j] == 'i')||
+                  (format[j] == 'u')||(format[j] == 'x')||(format[j] == 'X')||
+                  (format[j] == 'e')||(format[j] == 'E')||(format[j] == 'f')||
+                  (format[j] == 'F')||(format[j] == 'g')||(format[j] == 'G')||
+                  (format[j] == 'a')||(format[j] == 'A')||(format[j] == 'p')||
+                  (format[j] == 'P'))
+          {
+            output += fstr;
+            i = j+1;
           }
-          i = j+1;
-        
-        }
-        else if ((format[j] == 'd')||(format[j] == 'o')||(format[j] == 'i')||
-                (format[j] == 'u')||(format[j] == 'x')||(format[j] == 'X')||
-                (format[j] == 'e')||(format[j] == 'E')||(format[j] == 'f')||
-                (format[j] == 'F')||(format[j] == 'g')||(format[j] == 'G')||
-                (format[j] == 'a')||(format[j] == 'A')||(format[j] == 'p')||
-                (format[j] == 'P'))
-        {
-          output += fstr;
-          i = j+1;
         }
       }
-    }
-    else if ( format[i] == '\\')
-    {
-      if (i < (format.size()-1))
+      else if ( format[i] == '\\')
       {
-        switch (format[i+1])
+        if (i < (format.size()-1))
         {
-          case 'n': output += '\n'; break;
-          case 'b': output += '\b'; break;
-          case 't': output += '\t'; break;
-          case 'r': output += '\r'; break;
-          case '\\': output += '\\'; break;
-          case '0': output += '\0'; break;
-          case 'v': output += '\v'; break;
-          default:
-            error("unknown escape character");
-            return;
+          switch (format[i+1])
+          {
+            case 'n': output += '\n'; break;
+            case 'b': output += '\b'; break;
+            case 't': output += '\t'; break;
+            case 'r': output += '\r'; break;
+            case '\\': output += '\\'; break;
+            case '0': output += '\0'; break;
+            case 'v': output += '\v'; break;
+            default:
+              error("unknown escape character");
+              return;
+          }
+          i = i+2;
         }
-        i = i+2;
+      }
+      else
+      {
+        output += format[i++];
       }
     }
-    else
-    {
-      output += format[i++];
-    }
-  }
 
-  StringHandle handle(new String(output));
-  sendOutput(Output, handle);
+    StringHandle handle(new String(output));
+    sendOutput(Output, handle);
+  }
 }
 
 
