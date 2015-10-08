@@ -257,24 +257,30 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithRenamedModules)
   auto networkFile = load("forward_problem.srn");
   ASSERT_TRUE(networkFile != nullptr);
 
-  EXPECT_EQ(0, networkFile->network.modules.size());
-  EXPECT_EQ(0, networkFile->network.connections.size());
-  EXPECT_EQ(0, networkFile->modulePositions.modulePositions.size());
+  EXPECT_EQ(30, networkFile->network.modules.size());
+  EXPECT_EQ(39, networkFile->network.connections.size());
+  EXPECT_EQ(30, networkFile->modulePositions.modulePositions.size());
+  EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
+  EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
+  EXPECT_EQ(0, networkFile->moduleTags.tags.size());
+
+  //FAIL() << "todo";
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicPorts)
+{
+  auto networkFile = load("dynamicPorts.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(2, networkFile->network.modules.size());
+  EXPECT_EQ(3, networkFile->network.connections.size());
+  EXPECT_EQ(2, networkFile->modulePositions.modulePositions.size());
   EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
   EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 
 
-
-
-
-
-  FAIL() << "todo";
-}
-
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicConnections)
-{
-  FAIL() << "todo";
+  //FAIL() << "todo";
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfObjects)

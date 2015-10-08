@@ -258,12 +258,28 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
   OutgoingConnectionDescription out;
   //TODO: need to have converted module ids by this point. need a map.
   out.moduleId_ = fromId;
+
   auto fromIndex = boost::lexical_cast<int>(from_port);
-  out.portId_ = fromDesc.output_ports_.at(fromIndex).id;
+  if (fromIndex >= fromDesc.output_ports_.size() && fromDesc.output_ports_.back().isDynamic)
+  {
+    out.portId_ = fromDesc.output_ports_.back().id;
+    out.portId_.id = fromIndex;
+  }
+  else
+    out.portId_ = fromDesc.output_ports_.at(fromIndex).id;
   IncomingConnectionDescription in;
   in.moduleId_ = toId;
+  
   auto toIndex = boost::lexical_cast<int>(to_port);
-  in.portId_ = toDesc.input_ports_.at(toIndex).id;
+
+  if (toIndex >= toDesc.input_ports_.size() && toDesc.input_ports_.back().isDynamic)
+  {
+    in.portId_ = toDesc.input_ports_.back().id;
+    in.portId_.id = toIndex;
+  }
+  else
+    in.portId_ = toDesc.input_ports_.at(toIndex).id;
+
   ConnectionDescriptionXML conn;
   conn.out_ = out;
   conn.in_ = in;
