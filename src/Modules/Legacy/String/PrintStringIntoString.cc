@@ -110,8 +110,13 @@ PrintStringIntoString::execute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   format = formatstring_.get();
 #endif
-
-  auto  stringH = getRequiredInput(Format);
+  
+  auto  stringH = getOptionalInput(Format);
+  
+  if (stringH && *stringH)
+  {
+    format = (*stringH)->value();
+  }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (get_input_handle("Format", stringH, false))
@@ -120,12 +125,19 @@ PrintStringIntoString::execute()
   }
 #endif
   
+  std::cout<<"Format string: "<< format <<std::endl;
+
+  
+  
   // Get the dynamic handles
   auto stringsH = getOptionalDynamicInputs(Input);
 //  get_dynamic_input_handles("Input",stringsH,false);
 
+  std::cout<<"Input strings: "<< stringsH  <<std::endl;
+  
   if (needToExecute())
   {
+    std::cout<<"need to execute"<<std::endl;
     
     size_t i = 0;
     while(i < format.size())
@@ -179,6 +191,7 @@ PrintStringIntoString::execute()
                   if (currentstring)
                   {
                     str = currentstring->value();
+                    std::cout<<" string " << inputport <<" = " << str <<std::endl;
                   }
                 }
               }
