@@ -40,22 +40,23 @@ SET(Interface_Modules_Factory_SOURCES
 SET(ModuleDialogFactory_Generated ${CMAKE_CURRENT_BINARY_DIR}/ModuleDialogFactory_Generated.cc)
 
 IF(GENERATE_MODULE_FACTORY_CODE)
-
-MESSAGE(STATUS "Setting up dialog factory generator")
-add_executable(MakeDialogFactory Generator/MakeDialogFactory.h Generator/MakeDialogFactory.cc)
-TARGET_LINK_LIBRARIES(MakeDialogFactory
-  Modules_Factory_Generator
-  ${SCI_BOOST_LIBRARY})
-SET_PROPERTY(TARGET MakeDialogFactory   PROPERTY FOLDER "Interface")
-
-# add the command to generate the source code
-add_custom_command (
-  OUTPUT ${ModuleDialogFactory_Generated}
-  COMMAND MakeDialogFactory ${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules/Factory/ ${ModuleDialogFactory_Generated}
-  DEPENDS MakeDialogFactory
-  VERBATIM
+  MESSAGE(STATUS "Setting up dialog factory generator")
+  ADD_EXECUTABLE(MakeDialogFactory Generator/MakeDialogFactory.h Generator/MakeDialogFactory.cc)
+  TARGET_LINK_LIBRARIES(MakeDialogFactory
+    Modules_Factory_Generator
+    ${SCI_BOOST_LIBRARY}
   )
-ENDIF(GENERATE_MODULE_FACTORY_CODE)
+  SET_PROPERTY(TARGET MakeDialogFactory PROPERTY FOLDER "Interface")
+
+  # add the command to generate the source code
+  ADD_CUSTOM_COMMAND(
+    OUTPUT ${ModuleDialogFactory_Generated}
+    COMMAND echo "MakeDialogFactory ${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules/Factory/ ${ModuleDialogFactory_Generated}"
+    COMMAND MakeDialogFactory ${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules/Factory/ ${ModuleDialogFactory_Generated}
+    DEPENDS MakeDialogFactory
+    VERBATIM
+  )
+ENDIF()
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Factory
   ${Interface_Modules_Factory_HEADERS}
@@ -63,17 +64,14 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Factory
   ${ModuleDialogFactory_Generated}
 )
 
-IF(GENERATE_MODULE_FACTORY_CODE)
-IF(REGENERATE_MODULE_FACTORY_CODE)
-    add_custom_command(
-        TARGET Interface_Modules_Factory
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove -f ${ModuleDialogFactory_Generated}
-        COMMENT " Running POST BUILD action "
-         )
-ENDIF(REGENERATE_MODULE_FACTORY_CODE)
-
-ENDIF(GENERATE_MODULE_FACTORY_CODE)
+IF(GENERATE_MODULE_FACTORY_CODE AND REGENERATE_MODULE_FACTORY_CODE)
+  ADD_CUSTOM_COMMAND(
+    TARGET Interface_Modules_Factory
+       POST_BUILD
+       COMMAND ${CMAKE_COMMAND} -E remove -f ${ModuleDialogFactory_Generated}
+       COMMENT " Running POST BUILD action "
+  )
+ENDIF()
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   Interface_Modules_Base
@@ -97,6 +95,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Factory)
-ENDIF(BUILD_SHARED_LIBS)
+ENDIF()
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

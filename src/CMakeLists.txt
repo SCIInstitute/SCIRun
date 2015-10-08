@@ -908,21 +908,11 @@ IF(WITH_TETGEN)
   SET_PROPERTY(TARGET tetlib         PROPERTY FOLDER "Externals")
 ENDIF()
 
-
-########################################################################
-# Factory code generation options
-
-OPTION(GENERATE_MODULE_FACTORY_CODE "Generate module factory code from config files" ON)
-MARK_AS_ADVANCED(GENERATE_MODULE_FACTORY_CODE)
-OPTION(REGENERATE_MODULE_FACTORY_CODE "Delete generated module factory code file in order to refresh module list" ON)
-MARK_AS_ADVANCED(REGENERATE_MODULE_FACTORY_CODE)
-
 ########################################################################
 # Custom CMake settings for CPack
 
 ########################################################################
 # CPack
-
 
 ########################################################################
 # PACKAGING Information
