@@ -39,6 +39,7 @@
 using namespace SCIRun::Modules::StringManip;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 const ModuleLookupInfo PrintStringIntoString::staticInfo_("PrintStringIntoString", "String", "SCIRun");
 
@@ -92,6 +93,8 @@ PrintStringIntoString::PrintStringIntoString(GuiContext* ctx)
 void PrintStringIntoString::setStateDefaults()
 {
   //TODO
+  auto state = get_state();
+  //state->setValue(Variables::FunctionString,"my string: %s");
   
 }
 
@@ -113,10 +116,18 @@ PrintStringIntoString::execute()
   
   auto  stringH = getOptionalInput(Format);
   
+  auto state = get_state();
+  //auto  ui_string=state -> getValue(Variables::FunctionString).toInt();
+  
   if (stringH && *stringH)
   {
     format = (*stringH)->value();
   }
+  else
+  {
+    //format = ui_string;
+  }
+  
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (get_input_handle("Format", stringH, false))
