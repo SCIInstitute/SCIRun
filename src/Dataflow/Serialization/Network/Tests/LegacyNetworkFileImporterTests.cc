@@ -317,3 +317,16 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithConnectionNotes)
 
   //FAIL() << "todo";
 }
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotesInFivePositions)
+{
+  auto networkFile = load("notePositions.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(5, networkFile->network.modules.size());
+  EXPECT_EQ(0, networkFile->network.connections.size());
+  EXPECT_EQ(5, networkFile->modulePositions.modulePositions.size());
+  EXPECT_EQ(5, networkFile->moduleNotes.notes.size());
+  EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
+  EXPECT_EQ(0, networkFile->moduleTags.tags.size());
+}
