@@ -290,10 +290,30 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfObjects)
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)
 {
-  FAIL() << "todo";
+  auto networkFile = load("notes.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(2, networkFile->network.modules.size());
+  EXPECT_EQ(1, networkFile->network.connections.size());
+  EXPECT_EQ(2, networkFile->modulePositions.modulePositions.size());
+  EXPECT_EQ(2, networkFile->moduleNotes.notes.size());
+  EXPECT_EQ(1, networkFile->connectionNotes.notes.size());
+  EXPECT_EQ(0, networkFile->moduleTags.tags.size());
+
+  //FAIL() << "todo";
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithConnectionNotes)
 {
-  FAIL() << "todo";
+  auto networkFile = load("notes.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(2, networkFile->network.modules.size());
+  EXPECT_EQ(1, networkFile->network.connections.size());
+  EXPECT_EQ(2, networkFile->modulePositions.modulePositions.size());
+  EXPECT_EQ(2, networkFile->moduleNotes.notes.size());
+  EXPECT_EQ(1, networkFile->connectionNotes.notes.size());
+  EXPECT_EQ(0, networkFile->moduleTags.tags.size());
+
+  //FAIL() << "todo";
 }

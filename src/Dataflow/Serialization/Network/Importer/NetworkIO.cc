@@ -237,18 +237,17 @@ std::string LegacyNetworkIO::checkForModuleRename(const std::string& originalNam
 }
 
 void
-LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port)
+LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to,
+  const std::string& from_port, const std::string& to_port, const std::string& con_id)
 {
   auto fromId = moduleIdMap_[from];
   auto toId = moduleIdMap_[to];
-  //std::cout << "TO IMPLEMENT: createConnectionNew \n\t" << fromId << "\n\t" << toId << "\n\t"  << from_port << "\n\t"  << to_port << std::endl;
+
   if (!xmlData_)
     return;
 
   auto fromDesc = modFactory_.lookupDescription(ModuleLookupInfo(fromId.name_, "TODO", "SCIRun"));
-  //std::cout << "SANITY CHECK: " << fromId << " -> " << fromDesc.lookupInfo_.module_name_ << std::endl;
   auto toDesc = modFactory_.lookupDescription(ModuleLookupInfo(toId.name_, "TODO", "SCIRun"));
-  //std::cout << "SANITY CHECK: " << toId << " -> " << toDesc.lookupInfo_.module_name_ << std::endl;
 
   // std::cout << "from port: " << fromId << "\n\t" << toId <<
   //   "\n\t"  << from_port << " " << fromDesc.output_ports_[boost::lexical_cast<int>(from_port)].id.name
@@ -269,7 +268,7 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
     out.portId_ = fromDesc.output_ports_.at(fromIndex).id;
   IncomingConnectionDescription in;
   in.moduleId_ = toId;
-  
+
   auto toIndex = boost::lexical_cast<int>(to_port);
 
   if (toIndex >= toDesc.input_ports_.size() && toDesc.input_ports_.back().isDynamic)
@@ -284,6 +283,7 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
   conn.out_ = out;
   conn.in_ = in;
   connections.push_back(conn);
+  connectionIdMap_[con_id] = ConnectionId::create(conn).id_;
 }
 
 void
@@ -302,7 +302,7 @@ const std::string &to_port0)
   {
     arg = "0";
     // create the connection.
-    createConnectionNew(from_id, to_id, from_port, to_port0);
+    createConnectionNew(from_id, to_id, from_port, to_port0, con_id);
     #if 0
     ModuleHandle omod = net_->get_module_by_id(from);
     ModuleHandle imod = net_->get_module_by_id(to);
@@ -453,11 +453,19 @@ const std::string &col, const std::string &note)
 {
   std::string mod = get_mod_id(mod_id);
   std::string cmmd = "set Notes(" + mod + ") " + note;
-  std::cout << "TCLInterface::eval " << cmmd << std::endl;
+  //std::cout << "TCLInterface::eval " << cmmd << std::endl;
   cmmd = "set Notes(" + mod + "-Position) " + pos;
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+  //std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
   cmmd = "set Notes(" + mod + "-Color) " + col;
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+  //std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+  // std::cout << "\tTO IMPLEMENT: gui_set_module_note mod_id " << moduleIdMap_[mod_id] << " pos " << pos <<
+  //   " col " << col << " note " << note << std::endl;
+
+  if (!xmlData_)
+    return;
+
+  NoteXML noteXml("", 0, note);
+  xmlData_->moduleNotes.notes[moduleIdMap_[mod_id]] = noteXml;
 }
 
 
@@ -468,11 +476,16 @@ const std::string &col, const std::string &note)
   id_map_t &cmap = netid_to_conid_.top();
   std::string con = cmap[con_id];
   std::string cmmd = "set Notes(" + con + ") " + note;
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+  //std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
   cmmd = "set Notes(" + con + "-Position) " + pos;
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+  //std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
   cmmd = "set Notes(" + con + "-Color) " + col;
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+  //std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+  // std::cout << "TO IMPLEMENT: gui_set_connection_note con_id " << con_id << " con " << con << " pos " << pos <<
+  //   " col " << col << " note " << note << std::endl;
+
+  NoteXML noteXml("", 0, note);
+  xmlData_->connectionNotes.notes[connectionIdMap_[con_id]] = noteXml;
 }
 
 void
@@ -1453,20 +1466,6 @@ const std::string &y)
 
 }
 
-
-void
-NetworkIO::add_module_note(const std::string &id, const std::string &note)
-{
-  xmlNode* mnode = get_module_node(id);
-
-  if (! mnode) {
-    std::cerr << "ERROR: could not find module node with id (add_module_note): " << id << std::endl;
-    return;
-  }
-  xmlNewTextChild(mnode, 0, BAD_CAST "note", BAD_CAST note.c_str());
-}
-
-
 void
 NetworkIO::add_module_note_position(const std::string &id, const std::string &pos)
 {
@@ -1620,21 +1619,6 @@ NetworkIO::add_connection_route(const std::string &id, const std::string &route)
 
   xmlNewTextChild(cid_node, 0, BAD_CAST "route", BAD_CAST route.c_str());
 }
-
-
-void
-NetworkIO::add_connection_note(const std::string &id, const std::string &note)
-{
-  xmlNode* cid_node = get_connection_node(id);
-
-  if (! cid_node) {
-    std::cerr << "ERROR: could not find connection node with id: " << id << std::endl;
-    return;
-  }
-
-  xmlNewTextChild(cid_node, 0, BAD_CAST "note", BAD_CAST note.c_str());
-}
-
 
 void
 NetworkIO::add_connection_note_position(const std::string &id, const std::string &pos)

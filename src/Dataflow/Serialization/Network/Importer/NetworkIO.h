@@ -53,7 +53,8 @@ namespace Networks {
 
     bool load_network();
 
-    void createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port);
+    void createConnectionNew(const std::string& from, const std::string& to,
+      const std::string& from_port, const std::string& to_port, const std::string &con_id);
 
     //! Interface to build up an xml document for saving.
     void start_net_doc(const std::string &fname, const std::string &vers, const std::string &vnetersion);
@@ -162,6 +163,7 @@ namespace Networks {
     std::string dtdPath_;
     const Networks::ModuleFactory& modFactory_;
     std::map<std::string, ModuleId> moduleIdMap_;
+    std::map<std::string, std::string> connectionIdMap_;
     static const std::map<std::string, std::string> moduleRenameMap_;
   };
 
