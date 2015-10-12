@@ -464,7 +464,8 @@ const std::string &col, const std::string &note)
   if (!xmlData_)
     return;
 
-  NoteXML noteXml("", 0, note);
+  std::string stripBraces(note.begin() + 1, note.end() - 1);
+  NoteXML noteXml(stripBraces, 0, stripBraces);
   xmlData_->moduleNotes.notes[moduleIdMap_[mod_id]] = noteXml;
 }
 
@@ -484,7 +485,9 @@ const std::string &col, const std::string &note)
   // std::cout << "TO IMPLEMENT: gui_set_connection_note con_id " << con_id << " con " << con << " pos " << pos <<
   //   " col " << col << " note " << note << std::endl;
 
-  NoteXML noteXml("", 0, note);
+  std::string stripBraces(note.begin() + 1, note.end() - 1);
+  NoteXML noteXml(stripBraces, 0, stripBraces);
+  std::cout << "SETTING CONNECTION note: " << connectionIdMap_[con_id] << " note is " << stripBraces << std::endl;
   xmlData_->connectionNotes.notes[connectionIdMap_[con_id]] = noteXml;
 }
 
