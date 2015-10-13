@@ -260,11 +260,9 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithRenamedModules)
   EXPECT_EQ(30, networkFile->network.modules.size());
   EXPECT_EQ(39, networkFile->network.connections.size());
   EXPECT_EQ(30, networkFile->modulePositions.modulePositions.size());
-  EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
+  EXPECT_EQ(6, networkFile->moduleNotes.notes.size());
   EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
-
-  //FAIL() << "todo";
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicPorts)
@@ -278,9 +276,6 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicPorts)
   EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
   EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
-
-
-  //FAIL() << "todo";
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfObjects)
@@ -299,8 +294,6 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)
   EXPECT_EQ(2, networkFile->moduleNotes.notes.size());
   EXPECT_EQ(1, networkFile->connectionNotes.notes.size());
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
-
-  //FAIL() << "todo";
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithConnectionNotes)
@@ -314,8 +307,6 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithConnectionNotes)
   EXPECT_EQ(2, networkFile->moduleNotes.notes.size());
   EXPECT_EQ(1, networkFile->connectionNotes.notes.size());
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
-
-  //FAIL() << "todo";
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotesInFivePositions)
