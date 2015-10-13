@@ -39,20 +39,20 @@ SET(Algorithms_Factory_HEADERS
 SET(AlgorithmFactoryImpl_Generated ${CMAKE_CURRENT_BINARY_DIR}/AlgorithmFactoryImpl_Generated.cc)
 
 IF(GENERATE_MODULE_FACTORY_CODE)
+  MESSAGE(STATUS "Setting up algorithm factory generator")
+  ADD_EXECUTABLE(MakeAlgorithmFactory Generator/MakeAlgorithmFactory.h Generator/MakeAlgorithmFactory.cc)
+  TARGET_LINK_LIBRARIES(MakeAlgorithmFactory
+    Modules_Factory_Generator
+    ${SCI_BOOST_LIBRARY})
+  SET_PROPERTY(TARGET MakeAlgorithmFactory   PROPERTY FOLDER "Modules")
 
-add_executable(MakeAlgorithmFactory Generator/MakeAlgorithmFactory.h Generator/MakeAlgorithmFactory.cc)
-TARGET_LINK_LIBRARIES(MakeAlgorithmFactory
-  Modules_Factory_Generator
-  ${SCI_BOOST_LIBRARY})
-SET_PROPERTY(TARGET MakeAlgorithmFactory   PROPERTY FOLDER "Modules")
-
-# add the command to generate the source code
-add_custom_command (
-  OUTPUT ${AlgorithmFactoryImpl_Generated}
-  COMMAND MakeAlgorithmFactory ${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules/Factory/ ${AlgorithmFactoryImpl_Generated}
-  DEPENDS MakeAlgorithmFactory
+  # add the command to generate the source code
+  ADD_CUSTOM_COMMAND(
+    OUTPUT ${AlgorithmFactoryImpl_Generated}
+    COMMAND MakeAlgorithmFactory ${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules/Factory/ ${AlgorithmFactoryImpl_Generated}
+    DEPENDS MakeAlgorithmFactory
   )
-ENDIF(GENERATE_MODULE_FACTORY_CODE)
+ENDIF()
 
 SCIRUN_ADD_LIBRARY(Algorithms_Factory
   ${Algorithms_Factory_HEADERS}
@@ -60,17 +60,14 @@ SCIRUN_ADD_LIBRARY(Algorithms_Factory
   ${AlgorithmFactoryImpl_Generated}
 )
 
-IF(GENERATE_MODULE_FACTORY_CODE)
-IF(REGENERATE_MODULE_FACTORY_CODE)
-    add_custom_command(
-        TARGET Algorithms_Factory
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove -f ${AlgorithmFactoryImpl_Generated}
-        COMMENT " Running POST BUILD action "
-         )
-ENDIF(REGENERATE_MODULE_FACTORY_CODE)
-
-ENDIF(GENERATE_MODULE_FACTORY_CODE)
+IF(GENERATE_MODULE_FACTORY_CODE AND REGENERATE_MODULE_FACTORY_CODE)
+  ADD_CUSTOM_COMMAND(
+    TARGET Algorithms_Factory
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${AlgorithmFactoryImpl_Generated}
+    COMMENT " Running POST BUILD action "
+  )
+ENDIF()
 
 TARGET_LINK_LIBRARIES(Algorithms_Factory
   Algorithms_Base
