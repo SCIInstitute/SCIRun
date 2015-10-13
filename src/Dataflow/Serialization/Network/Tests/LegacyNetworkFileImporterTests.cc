@@ -334,10 +334,6 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotesInFivePosi
     Bottom    6
   };
   */
-  for (const auto& note : moduleNotesMap)
-  {
-    std::cout << note.first << " : " << note.second.noteText << " @ " << note.second.position << std::endl;
-  }
   auto noteIter = moduleNotesMap.begin();
   EXPECT_TRUE(noteIter->second.noteText.find("Left") != std::string::npos);
   EXPECT_EQ(4, noteIter->second.position);

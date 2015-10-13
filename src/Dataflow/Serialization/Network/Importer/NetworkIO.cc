@@ -472,7 +472,37 @@ const std::string &col, const std::string &note)
 
 int LegacyNetworkIO::getNotePosition(const std::string& position) const
 {
-  return 0;
+  // expected format is {p}
+  if (position.length() < 3)
+    return 0;
+  char oldPos = position[1];
+  /* copied from gui header; should move type down here
+  enum NotePosition
+  {
+    Default,  0
+    None,     1
+    Tooltip,  2
+    Top,      3
+    Left,     4
+    Right,    5
+    Bottom    6
+  };
+  */
+  switch (oldPos)
+  {
+  case 'n':
+    return 3;
+  case 's':
+    return 6;
+  case 'e':
+    return 5;
+  case 'w':
+    return 4;
+  case 't':
+    return 2;
+  default:
+    return 0;
+  }
 }
 
 void
