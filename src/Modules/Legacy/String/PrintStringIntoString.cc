@@ -41,6 +41,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
+SCIRun::Core::Algorithms::AlgorithmParameterName PrintStringIntoString::FormatString("FormatString");
+
 const ModuleLookupInfo PrintStringIntoString::staticInfo_("PrintStringIntoString", "String", "SCIRun");
 
 PrintStringIntoString::PrintStringIntoString() : Module(staticInfo_)
@@ -50,51 +52,15 @@ PrintStringIntoString::PrintStringIntoString() : Module(staticInfo_)
   INITIALIZE_PORT(Output);
 }
 
-/*
-void FieldInfoPrinter::execute()
-{
-  auto field = getRequiredInput(InputField);
-  
-  ReportFieldInfoAlgorithm algo;
-  auto output = algo.run_generic(withInputData((InputField, field)));
-  
-  auto info = optional_any_cast_or_default<SCIRun::Core::Algorithms::Fields::ReportFieldInfoAlgorithm::Outputs>(output.getTransient());
-  remark("Field type: " + info.type);
-  
-  //std::cout << "field type: " << info.type << std::endl;
-  
-  sendOutput(OutputField, field);
-}
-*/
-
-
 /// @class PrintStringIntoString
 /// @brief This module does a sprintf with input strings into a new string. 
 
-/*
-class PrintStringIntoString : public Module {
-  public:
-    PrintStringIntoString(GuiContext*);
-    virtual ~PrintStringIntoString() {}
-    virtual void execute();
-
-  private:
-    GuiString formatstring_;
-};
-
-
-PrintStringIntoString::PrintStringIntoString(GuiContext* ctx)
-  : Module("PrintStringIntoString", ctx, Source, "String", "SCIRun"),
-    formatstring_(get_ctx()->subVar("formatstring"), "my string: %s")
-{
-}
-*/
 
 void PrintStringIntoString::setStateDefaults()
 {
   //TODO
   auto state = get_state();
-  //state->setValue(Variables::FunctionString,"my string: %s");
+  state->setValue(FormatString,std::string ("my string: %s"));
   
 }
 
@@ -117,39 +83,21 @@ PrintStringIntoString::execute()
   auto  stringH = getOptionalInput(Format);
   
   auto state = get_state();
-  //auto  ui_string=state -> getValue(Variables::FunctionString).toInt();
   
+  // check for port input and in none use gui input
   if (stringH && *stringH)
   {
-    format = (*stringH)->value();
+    state -> setValue(FormatString, (*stringH) -> value());
   }
-  else
-  {
-    //format = ui_string;
-  }
-  
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (get_input_handle("Format", stringH, false))
-  {
-    format = stringH->get();
-  }
-#endif
-  
-  std::cout<<"Format string: "<< format <<std::endl;
-
+  format = state -> getValue(FormatString).toString();
   
   
   // Get the dynamic handles
   auto stringsH = getOptionalDynamicInputs(Input);
-//  get_dynamic_input_handles("Input",stringsH,false);
 
-  std::cout<<"Input strings: "<< stringsH  <<std::endl;
   
   if (needToExecute())
   {
-    std::cout<<"need to execute"<<std::endl;
-    
     size_t i = 0;
     while(i < format.size())
     {

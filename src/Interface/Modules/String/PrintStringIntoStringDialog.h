@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_PrintStringIntoString_H
-#define INTERFACE_MODULES_PrintStringIntoString_H
+#ifndef INTERFACE_MODULES_PrintStringIntoStringDialog_H
+#define INTERFACE_MODULES_PrintStringIntoStringDialog_H
 
 #include "Interface/Modules/String/ui_PrintStringIntoStringDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>

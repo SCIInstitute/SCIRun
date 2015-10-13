@@ -27,11 +27,14 @@
 */
 
 #include <Interface/Modules/String/PrintStringIntoStringDialog.h>
+#include <Modules/Legacy/String/PrintStringIntoString.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Logging/Log.h>
 
+
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::StringManip;
 
 PrintStringIntoStringDialog::PrintStringIntoStringDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -40,5 +43,6 @@ PrintStringIntoStringDialog::PrintStringIntoStringDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addStringLineEditManager(FormatString_, Variables::FunctionString);
+  
+  addLineEditManager(FormatString_,PrintStringIntoString::FormatString);
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MapFieldDataOntoNodes</class>
- <widget class="QDialog" name="MapFieldDataOntoNodes">
+ <class>PrintStringIntoStringDialog</class>
+ <widget class="QDialog" name="PrintStringIntoStringDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -31,35 +31,61 @@
      <property name="title">
       <string/>
      </property>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+     <widget class="QLineEdit" name="FormatString_">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>20</y>
+        <width>144</width>
+        <height>21</height>
+       </rect>
       </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>Format String:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="FormatString_"/>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Available format strings:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>%s %S %c %C</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+      <property name="maxLength">
+       <number>1000000000</number>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Normal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>70</y>
+        <width>77</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>%s %S %c %C</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>70</y>
+        <width>155</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Available format strings:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>20</y>
+        <width>90</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Format String:</string>
+      </property>
+     </widget>
     </widget>
    </item>
   </layout>

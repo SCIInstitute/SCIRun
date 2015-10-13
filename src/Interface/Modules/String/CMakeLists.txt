@@ -62,6 +62,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_String
 TARGET_LINK_LIBRARIES(Interface_Modules_String 
   Modules_String
   Modules_Basic
+  Modules_Legacy_String
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
