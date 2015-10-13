@@ -320,4 +320,39 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotesInFivePosi
   EXPECT_EQ(5, networkFile->moduleNotes.notes.size());
   EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
+
+  const auto& moduleNotesMap = networkFile->moduleNotes.notes;
+  /*
+  enum NotePosition
+  {
+    Default,  0
+    None,     1
+    Tooltip,  2
+    Top,      3
+    Left,     4
+    Right,    5
+    Bottom    6
+  };
+  */
+  for (const auto& note : moduleNotesMap)
+  {
+    std::cout << note.first << " : " << note.second.noteText << " @ " << note.second.position << std::endl;
+  }
+  auto noteIter = moduleNotesMap.begin();
+  EXPECT_TRUE(noteIter->second.noteText.find("Left") != std::string::npos);
+  EXPECT_EQ(4, noteIter->second.position);
+  ++noteIter;
+  EXPECT_TRUE(noteIter->second.noteText.find("Right") != std::string::npos);
+  EXPECT_EQ(5, noteIter->second.position);
+  ++noteIter;
+  EXPECT_TRUE(noteIter->second.noteText.find("Top") != std::string::npos);
+  EXPECT_EQ(3, noteIter->second.position);
+  ++noteIter;
+  EXPECT_TRUE(noteIter->second.noteText.find("Bottom") != std::string::npos);
+  EXPECT_EQ(6, noteIter->second.position);
+  ++noteIter;
+  EXPECT_TRUE(noteIter->second.noteText.find("tooltip") != std::string::npos);
+  EXPECT_EQ(2, noteIter->second.position);
+  ++noteIter;
+  EXPECT_TRUE(noteIter == moduleNotesMap.end());
 }

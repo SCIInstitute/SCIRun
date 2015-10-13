@@ -129,6 +129,7 @@ namespace Networks {
                                  const std::string &col, const std::string &note);
     void gui_set_connection_route(const std::string &con_id, const std::string &route);
     void gui_open_module_gui(const std::string &mod_id);
+    int getNotePosition(const std::string& position) const;
 
     void gui_add_subnet_at_position(const std::string &mod_id,
                                     const std::string &module,

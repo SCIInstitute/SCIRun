@@ -465,10 +465,15 @@ const std::string &col, const std::string &note)
     return;
 
   std::string stripBraces(note.begin() + 1, note.end() - 1);
-  NoteXML noteXml(stripBraces, 0, stripBraces);
+  int position = getNotePosition(pos);
+  NoteXML noteXml(stripBraces, position, stripBraces);
   xmlData_->moduleNotes.notes[moduleIdMap_[mod_id]] = noteXml;
 }
 
+int LegacyNetworkIO::getNotePosition(const std::string& position) const
+{
+  return 0;
+}
 
 void
 LegacyNetworkIO::gui_set_connection_note(const std::string &con_id, const std::string &pos,
@@ -487,7 +492,7 @@ const std::string &col, const std::string &note)
 
   std::string stripBraces(note.begin() + 1, note.end() - 1);
   NoteXML noteXml(stripBraces, 0, stripBraces);
-  std::cout << "SETTING CONNECTION note: " << connectionIdMap_[con_id] << " note is " << stripBraces << std::endl;
+  //std::cout << "SETTING CONNECTION note: " << connectionIdMap_[con_id] << " note is " << stripBraces << std::endl;
   xmlData_->connectionNotes.notes[connectionIdMap_[con_id]] = noteXml;
 }
 
