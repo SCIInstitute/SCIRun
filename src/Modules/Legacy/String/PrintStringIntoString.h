@@ -30,7 +30,7 @@
 #define MODULES_STRING_PRINTSTRINGINTOSTRING_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <Modules/Legacy/String/share.h>
 
 namespace SCIRun {
   namespace Modules {
