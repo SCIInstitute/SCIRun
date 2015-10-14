@@ -31,7 +31,7 @@
 
 #include "Interface/Modules/String/ui_PrintStringIntoStringDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Interface/Modules/String/share.h>
 
 namespace SCIRun {
 namespace Gui {
