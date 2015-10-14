@@ -424,6 +424,17 @@ const std::string &val)
     cmmd = "set " + v +  " " + val;
   }
   std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+
+  if (!xmlData_)
+    return;
+
+  std::cout << "STATE TO IMPLEMENT: mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+
+  std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module....name;
+  SimpleMapModuleStateXML& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
+
+  stateXML.setValue(nameLookup_[moduleName][var], valueConverter_[moduleName](val));
+
 }
 
 #if 0

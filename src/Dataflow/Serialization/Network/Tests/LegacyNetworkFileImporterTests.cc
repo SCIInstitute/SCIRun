@@ -128,6 +128,15 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleNoState)
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleWithState)
 {
+  auto networkFile = load("clvState.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+
+
+
+
+
+
   FAIL() << "todo";
 }
 
