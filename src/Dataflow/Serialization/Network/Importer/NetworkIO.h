@@ -33,6 +33,7 @@
 #define DATAFLOW_NETWORK_NETWORKIO_H 1
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Algorithms/Base/Variable.h>
 #include <libxml/xmlreader.h>
 #include <map>
 #include <stack>
@@ -42,6 +43,10 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
+
+  typedef std::map<std::string, std::map<std::string, Core::Algorithms::Name>> NameLookup;
+  typedef boost::function<Core::Algorithms::AlgorithmParameter::Value(std::string)> ValueConverter;
+  typedef std::map<std::string, std::map<std::string, ValueConverter>> ValueConverterMap;
 
   class SCISHARE LegacyNetworkIO
   {
@@ -166,6 +171,8 @@ namespace Networks {
     std::map<std::string, ModuleId> moduleIdMap_;
     std::map<std::string, std::string> connectionIdMap_;
     static const std::map<std::string, std::string> moduleRenameMap_;
+    static NameLookup nameLookup_;
+    static ValueConverterMap valueConverter_;
   };
 
 }}} // end namespace SCIRun

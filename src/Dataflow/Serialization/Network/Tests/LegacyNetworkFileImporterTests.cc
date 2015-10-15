@@ -131,9 +131,12 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleWithState
   auto networkFile = load("clvState.srn");
   ASSERT_TRUE(networkFile != nullptr);
 
+  EXPECT_EQ(3, networkFile->network.modules.size());
 
-
-
+  auto mod = *networkFile->network.modules.begin();
+  EXPECT_EQ("CreateLatVol:0", mod.first);
+  EXPECT_TRUE(mod.second.state.containsKey(Name("XSize")));
+  EXPECT_TRUE(mod.second.state.containsKey(Name("PadPercent")));
 
 
 

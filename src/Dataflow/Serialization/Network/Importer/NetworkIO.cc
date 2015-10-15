@@ -59,6 +59,7 @@
 #include <sstream>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath, const ModuleFactory& modFactory) :
 net_file_("new.srn"),
@@ -423,19 +424,73 @@ const std::string &val)
     v.insert(++pos, mod + "-");
     cmmd = "set " + v +  " " + val;
   }
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+  //std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
 
   if (!xmlData_)
     return;
 
-  std::cout << "STATE TO IMPLEMENT: mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+  std::cout << "STATE CONVERSION TO IMPLEMENT: mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
 
-  std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module....name;
-  SimpleMapModuleStateXML& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
+  std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
+  auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
-  stateXML.setValue(nameLookup_[moduleName][var], valueConverter_[moduleName](val));
-
+  std::string stripBraces(val.begin() + 1, val.end() - 1);
+  stateXML.setValue(nameLookup_[moduleName][var], valueConverter_[moduleName][var](stripBraces));
 }
+
+namespace
+{
+  ValueConverter toInt = [](const std::string& s) { return boost::lexical_cast<int>(s); };
+  ValueConverter toDouble = [](const std::string& s) { return boost::lexical_cast<double>(s); };
+  ValueConverter toPercent = [](const std::string& s) { return boost::lexical_cast<double>(s) / 100.0; };
+
+  //TODO: mapping macro or find a boost lib to do pattern matching with funcs easily
+  ValueConverter data_at = [](const std::string& s)
+  {
+    if (s == "Nodes") return 0;
+    if (s == "Cells") return 1;
+    return 2;
+  };
+  ValueConverter element_size = [](const std::string& s)
+  {
+    if (s == "Mesh") return 0;
+    //if (s == "Element")
+    return 1;
+  };
+
+  ValueConverter throwAway = [](const std::string& s) { return 0; };
+}
+
+NameLookup LegacyNetworkIO::nameLookup_ =
+{
+  {
+    "CreateLatVol",
+    {
+      { "sizex", Name("XSize") },
+      { "sizey", Name("YSize") },
+      { "sizez", Name("ZSize") },
+      { "padpercent", Name("PadPercent") },
+      { "data-at", Name("DataAtLocation") },
+      { "element-size", Name("ElementSizeNormalized") }
+    }
+  }
+};
+
+ValueConverterMap LegacyNetworkIO::valueConverter_ =
+{
+  {
+    "CreateLatVol",
+    {
+      { "sizex", toInt },
+      { "sizey", toInt },
+      { "sizez", toInt },
+      { "padpercent", toPercent },
+      { "data-at", data_at },
+      { "element-size", element_size },
+      { "ui_geometry", throwAway }
+    }
+  }
+};
 
 #if 0
 void
