@@ -424,7 +424,6 @@ const std::string &val)
     v.insert(++pos, mod + "-");
     cmmd = "set " + v +  " " + val;
   }
-  //std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
 
   if (!xmlData_)
     return;
@@ -434,8 +433,20 @@ const std::string &val)
   std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
+  auto moduleNameMapIter = nameLookup_.find(moduleName);
+  if (moduleNameMapIter == nameLookup_.end())
+  {
+    std::cerr << "GuiVar name mapping not available for module: " << moduleName << ", please contact a developer." << std::endl;
+    return;
+  }
+  auto valueConverterForModuleIter = valueConverter_.find(moduleName);
+  if (valueConverterForModuleIter == valueConverter_.end())
+  {
+    std::cerr << "GuiVar value mapping not available for module: " << moduleName << ", please contact a developer." << std::endl;
+    return;
+  }
   std::string stripBraces(val.begin() + 1, val.end() - 1);
-  stateXML.setValue(nameLookup_[moduleName][var], valueConverter_[moduleName][var](stripBraces));
+  stateXML.setValue(moduleNameMapIter->second[var], valueConverterForModuleIter->second[var](stripBraces));
 }
 
 namespace
