@@ -75,14 +75,6 @@ modFactory_(modFactory)
   netid_to_conid_.push(id_map_t());
 }
 
-#if 0
-std::string NetworkIO::net_file()
-{
-  FullFileName netfile(net_file_);
-  return netfile.get_abs_filename();
-}
-#endif
-
 std::string
 LegacyNetworkIO::get_mod_id(const std::string& id)
 {
@@ -395,16 +387,6 @@ NetworkIO::gui_call_mod_post_read(const std::string &mod_id)
   if (mod.get_rep()) { mod->post_read(); }
 }
 
-
-void
-NetworkIO::gui_set_connection_route(const std::string &con_id,
-const std::string &route)
-{
-  id_map_t &cmap = netid_to_conid_.top();
-  std::string con = cmap[con_id];
-  std::string cmmd = "set ConnectionRoutes(" + con + ") " + route;
-  TCLInterface::eval(cmmd);
-}
 #endif
 
 void
