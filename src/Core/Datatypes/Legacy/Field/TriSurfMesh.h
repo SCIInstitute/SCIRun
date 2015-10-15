@@ -1061,10 +1061,11 @@ public:
     ei = bi; ej = bj; ek = bk;
 
     double dmin = maxdist;
-    double dmean = maxdist;
-    const double perturb= epsilon_*1e6; //value to move to find new point.
+    double dmean = maxdist*2;
     bool found = true;
     bool found_one = false;
+    
+    std::cout<<" epsilon2_ =  "<<epsilon2_ <<std::endl;
 
     do
     {
@@ -1090,29 +1091,86 @@ public:
 
                 while (it != eit)
                 {
-                  Core::Geometry::Point r;
+                  Core::Geometry::Point r, r_pert;
                   index_type idx = (*it) * 3;
-                  closest_point_on_tri(r, p,
-                                       points_[faces_[idx  ]],
-                                       points_[faces_[idx+1]],
-                                       points_[faces_[idx+2]]);
-
-                  // middle of the triangle for checking which face is closer when closest point is on the edge
-                  const Core::Geometry::Point &p_mean = (points_[faces_[idx  ]] + points_[faces_[idx+1]] + points_[faces_[idx+2]])/3;
+                  
+                  const Core::Geometry::Point &p1 = points_[faces_[idx  ]];
+                  const Core::Geometry::Point &p2 = points_[faces_[idx+1]];
+                  const Core::Geometry::Point &p3 = points_[faces_[idx+2]];
+                  
+                  closest_point_on_tri(r, p, p1, p2, p3);
+                  
                   double dtmp = (p - r).length2();
-                  double dtmp2=dtmp;
-                    
-                  if ((p_mean-r).length2()>=epsilon2_)
+
+                  // middle of the triangle
+                  const Core::Geometry::Point &p_mean = (p1+p2+p3)/3;
+                  
+                  
+                  //test triangle size for scaling
+                  Core::Geometry::Vector v12= Core::Geometry::Vector(p2-p1); v12.normalize();
+                  Core::Geometry::Vector v13= Core::Geometry::Vector(p3-p1); v13.normalize();
+                  Core::Geometry::Vector v21= Core::Geometry::Vector(p1-p2); v21.normalize();
+                  Core::Geometry::Vector v23= Core::Geometry::Vector(p3-p2); v23.normalize();
+                  Core::Geometry::Vector v31= Core::Geometry::Vector(p1-p3); v31.normalize();
+                  Core::Geometry::Vector v32= Core::Geometry::Vector(p2-p3); v32.normalize();
+                  
+                  Core::Geometry::Vector v1=(v12+v13); v1.normalize();
+                  Core::Geometry::Vector v2=(v21+v23); v2.normalize();
+                  Core::Geometry::Vector v3=(v31+v32); v3.normalize();
+                  
+                  
+                  double perturb= epsilon_*10; //value to move to find new point.
+                  
+                  double d1 = perturb/(Dot(v1,v12));
+                  double d2 = perturb/(Dot(v2,v23));
+                  double d3 = perturb/(Dot(v3,v31));
+                  
+                  Core::Geometry::Vector f_v1= Core::Geometry::Vector(p_mean-p1);
+                  Core::Geometry::Vector f_v2= Core::Geometry::Vector(p_mean-p2);
+                  Core::Geometry::Vector f_v3= Core::Geometry::Vector(p_mean-p3);
+                  
+                  //test triangle size for scaling
+                  if ( f_v1.length() < d1 || f_v2.length() < d2 || f_v3.length() < d3)
                   {
-                    // check a second point on the triangle to confirm it is really closest
-                    Core::Geometry::Vector f_v= Core::Geometry::Vector(p_mean-r); f_v.normalize();
-                    dtmp2 = (p - Core::Geometry::Point(p_mean+(f_v*perturb))).length2();
+                    std::cout<<"small triangle"<<std::endl;
+                    
                   }
+                  
+                  //scale triangle to test precision
+                  const Core::Geometry::Point &p1_ = Core::Geometry::Point(p1+v1*d1);
+                  const Core::Geometry::Point &p2_ = Core::Geometry::Point(p2+v2*d2);
+                  const Core::Geometry::Point &p3_ = Core::Geometry::Point(p3+v3*d3);
+                  
+                  closest_point_on_tri(r_pert, p, p1_, p2_, p3_);
+                  
+                  double dtmp2=(p-r_pert).length2();
+                  
+                  
+                  
+
+                  
+                  std::cout<<"checking face "<< INDEX(*it)<< std::endl;
+                  std::cout<<"p= "<<p<<"; r= "<<r<<"; p_mean= "<<p_mean<<"; r_pert= "<<r_pert<<std::endl;
+
+                  std::cout<<"dmin = "<<dmin<<"; dtmp = "<<dtmp<<"; diff1= "<< dtmp-dmin <<";"<<std::endl;
+                  std::cout<<"dmean = "<<dmean<<"; dtmp2 = "<<dtmp2<<"; diff2= "<< dtmp2-dmean <<";"<<std::endl;
+                  
+                  std::cout<<"v1= "<<v1<<"; v2= "<<v2<<"; v3= "<<v3<<std::endl;
+                  std::cout<<"d1= "<<d1<<"; d2= "<<d2<<"; d3= "<<d3<<std::endl;
+                  std::cout<<"p1= "<<p1<<"; p2= "<<p2<<"; p3= "<<p3<<std::endl;
+                  std::cout<<"p1_= "<<p1_<<"; p2_= "<<p2_<<"; p3_= "<<p3_<<std::endl;
+                  
+                  std::cout<<"f_v1= "<<f_v1<<"; f_v2= "<<f_v2<<"; f_v3= "<<f_v3<<"; perturb="<<perturb<<std::endl;
                   
                   //check for closest face and check within precision
                   
+                  std::cout<<"booleans : "<<(dtmp-dmin <= epsilon2_) <<";" <<(dtmp-dmin < - epsilon2_)<<";" << ( dtmp2-dmean < - epsilon2_ )<<";" << ( dtmp<dmin  && std::abs(dtmp2-dmean) < epsilon2_ )<<";" <<  (dtmp2 < dmean && dtmp-dmin > - epsilon2_) <<";" <<std::endl;
+                  std::cout<<" epsilon2_ =  "<<epsilon2_ <<std::endl;
+                  
+                  
                   if (dtmp-dmin <= epsilon2_)
                   {
+                    std::cout<<" possible closer face "<<std::endl;
                     if (dtmp-dmin < - epsilon2_)
                     {
                       found_one = true;
@@ -1120,6 +1178,10 @@ public:
                       face = INDEX(*it);
                       dmin = dtmp;
                       dmean =dtmp2;
+                      
+                      
+                      std::cout<<" new min distance.  Face = "<<face<<std::endl;
+                      
                       
                       if (dmin < epsilon2_)
                       {
@@ -1131,21 +1193,26 @@ public:
                         return (true);
                       }
                     }
-                    else if ( dtmp2-dmean < -epsilon2_ )
+                    else if (dtmp2-dmean < - epsilon2_ )
                     {
                       found_one = true;
                       result = r;
                       face = INDEX(*it);
                       if (dmin>=dtmp) dmin=dtmp;
                       dmean =dtmp2;
+                      
+                      std::cout<<" new mean distance.  Face = "<<face<<std::endl;
+                      
                     }
-                    else if ( dtmp<dmin  && std::abs(dtmp2-dmean) < epsilon2_ )
+                    else if (dtmp<dmin  && std::abs(dtmp2-dmean) < epsilon2_ )
                     {
                       found_one = true;
                       result = r;
                       face = INDEX(*it);
                       dmin = dtmp;
                       dmean =dtmp2;
+                      
+                      std::cout<<" new min distance.  within precision of both  Face = "<<face<<std::endl;
                       
                       if (dmin < epsilon2_)
                       {
@@ -1162,6 +1229,13 @@ public:
                       result = r;
                       face = INDEX(*it);
                       dmean =dtmp2;
+                      
+                      std::cout<<" new mean distance.  within precision of both  Face = "<<face<<std::endl;
+                      
+                    }
+                    else
+                    {
+                    std::cout<<" no closer face assigned "<<std::endl;
                     }
                   }
                   
