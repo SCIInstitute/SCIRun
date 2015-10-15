@@ -40,7 +40,7 @@ using namespace boost::assign;
 using ::testing::Return;
 using ::testing::NiceMock;
 
-ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& info)
+ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& info) const
 {
   ModuleDescription d;
   d.lookupInfo_ = info;
@@ -70,7 +70,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
     portIndex++;
   }
   ON_CALL(*module, inputPorts()).WillByDefault(Return(inputs));
-  
+
   ON_CALL(*module, num_output_ports()).WillByDefault(Return(info.output_ports_.size()));
   portIndex = 0;
   std::vector<OutputPortHandle> outputs;
@@ -86,7 +86,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
     portIndex++;
   }
   ON_CALL(*module, outputPorts()).WillByDefault(Return(outputs));
-  
+
   ModuleId id("module", ++moduleCounter_);
   ON_CALL(*module, get_id()).WillByDefault(Return(id));
 

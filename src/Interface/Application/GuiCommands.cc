@@ -39,6 +39,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Interface/Application/Utility.h>
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
@@ -224,7 +225,8 @@ NetworkFileHandle FileOpenCommand::processXmlFile()
 NetworkFileHandle FileImportCommand::processXmlFile()
 {
   auto dtdpath = Core::Application::Instance().executablePath();
-  LegacyNetworkIO lnio(dtdpath.string());
+  const auto& modFactory = Core::Application::Instance().controller()->moduleFactory();
+  LegacyNetworkIO lnio(dtdpath.string(), modFactory);
   return lnio.load_net(filename_);
 }
 

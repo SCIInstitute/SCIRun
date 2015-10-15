@@ -44,6 +44,7 @@
 
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Network/Network.h>
+#include <Dataflow/Network/ModuleFactory.h>
 #include <Core/XMLUtil/XMLUtil.h>
 //#include <Dataflow/Network/NetworkEditor.h>
 #include <Dataflow/Network/Module.h>
@@ -58,27 +59,21 @@
 #include <sstream>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath) :
+LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath, const ModuleFactory& modFactory) :
 net_file_("new.srn"),
 done_writing_(false),
 doc_(0),
 out_fname_(""),
 sn_count_(0),
 sn_ctx_(0),
-dtdPath_(dtdpath)
+dtdPath_(dtdpath),
+modFactory_(modFactory)
 {
   netid_to_modid_.push(id_map_t());
   netid_to_conid_.push(id_map_t());
 }
-
-#if 0
-std::string NetworkIO::net_file()
-{
-  FullFileName netfile(net_file_);
-  return netfile.get_abs_filename();
-}
-#endif
 
 std::string
 LegacyNetworkIO::get_mod_id(const std::string& id)
@@ -144,23 +139,16 @@ void
 LegacyNetworkIO::gui_add_module_at_position(const std::string &mod_id,
 const std::string &cpackage,
 const std::string &ccategory,
-const std::string &cmodule,
+const std::string &moduleNameOrig,
 const std::string &cversion,
 const std::string& x,
 const std::string &y)
 {
-  //std::cout << "TO BE IMPLEMENTED: gui_add_module_at_position "
-  //  << "\n\t" << mod_id
-  //  << "\n\t" << cpackage
-  //  << "\n\t" << ccategory
-  //  << "\n\t" << cmodule
-  //  << "\n\t" << cversion
-  //  << "\n\t" << x
-  //  << "\n\t" << y << std::endl;
   if (!xmlData_)
     return;
 
-  //TODO: probably need a bimap here.
+  const std::string cmodule = checkForModuleRename(moduleNameOrig);
+
   std::vector<int> existingIdsWithThisModuleName;
   boost::copy(moduleIdMap_
     | boost::adaptors::map_values
@@ -177,64 +165,71 @@ const std::string &y)
   mod.category_name_ = ccategory;
   mod.module_name_= cmodule;
 
+  const double guiScalingFactor = 1.5;
   xmlData_->modulePositions.modulePositions[moduleIdMap_[mod_id]] =
-    { boost::lexical_cast<double>(x),
-      boost::lexical_cast<double>(y) };
+    { boost::lexical_cast<double>(x) * guiScalingFactor,
+      boost::lexical_cast<double>(y) * guiScalingFactor};
+}
 
-#if 0
-
-  // Create the module.
-  std::string package;
-  std::string category;
-  std::string module;
-  std::string version;
-  ModuleHandle mod =
-    net_->add_module_maybe_replace(cpackage, ccategory, cmodule, cversion,
-    package, category, module, version);
-
-  // TODO: Fix crash bug here when package is not available.
-  // Invoke nice gui for not loading this network rather than crash to
-  // command line.
-  if (!mod.get_rep())
+//TODO: move into a config file
+const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
   {
-    //    package = "SCIRun"; category = "Unknown"; module = "Unknown";
-    //    mod = net_->add_module(package,
-    //							 category,
-    //							 module);
-    net_->incr_network_error_code();
-  }
+    {"MapFieldDataOntoElems", "MapFieldDataOntoElements"},
+    {"GetColumnOrRowFromMatrix", "GetMatrixSlice"},
+    {"CreateStandardColorMaps", "CreateStandardColorMap"}
+  };
 
-  if (mod)
-  {
-    // Now tell tcl about the module.
-    std::string cmmd = "addModuleAtAbsolutePosition " + package + " " +
-      category + " " + module + " " + x + " " + y + " " + mod->get_id();
-    std::string mid = TCLInterface::eval(cmmd);
-    id_map_t &mmap = netid_to_modid_.top();
-    mmap[mod_id] = mid;
-  }
-  #endif
+std::string LegacyNetworkIO::checkForModuleRename(const std::string& originalName)
+{
+  auto rename = moduleRenameMap_.find(originalName);
+  if (rename != moduleRenameMap_.end())
+    return rename->second;
+  return originalName;
 }
 
 void
-LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port)
+LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string& to,
+  const std::string& from_port, const std::string& to_port, const std::string& con_id)
 {
-  std::cout << "TO IMPLEMENT: createConnectionNew \n\t" << from << "\n\t" << to << "\n\t"  << from_port << "\n\t"  << to_port << std::endl;
+  auto fromId = moduleIdMap_[from];
+  auto toId = moduleIdMap_[to];
+
   if (!xmlData_)
     return;
 
+  auto fromDesc = modFactory_.lookupDescription(ModuleLookupInfo(fromId.name_, "TODO", "SCIRun"));
+  auto toDesc = modFactory_.lookupDescription(ModuleLookupInfo(toId.name_, "TODO", "SCIRun"));
+
   auto& connections = xmlData_->network.connections;
   OutgoingConnectionDescription out;
-  //TODO: need to have converted module ids by this point. need a map.
-  out.moduleId_ = moduleIdMap_[from];
-  out.portId_ = PortId(boost::lexical_cast<int>(from_port));
+  out.moduleId_ = fromId;
+
+  auto fromIndex = boost::lexical_cast<int>(from_port);
+  if (fromIndex >= fromDesc.output_ports_.size() && fromDesc.output_ports_.back().isDynamic)
+  {
+    out.portId_ = fromDesc.output_ports_.back().id;
+    out.portId_.id = fromIndex;
+  }
+  else
+    out.portId_ = fromDesc.output_ports_.at(fromIndex).id;
   IncomingConnectionDescription in;
-  in.moduleId_ = moduleIdMap_[to];
-  in.portId_ = PortId(boost::lexical_cast<int>(to_port));
+  in.moduleId_ = toId;
+
+  auto toIndex = boost::lexical_cast<int>(to_port);
+
+  if (toIndex >= toDesc.input_ports_.size() && toDesc.input_ports_.back().isDynamic)
+  {
+    in.portId_ = toDesc.input_ports_.back().id;
+    in.portId_.id = toIndex;
+  }
+  else
+    in.portId_ = toDesc.input_ports_.at(toIndex).id;
+
   ConnectionDescriptionXML conn;
   conn.out_ = out;
   conn.in_ = in;
   connections.push_back(conn);
+  connectionIdMap_[con_id] = ConnectionId::create(conn).id_;
 }
 
 void
@@ -247,81 +242,11 @@ const std::string &to_port0)
   std::string to_port = to_port0;
   std::string from = get_mod_id(from_id);
   std::string to = get_mod_id(to_id);
-  std::string arg = "1";
   if (from.find("Subnet") == std::string::npos &&
     to.find("Subnet") == std::string::npos)
   {
-    arg = "0";
-    // create the connection.
-    createConnectionNew(from_id, to_id, from_port, to_port0);
-    #if 0
-    ModuleHandle omod = net_->get_module_by_id(from);
-    ModuleHandle imod = net_->get_module_by_id(to);
-
-    if (omod.get_rep() == 0 || imod.get_rep() == 0)
-    {
-      std::cerr << "Bad connection made, one or more modules not available.\n";
-      return;
-    }
-
-    int owhich;
-    from_string(from_port,owhich);
-    int iwhich;
-    from_string(to_port,iwhich);
-
-    if( omod->get_oport(owhich) == 0 )
-    {
-      std::cerr << "Can not get " << omod->get_modulename()
-        << " output port " << owhich
-        << " that connects to  " << imod->get_modulename()
-        << " input port " << iwhich
-        << std::endl;
-
-      return;
-    }
-
-    if( imod->get_iport(iwhich) == 0 )
-    {
-      std::cerr << "Can not get " << imod->get_modulename()
-        << " input port " << iwhich
-        << " that connects to  " << omod->get_modulename()
-        << " output port " << owhich
-        << std::endl;
-
-      return;
-    }
-
-    std::string d0 = omod->get_oport(owhich)->get_typename();
-    std::string d1 = imod->get_iport(iwhich)->get_typename();
-
-    if (d0 != d1)
-    {
-      std::cerr << "Port type mismatch between output module "
-        << omod->get_modulename()
-        << " output port " << owhich << " with type " << d0
-        << " that connects to input module " << iwhich
-        << imod->get_modulename()
-        << " input port " << iwhich << " with type " << d1
-        << std::endl;
-
-      return;
-    }
-
-    net_->connect(omod, owhich, imod, iwhich);
-    #endif
+    createConnectionNew(from_id, to_id, from_port, to_port0, con_id);
   }
-
-  // Now tell tcl about the connection.
-  // tell tcl about the connection, last argument tells it not to creat the
-  // connection on the C side, since we just did that above.
-  std::string cmmd = "createConnection [list " + from + " " + from_port +
-    " " + to + " " + to_port + "] 0 " + arg;
-  std::cout << "TCLInterface::eval " << cmmd << std::endl;
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  std::string cid = TCLInterface::eval(cmmd);
-  id_map_t &cmap = netid_to_conid_.top();
-  cmap[con_id] = cid;
-#endif
 }
 
 #if 0
@@ -374,8 +299,84 @@ const std::string &val)
     v.insert(++pos, mod + "-");
     cmmd = "set " + v +  " " + val;
   }
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+
+  if (!xmlData_)
+    return;
+
+  std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
+  auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
+
+  auto moduleNameMapIter = nameLookup_.find(moduleName);
+  if (moduleNameMapIter == nameLookup_.end())
+  {
+    std::cerr << "GuiVar name mapping not available for module: " << moduleName << ", please contact a developer." << std::endl;
+    std::cerr << "STATE CONVERSION TO IMPLEMENT: mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+    return;
+  }
+  auto valueConverterForModuleIter = valueConverter_.find(moduleName);
+  if (valueConverterForModuleIter == valueConverter_.end())
+  {
+    std::cerr << "GuiVar value mapping not available for module: " << moduleName << ", please contact a developer." << std::endl;
+    std::cerr << "STATE CONVERSION TO IMPLEMENT: mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+    return;
+  }
+  std::string stripBraces(val.begin() + 1, val.end() - 1);
+  stateXML.setValue(moduleNameMapIter->second[var], valueConverterForModuleIter->second[var](stripBraces));
 }
+
+namespace
+{
+  ValueConverter toInt = [](const std::string& s) { return boost::lexical_cast<int>(s); };
+  ValueConverter toDouble = [](const std::string& s) { return boost::lexical_cast<double>(s); };
+  ValueConverter toPercent = [](const std::string& s) { return boost::lexical_cast<double>(s) / 100.0; };
+
+  //TODO: mapping macro or find a boost lib to do pattern matching with funcs easily
+  ValueConverter data_at = [](const std::string& s)
+  {
+    if (s == "Nodes") return 0;
+    if (s == "Cells") return 1;
+    return 2;
+  };
+  ValueConverter element_size = [](const std::string& s)
+  {
+    if (s == "Mesh") return 0;
+    //if (s == "Element")
+    return 1;
+  };
+
+  ValueConverter throwAway = [](const std::string& s) { return 0; };
+}
+
+NameLookup LegacyNetworkIO::nameLookup_ =
+{
+  {
+    "CreateLatVol",
+    {
+      { "sizex", Name("XSize") },
+      { "sizey", Name("YSize") },
+      { "sizez", Name("ZSize") },
+      { "padpercent", Name("PadPercent") },
+      { "data-at", Name("DataAtLocation") },
+      { "element-size", Name("ElementSizeNormalized") }
+    }
+  }
+};
+
+ValueConverterMap LegacyNetworkIO::valueConverter_ =
+{
+  {
+    "CreateLatVol",
+    {
+      { "sizex", toInt },
+      { "sizey", toInt },
+      { "sizez", toInt },
+      { "padpercent", toPercent },
+      { "data-at", data_at },
+      { "element-size", element_size },
+      { "ui_geometry", throwAway }
+    }
+  }
+};
 
 #if 0
 void
@@ -386,44 +387,64 @@ NetworkIO::gui_call_mod_post_read(const std::string &mod_id)
   if (mod.get_rep()) { mod->post_read(); }
 }
 
-
-void
-NetworkIO::gui_set_connection_route(const std::string &con_id,
-const std::string &route)
-{
-  id_map_t &cmap = netid_to_conid_.top();
-  std::string con = cmap[con_id];
-  std::string cmmd = "set ConnectionRoutes(" + con + ") " + route;
-  TCLInterface::eval(cmmd);
-}
 #endif
 
 void
 LegacyNetworkIO::gui_set_module_note(const std::string &mod_id, const std::string &pos,
 const std::string &col, const std::string &note)
 {
-  std::string mod = get_mod_id(mod_id);
-  std::string cmmd = "set Notes(" + mod + ") " + note;
-  std::cout << "TCLInterface::eval " << cmmd << std::endl;
-  cmmd = "set Notes(" + mod + "-Position) " + pos;
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
-  cmmd = "set Notes(" + mod + "-Color) " + col;
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+  if (!xmlData_)
+    return;
+
+  std::string stripBraces(note.begin() + 1, note.end() - 1);
+  int position = getNotePosition(pos);
+  NoteXML noteXml(stripBraces, position, stripBraces);
+  xmlData_->moduleNotes.notes[moduleIdMap_[mod_id]] = noteXml;
 }
 
+int LegacyNetworkIO::getNotePosition(const std::string& position) const
+{
+  // expected format is {p}
+  if (position.length() < 3)
+    return 0;
+  char oldPos = position[1];
+  /* copied from gui header; should move type down here
+  enum NotePosition
+  {
+    Default,  0
+    None,     1
+    Tooltip,  2
+    Top,      3
+    Left,     4
+    Right,    5
+    Bottom    6
+  };
+  */
+  switch (oldPos)
+  {
+  case 'n':
+    return 3;
+  case 's':
+    return 6;
+  case 'e':
+    return 5;
+  case 'w':
+    return 4;
+  case 't':
+    return 2;
+  default:
+    return 0;
+  }
+}
 
 void
 LegacyNetworkIO::gui_set_connection_note(const std::string &con_id, const std::string &pos,
 const std::string &col, const std::string &note)
 {
-  id_map_t &cmap = netid_to_conid_.top();
-  std::string con = cmap[con_id];
-  std::string cmmd = "set Notes(" + con + ") " + note;
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
-  cmmd = "set Notes(" + con + "-Position) " + pos;
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
-  cmmd = "set Notes(" + con + "-Color) " + col;
-  std::cout << "TCLInterface::eval " << (cmmd) << std::endl;
+  std::string stripBraces(note.begin() + 1, note.end() - 1);
+  NoteXML noteXml(stripBraces, 0, stripBraces);
+  //std::cout << "TODO NOT WORKING YET:::SETTING CONNECTION note: " << connectionIdMap_[con_id] << " note is " << stripBraces << std::endl;
+  xmlData_->connectionNotes.notes[connectionIdMap_[con_id]] = noteXml;
 }
 
 void
@@ -475,7 +496,6 @@ LegacyNetworkIO::process_modules_pass1(const xmlNodePtr enode)
       xmlAttrPtr category_att = get_attribute_by_name(node, "category");
       xmlAttrPtr name_att = get_attribute_by_name(node, "name");
       xmlAttrPtr version_att = get_attribute_by_name(node, "version");
-
 
       std::string mname = std::string(to_char_ptr(name_att->children->content));
       std::string mid = std::string(to_char_ptr(id_att->children->content));
@@ -820,7 +840,7 @@ LegacyNetworkIO::process_filename(const std::string &orig)
 std::string
 LegacyNetworkIO::process_substitute(const std::string &orig)
 {
-  std::cout << "TO BE IMPLEMENTED: process_substitute " << orig << std::endl;
+  //std::cout << "TO BE IMPLEMENTED: process_substitute " << orig << std::endl;
   return orig;
   #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
   std::string src = orig;
@@ -1404,20 +1424,6 @@ const std::string &y)
 
 }
 
-
-void
-NetworkIO::add_module_note(const std::string &id, const std::string &note)
-{
-  xmlNode* mnode = get_module_node(id);
-
-  if (! mnode) {
-    std::cerr << "ERROR: could not find module node with id (add_module_note): " << id << std::endl;
-    return;
-  }
-  xmlNewTextChild(mnode, 0, BAD_CAST "note", BAD_CAST note.c_str());
-}
-
-
 void
 NetworkIO::add_module_note_position(const std::string &id, const std::string &pos)
 {
@@ -1571,21 +1577,6 @@ NetworkIO::add_connection_route(const std::string &id, const std::string &route)
 
   xmlNewTextChild(cid_node, 0, BAD_CAST "route", BAD_CAST route.c_str());
 }
-
-
-void
-NetworkIO::add_connection_note(const std::string &id, const std::string &note)
-{
-  xmlNode* cid_node = get_connection_node(id);
-
-  if (! cid_node) {
-    std::cerr << "ERROR: could not find connection node with id: " << id << std::endl;
-    return;
-  }
-
-  xmlNewTextChild(cid_node, 0, BAD_CAST "note", BAD_CAST note.c_str());
-}
-
 
 void
 NetworkIO::add_connection_note_position(const std::string &id, const std::string &pos)
