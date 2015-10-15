@@ -1094,11 +1094,14 @@ public:
                   Core::Geometry::Point r, r_pert;
                   index_type idx = (*it) * 3;
                   
-                  const Core::Geometry::Point &p1 = points_[faces_[idx  ]];
-                  const Core::Geometry::Point &p2 = points_[faces_[idx+1]];
-                  const Core::Geometry::Point &p3 = points_[faces_[idx+2]];
+                  std::cout<<"checking face "<< INDEX(*it)<< std::endl;
+                  
+                  const Core::Geometry::Point p1 = points_[faces_[idx  ]];
+                  const Core::Geometry::Point p2 = points_[faces_[idx+1]];
+                  const Core::Geometry::Point p3 = points_[faces_[idx+2]];
                   
                   closest_point_on_tri(r, p, p1, p2, p3);
+                  std::cout<<"p1= "<<p1<<"; p2= "<<p2<<"; p3= "<<p3<<std::endl;
                   
                   double dtmp = (p - r).length2();
 
@@ -1119,7 +1122,7 @@ public:
                   Core::Geometry::Vector v3=(v31+v32); v3.normalize();
                   
                   
-                  double perturb= epsilon_*10; //value to move to find new point.
+                  double perturb= epsilon_*100; //value to move to find new point.
                   
                   double d1 = perturb/(Dot(v1,v12));
                   double d2 = perturb/(Dot(v2,v23));
@@ -1136,20 +1139,26 @@ public:
                     
                   }
                   
+                  f_v1.normalize();
+                  f_v2.normalize();
+                  f_v3.normalize();
+                  
                   //scale triangle to test precision
-                  const Core::Geometry::Point &p1_ = Core::Geometry::Point(p1+v1*d1);
-                  const Core::Geometry::Point &p2_ = Core::Geometry::Point(p2+v2*d2);
-                  const Core::Geometry::Point &p3_ = Core::Geometry::Point(p3+v3*d3);
+                  const Core::Geometry::Point p1_ = Core::Geometry::Point(p1+v1*d1);
+                  const Core::Geometry::Point p2_ = Core::Geometry::Point(p2+v2*d2);
+                  const Core::Geometry::Point p3_ = Core::Geometry::Point(p3+v3*d3);
                   
                   closest_point_on_tri(r_pert, p, p1_, p2_, p3_);
                   
                   double dtmp2=(p-r_pert).length2();
                   
+                  const Core::Geometry::Point p1_2 = Core::Geometry::Point(p1+v1*perturb);
+                  const Core::Geometry::Point p2_2 = Core::Geometry::Point(p2+v2*perturb);
+                  const Core::Geometry::Point p3_2 = Core::Geometry::Point(p3+v3*perturb);
+                  
+                  dtmp2 = std::min(std::min(Core::Geometry::Vector(p-p1_2).length2(),Core::Geometry::Vector(p-p2_2).length2()),std::min(Core::Geometry::Vector(p-p3_2).length2(),dtmp2));
                   
                   
-
-                  
-                  std::cout<<"checking face "<< INDEX(*it)<< std::endl;
                   std::cout<<"p= "<<p<<"; r= "<<r<<"; p_mean= "<<p_mean<<"; r_pert= "<<r_pert<<std::endl;
 
                   std::cout<<"dmin = "<<dmin<<"; dtmp = "<<dtmp<<"; diff1= "<< dtmp-dmin <<";"<<std::endl;
@@ -1157,7 +1166,6 @@ public:
                   
                   std::cout<<"v1= "<<v1<<"; v2= "<<v2<<"; v3= "<<v3<<std::endl;
                   std::cout<<"d1= "<<d1<<"; d2= "<<d2<<"; d3= "<<d3<<std::endl;
-                  std::cout<<"p1= "<<p1<<"; p2= "<<p2<<"; p3= "<<p3<<std::endl;
                   std::cout<<"p1_= "<<p1_<<"; p2_= "<<p2_<<"; p3_= "<<p3_<<std::endl;
                   
                   std::cout<<"f_v1= "<<f_v1<<"; f_v2= "<<f_v2<<"; f_v3= "<<f_v3<<"; perturb="<<perturb<<std::endl;
