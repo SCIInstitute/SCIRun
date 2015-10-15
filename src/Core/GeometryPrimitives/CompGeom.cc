@@ -139,6 +139,8 @@ closest_point_on_tri(Point &result, const Point &orig,
 {
   const Vector edge1 = p1 - p0;
   const Vector edge2 = p2 - p0;
+  
+  
 
   const Vector dir = Cross(edge1, edge2);
 
@@ -151,20 +153,49 @@ closest_point_on_tri(Point &result, const Point &orig,
 
   const Vector qvec = Cross(tvec, edge1);
   double v = Dot(dir, qvec) * inv_det;
+  
+  int bound=0;
+  Point tmp_r;
 
   if (u < 0.0)
   {
     distance_to_line2_aux(result, orig, p0, p2,epsilon);
+    bound++;
   }
-  else if (v < 0.0)
+  if (v < 0.0)
   {
-    distance_to_line2_aux(result, orig, p0, p1,epsilon);
+    distance_to_line2_aux(tmp_r, orig, p0, p1,epsilon);
+    
+    if (bound>0)
+    {
+      double tmp_dist1 = Vector(orig-result).length2();
+      double tmp_dist2 = Vector(orig-tmp_r).length2();
+      if (tmp_dist2<tmp_dist1) result = tmp_r;
+    }
+    else
+    {
+      result = tmp_r;
+    }
+    bound++;
   }
-  else if (u + v > 1.0)
+  if (u + v > 1.0)
   {
-    distance_to_line2_aux(result, orig, p1, p2,epsilon);
+    distance_to_line2_aux(tmp_r, orig, p1, p2,epsilon);
+    
+    if (bound>0)
+    {
+      double tmp_dist1 = Vector(orig-result).length2();
+      double tmp_dist2 = Vector(orig-tmp_r).length2();
+      if (tmp_dist2<tmp_dist1) result = tmp_r;
+    }
+    else
+    {
+      result = tmp_r;
+    }
+    bound++;
   }
-  else
+  
+  if (bound==0)
   {
     result = p0 + u * edge1 + v * edge2;
   }
