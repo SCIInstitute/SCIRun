@@ -28,37 +28,41 @@
 
 # CMakeLists.txt for Dataflow/Modules/String
 
-SET(Dataflow_Modules_String_SRCS
-  GetNetworkFileName.cc
-  ChooseString.cc
-  CreateString.cc
-  ReportStringInfo.cc
-  JoinStrings.cc
-  PrintMatrixIntoString.cc
+SET(Modules_Legacy_String_SRCS
+  #GetNetworkFileName.cc
+  #ChooseString.cc
+  #CreateString.cc
+  #ReportStringInfo.cc
+  #JoinStrings.cc
+  #PrintMatrixIntoString.cc
   PrintStringIntoString.cc
-  GetFileName.cc
-  SplitFileName.cc
+  #GetFileName.cc
+  #SplitFileName.cc
 )
 
-SCIRUN_ADD_LIBRARY(Dataflow_Modules_String ${Dataflow_Modules_String_SRCS})
+SET(Modules_Legacy_String_HEADERS
+  PrintStringIntoString.h
+)
 
-TARGET_LINK_LIBRARIES(Dataflow_Modules_String
+SCIRUN_ADD_LIBRARY(Modules_Legacy_String ${Modules_Legacy_String_SRCS} ${Modules_Legacy_String_HEADERS})
+
+TARGET_LINK_LIBRARIES(Modules_Legacy_String
   Core_Datatypes
-  Core_Exceptions
-  Core_Geom
-  Core_Geometry
-  Core_GeomInterface
-  Dataflow_GuiInterface
-  Core_Persistent
-  Core_Thread
-  Dataflow_TkExtensions
-  Core_Util
+  #Core_Exceptions
+  #Core_Geom
+  #Core_Geometry
+  #Core_GeomInterface
+  #Dataflow_GuiInterface
+  #Core_Persistent
+  #Core_Thread
+  #Dataflow_TkExtensions
+  #Core_Util
   Dataflow_Network
-  ${TK_LIBRARY}
-  ${GL_LIBRARY}
-  ${M_LIBRARY}
+  #${TK_LIBRARY}
+  #${GL_LIBRARY}
+  #${M_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Dataflow_Modules_String)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_String)
 ENDIF(BUILD_SHARED_LIBS)

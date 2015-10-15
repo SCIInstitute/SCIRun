@@ -94,6 +94,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_Teem_DataIO
   Modules_Legacy_Teem_Misc
   Modules_Legacy_Teem_Converters
+  Modules_Legacy_String
 )
 
 IF(BUILD_SHARED_LIBS)
