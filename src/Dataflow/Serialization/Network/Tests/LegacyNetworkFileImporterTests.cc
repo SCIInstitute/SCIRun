@@ -133,14 +133,32 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleWithState
 
   EXPECT_EQ(3, networkFile->network.modules.size());
 
-  auto mod = *networkFile->network.modules.begin();
-  EXPECT_EQ("CreateLatVol:0", mod.first);
-  EXPECT_TRUE(mod.second.state.containsKey(Name("XSize")));
-  EXPECT_TRUE(mod.second.state.containsKey(Name("PadPercent")));
-
-
-
-  FAIL() << "todo";
+  auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("CreateLatVol:0", mod->first);
+  EXPECT_TRUE(mod->second.state.containsKey(Name("XSize")));
+  EXPECT_TRUE(mod->second.state.containsKey(Name("PadPercent")));
+  EXPECT_EQ(2, mod->second.state.getValue(Name("XSize")).toInt());
+  EXPECT_EQ(3, mod->second.state.getValue(Name("YSize")).toInt());
+  EXPECT_EQ(4, mod->second.state.getValue(Name("ZSize")).toInt());
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("PadPercent")).toDouble());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("DataAtLocation")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("ElementSizeNormalized")).toInt());
+  ++mod;
+  EXPECT_EQ("CreateLatVol:1", mod->first);
+  EXPECT_EQ(10, mod->second.state.getValue(Name("XSize")).toInt());
+  EXPECT_EQ(10, mod->second.state.getValue(Name("YSize")).toInt());
+  EXPECT_EQ(10, mod->second.state.getValue(Name("ZSize")).toInt());
+  EXPECT_EQ(0.1, mod->second.state.getValue(Name("PadPercent")).toDouble());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("DataAtLocation")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("ElementSizeNormalized")).toInt());
+  ++mod;
+  EXPECT_EQ("CreateLatVol:2", mod->first);
+  EXPECT_EQ(10, mod->second.state.getValue(Name("XSize")).toInt());
+  EXPECT_EQ(10, mod->second.state.getValue(Name("YSize")).toInt());
+  EXPECT_EQ(10, mod->second.state.getValue(Name("ZSize")).toInt());
+  EXPECT_EQ(0.1, mod->second.state.getValue(Name("PadPercent")).toDouble());
+  EXPECT_EQ(1, mod->second.state.getValue(Name("DataAtLocation")).toInt());
+  EXPECT_EQ(1, mod->second.state.getValue(Name("ElementSizeNormalized")).toInt());
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesNoConnections)
