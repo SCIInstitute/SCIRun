@@ -119,7 +119,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleNoState)
   EXPECT_EQ(0, networkFile->network.connections.size());
 
   EXPECT_EQ(1, networkFile->modulePositions.modulePositions.size());
-  EXPECT_EQ(std::make_pair(289.0,151.0), networkFile->modulePositions.modulePositions.begin()->second);
+  EXPECT_EQ(std::make_pair(433.5,226.5), networkFile->modulePositions.modulePositions.begin()->second);
 
   EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
   EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
@@ -190,9 +190,9 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesNoConnectio
 
   EXPECT_EQ(3, networkFile->modulePositions.modulePositions.size());
   auto posIter = networkFile->modulePositions.modulePositions.begin();
-  EXPECT_EQ(std::make_pair(357.0,134.0), posIter->second); ++posIter;
-  EXPECT_EQ(std::make_pair(304.0,258.0), posIter->second); ++posIter;
-  EXPECT_EQ(std::make_pair(386.0,376.0), posIter->second);
+  EXPECT_EQ(std::make_pair(535.5,201.0), posIter->second); ++posIter;
+  EXPECT_EQ(std::make_pair(456.0,387.0), posIter->second); ++posIter;
+  EXPECT_EQ(std::make_pair(579.0,564.0), posIter->second);
 
   EXPECT_EQ(0, networkFile->moduleNotes.notes.size());
   EXPECT_EQ(0, networkFile->connectionNotes.notes.size());
