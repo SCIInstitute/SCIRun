@@ -1160,13 +1160,13 @@ public:
                   
                   double diff_r=Core::Geometry::Vector(r_pert-r).length2();
                   
-                  /*
+                  
                   const Core::Geometry::Point p1_2 = Core::Geometry::Point(p1+v1*perturb);
                   const Core::Geometry::Point p2_2 = Core::Geometry::Point(p2+v2*perturb);
                   const Core::Geometry::Point p3_2 = Core::Geometry::Point(p3+v3*perturb);
                   
-                  dtmp2 = std::min(std::min(Core::Geometry::Vector(p-p1_2).length2(),Core::Geometry::Vector(p-p2_2).length2()),std::min(Core::Geometry::Vector(p-p3_2).length2(),dtmp2));
-                  */
+                  //dtmp2 = std::min(std::min(Core::Geometry::Vector(p-p1_2).length2(),Core::Geometry::Vector(p-p2_2).length2()),std::min(Core::Geometry::Vector(p-p3_2).length2(),dtmp2));
+                  
                   
                   std::cout<<"p= "<<p<<"; r= "<<r<<"; p_mean= "<<p_mean<<"; r_pert= "<<r_pert<<std::endl;
 
