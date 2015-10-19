@@ -1064,6 +1064,7 @@ public:
     double dmean = maxdist*2;
     bool found = true;
     bool found_one = false;
+    double perturb= epsilon_*10; //value to move to find new point.
     
     std::cout<<" epsilon2_ =  "<<epsilon2_ <<std::endl;
 
@@ -1093,6 +1094,7 @@ public:
                 {
                   Core::Geometry::Point r, r_pert;
                   index_type idx = (*it) * 3;
+                  int edge, node;
                   
                   std::cout<<"checking face "<< INDEX(*it)<< std::endl;
                   
@@ -1100,86 +1102,126 @@ public:
                   const Core::Geometry::Point p2 = points_[faces_[idx+1]];
                   const Core::Geometry::Point p3 = points_[faces_[idx+2]];
                   
-                  closest_point_on_tri(r, p, p1, p2, p3);
+                  closest_point_on_tri(r, edge, node, p, p1, p2, p3);
+                  
                   std::cout<<"p1= "<<p1<<"; p2= "<<p2<<"; p3= "<<p3<<std::endl;
+                  std::cout<<"edge= "<<edge<<"; node= "<<node<<"; "<<std::endl;
                   
                   double dtmp = (p - r).length2();
+                  
+                  
 
                   // middle of the triangle
                   const Core::Geometry::Point &p_mean = (p1+p2+p3)/3;
                   
                   
-                  //test triangle size for scaling
-                  Core::Geometry::Vector v12= Core::Geometry::Vector(p2-p1); v12.normalize();
-                  Core::Geometry::Vector v13= Core::Geometry::Vector(p3-p1); v13.normalize();
-                  Core::Geometry::Vector v21= Core::Geometry::Vector(p1-p2); v21.normalize();
-                  Core::Geometry::Vector v23= Core::Geometry::Vector(p3-p2); v23.normalize();
-                  Core::Geometry::Vector v31= Core::Geometry::Vector(p1-p3); v31.normalize();
-                  Core::Geometry::Vector v32= Core::Geometry::Vector(p2-p3); v32.normalize();
-                  
-                  Core::Geometry::Vector v1=(v12+v13); v1.normalize();
-                  Core::Geometry::Vector v2=(v21+v23); v2.normalize();
-                  Core::Geometry::Vector v3=(v31+v32); v3.normalize();
-                  
-                  
-                  double perturb= epsilon_*10; //value to move to find new point.
-                  
-                  double dv1=Dot(v1,v12);
-                  double dv2=Dot(v2,v23);
-                  double dv3=Dot(v3,v31);
-                  
-                  double d1 = perturb/(std::sqrt(1-(dv1*dv1)));
-                  double d2 = perturb/(std::sqrt(1-(dv2*dv2)));
-                  double d3 = perturb/(std::sqrt(1-(dv3*dv3)));
-                  
-                  Core::Geometry::Vector f_v1= Core::Geometry::Vector(p_mean-p1);
-                  Core::Geometry::Vector f_v2= Core::Geometry::Vector(p_mean-p2);
-                  Core::Geometry::Vector f_v3= Core::Geometry::Vector(p_mean-p3);
-                  
-                  //test triangle size for scaling
-                  if ( f_v1.length() < d1 || f_v2.length() < d2 || f_v3.length() < d3)
+                  if (node>0)
                   {
-                    std::cout<<"small triangle"<<std::endl;
+                    Core::Geometry::Point tmp_p0=points_[faces_[idx + node]];
+                    Core::Geometry::Point tmp_p1, tmp_p2;
+                    Core::Geometry::Vector vect1,vect2;
+                    
+                    if (edge == 0)
+                    {
+                      vect2=Core::Geometry::Vector(p3-tmp_p0);
+                      if (node==0) vect1=Core::Geometry::Vector(p2-tmp_p0);
+                      else  vect1=Core::Geometry::Vector(p1-tmp_p0);
+                    }
+                    else if (edge == 1)
+                    {
+                      vect2=Core::Geometry::Vector(p1-tmp_p0);
+                      if (node==1) vect1=Core::Geometry::Vector(p3-tmp_p0);
+                      else  vect1=Core::Geometry::Vector(p2-tmp_p0);
+                    }
+                    else
+                    {
+                      vect2=Core::Geometry::Vector(p2-tmp_p0);
+                      if (node==0) vect1=Core::Geometry::Vector(p3-tmp_p0);
+                      else  vect1=Core::Geometry::Vector(p1-tmp_p0);
+                    }
+                    
+                    Core::Geometry::Vector vect3=Cross(vect1,vect2);
+                    Core::Geometry::Vector vect=Cross(vect3,vect1); vect.normalize();
+                    
+                    r_pert=Core::Geometry::Point(r+vect*perturb);
                     
                   }
-                  /*
-                  f_v1.normalize();
-                  f_v2.normalize();
-                  f_v3.normalize();
-                  */
-                  
-                  //scale triangle to test precision
-                  const Core::Geometry::Point p1_ = Core::Geometry::Point(p1+v1*d1);
-                  const Core::Geometry::Point p2_ = Core::Geometry::Point(p2+v2*d2);
-                  const Core::Geometry::Point p3_ = Core::Geometry::Point(p3+v3*d3);
-                  
-                  closest_point_on_tri(r_pert, p, p1_, p2_, p3_);
+                  else if (edge>0)
+                  {
+                    //test triangle size for scaling
+                    Core::Geometry::Vector v12= Core::Geometry::Vector(p2-p1); v12.normalize();
+                    Core::Geometry::Vector v13= Core::Geometry::Vector(p3-p1); v13.normalize();
+                    Core::Geometry::Vector v21= Core::Geometry::Vector(p1-p2); v21.normalize();
+                    Core::Geometry::Vector v23= Core::Geometry::Vector(p3-p2); v23.normalize();
+                    Core::Geometry::Vector v31= Core::Geometry::Vector(p1-p3); v31.normalize();
+                    Core::Geometry::Vector v32= Core::Geometry::Vector(p2-p3); v32.normalize();
+                    
+                    Core::Geometry::Vector v1=(v12+v13); v1.normalize();
+                    Core::Geometry::Vector v2=(v21+v23); v2.normalize();
+                    Core::Geometry::Vector v3=(v31+v32); v3.normalize();
+
+                    
+                    double dv1=Dot(v1,v12);
+                    double dv2=Dot(v2,v23);
+                    double dv3=Dot(v3,v31);
+                    
+                    double d1 = perturb/(std::sqrt(1-(dv1*dv1)));
+                    double d2 = perturb/(std::sqrt(1-(dv2*dv2)));
+                    double d3 = perturb/(std::sqrt(1-(dv3*dv3)));
+                    
+                    Core::Geometry::Vector f_v1= Core::Geometry::Vector(p_mean-p1);
+                    Core::Geometry::Vector f_v2= Core::Geometry::Vector(p_mean-p2);
+                    Core::Geometry::Vector f_v3= Core::Geometry::Vector(p_mean-p3);
+                    
+                    //test triangle size for scaling
+                    if ( f_v1.length() < d1 || f_v2.length() < d2 || f_v3.length() < d3)
+                    {
+                      std::cout<<"small triangle"<<std::endl;
+                      
+                    }
+                    /*
+                     f_v1.normalize();
+                     f_v2.normalize();
+                     f_v3.normalize();
+                     */
+                    
+                    
+                    //scale triangle to test precision
+                    const Core::Geometry::Point p1_ = Core::Geometry::Point(p1+v1*d1);
+                    const Core::Geometry::Point p2_ = Core::Geometry::Point(p2+v2*d2);
+                    const Core::Geometry::Point p3_ = Core::Geometry::Point(p3+v3*d3);
+                    
+                    closest_point_on_tri(r_pert, p, p1_, p2_, p3_);
+                    
+                    std::cout<<"v1= "<<v1<<"; v2= "<<v2<<"; v3= "<<v3<<std::endl;
+                    std::cout<<"d1= "<<d1<<"; d2= "<<d2<<"; d3= "<<d3<<std::endl;
+                    std::cout<<"p1_= "<<p1_<<"; p2_= "<<p2_<<"; p3_= "<<p3_<<std::endl;
+                    
+                    std::cout<<"f_v1= "<<f_v1<<"; f_v2= "<<f_v2<<"; f_v3= "<<f_v3<<"; perturb="<<perturb<<std::endl;
+                    
+                  }
+                  else
+                  {
+                    r_pert=r;
+                  }
                   
                   double dtmp2=(p-r_pert).length2();
                   
+                  if (dtmp2<dtmp)
+                  {
+                    std::cout<<"problem with dtmp2"<<std::endl;
+                  }
                   
                   double diff_r=Core::Geometry::Vector(r_pert-r).length2();
                   
-                  
-                  const Core::Geometry::Point p1_2 = Core::Geometry::Point(p1+v1*perturb);
-                  const Core::Geometry::Point p2_2 = Core::Geometry::Point(p2+v2*perturb);
-                  const Core::Geometry::Point p3_2 = Core::Geometry::Point(p3+v3*perturb);
-                  
-                  //dtmp2 = std::min(std::min(Core::Geometry::Vector(p-p1_2).length2(),Core::Geometry::Vector(p-p2_2).length2()),std::min(Core::Geometry::Vector(p-p3_2).length2(),dtmp2));
-                  
-                  
-                  std::cout<<"p= "<<p<<"; r= "<<r<<"; p_mean= "<<p_mean<<"; r_pert= "<<r_pert<<std::endl;
+                  std::cout<<"   p= "<<p<<"; r= "<<r<<"; p_mean= "<<p_mean<<"; r_pert= "<<r_pert<<std::endl;
 
                   std::cout<<"dist (r_pert-r) = "<<diff_r<<std::endl;
                   
-                  std::cout<<"dmin = "<<dmin<<"; dtmp = "<<dtmp<<"; diff1= "<< dtmp-dmin <<";"<<std::endl;
-                  std::cout<<"dmean = "<<dmean<<"; dtmp2 = "<<dtmp2<<"; diff2= "<< dtmp2-dmean <<";"<<std::endl;
+                  std::cout<<"  dmin = "<<dmin<<"; dtmp = "<<dtmp<<"; diff1= "<< dtmp-dmin <<";"<<std::endl;
+                  std::cout<<"  dmean = "<<dmean<<"; dtmp2 = "<<dtmp2<<"; diff2= "<< dtmp2-dmean <<";"<<std::endl;
                   
-                  std::cout<<"v1= "<<v1<<"; v2= "<<v2<<"; v3= "<<v3<<std::endl;
-                  std::cout<<"d1= "<<d1<<"; d2= "<<d2<<"; d3= "<<d3<<std::endl;
-                  std::cout<<"p1_= "<<p1_<<"; p2_= "<<p2_<<"; p3_= "<<p3_<<std::endl;
                   
-                  std::cout<<"f_v1= "<<f_v1<<"; f_v2= "<<f_v2<<"; f_v3= "<<f_v3<<"; perturb="<<perturb<<std::endl;
                   
                   //check for closest face and check within precision
                   
