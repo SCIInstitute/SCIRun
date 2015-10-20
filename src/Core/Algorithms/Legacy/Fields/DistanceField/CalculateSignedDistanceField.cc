@@ -76,8 +76,6 @@ class CalculateSignedDistanceFieldP : public Interruptible
           checkForInterruption();
           Point p, p1, p2;
           imesh->get_center(p,idx);
-          
-          std::cout<<std::endl<<std::endl<<"element number: "<<idx<<std::endl;
 
           objmesh->find_closest_elem(val,p2,fidx,p);
           objmesh->get_nodes(nodes,fidx);
@@ -87,11 +85,6 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
           n = Cross(Vector(n1-n0),Vector(n2-n1));
           k = Vector(p-p2); k.normalize();
-          
-          std::cout<<"face number: "<<fidx<<std::endl;
-          //val=fidx;
-          
-          
 
           double angle = Dot(n,k);
           if (angle < -epsilon)
@@ -150,7 +143,6 @@ class CalculateSignedDistanceFieldP : public Interruptible
           checkForInterruption();
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
-           
         }
       }
       else if (ofield->basis_order() == 1)
@@ -728,7 +720,7 @@ CalculateSignedDistanceFieldAlgo::run(FieldHandle input, FieldHandle object, Fie
 
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E|Mesh::EDGES_E);
   CalculateSignedDistanceFieldP palgo(imesh, objmesh, ofield, this);
-  const int numThreads = 1;
+  const int numThreads = Parallel::NumCores();
   auto task_i = [&palgo,numThreads,this](int i) { palgo.parallel(i, numThreads); };
   Parallel::RunTasks(task_i, numThreads);
 
@@ -818,8 +810,8 @@ CalculateSignedDistanceFieldAlgo::run(FieldHandle input, FieldHandle object, Fie
 
   CalculateSignedDistanceFieldP palgo(imesh, objmesh, objfield, dfield, vfield, this);
 
-  auto task_i = [&palgo,this](int i) { palgo.parallel2(i, 1); };
-  Parallel::RunTasks(task_i, 1);
+  auto task_i = [&palgo,this](int i) { palgo.parallel2(i, Parallel::NumCores()); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
 
   return (true);
 }
