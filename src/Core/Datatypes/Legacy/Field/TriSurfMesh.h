@@ -1109,48 +1109,30 @@ public:
                   
                   double dtmp = (p - r).length2();
                   
+                  std::cout<<"   p= "<<p<<"; r= "<<r<<std::endl;
                   
-
-                  // middle of the triangle
-                  const Core::Geometry::Point &p_mean = (p1+p2+p3)/3;
-                  
-                  
-                  if (node>0)
+                  if (edge>=0)
                   {
-                    Core::Geometry::Point tmp_p0=points_[faces_[idx + node]];
-                    Core::Geometry::Point tmp_p1, tmp_p2;
-                    Core::Geometry::Vector vect1,vect2;
+                    std::cout<<"edge check"<<std::endl;
                     
-                    if (edge == 0)
-                    {
-                      vect2=Core::Geometry::Vector(p3-tmp_p0);
-                      if (node==0) vect1=Core::Geometry::Vector(p2-tmp_p0);
-                      else  vect1=Core::Geometry::Vector(p1-tmp_p0);
-                    }
-                    else if (edge == 1)
-                    {
-                      vect2=Core::Geometry::Vector(p1-tmp_p0);
-                      if (node==1) vect1=Core::Geometry::Vector(p3-tmp_p0);
-                      else  vect1=Core::Geometry::Vector(p2-tmp_p0);
-                    }
-                    else
-                    {
-                      vect2=Core::Geometry::Vector(p2-tmp_p0);
-                      if (node==0) vect1=Core::Geometry::Vector(p3-tmp_p0);
-                      else  vect1=Core::Geometry::Vector(p1-tmp_p0);
-                    }
                     
-                    Core::Geometry::Vector vect3=Cross(vect1,vect2);
-                    Core::Geometry::Vector vect=Cross(vect3,vect1); vect.normalize();
+                    //test triangle size for scaling
+                    Core::Geometry::Vector v1= Core::Geometry::Vector(p2-p1); v1.normalize();
+                    Core::Geometry::Vector v2= Core::Geometry::Vector(p3-p1); v2.normalize();
+                    
+                    
+                    
+                    Core::Geometry::Vector n=Cross(v1,v2); n.normalize();
+                    Core::Geometry::Vector pr=Core::Geometry::Vector(r-p); pr.normalize();
+                    Core::Geometry::Vector pp=Cross(n,pr); pp.normalize();
+                    Core::Geometry::Vector vect=Cross(pp,n); vect.normalize();
                     
                     r_pert=Core::Geometry::Point(r+vect*perturb);
                     
-                  }
-                  else if (edge>0)
-                  {
-                    //test triangle size for scaling
-                    Core::Geometry::Vector v12= Core::Geometry::Vector(p2-p1); v12.normalize();
-                    Core::Geometry::Vector v13= Core::Geometry::Vector(p3-p1); v13.normalize();
+                    std::cout<<"vect= "<<vect<<std::endl;
+                    
+                    /*
+                    
                     Core::Geometry::Vector v21= Core::Geometry::Vector(p1-p2); v21.normalize();
                     Core::Geometry::Vector v23= Core::Geometry::Vector(p3-p2); v23.normalize();
                     Core::Geometry::Vector v31= Core::Geometry::Vector(p1-p3); v31.normalize();
@@ -1169,10 +1151,6 @@ public:
                     double d2 = perturb/(std::sqrt(1-(dv2*dv2)));
                     double d3 = perturb/(std::sqrt(1-(dv3*dv3)));
                     
-                    Core::Geometry::Vector f_v1= Core::Geometry::Vector(p_mean-p1);
-                    Core::Geometry::Vector f_v2= Core::Geometry::Vector(p_mean-p2);
-                    Core::Geometry::Vector f_v3= Core::Geometry::Vector(p_mean-p3);
-                    
                     //test triangle size for scaling
                     if ( f_v1.length() < d1 || f_v2.length() < d2 || f_v3.length() < d3)
                     {
@@ -1183,7 +1161,7 @@ public:
                      f_v1.normalize();
                      f_v2.normalize();
                      f_v3.normalize();
-                     */
+                     
                     
                     
                     //scale triangle to test precision
@@ -1198,6 +1176,7 @@ public:
                     std::cout<<"p1_= "<<p1_<<"; p2_= "<<p2_<<"; p3_= "<<p3_<<std::endl;
                     
                     std::cout<<"f_v1= "<<f_v1<<"; f_v2= "<<f_v2<<"; f_v3= "<<f_v3<<"; perturb="<<perturb<<std::endl;
+                     */
                     
                   }
                   else
@@ -1212,9 +1191,9 @@ public:
                     std::cout<<"problem with dtmp2"<<std::endl;
                   }
                   
-                  double diff_r=Core::Geometry::Vector(r_pert-r).length2();
+                  double diff_r=(r_pert-r).length2();
                   
-                  std::cout<<"   p= "<<p<<"; r= "<<r<<"; p_mean= "<<p_mean<<"; r_pert= "<<r_pert<<std::endl;
+                  std::cout<<"p_mean= "<<p_mean<<"; r_pert= "<<r_pert<<std::endl;
 
                   std::cout<<"dist (r_pert-r) = "<<diff_r<<std::endl;
                   

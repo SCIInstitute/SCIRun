@@ -128,6 +128,7 @@ distance_to_line2_aux(Point &result, int& node,
       Vector offset = m * t0;
       result = a + offset;
     }
+    std::cout<<"t0 = "<<t0<<"; node="<<node<<"; result= "<<result<<std::endl;
   }
 }
 
@@ -226,25 +227,66 @@ closest_point_on_tri(Point &result,
 
   const Vector qvec = Cross(tvec, edge1);
   double v = Dot(dir, qvec) * inv_det;
+  
+  int bound=0;
+  int tmp_node;
+  Point tmp_r;
 
   if (u < 0.0)
   {
     distance_to_line2_aux(result, node, orig, p0, p2,epsilon);
     if (node == 1) node = 2;
     edge = 2;
+    bound++;
   }
-  else if (v < 0.0)
+  if (v < 0.0)
   {
-    distance_to_line2_aux(result, node, orig, p0, p1,epsilon);
-    edge = 0;
+    distance_to_line2_aux(tmp_r, tmp_node, orig, p0, p1,epsilon);
+    if (bound>0)
+    {
+      double tmp_dist1 = Vector(orig-result).length2();
+      double tmp_dist2 = Vector(orig-tmp_r).length2();
+      if (tmp_dist2<tmp_dist1 || (v<u && tmp_dist2==tmp_dist1))
+      {
+        result = tmp_r;
+        node=tmp_node;
+        edge = 0;
+      }
+    }
+    else
+    {
+      result = tmp_r;
+      node=tmp_node;
+      edge = 0;
+    }
+    bound++;
   }
-  else if (u + v > 1.0)
+  if (u + v > 1.0)
   {
-    distance_to_line2_aux(result, node, orig, p1, p2,epsilon);
-    node = node + 1;
-    edge = 1;
+    distance_to_line2_aux(tmp_r, tmp_node, orig, p1, p2,epsilon);
+    
+    if (bound>0)
+    {
+      double tmp_dist1 = Vector(orig-result).length2();
+      double tmp_dist2 = Vector(orig-tmp_r).length2();
+      if (tmp_dist2<tmp_dist1 || (((u+v-1)>abs(v) || (u+v-1)>abs(u)) && tmp_dist2==tmp_dist1) )
+      {
+        result = tmp_r;
+        if (tmp_node>=0) tmp_node = tmp_node + 1;
+        node=tmp_node;
+        edge = 1;
+      }
+    }
+    else
+    {
+      result = tmp_r;
+      if (tmp_node>=0) tmp_node = tmp_node + 1;
+      node = tmp_node;
+      edge = 1;
+    }
+    bound++;
   }
-  else
+  if (bound==0)
   {
     result = p0 + u * edge1 + v * edge2;
     edge = -1;

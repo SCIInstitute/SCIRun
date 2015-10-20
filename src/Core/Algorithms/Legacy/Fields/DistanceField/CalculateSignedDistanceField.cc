@@ -89,9 +89,9 @@ class CalculateSignedDistanceFieldP : public Interruptible
           k = Vector(p-p2); k.normalize();
           
           std::cout<<"face number: "<<fidx<<std::endl;
-          val=fidx;
+          //val=fidx;
           
-          /*
+          
 
           double angle = Dot(n,k);
           if (angle < -epsilon)
@@ -150,7 +150,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
           checkForInterruption();
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
-           */
+           
         }
       }
       else if (ofield->basis_order() == 1)
