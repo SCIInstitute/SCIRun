@@ -1102,86 +1102,40 @@ public:
                   const Core::Geometry::Point p2 = points_[faces_[idx+1]];
                   const Core::Geometry::Point p3 = points_[faces_[idx+2]];
                   
-                  closest_point_on_tri(r, edge, node, p, p1, p2, p3);
+                  //closest_point_on_tri(r, edge, node, p, p1, p2, p3);
+                  closest_point_on_tri(r, p, p1, p2, p3);
                   
                   std::cout<<"p1= "<<p1<<"; p2= "<<p2<<"; p3= "<<p3<<std::endl;
-                  std::cout<<"edge= "<<edge<<"; node= "<<node<<"; "<<std::endl;
+                  //std::cout<<"edge= "<<edge<<"; node= "<<node<<"; "<<std::endl;
                   
                   double dtmp = (p - r).length2();
                   
                   std::cout<<"   p= "<<p<<"; r= "<<r<<std::endl;
                   
-                  if (edge>=0)
+                  
+                    
+                  //test triangle size for scaling
+                  Core::Geometry::Vector v1= Core::Geometry::Vector(p2-p1); v1.normalize();
+                  Core::Geometry::Vector v2= Core::Geometry::Vector(p3-p1); v2.normalize();
+                  
+                  Core::Geometry::Vector n=Cross(v1,v2); n.normalize();
+                  Core::Geometry::Vector pr=Core::Geometry::Vector(r-p); pr.normalize();
+                  
+                  if (std::abs(Dot(pr,n))>1-perturb)
                   {
-                    std::cout<<"edge check"<<std::endl;
+                    r_pert=r;
+                    std::cout<<"point perpendicular to face"<<std::endl;
                     
-                    
-                    //test triangle size for scaling
-                    Core::Geometry::Vector v1= Core::Geometry::Vector(p2-p1); v1.normalize();
-                    Core::Geometry::Vector v2= Core::Geometry::Vector(p3-p1); v2.normalize();
-                    
-                    
-                    
-                    Core::Geometry::Vector n=Cross(v1,v2); n.normalize();
-                    Core::Geometry::Vector pr=Core::Geometry::Vector(r-p); pr.normalize();
+                  }
+                  else
+                  {
+                      
                     Core::Geometry::Vector pp=Cross(n,pr); pp.normalize();
                     Core::Geometry::Vector vect=Cross(pp,n); vect.normalize();
                     
                     r_pert=Core::Geometry::Point(r+vect*perturb);
                     
                     std::cout<<"vect= "<<vect<<std::endl;
-                    
-                    /*
-                    
-                    Core::Geometry::Vector v21= Core::Geometry::Vector(p1-p2); v21.normalize();
-                    Core::Geometry::Vector v23= Core::Geometry::Vector(p3-p2); v23.normalize();
-                    Core::Geometry::Vector v31= Core::Geometry::Vector(p1-p3); v31.normalize();
-                    Core::Geometry::Vector v32= Core::Geometry::Vector(p2-p3); v32.normalize();
-                    
-                    Core::Geometry::Vector v1=(v12+v13); v1.normalize();
-                    Core::Geometry::Vector v2=(v21+v23); v2.normalize();
-                    Core::Geometry::Vector v3=(v31+v32); v3.normalize();
-
-                    
-                    double dv1=Dot(v1,v12);
-                    double dv2=Dot(v2,v23);
-                    double dv3=Dot(v3,v31);
-                    
-                    double d1 = perturb/(std::sqrt(1-(dv1*dv1)));
-                    double d2 = perturb/(std::sqrt(1-(dv2*dv2)));
-                    double d3 = perturb/(std::sqrt(1-(dv3*dv3)));
-                    
-                    //test triangle size for scaling
-                    if ( f_v1.length() < d1 || f_v2.length() < d2 || f_v3.length() < d3)
-                    {
-                      std::cout<<"small triangle"<<std::endl;
-                      
-                    }
-                    /*
-                     f_v1.normalize();
-                     f_v2.normalize();
-                     f_v3.normalize();
-                     
-                    
-                    
-                    //scale triangle to test precision
-                    const Core::Geometry::Point p1_ = Core::Geometry::Point(p1+v1*d1);
-                    const Core::Geometry::Point p2_ = Core::Geometry::Point(p2+v2*d2);
-                    const Core::Geometry::Point p3_ = Core::Geometry::Point(p3+v3*d3);
-                    
-                    closest_point_on_tri(r_pert, p, p1_, p2_, p3_);
-                    
-                    std::cout<<"v1= "<<v1<<"; v2= "<<v2<<"; v3= "<<v3<<std::endl;
-                    std::cout<<"d1= "<<d1<<"; d2= "<<d2<<"; d3= "<<d3<<std::endl;
-                    std::cout<<"p1_= "<<p1_<<"; p2_= "<<p2_<<"; p3_= "<<p3_<<std::endl;
-                    
-                    std::cout<<"f_v1= "<<f_v1<<"; f_v2= "<<f_v2<<"; f_v3= "<<f_v3<<"; perturb="<<perturb<<std::endl;
-                     */
-                    
-                  }
-                  else
-                  {
-                    r_pert=r;
                   }
                   
                   double dtmp2=(p-r_pert).length2();
@@ -1193,14 +1147,9 @@ public:
                   
                   double diff_r=(r_pert-r).length2();
                   
-                  std::cout<<"p_mean= "<<p_mean<<"; r_pert= "<<r_pert<<std::endl;
+                  std::cout<<" r_pert= "<<r_pert<<std::endl;
 
                   std::cout<<"dist (r_pert-r) = "<<diff_r<<std::endl;
-                  
-                  std::cout<<"  dmin = "<<dmin<<"; dtmp = "<<dtmp<<"; diff1= "<< dtmp-dmin <<";"<<std::endl;
-                  std::cout<<"  dmean = "<<dmean<<"; dtmp2 = "<<dtmp2<<"; diff2= "<< dtmp2-dmean <<";"<<std::endl;
-                  
-                  
                   
                   //check for closest face and check within precision
                   
@@ -1208,10 +1157,10 @@ public:
                   std::cout<<" epsilon2_ =  "<<epsilon2_ <<std::endl;
                   
                   
-                  if (dtmp-dmin <= epsilon2_)
+                  if (dtmp-dmin <= epsilon_)
                   {
                     std::cout<<" possible closer face "<<std::endl;
-                    if (dtmp-dmin < - epsilon2_)
+                    if (dtmp-dmin < - epsilon_)
                     {
                       found_one = true;
                       result = r;
@@ -1223,7 +1172,7 @@ public:
                       std::cout<<" new min distance.  Face = "<<face<<std::endl;
                       
                       
-                      if (dmin < epsilon2_)
+                      if (dmin < epsilon_)
                       {
                         
                         pdist = sqrt(dmin);
@@ -1233,7 +1182,7 @@ public:
                         return (true);
                       }
                     }
-                    else if (dtmp2-dmean < - epsilon2_ )
+                    else if (dtmp2-dmean < - epsilon_ )
                     {
                       found_one = true;
                       result = r;
@@ -1244,7 +1193,7 @@ public:
                       std::cout<<" new mean distance.  Face = "<<face<<std::endl;
                       
                     }
-                    else if (dtmp<dmin  && std::abs(dtmp2-dmean) < epsilon2_ )
+                    else if (dtmp<dmin  && std::abs(dtmp2-dmean) < epsilon_ )
                     {
                       found_one = true;
                       result = r;
@@ -1254,7 +1203,7 @@ public:
                       
                       std::cout<<" new min distance.  within precision of both  Face = "<<face<<std::endl;
                       
-                      if (dmin < epsilon2_)
+                      if (dmin < epsilon_)
                       {
                         
                         pdist = sqrt(dmin);
@@ -1263,7 +1212,7 @@ public:
                         basis_.get_coords(coords,result,ed);
                       }
                     }
-                    else if (dtmp2 < dmean && dtmp-dmin > - epsilon2_)
+                    else if (dtmp2 < dmean && dtmp-dmin > - epsilon_)
                     {
                       found_one = true;
                       result = r;
