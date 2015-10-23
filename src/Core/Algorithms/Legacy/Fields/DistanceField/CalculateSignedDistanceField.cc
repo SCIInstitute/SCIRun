@@ -59,6 +59,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
       double val = 0.0;
       double epsilon = objmesh->get_epsilon();
+      double epsilon2=epsilon*epsilon;
       int cnt = 0;
 
       if (ofield->basis_order() == 0)
@@ -77,26 +78,41 @@ class CalculateSignedDistanceFieldP : public Interruptible
           Point p, p1, p2;
           imesh->get_center(p,idx);
 
+          //std::cout<<std::endl<<std::endl<<std::endl<<"element number: "<<idx<<std::endl;
+
           objmesh->find_closest_elem(val,p2,fidx,p);
           objmesh->get_nodes(nodes,fidx);
           objmesh->get_center(n0,nodes[0]);
           objmesh->get_center(n1,nodes[1]);
           objmesh->get_center(n2,nodes[2]);
+          
+          //std::cout<<"face number: "<<fidx<<std::endl;
+          //std::cout<<"p = "<<p<<"; p2 = "<<p2<<std::endl;
+          
 
           n = Cross(Vector(n1-n0),Vector(n2-n1));
+          //std::cout<<"n = "<<n<<std::endl;
+          n.normalize();
           k = Vector(p-p2); k.normalize();
-
+          //std::cout<<"k = "<<k<<std::endl;
+          
           double angle = Dot(n,k);
+          //std::cout<<"angle = "<<angle<<"; epsilon= "<<epsilon<<std::endl;
+          //std::cout<<"val = "<< val<<std::endl;
+          
           if (angle < -epsilon)
           {
+            //std::cout<<"negative"<<std::endl;
             val = -val;
           }
           else if (angle > epsilon)
           {
+            //std::cout<<"normal"<<std::endl;
           }
           else
           {
             // trouble
+            //std::cout<<"trouble"<<std::endl;
             if (val != 0.0)
             {
                objmesh->get_delems(delems,fidx);
@@ -141,6 +157,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
             }
           }
           checkForInterruption();
+          //std::cout<<"val = "<< val<<std::endl;
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
@@ -341,6 +358,8 @@ class CalculateSignedDistanceFieldP : public Interruptible
           checkForInterruption();
           Point p, p1, p2;
           imesh->get_center(p,idx);
+          
+          
 
           objmesh->find_closest_elem(val,p2,coords,fidx,p);
           objmesh->get_nodes(nodes,fidx);
@@ -350,6 +369,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
           n = Cross(Vector(n1-n0),Vector(n2-n1));
           k = Vector(p-p2); k.normalize();
+          
 
           double angle = Dot(n,k);
           if (angle < -epsilon)
@@ -721,6 +741,7 @@ CalculateSignedDistanceFieldAlgo::run(FieldHandle input, FieldHandle object, Fie
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E|Mesh::EDGES_E);
   CalculateSignedDistanceFieldP palgo(imesh, objmesh, ofield, this);
   const int numThreads = Parallel::NumCores();
+  //const int numThreads = 1;
   auto task_i = [&palgo,numThreads,this](int i) { palgo.parallel(i, numThreads); };
   Parallel::RunTasks(task_i, numThreads);
 
@@ -810,8 +831,11 @@ CalculateSignedDistanceFieldAlgo::run(FieldHandle input, FieldHandle object, Fie
 
   CalculateSignedDistanceFieldP palgo(imesh, objmesh, objfield, dfield, vfield, this);
 
+  //auto task_i = [&palgo,this](int i) { palgo.parallel2(i, 1); };
+  //Parallel::RunTasks(task_i, 1);
   auto task_i = [&palgo,this](int i) { palgo.parallel2(i, Parallel::NumCores()); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
+
 
   return (true);
 }

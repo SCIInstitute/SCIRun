@@ -128,7 +128,6 @@ distance_to_line2_aux(Point &result, int& node,
       Vector offset = m * t0;
       result = a + offset;
     }
-    std::cout<<"t0 = "<<t0<<"; node="<<node<<"; result= "<<result<<std::endl;
   }
 }
 
