@@ -112,9 +112,10 @@ class CalculateSignedDistanceFieldP : public Interruptible
           else
           {
             // trouble
-            //std::cout<<"trouble"<<std::endl;
+            
             if (val != 0.0)
             {
+              //std::cout<<"trouble"<<std::endl;
                objmesh->get_delems(delems,fidx);
                double mindist = DBL_MAX;
                double dist;
@@ -175,10 +176,15 @@ class CalculateSignedDistanceFieldP : public Interruptible
 
         for (VMesh::Node::index_type idx =start; idx <end; idx++)
         {
+          //std::cout<<std::endl<<std::endl<<std::endl<<"node number: "<<idx<<std::endl;
+          
           checkForInterruption();
           Point p, p1, p2;
           imesh->get_center(p,idx);
           objmesh->find_closest_elem(val,p2,fidx,p);
+          
+          //std::cout<<"face number: "<<fidx<<std::endl;
+          //std::cout<<"p = "<<p<<"; p2 = "<<p2<<std::endl;
 
           objmesh->get_nodes(nodes,fidx);
           objmesh->get_center(n0,nodes[0]);
@@ -188,18 +194,25 @@ class CalculateSignedDistanceFieldP : public Interruptible
           k = Vector(p-p2);
           k.normalize();
           double angle = Dot(n,k);
+          
+          //std::cout<<"angle = "<<angle<<"; epsilon= "<<epsilon<<std::endl;
+          //std::cout<<"val = "<< val<<std::endl;
+          
           if (angle < -epsilon)
           {
+            //std::cout<<"negative"<<std::endl;
             val = -val;
           }
           else if (angle > epsilon)
           {
+            //std::cout<<"normal"<<std::endl;
           }
           else
           {
             // trouble
             if (val != 0.0)
             {
+              //std::cout<<"trouble"<<std::endl;
                objmesh->get_delems(delems,fidx);
                double mindist = DBL_MAX;
                double dist;
@@ -241,6 +254,7 @@ class CalculateSignedDistanceFieldP : public Interruptible
               if (angle < 0.0) val = -(val);
             }
           }
+          //std::cout<<"val = "<< val<<std::endl;
           checkForInterruption();
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
