@@ -1065,8 +1065,6 @@ public:
     bool found = true;
     bool found_one = false;
     double perturb= epsilon_*100; //value to move to find new point.
-    
-    //std::cout<<" epsilon2_ =  "<<epsilon2_ <<std::endl;
 
     do
     {
@@ -1093,40 +1091,15 @@ public:
                 while (it != eit)
                 {
                   Core::Geometry::Point r, r_pert;
-                  //index_type idx = (*it) * 3;
+                  index_type idx = (*it) * 3;
                   
-                  
-                  
-                  Core::Geometry::Point p1,p2,p3;
-                  typename Node::array_type nodes;
-                  typename Face::index_type fac_ind=static_cast<long> ( INDEX(*it));
-                  
-                  //std::cout<<"checking face "<< fac_ind << std::endl;
-                  
-                  
-                  get_nodes(nodes,fac_ind);
-                  
-                  //std::cout<<"nodes[0] =  "<< nodes[0]<<"; nodes[1] =  "<< nodes[1]<<"; nodes[2] =  "<< nodes[2]<<std::endl;
-                  
-                  get_center(p1,nodes[0]);
-                  get_center(p2,nodes[1]);
-                  get_center(p3,nodes[2]);
-                  
-                  closest_point_on_tri(r, p, p1, p2, p3);
-                  
-                  //std::cout<<"p1= "<<p1<<"; p2= "<<p2<<"; p3= "<<p3<<std::endl;
-                  
+                  closest_point_on_tri(r, p, points_[faces_[idx]], points_[faces_[idx+1]], points_[faces_[idx+2]]);
                   double dtmp = (p - r).length2();
                   
-                  //std::cout<<"   p= "<<p<<"; r= "<<r<<std::endl;
                   
-                  
-                    
                   //test triangle size for scaling
-                  //Core::Geometry::Vector v1= Core::Geometry::Vector(points_[faces_[idx+1]]-points_[faces_[idx  ]]); v1.normalize();
-                  //Core::Geometry::Vector v2= Core::Geometry::Vector(points_[faces_[idx+2]]-points_[faces_[idx  ]]); v2.normalize();
-                  Core::Geometry::Vector v1= Core::Geometry::Vector(p2-p1); v1.normalize();
-                  Core::Geometry::Vector v2= Core::Geometry::Vector(p3-p1); v2.normalize();
+                  Core::Geometry::Vector v1= Core::Geometry::Vector(points_[faces_[idx+1]]-points_[faces_[idx  ]]); v1.normalize();
+                  Core::Geometry::Vector v2= Core::Geometry::Vector(points_[faces_[idx+2]]-points_[faces_[idx  ]]); v2.normalize();
                   
                   Core::Geometry::Vector n=Cross(v1,v2); n.normalize();
                   Core::Geometry::Vector pr=Core::Geometry::Vector(r-p); pr.normalize();
@@ -1134,12 +1107,6 @@ public:
                   if (std::abs(Dot(pr,n))>1-perturb)
                   {
                     r_pert=r;
-                    //std::cout<<"point perpendicular to face"<<std::endl;
-                    
-                  }
-                  else if (std::abs(Dot(pr,n))<perturb)
-                  {
-                    //std::cout<<"point parallel to face"<<std::endl;
                   }
                   else
                   {
@@ -1148,37 +1115,13 @@ public:
                     Core::Geometry::Vector vect=Cross(pp,n); vect.normalize();
                     
                     r_pert=Core::Geometry::Point(r+vect*perturb);
-                    
-                    //std::cout<<"vect= "<<vect<<std::endl;
                   }
                   
                   double dtmp2=(p-r_pert).length2();
-                  
-                  if (dtmp2<dtmp)
-                  {
-                    std::cout<<"problem with dtmp2"<<std::endl;
-                  }
-                  
-                  
-                  double diff_r=(r_pert-r).length2();
-                  
-                  /*
-                  std::cout<<" r_pert= "<<r_pert<<std::endl;
 
-                  std::cout<<"dist (r_pert-r) = "<<diff_r<<std::endl;
-                  
                   //check for closest face and check within precision
-                  
-                  std::cout<<"booleans : "<<(dtmp-dmin <= epsilon2_) <<";" <<(dtmp-dmin < - epsilon2_)<<";" << ( dtmp2-dmean < - epsilon2_ )<<";" << ( dtmp<dmin  && std::abs(dtmp2-dmean) < epsilon2_ )<<";" <<  (dtmp2 < dmean && dtmp-dmin > - epsilon2_) <<";" <<std::endl;
-                  std::cout<<" epsilon2_ =  "<<epsilon2_ <<std::endl;
-                  std::cout<<"dmin = "<<dmin<<"; dtmp = "<< dtmp <<"; dtmp-dmin = "<<dtmp-dmin<<std::endl;
-                  std::cout<<"dmean = "<<dmean<<"; dtmp2 = "<< dtmp2 <<"; dtmp-dmean = "<<dtmp2-dmean<<std::endl;
-                  */
-                  
-                  
                   if (dtmp-dmin <= epsilon_)
                   {
-                    //std::cout<<" possible closer face "<<std::endl;
                     if (dtmp-dmin < - epsilon_)
                     {
                       found_one = true;
@@ -1186,10 +1129,6 @@ public:
                       face = INDEX(*it);
                       dmin = dtmp;
                       dmean =dtmp2;
-                      
-                      
-                      //std::cout<<" new min distance.  Face = "<<face<<std::endl;
-                      
                       
                       if (dmin < epsilon2_)
                       {
@@ -1209,9 +1148,6 @@ public:
                       face = INDEX(*it);
                       if (dmin>=dtmp) dmin=dtmp;
                       dmean =dtmp2;
-                      
-                      //std::cout<<" new mean distance.  Face = "<<face<<std::endl;
-                      
                     }
                     else if (dtmp<dmin  && std::abs(dtmp2-dmean) < epsilon_ )
                     {
@@ -1220,9 +1156,6 @@ public:
                       face = INDEX(*it);
                       dmin = dtmp;
                       dmean =dtmp2;
-                      
-                      //std::cout<<" new min distance.  within precision of both  Face = "<<face<<std::endl;
-                      
                       if (dmin < epsilon2_)
                       {
                         
@@ -1239,13 +1172,6 @@ public:
                       result = r;
                       face = INDEX(*it);
                       dmean =dtmp2;
-                      
-                      //std::cout<<" new mean distance.  within precision of both  Face = "<<face<<std::endl;
-                      
-                    }
-                    else
-                    {
-                    //std::cout<<" no closer face assigned "<<std::endl;
                     }
                   }
                   
