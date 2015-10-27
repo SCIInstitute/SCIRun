@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_BUNDLE_GETFIELDSFROMBUNDLE_H__
-#define MODULES_LEGACY_BUNDLE_GETFIELDSFROMBUNDLE_H__
+#ifndef MODULES_LEGACY_BUNDLE_GETSTRINGSFROMBUNDLE_H__
+#define MODULES_LEGACY_BUNDLE_GETSTRINGSFROMBUNDLE_H__
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Bundle/share.h>
@@ -36,34 +36,34 @@ namespace SCIRun {
   namespace Modules {
     namespace Bundles {
       
-      /// @class GetFieldsFromBundle
-      /// @brief This module retrieves a field object from a bundle.
+      /// @class GetStringsFromBundle
+      /// @brief This module retrieves a String object from a bundle.
 
-      class SCISHARE GetFieldsFromBundle : public Dataflow::Networks::Module,
+      class SCISHARE GetStringsFromBundle : public Dataflow::Networks::Module,
         public Has1InputPort<BundlePortTag>,
-        public Has7OutputPorts<BundlePortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag>
+        public Has7OutputPorts<BundlePortTag, StringPortTag, StringPortTag, StringPortTag, StringPortTag, StringPortTag, StringPortTag>
       {
       public:
-        GetFieldsFromBundle();
+        GetStringsFromBundle();
         virtual void setStateDefaults();
         virtual void execute();
 
         INPUT_PORT(0, InputBundle, Bundle);
         OUTPUT_PORT(0, OutputBundle, Bundle);
-        OUTPUT_PORT(1, field1, LegacyField);
-        OUTPUT_PORT(2, field2, LegacyField);
-        OUTPUT_PORT(3, field3, LegacyField);
-        OUTPUT_PORT(4, field4, LegacyField);
-        OUTPUT_PORT(5, field5, LegacyField);
-        OUTPUT_PORT(6, field6, LegacyField);
+        OUTPUT_PORT(1, string1, String);
+        OUTPUT_PORT(2, string2, String);
+        OUTPUT_PORT(3, string3, String);
+        OUTPUT_PORT(4, string4, String);
+        OUTPUT_PORT(5, string5, String);
+        OUTPUT_PORT(6, string6, String);
 
-        static Core::Algorithms::AlgorithmParameterName FieldNameList;
-        static const Core::Algorithms::AlgorithmParameterName FieldNames[];
+        static Core::Algorithms::AlgorithmParameterName StringNameList;
+        static const Core::Algorithms::AlgorithmParameterName StringNames[];
         static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
 
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
-        std::string makeFieldNameList(const Core::Datatypes::Bundle& bundle) const;
+        std::string makeStringNameList(const Core::Datatypes::Bundle& bundle) const;
       };
 
     }
