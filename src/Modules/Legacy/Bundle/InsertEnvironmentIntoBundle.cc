@@ -26,19 +26,20 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Util/Environment.h>
-#include <Core/Datatypes/Bundle.h>
+#include <Modules/Legacy/Bundle/InsertEnvironmentIntoBundle.h>
+#include <Core/Utils/Legacy/Environment.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/BundlePort.h>
-
-namespace SCIRun {
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Dataflow::Networks;
 
 /// @class InsertEnvironmentIntoBundle 
 /// @brief Collects the current environment variables into a bundle. 
 
+/*
 class InsertEnvironmentIntoBundle : public Module {
 public:
   InsertEnvironmentIntoBundle(GuiContext*);
@@ -53,31 +54,52 @@ InsertEnvironmentIntoBundle::InsertEnvironmentIntoBundle(GuiContext* ctx) :
   Module("InsertEnvironmentIntoBundle", ctx, Source, "Bundle", "SCIRun")
 {
 }
+ */
+
+
+ModuleLookupInfo InsertEnvironmentIntoBundle::staticInfo_("InsertEnvironmentIntoBundle", "Bundle", "SCIRun");
+
+
+InsertEnvironmentIntoBundle::InsertEnvironmentIntoBundle() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(Environment);
+}
 
 void
 InsertEnvironmentIntoBundle::execute()
 {
-  update_state(Executing);
-
-  std::map<std::string,std::string>& environment = get_sci_environment();
-
-  std::map<std::string,std::string>::iterator it, it_end;
-  it = environment.begin();
-  it_end = environment.end();
-  
-  BundleHandle bundle = new Bundle();
-  
-  while (it != it_end)
+  if (needToExecute())
   {
-    std::string key = (*it).first;
-    StringHandle data = new String((*it).second);
-    bundle->setString(key,data);
-    ++it;
+    
+    update_state(Executing);
+    
+    
+    BundleHandle bundle;
+    bundle.reset(new Bundle());
+    
+    //TODO  Environment.cc needs to be converted to SCIRun5
+
+    /*
+    std::map<std::string,std::string>& environment = get_sci_environment();
+
+    std::map<std::string,std::string>::iterator it, it_end;
+    it = environment.begin();
+    it_end = environment.end();
+    
+    while (it != it_end)
+    {
+      std::string key = (*it).first;
+      StringHandle data(new String((*it).second));
+      bundle->set(key,data);
+      ++it;
+    }
+
+    */
+    
+    sendOutput(Environment, bundle);
+
   }
-  
-  send_output_handle("Environment",bundle,true);
 }
 
-} // End namespace SCIRun
 
 

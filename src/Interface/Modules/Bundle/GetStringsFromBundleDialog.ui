@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GetStringFromBundleDialog</class>
- <widget class="QDialog" name="GetStringFromBundleDialog">
+ <class>GetStringsFromBundleDialog</class>
+ <widget class="QDialog" name="GetStringsFromBundleDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="title">
-      <string>Bundle Field Outputs</string>
+      <string>Bundle String Outputs</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -44,42 +44,42 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Field 1:</string>
+         <string>String 1:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Field 2:</string>
+         <string>String 2:</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Field 3:</string>
+         <string>String 3:</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Field 4:</string>
+         <string>String 4:</string>
         </property>
        </widget>
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Field 5:</string>
+         <string>String 5:</string>
         </property>
        </widget>
       </item>
       <item row="5" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>Field 6:</string>
+         <string>String 6:</string>
         </property>
        </widget>
       </item>
@@ -99,14 +99,14 @@
       <item row="2" column="1">
        <widget class="QComboBox" name="fieldComboBox3_"/>
       </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="fieldComboBox4_"/>
-      </item>
       <item row="4" column="1">
        <widget class="QComboBox" name="fieldComboBox5_"/>
       </item>
       <item row="5" column="1">
        <widget class="QComboBox" name="fieldComboBox6_"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="fieldComboBox4_"/>
       </item>
      </layout>
     </widget>
@@ -120,7 +120,7 @@
       </size>
      </property>
      <property name="title">
-      <string>Field Object Names</string>
+      <string>String Object Names</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

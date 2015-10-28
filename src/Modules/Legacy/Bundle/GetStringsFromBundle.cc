@@ -29,11 +29,7 @@
 
 #include <Modules/Legacy/Bundle/GetStringsFromBundle.h>
 #include <Core/Datatypes/String.h>
-#include <Core/Datatypes/Bundle.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/BundlePort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -160,10 +156,10 @@ GetStringsFromBundle::execute()
     for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
     {
       auto stringName = state->getValue(StringNames[i]).toString();
-      if (bundle->isString(StringName))
+      if (bundle->isString(stringName))
       {
         auto string_tmp = bundle->getString(stringName);
-        outputs[i] = string;
+        outputs[i] = string_tmp;
       }
     }
     
@@ -187,9 +183,9 @@ GetStringsFromBundle::execute()
 
 std::string GetStringsFromBundle::makeStringNameList(const Bundle& bundle) const
 {
-  auto Stringames = bundle.getStringNames();
+  auto stringNames = bundle.getStringNames();
   std::ostringstream vars;
-  std::copy(StringNames.begin(), StringNames.end(), std::ostream_iterator<std::string>(vars, "\n"));
+  std::copy(stringNames.begin(), stringNames.end(), std::ostream_iterator<std::string>(vars, "\n"));
   return vars.str();
 }
 

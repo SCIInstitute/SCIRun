@@ -37,16 +37,16 @@ namespace Modules {
 namespace Bundles {
 
   class SCISHARE InsertEnvironmentIntoBundle : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts<BundlePortTag>,
+    public HasNoInputPorts,
     public Has1OutputPort<BundlePortTag>
   {
   public:
     InsertEnvironmentIntoBundle();
     virtual void execute();
     virtual void setStateDefaults() {}
-    OUTPUT_PORT(0, OutputBundle, Bundle);
+    OUTPUT_PORT(0, Environment, Bundle);
 
-    const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 }}}
 

@@ -1,10 +1,10 @@
 {
   "module": {
     "name": "GetStringsFromBundle",
-    "namespace": "Bundle",
+    "namespace": "Bundles",
     "status": " No algorithm.",
     "description": "This module allows for the extraction of strings from bundle files.",
-    "header": "Modules/Legacy/String/GetStringsFromBundle.h"
+    "header": "Modules/Legacy/Bundle/GetStringsFromBundle.h"
   },
   "algorithm": {
     "name": "N/A",
@@ -13,6 +13,6 @@
   },
   "UI": {
     "name": "GetStringsFromBundleDialog",
-    "header": "Interface/Modules/Buundle/GetStringsFromBundleDialog.h"
+    "header": "Interface/Modules/Bundle/GetStringsFromBundleDialog.h"
   }
 }

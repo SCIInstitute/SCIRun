@@ -1,7 +1,7 @@
 {
   "module": {
     "name": "InsertEnvironmentIntoBundle",
-    "namespace": "Bundle",
+    "namespace": "Bundles",
     "status": "starting conversion",
     "description": "This module pulls the environment variables from the shell to use in the network",
     "header": "Modules/Legacy/Bundle/InsertEnvironmentIntoBundle.h"
@@ -12,7 +12,7 @@
     "header": "N/A"
   },
   "UI": {
-    "name": "N/A,
+    "name": "N/A",
     "header": "N/A"
   }
 }
