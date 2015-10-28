@@ -13,7 +13,7 @@ for i in range(n):
 	eval = addModule("EvaluateLinearAlgebraUnary")
 	eval.Operator = 2
 	eval.Scalar = i
-	read.output.Matrix >> eval.input.Input
+	read.output.Matrix >> eval.input.InputMatrix
 	write = addModule("WriteMatrix")
 	write.Filename = os.path.join(dir, "ident" + str(i) + ".txt")
 	eval.output.Result >> write.input[0]
