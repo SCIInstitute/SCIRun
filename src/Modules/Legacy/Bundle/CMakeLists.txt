@@ -38,7 +38,7 @@ SET(Modules_Legacy_Bundle_HEADERS
 )
 SET(Modules_Legacy_Bundle_SRCS
   #CreateParameterBundle.cc
-  InsertEnvironmentIntoBundle.cc
+  #InsertEnvironmentIntoBundle.cc
   #InsertBundlesIntoBundle.cc
   InsertFieldsIntoBundle.cc
   InsertMatricesIntoBundle.cc
