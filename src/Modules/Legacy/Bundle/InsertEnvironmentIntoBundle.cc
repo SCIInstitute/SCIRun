@@ -60,7 +60,7 @@ InsertEnvironmentIntoBundle::InsertEnvironmentIntoBundle(GuiContext* ctx) :
 ModuleLookupInfo InsertEnvironmentIntoBundle::staticInfo_("InsertEnvironmentIntoBundle", "Bundle", "SCIRun");
 
 
-InsertEnvironmentIntoBundle::InsertEnvironmentIntoBundle() : Module(staticInfo_)
+InsertEnvironmentIntoBundle::InsertEnvironmentIntoBundle() : Module(staticInfo_,false)
 {
   INITIALIZE_PORT(Environment);
 }

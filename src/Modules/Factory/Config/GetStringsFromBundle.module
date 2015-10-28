@@ -2,7 +2,7 @@
   "module": {
     "name": "GetStringsFromBundle",
     "namespace": "Bundles",
-    "status": " No algorithm.",
+    "status": " Module working with ui.  No algorithm file.",
     "description": "This module allows for the extraction of strings from bundle files.",
     "header": "Modules/Legacy/Bundle/GetStringsFromBundle.h"
   },
