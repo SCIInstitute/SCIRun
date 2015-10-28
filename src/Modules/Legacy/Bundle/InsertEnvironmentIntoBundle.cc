@@ -80,6 +80,7 @@ InsertEnvironmentIntoBundle::execute()
     //TODO  Environment.cc needs to be converted to SCIRun5
 
     /*
+    
     std::map<std::string,std::string>& environment = get_sci_environment();
 
     std::map<std::string,std::string>::iterator it, it_end;
@@ -93,7 +94,6 @@ InsertEnvironmentIntoBundle::execute()
       bundle->set(key,data);
       ++it;
     }
-
     */
     
     sendOutput(Environment, bundle);
