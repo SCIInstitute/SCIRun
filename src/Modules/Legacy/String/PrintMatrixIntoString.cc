@@ -73,7 +73,7 @@ PrintMatrixIntoString::execute()
 {
   std::string   format, output;
   
-  MatrixHandle currentmatrix;
+  MatrixHandle currentmatrix = 0;
   int inputport = 0;
   index_type matrixindex = 0;
   double       datavalue = 0;
@@ -137,7 +137,7 @@ PrintMatrixIntoString::execute()
           {
             isformat  = true;
             datavalue = 0.0;
-            while ((currentmatrix.get_rep() == 0)&&(lastport==false))
+            while ((!currentmatrix)&&(lastport==false))
             {
               if (static_cast<size_t>(inputport) >= matrixH.size())
               {
@@ -149,27 +149,25 @@ PrintMatrixIntoString::execute()
                 currentmatrix = matrixH[inputport]; 
                 inputport++;
                 matrixindex = 0;
-                if (currentmatrix.get_rep())
+                if (currentmatrix)
                 {
-                  if (currentmatrix->get_data_size() == 0) currentmatrix = 0;
-                }
-                
-                if (currentmatrix.get_rep())
-                {
-                  // Check whether we need to transpose matrix
-                  // If so we transpose the whole matrix
-                  if (matrix_is::dense_col_maj(currentmatrix))
-                  {
-                    currentmatrix = currentmatrix->dense();
-                  }
+                  if (currentmatrix->empty()) currentmatrix.reset();
                 }
               }
             }
             
-            if (currentmatrix.get_rep())
+            if (currentmatrix)
             {
-              dataptr = currentmatrix->get_data_pointer();
-              if (matrixindex < currentmatrix->get_data_size())
+              if (!matrix_is::dense(currentmatrix))
+              {
+                //TODO implement something with sparse
+                error("Currently only works with dense matrices");
+                return;
+              }
+              
+              auto dense = matrix_cast::as_dense (currentmatrix);
+              dataptr = dense->data();
+              if (matrixindex < dense->get_dense_size())
               {
                 datavalue = dataptr[matrixindex]; matrixindex++;
               }
@@ -177,9 +175,9 @@ PrintMatrixIntoString::execute()
               {
                 datavalue = 0.0;
               }
-              if (matrixindex == currentmatrix->get_data_size()) 
+              if (matrixindex == dense->get_dense_size())
               { 
-                currentmatrix = 0; 
+                currentmatrix.reset();
                 if (static_cast<size_t>(inputport) == matrixH.size())
                 {
                   lastdata = true;
@@ -217,6 +215,9 @@ PrintMatrixIntoString::execute()
             output += std::string(reinterpret_cast<char *>(&(buffer[0])));
             i = j+1;   
           }
+          #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+          //this gets execution time.  Not sure if it is needed anymore
+          //Should be the pointer address instead
           else if ((format[j] == 'p')||(format[j] == 'P'))
           {
             fstr[fstr.size()-1] = 'g';
@@ -225,6 +226,7 @@ PrintMatrixIntoString::execute()
             output += std::string(reinterpret_cast<char *>(&(buffer[0])));
             i = j+1;   
           }
+          #endif
         }
       }
       else if ( format[i] == '\\')
