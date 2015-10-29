@@ -84,7 +84,7 @@ InsertEnvironmentIntoBundle::execute()
       StringHandle data(new String(envPair.second));
       bundle->set(envPair.first, data);
     }
-    /*
+    
     
     std::map<std::string,std::string>& environment = get_sci_environment();
 
@@ -98,7 +98,7 @@ InsertEnvironmentIntoBundle::execute()
       
       ++it;
     }
-    */
+    
     
     sendOutput(Environment, bundle);
 
