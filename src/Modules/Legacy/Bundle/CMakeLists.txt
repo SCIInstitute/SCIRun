@@ -34,7 +34,6 @@ SET(Modules_Legacy_Bundle_HEADERS
   InsertFieldsIntoBundle.h
   InsertMatricesIntoBundle.h
   ReportBundleInfo.h
-  InsertEnvironmentIntoBundle.h
 )
 SET(Modules_Legacy_Bundle_SRCS
   #CreateParameterBundle.cc
