@@ -2,7 +2,7 @@
   "module": {
     "name": "PrintMatrixIntoString",
     "namespace": "StringManip",
-    "status": "  No algorithm.",
+    "status": "  Working. No algorithm file.",
     "description": "This module allows for Matrices to be inserted into strings, similar to sprintf.",
     "header": "Modules/Legacy/String/PrintMatrixIntoString.h"
   },
