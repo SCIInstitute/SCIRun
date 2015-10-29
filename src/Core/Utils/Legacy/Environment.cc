@@ -401,6 +401,8 @@ public:
 
   static void set_obj_dir_non_windows(const bfs::path& testdir, bfs::path& objdir )
   {
+    return;
+#if SCIRUN4_CODE_TO_BE_CONVERTED_LATER //probably never, may not need this
 #ifndef _WIN32
     std::string sciruntcl_package("sciruntcl");
     sciruntcl_package += SCIRUN_TCL_PACKAGE_VERSION;
@@ -419,6 +421,7 @@ public:
       objdir = testdir / ".." / "..";
       sci_putenv("SCIRUN_OBJDIR", objdir.string());
     }
+#endif
 #endif
   }
 
