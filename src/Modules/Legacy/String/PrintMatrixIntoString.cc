@@ -33,8 +33,9 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
 //#include <Core/Datatypes/Legacy/Matrix/DenseColMajMatrix.h>
+#include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 #ifdef _WIN32
 #define snprintf _snprintf
@@ -72,7 +73,7 @@ PrintMatrixIntoString::execute()
 {
   std::string   format, output;
   
-  MatrixHandle currentmatrix = 0;
+  MatrixHandle currentmatrix;
   int inputport = 0;
   index_type matrixindex = 0;
   double       datavalue = 0;
