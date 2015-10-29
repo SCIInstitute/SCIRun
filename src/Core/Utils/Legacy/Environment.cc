@@ -121,7 +121,7 @@ SCIRun::sci_putenv( const std::string &key, const std::string &val )
   scirun_env[key] = val;
 }
 
-std::map<std::string, std::string>&
+const std::map<std::string, std::string>&
 SCIRun::get_sci_environment()
 {
   return (scirun_env);

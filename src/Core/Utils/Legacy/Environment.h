@@ -68,7 +68,7 @@ namespace SCIRun {
   //   otherwise.
   SCISHARE bool sci_getenv_p( const std::string & key );
 
-  SCISHARE std::map<std::string,std::string>& get_sci_environment();
+  SCISHARE const std::map<std::string,std::string>& get_sci_environment();
 
   SCISHARE bool replace_environment_variables(std::string& str);
   SCISHARE std::string get_example_nets_dir(const std::string& objdir);

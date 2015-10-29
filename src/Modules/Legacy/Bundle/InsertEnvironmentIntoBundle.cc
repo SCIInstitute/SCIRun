@@ -86,7 +86,8 @@ InsertEnvironmentIntoBundle::execute()
     }
     
     
-    std::map<std::string,std::string>& environment = get_sci_environment();
+    /*
+     std::map<std::string,std::string>& environment = get_sci_environment();
 
     std::map<std::string,std::string>::iterator it, it_end;
     it = environment.begin();
@@ -98,7 +99,7 @@ InsertEnvironmentIntoBundle::execute()
       
       ++it;
     }
-    
+    */
     
     sendOutput(Environment, bundle);
 
