@@ -32,11 +32,13 @@
 #include <Core/Application/Application.h>
 #include <Interface/Application/GuiApplication.h>
 #include <Core/ConsoleApplication/ConsoleApplication.h>
+#include <Core/Utils/Legacy/Environment.h>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
 #endif
 
+using namespace SCIRun;
 using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Console;
@@ -47,6 +49,9 @@ int mainImpl(int argc, const char* argv[])
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
   //_CrtSetBreakAlloc(34006);
 #endif
+
+  char** env = nullptr; //TODO: passed as third argument from main, needs testing.
+  create_sci_environment(env, argv[0]);
 
   Application::Instance().readCommandLine(argc, argv);
 

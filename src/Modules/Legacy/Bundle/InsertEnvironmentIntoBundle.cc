@@ -29,7 +29,7 @@
 #include <Modules/Legacy/Bundle/InsertEnvironmentIntoBundle.h>
 #include <Core/Utils/Legacy/Environment.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
-
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -79,6 +79,11 @@ InsertEnvironmentIntoBundle::execute()
     
     //TODO  Environment.cc needs to be converted to SCIRun5
 
+    for (const auto& envPair : get_sci_environment())
+    {
+      StringHandle data(new String(envPair.second));
+      bundle->set(envPair.first, data);
+    }
     /*
     
     std::map<std::string,std::string>& environment = get_sci_environment();
@@ -90,8 +95,7 @@ InsertEnvironmentIntoBundle::execute()
     while (it != it_end)
     {
       std::string key = (*it).first;
-      StringHandle data(new String((*it).second));
-      bundle->set(key,data);
+      
       ++it;
     }
     */
