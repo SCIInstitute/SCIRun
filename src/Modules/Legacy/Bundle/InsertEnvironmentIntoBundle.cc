@@ -39,23 +39,6 @@ using namespace SCIRun::Dataflow::Networks;
 /// @class InsertEnvironmentIntoBundle 
 /// @brief Collects the current environment variables into a bundle. 
 
-/*
-class InsertEnvironmentIntoBundle : public Module {
-public:
-  InsertEnvironmentIntoBundle(GuiContext*);
-
-  virtual void execute();
-};
-
-
-DECLARE_MAKER(InsertEnvironmentIntoBundle)
-
-InsertEnvironmentIntoBundle::InsertEnvironmentIntoBundle(GuiContext* ctx) :
-  Module("InsertEnvironmentIntoBundle", ctx, Source, "Bundle", "SCIRun")
-{
-}
- */
-
 
 ModuleLookupInfo InsertEnvironmentIntoBundle::staticInfo_("InsertEnvironmentIntoBundle", "Bundle", "SCIRun");
 
@@ -77,29 +60,13 @@ InsertEnvironmentIntoBundle::execute()
     BundleHandle bundle;
     bundle.reset(new Bundle());
     
-    //TODO  Environment.cc needs to be converted to SCIRun5
-
+    
     for (const auto& envPair : get_sci_environment())
     {
       StringHandle data(new String(envPair.second));
       bundle->set(envPair.first, data);
     }
     
-    
-    /*
-     std::map<std::string,std::string>& environment = get_sci_environment();
-
-    std::map<std::string,std::string>::iterator it, it_end;
-    it = environment.begin();
-    it_end = environment.end();
-    
-    while (it != it_end)
-    {
-      std::string key = (*it).first;
-      
-      ++it;
-    }
-    */
     
     sendOutput(Environment, bundle);
 
