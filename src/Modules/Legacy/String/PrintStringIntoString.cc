@@ -58,10 +58,8 @@ PrintStringIntoString::PrintStringIntoString() : Module(staticInfo_)
 
 void PrintStringIntoString::setStateDefaults()
 {
-  //TODO
   auto state = get_state();
   state->setValue(FormatString,std::string ("my string: %s"));
-  
 }
 
 void
@@ -76,9 +74,6 @@ PrintStringIntoString::execute()
   std::vector<char> buffer(256);
   bool    lastport = false;
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  format = formatstring_.get();
-#endif
   
   auto  stringH = getOptionalInput(Format);
   

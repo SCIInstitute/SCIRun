@@ -26,28 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_BUNDLES_INSERTENVIRONMENTINTOBUNDLE_H
-#define MODULES_LEGACY_BUNDLES_INSERTENVIRONMENTINTOBUNDLE_H
+#include <Interface/Modules/String/PrintMatrixIntoStringDialog.h>
+#include <Modules/Legacy/String/PrintMatrixIntoString.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Core/Logging/Log.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Bundle/share.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace Bundles {
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::StringManip;
 
-  class SCISHARE InsertEnvironmentIntoBundle : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has1OutputPort<BundlePortTag>
-  {
-  public:
-    InsertEnvironmentIntoBundle();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    OUTPUT_PORT(0, Environment, Bundle);
-
-    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-  };
-}}}
-
-#endif
+PrintMatrixIntoStringDialog::PrintMatrixIntoStringDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  
+  addLineEditManager(FormatString_,PrintMatrixIntoString::FormatString);
+}
