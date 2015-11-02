@@ -34,24 +34,6 @@
 #include <Interface/Modules/String/share.h>
 
 namespace SCIRun {
-<<<<<<< HEAD:src/Modules/Legacy/Bundle/InsertEnvironmentIntoBundle.h
-namespace Modules {
-namespace Bundles {
-
-  class SCISHARE InsertEnvironmentIntoBundle : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has1OutputPort<BundlePortTag>
-  {
-  public:
-    InsertEnvironmentIntoBundle();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    OUTPUT_PORT(0, Environment, Bundle);
-
-    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-  };
-}}}
-=======
 namespace Gui {
 
 class SCISHARE PrintMatrixIntoStringDialog : public ModuleDialogGeneric,
@@ -67,6 +49,5 @@ public:
 
 }
 }
->>>>>>> printmatrix:src/Interface/Modules/String/PrintMatrixIntoStringDialog.h
 
 #endif
