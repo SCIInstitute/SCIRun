@@ -2,7 +2,7 @@
   "module": {
     "name": "InsertEnvironmentIntoBundle",
     "namespace": "Bundles",
-    "status": "module mostly converted, but some dependent code needs to be converted.",
+    "status": "fully converted.",
     "description": "This module pulls the environment variables from the shell to use in the network",
     "header": "Modules/Legacy/Bundle/InsertEnvironmentIntoBundle.h"
   },
