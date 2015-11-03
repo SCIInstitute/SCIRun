@@ -26,7 +26,7 @@
 									<name>InputString</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>/some/path/name/filename.text.ending</value>
+										<value>/some/path/name/file_name.t^xt.ending</value>
 									</value>
 								</second>
 							</item>
@@ -110,7 +110,7 @@
 									<name>ReceivedValue</name>
 									<value>
 										<which>2</which>
-										<value>filename.txt</value>
+										<value>file_name.t^xt</value>
 									</value>
 								</second>
 							</item>
@@ -138,7 +138,7 @@
 									<name>ReceivedValue</name>
 									<value>
 										<which>2</which>
-										<value>filename.txt.ending</value>
+										<value>file_name.t^xt.ending</value>
 									</value>
 								</second>
 							</item>
