@@ -46,13 +46,13 @@ namespace SCIRun {
       public:
         SplitFileName();
         virtual void execute();
-        virtual void setStateDefaults();
+        virtual void setStateDefaults() {};
         
-        INPUT_PORT(0, Filename, String);
+        INPUT_PORT(0, Full_Filename, String);
         OUTPUT_PORT(0, Pathname, String);
-        OUTPUT_PORT(0, Base, String);
-        OUTPUT_PORT(0, Extension, String);
-        OUTPUT_PORT(0, Filename, String);
+        OUTPUT_PORT(1, Base, String);
+        OUTPUT_PORT(2, Extension, String);
+        OUTPUT_PORT(3, Filename, String);
         
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };

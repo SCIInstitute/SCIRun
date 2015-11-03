@@ -2,7 +2,7 @@
   "module": {
     "name": "SplitFileName",
     "namespace": "StringManip",
-    "status": "converting started",
+    "status": "Converted",
     "description": "This module splits a string containing a filename into various parts to enable some string manipulation",
     "header": "Modules/Legacy/String/SplitFileName.h"
   },

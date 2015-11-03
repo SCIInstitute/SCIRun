@@ -28,5 +28,5 @@
 
 #include <Core/Application/Version.h>
 
-const std::string VersionInfo::GIT_VERSION_TAG = "v5.0-alpha.X.2lunch-66-gf6ca01e";
-const std::string VersionInfo::GIT_COMMIT_SHA = "f6ca01e47bedad02d39ee55eee4cfec65e1feb2b";
+const std::string VersionInfo::GIT_VERSION_TAG = "v5.0-alpha.X.2lunch-92-g43b8731";
+const std::string VersionInfo::GIT_COMMIT_SHA = "43b873137697ae6b441c4a028940b787784cd448";
