@@ -31,13 +31,15 @@
 SET(Modules_Legacy_Bundle_HEADERS
   GetFieldsFromBundle.h
   GetMatricesFromBundle.h
+  GetStringsFromBundle.h
+  InsertEnvironmentIntoBundle.h
   InsertFieldsIntoBundle.h
   InsertMatricesIntoBundle.h
   ReportBundleInfo.h
 )
 SET(Modules_Legacy_Bundle_SRCS
   #CreateParameterBundle.cc
-  #InsertEnvironmentIntoBundle.cc
+  InsertEnvironmentIntoBundle.cc
   #InsertBundlesIntoBundle.cc
   InsertFieldsIntoBundle.cc
   InsertMatricesIntoBundle.cc
@@ -50,7 +52,7 @@ SET(Modules_Legacy_Bundle_SRCS
   GetMatricesFromBundle.cc
   #GetNrrdsFromBundle.cc
   #GetColorMapsFromBundle.cc
-  #GetStringsFromBundle.cc
+  GetStringsFromBundle.cc
   #JoinBundles.cc
 )
 
@@ -63,6 +65,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Bundle
   Dataflow_Network
   Core_Datatypes
   Core_Datatypes_Legacy_Bundle
+  Core_Util_Legacy
   #${SCI_TEEM_LIBRARY}
 )
 

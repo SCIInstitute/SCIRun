@@ -86,6 +86,7 @@ ENDIF()
 
 TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
   Interface_Application
+  Core_Util_Legacy
 )
 
 IF(BUILD_WITH_PYTHON)

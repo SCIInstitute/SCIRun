@@ -128,6 +128,9 @@ TEST(ReadMatrixAlgorithmTest, TestDenseFromRealASCIIMatFile)
     ASSERT_TRUE(matrix_is::dense(matrix));
 
     auto dense = matrix_cast::as_dense(matrix);
+    double* ptr = dense->data();
+    size_t size = dense->get_dense_size();
+
     EXPECT_EQ(4, dense->cols());
     EXPECT_EQ(3, dense->rows());
     EXPECT_NEAR(-1, dense->minCoeff(), 1e-12);

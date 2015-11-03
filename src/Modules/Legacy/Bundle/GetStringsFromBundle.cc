@@ -27,18 +27,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Bundle/GetStringsFromBundle.h>
 #include <Core/Datatypes/String.h>
-#include <Core/Datatypes/Bundle.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/BundlePort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 /// @class GetStringsFromBundle
 /// @brief This module retrieves a string object from a bundle.
-
+/*
 class GetStringsFromBundle : public Module {
 public:
   GetStringsFromBundle(GuiContext*);
@@ -69,9 +70,45 @@ GetStringsFromBundle::GetStringsFromBundle(GuiContext* ctx)
 {
 }
 
+*/
+
+ModuleLookupInfo GetStringsFromBundle::staticInfo_("GetStringsFromBundle", "Bundle", "SCIRun");
+AlgorithmParameterName GetStringsFromBundle::StringNameList("StringNameList");
+const AlgorithmParameterName GetStringsFromBundle::StringNames[] = {
+  AlgorithmParameterName("string1-name"),
+  AlgorithmParameterName("string2-name"),
+  AlgorithmParameterName("string3-name"),
+  AlgorithmParameterName("string4-name"),
+  AlgorithmParameterName("string5-name"),
+  AlgorithmParameterName("string6-name")
+};
+
+GetStringsFromBundle::GetStringsFromBundle() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputBundle);
+  INITIALIZE_PORT(OutputBundle);
+  INITIALIZE_PORT(string1);
+  INITIALIZE_PORT(string2);
+  INITIALIZE_PORT(string3);
+  INITIALIZE_PORT(string4);
+  INITIALIZE_PORT(string5);
+  INITIALIZE_PORT(string6);
+}
+
+void GetStringsFromBundle::setStateDefaults()
+{
+  auto state = get_state();
+  
+  for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
+  {
+    state->setValue(StringNames[i], "string" + boost::lexical_cast<std::string>(i));
+  }
+}
+
 void
 GetStringsFromBundle::execute()
 {
+  /*
   // Define input handle:
   BundleHandle handle;
   
@@ -105,57 +142,51 @@ GetStringsFromBundle::execute()
 
     guistrings_.set(stringlist);
     get_ctx()->reset();
- 
-    // Send string1 if we found one that matches the name:
-    if (handle->isString(string1name))
+    */
+  
+  auto bundle = getRequiredInput(InputBundle);
+  
+  if (needToExecute())
+  {
+    update_state(Executing);
+    auto state = get_state();
+    state->setTransientValue(StringNameList.name(), bundle->getStringNames());
+    
+    StringHandle outputs[NUM_BUNDLE_OUT];
+    for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
     {
-      fhandle = handle->getString(string1name);
-      send_output_handle("string1",fhandle);
+      auto stringName = state->getValue(StringNames[i]).toString();
+      if (bundle->isString(stringName))
+      {
+        auto string_tmp = bundle->getString(stringName);
+        outputs[i] = string_tmp;
+      }
     }
-
-
-    // Send string2 if we found one that matches the name:
-    if (handle->isString(string2name))
-    {
-      fhandle = handle->getString(string2name);
-      send_output_handle("string2",fhandle);
-    } 
-
     
-    // Send string3 if we found one that matches the name:
-    if (handle->isString(string3name))
-    {
-      fhandle = handle->getString(string3name);
-      send_output_handle("string3",fhandle);
-    } 
-
+    sendOutput(OutputBundle, bundle);
     
-    // Send string4 if we found one that matches the name:
-    if (handle->isString(string4name))
-    {
-      fhandle = handle->getString(string4name);
-      send_output_handle("string4",fhandle);
-    }
-
-
-    // Send string5 if we found one that matches the name:
-    if (handle->isString(string5name))
-    {
-      fhandle = handle->getString(string5name);
-      send_output_handle("string5",fhandle);
-    } 
-
-    
-    // Send string6 if we found one that matches the name:
-    if (handle->isString(string6name))
-    {
-      fhandle = handle->getString(string6name);
-      send_output_handle("string6",fhandle);
-    } 
-
-    send_output_handle("bundle",handle);    
+    //TODO: fix duplication
+    if (outputs[0])
+      sendOutput(string1, outputs[0]);
+    if (outputs[1])
+      sendOutput(string2, outputs[1]);
+    if (outputs[2])
+      sendOutput(string3, outputs[2]);
+    if (outputs[3])
+      sendOutput(string4, outputs[3]);
+    if (outputs[4])
+      sendOutput(string5, outputs[4]);
+    if (outputs[5])
+      sendOutput(string6, outputs[5]);
   }      
 }
 
+std::string GetStringsFromBundle::makeStringNameList(const Bundle& bundle) const
+{
+  auto stringNames = bundle.getStringNames();
+  std::ostringstream vars;
+  std::copy(stringNames.begin(), stringNames.end(), std::ostream_iterator<std::string>(vars, "\n"));
+  return vars.str();
+}
 
 

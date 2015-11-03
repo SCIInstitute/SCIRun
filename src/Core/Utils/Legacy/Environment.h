@@ -42,13 +42,12 @@
 
 #include <string>
 #include <map>
-#if 0
 #include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
 
   SCISHARE void create_environment_defaults(std::map<std::string, std::string>& envMap);
-  SCISHARE void create_sci_environment(char **env, char *execname);
+  SCISHARE void create_sci_environment(char **env, const char *execname);
   SCISHARE void find_and_parse_rcfile(const std::string &rcfile);
   SCISHARE bool parse_rcfile(const char* file);
   SCISHARE void copy_and_parse_scirunrc();
@@ -69,7 +68,7 @@ namespace SCIRun {
   //   otherwise.
   SCISHARE bool sci_getenv_p( const std::string & key );
 
-  SCISHARE std::map<std::string,std::string>& get_sci_environment();
+  SCISHARE const std::map<std::string,std::string>& get_sci_environment();
 
   SCISHARE bool replace_environment_variables(std::string& str);
   SCISHARE std::string get_example_nets_dir(const std::string& objdir);
@@ -77,4 +76,3 @@ namespace SCIRun {
 } // end namespace SCIRun
 
 #endif // #ifndef Core_Util_Environment_h
-#endif

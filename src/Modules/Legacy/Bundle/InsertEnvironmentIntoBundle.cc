@@ -26,58 +26,52 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Util/Environment.h>
-#include <Core/Datatypes/Bundle.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/BundlePort.h>
-
-namespace SCIRun {
+#include <Modules/Legacy/Bundle/InsertEnvironmentIntoBundle.h>
+#include <Core/Utils/Legacy/Environment.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Dataflow::Networks;
 
 /// @class InsertEnvironmentIntoBundle 
 /// @brief Collects the current environment variables into a bundle. 
 
-class InsertEnvironmentIntoBundle : public Module {
-public:
-  InsertEnvironmentIntoBundle(GuiContext*);
 
-  virtual void execute();
-};
+ModuleLookupInfo InsertEnvironmentIntoBundle::staticInfo_("InsertEnvironmentIntoBundle", "Bundle", "SCIRun");
 
 
-DECLARE_MAKER(InsertEnvironmentIntoBundle)
-
-InsertEnvironmentIntoBundle::InsertEnvironmentIntoBundle(GuiContext* ctx) :
-  Module("InsertEnvironmentIntoBundle", ctx, Source, "Bundle", "SCIRun")
+InsertEnvironmentIntoBundle::InsertEnvironmentIntoBundle() : Module(staticInfo_,false)
 {
+  INITIALIZE_PORT(Environment);
 }
 
 void
 InsertEnvironmentIntoBundle::execute()
 {
-  update_state(Executing);
-
-  std::map<std::string,std::string>& environment = get_sci_environment();
-
-  std::map<std::string,std::string>::iterator it, it_end;
-  it = environment.begin();
-  it_end = environment.end();
-  
-  BundleHandle bundle = new Bundle();
-  
-  while (it != it_end)
+  if (needToExecute())
   {
-    std::string key = (*it).first;
-    StringHandle data = new String((*it).second);
-    bundle->setString(key,data);
-    ++it;
+    
+    update_state(Executing);
+    
+    
+    BundleHandle bundle;
+    bundle.reset(new Bundle());
+    
+    
+    for (const auto& envPair : get_sci_environment())
+    {
+      StringHandle data(new String(envPair.second));
+      bundle->set(envPair.first, data);
+    }
+    
+    
+    sendOutput(Environment, bundle);
+
   }
-  
-  send_output_handle("Environment",bundle,true);
 }
 
-} // End namespace SCIRun
 
 

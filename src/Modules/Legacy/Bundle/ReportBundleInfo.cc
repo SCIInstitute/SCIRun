@@ -28,6 +28,7 @@
 
 #include <Modules/Legacy/Bundle/ReportBundleInfo.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Bundles;
@@ -54,8 +55,19 @@ void ReportBundleInfo::execute()
     for (const auto& nameHandlePair : *bundle)
     {
       std::string name = nameHandlePair.first;
+      infostring << " {" << name << " (";
       std::string type = typeid(*nameHandlePair.second).name(); //nameHandlePair.second->dynamic_type_name();
-      infostring << " {" << name << " (" << type << ") }\n";
+      if (type.find("String"))
+      {
+        auto str = boost::dynamic_pointer_cast<Core::Datatypes::String>(nameHandlePair.second);
+        if (str)
+          infostring << str->value();
+        else
+          infostring << type;
+      }
+      else
+        infostring << type;
+      infostring << ") }\n";
     }
 
     get_state()->setTransientValue("ReportedInfo", infostring.str());
