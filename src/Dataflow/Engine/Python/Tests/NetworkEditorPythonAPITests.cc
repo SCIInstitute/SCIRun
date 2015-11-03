@@ -26,7 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Network/ConnectionId.h>
 
-/// @todo
+using namespace SCIRun;
+using namespace Testing;
+using namespace Modules::Factory;
+using namespace Dataflow::Networks;
+using namespace ReplacementImpl;
+using namespace Dataflow::Engine;
+using namespace Core::Algorithms;
+
+class PythonControllerFunctionalTests : public ModuleTest
+{
+};
+
+  
+TEST_F(PythonControllerFunctionalTests, CanAddModule)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_EQ(0, controller.getNetwork()->nmodules());
+
+  //controller.runPython("addModule(\"CreateLatVol\")");
+
+  ASSERT_EQ(1, controller.getNetwork()->nmodules());
+
+  FAIL() << "TODO";
+}
