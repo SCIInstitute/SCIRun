@@ -26,44 +26,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/String/PrintMatrixIntoString.h>
 #include <stdio.h>
 #include <Dataflow/Network/Module.h>
 
 #include <Core/Datatypes/String.h>
-#include <Dataflow/Network/Ports/StringPort.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DenseColMajMatrix.h>
+//#include <Core/Datatypes/Legacy/Matrix/DenseColMajMatrix.h>
+#include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 #ifdef _WIN32
 #define snprintf _snprintf
 #endif
 
-namespace SCIRun {
 
 /// @class PrintMatrixIntoString
-/// @brief This module does a sprintf with input matrices into a new string. 
+/// @brief This module does a sprintf with input matrices into a new string.
 
-class PrintMatrixIntoString : public Module {
-  public:
-    PrintMatrixIntoString(GuiContext*);
-    virtual ~PrintMatrixIntoString() {}
-    virtual void execute();
+  
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-  private:
-    GuiString formatstring_;
-};
+SCIRun::Core::Algorithms::AlgorithmParameterName PrintMatrixIntoString::FormatString("FormatString");
 
+const ModuleLookupInfo PrintMatrixIntoString::staticInfo_("PrintMatrixIntoString", "String", "SCIRun");
 
-DECLARE_MAKER(PrintMatrixIntoString)
-PrintMatrixIntoString::PrintMatrixIntoString(GuiContext* ctx)
-  : Module("PrintMatrixIntoString", ctx, Source, "String", "SCIRun"),
-    formatstring_(get_ctx()->subVar("formatstring"), "time: %5.4f ms")
+PrintMatrixIntoString::PrintMatrixIntoString() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(Format);
+  INITIALIZE_PORT(Input);
+  INITIALIZE_PORT(Output);
 }
 
+void PrintMatrixIntoString::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(FormatString,std::string ("time: %5.4f ms"));
+}
 
 void
 PrintMatrixIntoString::execute()
@@ -81,179 +84,184 @@ PrintMatrixIntoString::execute()
   
   std::vector<char> buffer(256);  
   
-  format = formatstring_.get();
 
-  StringHandle  stringH;
-  if (get_input_handle("Format", stringH, false))
+  auto  stringH = getOptionalInput(Format);
+  
+  auto state = get_state();
+  
+  // check for port input and in none use gui input
+  if (stringH && *stringH)
   {
-    format = stringH->get();
+    state -> setValue(FormatString, (*stringH) -> value());
   }
-
+  format = state -> getValue(FormatString).toString();
+  
   // Get the dynamic handles
-  std::vector<MatrixHandle> matrixH;
-  get_dynamic_input_handles("Input",matrixH,false);
-
-  size_t i = 0;
-  while(i < format.size())
+  auto matrixH = getOptionalDynamicInputs(Input);
+  
+  if (needToExecute())
   {
-    if (format[i] == '%')
+    size_t i = 0;
+    while(i < format.size())
     {
-      if (i == format.size()-1)
+      if (format[i] == '%')
       {
-        error("Improper format string '%' is last character");
-        return;
-      }
-            
-      if (format[i+1] == '%')
-      {
-          output += '%'; i += 2;
-      }
-      else
-      {
-        size_t j = i+1;
-        // Just to name a few printing options
-        while((j < format.size())&&(format[j] != 'd')&&(format[j] != 'e')&&(format[j] != 'g')&&(format[j] != 'c')
-            &&(format[j] != 'i')&&(format[j] != 'E')&&(format[j] != 'x')&&(format[j] != 'X')&&(format[j] != 's')
-            &&(format[j] != 'u')&&(format[j] != 'o')&&(format[j] != 'g')&&(format[j] != 'G')&&(format[j] != 'f')
-            &&(format[j] != 'F')&&(format[j] != 'A')&&(format[j] != 'a')&&(format[j] != 'p')&&(format[j] != 'P')) j++;
-    
-        if (j == format.size())
+        if (i == format.size()-1)
         {
-            error("Improper format string '%..type' clause was incomplete");
-            return;
+          error("Improper format string '%' is last character");
+          return;
         }
               
-        std::string fstr = format.substr(i,j-i+1);
-        
-        if ((format[j] != 's')&&(format[j] != 'S')&&(format[j] != 'C')&&(format[j] != 'c')&&(format[j] != 'p')&&(format[j] != 'P'))
+        if (format[i+1] == '%')
         {
-          isformat  = true;
-          datavalue = 0.0;
-          while ((currentmatrix.get_rep() == 0)&&(lastport==false))
+            output += '%'; i += 2;
+        }
+        else
+        {
+          size_t j = i+1;
+          // Just to name a few printing options
+          while((j < format.size())&&(format[j] != 'd')&&(format[j] != 'e')&&(format[j] != 'g')&&(format[j] != 'c')
+              &&(format[j] != 'i')&&(format[j] != 'E')&&(format[j] != 'x')&&(format[j] != 'X')&&(format[j] != 's')
+              &&(format[j] != 'u')&&(format[j] != 'o')&&(format[j] != 'g')&&(format[j] != 'G')&&(format[j] != 'f')
+              &&(format[j] != 'F')&&(format[j] != 'A')&&(format[j] != 'a')&&(format[j] != 'p')&&(format[j] != 'P')) j++;
+      
+          if (j == format.size())
           {
-            if (static_cast<size_t>(inputport) >= matrixH.size())
+              error("Improper format string '%..type' clause was incomplete");
+              return;
+          }
+                
+          std::string fstr = format.substr(i,j-i+1);
+          
+          if ((format[j] != 's')&&(format[j] != 'S')&&(format[j] != 'C')&&(format[j] != 'c')&&(format[j] != 'p')&&(format[j] != 'P'))
+          {
+            isformat  = true;
+            datavalue = 0.0;
+            while ((!currentmatrix)&&(lastport==false))
             {
-              lastport = true;
-              lastdata = true;
-            }
-            else
-            {
-              currentmatrix = matrixH[inputport]; 
-              inputport++;
-              matrixindex = 0;
-              if (currentmatrix.get_rep())
+              if (static_cast<size_t>(inputport) >= matrixH.size())
               {
-                if (currentmatrix->get_data_size() == 0) currentmatrix = 0;
+                lastport = true;
+                lastdata = true;
+              }
+              else
+              {
+                currentmatrix = matrixH[inputport]; 
+                inputport++;
+                matrixindex = 0;
+                if (currentmatrix)
+                {
+                  if (currentmatrix->empty()) currentmatrix.reset();
+                }
+              }
+            }
+            
+            if (currentmatrix)
+            {
+              if (!matrix_is::dense(currentmatrix))
+              {
+                //TODO implement something with sparse
+                error("Currently only works with dense matrices");
+                return;
               }
               
-              if (currentmatrix.get_rep())
+              auto dense = matrix_cast::as_dense (currentmatrix);
+              dataptr = dense->data();
+              if (matrixindex < dense->get_dense_size())
               {
-                // Check whether we need to transpose matrix
-                // If so we transpose the whole matrix
-                if (matrix_is::dense_col_maj(currentmatrix))
+                datavalue = dataptr[matrixindex]; matrixindex++;
+              }
+              else
+              {
+                datavalue = 0.0;
+              }
+              if (matrixindex == dense->get_dense_size())
+              { 
+                currentmatrix.reset();
+                if (static_cast<size_t>(inputport) == matrixH.size())
                 {
-                  currentmatrix = currentmatrix->dense();
+                  lastdata = true;
+                  lastport = true;
                 }
               }
             }
           }
           
-          if (currentmatrix.get_rep())
+          if ((format[j] == 's')||(format[j] == 'S')||(format[j] == 'c')||(format[j] == 'C'))
           {
-            dataptr = currentmatrix->get_data_pointer();
-            if (matrixindex < currentmatrix->get_data_size())
-            {
-              datavalue = dataptr[matrixindex]; matrixindex++;
-            }
-            else
-            {
-              datavalue = 0.0;
-            }
-            if (matrixindex == currentmatrix->get_data_size()) 
-            { 
-              currentmatrix = 0; 
-              if (static_cast<size_t>(inputport) == matrixH.size())
-              {
-                lastdata = true;
-                lastport = true;
-              }
-            }
+            // We put the %s %S back in the string so it can be filled out lateron
+            // By a different module
+            output += fstr;
+            i = j+1;
           }
-        }
-        
-        if ((format[j] == 's')||(format[j] == 'S')||(format[j] == 'c')||(format[j] == 'C'))
-        {
-          // We put the %s %S back in the string so it can be filled out lateron
-          // By a different module
-          output += fstr;
-          i = j+1;
-        }
-        else if ((format[j] == 'd')||(format[j] == 'o'))
-        {
-          int scalar = static_cast<int>(datavalue);
-          snprintf(&(buffer[0]),256,fstr.c_str(),scalar);
-          output += std::string(reinterpret_cast<char *>(&(buffer[0])));
-          i = j+1;
-        }
-        else if ((format[j] == 'i')||(format[j] == 'u')||(format[j] == 'x')||(format[j] == 'X'))
-        {
-          unsigned int scalar = static_cast<unsigned int>(datavalue);
-          snprintf(&(buffer[0]),256,fstr.c_str(),scalar);
-          output += std::string(reinterpret_cast<char *>(&(buffer[0])));
-          i = j+1;                
-        }
-        else if ((format[j] == 'e')||(format[j] == 'E')||(format[j] == 'f')||(format[j] == 'F')||
-                 (format[j] == 'g')||(format[j] == 'G')||(format[j] == 'a')||(format[j] == 'A'))
-        {
-          snprintf(&(buffer[0]),256,fstr.c_str(),datavalue);
-          output += std::string(reinterpret_cast<char *>(&(buffer[0])));
-          i = j+1;   
-        }
-        else if ((format[j] == 'p')||(format[j] == 'P'))
-        {
-          fstr[fstr.size()-1] = 'g';
-          double ptime = get_time();
-          snprintf(&(buffer[0]),256,fstr.c_str(),ptime);
-          output += std::string(reinterpret_cast<char *>(&(buffer[0])));
-          i = j+1;   
+          else if ((format[j] == 'd')||(format[j] == 'o'))
+          {
+            int scalar = static_cast<int>(datavalue);
+            snprintf(&(buffer[0]),256,fstr.c_str(),scalar);
+            output += std::string(reinterpret_cast<char *>(&(buffer[0])));
+            i = j+1;
+          }
+          else if ((format[j] == 'i')||(format[j] == 'u')||(format[j] == 'x')||(format[j] == 'X'))
+          {
+            unsigned int scalar = static_cast<unsigned int>(datavalue);
+            snprintf(&(buffer[0]),256,fstr.c_str(),scalar);
+            output += std::string(reinterpret_cast<char *>(&(buffer[0])));
+            i = j+1;                
+          }
+          else if ((format[j] == 'e')||(format[j] == 'E')||(format[j] == 'f')||(format[j] == 'F')||
+                   (format[j] == 'g')||(format[j] == 'G')||(format[j] == 'a')||(format[j] == 'A'))
+          {
+            snprintf(&(buffer[0]),256,fstr.c_str(),datavalue);
+            output += std::string(reinterpret_cast<char *>(&(buffer[0])));
+            i = j+1;   
+          }
+          #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+          //this gets execution time.  Not sure if it is needed anymore
+          //Should be the pointer address instead
+          else if ((format[j] == 'p')||(format[j] == 'P'))
+          {
+            fstr[fstr.size()-1] = 'g';
+            double ptime = get_time();
+            snprintf(&(buffer[0]),256,fstr.c_str(),ptime);
+            output += std::string(reinterpret_cast<char *>(&(buffer[0])));
+            i = j+1;   
+          }
+          #endif
         }
       }
-    }
-    else if ( format[i] == '\\')
-    {
-      if (i < (format.size()-1))
+      else if ( format[i] == '\\')
       {
-        switch (format[i+1])
+        if (i < (format.size()-1))
         {
-          case 'n': output += '\n'; break;
-          case 'b': output += '\b'; break;
-          case 't': output += '\t'; break;
-          case 'r': output += '\r'; break;
-          case '\\': output += '\\'; break;
-          case '0': output += '\0'; break;
-          case 'v': output += '\v'; break;
-          default:
-            error("unknown escape character");
-            return;
+          switch (format[i+1])
+          {
+            case 'n': output += '\n'; break;
+            case 'b': output += '\b'; break;
+            case 't': output += '\t'; break;
+            case 'r': output += '\r'; break;
+            case '\\': output += '\\'; break;
+            case '0': output += '\0'; break;
+            case 'v': output += '\v'; break;
+            default:
+              error("unknown escape character");
+              return;
+          }
+          i = i+2;
         }
-        i = i+2;
+      }
+      else
+      {
+        output += format[i]; i++;
+      }
+      
+      if ((i== format.size())&&(isformat == true)&&(lastdata == false))
+      {
+        i = 0;
       }
     }
-    else
-    {
-      output += format[i]; i++;
-    }
-    
-    if ((i== format.size())&&(isformat == true)&&(lastdata == false))
-    {
-      i = 0;
-    }
+
+    StringHandle handle(new String(output));
+    sendOutput(Output, handle);
   }
-
-  StringHandle handle(new String(output));
-  send_output_handle("Output", handle);
 }
-
-} // End namespace SCIRun
-
 

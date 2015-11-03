@@ -31,6 +31,7 @@ SET(Interface_Modules_String_FORMS
   CreateString.ui
   PrintDatatypeDialog.ui
   NetworkNotes.ui
+  PrintMatrixIntoStringDialog.ui
   PrintStringIntoStringDialog.ui
 )
 
@@ -39,6 +40,7 @@ SET(Interface_Modules_String_HEADERS
   CreateStringDialog.h
   PrintDatatypeDialog.h
   NetworkNotesDialog.h
+  PrintMatrixIntoStringDialog.h
   PrintStringIntoStringDialog.h
 )
 
@@ -46,6 +48,7 @@ SET(Interface_Modules_String_SOURCES
   CreateStringDialog.cc
   PrintDatatypeDialog.cc
   NetworkNotesDialog.cc
+  PrintMatrixIntoStringDialog.cc
   PrintStringIntoStringDialog.cc
 )
 
