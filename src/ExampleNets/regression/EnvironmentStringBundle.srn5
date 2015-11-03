@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>4</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>GetStringsFromBundle:1</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Bundle</category_name_>
+						<module_name_>GetStringsFromBundle</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>6</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>string1-name</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>string1-name</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>PATH</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>string2-name</name>
+								</first>
+								<second>
+									<name>string2-name</name>
+									<value>
+										<which>2</which>
+										<value>HOME</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>string3-name</name>
+								</first>
+								<second>
+									<name>string3-name</name>
+									<value>
+										<which>2</which>
+										<value>SCIRUN_STARTMATLAB</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>string4-name</name>
+								</first>
+								<second>
+									<name>string4-name</name>
+									<value>
+										<which>2</which>
+										<value>string3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>string5-name</name>
+								</first>
+								<second>
+									<name>string5-name</name>
+									<value>
+										<which>2</which>
+										<value>string4</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>string6-name</name>
+								</first>
+								<second>
+									<name>string6-name</name>
+									<value>
+										<which>2</which>
+										<value>string5</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>InsertEnvironmentIntoBundle:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Bundle</category_name_>
+						<module_name_>InsertEnvironmentIntoBundle</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>PrintDatatype:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>PrintDatatype</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ReceivedValue</name>
+								</first>
+								<second>
+									<name>ReceivedValue</name>
+									<value>
+										<which>2</which>
+										<value>test_string_for_scirun</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportBundleInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Bundle</category_name_>
+						<module_name_>ReportBundleInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>3</count>
+			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>GetStringsFromBundle:1</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>string1</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>PrintDatatype:0</moduleId2_>
+				<port2_>
+					<name>Input</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>InsertEnvironmentIntoBundle:0</moduleId1_>
+				<port1_>
+					<name>Environment</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetStringsFromBundle:1</moduleId2_>
+				<port2_>
+					<name>InputBundle</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>InsertEnvironmentIntoBundle:0</moduleId1_>
+				<port1_>
+					<name>Environment</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportBundleInfo:0</moduleId2_>
+				<port2_>
+					<name>InputBundle</name>
+					<id>0</id>
+				</port2_>
+			</item>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="15" tracking_level="0" version="0">
+		<count>4</count>
+		<item_version>0</item_version>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>GetStringsFromBundle:1</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>2.04000000000000000e+02</first>
+				<second>-9.80000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>InsertEnvironmentIntoBundle:0</first>
+			<second>
+				<first>8.90000000000000000e+01</first>
+				<second>-2.62000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>PrintDatatype:0</first>
+			<second>
+				<first>1.49000000000000000e+02</first>
+				<second>1.28000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportBundleInfo:0</first>
+			<second>
+				<first>-1.55000000000000000e+02</first>
+				<second>-9.90000000000000000e+01</second>
+			</second>
+		</item>
+	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>4</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>GetStringsFromBundle:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>InsertEnvironmentIntoBundle:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>PrintDatatype:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportBundleInfo:0</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
+</networkFile>
+</boost_serialization>
+

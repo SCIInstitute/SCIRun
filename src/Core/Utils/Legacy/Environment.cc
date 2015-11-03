@@ -1,5 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 /*
   For more information, please see: http://software.sci.utah.edu
 
@@ -31,19 +29,20 @@
 
 // Core SCIRun Includes
 
-#include <Core/Thread/Legacy/Mutex.h>
+//#include <Core/Thread/Legacy/Mutex.h>
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Utils/Legacy/FileUtils.h>
 #include <Core/Utils/Legacy/sci_system.h>
+
+#define SCI_OK_TO_INCLUDE_SCI_ENVIRONMENT_DEFS_H
+#include <sci_defs/environment_defs.h>
 
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 
-// STL Includes
-
-#include <Core/Utils/Legacy/Environment.h> // includes <string>
+#include <Core/Utils/Legacy/Environment.h>
 #include <Core/Utils/Legacy/StringUtil.h>
 #include <iostream>
 #include <fstream>
@@ -58,20 +57,6 @@ typedef bfs::path::value_type boost_value_type;
 namespace bsys=boost::system;
 namespace balgo=boost::algorithm;
 
-// Need these mutexes to be created here for use in another library
-// as they must "construct" _now_ because they are used before the
-// library that would normally construct them gets loaded...
-
-namespace SCIRun {
-
-SCISHARE Mutex colormapIEPluginMutex("ColorMap Import/Export Plugin Table Lock");
-SCISHARE Mutex fieldIEPluginMutex("Field Import/Export Plugin Table Lock");
-SCISHARE Mutex matrixIEPluginMutex("Matrix Import/Export Plugin Table Lock");
-SCISHARE Mutex nrrdIEPluginMutex("Nrrd Import/Export Plugin Table Lock");
-
-}
-
-#if 0
 /// This set stores all of the environemnt keys that were set when scirun was
 /// started. Its checked by sci_putenv to ensure we don't overwrite variables
 static std::map<std::string, std::string> scirun_env;
@@ -136,7 +121,7 @@ SCIRun::sci_putenv( const std::string &key, const std::string &val )
   scirun_env[key] = val;
 }
 
-std::map<std::string, std::string>&
+const std::map<std::string, std::string>&
 SCIRun::get_sci_environment()
 {
   return (scirun_env);
@@ -146,6 +131,7 @@ SCIRun::get_sci_environment()
 #ifdef _WIN32
 void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, bfs::path& thirdparty, std::string& packages)
 {
+#if 0 //DAN TODO
   // on an installed version of SCIRun, query these values from the registry, overwriting the compiled version
   // if not an installed version, return the compiled values unchanged
   HKEY software, company, version, scirun, pack, volatileEnvironment;
@@ -289,7 +275,9 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
 
     LocalFree(lpMsgBuf);
   }
+#endif
 }
+
 #endif
 // get_existing_env() will fill up the SCIRun::existing_env string set
 // with all the currently set environment variable keys, but not their values
@@ -360,7 +348,7 @@ public:
 #endif
   }
 
-  static void append_directory(std::string& objdir, char* execname, const std::string& executable_name)
+  static void append_directory(std::string& objdir, const char* execname, const std::string& executable_name)
   {
     const char *path = sci_getenv("PATH");
     if (path &&
@@ -372,13 +360,12 @@ public:
       // findFileInPath appends directory separator to objdir
       objdir += executable_name;
     } else {
-      char cwd[MAXPATHLEN];
-      getcwd(cwd,MAXPATHLEN);
-      objdir = cwd+std::string("/")+objdir;
+      auto cwd = bfs::current_path();
+      objdir = (cwd / objdir).string();
     }
   }
 
-  static void set_object_directory(char* execname, bfs::path& objdir, std::string& executable_name)
+  static void set_object_directory(const char* execname, bfs::path& objdir, std::string& executable_name)
   {
     if (!sci_getenv("SCIRUN_OBJDIR"))
     {
@@ -414,6 +401,8 @@ public:
 
   static void set_obj_dir_non_windows(const bfs::path& testdir, bfs::path& objdir )
   {
+    return;
+#if SCIRUN4_CODE_TO_BE_CONVERTED_LATER //probably never, may not need this
 #ifndef _WIN32
     std::string sciruntcl_package("sciruntcl");
     sciruntcl_package += SCIRUN_TCL_PACKAGE_VERSION;
@@ -432,6 +421,7 @@ public:
       objdir = testdir / ".." / "..";
       sci_putenv("SCIRUN_OBJDIR", objdir.string());
     }
+#endif
 #endif
   }
 
@@ -492,7 +482,7 @@ std::string SCIRun::get_example_nets_dir(const std::string& srcdir)
 }
 
 void
-SCIRun::create_sci_environment(char **env, char *execname)
+SCIRun::create_sci_environment(char **env, const char *execname)
 {
   // set defaults
   scirun_env.clear();
@@ -867,8 +857,3 @@ SCIRun::replace_environment_variables(std::string& str)
   }
   return (true);
 }
-
-
-
-#endif
-#endif

@@ -32,21 +32,26 @@
 #include <Core/Application/Application.h>
 #include <Interface/Application/GuiApplication.h>
 #include <Core/ConsoleApplication/ConsoleApplication.h>
+#include <Core/Utils/Legacy/Environment.h>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
 #endif
 
+using namespace SCIRun;
 using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Console;
 
-int mainImpl(int argc, const char* argv[])
+int mainImpl(int argc, const char* argv[], char **environment)
 {
 #ifdef LOOK_FOR_MEMORY_LEAKS
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
   //_CrtSetBreakAlloc(34006);
 #endif
+
+  //char** env = nullptr; //TODO: passed as third argument from main, needs testing.
+  create_sci_environment(environment, argv[0]);
 
   Application::Instance().readCommandLine(argc, argv);
 
@@ -80,7 +85,7 @@ const char* utf8_encode(const std::wstring &wstr)
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-#ifdef SCIRUN_SHOW_CONSOLE 
+#ifdef SCIRUN_SHOW_CONSOLE
   AllocConsole();
   freopen("CONIN$", "r", stdin);
   freopen("CONOUT$", "w", stdout);
@@ -110,15 +115,14 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     LocalFree(szArglist);
   }
 
-  return mainImpl(argc, argv);
+  return mainImpl(argc, argv, nullptr);
 }
 
 #else // If not WIN32 use this main()/entry point.
 
-int main(int argc, const char* argv[])
+int main(int argc, const char* argv[], char **environment)
 {
-  return mainImpl(argc, argv);
+  return mainImpl(argc, argv, environment);
 }
 
 #endif // End of main for non-Windows.
-
