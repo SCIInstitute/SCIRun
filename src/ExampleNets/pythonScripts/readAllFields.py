@@ -35,7 +35,7 @@ for file in allFields(dir):
 	files.append(file)
 	show = addModule("ReportFieldInfo")
 	prnt = addModule("PrintDatatype")
-	read.output[0] >> show.input.Input
+	read.output[0] >> show.input.InputField
 	show.output[0] >> prnt.input[0]
 	executeAll()
 	time.sleep(1)
