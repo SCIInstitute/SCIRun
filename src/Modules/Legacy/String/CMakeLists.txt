@@ -37,13 +37,13 @@ SET(Modules_Legacy_String_SRCS
   PrintMatrixIntoString.cc
   PrintStringIntoString.cc
   #GetFileName.cc
-  #SplitFileName.cc
+  SplitFileName.cc
 )
 
 SET(Modules_Legacy_String_HEADERS
   PrintMatrixIntoString.h
   PrintStringIntoString.h
-
+  SplitFileName.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_String ${Modules_Legacy_String_SRCS} ${Modules_Legacy_String_HEADERS})
