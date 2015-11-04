@@ -75,8 +75,13 @@ public:
 	
   std::string read_from_console( const int bytes = -1 );
 
-	// The name of the executable
-  std::vector< wchar_t > program_name_;
+  const wchar_t* programName() const { return !program_name_.empty() ? &program_name_[0] : L"<unset>"; }
+  void setProgramName(const std::vector<wchar_t>& name) 
+  { 
+    program_name_ = name; 
+    //std::wcout << "PROGRAM NAME SET TO: " << programName() << std::endl;
+  }
+
 	// A list of Python extension modules that need to be initialized
 	module_list_type modules_;
 	// An instance of python CommandCompiler object (defined in codeop.py)
@@ -100,6 +105,9 @@ public:
 	// Condition variable to make sure the PythonInterpreter thread has 
 	// completed initialization before continuing the main thread.
 	boost::condition_variable thread_condition_variable_;
+private:
+  // The name of the executable
+  std::vector< wchar_t > program_name_;
 };
 
 std::string PythonInterpreterPrivate::read_from_console( const int bytes /*= -1 */ )
@@ -254,11 +262,11 @@ void PythonInterpreter::initialize_eventhandler()
     PyImport_AppendInittab( ( *it ).first.c_str(), ( *it ).second );
   }
   PRINT_PY_INIT_DEBUG(3);
-  std::wcerr << "initialize_eventhandler: program name=" << &this->private_->program_name_[0] << std::endl;
-  Py_SetProgramName( const_cast< wchar_t* >( &this->private_->program_name_[0] ) );
+  std::wcerr << "initialize_eventhandler: program name=" << this->private_->programName() << std::endl;
+  Py_SetProgramName(const_cast< wchar_t* >(this->private_->programName()));
 
   PRINT_PY_INIT_DEBUG(4);
-  boost::filesystem::path lib_path( &this->private_->program_name_[0] );
+  boost::filesystem::path lib_path(this->private_->programName());
   //std::wcout << "lib_path: " << lib_path.wstring() << std::endl;
   std::wstringstream lib_paths;
 #if defined( _WIN32 )
@@ -393,9 +401,9 @@ void PythonInterpreter::initialize( bool needProgramName /*const wchar_t* progra
     //  SCIRun::Core::PythonInterpreter::Instance().run_string( "from " + module_name + " import *\n" );
 
     std::cerr << "Initializing Python ..." << std::endl;
-    this->private_->program_name_ = program_name;
+    this->private_->setProgramName(program_name);
     // TODO: remove debug print when confident python initialization is stable
-    std::wcerr << "initialize program name=" << &this->private_->program_name_[0] << std::endl;
+    std::wcerr << "initialize program name=" << this->private_->programName() << std::endl;
   }
 //  PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 //  this->start_eventhandler();
@@ -665,7 +673,7 @@ void PythonInterpreter::start_terminal()
 	//Py_DECREF(io);
 	//Py_DECREF(pystdout);
 	wchar_t** argv = new wchar_t*[ 2 ];
-	argv[ 0 ] = const_cast< wchar_t* >( &this->private_->program_name_[0] );
+  argv[0] = const_cast< wchar_t* >(this->private_->programName());
 	argv[ 1 ] = 0;
 	Py_Main( 1, argv );
 	delete[] argv;
