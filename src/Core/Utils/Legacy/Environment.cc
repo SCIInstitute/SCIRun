@@ -335,11 +335,11 @@ public:
         bsys::error_code ec;
         if (! bfs::create_directory(appdata, ec) )
         {
-          std::cerr << __FILE__ << ", " << __LINE__ << ": " << appdata.c_str() << " could not be created." << std::endl;
+          std::cerr << __FILE__ << ", " << __LINE__ << ": " << appdata.string() << " could not be created." << std::endl;
           std::cerr << __FILE__ << ", " << __LINE__ << ": " << "error " << ec.value() << ": " << ec.message() << std::endl;
         }
         if (! bfs::exists(appdata) )
-          std::cerr << __FILE__ << ", " << __LINE__ << ": " << appdata.c_str() << " was not created." << std::endl;
+          std::cerr << __FILE__ << ", " << __LINE__ << ": " << appdata.string() << " was not created." << std::endl;
       }
       catch (...) {
         std::cerr << __FILE__ << ", " << __LINE__ << ": create_directory failed in create_sci_environment(..)" << std::endl;
