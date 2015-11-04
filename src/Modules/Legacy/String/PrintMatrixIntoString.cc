@@ -36,6 +36,7 @@
 #include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 #ifdef _WIN32
 #define snprintf _snprintf
@@ -51,8 +52,6 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-SCIRun::Core::Algorithms::AlgorithmParameterName PrintMatrixIntoString::FormatString("FormatString");
-
 const ModuleLookupInfo PrintMatrixIntoString::staticInfo_("PrintMatrixIntoString", "String", "SCIRun");
 
 PrintMatrixIntoString::PrintMatrixIntoString() : Module(staticInfo_)
@@ -65,7 +64,7 @@ PrintMatrixIntoString::PrintMatrixIntoString() : Module(staticInfo_)
 void PrintMatrixIntoString::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(FormatString,std::string ("time: %5.4f ms"));
+  state->setValue(Variables::FormatString ,std::string ("time: %5.4f ms"));
 }
 
 void
@@ -92,9 +91,9 @@ PrintMatrixIntoString::execute()
   // check for port input and in none use gui input
   if (stringH && *stringH)
   {
-    state -> setValue(FormatString, (*stringH) -> value());
+    state->setValue(Variables::FormatString, (*stringH)->value());
   }
-  format = state -> getValue(FormatString).toString();
+  format = state->getValue(Variables::FormatString).toString();
   
   // Get the dynamic handles
   auto matrixH = getOptionalDynamicInputs(Input);

@@ -27,14 +27,11 @@
 */
 
 #include <Interface/Modules/String/PrintMatrixIntoStringDialog.h>
-#include <Modules/Legacy/String/PrintMatrixIntoString.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
-#include <Core/Logging/Log.h>
-
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Algorithms;
 
 PrintMatrixIntoStringDialog::PrintMatrixIntoStringDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -44,5 +41,5 @@ PrintMatrixIntoStringDialog::PrintMatrixIntoStringDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  addLineEditManager(FormatString_,PrintMatrixIntoString::FormatString);
+  addLineEditManager(FormatString_, Variables::FormatString);
 }

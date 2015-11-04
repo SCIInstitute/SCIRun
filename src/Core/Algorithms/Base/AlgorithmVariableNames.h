@@ -51,6 +51,7 @@ public:
   static const AlgorithmParameterName FileTypeList;
   static const AlgorithmParameterName FileExtension;
   static const AlgorithmParameterName FileTypeName;
+  static const AlgorithmParameterName FormatString;
 	static const AlgorithmParameterName FunctionString;
   static const AlgorithmParameterName ObjectInfo; 
 
