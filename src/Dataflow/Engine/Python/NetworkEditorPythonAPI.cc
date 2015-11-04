@@ -57,15 +57,15 @@ public:
   }
 };
 
-void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl)
+void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl) 
 {
   if (!impl_)
   {
     impl_ = impl;
 
-    boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >,
+    boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >, 
       StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
-    boost::python::to_python_converter< std::vector< std::string >,
+    boost::python::to_python_converter< std::vector< std::string >, 
       StdVectorToListConverter< std::string >, true >();
   }
 }
@@ -88,11 +88,6 @@ boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string&
     std::cout << "Null implementation: NetworkEditorPythonAPI::addModule()" << std::endl;
     return boost::shared_ptr<PyModule>();
   }
-}
-
-PyModuleWrapper NetworkEditorPythonAPI::addModule2(const std::string& name)
-{
-  return { addModule(name) };
 }
 
 std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
@@ -119,7 +114,7 @@ std::string NetworkEditorPythonAPI::executeAll()
     return impl_->executeAll(lookup_);
   else
   {
-    return "Null implementation or execution context: NetworkEditorPythonAPI::executeAll()";
+    return "Null implementation or execution context: NetworkEditorPythonAPI::executeAll()"; 
   }
 }
 
