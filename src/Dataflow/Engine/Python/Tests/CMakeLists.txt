@@ -42,6 +42,7 @@ TARGET_LINK_LIBRARIES(Engine_Python_Tests
   Engine_Network
   Testing_Utils
   Testing_ModuleTestBase
+  Core_Python
   gtest_main
   gtest
   gmock

@@ -997,6 +997,7 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
   GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
+  SCIRun::Core::PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   SCIRun::Core::PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
   statusBar()->showMessage(tr("Script is running."), 2000);
 #else

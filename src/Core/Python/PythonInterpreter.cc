@@ -353,26 +353,28 @@ void PythonInterpreter::initialize_eventhandler()
   this->private_->initialized_ = true;
 }
 
-void PythonInterpreter::initialize( /*const wchar_t* program_name, const module_list_type& init_list*/ )
+void PythonInterpreter::initialize( bool needProgramName /*const wchar_t* program_name, const module_list_type& init_list*/ )
 {
-  using namespace boost::algorithm;
-  std::string cmdline = Application::Instance().parameters()->entireCommandLine();
-  trim_all( cmdline );
-  std::vector< std::string > argv;
-  split( argv, cmdline, is_any_of(" ") );
+  if (needProgramName)
+  {
+    using namespace boost::algorithm;
+    std::string cmdline = Application::Instance().parameters()->entireCommandLine();
+    trim_all(cmdline);
+    std::vector< std::string > argv;
+    split(argv, cmdline, is_any_of(" "));
 
-  size_t name_len = strlen( argv[ 0 ].c_str() );
-  std::vector< wchar_t > program_name( name_len + 1 );
-  mbstowcs( &program_name[ 0 ], argv[ 0 ].c_str(), name_len + 1 );
+    size_t name_len = strlen(argv[0].c_str());
+    std::vector< wchar_t > program_name(name_len + 1);
+    mbstowcs(&program_name[0], argv[0].c_str(), name_len + 1);
 
-//  SCIRun::Core::PythonInterpreter::Instance().run_string( "import " + module_name + "\n" );
-//  SCIRun::Core::PythonInterpreter::Instance().run_string( "from " + module_name + " import *\n" );
+    //  SCIRun::Core::PythonInterpreter::Instance().run_string( "import " + module_name + "\n" );
+    //  SCIRun::Core::PythonInterpreter::Instance().run_string( "from " + module_name + " import *\n" );
 
-  std::cerr << "Initializing Python ..." << std::endl;
-  this->private_->program_name_ = &program_name[0];
-  // TODO: remove debug print when confident python initialization is stable
-  std::wcerr << "initialize program name=" << this->private_->program_name_ << std::endl;
-
+    std::cerr << "Initializing Python ..." << std::endl;
+    this->private_->program_name_ = &program_name[0];
+    // TODO: remove debug print when confident python initialization is stable
+    std::wcerr << "initialize program name=" << this->private_->program_name_ << std::endl;
+  }
 //  PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 //  this->start_eventhandler();
 
@@ -575,18 +577,13 @@ void PythonInterpreter::run_file( const std::string& file_name )
 			throw std::logic_error( "The python interpreter hasn't been initialized!" );
 		}
 	}
-
-	//if ( !this->is_eventhandler_thread() )
-	//{
-	//	this->post_event( boost::bind( &PythonInterpreter::run_file, this, file_name ) );
-	//	return;
-	//}
-
-	FILE* fp = fopen( file_name.c_str(), "r" );
-	if ( fp != 0 )
-	{
-		PyRun_SimpleFileEx( fp, file_name.c_str(), 1 );
-	}
+  const char* file = file_name.c_str();
+  PyObject *obj = Py_BuildValue("s", file);
+  FILE *fp2 = _Py_fopen_obj(obj, "r+");
+  if (fp2) 
+  {
+    PyRun_SimpleFile(fp2, file);
+  }
 }
 
 void PythonInterpreter::interrupt()

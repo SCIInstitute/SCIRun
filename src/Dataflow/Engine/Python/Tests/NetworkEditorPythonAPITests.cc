@@ -30,17 +30,25 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ConnectionId.h>
+#include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun;
+using namespace Core;
 using namespace Testing;
 using namespace Modules::Factory;
 using namespace Dataflow::Networks;
 using namespace ReplacementImpl;
 using namespace Dataflow::Engine;
-using namespace Core::Algorithms;
+using namespace Algorithms;
 
 class PythonControllerFunctionalTests : public ModuleTest
 {
+public:
+  PythonControllerFunctionalTests()
+  {
+    PythonInterpreter::Instance().initialize(false);
+    PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  }
 };
 
   
@@ -52,9 +60,9 @@ TEST_F(PythonControllerFunctionalTests, CanAddModule)
 
   ASSERT_EQ(0, controller.getNetwork()->nmodules());
 
+  std::string command = "addModule(\"CreateLatVol\")";
+  PythonInterpreter::Instance().run_string(command);
   //controller.runPython("addModule(\"CreateLatVol\")");
 
   ASSERT_EQ(1, controller.getNetwork()->nmodules());
-
-  FAIL() << "TODO";
 }
