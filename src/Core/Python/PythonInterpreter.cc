@@ -261,25 +261,34 @@ void PythonInterpreter::initialize_eventhandler()
 #endif
 
 #if defined( __APPLE__ )
-  boost::filesystem::path top_lib_path = lib_path.parent_path().parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH;
-  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
-  boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
-  boost::filesystem::path plat_lib_path = top_lib_path / "plat-darwin";
-  lib_paths << top_lib_path.wstring() << PATH_SEP
-            << plat_lib_path.wstring() << PATH_SEP
-            << dynload_lib_path.wstring() << PATH_SEP
-            << site_lib_path.wstring();
+  std::vector<boost::filesystem::path> lib_path_list;
+  // relative paths
+  lib_path_list.push_back(lib_path.parent_path().parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
+  lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
 
-  boost::filesystem::path full_lib_path(PYTHONLIBDIR);
-  full_lib_path /= PYTHONLIB;
-  boost::filesystem::path full_dynload_lib_path = full_lib_path / "lib-dynload";
-  boost::filesystem::path full_site_lib_path = full_lib_path / "site-packages";
-  boost::filesystem::path full_plat_lib_path = full_lib_path / "plat-darwin";
-  lib_paths << PATH_SEP
-            << full_lib_path.wstring() << PATH_SEP
-            << full_dynload_lib_path.wstring() << PATH_SEP
-            << full_site_lib_path.wstring() << PATH_SEP
-            << full_plat_lib_path.wstring();
+  // for test executable
+  if (lib_path == "./SCIRun_test")
+  {
+    boost::filesystem::path full_lib_path(PYTHONLIBDIR);
+    full_lib_path /= PYTHONLIB;
+    lib_path_list.push_back(full_lib_path);
+  }
+
+  for ( size_t i = 0; i < lib_path_list.size(); ++i )
+  {
+    auto path = lib_path_list[i];
+    boost::filesystem::path plat_lib_path = path / "plat-darwin";
+    boost::filesystem::path dynload_lib_path = path / "lib-dynload";
+    boost::filesystem::path site_lib_path = path / "site-packages";
+    if (i > 0)
+    {
+      lib_paths << PATH_SEP;
+    }
+    lib_paths << path.wstring() << PATH_SEP
+              << plat_lib_path.wstring() << PATH_SEP
+              << dynload_lib_path.wstring() << PATH_SEP
+              << site_lib_path.wstring();
+  }
 
   Py_SetPath( lib_paths.str().c_str() );
 #elif defined (_WIN32)
