@@ -145,6 +145,7 @@ private:
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
+  bool quitAfterExecute_;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
