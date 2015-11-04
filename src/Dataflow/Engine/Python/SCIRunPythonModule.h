@@ -53,7 +53,9 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .def("__len__", &PyPorts::size)
     ;
 
-  boost::python::class_<PyModule, boost::shared_ptr<PyModule>, boost::noncopyable>("SCIRun::PyModule", boost::python::no_init)
+  boost::python::class_<PyModule,
+    //PyModuleWrapper,
+    boost::shared_ptr<PyModule>, boost::noncopyable>("SCIRun::PyModule", boost::python::no_init)
     .add_property("id", &PyModule::id)
     .add_property("stateVars", &PyModule::stateVars)
     .add_property("input", &PyModule::input)
@@ -64,7 +66,10 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .def("__setattr__", &PyModule::setattr)
     ;
 
+  boost::python::class_<PyModuleWrapper>("SCIRun::PyModuleWrapper");
+
   boost::python::def("addModule", &NetworkEditorPythonAPI::addModule);
+  boost::python::def("addModule2", &NetworkEditorPythonAPI::addModule2);
   boost::python::def("removeModule", &NetworkEditorPythonAPI::removeModule);
   boost::python::def("modules", &NetworkEditorPythonAPI::modules);
   boost::python::def("executeAll", &NetworkEditorPythonAPI::executeAll);

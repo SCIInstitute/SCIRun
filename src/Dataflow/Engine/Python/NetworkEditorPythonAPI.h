@@ -36,14 +36,20 @@
 #include <Dataflow/Engine/Python/share.h>
 
 namespace SCIRun {
-  
+
   class NetworkEditorPythonInterface;
   class PyModule;
+
+  struct PyModuleWrapper
+  {
+    boost::shared_ptr<PyModule> mod_;
+  };
 
   class SCISHARE NetworkEditorPythonAPI
   {
   public:
     static boost::shared_ptr<PyModule> addModule(const std::string& name);
+    static PyModuleWrapper addModule2(const std::string& name);
     static std::vector<boost::shared_ptr<PyModule>> modules();
     static std::string removeModule(const std::string& id);
     static std::string executeAll();
