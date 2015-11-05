@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-const ModuleLookupInfo ConvertMatrixToScalar::staticInfo_("ConvertMatrixToScalar", "Math", "SCIRun");
+const ModuleLookupInfo ConvertMatrixToScalar::staticInfo_("ConvertMatrixToScalar", "Converters", "SCIRun");
 
 ConvertMatrixToScalar::ConvertMatrixToScalar() : Module(staticInfo_,false)
 {
