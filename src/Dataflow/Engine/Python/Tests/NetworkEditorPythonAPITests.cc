@@ -30,10 +30,10 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ConnectionId.h>
-#include <Core/Python/PythonInterpreter.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
+#include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun;
 using namespace Core;
@@ -144,5 +144,5 @@ TEST_F(PythonControllerFunctionalTests, DISABLED_CanExecuteNetwork)
   PythonInterpreter::Instance().run_string("executeAll()");
  // boost::this_thread::sleep(boost::posix_time::milliseconds(500));
   ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::Completed);
-  //TODO: how do i assert on 
+  //TODO: how do i assert on
 }
