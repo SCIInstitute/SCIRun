@@ -57,7 +57,7 @@ void ConvertScalarToMatrix::execute()
     update_state(Executing);
     
     
-    DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>(input_scalar->value()));
+    DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>(1,1,input_scalar->value()));
     
 
     sendOutput(Output,matrix);

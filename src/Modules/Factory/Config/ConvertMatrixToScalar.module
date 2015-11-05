@@ -2,7 +2,7 @@
   "module": {
     "name": "ConvertMatrixToScalar",
     "namespace": "Math",
-    "status": "Ported module",
+    "status": "Ported module.  Int32 only",
     "description": "Converts 1x1 matrix datatype to Scalar",
     "header": "Modules/Math/ConvertMatrixToScalar.h"
   },

@@ -27,12 +27,13 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Modules/Math/ConvertMatrixToScalar.h>
-#include <Core/Datatypes/Matrix.h>
+
+//#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Math/MiscMath.h>
+//#include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Scalar.h>
-#include <Modules/Basic/SendScalar.h>
+
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
@@ -72,10 +73,10 @@ void ConvertMatrixToScalar::execute()
     
     double* dataptr = 0;
     dataptr = dense->data();
-    double datavalue=dataptr[0];
+    int datavalue= dataptr[0];
     
-    boost::shared_ptr<Double> out(new Double(datavalue));
+    boost::shared_ptr<SCIRun::Core::Datatypes::Int32> out(new SCIRun::Core::Datatypes::Int32(datavalue));
 
-    //sendOutput(Output,out);
+    sendOutput(Output,out);
   }
 }
