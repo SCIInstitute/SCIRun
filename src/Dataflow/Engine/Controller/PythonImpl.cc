@@ -195,7 +195,9 @@ namespace
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
         if (!state->containsKey(apn))
-          return boost::python::object();
+        {
+          throw std::invalid_argument("Module state key " + name + " not defined.");
+        }
 
         auto v = state->getValue(apn);
 
@@ -220,6 +222,10 @@ namespace
       {
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
+        if (!state->containsKey(apn))
+        {
+          throw std::invalid_argument("Module state key " + name + " not defined.");
+        }
         state->setValue(apn, convert(object));
       }
     }
