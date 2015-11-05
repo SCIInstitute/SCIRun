@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>6</count>
+			<count>3</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ConvertNrrdToField:0</first>
@@ -59,46 +59,6 @@
 				</second>
 			</item>
 			<item>
-				<first>ReadField:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadField</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>NrrdFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/pot_based_FEM_forward/Segmentation.nrrd</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
 				<first>ReadNrrd:0</first>
 				<second>
 					<module>
@@ -118,7 +78,7 @@
 									<name>FileTypeName</name>
 									<value>
 										<which>2</which>
-										<value>All Files</value>
+										<value>Nrrd Files</value>
 									</value>
 								</second>
 							</item>
@@ -130,7 +90,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/pot_based_FEM_forward/Segmentation.nrrd</value>
+										<value>C:/Dev/Dropbox/Saves/2x2array_250um_res10um.nhdr</value>
 									</value>
 								</second>
 							</item>
@@ -154,41 +114,9 @@
 					</state>
 				</second>
 			</item>
-			<item>
-				<first>ReportFieldInfo:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>MiscField</category_name_>
-						<module_name_>ReportFieldInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportNrrdInfo:0</first>
-				<second>
-					<module>
-						<package_name_>Teem</package_name_>
-						<category_name_>Misc</category_name_>
-						<module_name_>ReportNrrdInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>4</count>
+			<count>2</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>ConvertNrrdToField:0</moduleId1_>
@@ -197,18 +125,6 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportFieldInfo:0</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadField:0</moduleId1_>
-				<port1_>
-					<name>Field</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportFieldInfo:1</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -226,63 +142,30 @@
 					<id>0</id>
 				</port2_>
 			</item>
-			<item>
-				<moduleId1_>ReadNrrd:0</moduleId1_>
-				<port1_>
-					<name>Output_Data</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportNrrdInfo:0</moduleId2_>
-				<port2_>
-					<name>Query_Nrrd</name>
-					<id>0</id>
-				</port2_>
-			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>6</count>
+		<count>3</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ConvertNrrdToField:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>3.90000000000000000e+001</first>
-				<second>5.50000000000000000e+000</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadField:0</first>
-			<second>
-				<first>4.59000000000000000e+002</first>
-				<second>-1.53000000000000000e+002</second>
+				<first>-2.26000000000000000e+002</first>
+				<second>-1.83000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadNrrd:0</first>
 			<second>
-				<first>-1.19000000000000000e+002</first>
-				<second>-1.67000000000000000e+002</second>
+				<first>-2.55000000000000000e+002</first>
+				<second>-2.89000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:0</first>
 			<second>
-				<first>8.90000000000000000e+001</first>
-				<second>2.73000000000000000e+002</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportFieldInfo:1</first>
-			<second>
-				<first>4.52000000000000000e+002</first>
-				<second>2.05000000000000000e+001</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportNrrdInfo:0</first>
-			<second>
-				<first>-1.52000000000000000e+002</first>
-				<second>1.38000000000000000e+002</second>
+				<first>-2.11000000000000000e+002</first>
+				<second>-4.90000000000000000e+001</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -295,14 +178,10 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>6</count>
+		<count>3</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>ConvertNrrdToField:0</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReadField:0</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -311,14 +190,6 @@
 		</item>
 		<item>
 			<first>ReportFieldInfo:0</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReportFieldInfo:1</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReportNrrdInfo:0</first>
 			<second>0</second>
 		</item>
 	</moduleTags>
