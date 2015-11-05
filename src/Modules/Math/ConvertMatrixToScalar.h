@@ -44,9 +44,10 @@ namespace Math {
     ConvertMatrixToScalar();
     virtual void execute();
     virtual void setStateDefaults() {};
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
     INPUT_PORT(0, Input, Matrix);
-    OUTPUT_PORT(0, Output, Scalar);
+    OUTPUT_PORT(0, Output, Double);
   };
 }}}
 

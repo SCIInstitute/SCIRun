@@ -26,19 +26,25 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Math/ConvertMatrixToScalar.h>
+#include <Modules/Math/ConvertMatrixToScalar.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Math/MiscMath.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/Scalar.h>
+#include <Modules/Basic/SendScalar.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-ConvertMatrixToScalar::ConvertMatrixToScalar() : Module(ModuleLookupInfo("ConvertMatrixToScalar", "Math", "SCIRun"),false)
+const ModuleLookupInfo ConvertMatrixToScalar::staticInfo_("ConvertMatrixToScalar", "Math", "SCIRun");
+
+ConvertMatrixToScalar::ConvertMatrixToScalar() : Module(staticInfo_,false)
 {
   INITIALIZE_PORT(Input);
-  INITIALIZE_PORT(Scalar);
+  INITIALIZE_PORT(Output);
 }
 
 
@@ -61,12 +67,15 @@ void ConvertMatrixToScalar::execute()
     
     if (dense->get_dense_size()!=1)
     {
-      error("matrix must be size 1x1")
+      error("matrix must be size 1x1");
     }
     
-    double* dataptr = dense->data();
+    double* dataptr = 0;
+    dataptr = dense->data();
     double datavalue=dataptr[0];
+    
+    boost::shared_ptr<Double> out(new Double(datavalue));
 
-    sendOutput(Output,datavalue);
+    //sendOutput(Output,out);
   }
 }
