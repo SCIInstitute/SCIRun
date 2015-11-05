@@ -29,7 +29,7 @@
 SET(Core_IEPlugin_SRCS
   #BYUSurfField_Plugin.cc
   #CVRTIFileToMatrix_Plugin.cc
-  #CurveField_Plugin.cc
+  CurveField_Plugin.cc
   #DIF_Plugin.cc
   #EcgsimFileToMatrix_Plugin.cc
   #EcgsimFileToTriSurf_Plugin.cc
@@ -57,7 +57,7 @@ SET(Core_IEPlugin_HEADERS
   IEPluginInit.h
   #BYUSurfField_Plugin.h
   #CVRTIFileToMatrix_Plugin.h
-  #CurveField_Plugin.h
+  CurveField_Plugin.h
   #DIF_Plugin.h
   #EcgsimFileToMatrix_Plugin.h
   #EcgsimFileToTriSurf_Plugin.h
