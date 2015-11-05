@@ -31,14 +31,20 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Core/Python/PythonInterpreter.h>
+#include <Modules/Legacy/Fields/CreateLatVol.h>
+#include <Dataflow/State/SimpleMapModuleState.h>
+#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 
 using namespace SCIRun;
 using namespace Core;
 using namespace Testing;
 using namespace Modules::Factory;
+using namespace Modules::Fields;
 using namespace Dataflow::Networks;
+using namespace Dataflow::Engine;
 using namespace ReplacementImpl;
 using namespace Dataflow::Engine;
+using namespace Dataflow::State;
 using namespace Algorithms;
 
 class PythonControllerFunctionalTests : public ModuleTest
@@ -51,7 +57,6 @@ public:
   }
 };
 
-  
 TEST_F(PythonControllerFunctionalTests, CanAddModule)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
@@ -62,7 +67,82 @@ TEST_F(PythonControllerFunctionalTests, CanAddModule)
 
   std::string command = "addModule(\"CreateLatVol\")";
   PythonInterpreter::Instance().run_string(command);
+  //TODO: expose API directly on NEC?
   //controller.runPython("addModule(\"CreateLatVol\")");
 
   ASSERT_EQ(1, controller.getNetwork()->nmodules());
+}
+
+TEST_F(PythonControllerFunctionalTests, CanAddMultipleModule)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_EQ(0, controller.getNetwork()->nmodules());
+
+  std::string command = "addModule(\"CreateLatVol\")";
+  PythonInterpreter::Instance().run_string(command);
+  PythonInterpreter::Instance().run_string(command);
+
+  ASSERT_EQ(2, controller.getNetwork()->nmodules());
+}
+
+TEST_F(PythonControllerFunctionalTests, CanChangeModuleState)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  NetworkEditorController controller(mf, sf, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_EQ(0, controller.getNetwork()->nmodules());
+
+  std::string command = "m = addModule(\"CreateLatVol\")";
+  PythonInterpreter::Instance().run_string(command);
+
+  ASSERT_EQ(1, controller.getNetwork()->nmodules());
+  auto mod = controller.getNetwork()->module(0);
+  ASSERT_TRUE(mod != nullptr);
+  EXPECT_EQ(16, mod->get_state()->getValue(CreateLatVol::XSize).toInt());
+  command = "m.XSize = 14";
+  PythonInterpreter::Instance().run_string(command);
+  EXPECT_EQ(14, mod->get_state()->getValue(CreateLatVol::XSize).toInt());
+}
+
+TEST_F(PythonControllerFunctionalTests, CanConnectModules)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_EQ(0, controller.getNetwork()->nmodules());
+
+  PythonInterpreter::Instance().run_string("m1 = addModule(\"CreateLatVol\")");
+  PythonInterpreter::Instance().run_string("m2 = addModule(\"CreateLatVol\")");
+
+  ASSERT_EQ(2, controller.getNetwork()->nmodules());
+
+  ASSERT_EQ(0, controller.getNetwork()->nconnections());
+
+  PythonInterpreter::Instance().run_string("m1.output[0] >> m2.input[0]");
+  ASSERT_EQ(1, controller.getNetwork()->nconnections());
+}
+
+//TODO: this test is unstable
+TEST_F(PythonControllerFunctionalTests, DISABLED_CanExecuteNetwork)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::none));
+  NetworkEditorController controller(mf, sf, exe, nullptr, nullptr);
+  initModuleParameters(false);
+
+  PythonInterpreter::Instance().run_string("m1 = addModule(\"CreateLatVol\")");
+  ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::NotExecuted);
+  PythonInterpreter::Instance().run_string("m2 = addModule(\"CreateLatVol\")");
+  PythonInterpreter::Instance().run_string("m1.output[0] >> m2.input[0]");
+  PythonInterpreter::Instance().run_string("executeAll()");
+ // boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+  ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::Completed);
+  //TODO: how do i assert on 
 }
