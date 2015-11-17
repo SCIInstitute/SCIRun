@@ -1061,8 +1061,10 @@ public:
     ei = bi; ej = bj; ek = bk;
 
     double dmin = maxdist;
+    double dmean = maxdist;
     bool found = true;
     bool found_one = false;
+    double perturb= epsilon_*100; //value to move to find new point.
 
     do
     {
@@ -1088,29 +1090,91 @@ public:
 
                 while (it != eit)
                 {
-                  Core::Geometry::Point r;
+                  Core::Geometry::Point r, r_pert;
                   index_type idx = (*it) * 3;
-                  closest_point_on_tri(r, p,
-                                       points_[faces_[idx  ]],
-                                       points_[faces_[idx+1]],
-                                       points_[faces_[idx+2]]);
-                  const double dtmp = (p - r).length2();
-                  if (dtmp < dmin)
+                  
+                  closest_point_on_tri(r, p, points_[faces_[idx]], points_[faces_[idx+1]], points_[faces_[idx+2]]);
+                  double dtmp = (p - r).length2();
+                  
+                  
+                  //test triangle size for scaling
+                  Core::Geometry::Vector v1= Core::Geometry::Vector(points_[faces_[idx+1]]-points_[faces_[idx  ]]); v1.normalize();
+                  Core::Geometry::Vector v2= Core::Geometry::Vector(points_[faces_[idx+2]]-points_[faces_[idx  ]]); v2.normalize();
+                  
+                  Core::Geometry::Vector n=Cross(v1,v2); n.normalize();
+                  Core::Geometry::Vector pr=Core::Geometry::Vector(r-p); pr.normalize();
+                  
+                  if (std::abs(Dot(pr,n))>1-perturb)
                   {
-                    found_one = true;
-                    result = r;
-                    face = INDEX(*it);
-                    dmin = dtmp;
+                    r_pert=r;
+                  }
+                  else
+                  {
+                      
+                    Core::Geometry::Vector pp=Cross(n,pr); pp.normalize();
+                    Core::Geometry::Vector vect=Cross(pp,n); vect.normalize();
+                    
+                    r_pert=Core::Geometry::Point(r+vect*perturb);
+                  }
+                  
+                  double dtmp2=(p-r_pert).length2();
 
-                    if (dmin < epsilon2_)
+                  //check for closest face and check within precision
+                  if (dtmp-dmin <= epsilon_)
+                  {
+                    if (dtmp-dmin < - epsilon_)
                     {
-                      pdist = sqrt(dmin);
-
-                      ElemData ed(*this,face);
-                      basis_.get_coords(coords,result,ed);
-                      return (true);
+                      found_one = true;
+                      result = r;
+                      face = INDEX(*it);
+                      dmin = dtmp;
+                      dmean =dtmp2;
+                      
+                      if (dmin < epsilon2_)
+                      {
+                        
+                        pdist = sqrt(dmin);
+                        pdist = sqrt(dmean);
+                            
+                        ElemData ed(*this,face);
+                        basis_.get_coords(coords,result,ed);
+                        return (true);
+                      }
+                    }
+                    else if (dtmp2-dmean < - epsilon_ )
+                    {
+                      found_one = true;
+                      result = r;
+                      face = INDEX(*it);
+                      if (dmin>=dtmp) dmin=dtmp;
+                      dmean =dtmp2;
+                    }
+                    else if (dtmp<dmin  && std::abs(dtmp2-dmean) < epsilon_ )
+                    {
+                      found_one = true;
+                      result = r;
+                      face = INDEX(*it);
+                      dmin = dtmp;
+                      dmean =dtmp2;
+                      if (dmin < epsilon2_)
+                      {
+                        
+                        pdist = sqrt(dmin);
+                        pdist = sqrt(dmean);
+                        
+                        ElemData ed(*this,face);
+                        basis_.get_coords(coords,result,ed);
+                      }
+                    }
+                    else if (dtmp2 < dmean && dtmp-dmin > - epsilon_)
+                    {
+                      found_one = true;
+                      result = r;
+                      face = INDEX(*it);
+                      dmean =dtmp2;
                     }
                   }
+                  
 
                   ++it;
                 }

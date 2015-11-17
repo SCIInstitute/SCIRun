@@ -90,7 +90,7 @@ namespace
   class PyPortsImpl : public PyPorts
   {
   public:
-    PyPortsImpl(ModuleHandle mod, bool input, NetworkEditorController& nec) : nec_(nec)
+    PyPortsImpl(ModuleHandle mod, bool input, NetworkEditorController& nec) : nec_(nec), modId_(mod->get_id())
     {
       //wish:
       //boost::push_back(ports_,
@@ -115,6 +115,7 @@ namespace
       if (port != ports_.end())
         return *port;
 
+      std::cerr << "Could not find port with name " << name << " on module " << modId_.id_ << std::endl;
       PyErr_SetObject(PyExc_KeyError, boost::python::object(name).ptr());
       throw boost::python::error_already_set();
     }
@@ -144,6 +145,7 @@ namespace
   private:
     std::vector<boost::shared_ptr<PyPortImpl>> ports_;
     NetworkEditorController& nec_;
+    ModuleId modId_;
   };
 
   class PyModuleImpl : public PyModule
@@ -193,7 +195,9 @@ namespace
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
         if (!state->containsKey(apn))
-          return boost::python::object();
+        {
+          throw std::invalid_argument("Module state key " + name + " not defined.");
+        }
 
         auto v = state->getValue(apn);
 
@@ -218,6 +222,10 @@ namespace
       {
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
+        if (!state->containsKey(apn))
+        {
+          throw std::invalid_argument("Module state key " + name + " not defined.");
+        }
         state->setValue(apn, convert(object));
       }
     }

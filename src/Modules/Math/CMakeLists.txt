@@ -31,6 +31,8 @@ SET(Modules_Math_SRCS
   #SelectSubMatrix.cc
   #GetSubmatrix.cc 
   AppendMatrix.cc
+  ConvertMatrixToScalar.cc
+  ConvertScalarToMatrix.cc
   CreateMatrix.cc
   EvaluateLinearAlgebraUnary.cc
   EvaluateLinearAlgebraBinary.cc
@@ -45,6 +47,8 @@ SET(Modules_Math_HEADERS
   #SelectSubMatrix.h
   #GetSubmatrix.h
   AppendMatrix.h
+  ConvertMatrixToScalar.cc
+  ConvertScalarToMatrix.h
   CreateMatrix.h
   EvaluateLinearAlgebraUnary.h
   EvaluateLinearAlgebraBinary.h

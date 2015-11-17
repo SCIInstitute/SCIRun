@@ -50,9 +50,7 @@ namespace SCIRun {
         INPUT_PORT(1, Buffer_Size, Int32);
         OUTPUT_PORT(0, Fields, LegacyField);
 
-        //static Core::Algorithms::AlgorithmParameterName FunctionString;
-        //static Core::Algorithms::AlgorithmParameterName FormatString;
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
     }
   }

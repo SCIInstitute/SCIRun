@@ -75,8 +75,13 @@ public:
 	
   std::string read_from_console( const int bytes = -1 );
 
-	// The name of the executable
-	const wchar_t* program_name_;
+  const wchar_t* programName() const { return !program_name_.empty() ? &program_name_[0] : L"<unset>"; }
+  void setProgramName(const std::vector<wchar_t>& name) 
+  { 
+    program_name_ = name; 
+    //std::wcout << "PROGRAM NAME SET TO: " << programName() << std::endl;
+  }
+
 	// A list of Python extension modules that need to be initialized
 	module_list_type modules_;
 	// An instance of python CommandCompiler object (defined in codeop.py)
@@ -100,6 +105,9 @@ public:
 	// Condition variable to make sure the PythonInterpreter thread has 
 	// completed initialization before continuing the main thread.
 	boost::condition_variable thread_condition_variable_;
+private:
+  // The name of the executable
+  std::vector< wchar_t > program_name_;
 };
 
 std::string PythonInterpreterPrivate::read_from_console( const int bytes /*= -1 */ )
@@ -218,7 +226,6 @@ PythonInterpreter::PythonInterpreter() :
 	//Core::EventHandler(),
 	private_( new PythonInterpreterPrivate )
 {
-	this->private_->program_name_ = L"";
 	this->private_->initialized_ = false;
 	this->private_->terminal_running_ = false;
 	this->private_->waiting_for_input_ = false;
@@ -232,12 +239,17 @@ PythonInterpreter::~PythonInterpreter()
 	//Py_Finalize();
 }
 
+//#define PRINT_PY_INIT_DEBUG(n) std::cout << "ev_" << (n) << std::endl;
+#define PRINT_PY_INIT_DEBUG(n)
+
+
 void PythonInterpreter::initialize_eventhandler()
 {
+  PRINT_PY_INIT_DEBUG(1);
 	using namespace boost::python;
 
 	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
-
+  PRINT_PY_INIT_DEBUG(2);
 	// Register C++ to Python type converters
 	//RegisterToPythonConverters();
 
@@ -249,46 +261,63 @@ void PythonInterpreter::initialize_eventhandler()
   {
     PyImport_AppendInittab( ( *it ).first.c_str(), ( *it ).second );
   }
-  //std::wcerr << "initialize_eventhandler: program name=" << this->private_->program_name_ << std::endl;
-  Py_SetProgramName( const_cast< wchar_t* >( this->private_->program_name_ ) );
+  PRINT_PY_INIT_DEBUG(3);
+  std::wcerr << "initialize_eventhandler: program name=" << this->private_->programName() << std::endl;
+  Py_SetProgramName(const_cast< wchar_t* >(this->private_->programName()));
 
-  boost::filesystem::path lib_path( this->private_->program_name_ );
+  PRINT_PY_INIT_DEBUG(4);
+  boost::filesystem::path lib_path(this->private_->programName());
+  //std::wcout << "lib_path: " << lib_path.wstring() << std::endl;
   std::wstringstream lib_paths;
 #if defined( _WIN32 )
   const std::wstring PATH_SEP(L";");
 #else
   const std::wstring PATH_SEP(L":");
 #endif
-
+  PRINT_PY_INIT_DEBUG(5);
 #if defined( __APPLE__ )
-  boost::filesystem::path top_lib_path = lib_path.parent_path().parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH;
-  boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
-  boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
-  boost::filesystem::path plat_lib_path = top_lib_path / "plat-darwin";
-  lib_paths << top_lib_path.wstring() << PATH_SEP
-            << plat_lib_path.wstring() << PATH_SEP
-            << dynload_lib_path.wstring() << PATH_SEP
-            << site_lib_path.wstring();
+  std::vector<boost::filesystem::path> lib_path_list;
+  // relative paths
+  lib_path_list.push_back(lib_path.parent_path().parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
+  lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
 
-  boost::filesystem::path full_lib_path(PYTHONLIBDIR);
-  full_lib_path /= PYTHONLIB;
-  boost::filesystem::path full_dynload_lib_path = full_lib_path / "lib-dynload";
-  boost::filesystem::path full_site_lib_path = full_lib_path / "site-packages";
-  boost::filesystem::path full_plat_lib_path = full_lib_path / "plat-darwin";
-  lib_paths << PATH_SEP
-            << full_lib_path.wstring() << PATH_SEP
-            << full_dynload_lib_path.wstring() << PATH_SEP
-            << full_site_lib_path.wstring() << PATH_SEP
-            << full_plat_lib_path.wstring();
+  // for test executable
+  if (lib_path == "./SCIRun_test")
+  {
+    boost::filesystem::path full_lib_path(PYTHONLIBDIR);
+    full_lib_path /= PYTHONLIB;
+    lib_path_list.push_back(full_lib_path);
+  }
+
+  for ( size_t i = 0; i < lib_path_list.size(); ++i )
+  {
+    auto path = lib_path_list[i];
+    boost::filesystem::path plat_lib_path = path / "plat-darwin";
+    boost::filesystem::path dynload_lib_path = path / "lib-dynload";
+    boost::filesystem::path site_lib_path = path / "site-packages";
+    if (i > 0)
+    {
+      lib_paths << PATH_SEP;
+    }
+    lib_paths << path.wstring() << PATH_SEP
+              << plat_lib_path.wstring() << PATH_SEP
+              << dynload_lib_path.wstring() << PATH_SEP
+              << site_lib_path.wstring();
+  }
 
   Py_SetPath( lib_paths.str().c_str() );
 #elif defined (_WIN32)
   boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH / PYTHONNAME;
+  //std::cout << "top_lib_path: " << top_lib_path.string() << std::endl;
   boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
+  //std::cout << "dynload_lib_path: " << dynload_lib_path.string() << std::endl;
   boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
+  //std::cout << "site_lib_path: " << site_lib_path.string() << std::endl;
   lib_paths << top_lib_path.wstring() << PATH_SEP
             << site_lib_path.wstring();
+  //std::wcout << "lib_paths final: " << lib_paths.str() << std::endl;
   Py_SetPath( lib_paths.str().c_str() );
+  PRINT_PY_INIT_DEBUG(6);
 #else
   // linux...
   boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH;
@@ -304,7 +333,7 @@ void PythonInterpreter::initialize_eventhandler()
 
   // TODO: remove debug print when confident python initialization is stable
   std::wcerr << lib_paths.str() << std::endl;
-
+  PRINT_PY_INIT_DEBUG(7);
   Py_IgnoreEnvironmentFlag = 1;
   Py_InspectFlag = 1;
   Py_OptimizeFlag = 2;
@@ -312,7 +341,7 @@ void PythonInterpreter::initialize_eventhandler()
   Py_NoSiteFlag = 1;
 #endif
   Py_Initialize();
-
+  PRINT_PY_INIT_DEBUG(8);
 	// Create the compiler object
 	PyRun_SimpleString( "from codeop import CommandCompiler\n"
 		"__internal_compiler = CommandCompiler()\n" );
@@ -320,7 +349,7 @@ void PythonInterpreter::initialize_eventhandler()
  	boost::python::object main_namespace = main_module.attr( "__dict__" );
 	this->private_->compiler_ = main_namespace[ "__internal_compiler" ];
 	this->private_->globals_ = main_namespace;
-
+  PRINT_PY_INIT_DEBUG(9);
 	// Set up the prompt strings
 	PyRun_SimpleString( "import sys\n"
 		"try:\n"
@@ -335,7 +364,7 @@ void PythonInterpreter::initialize_eventhandler()
 	boost::python::object sys_namespace = sys_module.attr( "__dict__" );
 	this->private_->prompt1_ = boost::python::extract< std::string >( sys_namespace[ "ps1" ] );
 	this->private_->prompt2_ = boost::python::extract< std::string >( sys_namespace[ "ps2" ] );
-
+  PRINT_PY_INIT_DEBUG(10);
 	// Hook up the I/O
 	PyRun_SimpleString( "import interpreter\n"
 		"__term_io = interpreter.terminalio()\n"
@@ -344,35 +373,38 @@ void PythonInterpreter::initialize_eventhandler()
 		"sys.stdin = __term_io\n"
 		"sys.stdout = __term_io\n"
 		"sys.stderr = __term_err\n" );
-
+  PRINT_PY_INIT_DEBUG(11);
 	// Remove intermediate python variables
 	PyRun_SimpleString( "del (interpreter, __internal_compiler, __term_io, __term_err)\n" );
-
+  PRINT_PY_INIT_DEBUG(12);
 	//this->private_->thread_condition_variable_.notify_one();
 
   this->private_->initialized_ = true;
+  PRINT_PY_INIT_DEBUG(999);
 }
 
-void PythonInterpreter::initialize( /*const wchar_t* program_name, const module_list_type& init_list*/ )
+void PythonInterpreter::initialize( bool needProgramName /*const wchar_t* program_name, const module_list_type& init_list*/ )
 {
-  using namespace boost::algorithm;
-  std::string cmdline = Application::Instance().parameters()->entireCommandLine();
-  trim_all( cmdline );
-  std::vector< std::string > argv;
-  split( argv, cmdline, is_any_of(" ") );
+  if (needProgramName)
+  {
+    using namespace boost::algorithm;
+    std::string cmdline = Application::Instance().parameters()->entireCommandLine();
+    trim_all(cmdline);
+    std::vector< std::string > argv;
+    split(argv, cmdline, is_any_of(" "));
 
-  size_t name_len = strlen( argv[ 0 ].c_str() );
-  std::vector< wchar_t > program_name( name_len + 1 );
-  mbstowcs( &program_name[ 0 ], argv[ 0 ].c_str(), name_len + 1 );
+    size_t name_len = strlen(argv[0].c_str());
+    std::vector< wchar_t > program_name(name_len + 1);
+    mbstowcs(&program_name[0], argv[0].c_str(), name_len + 1);
 
-//  SCIRun::Core::PythonInterpreter::Instance().run_string( "import " + module_name + "\n" );
-//  SCIRun::Core::PythonInterpreter::Instance().run_string( "from " + module_name + " import *\n" );
+    //  SCIRun::Core::PythonInterpreter::Instance().run_string( "import " + module_name + "\n" );
+    //  SCIRun::Core::PythonInterpreter::Instance().run_string( "from " + module_name + " import *\n" );
 
-  std::cerr << "Initializing Python ..." << std::endl;
-  this->private_->program_name_ = &program_name[0];
-  // TODO: remove debug print when confident python initialization is stable
-  std::wcerr << "initialize program name=" << this->private_->program_name_ << std::endl;
-
+    std::cerr << "Initializing Python ..." << std::endl;
+    this->private_->setProgramName(program_name);
+    // TODO: remove debug print when confident python initialization is stable
+    std::wcerr << "initialize program name=" << this->private_->programName() << std::endl;
+  }
 //  PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 //  this->start_eventhandler();
 
@@ -575,18 +607,13 @@ void PythonInterpreter::run_file( const std::string& file_name )
 			throw std::logic_error( "The python interpreter hasn't been initialized!" );
 		}
 	}
-
-	//if ( !this->is_eventhandler_thread() )
-	//{
-	//	this->post_event( boost::bind( &PythonInterpreter::run_file, this, file_name ) );
-	//	return;
-	//}
-
-	FILE* fp = fopen( file_name.c_str(), "r" );
-	if ( fp != 0 )
-	{
-		PyRun_SimpleFileEx( fp, file_name.c_str(), 1 );
-	}
+  const char* file = file_name.c_str();
+  PyObject *obj = Py_BuildValue("s", file);
+  FILE *fp2 = _Py_fopen_obj(obj, "r+");
+  if (fp2) 
+  {
+    PyRun_SimpleFile(fp2, file);
+  }
 }
 
 void PythonInterpreter::interrupt()
@@ -646,7 +673,7 @@ void PythonInterpreter::start_terminal()
 	//Py_DECREF(io);
 	//Py_DECREF(pystdout);
 	wchar_t** argv = new wchar_t*[ 2 ];
-	argv[ 0 ] = const_cast< wchar_t* >( this->private_->program_name_ );
+  argv[0] = const_cast< wchar_t* >(this->private_->programName());
 	argv[ 1 ] = 0;
 	Py_Main( 1, argv );
 	delete[] argv;

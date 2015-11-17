@@ -45,7 +45,7 @@ namespace Networks {
   {
   public:
     virtual ~ModuleFactory();
-    virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info) = 0;
+    virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info) const = 0;
     virtual ModuleHandle create(const ModuleDescription& desc) = 0;
     virtual void setStateFactory(ModuleStateFactoryHandle stateFactory) = 0;
     virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) = 0;

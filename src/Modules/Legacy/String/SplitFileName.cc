@@ -31,97 +31,93 @@
 ///@author
 ///   jeroen
 
-#include <Dataflow/Network/Module.h>
-
+#include <Modules/Legacy/String/SplitFileName.h>
 #include <Core/Datatypes/String.h>
-#include <Dataflow/Network/Ports/StringPort.h>
-
-namespace SCIRun {
 
 using namespace SCIRun;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 /// @class SplitFileName
 /// @brief This module splits a filename in: pathname, filename (base), and extension. 
 
-class SplitFileName : public Module {
-public:
-  SplitFileName(GuiContext*);
-
-  virtual ~SplitFileName();
-
-  virtual void execute();
-};
+const ModuleLookupInfo SplitFileName::staticInfo_("SplitFileName", "String", "SCIRun");
 
 
-DECLARE_MAKER(SplitFileName)
-SplitFileName::SplitFileName(GuiContext* ctx)
-  : Module("SplitFileName", ctx, Source, "String", "SCIRun")
+SplitFileName::SplitFileName() : Module(staticInfo_,false)
 {
+  INITIALIZE_PORT(Full_Filename);
+  INITIALIZE_PORT(Pathname);
+  INITIALIZE_PORT(Base);
+  INITIALIZE_PORT(Extension);
+  INITIALIZE_PORT(Filename);
 }
 
-
-SplitFileName::~SplitFileName()
-{
-}
 
 void
 SplitFileName::execute()
 {
-  StringHandle filenameH;
-  if (!get_input_handle("Filename", filenameH)) return;
+  
+  auto filenameH = getRequiredInput(Full_Filename);
+  
 
   std::string filename, fn, pn, ext, fnext;
 
   const char sep = '/';
   const char dot = '.';
   
-  filename = filenameH->get();
+  filename = filenameH->value();
   
-	if (filename.size() > 0) if (filename[filename.size()-1] == sep) 
-															filename = filename.substr(0,filename.size()-1);
-	
-  int lastsep = -1;
-  for (size_t p = 0; p < filename.size(); p++) if (filename[p] == sep) lastsep = (int)p;
-  
-  if (lastsep > -1)
+  if (needToExecute())
   {
-    pn = filename.substr(0,lastsep+1);
-    fn = filename.substr(lastsep+1);
+    
+      if (filename.size() > 0) if (filename[filename.size()-1] == sep) 
+                                                              filename = filename.substr(0,filename.size()-1);
+      
+    int lastsep = -1;
+    for (size_t p = 0; p < filename.size(); p++) if (filename[p] == sep) lastsep = (int)p;
+    
+    if (lastsep > -1)
+    {
+      pn = filename.substr(0,lastsep+1);
+      fn = filename.substr(lastsep+1);
+    }
+    else
+    {
+      pn = "";
+      fn = filename;
+    }
+
+    int lastdot = -1;
+    for (size_t p = 0; p < fn.size(); p++) if (fn[p] == dot) lastdot = (int)p;
+    
+    if (lastdot > -1)
+    {
+      ext = fn.substr(lastdot);
+      fn = fn.substr(0,lastdot);
+    }
+    else
+    {
+      ext = "";
+    }
+
+    fnext = fn+ext;
+    
+    StringHandle pnH(new String(pn));
+    sendOutput(Pathname, pnH);
+
+    StringHandle fnH(new String(fn));
+    sendOutput(Base, fnH);
+
+    StringHandle extH(new String(ext));
+    sendOutput(Extension, extH);
+
+    StringHandle fnextH(new String(fnext));
+    sendOutput(Filename, fnextH);
   }
-  else
-  {
-    pn = "";
-    fn = filename;
-  }
-
-  int lastdot = -1;
-  for (size_t p = 0; p < fn.size(); p++) if (fn[p] == dot) lastdot = (int)p;
-  
-  if (lastdot > -1)
-  {
-    ext = fn.substr(lastdot);
-    fn = fn.substr(0,lastdot);
-  }
-  else
-  {
-    ext = "";
-  }
-
-  fnext = fn+ext;
-
-  StringHandle pnH(new String(pn));
-  send_output_handle("Pathname", pnH);
-
-  StringHandle fnH(new String(fn));
-  send_output_handle("Filename Base", fnH);
-
-  StringHandle extH(new String(ext));
-  send_output_handle("Extension", extH);
-
-  StringHandle fnextH(new String(fnext));
-  send_output_handle("Filename", fnextH);
 }
 
-} // End namespace SCIRun
 
 

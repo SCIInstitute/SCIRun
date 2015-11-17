@@ -246,43 +246,43 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ConvertNrrdToField:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>3.90000000000000000e+01</first>
-				<second>5.50000000000000000e+00</second>
+				<first>3.90000000000000000e+001</first>
+				<second>5.50000000000000000e+000</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>4.59000000000000000e+02</first>
-				<second>-1.53000000000000000e+02</second>
+				<first>4.59000000000000000e+002</first>
+				<second>-1.53000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadNrrd:0</first>
 			<second>
-				<first>-1.19000000000000000e+02</first>
-				<second>-1.67000000000000000e+02</second>
+				<first>-1.19000000000000000e+002</first>
+				<second>-1.67000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:0</first>
 			<second>
-				<first>8.90000000000000000e+01</first>
-				<second>2.73000000000000000e+02</second>
+				<first>8.90000000000000000e+001</first>
+				<second>2.73000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:1</first>
 			<second>
-				<first>4.52000000000000000e+02</first>
-				<second>2.05000000000000000e+01</second>
+				<first>4.52000000000000000e+002</first>
+				<second>2.05000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportNrrdInfo:0</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>1.38000000000000000e+02</second>
+				<first>-1.52000000000000000e+002</first>
+				<second>1.38000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>

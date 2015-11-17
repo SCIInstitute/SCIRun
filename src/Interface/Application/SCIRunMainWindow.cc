@@ -87,7 +87,7 @@ static const char* ToolkitIconURL = "ToolkitIconURL";
 static const char* ToolkitURL = "ToolkitURL";
 static const char* ToolkitFilename = "ToolkitFilename";
 
-SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true), returnCode_(0)
+SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true), returnCode_(0), quitAfterExecute_(false)
 {
 	setupUi(this);
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -525,7 +525,7 @@ void SCIRunMainWindow::executeAll()
 void SCIRunMainWindow::setupQuitAfterExecute()
 {
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
-  prefsWindow_->setRegressionMode(true);
+  quitAfterExecute_ = true;
 }
 
 void SCIRunMainWindow::exitApplication(int code)
@@ -726,7 +726,7 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 
 bool SCIRunMainWindow::okToContinue()
 {
-  if (isWindowModified() && !Application::Instance().parameters()->isRegressionMode())
+  if (isWindowModified() && !Application::Instance().parameters()->isRegressionMode() && !quitAfterExecute_)
   {
     int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"),
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
@@ -997,6 +997,7 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
   GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
+  SCIRun::Core::PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   SCIRun::Core::PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
   statusBar()->showMessage(tr("Script is running."), 2000);
 #else

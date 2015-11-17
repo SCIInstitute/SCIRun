@@ -1,5 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -561,17 +559,6 @@ convertToWindowsPath( std::string & unixPath )
   }
 }    
 
-void
-convertToUnixPath( std::string & unixPath )
-{
-  for( std::string::size_type cnt = 0; cnt < unixPath.length(); cnt++ ) {
-    if( unixPath[cnt] == '\\' ) {
-      unixPath[cnt] = '/';
-    }
-  }
-}    
-
-
 int copyFile(const bfs::path& src, const bfs::path& dest)
 {
   int code = -1;
@@ -809,5 +796,4 @@ rewinddir(DIR *dir)
 }
 
 
-#endif
 #endif

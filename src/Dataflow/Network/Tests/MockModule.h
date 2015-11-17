@@ -96,7 +96,7 @@ namespace SCIRun {
         {
         public:
           MockModuleFactory() : moduleCounter_(0) {}
-          virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
+          virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info) const;
           virtual ModuleHandle create(const ModuleDescription& info);
           virtual void setStateFactory(ModuleStateFactoryHandle stateFactory);
           virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory);

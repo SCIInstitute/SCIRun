@@ -31,6 +31,7 @@
 #include <Core/IEPlugin/MatlabFiles_Plugin.h>
 #include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>
 #include <Core/IEPlugin/PointCloudField_Plugin.h>
+#include <Core/IEPlugin/CurveField_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/IEPlugin/IEPluginInit.h>
@@ -47,8 +48,8 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter ModalNrrdToField_plugin("NrrdFile[DataOnElements]","*.nhdr *.nrrd", "", Modal_NrrdToField_reader, 0);
   static FieldIEPluginLegacyAdapter IPNodalNrrdToField_plugin("NrrdFile[DataOnNodes,InvertParity]","*.nhdr *.nrrd", "", IPNodal_NrrdToField_reader, 0);
   static FieldIEPluginLegacyAdapter IPModalNrrdToField_plugin("NrrdFile[DataOnElements,InvertParity]","*.nhdr *.nrrd", "", IPModal_NrrdToField_reader, 0);
-  
-  static FieldIEPluginLegacyAdapter MatlabField_plugin("Matlab Field", "*.mat", "*.mat", MatlabField_reader, MatlabField_writer);   
+
+  static FieldIEPluginLegacyAdapter MatlabField_plugin("Matlab Field", "*.mat", "*.mat", MatlabField_reader, MatlabField_writer);
 
   static MatrixIEPluginLegacyAdapter MatlabMatrix_plugin("Matlab Matrix","*.mat", "*.mat", MatlabMatrix_reader, MatlabMatrix_writer);
   //TODO
@@ -57,4 +58,6 @@ void IEPluginManager::Initialize()
   static MatrixIEPluginLegacyAdapter SimpleTextFileMatrix_plugin("SimpleTextFile","*.*", "",SimpleTextFileMatrix_reader,SimpleTextFileMatrix_writer);
 
   static FieldIEPluginLegacyAdapter PointCloudField_plugin("PointCloudField", "*.pts *.pos *.txt", "", TextToPointCloudField_reader, PointCloudFieldToText_writer);
+
+  static FieldIEPluginLegacyAdapter CurveField_plugin("CurveField", "*.pts *.pos *.edge", "", TextToCurveField_reader, CurveFieldToTextBaseIndexZero_writer);
 }

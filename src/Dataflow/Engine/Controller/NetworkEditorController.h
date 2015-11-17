@@ -153,6 +153,8 @@ namespace Engine {
 
     void cleanUpNetwork();
 
+    const Networks::ModuleFactory& moduleFactory() const { return *moduleFactory_; }  //TOOD: lazy
+
   private:
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);

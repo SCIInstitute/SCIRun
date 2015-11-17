@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -27,7 +27,7 @@
 #
 
 SET(SCIRunMain_SOURCES
-  scirunMain.cc 
+  scirunMain.cc
 )
 
 IF(BUILD_HEADLESS)
@@ -53,7 +53,7 @@ IF(APPLE)
 
   ADD_EXECUTABLE(${APPLICATION_NAME} MACOSX_BUNDLE ${SCIRunMain_SOURCES})
 
-ELSEIF(WIN32)  
+ELSEIF(WIN32)
   SET(SCIRunMain_SOURCES ${SCIRunMain_SOURCES} "${APPLICATION_WINDOWS_RC}")
   IF(SCIRUN_SHOW_CONSOLE)
     ADD_DEFINITIONS(-DSCIRUN_SHOW_CONSOLE=1)
@@ -86,6 +86,7 @@ ENDIF()
 
 TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
   Interface_Application
+  Core_Util_Legacy
 )
 
 IF(BUILD_WITH_PYTHON)
@@ -94,8 +95,11 @@ IF(BUILD_WITH_PYTHON)
   )
 ENDIF()
 
+OPTION(DISABLE_MAC_BUNDLE "Disable Mac bundle" OFF)
+MARK_AS_ADVANCED(DISABLE_MAC_BUNDLE)
+
 IF(APPLE)
-  SET(BUILD_BUNDLE TRUE)
+  SET(BUILD_BUNDLE NOT ${DISABLE_MAC_BUNDLE})
 
   IF(${MACDEPLOYQT} MATCHES "NOTFOUND")
     SET(BUILD_BUNDLE FALSE)
@@ -103,14 +107,19 @@ IF(APPLE)
   ENDIF()
 ENDIF()
 
-IF(APPLE AND BUILD_BUNDLE)
+MESSAGE("Build bundle: " ${BUILD_BUNDLE})
+
+IF(${BUILD_BUNDLE})
+IF(APPLE)
+
+MESSAGE("Build bundle is on")
 
 # TODO: Xcode settings go here, once Xcode build is working
 # IF(${CMAKE_GENERATOR} MATCHES "Xcode")
 
   IF(${CMAKE_GENERATOR} MATCHES "Unix Makefiles")
     # otool can be used to check list of dependent dylibs
-    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME} 
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
       POST_BUILD
       # clean out libraries
       COMMAND ${CMAKE_COMMAND} ARGS -E remove -f ${APPLICATION_NAME}.app/Contents/Contents/Frameworks/*${CMAKE_SHARED_LIBRARY_SUFFIX}
@@ -213,6 +222,7 @@ ELSE()
       ENDIF()
     ENDIF()
   ENDIF()
+ENDIF()
 ENDIF()
 
 SET(NETWORKS_DESTINATION_DIR  "./SCIRunNetworks")

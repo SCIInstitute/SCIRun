@@ -885,6 +885,10 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
 
   SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
+  IF(BUILD_WITH_PYTHON)
+    SET_PROPERTY(TARGET Core_Python_Tests     PROPERTY FOLDER "Core/Tests")
+    SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
+  ENDIF()
 ENDIF()
 
 #SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
@@ -898,9 +902,7 @@ SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
-  SET_PROPERTY(TARGET Core_Python_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
-  SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
 ENDIF()
 
 IF(WITH_TETGEN)
@@ -908,21 +910,11 @@ IF(WITH_TETGEN)
   SET_PROPERTY(TARGET tetlib         PROPERTY FOLDER "Externals")
 ENDIF()
 
-
-########################################################################
-# Factory code generation options
-
-OPTION(GENERATE_MODULE_FACTORY_CODE "Generate module factory code from config files" ON)
-MARK_AS_ADVANCED(GENERATE_MODULE_FACTORY_CODE)
-OPTION(REGENERATE_MODULE_FACTORY_CODE "Delete generated module factory code file in order to refresh module list" ON)
-MARK_AS_ADVANCED(REGENERATE_MODULE_FACTORY_CODE)
-
 ########################################################################
 # Custom CMake settings for CPack
 
 ########################################################################
 # CPack
-
 
 ########################################################################
 # PACKAGING Information

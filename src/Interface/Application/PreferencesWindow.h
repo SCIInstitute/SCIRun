@@ -43,9 +43,6 @@ class PreferencesWindow : public QDialog, public Ui::PreferencesDialog
 public:
   explicit PreferencesWindow(NetworkEditor* editor, QWidget* parent = 0);
   
-  bool isRegression() const { return regressionMode_; }
-  void setRegressionMode(bool mode) { regressionMode_ = mode; }
-
   bool saveBeforeExecute() const;
   void setSaveBeforeExecute(bool mode);
 
@@ -62,7 +59,6 @@ public Q_SLOTS:
 
 private:
   NetworkEditor* networkEditor_;
-  bool regressionMode_;
 };
 
 }

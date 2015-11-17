@@ -33,6 +33,7 @@
 #define DATAFLOW_NETWORK_NETWORKIO_H 1
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Algorithms/Base/Variable.h>
 #include <libxml/xmlreader.h>
 #include <map>
 #include <stack>
@@ -43,17 +44,22 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+  typedef std::map<std::string, std::map<std::string, Core::Algorithms::Name>> NameLookup;
+  typedef boost::function<Core::Algorithms::AlgorithmParameter::Value(std::string)> ValueConverter;
+  typedef std::map<std::string, std::map<std::string, ValueConverter>> ValueConverterMap;
+
   class SCISHARE LegacyNetworkIO
   {
   public:
-    explicit LegacyNetworkIO(const std::string& dtdPath);
+    LegacyNetworkIO(const std::string& dtdPath, const Networks::ModuleFactory& modFactory);
     NetworkFileHandle load_net(const std::string& legacyNetworkFilename);
   private:
     bool done_writing() const { return done_writing_; }
 
     bool load_network();
 
-    void createConnectionNew(const std::string& from, const std::string& to, const std::string& from_port, const std::string& to_port);
+    void createConnectionNew(const std::string& from, const std::string& to,
+      const std::string& from_port, const std::string& to_port, const std::string &con_id);
 
     //! Interface to build up an xml document for saving.
     void start_net_doc(const std::string &fname, const std::string &vers, const std::string &vnetersion);
@@ -128,6 +134,7 @@ namespace Networks {
                                  const std::string &col, const std::string &note);
     void gui_set_connection_route(const std::string &con_id, const std::string &route);
     void gui_open_module_gui(const std::string &mod_id);
+    int getNotePosition(const std::string& position) const;
 
     void gui_add_subnet_at_position(const std::string &mod_id,
                                     const std::string &module,
@@ -137,6 +144,7 @@ namespace Networks {
     void gui_pop_subnet_ctx(const std::string& ctx);
 
     void listModuleIdMapping();
+    static std::string checkForModuleRename(const std::string& originalName);
 
     xmlNode* get_module_node(const std::string &id);
     xmlNode* get_connection_node(const std::string &id);
@@ -159,7 +167,12 @@ namespace Networks {
     int                                sn_count_;
     int                                sn_ctx_;
     std::string dtdPath_;
+    const Networks::ModuleFactory& modFactory_;
     std::map<std::string, ModuleId> moduleIdMap_;
+    std::map<std::string, std::string> connectionIdMap_;
+    static const std::map<std::string, std::string> moduleRenameMap_;
+    static NameLookup nameLookup_;
+    static ValueConverterMap valueConverter_;
   };
 
 }}} // end namespace SCIRun
