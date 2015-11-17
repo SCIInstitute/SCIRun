@@ -61,6 +61,15 @@ namespace SCIRun {
     static std::vector<boost::shared_ptr<PyModule>> modules_;
   };
 
+  class SCISHARE SimplePythonAPI
+  {
+  public:
+    static std::string scirun_addModule(const std::string& name);
+    static std::string scirun_quit(bool force);
+  private:
+    SimplePythonAPI();
+  };
+
 }
 
 #endif
