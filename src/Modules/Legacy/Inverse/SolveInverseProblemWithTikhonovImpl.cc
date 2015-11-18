@@ -188,6 +188,8 @@ namespace LinearAlgebra
   class LapackError : public std::exception {};
 }
 
+/////////////////////////
+/////////  run()
 void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
 {
   // TODO: use DimensionMismatch exception where appropriate
@@ -195,96 +197,250 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
   const int M = forwardMatrix_->nrows();
   const int N = forwardMatrix_->ncols();
 
-  if (M < N && M != measuredData_->nrows())
+// check that rows of fwd matrix equal number of measurements
+  if ( M != measuredData_->nrows() )
   {
-    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Input matrix dimensions must agree: Underdetermined case, rows are unequal."));
+    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Input matrix dimensions must agree."));
   }
-  //TODO @JCOLLFONT: this check breaks the Toolkit network. I will comment it out until we can discuss further
-#if 0
-  if (M >= N && N != measuredData_->nrows())
-  {
-    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Input matrix dimensions must agree: Overdetermined case, columns are unequal."));
-  }
-#endif
+
+// check that number of time samples is 1. @JCOLLFONT to change for a more general case later (should add a for loop)
   if (1 != measuredData_->ncols())
   {
     BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Measured data must be a vector"));
   }
-  //decide used Tikhonov regularization formulation (underdetermined or overdetermined)
-  //based purely on relationship of number of sensors compared to number of source reconstruction points
-  //UNDERDETERMINED CASE
+  
+    
+    
+// PREALOCATE VARIABLES and MATRICES
+    DenseMatrix M1, M2, M3;
+    DenseColumnMatrix y;
+    DenseMatrix forward_transpose = forwardMatrix_->transpose();
+    DenseColumnMatrix solution(M);
+    double lambda=0, lambda_sq=0;
+    
+// select underdetermined case if user decides so or the option is set to automatic and number of measurements is smaller than number of unknowns.
   if ( ((M < N) && (regularizationChoice_ == automatic)) || (regularizationChoice_ == underdetermined))
   {
+    //UNDERDETERMINED CASE
     //.........................................................................
     // OPERATE ON DATA:
-    // Compute X = R * R^T * A^T (A * R * R^T * A^T + LAMBDA * LAMBDA * C * C^T) * Y
+    // Compute X = (R * R^T)^-1 * A^T (A * (R*R^T)^-1 * A^T + LAMBDA * LAMBDA * (C*C^T)^-1 ) * Y
+    // Will set:
+      //      M1 = A * (R*R^T)^-1 * A^T
+      //      M2 = (C*C^T)^-1
+      //      M3 = (R * R^T)^-1 * A^T
+      //      y = measuredData
     //.........................................................................
-    DenseMatrix ARRtrAtr, RRtrAtr;
-    double lambda=0, lambda_sq=0;
-    DenseMatrix forward_transpose = forwardMatrix_->transpose();
-    DenseMatrix regMat;
-    #ifdef SCIRUN4_CODE_TO_BE_CONVERTED_LATER
-    SparseRowMatrixHandle sourceWeighting_sparse;
-    #endif
-    DenseColumnMatrix solution(M);
-    DenseColumnMatrix RRtrAtrsolution(N);
+   
+    
+    DenseMatrix iRRtr, RRtr, RRtrAtr, iCCtr, CCtr;
 
-    if (!sourceWeighting_) //check if a Source Space Weighting Matrix exist?
-    {
-      regMat = DenseMatrix::Identity(N, N);
-      ARRtrAtr = *forwardMatrix_ * forward_transpose;
-      RRtrAtr = forward_transpose;
-    }
-    else
-    {
-      if(((regularizationSolutionSubcase_==solution_constrained) && ((N != sourceWeighting_->nrows()) || (N != sourceWeighting_->ncols()))) ||
-         ((regularizationSolutionSubcase_==solution_constrained_squared) && (N != sourceWeighting_->nrows())))
-      {
-        BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Solution Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of columns) !"));
-      }
-      regMat = *sourceWeighting_;
-      #ifdef SCIRUN4_CODE_TO_BE_CONVERTED_LATER
-      sourceWeighting_sparse = sourceWeighting_->sparse();
-      #endif
+    // DEFINITIONS AND PREALOCATION OF SOURCE REGULARIZATION MATRIX 'R'
 
-      if (regularizationSolutionSubcase_== solution_constrained)
+      // if R does not exist, set as identity of size equal to N (columns of fwd matrix)
+      if (!sourceWeighting_)
       {
-        RRtrAtr = *sourceWeighting_ * forward_transpose;
-	      auto AR = forwardMatrix_;
-	      ARRtrAtr = *AR * RRtrAtr;
-      }
-      else if (regularizationSolutionSubcase_== solution_constrained_squared)
-      {
-        auto AR = *forwardMatrix_ * *sourceWeighting_;
-	      auto RtrAtr = AR.transpose().eval();
-        RRtrAtr = *sourceWeighting_ * RtrAtr;
-	      ARRtrAtr = AR * RtrAtr;
-      }
-    }
-    DenseMatrix CCtr;
-    if (!sensorWeighting_) //check if a Sensor Space (Noise Covariance) Weighting Matrix exist?
-    {
-      CCtr = DenseMatrix::Identity(M, M);
-    }
-    else
-    {
-      if (((regularizationResidualSubcase_ == residual_constrained) && ((M != sensorWeighting_->nrows()) || (M != sensorWeighting_->ncols()))) ||
-          ((regularizationResidualSubcase_ == residual_constrained_squared) && (M != sensorWeighting_->nrows())))
-      {
-        BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Data Residual Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of rows) !"));
+          RRtr = DenseMatrix::Identity(N, N);
+          iRRtr = RRtr;
+          
       }
       else
       {
-        if (regularizationResidualSubcase_ == residual_constrained)
-          CCtr = *sensorWeighting_;
-        else
-          if ( regularizationResidualSubcase_ == residual_constrained_squared )
-            CCtr = *sensorWeighting_ * sensorWeighting_->transpose();
+        // if provided the non-squared version of R
+        if( regularizationSolutionSubcase_==solution_constrained )
+        {
+            
+            // check that the matrix is of appropriate size (equal number of rows as columns in fwd matrix)
+            if ( N != sourceWeighting_->nrows() )
+            {
+                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !"));
+            }
+          
+            RRtr = *sourceWeighting_ * sourceWeighting_->transpose();
+            iRRtr = RRtr.inverse();   // todo: @JCOLLFONT need to compute inverse of RRtr and set try/catch 
+            
+        }
+        // otherwise, if the source regularization is provided as the squared version (RR^T)
+        else if ( regularizationSolutionSubcase_==solution_constrained_squared )
+        {
+            // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
+            if ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() )
+            {
+                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !"));
+            }
+            
+            RRtr = *sourceWeighting_;
+            iRRtr = regMat.inverse();   // todo: @JCOLLFONT need to compute inverse of RRtr
+            
+        }
       }
+      
+      
+    // DEFINITIONS AND PREALOCATIONS OF MEASUREMENTS COVARIANCE MATRIX 'C'
+      // if C does not exist, set as identity of size equal to M (rows of fwd matrix)
+      if (!sensorWeighting_) 
+      {
+          CCtr = DenseMatrix::Identity(M, M);
+          iCCtr = CCtr;
+          
+      }
+      else
+      {
+          // if measurement covariance matrix provided in non-squared form
+          if (regularizationResidualSubcase_ == residual_constrained) 
+          {
+              // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
+              if(M != sensorWeighting_->nrows())
+              {
+                   BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !"));
+              }
+              CCtr = *sensorWeighting_ * sensorWeighting_->transpose();
+              iCCtr = CCtr.inverse();
+          
+          }
+          // otherwise if the source covariance matrix is provided in squared form
+          else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
+          {
+              // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
+              if(M != sensorWeighting_->nrows()) && (M != sensorWeighting_->ncols())
+              {
+                  BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !"));
+              }
+              
+              CCtr = *sensorWeighting_;
+              iCCtr = CCtr.inverse();
+              
+          }
+          
+      }
+      
+    // DEFINE  M1 = (A * (R*R^T)^-1 * A^T MATRIX FOR FASTER COMPUTATION
+      auto RAtr = iRRtr * forward_transpose;
+      M1 = *forwardMatrix_ * RAtr;
+      
+    // DEFINE M2 = (CC^T)^-1
+      M2 = iCCtr;
+    
+    // DEFINE M3 = identity (size of number of measurements)
+      M3 = RAtr;
+      
+    // DEFINE measurement vector
+      y = *measuredData_;
+   
     }
+    //OVERDETERMINED CASE,
+  //similar procedure as underdetermined case (documentation comments similar, see above)
+  else if ( ((regularizationChoice_ == automatic) && (M>=N)) || (regularizationChoice_==overdetermined) )
+  {
+        //.........................................................................
+        // OPERATE ON DATA:
+        // Computes X = (A^T * C^T * C * A + LAMBDA * LAMBDA * R^T * R) * A^T * C^T * C *Y
+        //.........................................................................
+        // Will set:
+        //      M1 = A * C^T*C * A^T
+        //      M2 = R^T*R
+        //      M3 = identity
+        //      y = A * C^T*C * measuredData
+        //.........................................................................
+        
+        
+        // prealocations
+        DenseMatrix RtrR, RtrRAtr, CtrC;
+        
+        
+        // DEFINITIONS AND PREALOCATION OF SOURCE REGULARIZATION MATRIX 'R'
+        
+        // if R does not exist, set as identity of size equal to N (columns of fwd matrix)
+        if (!sourceWeighting_)
+        {
+            RtrR = DenseMatrix::Identity(N, N);
+            
+        }
+        else
+        {
+            // if provided the non-squared version of R
+            if( regularizationSolutionSubcase_==solution_constrained )
+            {
+                
+                // check that the matrix is of appropriate size (equal number of rows as columns in fwd matrix)
+                if ( N != sourceWeighting_->nrows() )
+                {
+                    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !"));
+                }
+                
+                RtrR = *sourceWeighting_ * sourceWeighting_->transpose();
+                            
+            }
+            // otherwise, if the source regularization is provided as the squared version (RR^T)
+            else if ( regularizationSolutionSubcase_==solution_constrained_squared )
+            {
+                // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
+                if ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() )
+                {
+                    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !"));
+                }
+                
+                RtrR = *sourceWeighting_;
+                    
+            }
+        }
+        
+        
+        // DEFINITIONS AND PREALOCATIONS OF MEASUREMENTS COVARIANCE MATRIX 'C'
+        // if C does not exist, set as identity of size equal to M (rows of fwd matrix)
+        if (!sensorWeighting_)
+        {
+            CtrC = DenseMatrix::Identity(M, M);
+            
+        }
+        else
+        {
+            // if measurement covariance matrix provided in non-squared form
+            if (regularizationResidualSubcase_ == residual_constrained)
+            {
+                // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
+                if(M != sensorWeighting_->nrows())
+                {
+                    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !"));
+                }
+                CtrC = *sensorWeighting_ * sensorWeighting_->transpose();
+                
+            }
+            // otherwise if the source covariance matrix is provided in squared form
+            else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
+            {
+                // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
+                if(M != sensorWeighting_->nrows()) && (M != sensorWeighting_->ncols())
+                {
+                    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !"));
+                }
+                
+                CtrC = *sensorWeighting_;
+                
+            }
+            
+        }
+        
+        // DEFINE  M1 = (A * (R*R^T)^-1 * A^T MATRIX FOR FASTER COMPUTATION
+        auto CtrCAtr = CtrC * forwardMatrix_;
+        M1 = *forward_transpose * CtrCAtr;
+        
+        // DEFINE M2 = (CC^T)^-1
+        M2 = RtrR;
+        
+        // DEFINE M3 = identity (size of number of measurements)
+        M3 = DenseMatrix::Identity(N, N);
+        
+        // DEFINE measurement vector
+        y = CtrCAtr->transpose() * *measuredData_;
 
-    DenseMatrix regForMatrix(M, M);
-
+    
+  }
+    
+///////////////////////////////
+// Lambda selection
+///////////////////////////////
+    
     //Get Regularization parameter(s) : Lambda
     if ((input.regMethod_ == "single") || (input.regMethod_ == "slider"))
     {
@@ -300,453 +456,126 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       }
     }
     else if (input.regMethod_ == "lcurve")
+    { 
+        lambda = computeLcurve( input, &M1, &M2, &M3, &y );
+    }
+      
+      
+    lambda_sq = lambda * lambda;
+      
+      
+      // COMPUTE INVERSE SOLUTION  // Todo: @JCOLLFONT function needs to be defined
+      computeInverseSolution( &solution, &M1, &M2, &M3, &y );
+    
+      // set final result
+      inverseSolution_.reset(new DenseMatrix(solution));
+  
+  }
+
+}
+//////// fi  run()
+///////////////////////////
+
+///////////////////////////
+/////// compute L-curve
+double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input& input, DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseColumnMatrix& y, DenseMatrix& R, int N, int M)
+{
+    
+    // define the step size of the lambda vector to be computed  (distance between min and max divided by number of desired lambdas in log scale)
+    lambdaArray[0] = input.lambdaMin_;
+    const double lam_step = pow(10.0, log10(input.lambdaMax_ / input.lambdaMin_) / (nLambda-1));
+    const int nLambda = input.lambdaCount_;
+    
+    // prealocate vector of lambdas and eta and rho
+    std::vector<double> lambdaArray(nLambda, 0.0);
+    std::vector<double> rho(nLambda, 0.0);
+    std::vector<double> eta(nLambda, 0.0);
+    
+    DenseColumnMatrix CAx, Rx;
+    DenseColumnMatrix solution(N);
+    
+    
+    // initialize counter
+    int lambda_index = 0;
+    
+    // for all lambdas
+    for (int j = 0; j < nLambda; j++)
     {
-      const int nLambda = input.lambdaCount_;  //declare needed variables
-
-      std::vector<double> lambdaArray(nLambda, 0.0);
-      std::vector<double> rho(nLambda, 0.0);
-      std::vector<double> eta(nLambda, 0.0);
-
-      lambdaArray[0] = input.lambdaMin_;
-      const double lam_step = pow(10.0, log10(input.lambdaMax_ / input.lambdaMin_) / (nLambda-1));
-
-      DenseColumnMatrix Ax(M);
-      DenseColumnMatrix Rx(N);
-
-      int lambda_index = 0;
-      const DenseMatrix &forwardMatrixRef = *forwardMatrix_;
-
-      int nr_rows = CCtr.nrows();
-      int nr_cols = CCtr.ncols();
-      const int NR_BOUNDS_CHECK = nr_rows * nr_cols;
-
-      double* AtrA = ARRtrAtr.data();
-      double* LLtr = CCtr.data();
-
-      for (int j = 0; j < nLambda; j++)
-      {
         if (j)
         {
-          lambdaArray[j] = lambdaArray[j-1] * lam_step;
+            lambdaArray[j] = lambdaArray[j-1] * lam_step;
         }
-
-        lambda_sq = lambdaArray[j] * lambdaArray[j]; //generate current lambda
-
-        double* rm = regForMatrix.data();
-
-        for (int i = 0; i < NR_BOUNDS_CHECK; i++)
-        {
-          rm[i] = AtrA[i] + lambda_sq * LLtr[i];
-        }
-
-        try
-        {
-          LinearAlgebra::solve_lapack(regForMatrix, *measuredData_, solution);
-        }
-        catch (LinearAlgebra::LapackError&)
-        {
-          const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda Range ''From'' value for the L-Curve calculation.");
-          if (pr_)
-          {
-            pr_->error(errorMessage);
-          }
-          else
-          {
-            std::cerr << errorMessage << std::endl;
-          }
-          throw;
-        }
-        catch(DimensionMismatch&)
-        {
-          const std::string errorMessage("Invalid matrix sizes are being used in the Tikhonov linear system.");
-          if (pr_)
-          {
-            pr_->error(errorMessage);
-          }
-          else
-          {
-            std::cerr << errorMessage << std::endl;
-          }
-          throw;
-        }
-
-        RRtrAtrsolution = RRtrAtr * solution;
-
+        
+        // set current lambda
+        lambda_sq = lambdaArray[j] * lambdaArray[j];
+        
+        // COMPUTE INVERSE SOLUTION  // Todo: @JCOLLFONT function needs to be defined
+        computeInverseSolution( &solution, &M1, &M2, &M3, &y );
+        
+        // if using source regularization matrix, apply it to compute Rx (for the eta computations)
         if (sourceWeighting_)
         {
-          if (RRtrAtrsolution.nrows() == sourceWeighting_->ncols())
-            Rx = *sourceWeighting_ * RRtrAtrsolution;
-          else if  (RRtrAtrsolution.nrows() == sourceWeighting_->nrows())
-            Rx = sourceWeighting_->transpose() * RRtrAtrsolution;
-          else
-          {
-            const std::string errorMessage(" Solution weighting matrix unexpectedly does not fit to compute the weighted solution norm. ");
-            if (pr_)
-            {
-              pr_->error(errorMessage);
-            }
+            if (solution.nrows() == sourceWeighting->ncols()) // check that regularization matrix and solution match sizes
+                Rx = sourceWeighting * solution;
             else
             {
-              std::cerr << errorMessage << std::endl;
+                const std::string errorMessage(" Solution weighting matrix unexpectedly does not fit to compute the weighted solution norm. ");
+                if (pr_)
+                    pr_->error(errorMessage);
+                else
+                    std::cerr << errorMessage << std::endl;
             }
-          }
         }
         else
-          Rx = RRtrAtrsolution;
-
-        // Calculate the norm of Ax-b and Rx for L curve
-        Ax = forwardMatrixRef * RRtrAtrsolution;
-
-        rho[j]=0; eta[j]=0;
-        for (int k = 0; k < Ax.nrows(); k++)
-        {
-          double T = Ax(k) - (*measuredData_)(k);
-          rho[j] += T*T; //norm of the data fit term
-        }
-
-        for (int k = 0; k < Rx.nrows(); k++)
-        {
-          double T = Rx[k];
-          eta[j] += T*T; //norm of the model term
-        }
-        // eta and rho needed to plot the Lcurve and determine the L corner
-        rho[j] = sqrt(rho[j]);
-        eta[j] = sqrt(eta[j]);
-      }
-      boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput(new TikhonovAlgorithm::LCurveInput(rho, eta, lambdaArray, nLambda));
-      lcurveInput_handle_ = lcurveInput;
-      lambda = FindCorner(*lcurveInput_handle_, lambda_index);
-
-      if (input.updateLCurveGui_)
+            Rx = solution;
+        
+        
+        Ax = forwardMatrixRef  * solution;
+        residualSolution = Ax - *measuredData_;
+        
+        // if using source regularization matrix, apply it to compute Rx (for the eta computations)
+        if (sensorWeighting_)
+            CAx = sensorWeighting * residualSolution;
+        else
+             CAx = residualSolution;
+      
+        
+         
+        
+    }
+    
+    // update L-curve
+    boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput(new TikhonovAlgorithm::LCurveInput(rho, eta, lambdaArray, nLambda));
+    lcurveInput_handle_ = lcurveInput;
+    
+    // Find corner in L-curve
+    lambda = FindCorner(*lcurveInput_handle_, lambda_index);
+    
+    // update GUI
+    if (input.updateLCurveGui_)
         input.updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
-    }
-    lambda_sq = lambda * lambda;
-    //compute the solution with the selected regularization parameter: lambda
-    regularizationParameter_.reset(new DenseColumnMatrix(1));
-    (*regularizationParameter_)(0) = lambda;
-    int nr_rows = regForMatrix.nrows();
-    int nr_cols = regForMatrix.ncols();
-
-    double* AtrA = ARRtrAtr.data();
-    double* RtrR = CCtr.data();
-    double* rm   = regForMatrix.data();
-    for (int i=0; i<(int)(nr_rows*nr_cols); i++)
-    {
-      rm[i] = AtrA[i] + lambda_sq * RtrR[i];
-    }
-    //TODO: don't use pointers, math should look like this:
-    //regForMatrix = ARRtrAtr + lambda_sq * CCtr;
-
-    if (computeRegularizedInverse_)
-    {
-      if (sourceWeighting_)
-      {
-        inverseMatrix_.reset(new DenseMatrix(RRtrAtr * regForMatrix.inverse()));
-      }
-      else
-      {
-        inverseMatrix_.reset(new DenseMatrix(forward_transpose * regForMatrix.inverse()));
-      }
-      inverseSolution_.reset(new DenseMatrix(*inverseMatrix_ * *measuredData_));
-    }
-    else
-    {
-      try
-      {
-        LinearAlgebra::solve_lapack(regForMatrix, *measuredData_, solution);
-      }
-      catch (LinearAlgebra::LapackError&)
-      {
-        const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda Range ''From'' value for the L-Curve calculation.");
-        if (pr_)
-        {
-          pr_->error(errorMessage);
-        }
-        else
-        {
-          std::cerr << errorMessage << std::endl;
-        }
-        throw;
-      }
-      catch(DimensionMismatch&)
-      {
-        const std::string errorMessage("Invalid matrix sizes are being used in the Tikhonov linear system.");
-        if (pr_)
-        {
-          pr_->error(errorMessage);
-        }
-        else
-        {
-          std::cerr << errorMessage << std::endl;
-        }
-        throw;
-      }
-
-      RRtrAtrsolution = RRtrAtr * solution;
-      inverseSolution_.reset(new DenseMatrix(RRtrAtrsolution));
-    }
-
-  }
-  else
-    //OVERDETERMINED CASE,
-    //similar procedure as underdetermined case (documentation comments similar, see above)
-    if ( ((regularizationChoice_ == automatic) && (M>=N)) || (regularizationChoice_==overdetermined) )
-    {
-      //.........................................................................
-      // OPERATE ON DATA:
-      // Computes X = (A^T * C^T * C * A + LAMBDA * LAMBDA * R^T * R) * A^T * C^T * C *Y
-      //.........................................................................
-      // calculate A^T * A
-      DenseMatrix forward_transpose = forwardMatrix_->transpose();
-      DenseMatrix AtrA;
-      DenseMatrix CCtr;
-      DenseMatrix matrixNoiseCov_transpose;
-
-      if (!sensorWeighting_)
-      //check if a Sensor Space (Noise Covariance) Weighting Matrix exist?
-      {
-        // For large problems, allocating this matrix causes the module to hang.
-        // The CCtr matrix is only used if sensorWeighting is available.
-        //
-        // In general, this code really should be rewritten to use sparse matrices (SCIRun 5)
-        // or have replaced with more efficient calculations
-        // (Eigen may have algorithms we can use).
-        //CCtr = DenseMatrix::identity(M);
-        AtrA = forward_transpose * *forwardMatrix_;
-      }
-      else
-      {
-        if (((regularizationResidualSubcase_ == residual_constrained) && ((M != sensorWeighting_->nrows()) || (M != sensorWeighting_->ncols()))) ||
-            ((regularizationResidualSubcase_ == residual_constrained_squared) && (M != sensorWeighting_->ncols())))
-        {
-          BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Data Residual Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of rows)!"));
-        }
-
-        matrixNoiseCov_transpose = sensorWeighting_->transpose();
-
-        // regularizationResidualSubcase_ is either residual_constrained (default) or residual_constrained_squared
-        if (regularizationResidualSubcase_ == residual_constrained)
-          CCtr = *sensorWeighting_;
-        else
-          if (regularizationResidualSubcase_ == residual_constrained_squared)
-            CCtr = matrixNoiseCov_transpose * *sensorWeighting_;
-
-        AtrA = forward_transpose * CCtr * *forwardMatrix_;
-      }
-      // calculate R^T * R
-      DenseMatrix RtrR;
-      DenseMatrix regMat;
-
-      if (!sourceWeighting_)
-      {
-        regMat = DenseMatrix::Identity(N, N);
-        RtrR = DenseMatrix::Identity(N, N);
-      }
-      else
-      {
-        if(((regularizationSolutionSubcase_==solution_constrained) && ((N != sourceWeighting_->nrows()) || (N != sourceWeighting_->ncols()))) ||
-           ((regularizationSolutionSubcase_==solution_constrained_squared) && (N != sourceWeighting_->ncols())))
-        {
-          BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Solution Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of columns) ! "));
-        }
-        regMat = *sourceWeighting_;
-
-        if (regularizationSolutionSubcase_ == solution_constrained_squared)
-          RtrR = sourceWeighting_->transpose() * regMat;
-        else if (regularizationSolutionSubcase_ == solution_constrained)
-          RtrR = regMat;
-      }
-
-      double lambda = 0, lambda_sq = 0;
-      int lambda_index = 0;
-      // calculate A^T * Y
-      DenseColumnMatrix AtrY(N);
-      DenseColumnMatrix measuredDataRef;
-      if (sensorWeighting_)
-      {
-        measuredDataRef = CCtr * *measuredData_;
-      }
-      else
-      {
-        measuredDataRef = *measuredData_;
-      }
-      AtrY = forwardMatrix_->transpose() * measuredDataRef;
-      DenseMatrix regForMatrix(N, N);
-      DenseColumnMatrix solution(N);
-      DenseColumnMatrix Ax(M);
-      DenseColumnMatrix Rx(N);
-      if ((input.regMethod_ == "single") || (input.regMethod_ == "slider"))
-      {
-        if (input.regMethod_ == "single")
-        {
-          // Use single fixed lambda value, entered in UI
-          lambda = input.lambdaFromTextEntry_;
-        }
-        else if (input.regMethod_ == "slider")
-        {
-          // Use single fixed lambda value, select via slider
-          lambda = input.lambdaSlider_;
-        }
-      }
-      else if (input.regMethod_ == "lcurve")
-      {
-        // Use L-curve, lambda from corner of the L-curve
-        const int nLambda = input.lambdaCount_;
-
-        std::vector<double> lambdaArray(nLambda);
-        std::vector<double> rho(nLambda);
-        std::vector<double> eta(nLambda);
-
-        lambdaArray[0] = input.lambdaMin_;
-        const double lam_step = pow(10.0, log10(input.lambdaMax_ / input.lambdaMin_) / (nLambda-1));
-
-        double* AtrAptr = AtrA.data();
-        double* RtrRptr = RtrR.data();
-        double* rm   = regForMatrix.data();
-
-        int s = N*N;
-        for (int j = 0; j < nLambda; j++)
-        {
-          if (j)
-          {
-            lambdaArray[j] = lambdaArray[j-1] * lam_step;
-          }
-
-          lambda_sq = lambdaArray[j] * lambdaArray[j];
-
-          ///////////////////////////////////////
-          ////Calculating the solution directly
-          ///////////////////////////////////////
-          for (int i = 0; i < s; i++)
-          {
-            rm[i] = AtrAptr[i] + lambda_sq * RtrRptr[i];
-          }
-
-          // Before, solution will be equal to (A^T * y)
-          // After, solution will be equal to x_reg
-          try
-          {
-            LinearAlgebra::solve_lapack(regForMatrix, AtrY, solution);
-          }
-          catch (LinearAlgebra::LapackError&)
-          {
-            const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda value for the L-Curve calculation.");
-            if (pr_)
-            {
-              pr_->error(errorMessage);
-            }
-            else
-            {
-              std::cerr << errorMessage << std::endl;
-            }
-            throw;
-          }
-          catch(DimensionMismatch&)
-          {
-            const std::string errorMessage("Invalid matrix sizes are being used in the Tikhonov linear system.");
-            if (pr_)
-            {
-              pr_->error(errorMessage);
-            }
-            else
-            {
-              std::cerr << errorMessage << std::endl;
-            }
-            throw;
-          }
-
-          ////////////////////////////////
-          const DenseMatrix &forwardMatrixRef = *forwardMatrix_;
-
-          Ax = forwardMatrixRef * solution;
-          Rx = regMat * solution;
-          // Calculate the norm of Ax-b and Rx
-          rho[j]=0; eta[j]=0;
-          for (int k = 0; k < M; k++)
-          {
-            double T = Ax(k) - (*measuredData_)(k);
-            rho[j] += T*T;
-          }
-
-          for (int k = 0; k < N; k++)
-          {
-            double T = Rx(k);
-            eta[j] += T*T;
-          }
-
-          rho[j] = sqrt(rho[j]);
-          eta[j] = sqrt(eta[j]);
-        }
-        boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput(new TikhonovAlgorithm::LCurveInput(rho, eta, lambdaArray, nLambda));
-        lcurveInput_handle_ = lcurveInput;
-        lambda = FindCorner(*lcurveInput_handle_, lambda_index);
-
-        if (input.updateLCurveGui_)
-          input.updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
-
-      } // END  else if (reg_method_.get() == "lcurve")
-      lambda_sq = lambda * lambda;
-
-      regularizationParameter_.reset(new DenseColumnMatrix(1));
-      (*regularizationParameter_)[0] = lambda;
-      int nr_rows = regForMatrix.nrows();
-      int nr_cols = regForMatrix.ncols();
-      const int NR_BOUNDS_CHECK = nr_rows * nr_cols;
-      const double* AtrAptr = AtrA.data();
-      const double* RtrRptr = RtrR.data();
-      double* rm   = regForMatrix.data();
-
-      for (int i = 0; i < NR_BOUNDS_CHECK; i++)
-      {
-        rm[i] = AtrAptr[i] + lambda_sq * RtrRptr[i];
-      }
-      if (computeRegularizedInverse_)
-      {
-        if (CCtr.empty())
-          inverseMatrix_.reset(new DenseMatrix((regForMatrix.inverse() * forward_transpose)));
-        else
-          inverseMatrix_.reset(new DenseMatrix((regForMatrix.inverse() * forward_transpose) * CCtr));
-
-        inverseSolution_.reset(new DenseMatrix(*inverseMatrix_ * *measuredData_));
-      }
-      else
-      {
-        try
-        {
-          LinearAlgebra::solve_lapack(regForMatrix, AtrY, solution);
-        }
-        catch (LinearAlgebra::LapackError&)
-        {
-          const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda value for the L-Curve calculation.");
-          if (pr_)
-          {
-            pr_->error(errorMessage);
-          }
-          else
-          {
-            std::cerr << errorMessage << std::endl;
-          }
-          throw;
-        }
-        catch(DimensionMismatch&)
-        {
-          const std::string errorMessage("Invalid matrix sizes are being used in the Tikhonov linear system.");
-          if (pr_)
-          {
-            pr_->error(errorMessage);
-          }
-          else
-          {
-            std::cerr << errorMessage << std::endl;
-          }
-          throw;
-        }
-        inverseSolution_.reset(new DenseMatrix(solution));
-      }
-
-    }
+    
+    // return lambda
+    return lambda;
+    
 }
+//////// fi compute L-curve
+/////////////////////////////
 
+
+/////////////////////////
+///////// compute Inverse solution
+void TikhonovAlgorithmImpl::computeInverseSolution( DenseColumnMatrix& solution, DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseColumnMatrix& y, int N, int M)
+
+{
+    
+}
+//////// fi compute inverse solution
+////////////////////////
+
+
+
+////////// update graph
 void TikhonovAlgorithmImpl::update_graph(const TikhonovAlgorithmImpl::Input& input, double lambda, int lambda_index, const double epsilon)
 {
   if (lcurveInput_handle_ && input.updateLCurveGui_)
@@ -758,6 +587,8 @@ void TikhonovAlgorithmImpl::update_graph(const TikhonovAlgorithmImpl::Input& inp
     }
   }
 }
+    
+
 
 #if 0
 
@@ -793,4 +624,117 @@ TikhonovAlgorithmImpl::Input::Input(const std::string& regMethod, double lambdaF
 updateLCurveGui_(updateLCurveGui)
 {}
 
+    
+    
+// //// DUMP FOR COMPUTATION OF UNDERDETERMINED EQUATIONS
+    
+//    
+//    int nr_rows = CCtr.nrows();
+//    int nr_cols = CCtr.ncols();
+//    const int NR_BOUNDS_CHECK = nr_rows * nr_cols;
+//
+//    double* rm = regForMatrix.data();
+//    
+//    for (int i = 0; i < NR_BOUNDS_CHECK; i++)
+//    {
+//        rm[i] = AtrA[i] + lambda_sq * LLtr[i];
+//    }
+//    
+//    try
+//    {
+//        LinearAlgebra::solve_lapack(regForMatrix, *measuredData_, solution);
+//    }
+//    catch (LinearAlgebra::LapackError&)
+//    {
+//        const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda Range ''From'' value for the L-Curve calculation.");
+//        if (pr_)
+//        {
+//            pr_->error(errorMessage);
+//        }
+//        else
+//        {
+//            std::cerr << errorMessage << std::endl;
+//            }
+//            throw;
+//            }
+//            catch(DimensionMismatch&)
+//            {
+//                const std::string errorMessage("Invalid matrix sizes are being used in the Tikhonov linear system.");
+//                if (pr_)
+//                {
+//                    pr_->error(errorMessage);
+//                }
+//                else
+//                {
+//                    std::cerr << errorMessage << std::endl;
+//                }
+//                throw;
+//            }
+//            
+//            RRtrAtrsolution = RRtrAtr * solution;
+
+    
+// DUMP, final inverse calculation
+//    regularizationParameter_.reset(new DenseColumnMatrix(1));
+//    (*regularizationParameter_)(0) = lambda;
+//    int nr_rows = regForMatrix.nrows();
+//    int nr_cols = regForMatrix.ncols();
+//    
+//    double* AtrA = ARRtrAtr.data();
+//    double* RtrR = CCtr.data();
+//    double* rm   = regForMatrix.data();
+//    for (int i=0; i<(int)(nr_rows*nr_cols); i++)
+//    {
+//        rm[i] = AtrA[i] + lambda_sq * RtrR[i];
+//    }
+//    //TODO: don't use pointers, math should look like this:
+//    //regForMatrix = ARRtrAtr + lambda_sq * CCtr;
+//    
+//    if (computeRegularizedInverse_)
+//    {
+//        if (sourceWeighting_)
+//        {
+//            inverseMatrix_.reset(new DenseMatrix(RRtrAtr * regForMatrix.inverse()));
+//        }
+//        else
+//        {
+//            inverseMatrix_.reset(new DenseMatrix(forward_transpose * regForMatrix.inverse()));
+//        }
+//        inverseSolution_.reset(new DenseMatrix(*inverseMatrix_ * *measuredData_));
+//    }
+//    else
+//    {
+//        try
+//        {
+//            LinearAlgebra::solve_lapack(regForMatrix, *measuredData_, solution);
+//        }
+//        catch (LinearAlgebra::LapackError&)
+//        {
+//            const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda Range ''From'' value for the L-Curve calculation.");
+//            if (pr_)
+//            {
+//                pr_->error(errorMessage);
+//            }
+//            else
+//            {
+//                std::cerr << errorMessage << std::endl;
+//            }
+//            throw;
+//        }
+//        catch(DimensionMismatch&)
+//        {
+//            const std::string errorMessage("Invalid matrix sizes are being used in the Tikhonov linear system.");
+//            if (pr_)
+//            {
+//                pr_->error(errorMessage);
+//            }
+//            else
+//            {
+//                std::cerr << errorMessage << std::endl;
+//            }
+//            throw;
+//        }
+//        
+
+    
 } // End namespace BioPSE
