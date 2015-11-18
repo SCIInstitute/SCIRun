@@ -71,13 +71,12 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
   boost::python::def("saveNetwork", &NetworkEditorPythonAPI::saveNetwork);
   boost::python::def("loadNetwork", &NetworkEditorPythonAPI::loadNetwork);
   boost::python::def("quit", &NetworkEditorPythonAPI::quit);
-}
 
-BOOST_PYTHON_MODULE(SCIRunPythonSimpleAPI)
-{
-  using namespace SCIRun;
+  //////////////////////////////////////////////////////////////////////////////////////
+  // Simple API version--all string based. Hopefully temporary for Mac compatibility
+  //////////////////////////////////////////////////////////////////////////////////////
 
-  boost::python::def("scirun_addModule", &SimplePythonAPI::scirun_addModule);
+  boost::python::def("scirun_add_module", &SimplePythonAPI::scirun_add_module);
   //boost::python::def("removeModule", &NetworkEditorPythonAPI::removeModule);
   //boost::python::def("modules", &NetworkEditorPythonAPI::modules);
   //boost::python::def("executeAll", &NetworkEditorPythonAPI::executeAll);

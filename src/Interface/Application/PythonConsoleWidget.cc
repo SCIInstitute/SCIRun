@@ -400,7 +400,6 @@ PythonConsoleWidget::PythonConsoleWidget( QWidget* parent ) :
 
   showBanner();
   PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
-  PythonInterpreter::Instance().run_string("import SCIRunPythonSimpleAPI; from SCIRunPythonSimpleAPI import *");
 }
 
 PythonConsoleWidget::~PythonConsoleWidget()

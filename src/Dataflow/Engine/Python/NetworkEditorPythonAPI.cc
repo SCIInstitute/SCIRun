@@ -156,7 +156,7 @@ boost::shared_ptr<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& t
   return boost::ref(ptr);
 }
 
-std::string SimplePythonAPI::scirun_addModule(const std::string& name)
+std::string SimplePythonAPI::scirun_add_module(const std::string& name)
 {
   return NetworkEditorPythonAPI::addModule(name)->id();
 }
