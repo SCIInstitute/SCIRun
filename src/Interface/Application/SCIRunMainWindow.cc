@@ -592,7 +592,6 @@ bool NetworkSaveCommand::execute()
   return true;
 }
 
-
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
   NetworkSaveCommand save(fileName, networkEditor_, this);

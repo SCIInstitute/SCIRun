@@ -60,7 +60,7 @@ public:
 TEST_F(PythonControllerFunctionalTests, CanAddModule)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 
   ASSERT_EQ(0, controller.getNetwork()->nmodules());
@@ -76,7 +76,7 @@ TEST_F(PythonControllerFunctionalTests, CanAddModule)
 TEST_F(PythonControllerFunctionalTests, CanAddMultipleModule)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 
   ASSERT_EQ(0, controller.getNetwork()->nmodules());
@@ -92,7 +92,7 @@ TEST_F(PythonControllerFunctionalTests, CanChangeModuleState)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  NetworkEditorController controller(mf, sf, nullptr, nullptr, nullptr);
+  NetworkEditorController controller(mf, sf, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 
   ASSERT_EQ(0, controller.getNetwork()->nmodules());
@@ -112,7 +112,7 @@ TEST_F(PythonControllerFunctionalTests, CanChangeModuleState)
 TEST_F(PythonControllerFunctionalTests, CanConnectModules)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 
   ASSERT_EQ(0, controller.getNetwork()->nmodules());
@@ -134,7 +134,7 @@ TEST_F(PythonControllerFunctionalTests, DISABLED_CanExecuteNetwork)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::none));
-  NetworkEditorController controller(mf, sf, exe, nullptr, nullptr);
+  NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 
   PythonInterpreter::Instance().run_string("m1 = addModule(\"CreateLatVol\")");
