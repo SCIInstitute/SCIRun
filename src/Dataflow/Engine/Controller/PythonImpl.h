@@ -34,6 +34,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Command/CommandFactory.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Controller/share.h>
 
@@ -46,7 +47,7 @@ namespace Engine {
   class PythonImpl : public NetworkEditorPythonInterface, boost::noncopyable
   {
   public:
-    explicit PythonImpl(NetworkEditorController& nec);
+    PythonImpl(NetworkEditorController& nec, Commands::GlobalCommandFactoryHandle cmdFactory);
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name);
     virtual std::string removeModule(const std::string& id);
     virtual std::string executeAll(const Networks::ExecutableLookup* lookup);
@@ -57,6 +58,7 @@ namespace Engine {
     virtual std::string quit(bool force);
   private:
     NetworkEditorController& nec_;
+    Commands::GlobalCommandFactoryHandle cmdFactory_;
   };
 
 }}}

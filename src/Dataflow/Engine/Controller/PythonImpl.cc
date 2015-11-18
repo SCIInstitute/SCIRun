@@ -299,7 +299,7 @@ namespace
   };
 }
 
-PythonImpl::PythonImpl(NetworkEditorController& nec) : nec_(nec) {}
+PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : nec_(nec), cmdFactory_(cmdFactory) {}
 
 boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
 {

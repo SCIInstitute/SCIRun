@@ -158,6 +158,7 @@ void Application::readCommandLine(int argc, const char* argv[])
 NetworkEditorControllerHandle Application::controller()
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+  ENSURE_NOT_NULL(private_->cmdFactory_, "Application internals are uninitialized!");
 
   if (!private_->controller_)
   {
@@ -167,8 +168,7 @@ NetworkEditorControllerHandle Application::controller()
     ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->threadMode()));
     AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
     ReexecuteStrategyFactoryHandle reexFactory(new DynamicReexecutionStrategyFactory(parameters()->reexecuteMode()));
-    //GlobalCommandFactoryHandle cmdFactory(new GuiGlobal)
-    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory, nullptr));
+    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory, private_->cmdFactory_));
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();
