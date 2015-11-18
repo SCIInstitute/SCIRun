@@ -64,7 +64,7 @@ namespace SCIRun {
   class SCISHARE SimplePythonAPI
   {
   public:
-    static std::string scirun_addModule(const std::string& name);
+    static std::string scirun_add_module(const std::string& name);
     static std::string scirun_quit(bool force);
   private:
     SimplePythonAPI();
