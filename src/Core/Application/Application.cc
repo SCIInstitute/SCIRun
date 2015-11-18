@@ -68,6 +68,7 @@ namespace SCIRun
       boost::filesystem::path app_filename_;
       ApplicationParametersHandle parameters_;
       NetworkEditorControllerHandle controller_;
+      GlobalCommandFactoryHandle cmdFactory_;
       void start_eai();
     };
   }
@@ -114,6 +115,12 @@ static ApplicationHelper applicationHelper;
 std::string Application::applicationName() const
 {
   return applicationHelper.applicationName();
+}
+
+void Application::setCommandFactory(GlobalCommandFactoryHandle cmdFactory)
+{
+  ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+  private_->cmdFactory_ = cmdFactory;
 }
 
 ApplicationParametersHandle Application::parameters() const
@@ -173,11 +180,12 @@ NetworkEditorControllerHandle Application::controller()
   return private_->controller_;
 }
 
-void Application::executeCommandLineRequests(Commands::GlobalCommandFactoryHandle cmdFactory)
+void Application::executeCommandLineRequests()
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+  ENSURE_NOT_NULL(private_->cmdFactory_, "Application internals (command factory) are uninitialized!");
 
-  GlobalCommandBuilderFromCommandLine builder(cmdFactory);
+  GlobalCommandBuilderFromCommandLine builder(private_->cmdFactory_);
   auto queue = builder.build(parameters());
   queue->runAll();
 }

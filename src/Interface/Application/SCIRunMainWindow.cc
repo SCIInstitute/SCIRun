@@ -45,7 +45,6 @@
 #include <Interface/Application/ShortcutsInterface.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
-#include <Interface/Application/GuiCommandFactory.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
@@ -503,7 +502,7 @@ void SCIRunMainWindow::setupNetworkEditor()
 
 void SCIRunMainWindow::executeCommandLineRequests()
 {
-  SCIRun::Core::Application::Instance().executeCommandLineRequests(boost::make_shared<GuiGlobalCommandFactory>());
+  SCIRun::Core::Application::Instance().executeCommandLineRequests();
 }
 
 void SCIRunMainWindow::executeAll()
