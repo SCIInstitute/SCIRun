@@ -560,20 +560,43 @@ void SCIRunMainWindow::saveNetworkAs()
     saveNetworkFile(filename);
 }
 
-void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
+class NetworkSaveCommand : public Core::Commands::GuiCommand
 {
-  std::string fileNameWithExtension = fileName.toStdString();
+public:
+  NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window);
+  virtual bool execute();
+private:
+  QString filename_;
+  NetworkEditor* editor_;
+  SCIRunMainWindow* window_;
+};
+
+NetworkSaveCommand::NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window) : 
+filename_(filename), editor_(editor), window_(window)
+{}
+
+bool NetworkSaveCommand::execute()
+{
+  std::string fileNameWithExtension = filename_.toStdString();
   if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
     fileNameWithExtension += ".srn5";
 
-  NetworkFileHandle file = networkEditor_->saveNetwork();
+  NetworkFileHandle file = editor_->saveNetwork();
 
   XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
-  setCurrentFile(QString::fromStdString(fileNameWithExtension));
+  window_->setCurrentFile(QString::fromStdString(fileNameWithExtension));
 
-  statusBar()->showMessage(tr("File saved"), 2000);
-  GuiLogger::Instance().logInfo("File save done: " + fileName);
-  setWindowModified(false);
+  window_->statusBar()->showMessage("File saved: " + filename_, 2000);
+  GuiLogger::Instance().logInfo("File save done: " + filename_);
+  window_->setWindowModified(false);
+  return true;
+}
+
+
+void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
+{
+  NetworkSaveCommand save(fileName, networkEditor_, this);
+  save.execute();
 }
 
 void SCIRunMainWindow::loadNetwork()
