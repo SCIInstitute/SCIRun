@@ -58,24 +58,40 @@ To convert an old module, find the v4 source code and make sure it's in a place 
 * Some old modules are where they need to be and just need a line uncommented in the CMake file; others will need to be added to a new, existing library, or in a brand new library. Steps for this: contact @dcwhite.
 
 ## 6. Create Module header
+TODO
 
 ## 7. Edit Module source file in order to compile
+TODO
 
 ## 8. Once build is green, check if new module is present in module list (before proceeding to algo and UI layers)
+TODO
 
 ## 9. Commit changes to your branch, and sync your branch.
+Nice guide:
+> https://guides.github.com/introduction/flow/index.html
 
 ## 10. Algo layer conversion
+TODO
 
 ## 11. Commit changes to your branch, and sync your branch.
+TODO
 
 ## 12. GUI layer conversion
+TODO
 
 ## 13. Commit changes to your branch, and sync your branch.
+Do this frequently.
 
 ## 14. Add test network for new module
+TODO
 
 ## 15. Add test code for algo/module/UI
+TODO
 
 ## 16. Create Pull request
 > https://help.github.com/articles/using-pull-requests/
+
+## 17. Wait for feedback from a developer. 
+A developer will be assigned to review the changes, and make suggestions for fixes or improvement. The key thing to remember is any change can just go on the same branch as you PRed, and it will show up on the PR page once the branch is synced. When everything is good and working, the PR will be merged into the main repo and your new/converted module is ready for everyone to use. 
+
+Congratulations, you made a module! Proceed to step 5 and repeat until SCIRun is out of beta.
