@@ -44,6 +44,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 

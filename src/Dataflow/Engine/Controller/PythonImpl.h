@@ -47,7 +47,7 @@ namespace Engine {
   class PythonImpl : public NetworkEditorPythonInterface, boost::noncopyable
   {
   public:
-    PythonImpl(NetworkEditorController& nec, Commands::GlobalCommandFactoryHandle cmdFactory);
+    PythonImpl(NetworkEditorController& nec, Core::Commands::GlobalCommandFactoryHandle cmdFactory);
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name);
     virtual std::string removeModule(const std::string& id);
     virtual std::string executeAll(const Networks::ExecutableLookup* lookup);
@@ -58,7 +58,7 @@ namespace Engine {
     virtual std::string quit(bool force);
   private:
     NetworkEditorController& nec_;
-    Commands::GlobalCommandFactoryHandle cmdFactory_;
+    Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
   };
 
 }}}

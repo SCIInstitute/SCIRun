@@ -80,7 +80,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   /// @todo should this class own the network or just keep a reference?
 
 #ifdef BUILD_WITH_PYTHON
-  NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this, cmdFactory_)));
+  NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this, cmdFactory_));
 #endif
 }
 
