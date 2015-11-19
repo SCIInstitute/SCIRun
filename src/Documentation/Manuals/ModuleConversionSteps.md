@@ -28,19 +28,54 @@ If you have an old batch of changed files (check with `git status`), you can `gi
 2. You also need CMake 2.8.12 (newer versions will run into problems while building externals)
   * https://cmake.org/files/v2.8/
 3. OSX/*nix instructions: Run `./build.sh` OR try this manual method:
-```
-cd SCIRun/bin
-cmake ../Superbuild
-make -j4
-# after first time success, you can 
-cd SCIRun 
-#(that's right, SCIRun/bin/SCIRun), and just 
-make -j8
-```
+  ```
+  cd SCIRun/bin
+  cmake ../Superbuild
+  make -j4
+  # after first time success, you can 
+  cd SCIRun 
+  #(that's right, SCIRun/bin/SCIRun), and just 
+  make -j8
+  ```
 4. Windows: 
   1. Use CMake to output Visual Studio 2013 (or newer) project files, with a binary directoy of short length. 
-  2. Open bin/Superbuild.sln and build it. This will take a long time initially, since it configures the SCIRun solution file and also builds it.
+  2. Open bin/Superbuild.sln and build it. This will take a long time initially, since it configures the SCIRun solution file and also builds it. Remember to switch to Release mode if you want a faster build (both in build time and executable performance).
   3. Once that build finishes, you can close Superbuild.sln and just work with bin/SCIRun/SCIRun.sln in Visual Studio.
 
-Initial builds will take some time. Subsequently, unless externals have changed (rare, and we'll alert everyone), incremental builds are usually quite fast.
+  Initial builds will take some time. Subsequently, unless externals have changed (rare, and we'll alert everyone), incremental builds are usually quite fast.
 
+5. Build output should produce `bin/SCIRun_test` and `bin/SCIRun` bundle on Mac, and `bin/Release/SCIRun.exe` on Windows.
+
+## 4. Essential new/convert module changes
+1. Create a new `.module` file in `src/Modules/Factory/Config`. You can copy/paste an existing file and edit it in a text editor. Be careful to check every line.
+2. The format is JSON and it should be self-explanatory for those who know SCIRun. Essentially it contains bits of source code that help wire up the three components of a module: algorithm, module proper, and UI implementation. 
+3. The "header" paths are relative to the `src` directory.
+4. The "status" and "description" strings are documentation and can be whatever you want; all the rest will turn into compiled code so you'll get a compile or link error if there is a mistake.
+
+To convert an old module, find the v4 source code and make sure it's in a place that makes sense. Some of the module code directory tree has been simplified.
+
+## 5. Edit CMakeLists.txt (between 1-5 of them, depending on layers needed and testing)
+* Some old modules are where they need to be and just need a line uncommented in the CMake file; others will need to be added to a new, existing library, or in a brand new library. Steps for this: contact @dcwhite.
+
+## 6. Create Module header
+
+## 7. Edit Module source file in order to compile
+
+## 8. Once build is green, check if new module is present in module list (before proceeding to algo and UI layers)
+
+## 9. Commit changes to your branch, and sync your branch.
+
+## 10. Algo layer conversion
+
+## 11. Commit changes to your branch, and sync your branch.
+
+## 12. GUI layer conversion
+
+## 13. Commit changes to your branch, and sync your branch.
+
+## 14. Add test network for new module
+
+## 15. Add test code for algo/module/UI
+
+## 16. Create Pull request
+> https://help.github.com/articles/using-pull-requests/
