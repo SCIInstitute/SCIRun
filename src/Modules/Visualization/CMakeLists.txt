@@ -61,7 +61,7 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Core_Datatypes_Legacy_Field
   Core_Algorithms_Visualization
   Graphics_Glyphs
-  ${OPENGL_LIBRARIES}
+  Graphics_Datatypes
 )
 
 IF(BUILD_SHARED_LIBS)

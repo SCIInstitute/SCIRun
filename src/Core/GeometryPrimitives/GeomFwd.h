@@ -40,6 +40,7 @@ class Vector;
 class Transform;
 class Tensor;
 class Plane;
+class BBox;
 
 }}}
 #endif

@@ -40,6 +40,7 @@ namespace Render {
 //------------------------------------------------------------------------------
 SRCamera::SRCamera(SRInterface& iface) :
     mTrafoSeq(0),
+    mInvertVal(-1),
     mPerspective(true),
     mFOV(getDefaultFOVY()),
     mZNear(getDefaultZNear()),
@@ -121,11 +122,12 @@ void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton bt
 }
 
 //------------------------------------------------------------------------------
-void SRCamera::mouseWheelEvent(int32_t delta)
+void SRCamera::mouseWheelEvent(int32_t delta, int zoomSpeed)
 {
   if (mInterface.getMouseMode() != SRInterface::MOUSE_OLDSCIRUN)
   {
-    mArcLookAt->doZoom(-static_cast<float>(delta) / 100.0f);
+    //mArcLookAt->doZoom(-static_cast<float>(delta) / 100.0f, zoomSpeed);
+    mArcLookAt->doZoom(mInvertVal*static_cast<float>(delta) / 100.0f, zoomSpeed);
   }
 }
 
@@ -148,6 +150,15 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
 void SRCamera::setView(const glm::vec3& view, const glm::vec3& up)
 {
     mArcLookAt->setView(view, up);
+}
+
+//------------------------------------------------------------------------------
+void SRCamera::setZoomInverted(bool value)
+{
+  if (value)
+    mInvertVal = 1;
+  else
+    mInvertVal = -1;
 }
 
 //------------------------------------------------------------------------------

@@ -70,14 +70,6 @@ MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
 OPTION(BUILD_HEADLESS "Build headless version, without Qt" OFF)
 MARK_AS_ADVANCED(BUILD_HEADLESS)
 
-########################################################################
-# Configure Windows executable to run with or without the console
-
-IF(WIN32)
-  OPTION(SCIRUN_SHOW_CONSOLE "Show Windows console when running SCIRun (useful for debugging)." ON)
-  MARK_AS_ADVANCED(SCIRUN_SHOW_CONSOLE)
-ENDIF()
-
 
 ########################################################################
 # Set default CMAKE_BUILD_TYPE
@@ -191,8 +183,8 @@ IF(BUILD_TESTING)
   SET(BUILDNAME "${BUILDNAME_SCIRun}" CACHE STRING "Name of build on the dashboard")
   MARK_AS_ADVANCED(BUILDNAME)
 
-  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestDataConfig.cmake)
-  TEST_DATA()
+  #INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TestDataConfig.cmake)
+  #TEST_DATA()
 
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
@@ -204,23 +196,61 @@ IF(BUILD_TESTING)
   ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${SCIRUN_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
-########################################################################
-# Python
+#########################################################################
+## Python
+#
+#OPTION(BUILD_WITH_PYTHON "Build with python support." OFF)
+#
+#IF(BUILD_WITH_PYTHON)
+#  MESSAGE(STATUS "Configuring Python")
+#  SET(PythonLibs_FIND_VERSION "3.2")
+#  FIND_PACKAGE(PythonLibs REQUIRED)
+#  IF(NOT PYTHONLIBS_FOUND)
+#    MESSAGE(FATAL_ERROR "Python 3.3 or 3.2 not found. Set PYTHON_INCLUDE_DIR and PYT#HON_LIBRARY to the correct Python installation.")
+#  ENDIF()
+#
+#  ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
+#  ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
+#ENDIF(BUILD_WITH_PYTHON)
 
-OPTION(BUILD_WITH_PYTHON "Build with python support." OFF)
+
+FIND_PACKAGE(Zlib CONFIGS ZlibConfig.cmake HINTS ${Zlib_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
+IF(NOT Zlib_FOUND)
+  MESSAGE(FATAL_ERROR "Zlib library not found in ${Zlib_DIR}")
+ENDIF()
+INCLUDE(${ZLIB_USE_FILE})
+
+FIND_PACKAGE(LibPNG CONFIGS LibPNGConfig.cmake HINTS ${LibPNG_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
+IF(NOT LibPNG_FOUND)
+  MESSAGE(FATAL_ERROR "Png library not found in ${LibPNG_DIR}")
+ENDIF()
+INCLUDE(${PNG_USE_FILE})
+
+FIND_PACKAGE(SQLite CONFIGS SQLiteConfig.cmake HINTS ${SQLite_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
+IF(NOT SQLite_FOUND)
+  MESSAGE(FATAL_ERROR "SQLite library not found in ${SQLite_DIR}")
+ENDIF()
+INCLUDE(${SQLITE_USE_FILE})
+
+FIND_PACKAGE(Teem CONFIGS TeemConfig.cmake HINTS ${Teem_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
+IF(NOT Teem_FOUND)
+  MESSAGE(FATAL_ERROR "Teem library not found in ${Teem_DIR}")
+ENDIF()
+INCLUDE(${Teem_USE_FILE})
 
 IF(BUILD_WITH_PYTHON)
-  MESSAGE(STATUS "Configuring Python")
-  SET(PythonLibs_FIND_VERSION "3.2")
-  FIND_PACKAGE(PythonLibs REQUIRED)
-  IF(NOT PYTHONLIBS_FOUND)
-    MESSAGE(FATAL_ERROR "Python 3.3 or 3.2 not found. Set PYTHON_INCLUDE_DIR and PYTHON_LIBRARY to the correct Python installation.")
+  FIND_PACKAGE(Python CONFIGS PythonConfig.cmake HINTS ${Python_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
+  IF(NOT Python_FOUND)
+    MESSAGE(FATAL_ERROR "Python library not found in ${Python_DIR}")
   ENDIF()
+  INCLUDE(${SCI_PYTHON_USE_FILE})
+ENDIF()
 
-  ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
-  ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
-ENDIF(BUILD_WITH_PYTHON)
-
+FIND_PACKAGE(Boost CONFIGS BoostConfig.cmake HINTS ${Boost_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
+IF(NOT Boost_FOUND)
+  MESSAGE(FATAL_ERROR "Boost library not found in ${Boost_DIR}")
+ENDIF()
+INCLUDE(${SCI_BOOST_USE_FILE})
 
 ########################################################################
 # Custom compiler flags and definitions
@@ -309,33 +339,33 @@ ENDIF()
 ########################################################################
 # Download external data sources
 
-OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
-MARK_AS_ADVANCED(DOWNLOAD_TOOLKITS)
-IF(DOWNLOAD_TOOLKITS)
-  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ToolkitsConfig.cmake)
-  EXTERNAL_TOOLKIT(BrainStimulator)
-  EXTERNAL_TOOLKIT(FwdInvToolkit)
-ENDIF()
-
-########################################################################
-# Configure zlib external project
-
-INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ZlibConfig.cmake)
-EXTERNAL_ZLIB_LIBRARY(GIT)
-
-
-########################################################################
-# Configure Boost external project
-
-INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/BoostConfig.cmake)
-EXTERNAL_BOOST_LIBRARY(GIT)
-
-
-########################################################################
-# Configure teem external project
-
-INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TeemConfig.cmake)
-EXTERNAL_TEEM_LIBRARY(GIT)
+#OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
+#MARK_AS_ADVANCED(DOWNLOAD_TOOLKITS)
+#IF(DOWNLOAD_TOOLKITS)
+#  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ToolkitsConfig.cmake)
+#  EXTERNAL_TOOLKIT(BrainStimulator)
+#  EXTERNAL_TOOLKIT(FwdInvToolkit)
+#ENDIF()
+#
+#########################################################################
+## Configure zlib external project
+#
+#INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ZlibConfig.cmake)
+#EXTERNAL_ZLIB_LIBRARY(GIT)
+#
+#
+##########################################################################
+## Configure Boost external project
+#
+#INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/BoostConfig.cmake)
+#EXTERNAL_BOOST_LIBRARY(GIT)
+#
+#
+#########################################################################
+## Configure teem external project
+#
+#INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TeemConfig.cmake)
+#EXTERNAL_TEEM_LIBRARY(GIT)
 
 
 ########################################################################
@@ -499,9 +529,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 
 # TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
-  SET(QT_MIN_VERSION "4.8.1")
-  FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork REQUIRED)
-  SET(QT_USE_QTOPENGL TRUE)
+  FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork QtOpenGL REQUIRED)
 
   IF(QT_FOUND)
     INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
@@ -552,6 +580,8 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/include
   ${SCIRun_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun_SOURCE_DIR}/Externals/gmock/include
+  ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
+  ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
@@ -736,11 +766,13 @@ SET_PROPERTY(TARGET Core_Services         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Math         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Matlab         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Parser         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_XMLUtil         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Exceptions_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Util_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Containers         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Thread_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Serialization_Network         PROPERTY FOLDER "Dataflow/Serialization")
+SET_PROPERTY(TARGET Core_Serialization_Network_Importer         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Dataflow_State         PROPERTY FOLDER "Dataflow")
@@ -759,6 +791,7 @@ SET_PROPERTY(TARGET Interface_Modules_Bundle   PROPERTY FOLDER "Interface/Module
 SET_PROPERTY(TARGET Interface_Modules_Matlab   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_Forward   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_Inverse   PROPERTY FOLDER "Interface/Modules")
+SET_PROPERTY(TARGET Interface_Modules_Teem   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_Factory   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Application   PROPERTY FOLDER "Interface/Application")
 
@@ -781,10 +814,14 @@ SET_PROPERTY(TARGET Modules_Legacy_Inverse PROPERTY FOLDER "Modules/Inverse")
 SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO PROPERTY FOLDER "Modules/DataIO")
 SET_PROPERTY(TARGET Modules_Legacy_MatlabInterface PROPERTY FOLDER "Modules/Matlab")
 SET_PROPERTY(TARGET Modules_Legacy_Visualization   PROPERTY FOLDER "Modules/Visualization")
+SET_PROPERTY(TARGET Modules_Legacy_Teem_DataIO   PROPERTY FOLDER "Modules/Teem")
+SET_PROPERTY(TARGET Modules_Legacy_Teem_Misc   PROPERTY FOLDER "Modules/Teem")
+SET_PROPERTY(TARGET Modules_Legacy_Teem_Converters   PROPERTY FOLDER "Modules/Teem")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
 SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Widgets   PROPERTY FOLDER "Graphics")
+SET_PROPERTY(TARGET Graphics_Datatypes   PROPERTY FOLDER "Graphics")
 
 IF(BUILD_TESTING)
   SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
@@ -793,7 +830,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
   SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
   SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
-  SET_PROPERTY(TARGET SCIRunTestData_external   PROPERTY FOLDER "Testing Support")
+  #SET_PROPERTY(TARGET SCIRunTestData_external   PROPERTY FOLDER "Testing Support")
 
   SET_PROPERTY(TARGET Algorithms_Base_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_DataIO_Tests PROPERTY FOLDER "Core/Algorithms/Tests")
@@ -818,6 +855,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Core_Serialization_Network_Tests         PROPERTY FOLDER "Dataflow/Serialization/Tests")
   SET_PROPERTY(TARGET Core_Thread_Tests   PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Utils_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Core_XMLUtil_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Parser_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_DatabaseManager_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_ImportExport_Tests         PROPERTY FOLDER "Core/Tests")
@@ -833,6 +871,9 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Bundle_Tests   PROPERTY FOLDER "Modules/Basic")
   SET_PROPERTY(TARGET Modules_BrainStimulator_Tests   PROPERTY FOLDER "Modules/Brain")
   SET_PROPERTY(TARGET Modules_DataIO_Tests   PROPERTY FOLDER "Modules/DataIO")
+  SET_PROPERTY(TARGET Modules_Teem_DataIO_Tests   PROPERTY FOLDER "Modules/Teem")
+  SET_PROPERTY(TARGET Modules_Teem_Misc_Tests   PROPERTY FOLDER "Modules/Teem")
+  SET_PROPERTY(TARGET Modules_Teem_Converters_Tests   PROPERTY FOLDER "Modules/Teem")
   SET_PROPERTY(TARGET Modules_Fields_Tests   PROPERTY FOLDER "Modules/Fields")
   SET_PROPERTY(TARGET Modules_Legacy_Inverse_Tests   PROPERTY FOLDER "Modules/Inverse")
   SET_PROPERTY(TARGET Modules_Math_Tests   PROPERTY FOLDER "Modules/Math")
@@ -842,23 +883,26 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
   SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO_Tests PROPERTY FOLDER "Modules/DataIO")
   SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
-  
+
   SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
+  IF(BUILD_WITH_PYTHON)
+    SET_PROPERTY(TARGET Core_Python_Tests     PROPERTY FOLDER "Core/Tests")
+    SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
+  ENDIF()
 ENDIF()
 
-SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
+#SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${CPM_LIBRARIES} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
-SET_PROPERTY(TARGET sqlite PROPERTY FOLDER "Externals")
+#SET_PROPERTY(TARGET sqlite PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
-SET_PROPERTY(TARGET Zlib_external   PROPERTY FOLDER "Externals")
-SET_PROPERTY(TARGET Teem_external   PROPERTY FOLDER "Externals")
+#SET_PROPERTY(TARGET Zlib_external   PROPERTY FOLDER "Externals")
+#SET_PROPERTY(TARGET Teem_external   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
-  SET_PROPERTY(TARGET Core_Python_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
-  SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
 ENDIF()
 
 IF(WITH_TETGEN)
@@ -866,17 +910,11 @@ IF(WITH_TETGEN)
   SET_PROPERTY(TARGET tetlib         PROPERTY FOLDER "Externals")
 ENDIF()
 
-IF(DOWNLOAD_TOOLKITS)
-  SET_PROPERTY(TARGET BrainStimulator_external   PROPERTY FOLDER "Externals")
-  SET_PROPERTY(TARGET FwdInvToolkit_external   PROPERTY FOLDER "Externals")
-ENDIF()
-
 ########################################################################
 # Custom CMake settings for CPack
 
 ########################################################################
 # CPack
-
 
 ########################################################################
 # PACKAGING Information

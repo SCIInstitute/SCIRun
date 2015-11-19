@@ -53,7 +53,7 @@ public:
       ("execute,e", "executes the given network on startup")
       ("Execute,E", "executes the given network on startup and quits when done")
       ("datadir,d", po::value<std::string>(), "scirun data directory")
-      ("regression,r", "regression test a network")
+      ("regression,r", po::value<int>(), "regression test a network")
       ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("interactive,i", "interactive mode--TODO")
       ("headless,x", "disable GUI (Qt still needed, for now)")
@@ -132,10 +132,12 @@ public:
     const boost::optional<std::string>& threadMode,
     const boost::optional<std::string>& reexecuteMode,
     const boost::optional<int>& frameInitLimit,
+    const boost::optional<int>& regressionTimeout,
     const Flags& flags
    ) : entireCommandLine_(entireCommandLine),
     inputFiles_(inputFiles), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory),
     threadMode_(threadMode), reexecuteMode_(reexecuteMode), frameInitLimit_(frameInitLimit),
+    regressionTimeout_(regressionTimeout),
     flags_(flags)
   {}
 
@@ -189,6 +191,11 @@ public:
     return flags_.isRegressionMode_;
   }
 
+  virtual boost::optional<int> regressionTimeoutSeconds() const override
+  {
+    return regressionTimeout_;
+  }
+
   virtual bool verboseMode() const override
   {
     return flags_.isVerboseMode_;
@@ -203,7 +210,7 @@ public:
   {
     return reexecuteMode_;
   }
-  
+
   virtual boost::optional<int> frameInitLimit() const override
   {
     return frameInitLimit_;
@@ -225,7 +232,7 @@ private:
   boost::optional<boost::filesystem::path> pythonScriptFile_;
   boost::optional<boost::filesystem::path> dataDirectory_;
   boost::optional<std::string> threadMode_, reexecuteMode_;
-  boost::optional<int> frameInitLimit_;
+  boost::optional<int> frameInitLimit_, regressionTimeout_;
   Flags flags_;
 };
 
@@ -260,6 +267,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     auto threadMode = parsed.count("threadMode") != 0 ? parsed["threadMode"].as<std::string>() : boost::optional<std::string>();
     auto reexecuteMode = parsed.count("reexecuteMode") != 0 ? parsed["reexecuteMode"].as<std::string>() : boost::optional<std::string>();
     auto frameInitLimit = parsed.count("frameInitLimit") != 0 ? parsed["frameInitLimit"].as<int>() : boost::optional<int>();
+    auto regressionTimeout = parsed.count("regression") != 0 ? parsed["regression"].as<int>() : boost::optional<int>();
     return boost::make_shared<ApplicationParametersImpl>
       (boost::algorithm::join(cmdline, " "),
       std::move(inputFiles),
@@ -268,6 +276,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       threadMode,
       reexecuteMode,
       frameInitLimit,
+      regressionTimeout,
       ApplicationParametersImpl::Flags(
         parsed.count("help") != 0,
         parsed.count("version") != 0,

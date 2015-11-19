@@ -29,7 +29,6 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Logging/Log.h>
-#include <boost/foreach.hpp>
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
@@ -212,7 +211,7 @@ void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr)
 void ModuleDialogGeneric::pullManagedWidgets()
 {
   Pulling p(this);
-  BOOST_FOREACH(WidgetSlotManagerPtr wsm, slotManagers_)
+  for (auto& wsm : slotManagers_)
     wsm->pull();
 }
 

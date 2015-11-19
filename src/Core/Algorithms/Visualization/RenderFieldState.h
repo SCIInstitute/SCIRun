@@ -29,13 +29,12 @@
 #ifndef CORE_ALGORITHMS_VISUALIZATION_RENDER_FIELD_STATE_H
 #define CORE_ALGORITHMS_VISUALIZATION_RENDER_FIELD_STATE_H
 
-#include <Core/Datatypes/Material.h>
 #include <Core/Datatypes/Color.h>
+#include <Core/Algorithms/Visualization/share.h>
 
 namespace SCIRun {
 
-// Add render state information here.
-class RenderState
+class SCISHARE RenderState
 {
 public:
 
@@ -115,26 +114,10 @@ public:
     LISTS_SORT
   };
 
-  RenderState()
-  {
-    for (int i = 0; i < MAX_ACTION_FLAGS; ++i)
-    {
-      mFlags[i] = false;
-    }
+  RenderState();
 
-    // Default settings.
-    mFlags[USE_NORMALS] = true;
-  }
-
-  void set(ActionFlags flag, bool truth)
-  {
-    mFlags[flag] = truth;
-  }
-
-  bool get(ActionFlags flag) const
-  {
-    return mFlags[flag];
-  }
+  void set(ActionFlags flag, bool truth);
+  bool get(ActionFlags flag) const;
 
   // Render state flags.
   bool mFlags[MAX_ACTION_FLAGS];

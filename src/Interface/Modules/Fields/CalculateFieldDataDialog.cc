@@ -36,7 +36,7 @@ typedef SCIRun::Modules::Fields::CalculateFieldData CalculateFieldDataModule;
 
 CalculateFieldDataDialog::CalculateFieldDataDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogWithParserHelp(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -44,4 +44,5 @@ CalculateFieldDataDialog::CalculateFieldDataDialog(const std::string& name, Modu
 
   addTextEditManager(expressionTextEdit_, CalculateFieldDataModule::FunctionString);
   addComboBoxManager(outputTypeComboBox_, CalculateFieldDataModule::FormatString);
+  connectParserHelpButton(parserHelpButton_);
 }

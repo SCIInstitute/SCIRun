@@ -36,6 +36,13 @@ SCIRUN_ADD_UNIT_TEST(Engine_Python_Tests
 
 TARGET_LINK_LIBRARIES(Engine_Python_Tests
   SCIRunPythonAPI
+  Modules_Factory
+  Modules_Factory_Generator
+  Dataflow_Network
+  Engine_Network
+  Testing_Utils
+  Testing_ModuleTestBase
+  Core_Python
   gtest_main
   gtest
   gmock

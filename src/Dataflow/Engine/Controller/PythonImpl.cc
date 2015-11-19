@@ -69,7 +69,7 @@ namespace
     {
       return port_ ? port_->isInput() : false;
     }
-    
+
     virtual void connect(const PyPort& other) const
     {
       auto otherPort = dynamic_cast<const PyPortImpl*>(&other);
@@ -90,21 +90,21 @@ namespace
   class PyPortsImpl : public PyPorts
   {
   public:
-    PyPortsImpl(ModuleHandle mod, bool input, NetworkEditorController& nec) : nec_(nec)
+    PyPortsImpl(ModuleHandle mod, bool input, NetworkEditorController& nec) : nec_(nec), modId_(mod->get_id())
     {
       //wish:
-      //boost::push_back(ports_, 
+      //boost::push_back(ports_,
       //  (input ? mod->inputPorts() : mod->outputPorts())
       //  | boost::adaptors::transformed([&](boost::shared_ptr<PortDescriptionInterface> p) { return boost::make_shared<PyPortImpl>(p, nec_); })
       //  );
       if (input)
       {
-        BOOST_FOREACH(InputPortHandle p, mod->inputPorts())
+        for (const auto& p : mod->inputPorts())
           ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
       }
       else
       {
-        BOOST_FOREACH(OutputPortHandle p, mod->outputPorts())
+        for (const auto& p : mod->outputPorts())
           ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
       }
     }
@@ -115,6 +115,7 @@ namespace
       if (port != ports_.end())
         return *port;
 
+      std::cerr << "Could not find port with name " << name << " on module " << modId_.id_ << std::endl;
       PyErr_SetObject(PyExc_KeyError, boost::python::object(name).ptr());
       throw boost::python::error_already_set();
     }
@@ -136,7 +137,7 @@ namespace
       return ports_.size();
     }
 
-    void reset() 
+    void reset()
     {
       std::for_each(ports_.begin(), ports_.end(), [](boost::shared_ptr<PyPortImpl> p) { p->reset(); p.reset(); });
       ports_.clear();
@@ -144,6 +145,7 @@ namespace
   private:
     std::vector<boost::shared_ptr<PyPortImpl>> ports_;
     NetworkEditorController& nec_;
+    ModuleId modId_;
   };
 
   class PyModuleImpl : public PyModule
@@ -177,7 +179,7 @@ namespace
         module_->setUiVisible(false);
     }
 
-    virtual void reset() 
+    virtual void reset()
     {
       module_.reset();
       input_->reset();
@@ -193,18 +195,20 @@ namespace
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
         if (!state->containsKey(apn))
-          return boost::python::object();
+        {
+          throw std::invalid_argument("Module state key " + name + " not defined.");
+        }
 
         auto v = state->getValue(apn);
 
         /// @todo: extract
-        if ( const int* p = boost::get<int>( &v.value_ ) )
+        if ( const int* p = boost::get<int>( &v.value() ) )
           return boost::python::object(*p);
-        else if ( const std::string* p = boost::get<std::string>( &v.value_ ) )
+        else if ( const std::string* p = boost::get<std::string>( &v.value() ) )
           return boost::python::object(*p);
-        else if ( const double* p = boost::get<double>( &v.value_ ) )
+        else if ( const double* p = boost::get<double>( &v.value() ) )
           return boost::python::object(*p);
-        else if ( const bool* p = boost::get<bool>( &v.value_ ) )
+        else if ( const bool* p = boost::get<bool>( &v.value() ) )
           return boost::python::object(*p);
 
         return boost::python::object();
@@ -218,10 +222,14 @@ namespace
       {
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
+        if (!state->containsKey(apn))
+        {
+          throw std::invalid_argument("Module state key " + name + " not defined.");
+        }
         state->setValue(apn, convert(object));
       }
     }
-    
+
     virtual std::vector<std::string> stateVars() const
     {
       if (module_)

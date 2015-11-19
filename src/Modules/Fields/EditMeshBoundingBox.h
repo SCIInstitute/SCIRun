@@ -32,6 +32,7 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Fields/BoxWidgetTypes.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
@@ -50,8 +51,8 @@ namespace SCIRun {
       {
       public:
         EditMeshBoundingBox();
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         static const Core::Algorithms::AlgorithmParameterName Resetting;
         //Input Field Attributes
@@ -61,7 +62,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName InputSizeX;
         static const Core::Algorithms::AlgorithmParameterName InputSizeY;
         static const Core::Algorithms::AlgorithmParameterName InputSizeZ;
-        //Outpuconst t Field Atributes
+        //Output Field Atributes
         static const Core::Algorithms::AlgorithmParameterName UseOutputCenter;
         static const Core::Algorithms::AlgorithmParameterName UseOutputSize;
         static const Core::Algorithms::AlgorithmParameterName OutputCenterX;
@@ -70,7 +71,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName OutputSizeX;
         static const Core::Algorithms::AlgorithmParameterName OutputSizeY;
         static const Core::Algorithms::AlgorithmParameterName OutputSizeZ;
-        //Widgeconst t Scale/Mode
+        //Widget Scale/Mode
         static const Core::Algorithms::AlgorithmParameterName Scale;
         static const Core::Algorithms::AlgorithmParameterName NoTranslation;
         static const Core::Algorithms::AlgorithmParameterName XYZTranslation;
@@ -100,7 +101,7 @@ namespace SCIRun {
         void widget_moved(bool);
         void createBoxWidget();
         void setBoxRestrictions();
-        Core::Datatypes::GeometryHandle buildGeometryObject();
+        Core::Datatypes::GeometryBaseHandle buildGeometryObject();
         void processWidgetFeedback(SCIRun::Core::Algorithms::VariableHandle var);
         SCIRun::Core::Geometry::BBox bbox_;
 

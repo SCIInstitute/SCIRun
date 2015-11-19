@@ -34,9 +34,7 @@
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Render/share.h>
 
-
-
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
@@ -46,6 +44,7 @@ namespace SCIRun
       {
         ALGORITHM_PARAMETER_DECL(GeomData);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
+        ALGORITHM_PARAMETER_DECL(ScreenshotData);
       }
     }
   }
@@ -59,27 +58,35 @@ namespace Render {
 /// Use the ViewScene to see a geometry, or spatial data. The ViewScene
 /// provides access to many simulation parameters and controls, thus,
 /// indirectly initiates new iterations of the simulation steps important to
-/// computational steering. 
+/// computational steering.
 
-  class SCISHARE ViewScene : public SCIRun::Dataflow::Networks::ModuleWithAsyncDynamicPorts,
+  class SCISHARE ViewScene : public Dataflow::Networks::ModuleWithAsyncDynamicPorts,
     public Has1InputPort<AsyncDynamicPortTag<GeometryPortTag>>,
+#ifdef BUILD_TESTING
+    public Has1OutputPort<MatrixPortTag>
+#else
     public HasNoOutputPorts
+#endif
   {
   public:
     ViewScene();
     virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
-    virtual void setStateDefaults();
+    virtual void setStateDefaults() override;
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
     static Core::Algorithms::AlgorithmParameterName BackgroundColor;
-    
+
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
+#ifdef BUILD_TESTING
+    OUTPUT_PORT(0, ScreenshotData, DenseMatrix);
+    virtual void execute() override;
+#endif
 
     static Core::Thread::Mutex mutex_;
 
-    typedef std::set<Core::Datatypes::GeometryHandle> GeomList;
+    typedef std::set<Core::Datatypes::GeometryBaseHandle> GeomList;
     typedef boost::shared_ptr<GeomList> GeomListPtr;
-    typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryHandle> ActiveGeometryMap;
+    typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryBaseHandle> ActiveGeometryMap;
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
     virtual void postStateChangeInternalSignalHookup() override;

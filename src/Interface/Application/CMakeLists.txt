@@ -60,6 +60,7 @@ SET(Interface_Application_SOURCES
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc
   TreeViewCollaborators.cc
+  ModuleWizard/ModuleWizard.cc
 )
 
 SET(Interface_Application_HEADERS
@@ -92,6 +93,7 @@ SET(Interface_Application_HEADERS
   NetworkEditorControllerGuiProxy.h
   TreeViewCollaborators.h
   Utility.h
+  ModuleWizard/ModuleWizard.h
 )
 
 SET(Interface_Application_FORMS
@@ -126,6 +128,7 @@ SCIRUN_ADD_LIBRARY(Interface_Application
 
 SET(NonPythonInterface_ApplicationLinkLibraries
   Dataflow_Network
+  Core_Serialization_Network_Importer
   Core_Application
   Core_Logging
   Core_Command

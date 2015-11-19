@@ -3126,26 +3126,26 @@ void MatlabToFieldAlgo::remark(const std::string& remark)
 
 void MatlabToFieldAlgo::compressedtensor(std::vector<double> &fielddata,Tensor &tens, unsigned int p)
 {
-  tens.mat_[0][0] = fielddata[p+0];
-  tens.mat_[0][1] = fielddata[p+1];
-  tens.mat_[0][2] = fielddata[p+2];
-  tens.mat_[1][0] = fielddata[p+1];
-  tens.mat_[1][1] = fielddata[p+3];
-  tens.mat_[1][2] = fielddata[p+4];
-  tens.mat_[2][0] = fielddata[p+2];
-  tens.mat_[2][1] = fielddata[p+4];
-  tens.mat_[2][2] = fielddata[p+5];
+  tens.val(0,0) = fielddata[p+0];
+  tens.val(0,1) = fielddata[p+1];
+  tens.val(0,2) = fielddata[p+2];
+  tens.val(1,0) = fielddata[p+1];
+  tens.val(1,1) = fielddata[p+3];
+  tens.val(1,2) = fielddata[p+4];
+  tens.val(2,0) = fielddata[p+2];
+  tens.val(2,1) = fielddata[p+4];
+  tens.val(2,2) = fielddata[p+5];
 }
 
 void MatlabToFieldAlgo::uncompressedtensor(std::vector<double> &fielddata,Tensor &tens, unsigned int p)
 {
-  tens.mat_[0][0] = fielddata[p];
-  tens.mat_[0][1] = fielddata[p+1];
-  tens.mat_[0][2] = fielddata[p+2];
-  tens.mat_[1][0] = fielddata[p+3];
-  tens.mat_[1][1] = fielddata[p+4];
-  tens.mat_[1][2] = fielddata[p+5];
-  tens.mat_[2][0] = fielddata[p+6];
-  tens.mat_[2][1] = fielddata[p+7];
-  tens.mat_[2][2] = fielddata[p+8];
+  tens.val(0, 0) = fielddata[p];
+  tens.val(0, 1) = fielddata[p + 1];
+  tens.val(0, 2) = fielddata[p + 2];
+  tens.val(1, 0) = fielddata[p + 3];
+  tens.val(1, 1) = fielddata[p + 4];
+  tens.val(1, 2) = fielddata[p + 5];
+  tens.val(2, 0) = fielddata[p + 6];
+  tens.val(2, 1) = fielddata[p + 7];
+  tens.val(2, 2) = fielddata[p + 8];
 }

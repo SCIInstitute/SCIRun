@@ -26,7 +26,7 @@
   DEALINGS IN THE SOFTWARE.
 */
 /// @todo Documentation Core/Utils/Legacy/Environment_Defaults.cc
-#if 0
+
 #include <Core/Utils/Legacy/Environment.h>
 
 #include <map>
@@ -50,4 +50,3 @@ namespace SCIRun {
   }
 
 }
-#endif

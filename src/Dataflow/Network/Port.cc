@@ -28,7 +28,6 @@
 
 /// @todo Documentation Dataflow/Network/Port.cc
 
-#include <boost/foreach.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Utils/Exception.h>
@@ -172,7 +171,7 @@ void OutputPort::sendData(DatatypeHandle data)
   if (0 == nconnections())
     return;
 
-  BOOST_FOREACH(Connection* c, connections_)
+  for (Connection* c : connections_)
   {
     if (c && c->iport_)
       source_->send(c->iport_->sink());

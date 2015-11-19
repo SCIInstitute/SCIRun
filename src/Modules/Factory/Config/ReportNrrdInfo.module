@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReportNrrdInfo",
+    "namespace": "Teem",
+    "status": "Ported module",
+    "description": "Displays Nrrd info",
+    "header": "Modules/Legacy/Teem/Misc/ReportNrrdInfo.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ReportNrrdInfoDialog",
+    "header": "Interface/Modules/Teem/ReportNrrdInfoDialog.h"
+  }
+}

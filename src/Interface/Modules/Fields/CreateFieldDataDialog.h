@@ -30,13 +30,13 @@
 #define INTERFACE_MODULES_CREATEFIELDDATA_H
 
 #include "Interface/Modules/Fields/ui_CreateFieldData.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/HasParserHelpDialog.h>
 #include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE CreateFieldDataDialog : public ModuleDialogGeneric,
+class SCISHARE CreateFieldDataDialog : public ModuleDialogWithParserHelp,
   public Ui::CreateFieldData
 {
 	Q_OBJECT

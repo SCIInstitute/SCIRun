@@ -38,13 +38,15 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Interface/Application/Utility.h>
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
-using namespace SCIRun::Core::Commands;
+using namespace Commands;
 using namespace SCIRun::Dataflow::Networks;
 
 bool LoadFileCommandGui::execute()
@@ -141,25 +143,25 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 }
 }
 
-bool FileOpenCommand::execute()
+bool NetworkFileProcessCommand::execute()
 {
   if (!filename_.empty())
     GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename_));
 
   try
   {
-    auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename_);
+    auto file = processXmlFile();
 
-    if (openedFile)
+    if (file)
     {
-      auto load = boost::bind(&FileOpenCommand::loadImpl, this, openedFile);
+      auto load = boost::bind(&NetworkFileProcessCommand::guiProcess, this, file);
       if (Core::Application::Instance().parameters()->isRegressionMode())
       {
         load();
       }
       else
       {
-        int numModules = static_cast<int>(openedFile->network.modules.size());
+        int numModules = static_cast<int>(file->network.modules.size());
         QProgressDialog progress("Loading network " + QString::fromStdString(filename_), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
         progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
         progress.setWindowModality(Qt::WindowModal);
@@ -174,12 +176,12 @@ bool FileOpenCommand::execute()
         progress.setValue(load());
         networkEditor_->setVisibility(true);
       }
-      openedFile_ = openedFile;
+      file_ = file;
 
-      QPointF center = findCenterOfNetworkFile(*openedFile_);
+      QPointF center = findCenterOfNetworkFile(*file);
       networkEditor_->centerOn(center);
 
-      GuiLogger::Instance().logInfo("File load done.");
+      GuiLogger::Instance().logInfoStd("File load done (" + filename_ + ").");
       return true;
     }
     else
@@ -193,26 +195,39 @@ bool FileOpenCommand::execute()
   catch (ExceptionBase& e)
   {
     if (!filename_.empty())
-      GuiLogger::Instance().logError("File load failed: exception in load_xml, " + QString(e.what()));
+      GuiLogger::Instance().logErrorStd("File load failed (" + filename_ + "): exception in load_xml, " + e.what());
   }
   catch (std::exception& ex)
   {
     if (!filename_.empty())
-      GuiLogger::Instance().logError("File load failed: exception in load_xml, " + QString(ex.what()));
+      GuiLogger::Instance().logErrorStd("File load failed(" + filename_ + "): exception in load_xml, " + ex.what());
   }
   catch (...)
   {
     if (!filename_.empty())
-      GuiLogger::Instance().logError("File load failed: Unknown exception in load_xml.");
+      GuiLogger::Instance().logErrorStd("File load failed(" + filename_ + "): Unknown exception in load_xml.");
   }
   return false;
 }
 
-int FileOpenCommand::loadImpl(const NetworkFileHandle& file)
+int NetworkFileProcessCommand::guiProcess(const NetworkFileHandle& file)
 {
   networkEditor_->clear();
   networkEditor_->loadNetwork(file);
   return static_cast<int>(file->network.modules.size()) + 1;
+}
+
+NetworkFileHandle FileOpenCommand::processXmlFile()
+{
+  return XMLSerializer::load_xml<NetworkFile>(filename_);
+}
+
+NetworkFileHandle FileImportCommand::processXmlFile()
+{
+  auto dtdpath = Core::Application::Instance().executablePath();
+  const auto& modFactory = Core::Application::Instance().controller()->moduleFactory();
+  LegacyNetworkIO lnio(dtdpath.string(), modFactory);
+  return lnio.load_net(filename_);
 }
 
 bool RunPythonScriptCommandGui::execute()

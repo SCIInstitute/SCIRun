@@ -31,6 +31,8 @@ SET(Interface_Modules_String_FORMS
   CreateString.ui
   PrintDatatypeDialog.ui
   NetworkNotes.ui
+  PrintMatrixIntoStringDialog.ui
+  PrintStringIntoStringDialog.ui
 )
 
 SET(Interface_Modules_String_HEADERS
@@ -38,12 +40,16 @@ SET(Interface_Modules_String_HEADERS
   CreateStringDialog.h
   PrintDatatypeDialog.h
   NetworkNotesDialog.h
+  PrintMatrixIntoStringDialog.h
+  PrintStringIntoStringDialog.h
 )
 
 SET(Interface_Modules_String_SOURCES 
   CreateStringDialog.cc
   PrintDatatypeDialog.cc
   NetworkNotesDialog.cc
+  PrintMatrixIntoStringDialog.cc
+  PrintStringIntoStringDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_String_FORMS_HEADERS ${Interface_Modules_String_FORMS})
@@ -59,7 +65,9 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_String
 TARGET_LINK_LIBRARIES(Interface_Modules_String 
   Modules_String
   Modules_Basic
+  Modules_Legacy_String
   Interface_Modules_Base
+  Modules_Legacy_Bundle
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )

@@ -37,7 +37,7 @@ typedef SCIRun::Modules::Fields::ClipFieldByFunction ClipFieldDataModule;
 
 ClipFieldByFunctionDialog::ClipFieldByFunctionDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogWithParserHelp(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -45,4 +45,5 @@ ClipFieldByFunctionDialog::ClipFieldByFunctionDialog(const std::string& name, Mo
 
   addTextEditManager(expressionTextEdit_, ClipFieldDataModule::FunctionString);
   addComboBoxManager(clippingLocationComboBox_, Parameters::ClipMethod);
+  connectParserHelpButton(parserHelpButton_);
 }

@@ -37,7 +37,7 @@
 namespace SCIRun {
   namespace Core {
     namespace Algorithms {
-      
+
       class SCISHARE HardCodedAlgorithmFactory : public SCIRun::Core::Algorithms::AlgorithmFactory
       {
       public:
@@ -49,10 +49,13 @@ namespace SCIRun {
         AlgoMakerMap factoryMap_;
         void addToMakerMap();
         void addToMakerMap2(); // @todo: temporary
+        void addToMakerMapGenerated();
       };
-
     }
   }
 }
+
+#define ADD_MODULE_ALGORITHM(module, algorithm) (#module, boost::factory<algorithm*>())
+#define ADD_MODULE_ALGORITHM_GENERATED(module, algorithm) factoryMap_[#module] = boost::factory<algorithm*>()
 
 #endif

@@ -33,14 +33,13 @@
 #include <Interface/Modules/Render/ES/SRInterface.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Render;
-using namespace SCIRun::Gui;
+using namespace Render;
+using namespace Gui;
 
 TEST(SRInterfaceTest, CanInstantiateSRInterface)
 {
   std::shared_ptr<GLContext> context;
-  std::vector<std::string> shaderDirs;
-  SRInterface srinterface(context, shaderDirs);
+  SRInterface srinterface(context);
 }
 
 class DummyGLContext : public GLContext
@@ -61,8 +60,7 @@ public:
 TEST(SRInterfaceTest, CanRenderEmptyFrame)
 {
   std::shared_ptr<GLContext> context(new DummyGLContext);
-  std::vector<std::string> shaderDirs;
-  SRInterface srinterface(context, shaderDirs);
+  SRInterface srinterface(context);
 
   srinterface.doFrame(0, 50);
 }

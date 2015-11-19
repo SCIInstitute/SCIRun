@@ -36,7 +36,6 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <boost/foreach.hpp>
 #include <fstream>
 
 #include <Dataflow/Serialization/Network/share.h>

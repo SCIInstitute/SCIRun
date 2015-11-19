@@ -45,6 +45,7 @@
 class QTextEdit;
 class QTreeWidget;
 class QComboBox;
+class QStatusBar;
 
 namespace SCIRun {
 namespace Gui {
@@ -135,7 +136,7 @@ namespace Gui {
     Q_OBJECT
 
   public:
-    explicit FileDownloader(QUrl imageUrl, QObject *parent = 0);
+    explicit FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent = 0);
     QByteArray downloadedData() const { return downloadedData_; }
 
   Q_SIGNALS:
@@ -148,13 +149,14 @@ namespace Gui {
     QNetworkAccessManager webCtrl_;
     QNetworkReply* reply_;
     QByteArray downloadedData_;
+    QStatusBar* statusBar_;
   };
 
   class ToolkitDownloader : public QObject
   {
     Q_OBJECT
   public:
-    explicit ToolkitDownloader(QObject* infoObject, QWidget* parent = 0);
+    explicit ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent = 0);
   private Q_SLOTS:
     void showMessageBox();
     void saveToolkit();
@@ -165,6 +167,7 @@ namespace Gui {
     FileDownloader* zipDownloader_;
     QString iconUrl_, fileUrl_, filename_;
     QDir toolkitDir_;
+    QStatusBar* statusBar_;
   };
 
 }

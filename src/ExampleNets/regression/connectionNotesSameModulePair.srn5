@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>2</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>ApplyFEMCurrentSource:1</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>FiniteElements</category_name_>
+						<module_name_>ApplyFEMCurrentSource</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>3</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>ModelType</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>ModelType</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>dipole</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SinkNode</name>
+								</first>
+								<second>
+									<name>SinkNode</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SourceNode</name>
+								</first>
+								<second>
+									<name>SourceNode</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ApplyFEMCurrentSource:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>FiniteElements</category_name_>
+						<module_name_>ApplyFEMCurrentSource</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ModelType</name>
+								</first>
+								<second>
+									<name>ModelType</name>
+									<value>
+										<which>2</which>
+										<value>dipole</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SinkNode</name>
+								</first>
+								<second>
+									<name>SinkNode</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SourceNode</name>
+								</first>
+								<second>
+									<name>SourceNode</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>2</count>
+			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>ApplyFEMCurrentSource:2</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>Output_RHS</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ApplyFEMCurrentSource:1</moduleId2_>
+				<port2_>
+					<name>Mapping</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ApplyFEMCurrentSource:2</moduleId1_>
+				<port1_>
+					<name>Output_Weights</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ApplyFEMCurrentSource:1</moduleId2_>
+				<port2_>
+					<name>Input_RHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="15" tracking_level="0" version="0">
+		<count>2</count>
+		<item_version>0</item_version>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>ApplyFEMCurrentSource:1</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>5.25000000000000000e+02</first>
+				<second>1.40000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ApplyFEMCurrentSource:2</first>
+			<second>
+				<first>5.56000000000000000e+02</first>
+				<second>-2.65000000000000000e+02</second>
+			</second>
+		</item>
+	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>1</count>
+		<item_version>0</item_version>
+		<item class_id="19" tracking_level="0" version="0">
+			<first>ApplyFEMCurrentSource:1--ApplyFEMCurrentSource:2</first>
+			<second class_id="20" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;c2&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>c2</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
+	</connectionNotes>
+	<moduleTags class_id="21" tracking_level="0" version="0">
+		<count>2</count>
+		<item_version>0</item_version>
+		<item class_id="22" tracking_level="0" version="0">
+			<first>ApplyFEMCurrentSource:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ApplyFEMCurrentSource:2</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
+</networkFile>
+</boost_serialization>
+

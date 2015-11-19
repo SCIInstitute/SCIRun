@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReadNrrd",
+    "namespace": "DataIO",
+    "status": "Ported module",
+    "description": "Read Nrrd files as Nrrd objects",
+    "header": "Modules/Legacy/Teem/DataIO/ReadNrrd.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ReadNrrdDialog",
+    "header": "Interface/Modules/DataIO/ReadNrrdDialog.h"
+  }
+}

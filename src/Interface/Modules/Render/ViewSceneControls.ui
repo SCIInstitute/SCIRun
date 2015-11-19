@@ -39,7 +39,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="ObjectTab">
        <attribute name="title">
@@ -73,13 +73,13 @@
           </rect>
          </property>
         </widget>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>10</x>
            <y>293</y>
            <width>241</width>
-           <height>25</height>
+           <height>32</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
@@ -816,6 +816,104 @@
         </property>
         <property name="text">
          <string>Save screenshot on update</string>
+        </property>
+       </widget>
+       <widget class="QGroupBox" name="zoomBox_">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>80</y>
+          <width>261</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="title">
+         <string>Zoom Speed</string>
+        </property>
+        <widget class="QSlider" name="zoomSpeedHorizontalSlider_">
+         <property name="geometry">
+          <rect>
+           <x>9</x>
+           <y>60</y>
+           <width>241</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>65</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="invertedAppearance">
+          <bool>true</bool>
+         </property>
+         <property name="invertedControls">
+          <bool>true</bool>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::TicksBelow</enum>
+         </property>
+         <property name="tickInterval">
+          <number>10</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_5">
+         <property name="geometry">
+          <rect>
+           <x>8</x>
+           <y>27</y>
+           <width>61</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Slower</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_6">
+         <property name="geometry">
+          <rect>
+           <x>193</x>
+           <y>27</y>
+           <width>61</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Faster</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QCheckBox" name="invertZoomCheckBox_">
+        <property name="geometry">
+         <rect>
+          <x>160</x>
+          <y>10</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Invert Zoom</string>
         </property>
        </widget>
       </widget>

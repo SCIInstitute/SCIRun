@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/assign.hpp>
 #include <Dataflow/Network/Tests/MockModule.h>
@@ -41,7 +40,7 @@ using namespace boost::assign;
 using ::testing::Return;
 using ::testing::NiceMock;
 
-ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& info)
+ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& info) const
 {
   ModuleDescription d;
   d.lookupInfo_ = info;
@@ -59,7 +58,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
   ON_CALL(*module, num_input_ports()).WillByDefault(Return(info.input_ports_.size()));
   size_t portIndex = 0;
   std::vector<InputPortHandle> inputs;
-  BOOST_FOREACH(const InputPortDescription& d, info.input_ports_)
+  for (const InputPortDescription& d : info.input_ports_)
   {
     MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
     ON_CALL(*inputPort, get_typename()).WillByDefault(Return(PortColorLookup::toColor(d.datatype)));
@@ -71,11 +70,11 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
     portIndex++;
   }
   ON_CALL(*module, inputPorts()).WillByDefault(Return(inputs));
-  
+
   ON_CALL(*module, num_output_ports()).WillByDefault(Return(info.output_ports_.size()));
   portIndex = 0;
   std::vector<OutputPortHandle> outputs;
-  BOOST_FOREACH(const OutputPortDescription& d, info.output_ports_)
+  for (const OutputPortDescription& d : info.output_ports_)
   {
     MockOutputPortPtr outputPort(new NiceMock<MockOutputPort>);
     ON_CALL(*outputPort, get_typename()).WillByDefault(Return(PortColorLookup::toColor(d.datatype)));
@@ -87,7 +86,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
     portIndex++;
   }
   ON_CALL(*module, outputPorts()).WillByDefault(Return(outputs));
-  
+
   ModuleId id("module", ++moduleCounter_);
   ON_CALL(*module, get_id()).WillByDefault(Return(id));
 

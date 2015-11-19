@@ -1,11 +1,8 @@
 #ifndef INTERFACE_MODULES_RENDER_ES_COMP_RENDER_LIST_H
 #define INTERFACE_MODULES_RENDER_ES_COMP_RENDER_LIST_H
 
-#include <gl-shaders/GLShader.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
-#include <es-render/util/Shader.hpp>
-#include <es-render/comp/StaticVBOMan.hpp>
-#include <Core/Datatypes/Geometry.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
 
 namespace SCIRun {
 namespace Render {
@@ -14,12 +11,12 @@ struct RenderList
 {
   // -- Data --
   std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data;
-  std::vector<Core::Datatypes::GeometryObject::SpireVBO::AttributeData> attributes;
-  Core::Datatypes::GeometryObject::RenderType renderType;
+  std::vector<Graphics::Datatypes::SpireVBO::AttributeData> attributes;
+  Graphics::Datatypes::RenderType renderType;
   int64_t numElements;
 
   // -- Functions --
-  RenderList() {}
+  RenderList() : renderType(Graphics::Datatypes::RENDER_VBO_IBO), numElements(0) {}
 
   static const char* getName() {return "RenderList";}
 

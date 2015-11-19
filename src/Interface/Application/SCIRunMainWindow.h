@@ -40,6 +40,9 @@ class QToolButton;
 
 namespace SCIRun {
   namespace Dataflow {
+    namespace Networks {
+      struct ModuleId;
+    }
     namespace Engine {
       class NetworkEditorController;
     }}}
@@ -67,6 +70,7 @@ public:
   //command access: extract an interface
   void saveNetworkFile(const QString& fileName);
   bool loadNetworkFile(const QString& filename);
+  bool importLegacyNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
@@ -87,6 +91,8 @@ protected:
   virtual void closeEvent(QCloseEvent* event) override;
   virtual void keyPressEvent(QKeyEvent *event) override;
   virtual void keyReleaseEvent(QKeyEvent *event) override;
+  virtual void showEvent(QShowEvent* event) override;
+  virtual void hideEvent(QHideEvent* event) override;
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
@@ -101,7 +107,7 @@ private:
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
   QToolButton* executeButton_;
-
+  QByteArray windowState_;
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
@@ -121,7 +127,6 @@ private:
   void setupPythonConsole();
   void fillModuleSelector();
   void setupInputWidgets();
-  void parseStyleXML();
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
   void showStatusMessage(const QString& str);
@@ -135,10 +140,12 @@ private:
   bool firstTimePythonShown_;
   int returnCode_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
+  QMap<QString, QAction*> currentModuleActions_;
   boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
+  bool quitAfterExecute_;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
@@ -150,6 +157,7 @@ private Q_SLOTS:
   void loadRecentNetwork();
   bool newNetwork();
   void runScript();
+  void importLegacyNetwork();
   void networkModified();
   void filterModuleNamesInTreeView(const QString& start);
   void makePipesEuclidean();
@@ -166,6 +174,8 @@ private Q_SLOTS:
   void showPythonWarning(bool visible);
   void makeModulesLargeSize();
   void makeModulesSmallSize();
+  void alertForNetworkCycles(int code);
+  void updateDockWidgetProperties(bool isFloating);
   void setDataDirectoryFromGUI();
   void toolkitDownload();
   void addToPathFromGUI();
@@ -177,11 +187,15 @@ private Q_SLOTS:
   void modulesSnapToChanged();
   void highlightPortsChanged();
   void openLogFolder();
+  void runNewModuleWizard();
   void resetWindowLayout();
   void zoomNetwork();
+  void networkTimedOut();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
+  void addModuleToWindowList(const QString& id, bool hasUI);
+  void removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId& modId);
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
   void toggleTagLayer(bool toggle);

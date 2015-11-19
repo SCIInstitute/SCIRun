@@ -30,7 +30,6 @@
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
@@ -50,7 +49,7 @@ namespace
       waitForStartupInit(lookup_);
       Guard g(executionLock_->get());
       bounds_.executeStarts_();
-      BOOST_FOREACH(const ModuleId& id, order_)
+      for (const ModuleId& id : order_)
       {
         ExecutableObject* obj = lookup_.lookupExecutable(id);
         if (obj)
