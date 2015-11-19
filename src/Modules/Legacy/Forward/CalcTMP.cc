@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2011 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Field.h>
@@ -38,10 +37,8 @@
 
 #include <Packages/BioPSE/Core/Algorithms/NumApproximation/CalcTMP.h>
 
-//#include <algorithm>
-
 namespace BioPSE {
-  
+
 using namespace SCIRun;
 
 class CalcTMP : public Module, public CalcTMPAlgo {
@@ -50,7 +47,7 @@ class CalcTMP : public Module, public CalcTMPAlgo {
     virtual ~CalcTMP() {}
 
     virtual void execute();
-  
+
   private:
     //SCIRunAlgo::CalcTMPAlgo algo_;
     CalcTMPAlgo algo_;
@@ -68,7 +65,6 @@ CalcTMP::CalcTMP(GuiContext* ctx)
 
 void CalcTMP::execute()
 {
-  //FieldHandle Field;
   MatrixHandle amplitudes;
   MatrixHandle deps;
   MatrixHandle depslopes;
@@ -77,8 +73,7 @@ void CalcTMP::execute()
   MatrixHandle repslopes;
   MatrixHandle rests;
   MatrixHandle TMPs;
-  
-  //if (!(get_input_handle("Mesh",Field,true))) return;
+
   get_input_handle("Amplitude", amplitudes, false);
   get_input_handle("Depolarization Time", deps, false);
   get_input_handle("Depolarization Slope", depslopes, false);
@@ -86,13 +81,9 @@ void CalcTMP::execute()
   get_input_handle("Repolarization Time", reps, false);
   get_input_handle("Repolarization Slope", repslopes, false);
   get_input_handle("Rest Potential", rests, false);
-  
+
   if (inputs_changed_ || !oport_cached("TMPs") )
   {
-    //algo_.set_bool("generate_basis",gui_use_basis_.get());
-    //algo_.set_bool("force_symmetry",gui_force_symmetry_.get());
-    //if(!(algo_.run(Field,Conductivity,SysMatrix))) return;
-    
     algo_.calc_TMPs(amplitudes,
                     deps,
                     depslopes,
@@ -102,12 +93,9 @@ void CalcTMP::execute()
                     rests,
                     500,
                     TMPs);
-    
+
     send_output_handle("TMPs", TMPs);
   }
 }
 
 } // End namespace BioPSE
-
-
-
