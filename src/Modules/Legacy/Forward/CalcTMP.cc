@@ -26,21 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Forward/CalcTMP.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
-
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Dataflow/Network/Module.h>
-
-#include <Packages/BioPSE/Core/Algorithms/NumApproximation/CalcTMP.h>
-
-namespace BioPSE {
+//#include <Packages/BioPSE/Core/Algorithms/NumApproximation/CalcTMP.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Forward;
+using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Core::Algorithms::Forward;
 
+const ModuleLookupInfo CalcTMP::staticInfo_("CalcTMP", "Forward", "SCIRun");
+
+/*
 class CalcTMP : public Module, public CalcTMPAlgo {
   public:
     CalcTMP(GuiContext*);
@@ -52,38 +50,48 @@ class CalcTMP : public Module, public CalcTMPAlgo {
     //SCIRunAlgo::CalcTMPAlgo algo_;
     CalcTMPAlgo algo_;
 };
+*/
 
-
-DECLARE_MAKER(CalcTMP)
-
-CalcTMP::CalcTMP(GuiContext* ctx)
-  : Module("CalcTMP", ctx, Source, "Forward", "BioPSE")
+CalcTMP::CalcTMP()
+  : Module(staticInfo_)
 {
+  INITIALIZE_PORT(Amplitude);
+  INITIALIZE_PORT(i1);
+  INITIALIZE_PORT(i2);
+  INITIALIZE_PORT(i3);
+  INITIALIZE_PORT(i4);
+  INITIALIZE_PORT(i5);
+  INITIALIZE_PORT(i6);
+  INITIALIZE_PORT(TMPs);
   //algo_.set_progress_reporter(this);
 }
 
 
 void CalcTMP::execute()
 {
-  MatrixHandle amplitudes;
-  MatrixHandle deps;
+  MatrixHandle amplitudes = getRequiredInput(Amplitude);
+  auto deps = getOptionalInput(i1);
+
+
+
+
   MatrixHandle depslopes;
   MatrixHandle platslopes;
   MatrixHandle reps;
   MatrixHandle repslopes;
   MatrixHandle rests;
-  MatrixHandle TMPs;
+  MatrixHandle tmps;
 
-  get_input_handle("Amplitude", amplitudes, false);
-  get_input_handle("Depolarization Time", deps, false);
-  get_input_handle("Depolarization Slope", depslopes, false);
-  get_input_handle("Plateau Slope", platslopes, false);
-  get_input_handle("Repolarization Time", reps, false);
-  get_input_handle("Repolarization Slope", repslopes, false);
-  get_input_handle("Rest Potential", rests, false);
+  // get_input_handle("Depolarization Time", deps, false);
+  // get_input_handle("Depolarization Slope", depslopes, false);
+  // get_input_handle("Plateau Slope", platslopes, false);
+  // get_input_handle("Repolarization Time", reps, false);
+  // get_input_handle("Repolarization Slope", repslopes, false);
+  // get_input_handle("Rest Potential", rests, false);
 
-  if (inputs_changed_ || !oport_cached("TMPs") )
+  if (needToExecute())
   {
+    /* TODO LATER
     algo_.calc_TMPs(amplitudes,
                     deps,
                     depslopes,
@@ -93,9 +101,8 @@ void CalcTMP::execute()
                     rests,
                     500,
                     TMPs);
+                    */
 
-    send_output_handle("TMPs", TMPs);
+    sendOutput(TMPs, tmps);
   }
 }
-
-} // End namespace BioPSE
