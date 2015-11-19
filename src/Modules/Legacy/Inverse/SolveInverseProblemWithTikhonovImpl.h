@@ -132,6 +132,13 @@ namespace BioPSE
     bool computeRegularizedInverse_;
     boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput_handle_;
     SCIRun::Core::Logging::LegacyLoggerInterface* pr_;
+      
+      
+    void TikhonovAlgorithmImpl::computeInverseSolution( DenseColumnMatrix& solution, DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseMatrix& M4, DenseColumnMatrix& y, double lambda_sq);
+      
+    double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input& input, DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseMatrix& M4, DenseColumnMatrix& y, DenseMatrix& R);
+      
+
   };
 }
 

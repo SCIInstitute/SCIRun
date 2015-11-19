@@ -188,6 +188,8 @@ namespace LinearAlgebra
   class LapackError : public std::exception {};
 }
 
+    
+    
 /////////////////////////
 /////////  run()
 void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
@@ -212,7 +214,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     
     
 // PREALOCATE VARIABLES and MATRICES
-    DenseMatrix M1, M2, M3;
+    DenseMatrix M1, M2, M3, M4;
     DenseColumnMatrix y;
     DenseMatrix forward_transpose = forwardMatrix_->transpose();
     DenseColumnMatrix solution(M);
@@ -229,6 +231,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       //      M1 = A * (R*R^T)^-1 * A^T
       //      M2 = (C*C^T)^-1
       //      M3 = (R * R^T)^-1 * A^T
+      //      M4 = identity
       //      y = measuredData
     //.........................................................................
    
@@ -321,14 +324,17 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     // DEFINE M2 = (CC^T)^-1
       M2 = iCCtr;
     
-    // DEFINE M3 = identity (size of number of measurements)
+    // DEFINE M3 = (RR^T)^-1 * A
       M3 = RAtr;
+      
+    // DEFINE M4 = identity (size of number of measurements)
+      M4 = DenseMatrix::Identity(N, N);
       
     // DEFINE measurement vector
       y = *measuredData_;
    
-    }
-    //OVERDETERMINED CASE,
+  }
+  //OVERDETERMINED CASE,
   //similar procedure as underdetermined case (documentation comments similar, see above)
   else if ( ((regularizationChoice_ == automatic) && (M>=N)) || (regularizationChoice_==overdetermined) )
   {
@@ -340,6 +346,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         //      M1 = A * C^T*C * A^T
         //      M2 = R^T*R
         //      M3 = identity
+        //      M4 = A^TC^TC
         //      y = A * C^T*C * measuredData
         //.........................................................................
         
@@ -422,7 +429,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         }
         
         // DEFINE  M1 = (A * (R*R^T)^-1 * A^T MATRIX FOR FASTER COMPUTATION
-        auto CtrCAtr = CtrC * forwardMatrix_;
+        auto CtrCA = CtrC * forwardMatrix_;
         M1 = *forward_transpose * CtrCAtr;
         
         // DEFINE M2 = (CC^T)^-1
@@ -430,10 +437,12 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         
         // DEFINE M3 = identity (size of number of measurements)
         M3 = DenseMatrix::Identity(N, N);
-        
+      
+        // DEFINT M4 = A^T* C^T * C
+        M4 = CtrCA->transpose();
+      
         // DEFINE measurement vector
-        y = CtrCAtr->transpose() * *measuredData_;
-
+        y = CtrCA->transpose() * *measuredData_;
     
   }
     
@@ -457,28 +466,30 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     }
     else if (input.regMethod_ == "lcurve")
     { 
-        lambda = computeLcurve( input, &M1, &M2, &M3, &y );
+        lambda = computeLcurve( input, &M1, &M2, &M3, &M4, &y );
     }
       
       
     lambda_sq = lambda * lambda;
-      
-      
-      // COMPUTE INVERSE SOLUTION  // Todo: @JCOLLFONT function needs to be defined
-      computeInverseSolution( &solution, &M1, &M2, &M3, &y );
     
-      // set final result
-      inverseSolution_.reset(new DenseMatrix(solution));
-  
-  }
-
+    
+/////////////////////////////
+// COMPUTE INVERSE SOLUTION  // Todo: @JCOLLFONT function needs to be defined
+////////////////////////////
+    
+    computeInverseSolution( &solution, &M1, &M2, &M3, &M4, &y, lambda_sq);
+    
+    // set final result
+    inverseSolution_.reset(new DenseMatrix(solution));
+ 
+    
 }
 //////// fi  run()
 ///////////////////////////
 
 ///////////////////////////
 /////// compute L-curve
-double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input& input, DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseColumnMatrix& y, DenseMatrix& R, int N, int M)
+double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input &input, DenseMatrix &M1, DenseMatrixv &M2, DenseMatrix &M3, DenseMatrix &M4, DenseColumnMatrix &y, DenseMatrix &R)
 {
     
     // define the step size of the lambda vector to be computed  (distance between min and max divided by number of desired lambdas in log scale)
@@ -510,7 +521,7 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
         lambda_sq = lambdaArray[j] * lambdaArray[j];
         
         // COMPUTE INVERSE SOLUTION  // Todo: @JCOLLFONT function needs to be defined
-        computeInverseSolution( &solution, &M1, &M2, &M3, &y );
+        computeInverseSolution( &solution, &M1, &M2, &M3, &M4, &y, lambda_sq);
         
         // if using source regularization matrix, apply it to compute Rx (for the eta computations)
         if (sourceWeighting_)
@@ -539,7 +550,23 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
         else
              CAx = residualSolution;
       
+        // compute rho and eta
+        rho[j]=0; eta[j]=0;
+        for (int k = 0; k < CAx.nrows(); k++)
+        {
+            double T = CAx(k);
+            rho[j] += T*T; //norm of the data fit term
+        }
         
+        for (int k = 0; k < Rx.nrows(); k++)
+        {
+            double T = Rx[k];
+            eta[j] += T*T; //norm of the model term
+        }
+        
+        // eta and rho needed to plot the Lcurve and determine the L corner
+        rho[j] = sqrt(rho[j]);
+        eta[j] = sqrt(eta[j]);
          
         
     }
@@ -565,9 +592,66 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
 
 /////////////////////////
 ///////// compute Inverse solution
-void TikhonovAlgorithmImpl::computeInverseSolution( DenseColumnMatrix& solution, DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseColumnMatrix& y, int N, int M)
-
+void TikhonovAlgorithmImpl::computeInverseSolution( DenseColumnMatrix &solution, DenseMatrix &M1, DenseMatrix &M2, DenseMatrix &M3, DenseMatrix &M4, DenseColumnMatrix &y, double lambda_sq)
 {
+    //............................
+    //  OPERATIONS PERFORMED IN THIS SECTION:
+    //      The description of these operations is general and applies to underdetermined or overdetermined equations depending on the definition given to M1, M2, M3 and y (look at the selection of underdetermined or overdetermined for details)
+    //............................
+    //
+    //      G = (M1 + lambda^2 * M2)
+    //      b = G^-1 * y
+    //      x = M3 * b
+    //
+    //
+    //...........................................................................................................
+    
+    DenseColumnMatrix b;
+    
+    G = *M1 + lambda_sq* (*M2);
+    
+    try
+    {
+        LinearAlgebra::solve_lapack(*G, *y, b);
+    }
+    catch (LinearAlgebra::LapackError&)
+    {
+        const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda Range ''From'' value for the L-Curve calculation.");
+        if (pr_)
+        {
+            pr_->error(errorMessage);
+        }
+        else
+        {
+            std::cerr << errorMessage << std::endl;
+        }
+        throw;
+    }
+    catch(DimensionMismatch&)
+    {
+        const std::string errorMessage("Invalid matrix sizes are being used in the Tikhonov linear system.");
+        if (pr_)
+        {
+            pr_->error(errorMessage);
+        }
+        else
+        {
+            std::cerr << errorMessage << std::endl;
+        }
+        throw;
+    }
+    
+    
+    *solution = (*M3) * b;
+    
+    
+    if (computeRegularizedInverse_)
+    {
+        new DenseMatrix inverseG = G.inverse();
+        inverseMatrix_.reset( (*M3) * inverseG * (*M4) );
+        
+    }
+    
     
 }
 //////// fi compute inverse solution
@@ -624,117 +708,4 @@ TikhonovAlgorithmImpl::Input::Input(const std::string& regMethod, double lambdaF
 updateLCurveGui_(updateLCurveGui)
 {}
 
-    
-    
-// //// DUMP FOR COMPUTATION OF UNDERDETERMINED EQUATIONS
-    
-//    
-//    int nr_rows = CCtr.nrows();
-//    int nr_cols = CCtr.ncols();
-//    const int NR_BOUNDS_CHECK = nr_rows * nr_cols;
-//
-//    double* rm = regForMatrix.data();
-//    
-//    for (int i = 0; i < NR_BOUNDS_CHECK; i++)
-//    {
-//        rm[i] = AtrA[i] + lambda_sq * LLtr[i];
-//    }
-//    
-//    try
-//    {
-//        LinearAlgebra::solve_lapack(regForMatrix, *measuredData_, solution);
-//    }
-//    catch (LinearAlgebra::LapackError&)
-//    {
-//        const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda Range ''From'' value for the L-Curve calculation.");
-//        if (pr_)
-//        {
-//            pr_->error(errorMessage);
-//        }
-//        else
-//        {
-//            std::cerr << errorMessage << std::endl;
-//            }
-//            throw;
-//            }
-//            catch(DimensionMismatch&)
-//            {
-//                const std::string errorMessage("Invalid matrix sizes are being used in the Tikhonov linear system.");
-//                if (pr_)
-//                {
-//                    pr_->error(errorMessage);
-//                }
-//                else
-//                {
-//                    std::cerr << errorMessage << std::endl;
-//                }
-//                throw;
-//            }
-//            
-//            RRtrAtrsolution = RRtrAtr * solution;
-
-    
-// DUMP, final inverse calculation
-//    regularizationParameter_.reset(new DenseColumnMatrix(1));
-//    (*regularizationParameter_)(0) = lambda;
-//    int nr_rows = regForMatrix.nrows();
-//    int nr_cols = regForMatrix.ncols();
-//    
-//    double* AtrA = ARRtrAtr.data();
-//    double* RtrR = CCtr.data();
-//    double* rm   = regForMatrix.data();
-//    for (int i=0; i<(int)(nr_rows*nr_cols); i++)
-//    {
-//        rm[i] = AtrA[i] + lambda_sq * RtrR[i];
-//    }
-//    //TODO: don't use pointers, math should look like this:
-//    //regForMatrix = ARRtrAtr + lambda_sq * CCtr;
-//    
-//    if (computeRegularizedInverse_)
-//    {
-//        if (sourceWeighting_)
-//        {
-//            inverseMatrix_.reset(new DenseMatrix(RRtrAtr * regForMatrix.inverse()));
-//        }
-//        else
-//        {
-//            inverseMatrix_.reset(new DenseMatrix(forward_transpose * regForMatrix.inverse()));
-//        }
-//        inverseSolution_.reset(new DenseMatrix(*inverseMatrix_ * *measuredData_));
-//    }
-//    else
-//    {
-//        try
-//        {
-//            LinearAlgebra::solve_lapack(regForMatrix, *measuredData_, solution);
-//        }
-//        catch (LinearAlgebra::LapackError&)
-//        {
-//            const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda Range ''From'' value for the L-Curve calculation.");
-//            if (pr_)
-//            {
-//                pr_->error(errorMessage);
-//            }
-//            else
-//            {
-//                std::cerr << errorMessage << std::endl;
-//            }
-//            throw;
-//        }
-//        catch(DimensionMismatch&)
-//        {
-//            const std::string errorMessage("Invalid matrix sizes are being used in the Tikhonov linear system.");
-//            if (pr_)
-//            {
-//                pr_->error(errorMessage);
-//            }
-//            else
-//            {
-//                std::cerr << errorMessage << std::endl;
-//            }
-//            throw;
-//        }
-//        
-
-    
 } // End namespace BioPSE
