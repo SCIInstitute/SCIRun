@@ -331,12 +331,16 @@ std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
   return "Execution finished.";
 }
 
-std::string PythonImpl::connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2)
+std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
   auto network = nec_.getNetwork();
-  auto mod1 = network->lookupModule(ModuleId(moduleId1));
-  auto mod2 = network->lookupModule(ModuleId(moduleId2));
-  return "PythonImpl::connect does nothing";
+  auto modFrom = network->lookupModule(ModuleId(moduleIdFrom));
+  auto outputPort = modFrom->outputPorts().at(fromIndex);
+  auto modTo = network->lookupModule(ModuleId(moduleIdTo));
+  auto inputPort = modTo->inputPorts().at(toIndex);
+  nec_.requestConnection(outputPort.get(), inputPort.get());
+
+  return "PythonImpl::connect success";
 }
 
 std::string PythonImpl::disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2)

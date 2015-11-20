@@ -36,7 +36,7 @@
 #include <Dataflow/Engine/Python/share.h>
 
 namespace SCIRun {
-  
+
   class NetworkEditorPythonInterface;
   class PyModule;
 
@@ -46,6 +46,8 @@ namespace SCIRun {
     static boost::shared_ptr<PyModule> addModule(const std::string& name);
     static std::vector<boost::shared_ptr<PyModule>> modules();
     static std::string removeModule(const std::string& id);
+    static std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
+
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);
     static std::string loadNetwork(const std::string& filename);
@@ -65,6 +67,8 @@ namespace SCIRun {
   {
   public:
     static std::string scirun_add_module(const std::string& name);
+    static std::string scirun_connect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex);
+    static std::string scirun_disconnect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex);
     static std::string scirun_quit(bool force);
   private:
     SimplePythonAPI();

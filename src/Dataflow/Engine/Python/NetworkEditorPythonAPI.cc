@@ -57,15 +57,15 @@ public:
   }
 };
 
-void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl) 
+void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl)
 {
   if (!impl_)
   {
     impl_ = impl;
 
-    boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >, 
+    boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >,
       StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
-    boost::python::to_python_converter< std::vector< std::string >, 
+    boost::python::to_python_converter< std::vector< std::string >,
       StdVectorToListConverter< std::string >, true >();
   }
 }
@@ -114,7 +114,17 @@ std::string NetworkEditorPythonAPI::executeAll()
     return impl_->executeAll(lookup_);
   else
   {
-    return "Null implementation or execution context: NetworkEditorPythonAPI::executeAll()"; 
+    return "Null implementation or execution context: NetworkEditorPythonAPI::executeAll()";
+  }
+}
+
+std::string NetworkEditorPythonAPI::connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
+{
+  if (impl_)
+    return impl_->connect(moduleIdFrom, fromIndex, moduleIdTo, toIndex);
+  else
+  {
+    return "Null implementation or execution context: NetworkEditorPythonAPI::connect()";
   }
 }
 
@@ -164,4 +174,14 @@ std::string SimplePythonAPI::scirun_add_module(const std::string& name)
 std::string SimplePythonAPI::scirun_quit(bool force)
 {
   return NetworkEditorPythonAPI::quit(force);
+}
+
+std::string SimplePythonAPI::scirun_connect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex)
+{
+  return NetworkEditorPythonAPI::connect(modIdFrom, fromIndex, modIdTo, toIndex);
+}
+
+std::string SimplePythonAPI::scirun_disconnect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex)
+{
+  return "TODO";
 }
