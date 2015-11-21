@@ -138,8 +138,16 @@ Please refer to Section~\ref{} for an example.  %TODO reference other chapters.
 \section{Module Source Code}
 \label{sec:module}
 
+The Module source code consist of a .cc and .h file that code the actual function of the module.
+However, since most modules use an algorithm file, these files can also be considered the the code that pulls all the relevant information from the algorithm, the UI, and other modules in order to achieve it's proper function.  
+These files should be located in the proper directory with the \emph{src/Modules/} directory.
+For example purposes, we will show and discuss the template files included in the \emph{src/Modules/Template/} directory.
+
 \subsection{Module Header File}
 
+The module header file functions as a typical C++ header file, containing code establishing the module object and structure.  
+The \emph{ModuleTemplate.h} file found in \emph{src/Modules/Template/} provides an example of the kind of coding needed for a module header.  
+The relevant functions are included here, with annotated comments:
 \begin{verbatim}
 // makes sure that headers aren't loaded multiple times. 
 // This requires the string to be unique to this file.
@@ -179,6 +187,29 @@ namespace Fields {
 }}}
 #endif
 \end{verbatim}
+One of the key functions of this header file is the definition of the ports used by the module.  
+This template uses one input and output, but any number can be used by changing the number and defining all the port types.
+To use two inputs and outputs:
+\begin{verbatim}
+public Has2InputPorts<FieldPortTag,FieldPortTag>,
+public Has2OutputPorts<FieldPortTag,FieldPortTag>
+\end{verbatim}
+If no there are no input or output ports, the commands are:
+\begin{verbatim}
+public HasNoInputPorts,
+public HasNoOutputPorts
+\end{verbatim}
+Dynamic ports are also possible for the inputs.  
+Dynamic ports are essentially a vector of ports, and are counted as a single port in the header.
+For a single dynamic port, then a static port and a dynamic port:
+\begin{verbatim}
+public Has1InputPort<DynamicPortTag<FieldPortTag>>,
+public Has2InputPorts<FieldPortTag,DynamicPortTag<FieldPortTag>>
+\end{verbatim}
+
+
+
+
 
 
 List of port tags that can be used in SCIRun:
