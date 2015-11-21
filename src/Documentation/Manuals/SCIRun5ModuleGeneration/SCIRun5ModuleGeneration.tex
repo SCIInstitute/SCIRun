@@ -1,0 +1,442 @@
+\documentclass[fleqn,11pt,openany]{book}
+
+% These two need to be set before including scirun style package
+\title{SCIRun Module Generation}
+\author{Jess Tate}
+
+% INCLUDE SCI STYLE DOCUMENT
+\usepackage{scirun}
+
+\begin{document}
+
+%% starting from SCIRun Doc wiki
+%% http://software.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Tutorial:BioPSE
+
+
+% CREATE TITLE PAGE --------------------------------------------------
+\maketitle
+
+% CHAPTERS ---------------------------------------------------------------
+
+\chapter{SCIRun Overview} \label{overview}
+
+\begin{introduction}
+This tutorial demonstrates how to create new modules in SCIRun \SCIRunVersion.  It will walk through all the files needed and the basic module structure used by modules.  These instructions assume a basic understanding in C++ coding and other basic programing skills
+\end{introduction}
+
+\section{Software requirements}
+
+\subsection{SCIRun  \SCIRunVersion}
+
+Download SCIRun version \SCIRunVersion  from the \href{http://www.scirun.org}{SCI software portal}.
+Make sure to update to the most up-to-date version of the source code available, which will include the latest bug fixes.
+Alternatively, use git to clone the SCIRun repository (https://github.com/SCIInstitute/SCIRun.git).  
+We suggest creating a fork of the repository so that you can track your changes and create pull requests to the SCIRun repository (Section \ref{sec:forking}).  
+%See github and git documentation on how to create, sync, merge, and manage forks
+
+\subsection{Compilers, Dependencies Development Tools}
+
+SCIRun will need to be built from the source code in order to test and use any modules written.  
+Make sure that qt 4.8, git, cmake, and the latest c++ compilers for the operating system are installed.  
+
+\subsection{Creating Your SCIRun Fork}
+\label{sec:forking}
+
+With your own github account, go to the \href{https://github.com/SCIInstitute/SCIRun}{SCIRun github page}.
+Click the fork button on the upper right side of the page.  
+It will ask you where to move the fork to, chose your own account.  
+Once the repository is forked, clone it to your local machine with the following command.  
+\begin{verbatim}
+$ git clone https://github.com/[yourgithubaccount]/SCIRun.git
+\end{verbatim}
+After the the code is cloned, navigate to the repository directory and add the upstream path to the original SCIRun repository.
+\begin{verbatim}
+$ git remote add upstream https://github.com/SCIInstitute/SCIRun.git
+\end{verbatim}
+You should be able to see both your and the original repositories when you use the command:
+\begin{verbatim}
+$ git remote -v
+\end{verbatim}
+The fork is good to go, but you will need to sync the fork occationally to keep up with the changes in the main repository.  To sync your fork, use the following commands:
+\begin{verbatim}
+$ git fetch upstream
+$ git checkout master
+$ git merge upstream/master
+\end{verbatim}
+You should sync and merge your fork before you start a new module and before you create a pull request.  
+It is a good practice to create a new branch in your fork for every module you will be adding.  The command to create a new branch is:
+\begin{verbatim}
+$ git checkout -b [branch_name]
+\end{verbatim}
+Please see the \href{https://help.github.com}{github help page} for more information.
+
+\chapter{Files Needed for a New Module}
+\label{sec:files}
+
+\begin{introduction}
+This chapter will describe the files need to create a module in SCIRun.
+
+Scope: \hyperref[sec:overview]{Overview of Files Needed for each Module} - \hyperref[sec:config]{Module Configuration File} -
+\hyperref[sec:module]{Module Source Code} - \hyperref[sec:algo]{Algorithm Code} - \hyperref[sec:ui]{Module UI Code}
+\end{introduction}
+
+\section{Overview of Files Needed for each Module}
+\label{sec:overview}
+
+There are only three files required to create a module, though more may be needed depending on the function of the module.
+In addition to the required module source code and header files (\emph{modulename.cc} and \emph{modulename.h}), a module configuration file is needed.
+The module configuration file (\emph{modulename.module}) contains a description of the module and its state and names all the files needed for the module to be included in SCIRUn.  
+
+Simple modules without user interfaces (UIs) can be created with the previously list three files alone.
+However, if the module function needs a UI, there are three additional files needed.  
+SCIRun can generate a UI for a module without these, but the functionality will be very limited to nonexistent.  
+The qt ui file (\emph{modulenameDialog.ui}) describes the graphics and hooks of the UI can be created using the qt UI editor.
+Module UIs also require a code and header file (\emph{modulenameDialog.cc} and \emph{modulenameDialog.h}.
+
+Most modules, especially those requiring more than minimal code, should also have algorithm code to allow for greater portability and code control.  
+This algorithm code and header file (\emph{modulenameAlgo.cc} and \emph{modulenameAlgo.h}) should contain all the computation of the module.
+Though it is possible to build modules without these algorithm files, it is considered good practice to do so.
+
+It is worth noting that each of the \emph{CMakeLists.txt} files in the directories of all of the files (except the module config file).  
+See the examples in the following chapters for details.  %TODO reference other chapters.
+
+
+\section{Module Configuration File}
+\label{sec:config}
+
+The module configuration file contains all the information need for the module factory to create necessary linkage and helper files for module to be properly included into SCIRun.  
+Module configuration files should be located in \emph{src/Modules/Factory/Config/}.  
+It is a text file that describes fields specific to the module delimited by curly brackets.  
+There are three fields ``module", ``algorithm", and ``UI" and within each field are subfields ``name" and ``header", and others depending on the field.  
+The following is an example that reflects the template files included in the source code.
+\begin{verbatim}
+{
+  "module": {
+    "name": "@ModuleName@",
+    "namespace": "Fields",
+    "status": "description of status",
+    "description": "description of module",
+    "header": "Modules/Template/ModuleTemplate.h"
+  },
+  "algorithm": {
+    "name": "@AlgorithmName@Algo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Template/AlgorithmTemplate.h"
+  },
+  "UI": {
+    "name": "@ModuleName@Dialog",
+    "header": "Interface/Modules/Template/ModuleDialog.h"
+  }
+}
+\end{verbatim}
+This config file example would not build.  
+We will include specific examples that will build and work in following chapters of this tutorial (Chapters---). %TODO reference other chapters.
+
+As mentioned before, the UI and algorithm files are not required to generated a module, therefore the subfields for the ``algorithm" or ``UI" fields can changed to ``N/A" to indicate that these files do not exist.  
+Please refer to Section~\ref{} for an example.  %TODO reference other chapters.
+
+\section{Module Source Code}
+\label{sec:module}
+
+\subsection{Module Header File}
+
+\begin{verbatim}
+// makes sure that headers aren't loaded multiple times. 
+// This requires the string to be unique to this file.
+// standard convention incorporates the file path and filename.
+#ifndef MODULES_FIELDS_@ModuleName@_H__
+#define MODULES_FIELDS_@ModuleName@_H__
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/Fields/share.h>
+// share.h must be the last include, or it will not build on windows systems.
+
+namespace SCIRun {
+namespace Modules {
+namespace Fields {
+// this final namespace needs to match the .module file
+// in src/Modules/Factory/Config/
+  
+  // define module ports.  
+  // Can have any number of ports (including none), and dynamic ports.
+  class SCISHARE @ModuleName@ : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
+  {
+  public:
+    // these functions are required for all modules
+    @ModuleName@();
+    virtual void execute();
+    virtual void setStateDefaults();
+    
+    //name the ports and datatype.
+    INPUT_PORT(0, InputField, Field);
+    OUTPUT_PORT(0, OutputField, Field);
+  
+    // this is needed for the module factory
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
+}}}
+#endif
+\end{verbatim}
+
+
+List of port tags that can be used in SCIRun:
+\begin{itemize}
+\item MatrixPortTag 
+\item ScalarPortTag
+\item StringPortTag
+\item FieldPortTag
+\item GeometryPortTag
+\item ColorMapPortTag
+\item BundlePortTag
+\item NrrdPortTag
+\item DatatypePortTag
+\end{itemize}
+
+\subsection{Module Code File}
+
+\begin{verbatim}
+#include <Modules/Fields/@ModuleName@.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Field/@ModuleName@Algo.h>
+
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+// this defines the location of the module in the module list.  
+// "NewField" is the catagory and "SCIRun" is the package.
+const ModuleLookupInfo @ModuleName@::staticInfo_("@ModuleName@", 
+          "NewField", "SCIRun");
+
+@ModuleName@::@ModuleName@() : Module(staticInfo_)
+{
+  //initialize all ports.
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+}
+
+void @ModuleName@::setStateDefaults()
+{
+  auto state = get_state();
+  setStateBoolFromAlgo(Parameters::Knob1);
+  setStateDoubleFromAlgo(Parameters::Knob2);
+}
+
+void @ModuleName@::execute()
+{
+  // get input from ports
+  auto field = getRequiredInput(InputField);
+  // get parameters from UI
+  setAlgoBoolFromState(Parameters::Knob1);
+  setAlgoDoubleFromState(Parameters::Knob2);
+  // run algorithm code.  
+  auto output = algo().run(withInputData((InputField, field)));
+  //send to output port
+  sendOutputFromAlgorithm(OutputField, output);
+}
+\end{verbatim}
+
+
+\section{Algorithm Code}
+\label{sec:algo}
+
+
+\section{Module UI Code}
+\label{sec:ui}
+
+\chapter{Example: Simple Module Without UI}
+
+\begin{introduction}
+This chapter describes how to create a very simple module in SCIRun.  
+We will show how to make a simple module that outputs a simple string.  
+This example will show the basics of the functions and code used by SCIRun to create and run modules.
+
+%Scope: \hyperref[sec:test_config]{Module Config File} - \hyperref[sec:test_header]{Module Header File} - \hyperref[sec:test_source]{Module Source Code}
+\end{introduction}
+
+If you have created a fork from the SCIRun git repository, begin by creating a new branch in your repository.  
+Be sure to commit your changes to your repository often, as this can help you and the developers fix and make improvements to the code.
+It is often easiest to modify existing code to fit your purposes than create new code, so determine a module that has similar functionality or structure to the new module.  
+If desired, there is also the template files described in Chapter~\ref{sec:files} to use as a basis.  
+In this example, we will provide the code needed, so it is not necessary to copy another module.  
+
+%TODO maybe make a branch with examples?
+
+Begin with the module config file.  
+Create a new text file in module factory configuration directory (\emph{src/Modules/Factory/Config/}) for the new module.  
+I should be named \emph{TestModuleSimple.module} or something similar.  
+The text of the file should be:
+\begin{verbatim}
+{
+  "module": {
+    "name": "TestModuleSimple",
+    "namespace": "StringManip",
+    "status": "new module",
+    "description": "This is a simple module to show how to make new modules.",
+    "header": "Modules/String/TestModuleSimple.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}
+\end{verbatim}
+The exact text of the status and description can be whatever the creator desires. 
+The names of the module and filenames can also be different, but they must match the module code.  
+
+
+Now we move to the module code.
+The module will need to be placed in one of the directories in \emph{src/Modules/}, so choose the directory that fits the modules use the best (do not place the module code in \emph{Factory} or \emph{Template}, and \emph{Legacy} is generally for converted modules from earlier versions of SCIRun)
+Since this module will be only have a string output, we will place the module code in \emph{src/Modules/String/}.
+In this directory create a file called \emph{TestModuleSimple.h}.  
+This file will be very similar to the \emph{ModuleTemplate.h} file shown earlier.
+In addition to the SCIRun license information, the content of the header file should be:
+\begin{verbatim}
+#ifndef MODULES_STRING_TestModuleSimple_H
+#define MODULES_STRING_TestModuleSimple_H
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/Fields/share.h>
+
+namespace SCIRun {
+namespace Modules {
+namespace StringManip {
+
+class SCISHARE TestModuleSimple : public SCIRun::Dataflow::Networks::Module,
+public HasNoInputPorts,
+public Has1OutputPort<StringPortTag>
+{
+public:
+  TestModuleSimple();
+  virtual void execute();
+  virtual void setStateDefaults() {};
+  
+  OUTPUT_PORT(0, OutputString, String);
+  
+  static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+};
+}}}
+#endif
+\end{verbatim}
+As mentioned in Section~\ref{sec:config}, the header files for most modules do not vary significantly.  
+This example in particular contains only elements common to most other modules.
+The key to creating the header files is to ensure that the module name is correct in every place it occurs, that the namespace (StringManip) matches the module config file and that the ports are numbered and labeled correctly.  
+
+The final file needed for this module is the source code file (\emph{ModuleTemplate.cc}).
+The functionality used in this module is minimal to show how the essential functions.  
+With the license and other comments, the file should contain:
+\begin{verbatim}
+#include <Modules/String/TestModuleSimple.h>
+#include <Core/Datatypes/String.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+
+/// @class TestModuleSimple
+/// @brief This module splits out a string. 
+
+const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple", 
+       "String", "SCIRun");
+
+TestModuleSimple::TestModuleSimple() : Module(staticInfo_,false)
+{
+  INITIALIZE_PORT(OutputString);
+}
+
+void
+TestModuleSimple::execute()
+{  
+  std::string message_string;
+  
+  message_string = "[Personalize your  message here.]";
+  
+  StringHandle msH(new String(message_string));
+  sendOutput(OutputString, msH);
+}
+\end{verbatim}
+
+
+After these files are modified correctly,  the only step remaining before building is adding the module code and header to the compiler list.  
+Open the \emph{src/Modules/String/CMakeLists.txt} file.  
+Add \emph{TestModuleSimple.cc} and \emph{TestModuleSimple.h} to the respective list.
+There will more to the file, but the relevant sections should look something like this:
+\begin{verbatim}
+SET(Modules_String_SRCS
+  CreateString.cc
+  NetworkNotes.cc
+  TestModuleSimple.cc
+)
+
+SET(Modules_String_HEADERS
+  CreateString.h
+  NetworkNotes.h
+  share.h
+  TestModuleSimple.h
+)
+\end{verbatim}
+
+
+
+\chapter{Example: Simple Module With UI}
+
+\begin{introduction}
+This example will build off of the previous example.  In this chapter we will show how to add an input port and a UI to an existing module.
+%Scope: \hyperref[readdata]{Read Data File} - \hyperref[slice]{Slice} -
+%\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
+\end{introduction}
+
+
+
+
+\chapter{Example: Simple Module With Algorithm}
+
+\begin{introduction}
+%Scope: \hyperref[readdata]{Read Data File} - \hyperref[slice]{Slice} -
+%\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
+\end{introduction}
+
+
+%TODO
+
+\chapter{Converting Modules from SCIRun 4}
+
+\begin{introduction}
+%Scope: \hyperref[readdata]{Read Data File} - \hyperref[slice]{Slice} -
+%\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
+\end{introduction}
+
+\chapter{Creating Unit Tests}
+
+\begin{introduction}
+%Scope: \hyperref[readdata]{Read Data File} - \hyperref[slice]{Slice} -
+%\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
+\end{introduction}
+
+\chapter{Documenting the New Module}
+
+\begin{introduction}
+%Scope: \hyperref[readdata]{Read Data File} - \hyperref[slice]{Slice} -
+%\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
+\end{introduction}
+
+
+
+
+%\begin{figure}[H]
+%\scalebox{0.3}{\includegraphics{BasicTutorial_figures/readfield.png}}
+%\caption{Locate ReadField module.}
+%\label{fig:readfield}
+%\end{figure}
+
+
+\end{document}
