@@ -3,7 +3,7 @@
     "name": "TestModuleSimple",
     "namespace": "StringManip",
     "status": "new module",
-    "description": "This is a simple module to show how to make new modules.",
+    "description": "This is a simple module the returns a message.",
     "header": "Modules/String/TestModuleSimple.h"
   },
   "algorithm": {
