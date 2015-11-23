@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/ReportMatrixInfo.h
+/// @todo Documentation Modules/Math/ReportMatrixSliceMeasure.h
 
 #ifndef MODULES_MATH_REPORTMATRIXSLICEMEASURE_H
 #define MODULES_MATH_REPORTMATRIXSLICEMEASURE_H
@@ -39,14 +39,16 @@ namespace Math {
   
   class SCISHARE ReportMatrixSliceMeasure : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPorts<MatrixPortTag>
+    public Has1OutputPort<MatrixPortTag>
   {
   public:
     ReportMatrixSliceMeasure();
     virtual void execute();
     virtual void setStateDefaults();
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    
     INPUT_PORT(0, InputMatrix, Matrix);
-    OUTPUT_PORT(0, OuputMatrix, Matrix);
+    OUTPUT_PORT(0, OutputMatrix, Matrix);
   };
 }}}
 

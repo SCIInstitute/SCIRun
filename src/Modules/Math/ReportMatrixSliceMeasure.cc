@@ -26,25 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Math/ReportMatrixSliceMeasure.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/Math/ReportMatrixSliceMeasureAlgo.h>
+//#include <Core/Algorithms/Math/ReportMatrixSliceMeasureAlgo.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
 /// @class ReportMatrixSliceMeasure
 /// @brief This module computes a measure on each row of the input matrix and
 /// stores the result in the output matrix. 
 
-ReportMatrixSliceMeasure::ReportMatrixSliceMeasure() : Module(ModuleLookupInfo("ReportMatrixSliceMeasure", "Math", "SCIRun"))
+const ModuleLookupInfo ReportMatrixSliceMeasure::staticInfo_("ReportMatrixSliceMeasure", "Math", "SCIRun");
+
+ReportMatrixSliceMeasure::ReportMatrixSliceMeasure() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(OutputMatrix);
 }
 
-void GetMatrixSlice::setStateDefaults()
+void ReportMatrixSliceMeasure::setStateDefaults()
 {
 }
 
