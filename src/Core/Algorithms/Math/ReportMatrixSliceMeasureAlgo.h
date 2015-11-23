@@ -27,8 +27,8 @@
 */
 
 
-#ifndef CORE_ALGORITHMS_MATH_MATHALGO_H
-#define CORE_ALGORITHMS_MATH_MATHALGO_H 1
+#ifndef CORE_ALGORITHMS_MATH_REPORTMATRIXSLICEMEASUREALGO_H
+#define CORE_ALGORITHMS_MATH_REPORTMATRIXSLICEMEASUREALGO_H
 
 #include <Core/Algorithms/Util/AlgoLibrary.h>
 
@@ -43,7 +43,7 @@
 #include <vector>
 #include <algorithm>
 
-
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRunAlgo {

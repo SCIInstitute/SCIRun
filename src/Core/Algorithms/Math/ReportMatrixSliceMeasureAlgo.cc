@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Math/MathAlgo.h>
+#include <Core/Algorithms/Math/ReportMatrixSliceMeasureAlgo.h>
 #include <Core/Datatypes/MatrixOperations.h>
 #include <Core/Datatypes/MatrixTypeConverter.h>
 
