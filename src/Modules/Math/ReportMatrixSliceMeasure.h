@@ -27,8 +27,8 @@
 */
 /// @todo Documentation Modules/Math/ReportMatrixInfo.h
 
-#ifndef MODULES_MATH_REPORTMATRIXINFO_H
-#define MODULES_MATH_REPORTMATRIXINFO_H
+#ifndef MODULES_MATH_REPORTMATRIXSLICEMEASURE_H
+#define MODULES_MATH_REPORTMATRIXSLICEMEASURE_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Math/share.h>
@@ -37,18 +37,16 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
   
-  class SCISHARE ReportMatrixInfoModule : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE ReportMatrixSliceMeasure : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
-    public Has3OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag>
+    public Has1OutputPorts<MatrixPortTag>
   {
   public:
-    ReportMatrixInfoModule();
+    ReportMatrixSliceMeasure();
     virtual void execute();
-    virtual void setStateDefaults() {}
+    virtual void setStateDefaults();
     INPUT_PORT(0, InputMatrix, Matrix);
-    OUTPUT_PORT(0, NumRows, Int32);
-    OUTPUT_PORT(1, NumCols, Int32);
-    OUTPUT_PORT(2, NumElements, Int32);
+    OUTPUT_PORT(0, OuputMatrix, Matrix);
   };
 }}}
 

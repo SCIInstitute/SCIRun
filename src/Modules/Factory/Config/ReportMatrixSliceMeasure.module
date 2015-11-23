@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReportMatrixSliceMeasure",
+    "namespace": "Math",
+    "status": "combination of ReportMatrixColumnMeasure and ReportMatrixRowMeasure.",
+    "description": "Computes the statistics of each row or column of a matrix.",
+    "header": "Modules/Math/ReportMatrixSliceMeasure.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

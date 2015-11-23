@@ -27,51 +27,50 @@
 */
 
 #include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/Math/MathAlgo.h>
+#include <Core/Algorithms/Math/ReportMatrixSliceMeasureAlgo.h>
 
-namespace SCIRun {
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-/// @class ReportMatrixRowMeasure
+/// @class ReportMatrixSliceMeasure
 /// @brief This module computes a measure on each row of the input matrix and
 /// stores the result in the output matrix. 
 
-class ReportMatrixRowMeasure : public Module {
-public:
-  ReportMatrixRowMeasure(GuiContext*);
-  virtual void execute();
+ReportMatrixSliceMeasure::ReportMatrixSliceMeasure() : Module(ModuleLookupInfo("ReportMatrixSliceMeasure", "Math", "SCIRun"))
+{
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(OutputMatrix);
+}
 
-private:
-  GuiString guimethod_;  
-};
-
-
-DECLARE_MAKER(ReportMatrixRowMeasure)
-ReportMatrixRowMeasure::ReportMatrixRowMeasure(GuiContext* ctx)
-  : Module("ReportMatrixRowMeasure", ctx, Source, "Math", "SCIRun"),
-    guimethod_(ctx->subVar("method"))
+void GetMatrixSlice::setStateDefaults()
 {
 }
 
 void
-ReportMatrixRowMeasure::execute()
+ReportMatrixSliceMeasure::execute()
 {
   MatrixHandle input, output;
   
-  if (!(get_input_handle("Matrix",input,true))) return;
-
-  if (inputs_changed_ || guimethod_.changed() || !oport_cached("Vector"))
+  if (needToExecute())
   {
+    
+    auto input = getRequiredInput(InputMatrix);
+    
+    /*
     SCIRunAlgo::MathAlgo algo(this);
     
     std::string method = guimethod_.get();
     if (!(algo.ApplyRowOperation(input,output,method))) return;
+    */
     
-    send_output_handle("Vector", output);
+    MatrixHandle output=input;
+    
+    sendOutput(OutputMatrix, output);
+  
   }
 }
 
-} // End namespace SCIRun
 
 
