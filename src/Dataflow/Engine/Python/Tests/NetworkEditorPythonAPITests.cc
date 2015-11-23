@@ -29,7 +29,6 @@
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Dataflow/Network/ConnectionId.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
@@ -145,4 +144,100 @@ TEST_F(PythonControllerFunctionalTests, DISABLED_CanExecuteNetwork)
  // boost::this_thread::sleep(boost::posix_time::milliseconds(500));
   ASSERT_TRUE(controller.getNetwork()->module(0)->executionState().currentState() == ModuleExecutionState::Completed);
   //TODO: how do i assert on
+}
+
+TEST_F(PythonControllerFunctionalTests, CanAddModuleWithStaticFunction)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_EQ(0, controller.getNetwork()->nmodules());
+
+  std::string command = "scirun_add_module(\"CreateLatVol\")";
+  PythonInterpreter::Instance().run_string(command);
+  //TODO: expose API directly on NEC?
+  //controller.runPython("addModule(\"CreateLatVol\")");
+
+  ASSERT_EQ(1, controller.getNetwork()->nmodules());
+}
+
+TEST_F(PythonControllerFunctionalTests, CanAddMultipleModulesWithStaticFunction)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_EQ(0, controller.getNetwork()->nmodules());
+
+  std::string command = "scirun_add_module(\"CreateLatVol\")";
+  PythonInterpreter::Instance().run_string(command);
+  PythonInterpreter::Instance().run_string(command);
+
+  ASSERT_EQ(2, controller.getNetwork()->nmodules());
+}
+
+TEST_F(PythonControllerFunctionalTests, CanChangeModuleStateWithStaticFunction)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  NetworkEditorController controller(mf, sf, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_EQ(0, controller.getNetwork()->nmodules());
+
+  std::string command = "m = scirun_add_module(\"CreateLatVol\")";
+  PythonInterpreter::Instance().run_string(command);
+
+  ASSERT_EQ(1, controller.getNetwork()->nmodules());
+  auto mod = controller.getNetwork()->module(0);
+  ASSERT_TRUE(mod != nullptr);
+  EXPECT_EQ(16, mod->get_state()->getValue(CreateLatVol::XSize).toInt());
+  command = "m.XSize = 14";
+  PythonInterpreter::Instance().run_string(command);
+  EXPECT_EQ(14, mod->get_state()->getValue(CreateLatVol::XSize).toInt());
+  FAIL() << "todo";
+}
+
+TEST_F(PythonControllerFunctionalTests, CanConnectModulesWithStaticFunction)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_EQ(0, controller.getNetwork()->nmodules());
+
+  PythonInterpreter::Instance().run_string("m1 = scirun_add_module(\"CreateLatVol\")");
+  PythonInterpreter::Instance().run_string("m2 = scirun_add_module(\"CreateLatVol\")");
+
+  ASSERT_EQ(2, controller.getNetwork()->nmodules());
+
+  ASSERT_EQ(0, controller.getNetwork()->nconnections());
+
+  PythonInterpreter::Instance().run_string("scirun_connect_modules(m1, 0, m2, 0)");
+  ASSERT_EQ(1, controller.getNetwork()->nconnections());
+}
+
+TEST_F(PythonControllerFunctionalTests, CanDisconnectModulesWithStaticFunction)
+{
+
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_EQ(0, controller.getNetwork()->nmodules());
+
+  PythonInterpreter::Instance().run_string("m1 = scirun_add_module(\"CreateLatVol\")");
+  PythonInterpreter::Instance().run_string("m2 = scirun_add_module(\"CreateLatVol\")");
+
+  ASSERT_EQ(2, controller.getNetwork()->nmodules());
+
+  ASSERT_EQ(0, controller.getNetwork()->nconnections());
+
+  PythonInterpreter::Instance().run_string("c = scirun_connect_modules(m1, 0, m2, 0)");
+  ASSERT_EQ(1, controller.getNetwork()->nconnections());
+
+  PythonInterpreter::Instance().run_string("scirun_disconnect_modules(m1, 0, m2, 0)");
+
+  ASSERT_EQ(0, controller.getNetwork()->nconnections());
 }

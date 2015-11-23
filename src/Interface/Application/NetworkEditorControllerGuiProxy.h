@@ -30,9 +30,9 @@
 #define INTERFACE_APPLICATION_NETWORKEDITORCONTROLLERGUIPROXY_H
 
 #include <QObject>
-#include <vector>
-#include <boost/atomic.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <boost/optional/optional.hpp>
 
 namespace SCIRun {
   namespace Dataflow { namespace Engine { class NetworkEditorController; struct DisableDynamicPortSwitch; struct ModuleCounter; }}
@@ -48,7 +48,7 @@ namespace Gui {
     void addModule(const std::string& moduleName);
     void removeModule(const SCIRun::Dataflow::Networks::ModuleId& id);
     void interrupt(const SCIRun::Dataflow::Networks::ModuleId& id);
-    void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
+    boost::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);

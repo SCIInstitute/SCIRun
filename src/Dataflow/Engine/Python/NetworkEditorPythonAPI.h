@@ -47,6 +47,7 @@ namespace SCIRun {
     static std::vector<boost::shared_ptr<PyModule>> modules();
     static std::string removeModule(const std::string& id);
     static std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
+    static std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
 
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);

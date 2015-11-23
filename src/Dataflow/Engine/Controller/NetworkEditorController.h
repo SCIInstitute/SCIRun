@@ -104,7 +104,7 @@ namespace Engine {
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     void connectNewModule(const Networks::ModuleHandle& moduleToConnectTo, const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
 
-    void requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to);
+    boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to);
     void removeConnection(const Networks::ConnectionId& id);
 
     void executeAll(const Networks::ExecutableLookup* lookup);

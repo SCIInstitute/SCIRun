@@ -128,6 +128,16 @@ std::string NetworkEditorPythonAPI::connect(const std::string& moduleIdFrom, int
   }
 }
 
+std::string NetworkEditorPythonAPI::disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
+{
+  if (impl_)
+    return impl_->disconnect(moduleIdFrom, fromIndex, moduleIdTo, toIndex);
+  else
+  {
+    return "Null implementation or execution context: NetworkEditorPythonAPI::disconnect()";
+  }
+}
+
 std::string NetworkEditorPythonAPI::saveNetwork(const std::string& filename)
 {
   if (impl_)
@@ -183,5 +193,5 @@ std::string SimplePythonAPI::scirun_connect_modules(const std::string& modIdFrom
 
 std::string SimplePythonAPI::scirun_disconnect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex)
 {
-  return "TODO";
+  return NetworkEditorPythonAPI::disconnect(modIdFrom, fromIndex, modIdTo, toIndex);
 }

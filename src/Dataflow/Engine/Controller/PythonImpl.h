@@ -43,20 +43,22 @@ namespace Dataflow {
 namespace Engine {
 
   class NetworkEditorController;
+  class PythonImplImpl;
 
-  class PythonImpl : public NetworkEditorPythonInterface, boost::noncopyable
+  class SCISHARE PythonImpl : public NetworkEditorPythonInterface, boost::noncopyable
   {
   public:
     PythonImpl(NetworkEditorController& nec, Core::Commands::GlobalCommandFactoryHandle cmdFactory);
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name) override;
     virtual std::string removeModule(const std::string& id) override;
     virtual std::string executeAll(const Networks::ExecutableLookup* lookup) override;
-    virtual std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) override;
-    virtual std::string disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) override;
+    virtual std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
+    virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     virtual std::string saveNetwork(const std::string& filename) override;
     virtual std::string loadNetwork(const std::string& filename) override;
     virtual std::string quit(bool force) override;
   private:
+    boost::shared_ptr<PythonImplImpl> impl_;
     NetworkEditorController& nec_;
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
   };
