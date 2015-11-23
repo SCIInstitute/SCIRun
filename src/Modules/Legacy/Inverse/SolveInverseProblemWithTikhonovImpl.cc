@@ -267,7 +267,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         else if ( regularizationSolutionSubcase_==solution_constrained_squared )
         {
             // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
-            if ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() )
+            if ( ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() ) )
             {
                 BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !"));
             }
@@ -305,7 +305,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
           else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
           {
               // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
-              if(M != sensorWeighting_->nrows()) && (M != sensorWeighting_->ncols())
+              if( (M != sensorWeighting_->nrows()) && (M != sensorWeighting_->ncols()) )
               {
                   BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !"));
               }
@@ -379,10 +379,10 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
                             
             }
             // otherwise, if the source regularization is provided as the squared version (RR^T)
-            else if ( regularizationSolutionSubcase_==solution_constrained_squared )
+            else if ( ( regularizationSolutionSubcase_==solution_constrained_squared ) )
             {
                 // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
-                if ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() )
+                if ( ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() ) )
                 {
                     BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !"));
                 }
@@ -417,7 +417,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
             else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
             {
                 // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
-                if(M != sensorWeighting_->nrows()) && (M != sensorWeighting_->ncols())
+                if ( (M != sensorWeighting_->nrows()) && (M != sensorWeighting_->ncols()) )
                 {
                     BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !"));
                 }
@@ -429,8 +429,8 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         }
         
         // DEFINE  M1 = (A * (R*R^T)^-1 * A^T MATRIX FOR FASTER COMPUTATION
-        auto CtrCA = CtrC * forwardMatrix_;
-        M1 = *forward_transpose * CtrCAtr;
+        auto CtrCA = CtrC * (*forwardMatrix_);
+        M1 = *forward_transpose * CtrCA;
         
         // DEFINE M2 = (CC^T)^-1
         M2 = RtrR;
@@ -489,7 +489,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
 
 ///////////////////////////
 /////// compute L-curve
-double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input &input, DenseMatrix &M1, DenseMatrixv &M2, DenseMatrix &M3, DenseMatrix &M4, DenseColumnMatrix &y, DenseMatrix &R)
+double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input &input, DenseMatrix &M1, DenseMatrixv &M2, DenseMatrix &M3, DenseMatrix &M4, DenseColumnMatrix &y )
 {
     
     // define the step size of the lambda vector to be computed  (distance between min and max divided by number of desired lambdas in log scale)
@@ -497,13 +497,15 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input 
     const double lam_step = pow(10.0, log10(input.lambdaMax_ / input.lambdaMin_) / (nLambda-1));
     const int nLambda = input.lambdaCount_;
     
+    double lambda_sq;
+    
     // prealocate vector of lambdas and eta and rho
     std::vector<double> lambdaArray(nLambda, 0.0);
     std::vector<double> rho(nLambda, 0.0);
     std::vector<double> eta(nLambda, 0.0);
     
     DenseColumnMatrix CAx, Rx;
-    DenseColumnMatrix solution(N);
+    DenseColumnMatrix solution;
     
     
     // initialize counter
@@ -526,8 +528,8 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input 
         // if using source regularization matrix, apply it to compute Rx (for the eta computations)
         if (sourceWeighting_)
         {
-            if (solution.nrows() == sourceWeighting->ncols()) // check that regularization matrix and solution match sizes
-                Rx = sourceWeighting * solution;
+            if (solution.nrows() == sourceWeighting_->ncols()) // check that regularization matrix and solution match sizes
+                Rx = *sourceWeighting_ * solution;
             else
             {
                 const std::string errorMessage(" Solution weighting matrix unexpectedly does not fit to compute the weighted solution norm. ");
@@ -541,7 +543,7 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input 
             Rx = solution;
         
         
-        Ax = forwardMatrixRef  * solution;
+        Ax = forwardMatrix_  * solution;
         residualSolution = Ax - *measuredData_;
         
         // if using source regularization matrix, apply it to compute Rx (for the eta computations)
