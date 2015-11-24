@@ -30,11 +30,8 @@
 #ifndef CORE_ALGORITHMS_MATH_REPORTMATRIXSLICEMEASUREALGO_H
 #define CORE_ALGORITHMS_MATH_REPORTMATRIXSLICEMEASUREALGO_H
 
-#include <Core/Algorithms/Util/AlgoLibrary.h>
-
-#include <Core/Datatypes/Bundle.h>
+//#include <Core/Algorithms/Util/AlgoLibrary.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 
@@ -43,33 +40,30 @@
 #include <vector>
 #include <algorithm>
 
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/share.h>
 
-namespace SCIRunAlgo {
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Math {
 
-using namespace SCIRun;
+//class SparseElement;
+//typedef std::vector<SparseElement> SparseElementVector;
 
-class SparseElement; 
-typedef std::vector<SparseElement> SparseElementVector;
-
-class SCISHARE MathAlgo : public AlgoLibrary {
+class SCISHARE ReportMatrixSliceMeasureAlgo : public AlgorithmBase
+{
 
   public:
-    MathAlgo(ProgressReporter* pr); // normal case
-    // Resize a matrix, Dense or Sparse
-    bool ResizeMatrix(MatrixHandle input, MatrixHandle& output, size_type m, size_type n);
-    
-    // Build a sparse matrix based on coordinates of elements
-    bool CreateSparseMatrix(SparseElementVector& input, MatrixHandle& output, size_type m, size_type n);
+    ReportMatrixSliceMeasureAlgo();
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
     // Apply an operation on a row by row basis
-    bool ApplyRowOperation(MatrixHandle input, MatrixHandle& output, std::string operation); 
+    bool ApplyRowOperation(Datatypes::MatrixHandle input, Datatypes::MatrixHandle& output, int operation);
 
     // Apply an operation on a column by column basis
-    bool ApplyColumnOperation(MatrixHandle input, MatrixHandle& output, std::string operation); 
-    
-    bool IdentityMatrix(size_type n,MatrixHandle& output); 
+    bool ApplyColumnOperation(Datatypes::MatrixHandle input, Datatypes::MatrixHandle& output, int operation);
 
 };
 
@@ -78,7 +72,7 @@ class SCISHARE MathAlgo : public AlgoLibrary {
 
 
 // helper classes
-
+/*
 class SparseElement {
 public:
   index_type     row;
@@ -98,7 +92,7 @@ inline bool operator<(const SparseElement& s1, const SparseElement& s2)
   if (s1.row == s2.row) if (s1.col < s2.col) return(true);
   return (false);
 }
+*/
 
-
-} // end SCIRun namespace
+      }}}}// end SCIRun namespace
 #endif

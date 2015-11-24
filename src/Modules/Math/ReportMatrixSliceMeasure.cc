@@ -29,11 +29,11 @@
 #include <Modules/Math/ReportMatrixSliceMeasure.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
-//#include <Core/Algorithms/Math/ReportMatrixSliceMeasureAlgo.h>
+#include <Core/Algorithms/Math/ReportMatrixSliceMeasureAlgo.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
 /// @class ReportMatrixSliceMeasure
@@ -50,28 +50,28 @@ ReportMatrixSliceMeasure::ReportMatrixSliceMeasure() : Module(staticInfo_)
 
 void ReportMatrixSliceMeasure::setStateDefaults()
 {
+  setStateIntFromAlgo(Variables::Operator);
+  setStateIntFromAlgo(Variables::Method);
 }
 
 void
 ReportMatrixSliceMeasure::execute()
 {
   MatrixHandle input, output;
+  auto input = getRequiredInput(InputMatrix);
   
   if (needToExecute())
   {
     
-    auto input = getRequiredInput(InputMatrix);
+    setAlgoIntFromState(Variables::Operator);
+    setAlgoIntFromState(Variables::Method);
     
-    /*
-    SCIRunAlgo::MathAlgo algo(this);
+    auto output = algo().run_generic(withInputData((InputMatrix, input)));
+    sendOutputFromAlgorithm(OutputMatrix, output);
     
-    std::string method = guimethod_.get();
-    if (!(algo.ApplyRowOperation(input,output,method))) return;
-    */
+    //MatrixHandle output=input;
     
-    MatrixHandle output=input;
-    
-    sendOutput(OutputMatrix, output);
+    //sendOutput(OutputMatrix, output);
   
   }
 }

@@ -27,241 +27,79 @@
 */
 
 #include <Core/Algorithms/Math/ReportMatrixSliceMeasureAlgo.h>
-#include <Core/Datatypes/MatrixOperations.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+
 
 #include <sstream>
 
-namespace SCIRunAlgo {
-
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
 
-MathAlgo::MathAlgo(ProgressReporter* pr) :
-  AlgoLibrary(pr)
+ReportMatrixSliceMeasureAlgo::ReportMatrixSliceMeasureAlgo()
 {
-}
-
-bool
-MathAlgo::ResizeMatrix(MatrixHandle input, MatrixHandle& output, 
-                       size_type m, size_type n)
-{ 
-  if (input.get_rep() == 0)
-  {
-    error("ResizeMatrix: No input matrix was given");
-    return (false);
-  }
-  
-  SparseRowMatrix* sparse = matrix_cast::as_sparse(input);
-  if (sparse)
-  {
-    double* val = sparse->get_vals();
-    index_type* row = sparse->get_rows();
-    index_type* col = sparse->get_cols();
-    size_type   sm = input->nrows();
- 
-    size_type newnnz=0;
-    for (index_type p=1; p<(m+1); p++)
-    {
-      if (p <= sm)
-      {
-        for (index_type q = row[p-1]; q < row[p]; q++)
-        {
-          if (col[q] < n) newnnz++;
-        }
-      }
-    }
- 
-    SparseRowMatrix::Data outputData(m+1, newnnz);
-    const SparseRowMatrix::Rows& newrow = outputData.rows();
-    const SparseRowMatrix::Columns& newcol = outputData.columns();
-    const SparseRowMatrix::Storage& newval = outputData.data();
-        
-    if (!outputData.allocated())
-    {
-      error("ResizeMatrix: Could not allocate output matrix");
-      return (false);
-    }
-    
-    index_type k = 0;
-    newrow[0] = 0;
-    
-    for (index_type p=1; p<(m+1); p++)
-    {
-      if (p <= sm)
-      {
-        for (index_type q = row[p-1]; q < row[p]; q++)
-        {
-          if (col[q] < n) 
-          {
-            newval[k] = val[q];
-            newcol[k] = col[q];
-            k++;
-          }        
-        }
-      }
-      newrow[p] = k;
-    }
-    
-    output = new SparseRowMatrix(m, n, outputData, newnnz);
-    if (output.get_rep() == 0)
-    {
-      error("ResizeMatrix: Could not allocate output matrix");
-      return false;    
-    }
-    return true;
-  }
-  else
-  {
-    MatrixHandle mat = input->dense();
-    output = new DenseMatrix(m,n);
-    if (output.get_rep() == 0)
-    {
-      error("ResizeMatrix: Could not allocate output matrix");
-      return false;
-    }
-  
-    size_type sm = input->nrows();
-    size_type sn = input->ncols();
-    
-    double *src = input->get_data_pointer();
-    double *dst = output->get_data_pointer();
-    
-    index_type p,q;
-    for (p=0;(p<m)&&(p<sm);p++)
-    {
-      for (q=0;(q<n)&&(q<sn);q++)
-      {
-        dst[q+p*n] = src[q+p*sn];
-      }
-      for (;q<n;q++) dst[q+p*n] = 0.0;
-    }
-    for (;p<m;p++)
-      for (q=0;q<n;q++) dst[q+p*n]= 0.0;
-   
-    return true;
-  }
-  
-  return false;
-}
-
-bool 
-MathAlgo::IdentityMatrix(size_type n,MatrixHandle& output)
-{
-  SparseRowMatrix::Data outputData(n+1, n);
-  const SparseRowMatrix::Rows& rows = outputData.rows();
-  const SparseRowMatrix::Columns& cols = outputData.columns();
-  const SparseRowMatrix::Storage& vals = outputData.data();
-  
-  if (!outputData.allocated())
-  {
-    error("IdentityMatrix: Could not allocate output matrix");
-    return (false);  
-  }
-
-  for (index_type r=0; r<n+1; r++)
-  {
-    rows[r] = r;
-  }
-  
-  for (index_type c=0; c<n; c++) 
-  {
-    cols[c] = c;
-    vals[c] = 1.0;
-  }
-  
-  output = new SparseRowMatrix(n, n, outputData, n);
-  if (output.get_rep()) 
-    return true;
-
-  error("IdentityMatrix: Could not allocate output matrix");  
-  return (false);  
+  addParameter(Variables::Operator , 0);
+  addParameter(Variables::Method, 0);
 }
 
 
-
-bool
-MathAlgo::CreateSparseMatrix(SparseElementVector& input,
-                             MatrixHandle& output, 
-                             size_type m, size_type n)
+AlgorithmOutput ReportMatrixSliceMeasureAlgo::run_generic(const AlgorithmInput& input) const
 {
-  std::sort(input.begin(),input.end());
   
-  size_type nnz = 1;
-  size_t q = 0;
-  for (size_t p=1; p < input.size(); p++)
+  auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
+  
+  MatrixHandle return_matrix;
+  
+  auto op = get(Variables::Operator).toInt();
+  auto method = get(Variables::Method).toInt();
+  
+  switch (op)
   {
-    if (input[p] == input[q])
-    {
-      input[q].val += input[p].val; 
-	  input[p].val = 0.0;
-    }
-    else
-    {
-      nnz++;
-      q = p;
-    }
+    case 0:
+      ApplyRowOperation(input_matrix,return_matrix, method);
+      break;
+    case 1:
+      ApplyColumnOperation(input_matrix,return_matrix, method);
+      break;
   }
   
-  SparseRowMatrix::Data outputData(m+1, nnz);
-  const SparseRowMatrix::Rows& rows = outputData.rows();
-  const SparseRowMatrix::Columns& cols = outputData.columns();
-  const SparseRowMatrix::Storage& vals = outputData.data();
+  AlgorithmOutput output;
+  output[Variables::OutputMatrix] = return_matrix;
+  return output;
   
-  if (!outputData.allocated())
-  {
-    error("CreateSparseMatrix: Could not allocate memory for matrix");
-    return false;
-  }
-  
-  rows[0] = 0;
-  q = 0;
-  
-  index_type k = 0;
-  for (index_type p=0; p < m; p++)
-  {
-    while ((q < input.size()) && (input[q].row == p)) 
-    { 
-      if (input[q].val)
-      {
-        cols[k] = input[q].col; 
-        vals[k] = input[q].val;
-        k++; 
-      }
-      q++; 
-    }
-    rows[p+1] = k;
-  }   
-  
-  output = new SparseRowMatrix(m,n,outputData,nnz);
-  if (output.get_rep()) return true;
-  
-  return false;
 }
 
 
 bool
-MathAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle& output,
-                            std::string method)
+ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle& output,int method)
 {
-  if (input.get_rep() == 0)
+  
+  if (input)
   {
     error("ApplyRowOperation: no input matrix found");
     return false;
   }
   
+  
+  
   size_type nrows = input->nrows();
   size_type ncols = input->ncols();
   
   output = new DenseMatrix(nrows, 1);
-  if (output.get_rep() == 0)
+  auto omat = matrix_cast::as_dense ( output)
+  
+  double *dest = omat->data();
+  
+  for (index_type q=0; q<nrows; q++) dest[q] = 0.0;
+  
+  if (output)
   {
     error("ApplyRowOperation: could not create output matrix");
     return false;  
   }
 
-  double *dest = output->get_data_pointer();
-  for (index_type q=0; q<nrows; q++) dest[q] = 0.0;
-
+  
+/*
   if (matrix_is::sparse(input))
   {
     index_type *rows = input->sparse()->get_rows();
@@ -370,14 +208,23 @@ MathAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle& output,
       error ("ApplyRowOperation: This method has not yet been implemented");
       return false;
     }
+  }*/
+  
+  if (!matrix_is::dense(input))
+  {
+    //TODO implement something with sparse
+    error("Currently only works with dense matrices");
+    return;
   }
   else
   {
-    DenseMatrix* mat = input->dense();
+    auto mat  = matrix_cast::as_dense (input);
+    double* data = mat ->data()
+    //DenseMatrix* mat = input->dense();
     
-     size_type m = mat->nrows();
-     size_type n = mat->ncols();
-    double* data = mat->get_data_pointer();
+    size_type m = mat->nrows();
+    size_type n = mat->ncols();
+    //double* data = mat->get_data_pointer();
   
     if (method == "Sum")
     {
@@ -474,15 +321,16 @@ MathAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle& output,
     }
   }
   
+  
   return true;
 }
 
 
 bool
-MathAlgo::ApplyColumnOperation(MatrixHandle input, MatrixHandle& output,
-                               std::string method)
+ReportMatrixSliceMeasureAlgo::ApplyColumnOperation(MatrixHandle input, MatrixHandle& output, int method)
 {
-  if (input.get_rep() == 0)
+  
+  if (input)
   {
     error("ApplyRowOperation: no input matrix found");
     return false;
@@ -490,7 +338,6 @@ MathAlgo::ApplyColumnOperation(MatrixHandle input, MatrixHandle& output,
   MatrixHandle t = input->make_transpose();
   if(!(ApplyRowOperation(t,t,method))) return false;
   output = t->make_transpose();
+  
   return true;
 } 
-
-} // end SCIRun namespace

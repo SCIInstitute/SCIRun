@@ -27,16 +27,16 @@
 */
 
 #ifndef INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H
-#define INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H
+#define INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H 1
 
-#include "Interface/Modules/Fields/ui_RegisterWithCorrespondencesDialog.h"
+#include "Interface/Modules/Math/ui_ReportMatrixSliceMeasureDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
 	namespace Gui {
 		class SCISHARE ReportMatrixSliceMeasureDialog : public ModuleDialogGeneric,
-			public Ui::RegisterWithCorrespondencesDialog
+			public Ui::ReportMatrixSliceMeasureDialog
 		{
 			Q_OBJECT
 

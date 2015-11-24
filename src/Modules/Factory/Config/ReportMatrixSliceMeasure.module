@@ -7,9 +7,9 @@
     "header": "Modules/Math/ReportMatrixSliceMeasure.h"
   },
   "algorithm": {
-    "name": "N/A",
-    "namespace": "N/A",
-    "header": "N/A"
+    "name": "ReportMatrixSliceMeasureAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/ReportMatrixSliceMeasureAlgo.h"
   },
   "UI": {
     "name": "ReportMatrixSliceMeasureDialog",
