@@ -37,8 +37,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
 /// @class ReportMatrixSliceMeasure
-/// @brief This module computes a measure on each row of the input matrix and
-/// stores the result in the output matrix. 
+/// @brief This module computes a measure on each row or column of the input matrix
+/// and stores the result in the output matrix.
 
 const ModuleLookupInfo ReportMatrixSliceMeasure::staticInfo_("ReportMatrixSliceMeasure", "Math", "SCIRun");
 
@@ -62,20 +62,12 @@ ReportMatrixSliceMeasure::execute()
   if (needToExecute())
   {
     
-    //std::cout<<"setting parameters"<<std::endl;
     setAlgoIntFromState(Variables::Operator);
     setAlgoIntFromState(Variables::Method);
     
-    //std::cout << "input Size: " << input->nrows() << " x " << input->ncols() << std::endl;
-    
-    //std::cout<<"running algorithm"<<std::endl;
     auto output = algo().run_generic(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(OutputMatrix, output);
     
-    //MatrixHandle output=input;
-    
-    //sendOutput(OutputMatrix, output);
-  
   }
 }
 

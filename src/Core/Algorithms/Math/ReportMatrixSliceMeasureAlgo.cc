@@ -46,7 +46,6 @@ ReportMatrixSliceMeasureAlgo::ReportMatrixSliceMeasureAlgo()
 
 AlgorithmOutput ReportMatrixSliceMeasureAlgo::run_generic(const AlgorithmInput& input) const
 {
-  std::cout<<"running algorithm"<<std::endl;
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
   AlgorithmOutput output;
   
@@ -59,7 +58,6 @@ AlgorithmOutput ReportMatrixSliceMeasureAlgo::run_generic(const AlgorithmInput& 
   }
   auto mat  = matrix_cast::as_dense (input_matrix);
   
-  std::cout << "input Size: " << mat->nrows() << " x " << mat->ncols() << std::endl;
   DenseMatrixHandle return_matrix;
   
   auto op = get(Variables::Operator).toInt();
@@ -84,17 +82,11 @@ AlgorithmOutput ReportMatrixSliceMeasureAlgo::run_generic(const AlgorithmInput& 
 bool
 ReportMatrixSliceMeasureAlgo::ApplyRowOperation(DenseMatrixHandle input, DenseMatrixHandle& output,int method) const
 {
-  
-  std::cout<<"running row algorithm"<<std::endl;
-  
-  std::cout << "row algo input Size: " << input->nrows() << " x " << input->ncols() << std::endl;
   if (!input)
   {
     error("ApplyRowOperation: no input matrix found");
     return false;
   }
-  
-  std::cout<<"passed error check"<<std::endl;
   
   size_type nrows = input->nrows();
   //size_type ncols = input->ncols();
@@ -104,7 +96,6 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(DenseMatrixHandle input, DenseMa
   
   for (index_type q=0; q<nrows; q++) dest[q] = 0.0;
   
-  std::cout << "output Size: " << output->nrows() << " x " << output->ncols() << std::endl;
   DenseMatrixHandle return_matrix;
   
   if (!output)
@@ -114,8 +105,8 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(DenseMatrixHandle input, DenseMa
   }
 
   
-/*
- for sparse matrices
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ //for sparse matrices
   if (matrix_is::sparse(input))
   {
     index_type *rows = input->sparse()->get_rows();
@@ -225,24 +216,14 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(DenseMatrixHandle input, DenseMa
       return false;
     }
   }
-  
-  if (!matrix_is::dense(input))
-  {
-    //TODO implement something with sparse
-    error("Currently only works with dense matrices");
-    return false;
-  }
+  //else
+#endif
  
-  else
-  {
- */
-    //auto mat  = matrix_cast::as_dense (input);
+  
     double* data = input ->data();
     
     size_type m = input->nrows();
     size_type n = input->ncols();
-  
-  std::cout<<"method= "<< method << std::endl;
   
     if (method == 0)
     {
@@ -345,9 +326,6 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(DenseMatrixHandle input, DenseMa
       error("ApplyRowOperation: This method has not yet been implemented");
       return false;    
     }
-  
-  
-  //output=omat;
   
   return true;
 }

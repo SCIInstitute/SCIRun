@@ -67,32 +67,5 @@ class SCISHARE ReportMatrixSliceMeasureAlgo : public AlgorithmBase
 
 };
 
-
-
-
-
-// helper classes
-/*
-class SparseElement {
-public:
-  index_type     row;
-  index_type     col;
-  double  val;
-};
-
-inline bool operator==(const SparseElement& s1,const SparseElement& s2)
-{
-  if ((s1.row == s2.row)&&(s1.col == s2.col)) return (true);
-  return (false);
-}    
-
-inline bool operator<(const SparseElement& s1, const SparseElement& s2)
-{
-  if (s1.row < s2.row) return(true);
-  if (s1.row == s2.row) if (s1.col < s2.col) return(true);
-  return (false);
-}
-*/
-
       }}}}// end SCIRun namespace
 #endif

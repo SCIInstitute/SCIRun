@@ -2,7 +2,7 @@
   "module": {
     "name": "ReportMatrixSliceMeasure",
     "namespace": "Math",
-    "status": "combination of ReportMatrixColumnMeasure and ReportMatrixRowMeasure.",
+    "status": "combination of ReportMatrixColumnMeasure and ReportMatrixRowMeasure. works only on dense matrices.",
     "description": "Computes the statistics of each row or column of a matrix.",
     "header": "Modules/Math/ReportMatrixSliceMeasure.h"
   },
