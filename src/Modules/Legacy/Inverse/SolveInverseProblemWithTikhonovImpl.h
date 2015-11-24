@@ -134,7 +134,7 @@ namespace BioPSE
     SCIRun::Core::Logging::LegacyLoggerInterface* pr_;
       
       
-    void computeInverseSolution( SCIRun::Core::Datatypes::DenseColumnMatrix& solution, SCIRun::Core::Datatypes::DenseMatrix& M1, SCIRun::Core::Datatypes::DenseMatrix& M2, SCIRun::Core::Datatypes::DenseMatrix& M3, SCIRun::Core::Datatypes::DenseMatrix& M4, SCIRun::Core::Datatypes::DenseColumnMatrix& y, double lambda_sq);
+    SCIRun::Core::Datatypes::DenseColumnMatrix computeInverseSolution( SCIRun::Core::Datatypes::DenseMatrix& M1, SCIRun::Core::Datatypes::DenseMatrix& M2, SCIRun::Core::Datatypes::DenseMatrix& M3, SCIRun::Core::Datatypes::DenseMatrix& M4, SCIRun::Core::Datatypes::DenseColumnMatrix& y, double lambda_sq);
       
     double computeLcurve( const TikhonovAlgorithmImpl::Input& input, SCIRun::Core::Datatypes::DenseMatrix& M1, SCIRun::Core::Datatypes::DenseMatrix& M2, SCIRun::Core::Datatypes::DenseMatrix& M3, SCIRun::Core::Datatypes::DenseMatrix& M4, SCIRun::Core::Datatypes::DenseColumnMatrix& y );
       

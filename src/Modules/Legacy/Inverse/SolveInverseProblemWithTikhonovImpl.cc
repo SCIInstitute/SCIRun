@@ -215,7 +215,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     
     
 // PREALOCATE VARIABLES and MATRICES
-    DenseMatrixHandle M1, M2, M3, M4;
+    DenseMatrix M1, M2, M3, M4;
     DenseColumnMatrix y;
     DenseMatrix forward_transpose = forwardMatrix_->transpose();
     DenseColumnMatrix solution(M);
@@ -228,6 +228,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     //.........................................................................
     // OPERATE ON DATA:
     // Compute X = (R * R^T)^-1 * A^T (A * (R*R^T)^-1 * A^T + LAMBDA * LAMBDA * (C*C^T)^-1 ) * Y
+    //         X = M3                *              G^-1                                 * (M4) * Y
     // Will set:
       //      M1 = A * (R*R^T)^-1 * A^T
       //      M2 = (C*C^T)^-1
@@ -237,7 +238,9 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     //.........................................................................
    
     
-    DenseMatrix iRRtr, RRtr, RRtrAtr, iCCtr, CCtr;
+    DenseMatrix  RRtr, RRtrAtr, CCtr;
+    DenseMatrix iRRtr(N,N);
+    DenseMatrix iCCtr(M,M);
 
     // DEFINITIONS AND PREALOCATION OF SOURCE REGULARIZATION MATRIX 'R'
 
@@ -262,7 +265,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
             }
           
             RRtr = *sourceWeighting_ * sourceWeighting_->transpose();
-            iRRtr = RRtr.inverse();   // todo: @JCOLLFONT need to compute inverse of RRtr and set try/catch 
+            iRRtr = RRtr.inverse();   // todo: @JCOLLFONT need to compute inverse of RRtr and set try/catch
             
         }
         // otherwise, if the source regularization is provided as the squared version (RR^T)
@@ -301,7 +304,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
               }
               CCtr = *sensorWeighting_ * sensorWeighting_->transpose();
               iCCtr = CCtr.inverse();
-          
+           
           }
           // otherwise if the source covariance matrix is provided in squared form
           else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
@@ -320,13 +323,13 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       }
       
     // DEFINE  M1 = (A * (R*R^T)^-1 * A^T MATRIX FOR FASTER COMPUTATION
-      auto RAtr = iRRtr * forward_transpose;
+      DenseMatrix RAtr = iRRtr * forward_transpose;
       M1 = *forwardMatrix_ * RAtr;
       
     // DEFINE M2 = (CC^T)^-1
       M2 = iCCtr;
     
-    // DEFINE M3 = (RR^T)^-1 * A
+    // DEFINE M3 = (RR^T)^-1 * A^T
       M3 = RAtr;
       
     // DEFINE M4 = identity (size of number of measurements)
@@ -334,7 +337,8 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       
     // DEFINE measurement vector
       y = *measuredData_;
-   
+      
+     
   }
   //OVERDETERMINED CASE,
   //similar procedure as underdetermined case (documentation comments similar, see above)
@@ -342,7 +346,8 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
   {
         //.........................................................................
         // OPERATE ON DATA:
-        // Computes X = (A^T * C^T * C * A + LAMBDA * LAMBDA * R^T * R) * A^T * C^T * C *Y
+        // Computes X = (A^T * C^T * C * A + LAMBDA * LAMBDA * R^T * R) * A^T * C^T * C * Y
+        //          X = (M3)       *              G^-1                  * M4            * Y
         //.........................................................................
         // Will set:
         //      M1 = A * C^T*C * A^T
@@ -431,7 +436,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         }
         
         // DEFINE  M1 = (A * (R*R^T)^-1 * A^T MATRIX FOR FASTER COMPUTATION
-        auto CtrCA = CtrC * (*forwardMatrix_);
+        DenseMatrix CtrCA = CtrC * (*forwardMatrix_);
         M1 = forward_transpose * CtrCA;
         
         // DEFINE M2 = (CC^T)^-1
@@ -467,8 +472,8 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       }
     }
     else if (input.regMethod_ == "lcurve")
-    { 
-        lambda = computeLcurve( input, &M1, &M2, &M3, &M4, &y );
+    {
+        lambda = computeLcurve( input, M1, M2, M3, M4, y );
     }
       
       
@@ -479,7 +484,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
 // COMPUTE INVERSE SOLUTION  // Todo: @JCOLLFONT function needs to be defined
 ////////////////////////////
     
-    computeInverseSolution( &solution, &M1, &M2, &M3, &M4, &y, lambda_sq);
+    solution = computeInverseSolution( M1, M2, M3, M4, y, lambda_sq);
     
     // set final result
     inverseSolution_.reset(new DenseMatrix(solution));
@@ -499,6 +504,8 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
     const double lam_step = pow(10.0, log10(input.lambdaMax_ / input.lambdaMin_) / (nLambda-1));
     double lambda;
     
+    const int sizeSolution = M3.nrows();
+    
     double lambda_sq;
     
     // prealocate vector of lambdas and eta and rho
@@ -507,7 +514,7 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
     std::vector<double> eta(nLambda, 0.0);
     
     DenseColumnMatrix CAx, Rx;
-    DenseColumnMatrix solution;
+    DenseColumnMatrix solution(sizeSolution);
     
     lambdaArray[0] = input.lambdaMin_;
     
@@ -526,7 +533,8 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
         lambda_sq = lambdaArray[j] * lambdaArray[j];
         
         // COMPUTE INVERSE SOLUTION  // Todo: @JCOLLFONT function needs to be defined
-        computeInverseSolution( &solution, &M1, &M2, &M3, &M4, &y, lambda_sq);
+        solution = computeInverseSolution( M1, M2, M3, M4, y, lambda_sq);
+        
         
         // if using source regularization matrix, apply it to compute Rx (for the eta computations)
         if (sourceWeighting_)
@@ -555,6 +563,7 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
         else
              CAx = residualSolution;
       
+        
         // compute rho and eta
         rho[j]=0; eta[j]=0;
         for (int k = 0; k < CAx.nrows(); k++)
@@ -597,7 +606,7 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
 
 /////////////////////////
 ///////// compute Inverse solution
-void TikhonovAlgorithmImpl::computeInverseSolution( DenseColumnMatrix& solution, DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseMatrix& M4, DenseColumnMatrix& y, double lambda_sq)
+DenseColumnMatrix TikhonovAlgorithmImpl::computeInverseSolution( DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseMatrix& M4, DenseColumnMatrix& y, double lambda_sq)
 {
     //............................
     //  OPERATIONS PERFORMED IN THIS SECTION:
@@ -611,14 +620,18 @@ void TikhonovAlgorithmImpl::computeInverseSolution( DenseColumnMatrix& solution,
     //      A^-1 = M3 * G^-1 * M4
     //...........................................................................................................
     
-    DenseColumnMatrix b;
+    const int sizeB = M1.ncols();
+    const int sizeSolution = M3.nrows();
+    
+    DenseColumnMatrix b(sizeB);
+    DenseColumnMatrix solution(sizeSolution);
     DenseMatrix G;
     
-    G = *M1 + lambda_sq* (*M2);
+    G = M1 + lambda_sq * M2;
     
     try
     {
-        LinearAlgebra::solve_lapack(*G, *y, b);
+        LinearAlgebra::solve_lapack(G, y, b);
     }
     catch (LinearAlgebra::LapackError&)
     {
@@ -647,18 +660,17 @@ void TikhonovAlgorithmImpl::computeInverseSolution( DenseColumnMatrix& solution,
         throw;
     }
     
-    
-    *solution = (*M3) * b;
-    
+    solution = M3 * b;
     
     if (computeRegularizedInverse_)
     {
-        DenseMatrix inverseG = G.inverse();
-        inverseMatrix_.reset( (*M3) * inverseG * (*M4) );
-        
+        DenseMatrix inverseG = G.inverse() * M4;
+        inverseMatrix_.reset( new DenseMatrix(M3 * inverseG) );
     }
     
+//     inverseSolution_.reset(new DenseMatrix(solution));
     
+    return solution;
 }
 //////// fi compute inverse solution
 ////////////////////////
