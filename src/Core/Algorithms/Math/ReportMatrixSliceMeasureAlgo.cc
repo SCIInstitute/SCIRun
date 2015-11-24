@@ -48,8 +48,18 @@ AlgorithmOutput ReportMatrixSliceMeasureAlgo::run_generic(const AlgorithmInput& 
 {
   
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
+  AlgorithmOutput output;
   
-  MatrixHandle return_matrix;
+  if (!matrix_is::dense(input_matrix))
+  {
+    //TODO implement something with sparse
+    error("Currently only works with dense matrices");
+    output[Variables::OutputMatrix] = 0;
+    return output;
+  }
+  auto mat  = matrix_cast::as_dense (input_matrix);
+  
+  DenseMatrixHandle return_matrix;
   
   auto op = get(Variables::Operator).toInt();
   auto method = get(Variables::Method).toInt();
@@ -57,14 +67,13 @@ AlgorithmOutput ReportMatrixSliceMeasureAlgo::run_generic(const AlgorithmInput& 
   switch (op)
   {
     case 0:
-      ApplyRowOperation(input_matrix,return_matrix, method);
+      ApplyRowOperation(mat,return_matrix, method);
       break;
     case 1:
-      ApplyColumnOperation(input_matrix,return_matrix, method);
+      ApplyColumnOperation(mat,return_matrix, method);
       break;
   }
   
-  AlgorithmOutput output;
   output[Variables::OutputMatrix] = return_matrix;
   return output;
   
@@ -72,7 +81,7 @@ AlgorithmOutput ReportMatrixSliceMeasureAlgo::run_generic(const AlgorithmInput& 
 
 
 bool
-ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle& output,int method) const
+ReportMatrixSliceMeasureAlgo::ApplyRowOperation(DenseMatrixHandle input, DenseMatrixHandle& output,int method) const
 {
   
   if (input)
@@ -84,13 +93,10 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
   
   
   size_type nrows = input->nrows();
-  size_type ncols = input->ncols();
-  
-  //output(new DenseMatrix,nrows, 1);
-  auto omat = matrix_cast::as_dense(output);
-  //omat(boost::make_shared<DenseMatrix>(nrows,1));
-  
-  double *dest = omat->data();
+  //size_type ncols = input->ncols();
+
+  output.reset(new DenseMatrix(nrows, 1));
+  double *dest = output->data();
   
   for (index_type q=0; q<nrows; q++) dest[q] = 0.0;
   
@@ -102,6 +108,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
 
   
 /*
+ for sparse matrices
   if (matrix_is::sparse(input))
   {
     index_type *rows = input->sparse()->get_rows();
@@ -210,7 +217,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
       error ("ApplyRowOperation: This method has not yet been implemented");
       return false;
     }
-  }*/
+  }
   
   if (!matrix_is::dense(input))
   {
@@ -218,15 +225,15 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
     error("Currently only works with dense matrices");
     return false;
   }
+ 
   else
   {
-    auto mat  = matrix_cast::as_dense (input);
-    double* data = mat ->data();
-    //DenseMatrix* mat = input->dense();
+ */
+    //auto mat  = matrix_cast::as_dense (input);
+    double* data = input ->data();
     
-    size_type m = mat->nrows();
-    size_type n = mat->ncols();
-    //double* data = mat->get_data_pointer();
+    size_type m = input->nrows();
+    size_type n = input->ncols();
   
     if (method == 0)
     {
@@ -321,15 +328,16 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
       error("ApplyRowOperation: This method has not yet been implemented");
       return false;    
     }
-  }
   
+  
+  output=omat;
   
   return true;
 }
 
 
 bool
-ReportMatrixSliceMeasureAlgo::ApplyColumnOperation(MatrixHandle input, MatrixHandle& output, int method) const
+ReportMatrixSliceMeasureAlgo::ApplyColumnOperation(DenseMatrixHandle input, DenseMatrixHandle& output, int method) const
 {
   
   if (input)
@@ -337,9 +345,12 @@ ReportMatrixSliceMeasureAlgo::ApplyColumnOperation(MatrixHandle input, MatrixHan
     error("ApplyRowOperation: no input matrix found");
     return false;
   }
-  //MatrixHandle t = input->make_transpose();
-  //if(!(ApplyRowOperation(t,t,method))) return false;
-  //output = t->make_transpose();
+  
+  
+  DenseMatrixHandle t(new DenseMatrix(input->transpose()));
+  if(!(ApplyRowOperation(t,t,method))) return false;
+  output.reset(new DenseMatrix(t->transpose()));
+  
   
   return true;
 } 
