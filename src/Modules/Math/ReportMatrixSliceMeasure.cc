@@ -57,7 +57,6 @@ void ReportMatrixSliceMeasure::setStateDefaults()
 void
 ReportMatrixSliceMeasure::execute()
 {
-  MatrixHandle input, output;
   auto input = getRequiredInput(InputMatrix);
   
   if (needToExecute())
