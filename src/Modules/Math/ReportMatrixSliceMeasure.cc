@@ -62,9 +62,13 @@ ReportMatrixSliceMeasure::execute()
   if (needToExecute())
   {
     
+    //std::cout<<"setting parameters"<<std::endl;
     setAlgoIntFromState(Variables::Operator);
     setAlgoIntFromState(Variables::Method);
     
+    //std::cout << "input Size: " << input->nrows() << " x " << input->ncols() << std::endl;
+    
+    //std::cout<<"running algorithm"<<std::endl;
     auto output = algo().run_generic(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(OutputMatrix, output);
     

@@ -43,5 +43,5 @@ ReportMatrixSliceMeasureDialog::ReportMatrixSliceMeasureDialog(const std::string
 	fixSize();
 
   addRadioButtonGroupManager({ rowbutton_, columnbutton_ }, Variables::Operator);
-  addRadioButtonGroupManager({ sumbutton_, meanbutton_, varbutton_, stdbutton_, normbutton_, maxbutton_, minbutton_,medianbutton_ }, Variables::Method);
+  addRadioButtonGroupManager({ sumbutton_, meanbutton_, varbutton_, stdbutton_, normbutton_, maxbutton_, minbutton_, medianbutton_ }, Variables::Method);
 }
