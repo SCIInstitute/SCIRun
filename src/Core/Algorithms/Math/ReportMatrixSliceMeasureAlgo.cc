@@ -330,7 +330,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(DenseMatrixHandle input, DenseMa
     }
   
   
-  output=omat;
+  //output=omat;
   
   return true;
 }
