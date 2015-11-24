@@ -60,10 +60,10 @@ class SCISHARE ReportMatrixSliceMeasureAlgo : public AlgorithmBase
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
     // Apply an operation on a row by row basis
-    bool ApplyRowOperation(Datatypes::MatrixHandle input, Datatypes::MatrixHandle& output, int operation);
+    bool ApplyRowOperation(Datatypes::MatrixHandle input, Datatypes::MatrixHandle& output, int operation) const;
 
     // Apply an operation on a column by column basis
-    bool ApplyColumnOperation(Datatypes::MatrixHandle input, Datatypes::MatrixHandle& output, int operation);
+    bool ApplyColumnOperation(Datatypes::MatrixHandle input, Datatypes::MatrixHandle& output, int operation) const;
 
 };
 

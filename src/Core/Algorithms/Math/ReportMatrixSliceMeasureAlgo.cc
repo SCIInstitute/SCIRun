@@ -27,7 +27,8 @@
 */
 
 #include <Core/Algorithms/Math/ReportMatrixSliceMeasureAlgo.h>
-
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Math/MiscMath.h>
 
 #include <sstream>
 
@@ -71,7 +72,7 @@ AlgorithmOutput ReportMatrixSliceMeasureAlgo::run_generic(const AlgorithmInput& 
 
 
 bool
-ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle& output,int method)
+ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle& output,int method) const
 {
   
   if (input)
@@ -85,8 +86,9 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
   size_type nrows = input->nrows();
   size_type ncols = input->ncols();
   
-  output = new DenseMatrix(nrows, 1);
-  auto omat = matrix_cast::as_dense ( output)
+  //output(new DenseMatrix,nrows, 1);
+  auto omat = matrix_cast::as_dense(output);
+  //omat(boost::make_shared<DenseMatrix>(nrows,1));
   
   double *dest = omat->data();
   
@@ -214,26 +216,26 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
   {
     //TODO implement something with sparse
     error("Currently only works with dense matrices");
-    return;
+    return false;
   }
   else
   {
     auto mat  = matrix_cast::as_dense (input);
-    double* data = mat ->data()
+    double* data = mat ->data();
     //DenseMatrix* mat = input->dense();
     
     size_type m = mat->nrows();
     size_type n = mat->ncols();
     //double* data = mat->get_data_pointer();
   
-    if (method == "Sum")
+    if (method == 0)
     {
       index_type k = 0;
       for (index_type p=0; p<m; p++) dest[p] = 0.0;
       for (index_type p=0; p<m; p++) 
-        for (index_type q=0; q<n; q++) dest[p] += data[k++]; 
+        for (index_type q=0; q<n; q++) dest[p] += data[k++];
     }
-    else if (method == "Mean")
+    else if (method == 1)
     {
       index_type k = 0;
       for (index_type p=0; p<m; p++) dest[p] = 0.0;
@@ -241,7 +243,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
         for (index_type q=0; q<n; q++) dest[p] += data[k++]; 
       for (index_type p=0; p<m; p++) dest[p] /= static_cast<double>(n);  
     }
-    else if (method == "Variance")
+    else if (method == 2)
     {
       std::vector<double> mean(m);
       index_type k = 0;
@@ -256,7 +258,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
       for (index_type p=0; p<m; p++)  
         if (n > 1) dest[p] /= static_cast<double>(n-1);  else dest[p] = 0.0;
     }
-    else if (method == "StdDev")
+    else if (method == 4)
     {
       std::vector<double> mean(m);
       index_type k = 0;
@@ -271,7 +273,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
         if (n > 1) dest[p] = sqrt(dest[p]/static_cast<double>(n-1));  
         else dest[p] = 0.0;
     }
-    else if (method == "Norm")
+    else if (method == 5)
     {
       index_type k = 0;
       for (index_type p=0; p<m; p++) dest[p] = 0.0;
@@ -279,7 +281,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
         for (index_type q=0; q<n; q++, k++) dest[p] += data[k]*data[k]; 
       for (index_type p=0; p<m; p++) dest[p] = sqrt(dest[p]); 
     }
-    else if (method == "Maximum")
+    else if (method == 6)
     {
       index_type k = 0;
       for (index_type p=0; p<m; p++) dest[p] = -DBL_MAX;
@@ -287,7 +289,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
         for (index_type q=0; q<n; q++, k++) 
           if (data[k] > dest[p]) dest[p] = data[k]; 
     }
-    else if (method == "Minimum")
+    else if (method == 7)
     {
       index_type k = 0;
       for (index_type p=0; p<m; p++) dest[p] = DBL_MAX;
@@ -295,7 +297,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
         for (index_type q=0; q<n; q++, k++) 
           if (data[k] < dest[p]) dest[p] = data[k]; 
     }
-    else if (method == "Median")
+    else if (method == 8)
     {
       index_type k = 0;
       std::vector<double> v(n);
@@ -327,7 +329,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(MatrixHandle input, MatrixHandle
 
 
 bool
-ReportMatrixSliceMeasureAlgo::ApplyColumnOperation(MatrixHandle input, MatrixHandle& output, int method)
+ReportMatrixSliceMeasureAlgo::ApplyColumnOperation(MatrixHandle input, MatrixHandle& output, int method) const
 {
   
   if (input)
@@ -335,9 +337,9 @@ ReportMatrixSliceMeasureAlgo::ApplyColumnOperation(MatrixHandle input, MatrixHan
     error("ApplyRowOperation: no input matrix found");
     return false;
   }
-  MatrixHandle t = input->make_transpose();
-  if(!(ApplyRowOperation(t,t,method))) return false;
-  output = t->make_transpose();
+  //MatrixHandle t = input->make_transpose();
+  //if(!(ApplyRowOperation(t,t,method))) return false;
+  //output = t->make_transpose();
   
   return true;
 } 
