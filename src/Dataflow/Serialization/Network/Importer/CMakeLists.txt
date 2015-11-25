@@ -55,5 +55,3 @@ TARGET_LINK_LIBRARIES(Core_Serialization_Network_Importer
   ${SCI_LIBXML2_LIBRARY}
   ${SCI_BOOST_LIBRARY}
 )
-
-ADD_DEPENDENCIES(Core_Serialization_Network_Importer Boost_external)
