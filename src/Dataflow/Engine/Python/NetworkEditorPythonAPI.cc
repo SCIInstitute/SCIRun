@@ -168,6 +168,16 @@ std::string NetworkEditorPythonAPI::quit(bool force)
   }
 }
 
+std::string NetworkEditorPythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
+{
+  return "not implemented";
+}
+
+std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const std::string& value)
+{
+  return "not implemented";
+}
+
 /// @todo: bizarre reason for this return type and casting. but it works.
 boost::shared_ptr<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
 {
@@ -194,4 +204,14 @@ std::string SimplePythonAPI::scirun_connect_modules(const std::string& modIdFrom
 std::string SimplePythonAPI::scirun_disconnect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex)
 {
   return NetworkEditorPythonAPI::disconnect(modIdFrom, fromIndex, modIdTo, toIndex);
+}
+
+std::string SimplePythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
+{
+  return NetworkEditorPythonAPI::scirun_get_module_state(moduleId, stateVariable);
+}
+
+std::string SimplePythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const std::string& value)
+{
+  return NetworkEditorPythonAPI::scirun_set_module_state(moduleId, stateVariable, value);
 }

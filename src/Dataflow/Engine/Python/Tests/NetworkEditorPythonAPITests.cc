@@ -177,6 +177,30 @@ TEST_F(PythonControllerFunctionalTests, CanAddMultipleModulesWithStaticFunction)
   ASSERT_EQ(2, controller.getNetwork()->nmodules());
 }
 
+TEST_F(PythonControllerFunctionalTests, CanGetModuleStateWithStaticFunction)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  NetworkEditorController controller(mf, sf, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+
+  ASSERT_EQ(0, controller.getNetwork()->nmodules());
+
+  std::string command = "m = scirun_add_module(\"CreateLatVol\")";
+  PythonInterpreter::Instance().run_string(command);
+
+  ASSERT_EQ(1, controller.getNetwork()->nmodules());
+  auto mod = controller.getNetwork()->module(0);
+  ASSERT_TRUE(mod != nullptr);
+  EXPECT_EQ(16, mod->get_state()->getValue(CreateLatVol::XSize).toInt());
+  command = "xs = scirun_get_module_state(m, \"XSize\")";
+  PythonInterpreter::Instance().run_string(command);
+
+  ////???? need to get value back!!! how??
+
+  FAIL() << "todo";
+}
+
 TEST_F(PythonControllerFunctionalTests, CanChangeModuleStateWithStaticFunction)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
@@ -193,7 +217,7 @@ TEST_F(PythonControllerFunctionalTests, CanChangeModuleStateWithStaticFunction)
   auto mod = controller.getNetwork()->module(0);
   ASSERT_TRUE(mod != nullptr);
   EXPECT_EQ(16, mod->get_state()->getValue(CreateLatVol::XSize).toInt());
-  command = "m.XSize = 14";
+  command = "scirun_set_module_state(m, \"XSize\", 14)";
   PythonInterpreter::Instance().run_string(command);
   EXPECT_EQ(14, mod->get_state()->getValue(CreateLatVol::XSize).toInt());
   FAIL() << "todo";

@@ -83,6 +83,9 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
   boost::python::def("scirun_connect_modules", &SimplePythonAPI::scirun_connect_modules);
   boost::python::def("scirun_disconnect_modules", &SimplePythonAPI::scirun_disconnect_modules);
 
+  boost::python::def("scirun_get_module_state", &SimplePythonAPI::scirun_get_module_state);
+  boost::python::def("scirun_set_module_state", &SimplePythonAPI::scirun_set_module_state);
+
   boost::python::def("scirun_save_network", &NetworkEditorPythonAPI::saveNetwork);
   boost::python::def("scirun_load_network", &NetworkEditorPythonAPI::loadNetwork);
   boost::python::def("scirun_quit", &SimplePythonAPI::scirun_quit);
