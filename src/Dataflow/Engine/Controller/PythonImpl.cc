@@ -202,6 +202,7 @@ namespace
 
         auto v = state->getValue(apn);
 
+//TODO: extract and use for state get/set
         /// @todo: extract
         if ( const int* p = boost::get<int>( &v.value() ) )
           return boost::python::object(*p);
@@ -258,6 +259,7 @@ namespace
     NetworkEditorController& nec_;
     boost::shared_ptr<PyPortsImpl> input_, output_;
 
+//TODO: extract and use for state get/set
     AlgorithmParameter::Value convert(boost::python::object object) const
     {
       AlgorithmParameter::Value value;
@@ -374,7 +376,7 @@ std::string PythonImpl::disconnect(const std::string& moduleIdFrom, int fromInde
     return "PythonImpl::disconnect: connection not found";
   }
 
-  
+
 }
 
 std::string PythonImpl::saveNetwork(const std::string& filename)

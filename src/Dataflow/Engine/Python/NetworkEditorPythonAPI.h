@@ -32,6 +32,7 @@
 #define ENGINE_PYTHON_NETWORKEDITORPYTHONAPI_H
 
 #include <vector>
+#include <boost/python.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Python/share.h>
 
@@ -48,8 +49,8 @@ namespace SCIRun {
     static std::string removeModule(const std::string& id);
     static std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
     static std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
-    static std::string scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
-    static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const std::string& value);
+    static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
+    static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
 
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);
@@ -72,8 +73,8 @@ namespace SCIRun {
     static std::string scirun_add_module(const std::string& name);
     static std::string scirun_connect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex);
     static std::string scirun_disconnect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex);
-    static std::string scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
-    static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const std::string& value);
+    static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
+    static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
     static std::string scirun_quit(bool force);
   private:
     SimplePythonAPI();

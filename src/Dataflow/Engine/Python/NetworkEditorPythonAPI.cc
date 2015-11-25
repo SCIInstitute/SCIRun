@@ -168,12 +168,12 @@ std::string NetworkEditorPythonAPI::quit(bool force)
   }
 }
 
-std::string NetworkEditorPythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
+boost::python::object NetworkEditorPythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
 {
-  return "not implemented";
+  return boost::python::object();
 }
 
-std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const std::string& value)
+std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
 {
   return "not implemented";
 }
@@ -206,12 +206,12 @@ std::string SimplePythonAPI::scirun_disconnect_modules(const std::string& modIdF
   return NetworkEditorPythonAPI::disconnect(modIdFrom, fromIndex, modIdTo, toIndex);
 }
 
-std::string SimplePythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
+boost::python::object SimplePythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
 {
   return NetworkEditorPythonAPI::scirun_get_module_state(moduleId, stateVariable);
 }
 
-std::string SimplePythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const std::string& value)
+std::string SimplePythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
 {
   return NetworkEditorPythonAPI::scirun_set_module_state(moduleId, stateVariable, value);
 }
