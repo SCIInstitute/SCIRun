@@ -216,12 +216,14 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     
 // PREALOCATE VARIABLES and MATRICES
     DenseMatrix M1, M2, M3, M4;
+    DenseMatrix inverseG(M,N);
     DenseColumnMatrix y;
     DenseMatrix forward_transpose = forwardMatrix_->transpose();
     DenseColumnMatrix solution(M);
     double lambda=0, lambda_sq=0;
     
-// select underdetermined case if user decides so or the option is set to automatic and number of measurements is smaller than number of unknowns.
+    
+    // select underdetermined case if user decides so or the option is set to automatic and number of measurements is smaller than number of unknowns.
   if ( ((M < N) && (regularizationChoice_ == automatic)) || (regularizationChoice_ == underdetermined))
   {
     //UNDERDETERMINED CASE
@@ -265,7 +267,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
             }
           
             RRtr = *sourceWeighting_ * sourceWeighting_->transpose();
-            iRRtr = RRtr.inverse();   // todo: @JCOLLFONT need to compute inverse of RRtr and set try/catch
+            iRRtr = RRtr.inverse().eval();   // todo: @JCOLLFONT need to compute inverse of RRtr and set try/catch
             
         }
         // otherwise, if the source regularization is provided as the squared version (RR^T)
@@ -278,7 +280,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
             }
             
             RRtr = *sourceWeighting_;
-            iRRtr = RRtr.inverse();   // todo: @JCOLLFONT need to compute inverse of RRtr
+            iRRtr = RRtr.inverse().eval();   // todo: @JCOLLFONT need to compute inverse of RRtr
             
         }
       }
@@ -303,7 +305,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
                    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !"));
               }
               CCtr = *sensorWeighting_ * sensorWeighting_->transpose();
-              iCCtr = CCtr.inverse();
+              iCCtr = CCtr.inverse().eval();
            
           }
           // otherwise if the source covariance matrix is provided in squared form
@@ -316,7 +318,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
               }
               
               CCtr = *sensorWeighting_;
-              iCCtr = CCtr.inverse();
+              iCCtr = CCtr.inverse().eval();
               
           }
           
@@ -453,6 +455,8 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     
   }
     
+std::cerr << "gato: precomputations done" << std::endl;
+    
 ///////////////////////////////
 // Lambda selection
 ///////////////////////////////
@@ -484,11 +488,10 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
 // COMPUTE INVERSE SOLUTION  // Todo: @JCOLLFONT function needs to be defined
 ////////////////////////////
     
-    solution = computeInverseSolution( M1, M2, M3, M4, y, lambda_sq);
+    solution = computeInverseSolution( M1, M2, M3, M4, y, lambda_sq, computeRegularizedInverse_);
     
     // set final result
     inverseSolution_.reset(new DenseMatrix(solution));
- 
 
 }
 //////// fi  run()
@@ -532,8 +535,9 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
         // set current lambda
         lambda_sq = lambdaArray[j] * lambdaArray[j];
         
+        std::cerr << "gato: computing inverse solution in Lcurvce" << std::endl;
         // COMPUTE INVERSE SOLUTION  // Todo: @JCOLLFONT function needs to be defined
-        solution = computeInverseSolution( M1, M2, M3, M4, y, lambda_sq);
+        solution = computeInverseSolution( M1, M2, M3, M4, y, lambda_sq, false);
         
         
         // if using source regularization matrix, apply it to compute Rx (for the eta computations)
@@ -589,6 +593,7 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
     boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput(new TikhonovAlgorithm::LCurveInput(rho, eta, lambdaArray, nLambda));
     lcurveInput_handle_ = lcurveInput;
     
+    std::cerr << "gato: finding corner" << std::endl;
     // Find corner in L-curve
     lambda = FindCorner(*lcurveInput_handle_, lambda_index);
     
@@ -606,7 +611,7 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
 
 /////////////////////////
 ///////// compute Inverse solution
-DenseColumnMatrix TikhonovAlgorithmImpl::computeInverseSolution( DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseMatrix& M4, DenseColumnMatrix& y, double lambda_sq)
+DenseColumnMatrix TikhonovAlgorithmImpl::computeInverseSolution( DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseMatrix& M4, DenseColumnMatrix& y, double lambda_sq, bool inverseCalculation)
 {
     //............................
     //  OPERATIONS PERFORMED IN THIS SECTION:
@@ -622,13 +627,16 @@ DenseColumnMatrix TikhonovAlgorithmImpl::computeInverseSolution( DenseMatrix& M1
     
     const int sizeB = M1.ncols();
     const int sizeSolution = M3.nrows();
+    DenseMatrix inverseG(sizeB,sizeB);
     
     DenseColumnMatrix b(sizeB);
     DenseColumnMatrix solution(sizeSolution);
     DenseMatrix G;
     
+    std::cerr << "gato: calculating G" << std::endl;
     G = M1 + lambda_sq * M2;
     
+    std::cerr << "gato: Solving lapack" << std::endl;
     try
     {
         LinearAlgebra::solve_lapack(G, y, b);
@@ -660,16 +668,20 @@ DenseColumnMatrix TikhonovAlgorithmImpl::computeInverseSolution( DenseMatrix& M1
         throw;
     }
     
+    std::cerr << "gato: calculating final solution" << std::endl;
+    
     solution = M3 * b;
     
-    if (computeRegularizedInverse_)
+    std::cerr << "gato: Computing regularized inverse "<< inverseCalculation << std::endl;
+    if (inverseCalculation)
     {
-        DenseMatrix inverseG = G.inverse() * M4;
-        inverseMatrix_.reset( new DenseMatrix(M3 * inverseG) );
+        inverseG = G.inverse().eval();
+        std::cerr << "gato: setting inverse " << M4.ncols() << " " << M3.nrows() << " " << inverseG.nrows() << " " <<inverseG.ncols() <<   std::endl;
+        inverseMatrix_.reset( new DenseMatrix( (M3 * inverseG) * M4) );
     }
     
 //     inverseSolution_.reset(new DenseMatrix(solution));
-    
+    std::cerr << "gato: returning" << std::endl;
     return solution;
 }
 //////// fi compute inverse solution
