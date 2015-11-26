@@ -251,7 +251,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       {
           RRtr = DenseMatrix::Identity(N, N);
           iRRtr = RRtr;
-          
+          std::cerr << "gato: no source regularization metrix" << std::endl;
       }
       else
       {
@@ -292,6 +292,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       {
           CCtr = DenseMatrix::Identity(M, M);
           iCCtr = CCtr;
+          std::cerr << "gato: no sensor covariance matrix" << std::endl;
           
       }
       else
@@ -335,7 +336,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       M3 = RAtr;
       
     // DEFINE M4 = identity (size of number of measurements)
-      M4 = DenseMatrix::Identity(N, N);
+      M4 = DenseMatrix::Identity(M, N);
       
     // DEFINE measurement vector
       y = *measuredData_;
