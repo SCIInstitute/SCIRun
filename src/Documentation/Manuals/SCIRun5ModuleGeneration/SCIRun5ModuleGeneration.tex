@@ -416,13 +416,13 @@ SET(Modules_String_HEADERS
 )
 \end{verbatim}
 
-After changing the CMakeList.txt file, build SCIRun using the build script, or if you have already built SCIRun recently, go to the SCIRun_root/bin/SCIRun directory and run make.  
+After changing the CMakeList.txt file, build SCIRun using the build script, or if you have already built SCIRun recently, go to the \emph{SCIRun\_root/bin/SCIRun} directory and run make.  
 Take note of any build errors, if there is a problem in the with any module factory files, make sure that there are no mistakes in the the module configuration file and build again.  
 Check out the common build errors in section [TODO]. %TODO, add section reference
 
 After SCIRun builds completely, Launch SCIRun and test the module.  
 You can use the PrintDatatype module to view the string that this module outputs. 
-If the messages matches what you expect, then it is working properly.  
+Other modules will require more testing, but due to the very simple nature of the module you can know that if the messages matches what you expect, then it is working properly.  
 
 
 \chapter{Example: Simple Module With UI}
@@ -432,6 +432,86 @@ This example will build off of the previous example.  In this chapter we will sh
 %Scope: \hyperref[readdata]{Read Data File} - \hyperref[slice]{Slice} -
 %\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
 \end{introduction}
+
+In this chapter, we will build off the module that we described in the previous chapter to show how to add a UI and an input port.  
+This module will print a message that comes from either the input port or the UI.  
+We will show how to add a UI incrementally to help convey the principles that the software is based upon.
+This incremental approach allows the user to copy this approach with more complicated module as it provides sanity checks for the user.
+
+To begin, copy the \emph{TestModuleSimple.module} in the \emph{src/Modules/Factory/Config/} and name the copy \emph{TestModuleSimpleUI.module}.
+Change the name and header field to reflect the new name of the module, as shown here:
+\begin{verbatim}
+  "module": {
+    "name": "TestModuleSimpleUI",
+    "namespace": "StringManip",
+    "status": "new module",
+    "description": "This is a simple module to show how to make new modules.",
+    "header": "Modules/String/TestModuleSimpleUI.h"
+  },
+\end{verbatim}
+For now, leave the rest of the fields as 'N/A'; we will come back to those.  
+
+Next, copy the module code files \emph{TestModuleSimple.h} and \emph{TestModuleSimple.cc} in the \emph{src/Modules/String/} directory and rename them appropriately (\emph{TestModuleSimpleUI.h} and \emph{TestModuleSimpleUI.cc}).  
+In these new files, change all the references of the modules name to TestModuleSimpleUI. 
+A find and replace function will manage most instances, but make sure that all of them are changed. 
+There are 4 lines in each of the two files that need to be changed, with more than one change in some lines.
+The changes in \emph{TestModuleSimpleUI.h} are these lines:
+\begin{verbatim}
+#ifndef MODULES_STRING_TestModuleSimpleUI_H
+#define MODULES_STRING_TestModuleSimpleUI_H
+
+...
+
+class SCISHARE TestModuleSimpleUI : public SCIRun::Dataflow::Networks::Module,
+
+...
+
+public:
+  TestModuleSimpleUI();
+
+...  
+
+\end{verbatim}
+And for the \emph{TestModuleSimpleUI.cc} file:
+\begin{verbatim}
+#include <Modules/String/TestModuleSimpleUI.h>
+
+É
+
+const ModuleLookupInfo TestModuleSimpleUI::staticInfo_("TestModuleSimpleUI", 
+       "String", "SCIRun");
+
+TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
+
+É
+
+void
+TestModuleSimpleUI::execute()
+{  
+  
+  É
+  
+\end{verbatim}
+Another change you may notice is to remove the 'false' input in the constructor line:
+\begin{verbatim}
+TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
+\end{verbatim}
+The 'false' options means that there is no module.  
+Removing the options changes the input to 'true', which allows for a module UI.  
+If no UI file is found, a default UI will be used.  
+
+With these changes, we should try to build.  
+Make sure the files are added to the CMakeList.txt file in \emph{src/Modules/String/} as we showed in the previous chapter.  
+If there are build errors, check for spelling mismatches.
+Also, check out the common build errors in section [TODO]. %TODO, add section reference
+Once SCIRun is built, you can try to add the new module to the workspace. 
+SCIRun will give you a warning dialogue about not finding a UI file, so it will create a default one.
+This UI is not connected to anything, so it won't affect the module at all, but you should be able to open the UI and see it ( a slider and two buttons).
+Check to make sure that the output is still the string that you expected. 
+If everything is working properly, we can move onto the next step of adding our own module.  
+
+
+
 
 
 

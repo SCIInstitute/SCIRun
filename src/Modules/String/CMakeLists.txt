@@ -30,6 +30,7 @@ SET(Modules_String_SRCS
   CreateString.cc
   NetworkNotes.cc
   TestModuleSimple.cc
+  TestModuleSimpleUI.cc
 )
 
 SET(Modules_String_HEADERS
@@ -37,6 +38,7 @@ SET(Modules_String_HEADERS
   NetworkNotes.h
   share.h
   TestModuleSimple.h
+  TestModuleSimpleUI.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_String 

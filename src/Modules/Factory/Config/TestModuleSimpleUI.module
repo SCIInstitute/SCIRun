@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "TestModuleSimpleUI",
+    "namespace": "StringManip",
+    "status": "new module",
+    "description": "This is a simple module the returns a message.",
+    "header": "Modules/String/TestModuleSimpleUI.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}
