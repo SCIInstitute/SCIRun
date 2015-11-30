@@ -27,9 +27,7 @@
 */
 
 #include <sstream>
-#include <fstream>
 #include <QtGui>
-#include <iostream>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Node.h>
 #include <Interface/Application/Connection.h>
@@ -43,7 +41,6 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //TODO: remove
-#include <Dataflow/Network/NetworkSettings.h> //TODO: push
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -138,7 +135,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
   return controller_;
 }
 
-void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count)
+void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
   //qDebug() << "addModuleWidget " << module->get_id().id_.c_str();
   latestModuleId_ = module->get_id().id_;
@@ -167,10 +164,11 @@ boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisa
   return controller_->createDynamicPortSwitch();
 }
 
-void NetworkEditor::requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to)
+boost::optional<ConnectionId> NetworkEditor::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
-  controller_->requestConnection(from, to);
+  auto id = controller_->requestConnection(from, to);
   Q_EMIT modified();
+  return id;
 }
 
 namespace
@@ -210,7 +208,7 @@ void NetworkEditor::duplicateModule(const SCIRun::Dataflow::Networks::ModuleHand
   controller_->duplicateModule(module);
 }
 
-void NetworkEditor::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
   QPointF increment(0, portToConnect->isInput() ? -110 : 110);
@@ -219,7 +217,7 @@ void NetworkEditor::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHan
   controller_->connectNewModule(moduleToConnectTo, portToConnect, newModuleName);
 }
 
-void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName)
+void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const std::string& newModuleName)
 {
   auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
   lastModulePosition_ = oldModule->scenePos();

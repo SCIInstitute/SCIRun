@@ -100,6 +100,7 @@ namespace SCIRun
         bool verbose() const;
         void flush();
         void addCustomAppender(LogAppenderStrategyPtr appender);
+        void clearAppenders();
 
       private:
         Log();

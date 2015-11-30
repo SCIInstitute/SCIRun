@@ -77,6 +77,7 @@ public:
   void setDataDirectory(const QString& dir);
   void setDataPath(const QString& dirs);
   void addToDataDirectory(const QString& dir);
+  void setCurrentFile(const QString& fileName);
 
   bool newInterface() const;
   bool isInFavorites(const QString& module) const;
@@ -112,7 +113,6 @@ private:
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
   bool okToContinue();
-  void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();
   QString strippedName(const QString& fullFileName);
   void setActionIcons();

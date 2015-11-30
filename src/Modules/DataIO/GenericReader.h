@@ -56,7 +56,8 @@ class GenericReader : public SCIRun::Dataflow::Networks::Module,
 public:
   GenericReader(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
 
-  virtual void execute();
+  virtual void setStateDefaults() override;
+  virtual void execute() override;
   INPUT_PORT(0, Filename, String);
   //OUTPUT_PORT(0, Object, PortType);
   OUTPUT_PORT(1, FileLoaded, String);
@@ -88,6 +89,12 @@ GenericReader<HType, PortTag>::GenericReader(const std::string &name,
 {
   INITIALIZE_PORT(Filename);
   INITIALIZE_PORT(FileLoaded);
+}
+
+template <class HType, class PortTag>
+void GenericReader<HType, PortTag>::setStateDefaults()
+{
+  get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, std::string());
 }
 
 template <class HType, class PortTag> 

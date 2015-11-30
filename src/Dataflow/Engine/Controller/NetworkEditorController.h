@@ -37,6 +37,7 @@
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
 #include <Dataflow/Network/ModuleFactory.h> // todo split out replacement impl types
+#include <Core/Command/CommandFactory.h>
 #include <Dataflow/Engine/Controller/share.h>
 
 namespace SCIRun {
@@ -89,6 +90,7 @@ namespace Engine {
       ExecutionStrategyFactoryHandle executorFactory,
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       Networks::ReexecuteStrategyFactoryHandle reexFactory,
+      Core::Commands::GlobalCommandFactoryHandle cmdFactory,
       Networks::NetworkEditorSerializationManager* nesm = 0);
     NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = 0);
 
@@ -102,7 +104,7 @@ namespace Engine {
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     void connectNewModule(const Networks::ModuleHandle& moduleToConnectTo, const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
 
-    void requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to);
+    boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to);
     void removeConnection(const Networks::ConnectionId& id);
 
     void executeAll(const Networks::ExecutableLookup* lookup);
@@ -170,6 +172,7 @@ namespace Engine {
     Networks::ReexecuteStrategyFactoryHandle reexFactory_;
     ExecutionStrategyHandle currentExecutor_;
     ExecutionStrategyFactoryHandle executorFactory_;
+    Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
     Networks::NetworkEditorSerializationManager* serializationManager_;
 
     ExecutionQueueManager executionManager_;
