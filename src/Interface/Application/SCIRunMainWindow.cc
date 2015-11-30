@@ -45,7 +45,6 @@
 #include <Interface/Application/ShortcutsInterface.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
-#include <Interface/Application/GuiCommandFactory.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
@@ -87,7 +86,7 @@ static const char* ToolkitIconURL = "ToolkitIconURL";
 static const char* ToolkitURL = "ToolkitURL";
 static const char* ToolkitFilename = "ToolkitFilename";
 
-SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(0), firstTimePythonShown_(true), returnCode_(0), quitAfterExecute_(false)
+SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown_(true), returnCode_(0), quitAfterExecute_(false)
 {
 	setupUi(this);
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -454,7 +453,7 @@ void SCIRunMainWindow::setupInputWidgets()
   WidgetDisablingService::Instance().addWidgets(recentFileActions_.begin(), recentFileActions_.end());
 }
 
-SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
+SCIRunMainWindow* SCIRunMainWindow::instance_ = nullptr;
 
 SCIRunMainWindow* SCIRunMainWindow::Instance()
 {
@@ -467,6 +466,9 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
 
 SCIRunMainWindow::~SCIRunMainWindow()
 {
+  GuiLogger::setInstance(nullptr);
+  Log::get().clearAppenders();
+  Log::get("Modules").clearAppenders();
   networkEditor_->disconnect();
   networkEditor_->setNetworkEditorController(nullptr);
   networkEditor_->clear();
@@ -488,8 +490,9 @@ void SCIRunMainWindow::setupNetworkEditor()
   boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_, regression));
   GuiLogger::setInstance(logger);
   Log::get().addCustomAppender(logger);
-  boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
-  Log::get("Modules").addCustomAppender(moduleLog);
+  //TODO: this logger will crash on Windows when the console is closed. See #1250. Need to figure out a better way to manage scope/lifetime of Qt widgets passed to global singletons...
+  //boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
+  //Log::get("Modules").addCustomAppender(moduleLog);
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*prefsWindow_->defaultNotePositionComboBox_));
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
   networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, tagColorFunc, scrollAreaWidgetContents_);
@@ -503,7 +506,7 @@ void SCIRunMainWindow::setupNetworkEditor()
 
 void SCIRunMainWindow::executeCommandLineRequests()
 {
-  SCIRun::Core::Application::Instance().executeCommandLineRequests(boost::make_shared<GuiGlobalCommandFactory>());
+  SCIRun::Core::Application::Instance().executeCommandLineRequests();
 }
 
 void SCIRunMainWindow::executeAll()
@@ -560,20 +563,42 @@ void SCIRunMainWindow::saveNetworkAs()
     saveNetworkFile(filename);
 }
 
-void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
+class NetworkSaveCommand : public GuiCommand
 {
-  std::string fileNameWithExtension = fileName.toStdString();
+public:
+  NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window);
+  virtual bool execute() override;
+private:
+  QString filename_;
+  NetworkEditor* editor_;
+  SCIRunMainWindow* window_;
+};
+
+NetworkSaveCommand::NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window) : 
+filename_(filename), editor_(editor), window_(window)
+{}
+
+bool NetworkSaveCommand::execute()
+{
+  std::string fileNameWithExtension = filename_.toStdString();
   if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
     fileNameWithExtension += ".srn5";
 
-  NetworkFileHandle file = networkEditor_->saveNetwork();
+  NetworkFileHandle file = editor_->saveNetwork();
 
   XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
-  setCurrentFile(QString::fromStdString(fileNameWithExtension));
+  window_->setCurrentFile(QString::fromStdString(fileNameWithExtension));
 
-  statusBar()->showMessage(tr("File saved"), 2000);
-  GuiLogger::Instance().logInfo("File save done: " + fileName);
-  setWindowModified(false);
+  window_->statusBar()->showMessage("File saved: " + filename_, 2000);
+  GuiLogger::Instance().logInfo("File save done: " + filename_);
+  window_->setWindowModified(false);
+  return true;
+}
+
+void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
+{
+  NetworkSaveCommand save(fileName, networkEditor_, this);
+  save.execute();
 }
 
 void SCIRunMainWindow::loadNetwork()
@@ -1628,7 +1653,7 @@ void SCIRunMainWindow::runNewModuleWizard()
 	wizard->show();
 }
 
-FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(0), statusBar_(statusBar)
+FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
 {
  	connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
 
@@ -1658,7 +1683,7 @@ void SCIRunMainWindow::toolkitDownload()
   downloaders.push_back(new ToolkitDownloader(action, statusBar(), this));
 }
 
-ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent) : QObject(parent), iconDownloader_(0), zipDownloader_(0), statusBar_(statusBar)
+ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent) : QObject(parent), iconDownloader_(nullptr), zipDownloader_(nullptr), statusBar_(statusBar)
 {
   if (infoObject)
   {

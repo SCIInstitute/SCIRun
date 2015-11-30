@@ -36,7 +36,7 @@
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Python/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
 
   class SCISHARE PyModule
@@ -103,6 +103,8 @@ namespace SCIRun
     virtual ~NetworkEditorPythonInterface() {}
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name) = 0;
     virtual std::string removeModule(const std::string& id) = 0;
+    virtual std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
+    virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
     virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup* lookup) = 0;
     virtual std::string saveNetwork(const std::string& filename) = 0;
     virtual std::string loadNetwork(const std::string& filename) = 0;

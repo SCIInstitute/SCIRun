@@ -30,7 +30,6 @@
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/NetworkSettings.h>
-#include <Dataflow/Network/Network.h>
 #include <QDebug>
 #include <Core/Logging/Log.h>
 
@@ -75,9 +74,9 @@ void NetworkEditorControllerGuiProxy::interrupt(const ModuleId& id)
   controller_->interruptModule(id);
 }
 
-void NetworkEditorControllerGuiProxy::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
+boost::optional<ConnectionId> NetworkEditorControllerGuiProxy::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
-  controller_->requestConnection(from, to);
+  return controller_->requestConnection(from, to);
 }
 
 void NetworkEditorControllerGuiProxy::removeConnection(const ConnectionId& id)

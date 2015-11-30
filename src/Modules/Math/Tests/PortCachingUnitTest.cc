@@ -152,7 +152,7 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, ReexecuteStrategyFactoryHandle());
+  NetworkEditorController controller(mf, sf, nullptr, af, nullptr, nullptr);
 
   auto network = controller.getNetwork();
 
@@ -574,7 +574,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, ReexecuteStrategyFactoryHandle());
+  NetworkEditorController controller(mf, sf, nullptr, af, nullptr, nullptr);
 
   auto network = controller.getNetwork();
 
@@ -662,7 +662,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, ReexecuteStrategyFactoryHandle());
+  NetworkEditorController controller(mf, sf, nullptr, af, nullptr, nullptr);
 
   auto network = controller.getNetwork();
 
@@ -747,7 +747,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, ReexecuteStrategyFactoryHandle());
+  NetworkEditorController controller(mf, sf, nullptr, af, nullptr, nullptr);
 
   auto network = controller.getNetwork();
 
@@ -848,7 +848,7 @@ TEST(PortCachingFunctionalTest, TestSourceSinkInputsChanged)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, re);
+  NetworkEditorController controller(mf, sf, nullptr, af, re, nullptr);
 
   auto network = controller.getNetwork();
 
