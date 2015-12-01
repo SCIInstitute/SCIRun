@@ -38,7 +38,9 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
 /// @class TestModuleSimpleUI
-/// @brief This module splits out a string. 
+/// @brief This module splits out a string.
+
+//SCIRun::Core::Algorithms::AlgorithmParameterName TestModuleSimpleUI::FormatString("FormatString");
 
 const ModuleLookupInfo TestModuleSimpleUI::staticInfo_("TestModuleSimpleUI", "String", "SCIRun");
 

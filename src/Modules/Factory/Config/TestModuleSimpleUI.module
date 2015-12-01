@@ -13,6 +13,6 @@
   },
   "UI": {
     "name": "TestModuleSimpleUIDialog",
-    "header": "Interface/Modules/String/TestModuleSimpleUIDialog"
+    "header": "Interface/Modules/String/TestModuleSimpleUIDialog.h"
   }
 }

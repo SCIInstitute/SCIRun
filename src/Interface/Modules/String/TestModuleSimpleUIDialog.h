@@ -26,23 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_STRING_TestModuleSimpleUIDialogDIALOG_H
-#define INTERFACE_MODULES_STRING_TestModuleSimpleUIDialogDIALOG_H
+#ifndef INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
+#define INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
 
-#include <Interface/Modules/String/ui_TestModuleSimpleUIDialogDialog.h>
+#include <Interface/Modules/String/ui_TestModuleSimpleUIDialog.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/String/share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-class SCISHARE TestModuleSimpleUIDialogDialog : public ModuleDialogGeneric,
+class SCISHARE TestModuleSimpleUIDialog : public ModuleDialogGeneric,
   public Ui::TestModuleSimpleUIDialog
 {
 	Q_OBJECT
 	
 public:
-  TestModuleSimpleUIDialogDialog(const std::string& name,
+  TestModuleSimpleUIDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
 };

@@ -278,6 +278,15 @@ void @ModuleName@::execute()
 \section{Module UI Code}
 \label{sec:ui}
 
+
+\subsection{QT File}
+
+\begin{figure}[H]
+\scalebox{0.3}{\includegraphics{SCIRun5ModuleGeneration_Figures/QT-editor.png}}
+\caption{Locate ReadField module.}
+\label{fig:readfield}
+\end{figure}
+
 \chapter{Example: Simple Module Without UI}
 
 \begin{introduction}
@@ -510,8 +519,23 @@ This UI is not connected to anything, so it won't affect the module at all, but 
 Check to make sure that the output is still the string that you expected. 
 If everything is working properly, we can move onto the next step of adding our own module.  
 
+To create a new UI, we need to add three new files: a QT file, and a cc and header file for the UI.  
+We will need these files linked to the other module code, so we will modify the module config file again to add the name of the UI and the path to the header file. 
+The naming convention often used is to add 'Dialog' to the end of the module name for the name of the UI and the names of the files.
+\begin{verbatim}
+"UI": {
+    "name": "TestModuleSimpleUIDialog",
+    "header": "Interface/Modules/String/TestModuleSimpleUIDialog.h"
+  }
+\end{verbatim}
 
 
+
+\begin{figure}[H]
+\scalebox{0.3}{\includegraphics{SCIRun5ModuleGeneration_Figures/simpleUI.png}}
+\caption{Locate ReadField module.}
+\label{fig:readfield}
+\end{figure}
 
 
 

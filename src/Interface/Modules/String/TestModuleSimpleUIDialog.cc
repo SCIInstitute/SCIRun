@@ -26,11 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/TestModuleSimpleUIDialog.h>
+#include <Interface/Modules/String/TestModuleSimpleUIDialog.h>
+#include <Modules/String/TestModuleSimpleUI.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Modules::StringManip;
 
 TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -40,6 +42,6 @@ TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addLineEditManager(inputstring_,TestModuleSimpleUIDialog::FormatString);
+  //addLineEditManager(inputstring_,TestModuleSimpleUI::FormatString);
 }
 

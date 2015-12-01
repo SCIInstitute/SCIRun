@@ -49,6 +49,7 @@ public:
   OUTPUT_PORT(0, OutputString, String);
   
   static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  //static Core::Algorithms::AlgorithmParameterName FormatString;
 };
 }}}
 
