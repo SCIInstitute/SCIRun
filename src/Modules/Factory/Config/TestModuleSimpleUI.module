@@ -12,7 +12,7 @@
     "header": "N/A"
   },
   "UI": {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "TestModuleSimpleUIDialog",
+    "header": "Interface/Modules/String/TestModuleSimpleUIDialog"
   }
 }
