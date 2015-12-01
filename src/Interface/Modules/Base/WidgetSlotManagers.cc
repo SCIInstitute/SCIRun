@@ -30,9 +30,13 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Algorithms;
 
-WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog) : state_(state), dialog_(dialog)
+WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog, QWidget* widget, const AlgorithmParameterName& name)
+  : state_(state), dialog_(dialog)
 {
+  if (widget)
+    widget->setToolTip(QString::fromStdString(name.name_));
 }
 
 WidgetSlotManager::~WidgetSlotManager() 
