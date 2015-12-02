@@ -628,6 +628,64 @@ Once these files are added, SCIRun should build.
 Load SCIRun and place the TestModuleSimpleUI module.  
 Open the UI for the module and make sure that looks correct.  
 
+Now we will work on connecting the input from the UI to the code in the module.  
+Begin by modifying the \emph{TestModuleSimpleUIDialog.cc} to include a line that reads the input field and assigns it to a variable. 
+This line needs to go near the end in the main function of the module dialog code
+\begin{verbatim}
+addLineEditManager(inputstring_,TestModuleSimpleUI::FormatString);
+\end{verbatim}
+This function will read the value of 'inputstring\_' and set it to 'FormatString', which we have included as if it was part of the 'TestModuleSimpleUI' namespace.  
+We will need to include it as such, by adding it as a public function in the \emph{TestModuleSimpleUI.h} file.
+\begin{verbatim}
+static Core::Algorithms::AlgorithmParameterName FormatString;
+\end{verbatim}
+This should be the final declaration in the public list (after the 'staticInfo\_' declaration).
+Another change in this file is to modify the 'setStateDefault' function so that it is not empty.  
+Remove the curly brackets from this:
+\begin{verbatim}
+virtual void setStateDefaults() {};
+\end{verbatim}
+so that it is:
+\begin{verbatim}
+virtual void setStateDefaults();
+\end{verbatim}
+We need a couple more additions to make the value from the UI available for use in the main function code.  
+In the \emph{TestModuleSimpleUI.cc} file, add the following line to the before the main execute function, i.e., right after declaring the namespaces.
+\begin{verbatim}
+SCIRun::Core::Algorithms::AlgorithmParameterName PrintStringIntoString::FormatString("FormatString");
+\end{verbatim}
+
+Next we need to be able to set the state defaults by creating context for the 'setStateDefault' function we just exposed.
+Add this function just before the execute function.
+\begin{verbatim}
+void TestModuleSimpleUI::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(FormatString,std::string ("[Insert message here]"));
+}
+\end{verbatim}
+With these three additions, the code should build.
+If you load the module, you should she the default message ("[Insert message here]") in the input field.  
+Changing this will still not affect the output because the execute function is still hard coded for a specific message.  
+
+Now we need to change the execute function to use the UI inputs, which is very simple.  
+Simply get the state of the module (\verb|auto state = get_state();|), then assign the output string variable to \verb|state -> getValue(FormatString).toString();| so that the function is as follows:
+\begin{verbatim}
+void
+TestModuleSimpleUI::execute()
+{
+  std::string message_string;
+  auto state = get_state();
+  message_string = state -> getValue(FormatString).toString();
+  StringHandle msH(new String(message_string));
+  sendOutput(OutputString, msH);
+}
+\end{verbatim}
+After building the software, you should now see that the output of module will be the same as the string that is put in the input field in the module UI.  
+
+
+
+
 
 
 
