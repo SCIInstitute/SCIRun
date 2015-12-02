@@ -26,37 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_WIDGET_SLOT_MANAGERS_H
-#define INTERFACE_APPLICATION_WIDGET_SLOT_MANAGERS_H
+#ifndef INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H
+#define INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H 1
 
-#include <QObject>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Core/Algorithms/Base/Name.h>
-#include <Interface/Modules/Base/share.h>
+#include "Interface/Modules/Math/ui_ReportMatrixSliceMeasureDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-namespace Gui {
-  
-  class ModuleDialogGeneric;
+	namespace Gui {
+		class SCISHARE ReportMatrixSliceMeasureDialog : public ModuleDialogGeneric,
+			public Ui::ReportMatrixSliceMeasureDialog
+		{
+			Q_OBJECT
 
-  class SCISHARE WidgetSlotManager : public QObject
-  {
-    Q_OBJECT
-  public:
-    WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog, QWidget* widget, const Core::Algorithms::AlgorithmParameterName& name);
-    virtual ~WidgetSlotManager();
-    virtual void pushImpl() = 0;
-  public Q_SLOTS:
-    void push();
-    virtual void pull() = 0;
-  protected:
-    SCIRun::Dataflow::Networks::ModuleStateHandle state_;
-    ModuleDialogGeneric& dialog_;
-  };
-
-  typedef boost::shared_ptr<WidgetSlotManager> WidgetSlotManagerPtr;
-
-}
+		public:
+			ReportMatrixSliceMeasureDialog(const std::string& name,
+						SCIRun::Dataflow::Networks::ModuleStateHandle state,
+						QWidget* parent = 0);
+		};
+	}
 }
 
 #endif
