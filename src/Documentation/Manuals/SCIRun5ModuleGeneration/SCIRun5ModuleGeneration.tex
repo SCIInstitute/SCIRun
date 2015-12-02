@@ -207,12 +207,7 @@ public Has1InputPort<DynamicPortTag<FieldPortTag>>,
 public Has2InputPorts<FieldPortTag,DynamicPortTag<FieldPortTag>>
 \end{verbatim}
 
-
-
-
-
-
-List of port tags that can be used in SCIRun:
+Here is a list of port tags that can be used in SCIRun:
 \begin{itemize}
 \item MatrixPortTag 
 \item ScalarPortTag
@@ -225,8 +220,22 @@ List of port tags that can be used in SCIRun:
 \item DatatypePortTag
 \end{itemize}
 
+The header is also where the ports are named and the datatype is declared.  
+It is import for the name of each port to be unique, including all the inputs and outputs.  
+When the port is declared and named, the datatype is also specified.  
+This declares the datatype expected by the port and can be a subset of the port tag type, e.g., DenseMatrix instead of Matrix.
+However, it can be better to do this within the module to control the exception.  
+
+If there is a UI with the module in question, the state variables may be needed to pass data between the module and the UI.  
+State variables will need to be declared here as public (see Section~\ref{sec:connectUI} for an example).  
+The 'setStateDefault' function is how the default state variables are set.  
+If there is no UI and therefore no state variables, this function can be set to empty in this file and omitted from the .cc file.  
+
 \subsection{Module Code File}
 
+The module header file functions as a typical C++ file, containing the functions for the module.  
+The \emph{ModuleTemplate.cc} file found in \emph{src/Modules/Template/} provides an example of the kind of coding needed for a module .cc file.  
+The relevant functions are included here, with annotated comments:
 \begin{verbatim}
 #include <Modules/Fields/@ModuleName@.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -270,6 +279,8 @@ void @ModuleName@::execute()
 }
 \end{verbatim}
 
+As shown in this template example, the model.cc file contains mostly constructors and sends the inputs to the SCIRun algorithm.
+Most modules should follow this practice, which allows for easier maintenance of common algorithms.   
 
 \section{Algorithm Code}
 \label{sec:algo}
