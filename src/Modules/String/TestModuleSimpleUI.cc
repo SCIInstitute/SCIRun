@@ -48,6 +48,7 @@ const ModuleLookupInfo TestModuleSimpleUI::staticInfo_("TestModuleSimpleUI", "St
 
 TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputString);
   INITIALIZE_PORT(OutputString);
 }
 
@@ -64,7 +65,14 @@ TestModuleSimpleUI::execute()
   
   std::string message_string;
   
+  auto  stringH = getOptionalInput(InputString);
+  
   auto state = get_state();
+  
+  if (stringH && *stringH)
+  {
+    state -> setValue(FormatString, (*stringH) -> value());
+  }
   
   //message_string = "You stay classy, Planet Earth!";
   message_string = state -> getValue(FormatString).toString();

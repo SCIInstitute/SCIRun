@@ -287,6 +287,9 @@ void @ModuleName@::execute()
 \label{fig:qteditor}
 \end{figure}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Example: Simple Module Without UI}
 
 \begin{introduction}
@@ -294,8 +297,11 @@ This chapter describes how to create a very simple module in SCIRun.
 We will show how to make a simple module that outputs a simple string.  
 This example will show the basics of the functions and code used by SCIRun to create and run modules.
 
-%Scope: \hyperref[sec:test_config]{Module Config File} - \hyperref[sec:test_header]{Module Header File} - \hyperref[sec:test_source]{Module Source Code}
+Scope: \hyperref[sec:examp_config]{Module Config File} - \hyperref[sec:examp_header]{Module Header File} - \hyperref[sec:examp_source]{Module Source Code} - \hyperref[sec:testing]{Building and Testing}
 \end{introduction}
+
+\section{Module Config File}
+\label{sec:examp_config}
 
 If you have created a fork from the SCIRun git repository, begin by creating a new branch in your repository.  
 Be sure to commit your changes to your repository often, as this can help you and the developers fix and make improvements to the code.
@@ -332,6 +338,8 @@ The text of the file should be:
 The exact text of the status and description can be whatever the creator desires. 
 The names of the module and filenames can also be different, but they must match the module code.  
 
+\section{Module Header File}
+\label{sec:examp_header}
 
 Now we move to the module code.
 The module will need to be placed in one of the directories in \emph{src/Modules/}, so choose the directory that fits the modules use the best (do not place the module code in \emph{Factory} or \emph{Template}, and \emph{Legacy} is generally for converted modules from earlier versions of SCIRun)
@@ -370,6 +378,9 @@ As mentioned in Section~\ref{sec:config}, the header files for most modules do n
 This example in particular contains only elements common to most other modules.
 The key to creating the header files is to ensure that the module name is correct in every place it occurs, that the namespace (StringManip) matches the module config file and that the ports are numbered and labeled correctly.  
 
+\section{Module Source Code}
+\label{examp_source}
+
 The final file needed for this module is the source code file (\emph{ModuleTemplate.cc}).
 The functionality used in this module is minimal to show how the essential functions.  
 With the license and other comments, the file should contain:
@@ -405,6 +416,8 @@ TestModuleSimple::execute()
 }
 \end{verbatim}
 
+\section{Building and Testing}
+\label{sec:testing}
 
 After these files are modified correctly,  the only step remaining before building is adding the module code and header to the compiler list.  
 Open the \emph{src/Modules/String/CMakeLists.txt} file.  
@@ -433,19 +446,22 @@ After SCIRun builds completely, Launch SCIRun and test the module.
 You can use the PrintDatatype module to view the string that this module outputs. 
 Other modules will require more testing, but due to the very simple nature of the module you can know that if the messages matches what you expect, then it is working properly.  
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Example: Simple Module With UI}
 
 \begin{introduction}
-This example will build off of the previous example.  In this chapter we will show how to add an input port and a UI to an existing module.
-%Scope: \hyperref[readdata]{Read Data File} - \hyperref[slice]{Slice} -
-%\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
-\end{introduction}
-
 In this chapter, we will build off the module that we described in the previous chapter to show how to add a UI and an input port.  
 This module will print a message that comes from either the input port or the UI.  
 We will show how to add a UI incrementally to help convey the principles that the software is based upon.
 This incremental approach allows the user to copy this approach with more complicated module as it provides sanity checks for the user.
+
+Scope: \hyperref[sec:duplicate]{Duplicate the Previous Module} - \hyperref[sec:addUI]{Creating a Custom UI} -
+\hyperref[connectUI]{Connecting UI to the Module} - \hyperref[sec:addinput]{Adding an Input Port} - \hyperref[sec:finished]{Finished Code}
+\end{introduction}
+
+\section{Duplicate the Previous Module}
+\label{sec:duplicate}
 
 To begin, copy the \emph{TestModuleSimple.module} in the \emph{src/Modules/Factory/Config/} and name the copy \emph{TestModuleSimpleUI.module}.
 Change the name and header field to reflect the new name of the module, as shown here:
@@ -517,7 +533,10 @@ Once SCIRun is built, you can try to add the new module to the workspace.
 SCIRun will give you a warning dialogue about not finding a UI file, so it will create a default one.
 This UI is not connected to anything, so it won't affect the module at all, but you should be able to open the UI and see it ( a slider and two buttons).
 Check to make sure that the output is still the string that you expected. 
-If everything is working properly, we can move onto the next step of adding our own module.  
+If everything is working properly, we can move onto the next step of adding our own module. 
+
+\section{Creating a Custom UI}
+\label{sec:addUI}
 
 To create a new UI, we need to add three new files: a design file, and a cc and header file for the UI.  
 We will need these files linked to the other module code, so we will modify the module config file again to add the name of the UI and the path to the header file. 
@@ -628,6 +647,10 @@ Once these files are added, SCIRun should build.
 Load SCIRun and place the TestModuleSimpleUI module.  
 Open the UI for the module and make sure that looks correct.  
 
+
+\section{Connecting UI to the Module}
+\label{sec:connectUI}
+
 Now we will work on connecting the input from the UI to the code in the module.  
 Begin by modifying the \emph{TestModuleSimpleUIDialog.cc} to include a line that reads the input field and assigns it to a variable. 
 This line needs to go near the end in the main function of the module dialog code
@@ -683,12 +706,77 @@ TestModuleSimpleUI::execute()
 \end{verbatim}
 After building the software, you should now see that the output of module will be the same as the string that is put in the input field in the module UI.  
 
+\section{Adding an Input Port}
+\label{sec:addinput}
+
+With the UI implemented and working, we will now add an optional input port to the module.  
+This functionality is fairly simple in SCIRun5.  
+We need to add the port in the \emph{TestModuleSimpleUI.h} file.  
+First, replace the line:
+\begin{verbatim}
+public HasNoInputPorts,
+\end{verbatim}
+with:
+\begin{verbatim}
+public Has1InputPort<StringPortTag>,
+\end{verbatim}
+Next, we need to name the port in the list of public objects.  
+Add:
+\begin{verbatim}
+INPUT_PORT(0, InputString, String);
+\end{verbatim}
+near the output port declaration.  
+These changes are all that are needed in the header file, but we need to initialize the port in the .cc file.
+In the \emph{TestModuleSimpleUI.cc}, add the initializing line to the module constructor function, which should be then:
+\begin{verbatim}
+TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputString);
+  INITIALIZE_PORT(OutputString);
+}
+\end{verbatim}
+These changes should allow the code to build with an input port, yet the input will not affect the output of the module. 
+
+In the main execute function in \emph{TestModuleSimpleUI.cc}, we need to read whether there is an input, then use that input or the UI input if there is none.  
+This is straight forward in SCIRun, the execute function will be:
+\begin{verbatim}
+void
+TestModuleSimpleUI::execute()
+{
+  std::string message_string;
+  auto  stringH = getOptionalInput(InputString);
+  auto state = get_state();
+  
+  if (stringH && *stringH)
+  {
+    state -> setValue(FormatString, (*stringH) -> value());
+  }
+  
+  message_string = state -> getValue(FormatString).toString();
+  StringHandle msH(new String(message_string));
+  sendOutput(OutputString, msH);
+}
+\end{verbatim}
+This code reads an optional input, checks if it is not empty, and if so then changes the state variable to the input.  
+By changing the state variable before assigning it to the output, it changes the UI input string also.  
+
+This should be all the changes necessary to add inputs to this module.
+Build SCIRun, then test the module using the CreateString and PrintDatatype modules.  
+When there is no input, the value in the UI field is the output.  
+When there is an output, the input port is the same as the output port, and the UI input field is set to the input string.  
+This prevents the user from changing the input string while there is a string in the input port.  
+
+For a slightly more complicated, yet much more useful module as an example, check out PrintStringIntoString.
+The setup code is mostly the same, except there are dynamic ports, so much of the code will look very similar.  
+ 
+\section{Finished Code}
+\label{sec:finished}
 
 
+%TODO add references to the files.  
 
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Example: Simple Module With Algorithm}
 
@@ -700,12 +788,24 @@ After building the software, you should now see that the output of module will b
 
 %TODO
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Converting Modules from SCIRun 4}
 
 \begin{introduction}
-%Scope: \hyperref[readdata]{Read Data File} - \hyperref[slice]{Slice} -
-%\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
+Scope: \hyperref[sec:strategy]{Strategy} - \hyperref[sec:changes]{Common Function Changes} - \hyperref[sec:errors]{Common Build Errors}
 \end{introduction}
+
+\section{Strategy}
+\label{sec:strategy}
+
+\section{Common Function Changes}
+\label{sec:changes}
+
+\section{Common Build Errors}
+\label{sec:errors}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Creating Unit Tests}
 
@@ -714,6 +814,11 @@ After building the software, you should now see that the output of module will b
 %\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
 \end{introduction}
 
+You will at least need a testing network.  
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Documenting the New Module}
 
 \begin{introduction}
@@ -721,6 +826,7 @@ After building the software, you should now see that the output of module will b
 %\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
 \end{introduction}
 
+You should totally document the modules you add.  
 
 
 

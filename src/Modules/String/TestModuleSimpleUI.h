@@ -38,7 +38,7 @@ namespace Modules {
 namespace StringManip {
 
 class SCISHARE TestModuleSimpleUI : public SCIRun::Dataflow::Networks::Module,
-public HasNoInputPorts,
+public Has1InputPort<StringPortTag>,
 public Has1OutputPort<StringPortTag>
 {
 public:
@@ -46,6 +46,7 @@ public:
   virtual void execute();
   virtual void setStateDefaults();
   
+  INPUT_PORT(0, InputString, String);
   OUTPUT_PORT(0, OutputString, String);
   
   static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
