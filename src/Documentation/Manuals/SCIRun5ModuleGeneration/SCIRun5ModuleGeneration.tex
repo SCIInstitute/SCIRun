@@ -279,12 +279,12 @@ void @ModuleName@::execute()
 \label{sec:ui}
 
 
-\subsection{QT File}
+\subsection{Module Design File}
 
 \begin{figure}[H]
 \scalebox{0.3}{\includegraphics{SCIRun5ModuleGeneration_Figures/QT-editor.png}}
-\caption{Locate ReadField module.}
-\label{fig:readfield}
+\caption{Template module interface design file as seen in the Qt editor.}
+\label{fig:qteditor}
 \end{figure}
 
 \chapter{Example: Simple Module Without UI}
@@ -519,7 +519,7 @@ This UI is not connected to anything, so it won't affect the module at all, but 
 Check to make sure that the output is still the string that you expected. 
 If everything is working properly, we can move onto the next step of adding our own module.  
 
-To create a new UI, we need to add three new files: a QT file, and a cc and header file for the UI.  
+To create a new UI, we need to add three new files: a design file, and a cc and header file for the UI.  
 We will need these files linked to the other module code, so we will modify the module config file again to add the name of the UI and the path to the header file. 
 The naming convention often used is to add 'Dialog' to the end of the module name for the name of the UI and the names of the files.
 \begin{verbatim}
@@ -529,13 +529,105 @@ The naming convention often used is to add 'Dialog' to the end of the module nam
   }
 \end{verbatim}
 
-
+Next, we need to use the QT editor to design a module UI.  
+Copy the QT module file from \emph{src/Interface/Modules/Template/ModuleDesignerFile.ui} to \emph{src/Interface/Modules/String/TestModuleSimpleUIDialog.ui}.  
+Open the \emph{TestModuleSimpleUIDialog.ui} file in the Qt editor, which provides a graphic method for modifying and compiling the design file.
+First, delete the check box and input scroll wheel widgets and delete the 'knob 2' label.
+Next, add a \emph{line edit widget} by finding it in the \emph{Widgdet Box} window (in the \emph{Input Widget} section) and clicking and dragging it next to the remaining label.  
+Change the text of the remaining label to 'My String:' or something similar.
+Finally, change the name of the of the \emph{line edit widget} to \emph{inputstring\_} and the name of the \emph{QDialog} object to \emph{TestModuleSimpleUIDialog}.  
+This can be done in the \emph{Object Inspector} or in the \emph{Property Editor} when the appropriate object is clicked.  
+Figure~\ref{fig:simpleUI} shows what the module should look like in the Qt editor.
 
 \begin{figure}[H]
-\scalebox{0.3}{\includegraphics{SCIRun5ModuleGeneration_Figures/simpleUI.png}}
-\caption{Locate ReadField module.}
-\label{fig:readfield}
+\scalebox{0.4}{\includegraphics{SCIRun5ModuleGeneration_Figures/simpleUI.png}}
+\caption{Module interface design file for the TestModuleSimpleUI module as seen in the Qt editor.}
+\label{fig:simpleUI}
 \end{figure}
+
+Now that the module UI is designed, we need to link it to the module with the module dialog code.
+Copy the \emph{ModuleDialog.cc} and the \emph{ModuleDialog.h} from the \emph{src/Interface/Modules/Template/} directory to the \emph{src/Interface/Modules/String/} directory, with the appropriate names (\emph{TestModuleSimpleUIDialog.cc} and \emph{TestModuleSimpleUIDialog.h}).
+For the \emph{TestModuleSimpleUIDialog.h}, change the module name reference to the correct module name and delete the 'virtual void pull()' function.  The code should be very similar to the following:
+\begin{verbatim}
+#ifndef INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
+#define INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
+
+#include <Interface/Modules/String/ui_TestModuleSimpleUIDialog.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/String/share.h>
+
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE TestModuleSimpleUIDialog : public ModuleDialogGeneric,
+  public Ui::TestModuleSimpleUIDialog
+{
+	Q_OBJECT
+	
+public:
+  TestModuleSimpleUIDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+};
+}}
+#endif
+\end{verbatim}
+The \emph{TestModuleSimpleUIDialog.cc} requires similar treatment, but will require the addition of few more changes.  Add and include for the module header file, change the namespace from 'Field' to 'StringManip', and delete the last two lines from the main function.
+The code should be:
+\begin{verbatim}
+#include <Interface/Modules/String/TestModuleSimpleUIDialog.h>
+#include <Modules/String/TestModuleSimpleUI.h>
+
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::StringManip;
+
+TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+}
+\end{verbatim}
+This should be enough to create a UI for the TestModuleSimpleUI module, but it will not be able interact yet.
+We will need to modify this file later to connect all the required inputs.  
+For now, we can build SCIRun to test the UI design.  
+Make sure that these three new files are added to the \emph{CMakeList.txt} in the \emph{src/Interface/Modules/String/} directory:
+\begin{verbatim}
+
+É
+
+SET(Interface_Modules_String_FORMS
+  
+  ...
+  
+  TestModuleSimpleUIDialog.ui
+)
+
+SET(Interface_Modules_String_HEADERS
+
+É
+
+  TestModuleSimpleUIDialog.h
+)
+
+SET(Interface_Modules_String_SOURCES 
+  
+  ...
+  
+  TestModuleSimpleUIDialog.cc
+)
+
+É
+
+\end{verbatim}
+
+Once these files are added, SCIRun should build. 
+Load SCIRun and place the TestModuleSimpleUI module.  
+Open the UI for the module and make sure that looks correct.  
+
 
 
 
