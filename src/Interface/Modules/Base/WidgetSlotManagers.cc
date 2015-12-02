@@ -36,7 +36,10 @@ WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHand
   : state_(state), dialog_(dialog)
 {
   if (widget)
-    widget->setToolTip(QString::fromStdString(name.name_));
+  {
+    widget->setToolTip("State key: " + QString::fromStdString(name.name_));
+    widget->setStyleSheet(widget->styleSheet() + " QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+  }
 }
 
 WidgetSlotManager::~WidgetSlotManager() 
