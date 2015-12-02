@@ -26,37 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_WIDGET_SLOT_MANAGERS_H
-#define INTERFACE_APPLICATION_WIDGET_SLOT_MANAGERS_H
+#include <Interface/Modules/Math/ReportMatrixSliceMeasureDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <QtGui>
 
-#include <QObject>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Core/Algorithms/Base/Name.h>
-#include <Interface/Modules/Base/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun {
-namespace Gui {
-  
-  class ModuleDialogGeneric;
+ReportMatrixSliceMeasureDialog::ReportMatrixSliceMeasureDialog(const std::string& name, ModuleStateHandle state,
+	QWidget* parent/* = 0*/)
+	: ModuleDialogGeneric(state, parent)
+{
+	setupUi(this);
+	setWindowTitle(QString::fromStdString(name));
+	fixSize();
 
-  class SCISHARE WidgetSlotManager : public QObject
-  {
-    Q_OBJECT
-  public:
-    WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog, QWidget* widget, const Core::Algorithms::AlgorithmParameterName& name);
-    virtual ~WidgetSlotManager();
-    virtual void pushImpl() = 0;
-  public Q_SLOTS:
-    void push();
-    virtual void pull() = 0;
-  protected:
-    SCIRun::Dataflow::Networks::ModuleStateHandle state_;
-    ModuleDialogGeneric& dialog_;
-  };
-
-  typedef boost::shared_ptr<WidgetSlotManager> WidgetSlotManagerPtr;
-
+  addRadioButtonGroupManager({ rowbutton_, columnbutton_ }, Variables::Operator);
+  addRadioButtonGroupManager({ sumbutton_, meanbutton_, varbutton_, stdbutton_, normbutton_, maxbutton_, minbutton_, medianbutton_ }, Variables::Method);
 }
-}
-
-#endif

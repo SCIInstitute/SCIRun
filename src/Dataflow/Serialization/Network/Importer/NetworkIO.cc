@@ -54,12 +54,13 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #include <libxml/catalog.h>
-
+#include <Core/Logging/Log.h>
 #include <iostream>
 #include <sstream>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 
 LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath, const ModuleFactory& modFactory) :
 net_file_("new.srn"),
@@ -197,39 +198,46 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
   if (!xmlData_)
     return;
 
-  auto fromDesc = modFactory_.lookupDescription(ModuleLookupInfo(fromId.name_, "TODO", "SCIRun"));
-  auto toDesc = modFactory_.lookupDescription(ModuleLookupInfo(toId.name_, "TODO", "SCIRun"));
-
-  auto& connections = xmlData_->network.connections;
-  OutgoingConnectionDescription out;
-  out.moduleId_ = fromId;
-
-  auto fromIndex = boost::lexical_cast<int>(from_port);
-  if (fromIndex >= fromDesc.output_ports_.size() && fromDesc.output_ports_.back().isDynamic)
+  try
   {
-    out.portId_ = fromDesc.output_ports_.back().id;
-    out.portId_.id = fromIndex;
+    auto fromDesc = modFactory_.lookupDescription(ModuleLookupInfo(fromId.name_, "TODO", "SCIRun"));
+    auto toDesc = modFactory_.lookupDescription(ModuleLookupInfo(toId.name_, "TODO", "SCIRun"));
+
+    auto& connections = xmlData_->network.connections;
+    OutgoingConnectionDescription out;
+    out.moduleId_ = fromId;
+
+    auto fromIndex = boost::lexical_cast<int>(from_port);
+    if (fromIndex >= fromDesc.output_ports_.size() && fromDesc.output_ports_.back().isDynamic)
+    {
+      out.portId_ = fromDesc.output_ports_.back().id;
+      out.portId_.id = fromIndex;
+    }
+    else
+      out.portId_ = fromDesc.output_ports_.at(fromIndex).id;
+    IncomingConnectionDescription in;
+    in.moduleId_ = toId;
+
+    auto toIndex = boost::lexical_cast<int>(to_port);
+
+    if (toIndex >= toDesc.input_ports_.size() && toDesc.input_ports_.back().isDynamic)
+    {
+      in.portId_ = toDesc.input_ports_.back().id;
+      in.portId_.id = toIndex;
+    }
+    else
+      in.portId_ = toDesc.input_ports_.at(toIndex).id;
+  
+    ConnectionDescriptionXML conn;
+    conn.out_ = out;
+    conn.in_ = in;
+    connections.push_back(conn);
+    connectionIdMap_[con_id] = ConnectionId::create(conn).id_;
   }
-  else
-    out.portId_ = fromDesc.output_ports_.at(fromIndex).id;
-  IncomingConnectionDescription in;
-  in.moduleId_ = toId;
-
-  auto toIndex = boost::lexical_cast<int>(to_port);
-
-  if (toIndex >= toDesc.input_ports_.size() && toDesc.input_ports_.back().isDynamic)
+  catch (Core::InvalidArgumentException& e)
   {
-    in.portId_ = toDesc.input_ports_.back().id;
-    in.portId_.id = toIndex;
+    Log::get() << Core::Logging::ERROR_LOG << "File conversion error: connection not created between modules " << fromId << " and " << toId << std::endl;
   }
-  else
-    in.portId_ = toDesc.input_ports_.at(toIndex).id;
-
-  ConnectionDescriptionXML conn;
-  conn.out_ = out;
-  conn.in_ = in;
-  connections.push_back(conn);
-  connectionIdMap_[con_id] = ConnectionId::create(conn).id_;
 }
 
 void

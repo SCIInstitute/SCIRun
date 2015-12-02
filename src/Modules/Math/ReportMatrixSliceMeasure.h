@@ -25,38 +25,31 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Math/ReportMatrixSliceMeasure.h
 
-#ifndef INTERFACE_APPLICATION_WIDGET_SLOT_MANAGERS_H
-#define INTERFACE_APPLICATION_WIDGET_SLOT_MANAGERS_H
+#ifndef MODULES_MATH_REPORTMATRIXSLICEMEASURE_H
+#define MODULES_MATH_REPORTMATRIXSLICEMEASURE_H
 
-#include <QObject>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Core/Algorithms/Base/Name.h>
-#include <Interface/Modules/Base/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Modules {
+namespace Math {
   
-  class ModuleDialogGeneric;
-
-  class SCISHARE WidgetSlotManager : public QObject
+  class SCISHARE ReportMatrixSliceMeasure : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
   {
-    Q_OBJECT
   public:
-    WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog, QWidget* widget, const Core::Algorithms::AlgorithmParameterName& name);
-    virtual ~WidgetSlotManager();
-    virtual void pushImpl() = 0;
-  public Q_SLOTS:
-    void push();
-    virtual void pull() = 0;
-  protected:
-    SCIRun::Dataflow::Networks::ModuleStateHandle state_;
-    ModuleDialogGeneric& dialog_;
+    ReportMatrixSliceMeasure();
+    virtual void execute();
+    virtual void setStateDefaults();
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    
+    INPUT_PORT(0, InputMatrix, Matrix);
+    OUTPUT_PORT(0, OutputMatrix, Matrix);
   };
-
-  typedef boost::shared_ptr<WidgetSlotManager> WidgetSlotManagerPtr;
-
-}
-}
+}}}
 
 #endif

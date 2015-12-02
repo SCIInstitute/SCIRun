@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReportMatrixSliceMeasure",
+    "namespace": "Math",
+    "status": "combination of ReportMatrixColumnMeasure and ReportMatrixRowMeasure. works only on dense matrices.",
+    "description": "Computes the statistics of each row or column of a matrix.",
+    "header": "Modules/Math/ReportMatrixSliceMeasure.h"
+  },
+  "algorithm": {
+    "name": "ReportMatrixSliceMeasureAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/ReportMatrixSliceMeasureAlgo.h"
+  },
+  "UI": {
+    "name": "ReportMatrixSliceMeasureDialog",
+    "header": "Interface/Modules/Math/ReportMatrixSliceMeasureDialog.h"
+  }
+}
