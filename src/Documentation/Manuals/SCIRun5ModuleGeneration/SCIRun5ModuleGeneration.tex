@@ -77,7 +77,7 @@ Please see the \href{https://help.github.com}{github help page} for more informa
 This chapter will describe the files need to create a module in SCIRun.
 
 Scope: \hyperref[sec:overview]{Overview of Files Needed for each Module} - \hyperref[sec:config]{Module Configuration File} -
-\hyperref[sec:module]{Module Source Code} - \hyperref[sec:algo]{Algorithm Code} - \hyperref[sec:ui]{Module UI Code}
+\hyperref[sec:module]{Module Source Code} - \hyperref[sec:ui]{Module UI Code}  - \hyperref[sec:algo]{Algorithm Code}
 \end{introduction}
 
 \section{Overview of Files Needed for each Module}
@@ -282,21 +282,217 @@ void @ModuleName@::execute()
 As shown in this template example, the model.cc file contains mostly constructors and sends the inputs to the SCIRun algorithm.
 Most modules should follow this practice, which allows for easier maintenance of common algorithms.   
 
-\section{Algorithm Code}
-\label{sec:algo}
-
 
 \section{Module UI Code}
 \label{sec:ui}
 
+There are three files needed to set up a UI for a module, a design file, a header file, and a .cc file.  
+These files should all be located in the same directory within the \emph{src/Interface/Modules/}. 
+We will show the examples located in \emph{src/Interface/Modules/Template} as examples of the core functions needed.
 
 \subsection{Module Design File}
 
+The module design file is an xml file that describes the UI structure.  
+This file can be created and edited in the Qt editor.  
+Figure~\ref{fig:qteditor} shows the example template \emph{ModuleDesignerFile.ui} within the Qt editor.
+As shown, the user can interactively modify the placement of the widgets in the window.  
+The Widget Box window allows the user to choose and place new objects within the window.  
+The Property Editor allows for the modification of properties of the various objects and widgets within the UI, including size, type of input, names, etc.
+With the Object Inspector window, the hierarchy and organization of the UI can be changed.
+
 \begin{figure}[H]
-\scalebox{0.3}{\includegraphics{SCIRun5ModuleGeneration_Figures/QT-editor.png}}
+\centerline{
+\scalebox{0.35}{\includegraphics{SCIRun5ModuleGeneration_Figures/QT-editor.png}}}
 \caption{Template module interface design file as seen in the Qt editor.}
 \label{fig:qteditor}
 \end{figure}
+
+When using the editor to make a module UI, there are a few things to consider.
+First, make sure all the relevant objects, including the name of UI (QDialog) is consistent with module dialog code.  
+You can change the size and placement of objects with the property manager, but make sure that you leave some buffer space as some OS will interpret the file slightly differently.  
+The structure of the UI can be changed or destroyed, look at some of the existing modules for examples.
+
+\subsection{Module Dialog Header}
+
+The module dialog header performs as a traditional C++ header for the module dialog code.  
+Shown here is the example \emph{ModuleDialog.h} in the \emph{src/Interface/Modules/Template} folder.
+
+\begin{verbatim}
+#ifndef INTERFACE_MODULES_@ModuleName@DIALOG_H
+#define INTERFACE_MODULES_@ModuleName@DIALOG_H
+
+//This file is created from the @ModuleName@Dialog.ui in the module factory. 
+#include <Interface/Modules/Fields/ui_@ModuleName@Dialog.h>
+#include <boost/shared_ptr.hpp>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
+
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE @ModuleName@Dialog : public ModuleDialogGeneric,
+  public Ui::@ModuleName@
+{
+	Q_OBJECT
+	
+public:
+  @ModuleName@Dialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+    //this function would be from pulling data from module, 
+    // usually to change the UI. 
+  virtual void pull() override;
+};
+}}
+#endif
+\end{verbatim}
+
+The module dialog header file will be very similar for each module, with only the names of the module and a few different functions declared here.  
+
+
+\subsection{Module Dialog Code}
+
+The module dialog cc file is used with Qt to establish the functionality of module UI.  
+Shown here is the example \emph{ModuleDialog.cc} in the \emph{src/Interface/Modules/Template} folder.
+\begin{verbatim}
+#include <Interface/Modules/Fields/@ModuleName@Dialog.h>
+#include <Core/Algorithms/Field/@ModuleName@Algo.h>
+
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+@ModuleName@Dialog::@ModuleName@Dialog(const std::string& name, 
+  ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+
+//get values from UI and send to algorithm 
+  addCheckBoxManager(knob1CheckBox_, Parameters::Knob1);
+  addDoubleSpinBoxManager(knob2SpinBox_, Parameters::Knob2);
+}
+
+void @ModuleName@Dialog::pull()
+{
+// pull the code from the module and set in the dialog. 
+// make changes necessary.
+  pull_newVersionToReplaceOld();
+}
+\end{verbatim}
+
+The module dialog code is mostly for passing data between the module and the UI and changing the UI when require by the module.  
+Parameters and inputs can be passed straight to the algorithm, as templated in this example.  
+The 'pull' functions are optional to use data from the module and algorithm to either display in the UI or to use to change the options or appearance of the UI.  
+There can be other forms of 'pull', such as 'pullSpecial'
+A 'push' function can be used in conjunction with 'pull'.
+These functions, 'pull' and 'push' are automatic functions in the module UI.
+
+\section{Algorithm Code}
+\label{sec:algo}
+
+The Module algorithm files are where most of the computation code should live.  
+There are two files, a header and a .cc file. 
+Making algorithm files can be tricky for a beginner, because there are several options to use due to the flexible nature of SCIRun.  
+However, the module algorithms have more in common that it first appears.
+The trick to implementing a new module algorithm (as with most things) is look at several other modules that have similar functions and try to emulate those methods.  
+
+Module algorithm code belongs in the relevant directory within the \emph{src/Core/Algorithms/} directory.
+Provided in this section are some template examples, found in \emph{src/Core/Algorithms/Template/}
+
+\subsection{Module Algorithm Header}
+
+The module algorithm header performs as a traditional C++ header for the module algorithm code.  
+Shown here is the example \emph{AlgorithmTemplate.h} in the \emph{src/Core/Algorithm/Template/} folder.
+\begin{verbatim}
+#ifndef CORE_ALGORITHMS_FIELDS_@AlgorithmName@_H
+#define CORE_ALGORITHMS_FIELDS_@AlgorithmName@_H
+
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Field/share.h>
+
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+// declare parametes and options in header when not part of standard names. 
+        ALGORITHM_PARAMETER_DECL(Knob1);
+        ALGORITHM_PARAMETER_DECL(Knob2);
+
+        class SCISHARE @AlgorithmName@Algo : public AlgorithmBase
+        {
+        public:
+          @AlgorithmName@Algo();
+          //not necessary to declare here.
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+        };
+      }}}}
+#endif 
+\end{verbatim}
+Key difference that may occur in the algorithm header file are the function and variable declarations.
+Parameters and options for the algorithm may need to be declared here if they are not included in the recognized list (listed in \emph{Core/Algorithms/Base/AlgorithmVariableNames.h}).
+
+\subsection{Module Algorithm Code}
+
+The module algorithm cc file should contain the majority of the computation necessary for the module.
+Shown here is the example \emph{AlgorithmTemplate.h} in the \emph{src/Core/Algorithm/Template/} folder.
+\begin{verbatim}
+#include <Core/Algorithms/Field/@AlgorithmName@Algo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Logging/Log.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+//  this function is for setting defaults for state variables.  
+//  Mostly for UI variables. 
+@AlgorithmName@Algo::@AlgorithmName@Algo()
+{
+  using namespace Parameters;
+  addParameter(Knob1, false);
+  addParameter(Knob2, 1.0);
+}
+
+AlgorithmOutput @AlgorithmName@Algo::run_generic(const 
+     AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(Variables::InputField);
+  
+  FieldHandle outputField(inputField->deep_clone());
+  double knob2 = get(Parameters::Knob2).toDouble();
+  if (get(Parameters::Knob1).getBool())
+  {
+    // do something
+  }
+  else
+  {
+    // do something else
+  }
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
+}
+\end{verbatim}
+
+This template shows the algorithm using some of the defined names from \emph{Core/Algorithms/Base/AlgorithmVariableNames.h}, using the Variable namespace.
+This allows for easy use of common inputs and output to the algorithm.  
+If other or more values are needed, they can be declared in the header.  
+Also of note, the default values for the UI are set in the '@AlgorithmName@Algo()' function, and then in the module code, the 'setStateDefault ' function pulls the values from the algorithm.  
+This only works if the algorithm files are linked in the module configuration file. 
+
+There are several algorithms already implemented in SCIRun.  
+If there there are modules that have similar functionality, you may be able to use some of the functionality already implemented.  
+The module may still need it's own algorithm file.  
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -612,7 +808,8 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::StringManip;
 
-TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name, ModuleStateHandle state,
+TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name,
+  ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -686,7 +883,8 @@ virtual void setStateDefaults();
 We need a couple more additions to make the value from the UI available for use in the main function code.  
 In the \emph{TestModuleSimpleUI.cc} file, add the following line to the before the main execute function, i.e., right after declaring the namespaces.
 \begin{verbatim}
-SCIRun::Core::Algorithms::AlgorithmParameterName PrintStringIntoString::FormatString("FormatString");
+SCIRun::Core::Algorithms::AlgorithmParameterName 
+     PrintStringIntoString::FormatString("FormatString");
 \end{verbatim}
 
 Next we need to be able to set the state defaults by creating context for the 'setStateDefault' function we just exposed.
@@ -838,14 +1036,6 @@ You will at least need a testing network.
 \end{introduction}
 
 You should totally document the modules you add.  
-
-
-
-%\begin{figure}[H]
-%\scalebox{0.3}{\includegraphics{BasicTutorial_figures/readfield.png}}
-%\caption{Locate ReadField module.}
-%\label{fig:readfield}
-%\end{figure}
 
 
 \end{document}
