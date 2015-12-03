@@ -574,7 +574,7 @@ private:
   SCIRunMainWindow* window_;
 };
 
-NetworkSaveCommand::NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window) : 
+NetworkSaveCommand::NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window) :
 filename_(filename), editor_(editor), window_(window)
 {}
 

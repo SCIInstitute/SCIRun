@@ -44,8 +44,6 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  ColorMap cm("Rainbow");
-  previewColorMap_->setStyleSheet(buildGradientString(cm));
 
   addComboBoxManager(colorMapNameComboBox_, Parameters::ColorMapName);
   addSpinBoxManager(resolutionSpin_, Parameters::ColorMapResolution);
@@ -61,6 +59,14 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(shiftSlider_, SIGNAL(valueChanged(int)), this, SLOT(setShiftSpinner(int)));
   connect(resolutionSlider_, SIGNAL(valueChanged(int)), resolutionSpin_, SLOT(setValue(int)));
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
+
+  previewColorMap_ = new ClickableLabel(this);
+  connect(previewColorMap_, SIGNAL(clicked()), this, SLOT(previewClicked()));
+
+  ColorMap cm("Rainbow");
+  previewColorMap_->setStyleSheet(buildGradientString(cm));
+  previewColorMap_->setMinimumSize(100,60);
+  qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_);
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
@@ -70,6 +76,11 @@ void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
     invertCheck_->isChecked());
  // qDebug() << "updating color map: " << s << " " << resolutionSlider_->value() << " " << shiftSlider_->value();
   previewColorMap_->setStyleSheet(buildGradientString(cm));
+}
+
+void CreateStandardColorMapDialog::previewClicked()
+{
+  qDebug() << "color map clicked";
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview()
@@ -111,4 +122,14 @@ void CreateStandardColorMapDialog::setShiftSpinner(int i)
 void CreateStandardColorMapDialog::onInvertCheck(bool b)
 {
   updateColorMapPreview();
+}
+
+ClickableLabel::ClickableLabel(QWidget* parent)
+    : QLabel(parent)
+{
+}
+
+void ClickableLabel::mousePressEvent(QMouseEvent* event)
+{
+    Q_EMIT clicked();
 }

@@ -46,7 +46,7 @@ namespace SCIRun {
       CreateStandardColorMapDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = 0);
-      private Q_SLOTS:
+    private Q_SLOTS:
       void updateColorMapPreview();
       void updateColorMapPreview(const QString& s);
       const QString buildGradientString(const SCIRun::Core::Datatypes::ColorMap& cm);
@@ -54,9 +54,21 @@ namespace SCIRun {
       void setResolutionSlider(int i);
       void setShiftSpinner(int i);
       void onInvertCheck(bool b);
-
+      void previewClicked();
+    private:
+      QLabel* previewColorMap_;
     };
 
+    class ClickableLabel : public QLabel
+    {
+    Q_OBJECT
+    public:
+        explicit ClickableLabel( QWidget* parent = nullptr );
+    Q_SIGNALS:
+        void clicked(); //TODO: add x,y click location
+    protected:
+        virtual void mousePressEvent(QMouseEvent* event) override;
+    };
   }
 }
 
