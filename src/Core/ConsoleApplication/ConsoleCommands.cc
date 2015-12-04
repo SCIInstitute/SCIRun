@@ -37,6 +37,12 @@ using namespace SCIRun::Core;
 using namespace Commands;
 using namespace Console;
 using namespace SCIRun::Dataflow::Networks;
+using namespace Algorithms;
+
+LoadFileCommandConsole::LoadFileCommandConsole()
+{
+  addParameter(Name("FileNum"), 0);
+}
 
 bool LoadFileCommandConsole::execute()
 {

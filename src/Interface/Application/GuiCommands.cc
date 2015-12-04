@@ -27,7 +27,6 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <QtGui>
-#include <QtConcurrentRun>
 #include <numeric>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
@@ -35,6 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/NetworkEditor.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -43,11 +43,18 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Application/Utility.h>
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
+#include <boost/algorithm/string.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
 using namespace Commands;
 using namespace SCIRun::Dataflow::Networks;
+using namespace Algorithms;
+
+LoadFileCommandGui::LoadFileCommandGui()
+{
+  addParameter(Name("FileNum"), 0);
+}
 
 bool LoadFileCommandGui::execute()
 {
@@ -244,5 +251,26 @@ bool SetupDataDirectoryCommandGui::execute()
 
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
 
+  return true;
+}
+
+NetworkSaveCommand::NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window) :
+filename_(filename), editor_(editor), window_(window)
+{}
+
+bool NetworkSaveCommand::execute()
+{
+  std::string fileNameWithExtension = filename_.toStdString();
+  if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
+    fileNameWithExtension += ".srn5";
+
+  NetworkFileHandle file = editor_->saveNetwork();
+
+  XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
+  window_->setCurrentFile(QString::fromStdString(fileNameWithExtension));
+
+  window_->statusBar()->showMessage("File saved: " + filename_, 2000);
+  GuiLogger::Instance().logInfo("File save done: " + filename_);
+  window_->setWindowModified(false);
   return true;
 }

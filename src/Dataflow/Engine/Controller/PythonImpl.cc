@@ -363,24 +363,25 @@ std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, 
 
 std::string PythonImpl::disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
+  //TODO: doesn't work at all since there is no GUI connection to this network change event. Issue is #...
   auto id = impl_->connectionIdLookup_[moduleIdFrom][fromIndex][moduleIdTo][toIndex];
   if (!id.empty())
   {
-    std::cout << "here is the connection id i found: " << id << std::endl;
     nec_.removeConnection(id);
-    return "PythonImpl::disconnect success";
+    return "PythonImpl::disconnect IS NOT IMPLEMENTED";
   }
   else
   {
-    std::cout << "No connection id found" << std::endl;
     return "PythonImpl::disconnect: connection not found";
   }
-
-
 }
 
 std::string PythonImpl::saveNetwork(const std::string& filename)
 {
+  auto save = cmdFactory_->create(GlobalCommands::SaveNetworkFile);
+
+
+
   try
   {
     /// @todo: duplicated code from SCIRunMainWindow. Obviously belongs in a separate class.
@@ -396,6 +397,8 @@ std::string PythonImpl::saveNetwork(const std::string& filename)
 
 std::string PythonImpl::loadNetwork(const std::string& filename)
 {
+ 
+
   return "PythonImpl::loadNetwork does nothing";
 }
 

@@ -563,38 +563,6 @@ void SCIRunMainWindow::saveNetworkAs()
     saveNetworkFile(filename);
 }
 
-class NetworkSaveCommand : public GuiCommand
-{
-public:
-  NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window);
-  virtual bool execute() override;
-private:
-  QString filename_;
-  NetworkEditor* editor_;
-  SCIRunMainWindow* window_;
-};
-
-NetworkSaveCommand::NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window) : 
-filename_(filename), editor_(editor), window_(window)
-{}
-
-bool NetworkSaveCommand::execute()
-{
-  std::string fileNameWithExtension = filename_.toStdString();
-  if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
-    fileNameWithExtension += ".srn5";
-
-  NetworkFileHandle file = editor_->saveNetwork();
-
-  XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
-  window_->setCurrentFile(QString::fromStdString(fileNameWithExtension));
-
-  window_->statusBar()->showMessage("File saved: " + filename_, 2000);
-  GuiLogger::Instance().logInfo("File save done: " + filename_);
-  window_->setWindowModified(false);
-  return true;
-}
-
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
   NetworkSaveCommand save(fileName, networkEditor_, this);
