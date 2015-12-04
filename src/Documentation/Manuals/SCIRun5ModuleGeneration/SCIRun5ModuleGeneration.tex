@@ -426,7 +426,6 @@ namespace SCIRun {
         {
         public:
           @AlgorithmName@Algo();
-          //not necessary to declare here.
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
         };
       }}}}
@@ -462,6 +461,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
   addParameter(Knob2, 1.0);
 }
 
+//main algorithm function
 AlgorithmOutput @AlgorithmName@Algo::run_generic(const 
      AlgorithmInput& input) const
 {
@@ -990,9 +990,15 @@ The setup code is mostly the same, except there are dynamic ports, so much of th
 \chapter{Example: Simple Module With Algorithm}
 
 \begin{introduction}
+In this chapter, we will show how to build a module with a simple algorithm and a simple UI.  
+This chapter will build off the principles established in the previous examples.  
 %Scope: \hyperref[readdata]{Read Data File} - \hyperref[slice]{Slice} -
 %\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
 \end{introduction}
+
+\section{Overview}
+\label{sec:alg_overview}
+
 
 
 %TODO

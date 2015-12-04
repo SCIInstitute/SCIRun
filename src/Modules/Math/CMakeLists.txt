@@ -41,6 +41,7 @@ SET(Modules_Math_SRCS
   ReportMatrixSliceMeasure.cc
   SolveLinearSystem.cc
   ComputePCA.cc
+  SortMatrix.cc
 )
 
 SET(Modules_Math_HEADERS
@@ -59,6 +60,7 @@ SET(Modules_Math_HEADERS
   share.h
   SolveLinearSystem.h
   ComputePCA.h
+  SortMatrix.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Math 
