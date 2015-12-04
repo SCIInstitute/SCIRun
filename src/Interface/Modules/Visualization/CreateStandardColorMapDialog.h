@@ -37,6 +37,17 @@
 namespace SCIRun {
   namespace Gui {
 
+    class ColormapPreview : public QGraphicsView
+    {
+    Q_OBJECT
+    public:
+        explicit ColormapPreview(QGraphicsScene* scene, QWidget* parent = nullptr);
+    Q_SIGNALS:
+        void clicked(int x, int y);
+    protected:
+        virtual void mousePressEvent(QMouseEvent* event) override;
+    };
+
     class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,
       public Ui::CreateStandardColorMap
     {
@@ -57,18 +68,7 @@ namespace SCIRun {
       void previewClicked(int x, int y);
     private:
       QGraphicsScene* scene_;
-      QGraphicsView* previewColorMap_;
-    };
-
-    class ClickableLabel : public QLabel
-    {
-    Q_OBJECT
-    public:
-        explicit ClickableLabel( QWidget* parent = nullptr );
-    Q_SIGNALS:
-        void clicked(int x, int y);
-    protected:
-        virtual void mousePressEvent(QMouseEvent* event) override;
+      ColormapPreview* previewColorMap_;
     };
   }
 }

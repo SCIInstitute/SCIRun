@@ -60,16 +60,15 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(resolutionSlider_, SIGNAL(valueChanged(int)), resolutionSpin_, SLOT(setValue(int)));
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
 
-  //connect(previewColorMap_, SIGNAL(clicked(int,int)), this, SLOT(previewClicked(int,int)));
-
   ColorMap cm("Rainbow");
 
   scene_ = new QGraphicsScene(this);
-  previewColorMap_ = new QGraphicsView(scene_);
+  previewColorMap_ = new ColormapPreview(scene_, this);
   qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_);
   previewColorMap_->setStyleSheet(buildGradientString(cm));
   previewColorMap_->setMinimumSize(100,60);
   previewColorMap_->show();
+  connect(previewColorMap_, SIGNAL(clicked(int,int)), this, SLOT(previewClicked(int,int)));
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
@@ -127,12 +126,16 @@ void CreateStandardColorMapDialog::onInvertCheck(bool b)
   updateColorMapPreview();
 }
 
-ClickableLabel::ClickableLabel(QWidget* parent)
-    : QLabel(parent)
+ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
+  : QGraphicsView(scene, parent)
 {
+  setSceneRect(QRectF(0, 0, 365, 83));
 }
 
-void ClickableLabel::mousePressEvent(QMouseEvent* event)
+void ColormapPreview::mousePressEvent(QMouseEvent* event)
 {
+  QGraphicsView::mousePressEvent(event);
   Q_EMIT clicked(event->x(), event->y());
+
+  scene()->addItem(new QGraphicsEllipseItem(event->x(), event->y(), 3, 3));
 }
