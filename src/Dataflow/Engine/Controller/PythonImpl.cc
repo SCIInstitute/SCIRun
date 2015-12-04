@@ -41,6 +41,7 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -379,20 +380,9 @@ std::string PythonImpl::disconnect(const std::string& moduleIdFrom, int fromInde
 std::string PythonImpl::saveNetwork(const std::string& filename)
 {
   auto save = cmdFactory_->create(GlobalCommands::SaveNetworkFile);
-
-
-
-  try
-  {
-    /// @todo: duplicated code from SCIRunMainWindow. Obviously belongs in a separate class.
-    NetworkFileHandle file = nec_.saveNetwork();
-    XMLSerializer::save_xml(*file, filename, "networkFile");
-    return filename + " saved.";
-  }
-  catch (...)
-  {
-    return "Save failed.";
-  }
+  save->set(Variables::Filename, filename);
+  return save->execute() ? (filename + " saved") : "Save failed";
+  //TODO: provide more informative python return value string
 }
 
 std::string PythonImpl::loadNetwork(const std::string& filename)

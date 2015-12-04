@@ -131,10 +131,8 @@ namespace Gui {
   class NetworkSaveCommand : public Core::Commands::GuiCommand
   {
   public:
-    explicit NetworkSaveCommand(SCIRunMainWindow* window);
+    NetworkSaveCommand();
     virtual bool execute() override;
-  private:
-    SCIRunMainWindow* window_;
   };
 }
 }

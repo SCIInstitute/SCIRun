@@ -255,8 +255,7 @@ bool SetupDataDirectoryCommandGui::execute()
   return true;
 }
 
-NetworkSaveCommand::NetworkSaveCommand(SCIRunMainWindow* window) :
-window_(window)
+NetworkSaveCommand::NetworkSaveCommand() 
 {
   addParameter(Variables::Filename, std::string());
 }
@@ -271,10 +270,10 @@ bool NetworkSaveCommand::execute()
   auto file = Application::Instance().controller()->saveNetwork();
 
   XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
-  window_->setCurrentFile(QString::fromStdString(fileNameWithExtension));
+  SCIRunMainWindow::Instance()->setCurrentFile(QString::fromStdString(fileNameWithExtension));
 
-  window_->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
+  SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
   GuiLogger::Instance().logInfo("File save done: " + QString::fromStdString(filename));
-  window_->setWindowModified(false);
+  SCIRunMainWindow::Instance()->setWindowModified(false);
   return true;
 }
