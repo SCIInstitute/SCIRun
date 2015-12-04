@@ -1012,6 +1012,7 @@ void SCIRunMainWindow::setupPythonConsole()
   connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
   pythonConsole_->setVisible(false);
   pythonConsole_->setFloating(true);
+	pythonConsole_->setObjectName("PythonConsole");
   addDockWidget(Qt::TopDockWidgetArea, pythonConsole_);
 #else
   actionPythonConsole_->setEnabled(false);
