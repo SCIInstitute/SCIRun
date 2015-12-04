@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QtGui>
 #include <numeric>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -254,13 +255,16 @@ bool SetupDataDirectoryCommandGui::execute()
   return true;
 }
 
-NetworkSaveCommand::NetworkSaveCommand(const QString& filename, SCIRunMainWindow* window) :
-filename_(filename), window_(window)
-{}
+NetworkSaveCommand::NetworkSaveCommand(SCIRunMainWindow* window) :
+window_(window)
+{
+  addParameter(Variables::Filename, std::string());
+}
 
 bool NetworkSaveCommand::execute()
 {
-  std::string fileNameWithExtension = filename_.toStdString();
+  auto filename = get(Variables::Filename).toString();
+  std::string fileNameWithExtension = filename;
   if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
     fileNameWithExtension += ".srn5";
 
@@ -269,8 +273,8 @@ bool NetworkSaveCommand::execute()
   XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
   window_->setCurrentFile(QString::fromStdString(fileNameWithExtension));
 
-  window_->statusBar()->showMessage("File saved: " + filename_, 2000);
-  GuiLogger::Instance().logInfo("File save done: " + filename_);
+  window_->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
+  GuiLogger::Instance().logInfo("File save done: " + QString::fromStdString(filename));
   window_->setWindowModified(false);
   return true;
 }

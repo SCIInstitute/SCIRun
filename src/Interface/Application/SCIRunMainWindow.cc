@@ -34,6 +34,7 @@
 #include <boost/assign/std/vector.hpp>
 #include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
@@ -61,10 +62,7 @@
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Core/Application/Version.h>
-
-#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-
 #include <Core/Command/CommandFactory.h>
 
 #ifdef BUILD_WITH_PYTHON
@@ -565,7 +563,8 @@ void SCIRunMainWindow::saveNetworkAs()
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
-  NetworkSaveCommand save(fileName, this);
+  NetworkSaveCommand save(this);
+  save.set(Variables::Filename, fileName.toStdString());
   save.execute();
 }
 
