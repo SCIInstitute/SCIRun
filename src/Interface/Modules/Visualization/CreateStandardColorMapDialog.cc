@@ -60,13 +60,16 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(resolutionSlider_, SIGNAL(valueChanged(int)), resolutionSpin_, SLOT(setValue(int)));
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
 
-  previewColorMap_ = new ClickableLabel(this);
-  connect(previewColorMap_, SIGNAL(clicked()), this, SLOT(previewClicked()));
+  //connect(previewColorMap_, SIGNAL(clicked(int,int)), this, SLOT(previewClicked(int,int)));
 
   ColorMap cm("Rainbow");
+
+  scene_ = new QGraphicsScene(this);
+  previewColorMap_ = new QGraphicsView(scene_);
+  qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_);
   previewColorMap_->setStyleSheet(buildGradientString(cm));
   previewColorMap_->setMinimumSize(100,60);
-  qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_);
+  previewColorMap_->show();
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
@@ -78,9 +81,9 @@ void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
   previewColorMap_->setStyleSheet(buildGradientString(cm));
 }
 
-void CreateStandardColorMapDialog::previewClicked()
+void CreateStandardColorMapDialog::previewClicked(int x, int y)
 {
-  qDebug() << "color map clicked";
+  qDebug() << "color map clicked:" << x << y;
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview()
@@ -131,5 +134,5 @@ ClickableLabel::ClickableLabel(QWidget* parent)
 
 void ClickableLabel::mousePressEvent(QMouseEvent* event)
 {
-    Q_EMIT clicked();
+  Q_EMIT clicked(event->x(), event->y());
 }

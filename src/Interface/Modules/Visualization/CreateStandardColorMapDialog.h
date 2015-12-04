@@ -54,9 +54,10 @@ namespace SCIRun {
       void setResolutionSlider(int i);
       void setShiftSpinner(int i);
       void onInvertCheck(bool b);
-      void previewClicked();
+      void previewClicked(int x, int y);
     private:
-      QLabel* previewColorMap_;
+      QGraphicsScene* scene_;
+      QGraphicsView* previewColorMap_;
     };
 
     class ClickableLabel : public QLabel
@@ -65,7 +66,7 @@ namespace SCIRun {
     public:
         explicit ClickableLabel( QWidget* parent = nullptr );
     Q_SIGNALS:
-        void clicked(); //TODO: add x,y click location
+        void clicked(int x, int y);
     protected:
         virtual void mousePressEvent(QMouseEvent* event) override;
     };
