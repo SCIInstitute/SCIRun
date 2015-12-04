@@ -52,6 +52,8 @@ CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
     return boost::make_shared<PrintModulesCommand>();
   case LoadNetworkFile:
     return boost::make_shared<LoadFileCommandGui>();
+  //case SaveNetworkFile:
+  //  return boost::make_shared<NetworkSaveCommand>();
   case RunPythonScript:
     return boost::make_shared<RunPythonScriptCommandGui>();
   case SetupDataDirectory:

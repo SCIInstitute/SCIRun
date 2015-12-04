@@ -80,6 +80,11 @@ bool LoadFileCommandConsole::execute()
   return true;
 }
 
+bool SaveFileCommandConsole::execute()
+{
+  throw "todo";
+}
+
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
   std::cout << "ExecuteCurrentNetworkCommandConsole::execute()" << std::endl;

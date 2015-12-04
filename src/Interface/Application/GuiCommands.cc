@@ -254,8 +254,8 @@ bool SetupDataDirectoryCommandGui::execute()
   return true;
 }
 
-NetworkSaveCommand::NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window) :
-filename_(filename), editor_(editor), window_(window)
+NetworkSaveCommand::NetworkSaveCommand(const QString& filename, SCIRunMainWindow* window) :
+filename_(filename), window_(window)
 {}
 
 bool NetworkSaveCommand::execute()
@@ -264,7 +264,7 @@ bool NetworkSaveCommand::execute()
   if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
     fileNameWithExtension += ".srn5";
 
-  NetworkFileHandle file = editor_->saveNetwork();
+  auto file = Application::Instance().controller()->saveNetwork();
 
   XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
   window_->setCurrentFile(QString::fromStdString(fileNameWithExtension));

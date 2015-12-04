@@ -131,11 +131,10 @@ namespace Gui {
   class NetworkSaveCommand : public Core::Commands::GuiCommand
   {
   public:
-    NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window);
+    NetworkSaveCommand(const QString& filename, SCIRunMainWindow* window);
     virtual bool execute() override;
   private:
     QString filename_;
-    NetworkEditor* editor_;
     SCIRunMainWindow* window_;
   };
 }

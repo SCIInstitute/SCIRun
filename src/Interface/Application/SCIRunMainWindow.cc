@@ -565,7 +565,7 @@ void SCIRunMainWindow::saveNetworkAs()
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
-  NetworkSaveCommand save(fileName, networkEditor_, this);
+  NetworkSaveCommand save(fileName, this);
   save.execute();
 }
 
