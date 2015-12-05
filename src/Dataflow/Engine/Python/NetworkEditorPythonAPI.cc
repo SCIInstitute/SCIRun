@@ -191,9 +191,9 @@ std::string SimplePythonAPI::scirun_add_module(const std::string& name)
   return NetworkEditorPythonAPI::addModule(name)->id();
 }
 
-std::string SimplePythonAPI::scirun_quit(bool force)
+std::string SimplePythonAPI::scirun_quit()
 {
-  return NetworkEditorPythonAPI::quit(force);
+  return NetworkEditorPythonAPI::quit(true);
 }
 
 std::string SimplePythonAPI::scirun_connect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex)

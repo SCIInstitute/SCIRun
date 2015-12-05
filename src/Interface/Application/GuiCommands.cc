@@ -55,12 +55,19 @@ using namespace Algorithms;
 LoadFileCommandGui::LoadFileCommandGui()
 {
   addParameter(Name("FileNum"), 0);
+  addParameter(Variables::Filename, std::string());
 }
 
 bool LoadFileCommandGui::execute()
 {
-  auto inputFiles = Application::Instance().parameters()->inputFiles();
-  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFiles[index_]));
+  std::string inputFile;
+  auto inputFilesFromCommandLine = Application::Instance().parameters()->inputFiles();
+  if (!inputFilesFromCommandLine.empty())
+    inputFile = inputFilesFromCommandLine[index_];
+  else
+    inputFile = get(Variables::Filename).toString();
+
+  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile));
 }
 
 bool ExecuteCurrentNetworkCommandGui::execute()

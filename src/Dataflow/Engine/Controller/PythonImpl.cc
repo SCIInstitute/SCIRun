@@ -30,7 +30,6 @@
 #ifdef BUILD_WITH_PYTHON
 
 #include <boost/range/adaptor/transformed.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/python/to_python_converter.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ModuleInterface.h>
@@ -38,7 +37,6 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -387,14 +385,16 @@ std::string PythonImpl::saveNetwork(const std::string& filename)
 
 std::string PythonImpl::loadNetwork(const std::string& filename)
 {
- 
-
-  return "PythonImpl::loadNetwork does nothing";
+  auto load = cmdFactory_->create(GlobalCommands::LoadNetworkFile);
+  load->set(Variables::Filename, filename);
+  return load->execute() ? (filename + " loaded") : "Load failed";
+  //TODO: provide more informative python return value string
 }
 
 std::string PythonImpl::quit(bool force)
 {
-  return "PythonImpl::quit does nothing";
+  cmdFactory_->create(GlobalCommands::QuitCommand)->execute();
+  return "PythonImpl::quit";
 }
 
 #endif

@@ -70,7 +70,6 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
   boost::python::def("executeAll", &NetworkEditorPythonAPI::executeAll);
   boost::python::def("saveNetwork", &NetworkEditorPythonAPI::saveNetwork);
   boost::python::def("loadNetwork", &NetworkEditorPythonAPI::loadNetwork);
-  boost::python::def("quit", &NetworkEditorPythonAPI::quit);
 
   //////////////////////////////////////////////////////////////////////////////////////
   // Simple API version--all string based. Hopefully temporary for Mac compatibility

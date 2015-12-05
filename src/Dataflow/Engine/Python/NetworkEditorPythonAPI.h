@@ -75,7 +75,7 @@ namespace SCIRun {
     static std::string scirun_disconnect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex);
     static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
     static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
-    static std::string scirun_quit(bool force);
+    static std::string scirun_quit();
   private:
     SimplePythonAPI();
   };
