@@ -60,11 +60,13 @@ SortMatrix::execute()
   
   if (needToExecute())
   {
+    std::cout<<"need to execute"<<std::endl;
     
-    setAlgoIntFromState(Variables::Operator);
     setAlgoIntFromState(Variables::Method);
-    
+
+    std::cout<<"ready to run algo"<<std::endl;
     auto output = algo().run_generic(withInputData((InputMatrix, input)));
+    
     sendOutputFromAlgorithm(OutputMatrix, output);
     
   }

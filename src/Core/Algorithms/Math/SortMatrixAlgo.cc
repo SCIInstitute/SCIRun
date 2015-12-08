@@ -30,7 +30,10 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Math/MiscMath.h>
 
-#include <sstream>
+//#include <vector>
+//#include <iostream>
+//#include <iterator>
+#include <algorithm>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -45,6 +48,8 @@ SortMatrixAlgo::SortMatrixAlgo()
 
 AlgorithmOutput SortMatrixAlgo::run_generic(const AlgorithmInput& input) const
 {
+  std::cout<<"running algo"<<std::endl;
+  
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
   AlgorithmOutput output;
   
@@ -61,15 +66,8 @@ AlgorithmOutput SortMatrixAlgo::run_generic(const AlgorithmInput& input) const
   
   auto method = get(Variables::Method).toInt();
   
-  switch (method)
-  {
-    case 0:
-      SortAscending(mat,return_matrix);
-      break;
-    case 1:
-      SortDescending(mat,return_matrix);
-      break;
-  }
+  std::cout<<"setup, starting second algorithm"<<std::endl;
+  Sort(mat,return_matrix,method);
   
   output[Variables::OutputMatrix] = return_matrix;
   return output;
@@ -78,7 +76,7 @@ AlgorithmOutput SortMatrixAlgo::run_generic(const AlgorithmInput& input) const
 
 
 bool
-SortMatrixAlgo::SortAscending(DenseMatrixHandle input, DenseMatrixHandle& output) const
+SortMatrixAlgo::Sort(DenseMatrixHandle input, DenseMatrixHandle& output,int method) const
 {
   if (!input)
   {
@@ -88,46 +86,114 @@ SortMatrixAlgo::SortAscending(DenseMatrixHandle input, DenseMatrixHandle& output
   
   size_type nrows = input->nrows();
   size_type ncols = input->ncols();
+  
+    std::cout<<"original size " <<nrows<<" rows "<<ncols<<" cols"<<std::endl;
 
-  output.reset(new DenseMatrix(nrows, 1));
-  double *dest = output->data();
-  
-  for (index_type q=0; q<nrows; q++) dest[q] = 0.0;
-  
-  DenseMatrixHandle return_matrix;
-  
+      std::cout<<"set matrix size"<<std::endl;
+  output.reset(new DenseMatrix(*input));
+  double *data = output->data();
+
   if (!output)
   {
     error("ApplyRowOperation: could not create output matrix");
-    return false;  
-  }
- 
-  
-  double* data = input ->data();
-  
-  size_type m = input->nrows();
-  size_type n = input->ncols();
-
-
-  return true;
-}
-
-
-bool
-SortMatrixAlgo::SortDescending(DenseMatrixHandle input, DenseMatrixHandle& output) const
-{
-  
-  if (!input)
-  {
-    error("SortDescending: no input matrix found");
     return false;
   }
   
-  /*
-  DenseMatrixHandle t(new DenseMatrix(input->transpose()));
-  if(!(ApplyRowOperation(t,t,method))) return false;
-  output.reset(new DenseMatrix(t->transpose()));
+  //output -> resize(nrows*ncols,1);
+  //size_type n = output->nrows();
+  size_type n = nrows*ncols;
   
-  */
+  //*data=*d_in;
+  
+  std::cout<<"resized.  "<<n <<"  rows"<<std::endl;
+  size_type nrows_c = input->nrows();
+  size_type ncols_c = input->ncols();
+  std::cout<<"original size check " <<nrows_c<<" rows "<<ncols_c<<" cols"<<std::endl;
+  
+
+  std::cout<<"original matrix = ";
+  for (index_type l=0;l<n;l++) std::cout<<data[l]<<" ";
+  std::cout<<std::endl;
+  
+  Quicksort(data,0,n-1);
+      std::cout<<"quicksort done"<<std::endl;
+  
+  std::cout<<"sorted matrix = ";
+  for (index_type l=0;l<n;l++) std::cout<<data[l]<<" ";
+  std::cout<<std::endl;
+  
+  if (method==1)
+  {
+    output.reset(new DenseMatrix(output -> reverse()));
+          std::cout<<"descending"<<std::endl;
+  }
+  
+  //std::cout<<"final matrix = ";
+  //for (index_type l=0;l<n;l++) std::cout<<data[l]<<" ";
+  //std::cout<<std::endl;
+  std::cout<<"final matrix = "<<*output<<std::endl;
+  
+  //output -> resize(nrows,ncols);
+  
   return true;
-} 
+}
+
+bool
+SortMatrixAlgo::Quicksort(double* input, index_type lo, index_type hi) const
+{
+  index_type ind;
+  //std::cout<<"lo = "<< lo << ";  hi = "<<hi<<std::endl;
+  if (lo<hi)
+  {
+    
+    
+    ind=Partition(input,lo,hi);
+    //std::cout<<"ind = "<< ind<<std::endl;
+    
+    //std::cout<<"input = ";
+    //for (index_type l=0;l<6;l++) std::cout<<input[l]<<" ";
+    //std::cout<<std::endl;
+    
+    Quicksort(input,lo,ind-1);
+    Quicksort(input,ind+1,hi);
+  }
+  
+  return true;
+}
+
+index_type
+SortMatrixAlgo::Partition(double* input, index_type lo, index_type hi) const
+{
+  index_type ind=lo;
+  
+  double pivot = input[hi];
+  double tmp;
+  //ind = lo;
+  //std::cout<<"lo = "<< lo << "; hi = "<<hi<<std::endl;
+  for (index_type k=lo;k<hi;k++)
+  {
+    //std::cout<<"ind = "<<ind<<"; k = "<<k<<std::endl;
+    //std::cout<<"comparing "<<input[k]<<" & "<<pivot<<std::endl;
+    if (input[k]<=pivot)
+    {
+      //std::cout<<"swaping "<<ind<<" & "<<k<<std::endl;
+      tmp=input[ind];
+      input[ind]=input[k];
+      input[k]=tmp;
+      ind+=1;
+    }
+  }
+  //std::cout<<"swaping "<<ind<<" & "<<hi<<std::endl;
+  tmp=input[ind];
+  input[ind]=input[hi];
+  input[hi]=tmp;
+  
+  //std::cout<<"ind = "<<ind<<std::endl;
+  
+  return ind;
+}
+
+
+
+  
+  

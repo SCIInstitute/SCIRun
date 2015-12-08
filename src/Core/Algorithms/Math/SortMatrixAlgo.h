@@ -32,6 +32,7 @@
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 
 
 #include <string>
@@ -57,13 +58,11 @@ class SCISHARE SortMatrixAlgo : public AlgorithmBase
   public:
     SortMatrixAlgo();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-    // Apply an operation on a row by row basis
-    bool SortAscending(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output) const;
-
-    // Apply an operation on a column by column basis
-    bool SortDescending(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output) const;
-
+  
+    bool Sort(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int method) const;
+  
+    bool Quicksort(double* input, index_type lo, index_type hi) const;
+    index_type Partition(double* input, index_type lo, index_type hi) const;
 };
 
       }}}}// end SCIRun namespace
