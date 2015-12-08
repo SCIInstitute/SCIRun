@@ -28,7 +28,15 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 IF(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(VERSION 2.6)
-ENDIF(COMMAND CMAKE_POLICY)
+
+  IF(CMAKE_VERSION VERSION_GREATER 3.0)
+    # TODO: when support for versions older than 2.8.12 is dropped,
+    # enable new policy and get rid of version check
+    #
+    # see https://cmake.org/cmake/help/v3.0/policy/CMP0042.html
+    CMAKE_POLICY(SET CMP0042 OLD)
+  ENDIF()
+ENDIF()
 
 PROJECT(libxml2)
 
