@@ -408,7 +408,7 @@ std::string PythonImpl::loadNetwork(const std::string& filename)
 
 std::string PythonImpl::quit(bool force)
 {
-  cmdFactory_->create(GlobalCommands::QuitCommand)->execute();
+  cmdFactory_->create(GlobalCommands::SetupQuitAfterExecute)->execute();
   return "PythonImpl::quit";
 }
 
