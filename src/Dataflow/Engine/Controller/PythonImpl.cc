@@ -243,6 +243,21 @@ namespace
       return std::vector<std::string>();
     }
 
+    virtual std::string stateToString() const override
+    {
+      if (module_)
+      {
+        std::ostringstream ostr;
+        auto state = module_->get_state();
+        for (const auto& key : state->getKeys())
+        {
+          ostr << state->getValue(key) << std::endl;
+        }
+        return ostr.str();
+      }
+      return "[null module]";
+    }
+
     virtual boost::shared_ptr<PyPorts> output() override
     {
       return output_;

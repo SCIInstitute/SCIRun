@@ -52,6 +52,7 @@ namespace SCIRun
     virtual boost::python::object getattr(const std::string& name) = 0;
     virtual void setattr(const std::string& name, boost::python::object object) = 0;
     virtual std::vector<std::string> stateVars() const = 0;
+    virtual std::string stateToString() const = 0;
 
     //ports
     virtual boost::shared_ptr<class PyPorts> output() = 0;

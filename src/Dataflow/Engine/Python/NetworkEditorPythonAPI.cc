@@ -191,6 +191,16 @@ std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& m
   return "Module or value not found";
 }
 
+std::string NetworkEditorPythonAPI::scirun_dump_module_state(const std::string& moduleId)
+{
+  auto modIter = modules_.find(moduleId);
+  if (modIter != modules_.end())
+  {
+    return modIter->second->stateToString();
+  }
+  return "Module not found";
+}
+
 /// @todo: bizarre reason for this return type and casting. but it works.
 boost::shared_ptr<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
 {
