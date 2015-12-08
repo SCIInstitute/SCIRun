@@ -32,13 +32,15 @@
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Python/SCIRunPythonModule.h>
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Networks;
 
 boost::shared_ptr<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
-ExecutableLookup* NetworkEditorPythonAPI::lookup_ = 0;
-std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules_;
+ExecutableLookup* NetworkEditorPythonAPI::lookup_ = nullptr;
+std::map<std::string, boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules_;
 
 
 template< class T >
@@ -80,7 +82,7 @@ boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string&
   if (impl_)
   {
     auto m = impl_->addModule(name);
-    modules_.push_back(m);
+    modules_[m->id()] = m;
     return m;
   }
   else
@@ -94,7 +96,7 @@ std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
 {
   if (impl_)
   {
-    modules_.erase(std::remove_if(modules_.begin(), modules_.end(), [&](boost::shared_ptr<PyModule> m) -> bool { bool same = m->id() == id; if (same) m->reset(); return same; }), modules_.end());
+    modules_.erase(id);
     return impl_->removeModule(id);
   }
   else
@@ -105,7 +107,9 @@ std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
 
 std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules()
 {
-  return modules_;
+  std::vector<boost::shared_ptr<PyModule>> moduleList;
+  boost::copy(modules_ | boost::adaptors::map_values, std::back_inserter(moduleList));
+  return moduleList;
 }
 
 std::string NetworkEditorPythonAPI::executeAll()
@@ -170,12 +174,21 @@ std::string NetworkEditorPythonAPI::quit(bool force)
 
 boost::python::object NetworkEditorPythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
 {
+  auto modIter = modules_.find(moduleId);
+  if (modIter != modules_.end())
+    return modIter->second->getattr(stateVariable);
   return boost::python::object();
 }
 
 std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
 {
-  return "not implemented";
+  auto modIter = modules_.find(moduleId);
+  if (modIter != modules_.end())
+  {
+    modIter->second->setattr(stateVariable, value);
+    return "Value set";
+  }
+  return "Module or value not found";
 }
 
 /// @todo: bizarre reason for this return type and casting. but it works.

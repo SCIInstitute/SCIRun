@@ -64,7 +64,7 @@ namespace SCIRun {
     NetworkEditorPythonAPI();
     static boost::shared_ptr<NetworkEditorPythonInterface> impl_;
     static Dataflow::Networks::ExecutableLookup* lookup_;
-    static std::vector<boost::shared_ptr<PyModule>> modules_;
+    static std::map<std::string, boost::shared_ptr<PyModule>> modules_;
   };
 
   class SCISHARE SimplePythonAPI
