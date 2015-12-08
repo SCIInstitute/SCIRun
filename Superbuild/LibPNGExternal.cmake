@@ -25,7 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(libpng_GIT_TAG "origin/seg3d_external_test")
+SET(libpng_GIT_TAG "origin/master")
 SET(libpng_DEPENDENCIES "Zlib_external")
 
 # If CMake ever allows overriding the checkout command or adding flags,
