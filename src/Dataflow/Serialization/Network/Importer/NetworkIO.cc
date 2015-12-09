@@ -227,7 +227,7 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
     }
     else
       in.portId_ = toDesc.input_ports_.at(toIndex).id;
-  
+
     ConnectionDescriptionXML conn;
     conn.out_ = out;
     conn.in_ = in;
@@ -317,15 +317,13 @@ const std::string &val)
   auto moduleNameMapIter = nameLookup_.find(moduleName);
   if (moduleNameMapIter == nameLookup_.end())
   {
-    std::cerr << "GuiVar name mapping not available for module: " << moduleName << ", please contact a developer." << std::endl;
-    std::cerr << "STATE CONVERSION TO IMPLEMENT: mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+    std::cerr << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
     return;
   }
   auto valueConverterForModuleIter = valueConverter_.find(moduleName);
   if (valueConverterForModuleIter == valueConverter_.end())
   {
-    std::cerr << "GuiVar value mapping not available for module: " << moduleName << ", please contact a developer." << std::endl;
-    std::cerr << "STATE CONVERSION TO IMPLEMENT: mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+    std::cerr << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
     return;
   }
   std::string stripBraces(val.begin() + 1, val.end() - 1);
