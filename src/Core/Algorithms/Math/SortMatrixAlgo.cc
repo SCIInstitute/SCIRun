@@ -30,11 +30,6 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Math/MiscMath.h>
 
-//#include <vector>
-//#include <iostream>
-//#include <iterator>
-#include <algorithm>
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -42,17 +37,17 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 SortMatrixAlgo::SortMatrixAlgo()
 {
+  //set parameter defaults for UI
   addParameter(Variables::Method, 0);
 }
 
 
 AlgorithmOutput SortMatrixAlgo::run_generic(const AlgorithmInput& input) const
 {
-  std::cout<<"running algo"<<std::endl;
-  
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
   AlgorithmOutput output;
   
+  //sparse support not fully implemented yet.
   if (!matrix_is::dense(input_matrix))
   {
     //TODO implement something with sparse
@@ -61,17 +56,14 @@ AlgorithmOutput SortMatrixAlgo::run_generic(const AlgorithmInput& input) const
     return output;
   }
   auto mat  = matrix_cast::as_dense (input_matrix);
-  
   DenseMatrixHandle return_matrix;
   
+  //pull parameter from UI
   auto method = get(Variables::Method).toInt();
   
-  std::cout<<"setup, starting second algorithm"<<std::endl;
   Sort(mat,return_matrix,method);
-  
   output[Variables::OutputMatrix] = return_matrix;
   return output;
-  
 }
 
 
@@ -83,14 +75,12 @@ SortMatrixAlgo::Sort(DenseMatrixHandle input, DenseMatrixHandle& output,int meth
     error("SortAscending: no input matrix found");
     return false;
   }
-  
+  //get size of original matrix
   size_type nrows = input->nrows();
   size_type ncols = input->ncols();
-  
-    std::cout<<"original size " <<nrows<<" rows "<<ncols<<" cols"<<std::endl;
-
-      std::cout<<"set matrix size"<<std::endl;
+  //copy original matrix for processing
   output.reset(new DenseMatrix(*input));
+  //pointer to matrix data
   double *data = output->data();
 
   if (!output)
@@ -99,97 +89,54 @@ SortMatrixAlgo::Sort(DenseMatrixHandle input, DenseMatrixHandle& output,int meth
     return false;
   }
   
-  //output -> resize(nrows*ncols,1);
-  //size_type n = output->nrows();
   size_type n = nrows*ncols;
-  
-  //*data=*d_in;
-  
-  std::cout<<"resized.  "<<n <<"  rows"<<std::endl;
-  size_type nrows_c = input->nrows();
-  size_type ncols_c = input->ncols();
-  std::cout<<"original size check " <<nrows_c<<" rows "<<ncols_c<<" cols"<<std::endl;
-  
-
-  std::cout<<"original matrix = ";
-  for (index_type l=0;l<n;l++) std::cout<<data[l]<<" ";
-  std::cout<<std::endl;
-  
+  //call the sorting functions
   Quicksort(data,0,n-1);
-      std::cout<<"quicksort done"<<std::endl;
-  
-  std::cout<<"sorted matrix = ";
-  for (index_type l=0;l<n;l++) std::cout<<data[l]<<" ";
-  std::cout<<std::endl;
   
   if (method==1)
   {
+    //if set to descending, reverse the order.
     output.reset(new DenseMatrix(output -> reverse()));
-          std::cout<<"descending"<<std::endl;
   }
-  
-  //std::cout<<"final matrix = ";
-  //for (index_type l=0;l<n;l++) std::cout<<data[l]<<" ";
-  //std::cout<<std::endl;
-  std::cout<<"final matrix = "<<*output<<std::endl;
-  
-  //output -> resize(nrows,ncols);
-  
   return true;
 }
 
 bool
 SortMatrixAlgo::Quicksort(double* input, index_type lo, index_type hi) const
 {
+  //splits matrix based on Partition function
   index_type ind;
-  //std::cout<<"lo = "<< lo << ";  hi = "<<hi<<std::endl;
   if (lo<hi)
   {
-    
-    
     ind=Partition(input,lo,hi);
-    //std::cout<<"ind = "<< ind<<std::endl;
-    
-    //std::cout<<"input = ";
-    //for (index_type l=0;l<6;l++) std::cout<<input[l]<<" ";
-    //std::cout<<std::endl;
-    
     Quicksort(input,lo,ind-1);
     Quicksort(input,ind+1,hi);
   }
-  
   return true;
 }
 
 index_type
 SortMatrixAlgo::Partition(double* input, index_type lo, index_type hi) const
 {
+  // places the last entry in its proper place in relation to the other
+  // entries, ie, smaller values before and larger values after.
   index_type ind=lo;
   
   double pivot = input[hi];
   double tmp;
-  //ind = lo;
-  //std::cout<<"lo = "<< lo << "; hi = "<<hi<<std::endl;
   for (index_type k=lo;k<hi;k++)
   {
-    //std::cout<<"ind = "<<ind<<"; k = "<<k<<std::endl;
-    //std::cout<<"comparing "<<input[k]<<" & "<<pivot<<std::endl;
     if (input[k]<=pivot)
     {
-      //std::cout<<"swaping "<<ind<<" & "<<k<<std::endl;
       tmp=input[ind];
       input[ind]=input[k];
       input[k]=tmp;
       ind+=1;
     }
   }
-  //std::cout<<"swaping "<<ind<<" & "<<hi<<std::endl;
   tmp=input[ind];
   input[ind]=input[hi];
   input[hi]=tmp;
-  
-  //std::cout<<"ind = "<<ind<<std::endl;
-  
   return ind;
 }
 

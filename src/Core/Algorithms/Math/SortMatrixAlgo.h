@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef CORE_ALGORITHMS_MATH_SortMatrixALGO_H
 #define CORE_ALGORITHMS_MATH_SortMatrixALGO_H
 
@@ -48,9 +47,6 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Math {
-
-//class SparseElement;
-//typedef std::vector<SparseElement> SparseElementVector;
 
 class SCISHARE SortMatrixAlgo : public AlgorithmBase
 {

@@ -37,8 +37,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
 /// @class SortMatrix
-/// @brief This module computes a measure on each row or column of the input matrix
-/// and stores the result in the output matrix.
+/// @brief This module sorts the matrix entries into ascending or descending order.
 
 const ModuleLookupInfo SortMatrix::staticInfo_("SortMatrix", "Math", "SCIRun");
 
@@ -60,11 +59,8 @@ SortMatrix::execute()
   
   if (needToExecute())
   {
-    std::cout<<"need to execute"<<std::endl;
-    
     setAlgoIntFromState(Variables::Method);
 
-    std::cout<<"ready to run algo"<<std::endl;
     auto output = algo().run_generic(withInputData((InputMatrix, input)));
     
     sendOutputFromAlgorithm(OutputMatrix, output);
