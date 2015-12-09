@@ -5,7 +5,7 @@ m3 = scirun_add_module("WriteField")
 scirun_connect_modules(m1, 0, m2, 0)
 scirun_connect_modules(m2, 0, m3, 0)
 
-for i in range(10):
+for i in range(5):
 	scirun_set_module_state(m2, "Value", i)
 	scirun_set_module_state(m3, "Filename", "field%d.fld" % i)
 	scirun_execute_all()
