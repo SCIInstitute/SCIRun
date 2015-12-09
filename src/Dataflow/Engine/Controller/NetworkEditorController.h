@@ -104,21 +104,21 @@ namespace Engine {
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     void connectNewModule(const Networks::ModuleHandle& moduleToConnectTo, const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
 
-    boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to);
+    boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
     void executeAll(const Networks::ExecutableLookup* lookup);
     void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup);
 
-    virtual Networks::NetworkFileHandle saveNetwork() const;
-    virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
+    virtual Networks::NetworkFileHandle saveNetwork() const override;
+    virtual void loadNetwork(const Networks::NetworkFileHandle& xml) override;
 
     Networks::NetworkFileHandle serializeNetworkFragment(Networks::ModuleFilter modFilter, Networks::ConnectionFilter connFilter) const;
     void appendToNetwork(const Networks::NetworkFileHandle& xml);
 //////////////////////End: To be Pythonized///////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-    virtual void clear();
+    virtual void clear() override;
 
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);

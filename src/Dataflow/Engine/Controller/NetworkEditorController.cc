@@ -85,7 +85,8 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 }
 
 NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
-  : theNetwork_(network), executorFactory_(executorFactory), serializationManager_(nesm)
+  : theNetwork_(network), executorFactory_(executorFactory), serializationManager_(nesm),
+  signalSwitch_(true)
 {
 }
 
@@ -330,12 +331,10 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
     printNetwork();
     return id;
   }
-  else
-  {
-    Log::get() << NOTICE << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module." << std::endl;
-    invalidConnection_(desc);
-    return boost::none;
-  }
+
+  Log::get() << NOTICE << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module." << std::endl;
+  invalidConnection_(desc);
+  return boost::none;
 }
 
 void NetworkEditorController::removeConnection(const ConnectionId& id)
@@ -582,7 +581,7 @@ NetworkGlobalSettings& NetworkEditorController::getSettings()
 
 void NetworkEditorController::setExecutorType(int type)
 {
-  executionManager_.setExecutionStrategy(executorFactory_->create((ExecutionStrategy::Type)type));
+  executionManager_.setExecutionStrategy(executorFactory_->create(static_cast<ExecutionStrategy::Type>(type)));
 }
 
 const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescriptions() const

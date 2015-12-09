@@ -44,6 +44,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Commands;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
@@ -160,7 +161,7 @@ namespace
       }
     }
 
-    virtual std::string id() const
+    virtual std::string id() const override
     {
       if (module_)
         return module_->get_id();
@@ -328,7 +329,26 @@ namespace SCIRun {
   }
 }
 
-PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory) {}
+PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory), executionMutex_(nullptr)
+{
+  nec_.connectNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); });
+}
+
+void PythonImpl::setLock(Mutex* mutex)
+{
+  executionMutex_ = mutex;
+}
+
+void PythonImpl::executionFromPythonStart()
+{
+  //std::cout << "Python impl exec start" << std::endl;
+}
+
+void PythonImpl::executionFromPythonFinish(int)
+{
+  if (executionMutex_)
+    executionMutex_->unlock();
+}
 
 boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
 {
@@ -408,8 +428,11 @@ std::string PythonImpl::loadNetwork(const std::string& filename)
 
 std::string PythonImpl::quit(bool force)
 {
-  cmdFactory_->create(GlobalCommands::SetupQuitAfterExecute)->execute();
-  return "PythonImpl::quit";
+  if (force)
+    cmdFactory_->create(GlobalCommands::QuitCommand)->execute();
+  else
+    cmdFactory_->create(GlobalCommands::SetupQuitAfterExecute)->execute();
+  return "Quit after execute enabled.";
 }
 
 #endif
