@@ -41,13 +41,16 @@ namespace SCIRun {
     {
     Q_OBJECT
     public:
-        explicit ColormapPreview(QGraphicsScene* scene, QWidget* parent = nullptr);
+      explicit ColormapPreview(QGraphicsScene* scene, QWidget* parent = nullptr);
+    public Q_SLOTS:
+      void clearAlphaPoints();
     Q_SIGNALS:
-        void clicked(int x, int y);
+      void clicked(int x, int y);
     protected:
-        virtual void mousePressEvent(QMouseEvent* event) override;
+      virtual void mousePressEvent(QMouseEvent* event) override;
     private:
       void addPoint(const QPointF& point);
+      QList<QPointF> alphaPoints_;
     };
 
     class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,

@@ -69,6 +69,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   previewColorMap_->setMinimumSize(100,40);
   previewColorMap_->show();
   connect(previewColorMap_, SIGNAL(clicked(int,int)), this, SLOT(previewClicked(int,int)));
+  connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPoints()));
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
@@ -142,7 +143,7 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
   Q_EMIT clicked(event->x(), event->y());
 
   auto center = mapToScene(event->pos());
-  
+
   addPoint(center);
 }
 
@@ -150,4 +151,15 @@ void ColormapPreview::addPoint(const QPointF& point)
 {
   static QPen pointPen(Qt::white, 1);
   scene()->addEllipse(point.x() - 4, point.y() - 4, 8, 8, pointPen, QBrush(Qt::black));
+  alphaPoints_.append(point);
+}
+
+void ColormapPreview::clearAlphaPoints()
+{
+  alphaPoints_.clear();
+  for (auto& item : scene()->items())
+  {
+    if (dynamic_cast<QGraphicsEllipseItem*>(item))
+      scene()->removeItem(item);
+  }
 }
