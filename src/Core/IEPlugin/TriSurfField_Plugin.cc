@@ -27,21 +27,27 @@
 */
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Logging/LoggerInterface.h>
 //#include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/IEPlugin/TriSurfField_Plugin.h>
-//#include <Core/Util/StringUtil.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
-#include <Core/Algorithms/DataIO/VTKToTriSurfReader.h>
+using namespace SCIRun;
+//using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 
-namespace SCIRun {
+#include <Core/Algorithms/Legacy/DataIO/VTKToTriSurfReader.h>
 
-FieldHandle VtkToTriSurfField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::VtkToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
   FieldHandle outputField = 0;
   SCIRunAlgo::VTKToTriSurfReader reader(pr);
@@ -54,7 +60,7 @@ FieldHandle VtkToTriSurfField_reader(ProgressReporter *pr, const char *filename)
   return outputField;
 }
 
-FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::TextToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
   FieldHandle result = 0;
 
@@ -471,7 +477,7 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
   return (result);
 }
 
-FieldHandle MToTriSurfField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
   FieldHandle result = 0;
 
@@ -532,7 +538,7 @@ FieldHandle MToTriSurfField_reader(ProgressReporter *pr, const char *filename)
   return (result);
 }
 
-bool TriSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToTextBaseIndexZero_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
 
@@ -640,8 +646,7 @@ bool TriSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh
   return (true);
 }
 
-
-bool TriSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToTextBaseIndexOne_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
 
@@ -753,7 +758,7 @@ bool TriSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh,
   return (true);
 }
 
-bool TriSurfFieldToM_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToM_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
 
@@ -826,7 +831,7 @@ bool TriSurfFieldToM_writer(ProgressReporter *pr, FieldHandle fh, const char *fi
   return (true);
 }
 
-bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
 
@@ -910,7 +915,7 @@ bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *
   return (true);
 }
 
-bool TriSurfFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToExotxt_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("TriSurfField") !=
       std::string::npos)
@@ -1008,7 +1013,7 @@ bool TriSurfFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const cha
   return (true);
 }
 
-bool TriSurfFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToExotxtBaseIndexOne_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("TriSurfField") !=
       std::string::npos)
@@ -1106,5 +1111,3 @@ bool TriSurfFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle f
 
   return (true);
 }
-
-} // end namespace
