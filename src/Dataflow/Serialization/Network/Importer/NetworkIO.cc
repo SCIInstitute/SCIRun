@@ -62,7 +62,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 
-LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath, const ModuleFactory& modFactory) :
+LegacyNetworkIO::LegacyNetworkIO(const std::string& dtdpath, const ModuleFactory& modFactory,
+  std::ostringstream& simpleLog) :
 net_file_("new.srn"),
 done_writing_(false),
 doc_(0),
@@ -70,7 +71,8 @@ out_fname_(""),
 sn_count_(0),
 sn_ctx_(0),
 dtdPath_(dtdpath),
-modFactory_(modFactory)
+modFactory_(modFactory),
+simpleLog_(simpleLog)
 {
   netid_to_modid_.push(id_map_t());
   netid_to_conid_.push(id_map_t());
@@ -97,7 +99,7 @@ void
 LegacyNetworkIO::gui_pop_subnet_ctx(const std::string& ctx)
 {
   std::string cmmd = "set Subnet(Loading) " + ctx;
-  std::cout << "TCLInterface::eval " << cmmd << std::endl;
+  simpleLog_ << "TCLInterface::eval " << cmmd << std::endl;
 #if 0
   --sn_ctx_;
   netid_to_modid_.pop();
@@ -236,7 +238,7 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
   }
   catch (Core::InvalidArgumentException& e)
   {
-    Log::get() << Core::Logging::ERROR_LOG << "File conversion error: connection not created between modules " << fromId << " and " << toId << std::endl;
+    simpleLog_ << "File conversion error: connection not created between modules " << fromId << " and " << toId << std::endl;
   }
 }
 
@@ -317,13 +319,13 @@ const std::string &val)
   auto moduleNameMapIter = nameLookup_.find(moduleName);
   if (moduleNameMapIter == nameLookup_.end())
   {
-    std::cerr << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
     return;
   }
   auto valueConverterForModuleIter = valueConverter_.find(moduleName);
   if (valueConverterForModuleIter == valueConverter_.end())
   {
-    std::cerr << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
     return;
   }
   std::string stripBraces(val.begin() + 1, val.end() - 1);
@@ -457,7 +459,7 @@ void
 LegacyNetworkIO::gui_set_variable(const std::string &var, const std::string &val)
 {
   std::string cmd = "set " + var +  " " + val;
-  std::cout << "TCLInterface::eval " << cmd << std::endl;
+  simpleLog_ << "TCLInterface::eval " << cmd << std::endl;
 }
 
 void
@@ -465,7 +467,7 @@ LegacyNetworkIO::gui_open_module_gui(const std::string &mod_id)
 {
   std::string mod = get_mod_id(mod_id);
   std::string cmmd = mod + " initialize_ui";
-  std::cout << "TCLInterface::eval " << cmmd << std::endl;
+  simpleLog_ << "TCLInterface::eval " << cmmd << std::endl;
 }
 
 void
@@ -1006,7 +1008,7 @@ LegacyNetworkIO::load_network()
   /* create a parser context */
   ctxt = xmlNewParserCtxt();
   if (!ctxt) {
-    std::cerr << "LegacyNetworkIO.cc: Failed to allocate parser context"
+    simpleLog_ << "LegacyNetworkIO.cc: Failed to allocate parser context"
       << std::endl;
     return false;
   }
@@ -1026,13 +1028,13 @@ LegacyNetworkIO::load_network()
   doc = xmlCtxtReadFile(ctxt, net_file_.c_str(), 0, flags);
   /* check if parsing suceeded */
   if (doc == 0) {
-    std::cerr << "LegacyNetworkIO.cc: Failed to parse " << net_file_
+    simpleLog_ << "LegacyNetworkIO.cc: Failed to parse " << net_file_
       << std::endl;
     return false;
   } else {
     /* check if validation suceeded */
     if (ctxt->valid == 0) {
-      std::cerr << "LegacyNetworkIO.cc: Failed to validate " << net_file_
+      simpleLog_ << "LegacyNetworkIO.cc: Failed to validate " << net_file_
         << std::endl;
       return false;
     }
@@ -1099,7 +1101,7 @@ NetworkIO::push_subnet_scope(const std::string &id, const std::string &name)
   }
   if (! mod_node) {
     if (! net_node) {
-      std::cerr << "ERROR: could not find top level node." << std::endl;
+      simpleLog_ << "ERROR: could not find top level node." << std::endl;
       return;
     }
     mod_node = xmlNewChild(net_node, 0, BAD_CAST "modules", 0);
@@ -1196,7 +1198,7 @@ NetworkIO::add_net_var(const std::string &var, const std::string &val)
     }
   }
   if (! node) {
-    std::cerr << "ERROR: could not find top level node." << std::endl;
+    simpleLog_ << "ERROR: could not find top level node." << std::endl;
     return;
   }
   xmlNewProp(node, BAD_CAST var.c_str(), BAD_CAST val.c_str());
@@ -1227,7 +1229,7 @@ NetworkIO::add_environment_sub(const std::string &var, const std::string &val)
   }
   if (! env_node) {
     if (! net_node) {
-      std::cerr << "ERROR: could not find top level node." << std::endl;
+      simpleLog_ << "ERROR: could not find top level node." << std::endl;
       return;
     }
     env_node = xmlNewChild(net_node, 0, BAD_CAST "environment", 0);
@@ -1253,7 +1255,7 @@ NetworkIO::add_net_note(const std::string &val)
     }
   }
   if (! node) {
-    std::cerr << "ERROR: could not find 'network' node." << std::endl;
+    simpleLog_ << "ERROR: could not find 'network' node." << std::endl;
     return;
   }
 
@@ -1286,7 +1288,7 @@ const std::string &cat, const std::string &mod, const std::string& ver)
   }
   if (! mod_node) {
     if (! net_node) {
-      std::cerr << "ERROR: could not find top level node." << std::endl;
+      simpleLog_ << "ERROR: could not find top level node." << std::endl;
       return;
     }
     mod_node = xmlNewChild(net_node, 0, BAD_CAST "modules", 0);
@@ -1345,7 +1347,7 @@ const std::string &val, bool filename, bool substitute, bool userelfilenames)
 
   if (! node)
   {
-    std::cerr << "ERROR: could not find module node with id (module variable): " << id << std::endl;
+    simpleLog_ << "ERROR: could not find module node with id (module variable): " << id << std::endl;
     return;
   }
   xmlNodePtr tmp = xmlNewChild(node, 0, BAD_CAST "var", 0);
@@ -1381,7 +1383,7 @@ NetworkIO::set_module_gui_visible(const std::string &id)
   xmlNode* node = get_module_node(id);
 
   if (! node) {
-    std::cerr << "ERROR: could not find module node with id (module gui visible): " << id << std::endl;
+    simpleLog_ << "ERROR: could not find module node with id (module gui visible): " << id << std::endl;
     return;
   }
   xmlNewProp(node, BAD_CAST "gui_visible", BAD_CAST "yes");
@@ -1394,7 +1396,7 @@ NetworkIO::add_module_gui_callback(const std::string &id, const std::string &cal
   xmlNode* gc_node = 0;
   xmlNode* mod_node = get_module_node(id);
   if (! mod_node) {
-    std::cerr << "ERROR: could not find node for module id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find node for module id: " << id << std::endl;
     return;
   }
   xmlNode *node = mod_node->children;
@@ -1421,7 +1423,7 @@ const std::string &y)
   xmlNode* mid_node = get_module_node(id);
 
   if (! mid_node) {
-    std::cerr << "ERROR: could not find module node with id (add_module_position): " << id << std::endl;
+    simpleLog_ << "ERROR: could not find module node with id (add_module_position): " << id << std::endl;
     return;
   }
   xmlNodePtr tmp = xmlNewChild(mid_node, 0, BAD_CAST "position", 0);
@@ -1436,7 +1438,7 @@ NetworkIO::add_module_note_position(const std::string &id, const std::string &po
   bool found = false;
   xmlNode* node = get_module_node(id);
   if (! node) {
-    std::cerr << "ERROR: could not find node for module id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find node for module id: " << id << std::endl;
     return;
   }
   node = node->children;
@@ -1450,7 +1452,7 @@ NetworkIO::add_module_note_position(const std::string &id, const std::string &po
   }
 
   if (! found) {
-    std::cerr << "ERROR: could not find note node for module id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find note node for module id: " << id << std::endl;
     return;
   }
   xmlNewProp(node, BAD_CAST "position", BAD_CAST pos.c_str());
@@ -1463,7 +1465,7 @@ NetworkIO::add_module_note_color(const std::string &id, const std::string &col)
   bool found = false;
   xmlNode* node = get_module_node(id);
   if (! node) {
-    std::cerr << "ERROR: could not find node for module id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find node for module id: " << id << std::endl;
     return;
   }
   node = node->children;
@@ -1477,7 +1479,7 @@ NetworkIO::add_module_note_color(const std::string &id, const std::string &col)
   }
 
   if (! found) {
-    std::cerr << "ERROR: could not find note node for module id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find note node for module id: " << id << std::endl;
     return;
   }
   xmlNewProp(node, BAD_CAST "color", BAD_CAST col.c_str());
@@ -1510,7 +1512,7 @@ const std::string &tport)
   }
   if (! con_node) {
     if (! net_node) {
-      std::cerr << "ERROR: could not find top level node." << std::endl;
+      simpleLog_ << "ERROR: could not find top level node." << std::endl;
       return;
     }
     con_node = xmlNewChild(net_node, 0, BAD_CAST "connections", 0);
@@ -1564,7 +1566,7 @@ NetworkIO::set_disabled_connection(const std::string &id)
   xmlNode* cid_node = get_connection_node(id);
 
   if (! cid_node) {
-    std::cerr << "ERROR: could not find connection node with id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find connection node with id: " << id << std::endl;
     return;
   }
   xmlNewProp(cid_node, BAD_CAST "disabled", BAD_CAST "yes");
@@ -1577,7 +1579,7 @@ NetworkIO::add_connection_route(const std::string &id, const std::string &route)
   xmlNode* cid_node = get_connection_node(id);
 
   if (! cid_node) {
-    std::cerr << "ERROR: could not find connection node with id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find connection node with id: " << id << std::endl;
     return;
   }
 
@@ -1591,7 +1593,7 @@ NetworkIO::add_connection_note_position(const std::string &id, const std::string
   xmlNode* node = get_connection_node(id);
 
   if (! node) {
-    std::cerr << "ERROR: could not find node for connection id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find node for connection id: " << id << std::endl;
     return;
   }
   node = node->children;
@@ -1605,7 +1607,7 @@ NetworkIO::add_connection_note_position(const std::string &id, const std::string
   }
 
   if (! found) {
-    std::cerr << "ERROR: could not find note node for module id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find note node for module id: " << id << std::endl;
     return;
   }
   xmlNewProp(node, BAD_CAST "position", BAD_CAST pos.c_str());
@@ -1619,7 +1621,7 @@ NetworkIO::add_connection_note_color(const std::string &id, const std::string &c
   xmlNode* node = get_connection_node(id);
 
   if (! node) {
-    std::cerr << "ERROR: could not find node for connection id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find node for connection id: " << id << std::endl;
     return;
   }
   node = node->children;
@@ -1633,7 +1635,7 @@ NetworkIO::add_connection_note_color(const std::string &id, const std::string &c
   }
 
   if (! found) {
-    std::cerr << "ERROR: could not find note node for module id: " << id << std::endl;
+    simpleLog_ << "ERROR: could not find note node for module id: " << id << std::endl;
     return;
   }
   xmlNewProp(node, BAD_CAST "color", BAD_CAST col.c_str());
@@ -1647,7 +1649,7 @@ const std::string &val)
   xmlNode* mnode = get_module_node(id);
   xmlNode* pcnode = 0;
   if (! mnode) {
-    std::cerr << "ERROR: could not find module node with id (set_port_caching): " << id << std::endl;
+    simpleLog_ << "ERROR: could not find module node with id (set_port_caching): " << id << std::endl;
     return;
   }
 

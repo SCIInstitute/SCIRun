@@ -241,7 +241,7 @@ NetworkFileHandle FileImportCommand::processXmlFile()
 {
   auto dtdpath = Core::Application::Instance().executablePath();
   const auto& modFactory = Core::Application::Instance().controller()->moduleFactory();
-  LegacyNetworkIO lnio(dtdpath.string(), modFactory);
+  LegacyNetworkIO lnio(dtdpath.string(), modFactory, logContents_);
   return lnio.load_net(filename_);
 }
 
@@ -262,7 +262,7 @@ bool SetupDataDirectoryCommandGui::execute()
   return true;
 }
 
-NetworkSaveCommand::NetworkSaveCommand() 
+NetworkSaveCommand::NetworkSaveCommand()
 {
   addParameter(Variables::Filename, std::string());
 }

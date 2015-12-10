@@ -634,7 +634,8 @@ bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
 		QFile logFile(logFileName); //todo: add timestamp
     if (logFile.open(QFile::WriteOnly | QFile::Text))
 		{
-			//logFile.write(log);
+			QTextStream stream(&logFile);
+			stream << log;
 			QMessageBox::information(this, "SRN File Import", "SRN File Import log file can be found here: " + logFileName);
     }
 		else
