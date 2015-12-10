@@ -131,10 +131,7 @@ ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
   : QGraphicsView(scene, parent)
 {
   setSceneRect(QRectF(0, 0, 365, 83));
-  QPen pen;
-  pen.setWidth(1);
-  pen.setBrush(Qt::red);
-  this->scene()->addLine(-10, 42, 500, 42, pen);
+  addDefaultLine();
 }
 
 void ColormapPreview::mousePressEvent(QMouseEvent* event)
@@ -147,8 +144,24 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
   addPoint(center);
 }
 
+void ColormapPreview::addDefaultLine()
+{
+  QPen pen;
+  pen.setWidth(1);
+  pen.setBrush(Qt::red);
+  defaultLine_ = scene()->addLine(-10, 42, 500, 42, pen);
+}
+
+void ColormapPreview::removeDefaultLine()
+{
+  delete defaultLine_;
+  defaultLine_ = nullptr;
+}
+
 void ColormapPreview::addPoint(const QPointF& point)
 {
+  removeDefaultLine();
+
   static QPen pointPen(Qt::white, 1);
   scene()->addEllipse(point.x() - 4, point.y() - 4, 8, 8, pointPen, QBrush(Qt::black));
   alphaPoints_.append(point);
@@ -162,4 +175,5 @@ void ColormapPreview::clearAlphaPoints()
     if (dynamic_cast<QGraphicsEllipseItem*>(item))
       scene()->removeItem(item);
   }
+  addDefaultLine();
 }

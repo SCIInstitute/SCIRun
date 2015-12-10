@@ -50,6 +50,9 @@ namespace SCIRun {
       virtual void mousePressEvent(QMouseEvent* event) override;
     private:
       void addPoint(const QPointF& point);
+      void addDefaultLine();
+      void removeDefaultLine();
+      QGraphicsLineItem* defaultLine_;
       QList<QPointF> alphaPoints_;
     };
 
