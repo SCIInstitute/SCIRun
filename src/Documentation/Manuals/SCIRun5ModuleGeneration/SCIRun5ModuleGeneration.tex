@@ -1101,9 +1101,11 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
 /// @class SortMatrix
-/// @brief This module sorts the matrix entries into ascending or descending order.
+/// @brief This module sorts the matrix entries 
+/// into ascending or descending order.
 
-const ModuleLookupInfo SortMatrix::staticInfo_("SortMatrix", "Math", "SCIRun");
+const ModuleLookupInfo SortMatrix::staticInfo_("SortMatrix", "Math",
+    "SCIRun");
 
 SortMatrix::SortMatrix() : Module(staticInfo_)
 {
@@ -1190,15 +1192,17 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-SortMatrixDialog::SortMatrixDialog(const std::string& name, ModuleStateHandle state,
-	QWidget* parent/* = 0*/)
-	: ModuleDialogGeneric(state, parent)
+SortMatrixDialog::SortMatrixDialog(const std::string& name, 
+                ModuleStateHandle state,
+         QWidget* parent/* = 0*/)
+         : ModuleDialogGeneric(state, parent)
 {
-	setupUi(this);
+         setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
 
-  addRadioButtonGroupManager({ ascendButton_, descendButton_ }, Variables::Method);
+  addRadioButtonGroupManager({ ascendButton_, descendButton_ }, 
+  	Variables::Method);
 }
 \end{verbatim}
 The key difference in this file is the line that pulls the inputs from the UI using \emph{addRadioButtonGroupManager}.
@@ -1242,7 +1246,8 @@ class SCISHARE SortMatrixAlgo : public AlgorithmBase
     SortMatrixAlgo();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   
-    bool Sort(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int method) const;
+    bool Sort(Datatypes::DenseMatrixHandle input, 
+        Datatypes::DenseMatrixHandle& output, int method) const;
   
     bool Quicksort(double* input, index_type lo, index_type hi) const;
     index_type Partition(double* input, index_type lo, index_type hi) const;
@@ -1304,7 +1309,8 @@ AlgorithmOutput SortMatrixAlgo::run_generic(const AlgorithmInput& input) const
 
 
 bool
-SortMatrixAlgo::Sort(DenseMatrixHandle input, DenseMatrixHandle& output,int method) const
+SortMatrixAlgo::Sort(DenseMatrixHandle input, DenseMatrixHandle& output,
+            int method) const
 {
   if (!input)
   {
@@ -1415,21 +1421,29 @@ Unit Test can also find some bugs in module code.
 \end{figure}
 
 
-
-
-%TODO
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Converting Modules from SCIRun 4}
 \label{sec:converting}
 
 \begin{introduction}
+This chapter will walk through the steps necessary to convert a module from SCIRun 4 to SCIRun 5.  
+Converting a module is very similar to creating a new module, as expected.  
+However, there are additional considerations that will be described in this chapter, including a list of common build errors and a list of common changes in code needed for the conversion.
+
 Scope: \hyperref[sec:strategy]{Strategy} - \hyperref[sec:changes]{Common Function Changes} - \hyperref[sec:errors]{Common Build Errors}
 \end{introduction}
 
 \section{Strategy}
 \label{sec:strategy}
+
+The strategy for converting a module from SCIRun 4 to SCIRun 5 is very similar to the strategy of making a new module, which is to start with the basics, and add all the necessary parts piece by piece.  
+This is demonstrated in our previous examples, especially in Chapters~\ref{sec:ex_simple}~\&~\ref{sec:ex_UI}.
+
+
+There is another document outlining the steps to convert a module.
+It is \emph{src/Documentation/Manuals/ModuleConversionSteps.md} and can also be found on \href{https://github.com/SCIInstitute/SCIRun/blob/master/src/Documentation/Manuals/ModuleConversionSteps.md}{github}.
+
 
 \section{Common Function Changes}
 \label{sec:changes}
@@ -1449,6 +1463,7 @@ Scope: \hyperref[sec:strategy]{Strategy} - \hyperref[sec:changes]{Common Functio
 
 You will at least need a testing network.  
 
+%TODO
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1462,5 +1477,6 @@ You will at least need a testing network.
 
 You should totally document the modules you add.  
 
+%TODO
 
 \end{document}
