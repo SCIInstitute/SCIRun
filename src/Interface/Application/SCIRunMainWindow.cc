@@ -614,6 +614,7 @@ void SCIRunMainWindow::importLegacyNetwork()
 
 bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
 {
+	bool success = false;
   if (!filename.isEmpty())
   {
     FileImportCommand command(filename.toStdString(), networkEditor_);
@@ -622,14 +623,28 @@ bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
       statusBar()->showMessage(tr("File imported: ") + filename, 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
       networkEditor_->viewport()->update();
-      return true;
+      success = true;
     }
     else
     {
       statusBar()->showMessage(tr("File import failed: ") + filename, 2000);
     }
+		auto log = QString::fromStdString(command.logContents());
+		auto logFileName = latestNetworkDirectory_.path() + "/" + ("importLog_" + strippedName(filename) + ".log");
+		QFile logFile(logFileName); //todo: add timestamp
+    if (logFile.open(QFile::WriteOnly | QFile::Text))
+		{
+			QTextStream stream(&logFile);
+			stream << log;
+			QMessageBox::information(this, "SRN File Import", "SRN File Import log file can be found here: " + logFileName
+				+ "\n\nAdditionally, check the log directory for a list of missing modules (look for file missingModules.log)");
+    }
+		else
+		{
+			QMessageBox::information(this, "SRN File Import", "Failed to write SRN File Import log file: " + logFileName);
+		}
   }
-  return false;
+  return success;
 }
 
 bool SCIRunMainWindow::newNetwork()
