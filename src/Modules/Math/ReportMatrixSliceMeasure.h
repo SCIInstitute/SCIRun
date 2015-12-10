@@ -25,31 +25,31 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/DataIO/WriteField.h
+/// @todo Documentation Modules/Math/ReportMatrixSliceMeasure.h
 
-#ifndef MODULES_DATAIO_WRITE_FIELD_H
-#define MODULES_DATAIO_WRITE_FIELD_H
+#ifndef MODULES_MATH_REPORTMATRIXSLICEMEASURE_H
+#define MODULES_MATH_REPORTMATRIXSLICEMEASURE_H
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Modules/DataIO/GenericWriter.h>
-#include <Modules/DataIO/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace DataIO {
-
-      class SCISHARE WriteFieldModule : public GenericWriter<FieldHandle, FieldPortTag>
-      {
-      public:
-        typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
-        WriteFieldModule();
-        virtual void execute() override;
-        virtual bool useCustomExporter(const std::string& filename) const override;
-        virtual bool call_exporter(const std::string& filename) override;
-
-        INPUT_PORT(0, FieldToWrite, LegacyField);
-      };
-
-    }}}
+namespace Modules {
+namespace Math {
+  
+  class SCISHARE ReportMatrixSliceMeasure : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
+  {
+  public:
+    ReportMatrixSliceMeasure();
+    virtual void execute();
+    virtual void setStateDefaults();
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    
+    INPUT_PORT(0, InputMatrix, Matrix);
+    OUTPUT_PORT(0, OutputMatrix, Matrix);
+  };
+}}}
 
 #endif

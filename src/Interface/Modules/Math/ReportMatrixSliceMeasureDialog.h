@@ -25,31 +25,27 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/DataIO/WriteField.h
 
-#ifndef MODULES_DATAIO_WRITE_FIELD_H
-#define MODULES_DATAIO_WRITE_FIELD_H
+#ifndef INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H
+#define INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H 1
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Modules/DataIO/GenericWriter.h>
-#include <Modules/DataIO/share.h>
+#include "Interface/Modules/Math/ui_ReportMatrixSliceMeasureDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace DataIO {
+	namespace Gui {
+		class SCISHARE ReportMatrixSliceMeasureDialog : public ModuleDialogGeneric,
+			public Ui::ReportMatrixSliceMeasureDialog
+		{
+			Q_OBJECT
 
-      class SCISHARE WriteFieldModule : public GenericWriter<FieldHandle, FieldPortTag>
-      {
-      public:
-        typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
-        WriteFieldModule();
-        virtual void execute() override;
-        virtual bool useCustomExporter(const std::string& filename) const override;
-        virtual bool call_exporter(const std::string& filename) override;
-
-        INPUT_PORT(0, FieldToWrite, LegacyField);
-      };
-
-    }}}
+		public:
+			ReportMatrixSliceMeasureDialog(const std::string& name,
+						SCIRun::Dataflow::Networks::ModuleStateHandle state,
+						QWidget* parent = 0);
+		};
+	}
+}
 
 #endif

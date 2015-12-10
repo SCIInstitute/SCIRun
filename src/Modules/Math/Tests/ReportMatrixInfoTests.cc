@@ -82,7 +82,7 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
   ModuleStateFactoryHandle sf_;
   AlgorithmFactoryHandle af_;
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, sf_, ExecutionStrategyFactoryHandle(), af_, ReexecuteStrategyFactoryHandle());
+  NetworkEditorController controller(mf, sf_, nullptr, af_, nullptr, nullptr);
 
   auto network = controller.getNetwork();
   ModuleHandle hasDynamic = network->add_module(ViewScene::staticInfo_);

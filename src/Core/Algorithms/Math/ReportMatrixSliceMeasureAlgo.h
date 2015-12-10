@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Module/DataIO/ReadField.h
 
-#ifndef MODULES_DATAIO_READ_FIELD_H
-#define MODULES_DATAIO_READ_FIELD_H
+#ifndef CORE_ALGORITHMS_MATH_REPORTMATRIXSLICEMEASUREALGO_H
+#define CORE_ALGORITHMS_MATH_REPORTMATRIXSLICEMEASUREALGO_H
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
+//#include <Core/Algorithms/Util/AlgoLibrary.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+
+
+#include <string>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+#include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace DataIO {
+namespace Core {
+namespace Algorithms {
+namespace Math {
 
-  class SCISHARE ReadFieldModule : public GenericReader<FieldHandle, FieldPortTag>
-  {
+//class SparseElement;
+//typedef std::vector<SparseElement> SparseElementVector;
+
+class SCISHARE ReportMatrixSliceMeasureAlgo : public AlgorithmBase
+{
+
   public:
-    typedef GenericReader<FieldHandle, FieldPortTag> my_base;
-    ReadFieldModule();
-    virtual void execute() override;
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, FieldHandle& handle) override;
+    ReportMatrixSliceMeasureAlgo();
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    OUTPUT_PORT(0, Field, LegacyField);
+    // Apply an operation on a row by row basis
+    bool ApplyRowOperation(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int operation) const;
 
-    static std::string fileTypeList();
-  };
+    // Apply an operation on a column by column basis
+    bool ApplyColumnOperation(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int operation) const;
 
-}}}
+};
 
+      }}}}// end SCIRun namespace
 #endif

@@ -25,31 +25,23 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/DataIO/WriteField.h
 
-#ifndef MODULES_DATAIO_WRITE_FIELD_H
-#define MODULES_DATAIO_WRITE_FIELD_H
+#include <Interface/Modules/Math/ReportMatrixSliceMeasureDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <QtGui>
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Modules/DataIO/GenericWriter.h>
-#include <Modules/DataIO/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun {
-  namespace Modules {
-    namespace DataIO {
+ReportMatrixSliceMeasureDialog::ReportMatrixSliceMeasureDialog(const std::string& name, ModuleStateHandle state,
+	QWidget* parent/* = 0*/)
+	: ModuleDialogGeneric(state, parent)
+{
+	setupUi(this);
+	setWindowTitle(QString::fromStdString(name));
+	fixSize();
 
-      class SCISHARE WriteFieldModule : public GenericWriter<FieldHandle, FieldPortTag>
-      {
-      public:
-        typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
-        WriteFieldModule();
-        virtual void execute() override;
-        virtual bool useCustomExporter(const std::string& filename) const override;
-        virtual bool call_exporter(const std::string& filename) override;
-
-        INPUT_PORT(0, FieldToWrite, LegacyField);
-      };
-
-    }}}
-
-#endif
+  addRadioButtonGroupManager({ rowbutton_, columnbutton_ }, Variables::Operator);
+  addRadioButtonGroupManager({ sumbutton_, meanbutton_, varbutton_, stdbutton_, normbutton_, maxbutton_, minbutton_, medianbutton_ }, Variables::Method);
+}
