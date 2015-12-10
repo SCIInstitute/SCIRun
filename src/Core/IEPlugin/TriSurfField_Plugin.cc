@@ -27,8 +27,6 @@
 */
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Logging/LoggerInterface.h>
