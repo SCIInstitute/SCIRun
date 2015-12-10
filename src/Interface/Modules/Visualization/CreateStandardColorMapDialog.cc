@@ -77,7 +77,6 @@ void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
   ColorMap cm(s.toStdString(), resolutionSlider_->value(),
     static_cast<double>(shiftSlider_->value()) / 100.,
     invertCheck_->isChecked());
- // qDebug() << "updating color map: " << s << " " << resolutionSlider_->value() << " " << shiftSlider_->value();
   previewColorMap_->setStyleSheet(buildGradientString(cm));
 }
 
@@ -128,9 +127,13 @@ void CreateStandardColorMapDialog::onInvertCheck(bool b)
 }
 
 ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
-  : QGraphicsView(scene, parent)
+  : QGraphicsView(scene, parent), alphaPath_(nullptr)
 {
-  setSceneRect(QRectF(0, 0, 365, 83));
+  const int h = 83;
+  const int w = 365;
+  setSceneRect(QRectF(0, 0, w, h));
+  defaultStart_ = QPointF(0, h / 2);
+  defaultEnd_ = QPointF(w, h / 2);
   addDefaultLine();
 }
 
@@ -144,18 +147,22 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
   addPoint(center);
 }
 
+  static QPen alphaLinePen(Qt::red, 1);
+
 void ColormapPreview::addDefaultLine()
 {
-  QPen pen;
-  pen.setWidth(1);
-  pen.setBrush(Qt::red);
-  defaultLine_ = scene()->addLine(-10, 42, 500, 42, pen);
+  delete alphaPath_;
+  alphaPath_ = scene()->addLine(defaultStart_.x(), defaultStart_.y(),
+    defaultEnd_.x(), defaultEnd_.y(),
+    alphaLinePen);
+  alphaPoints_.insert(defaultStart_);
+  alphaPoints_.insert(defaultEnd_);
 }
 
 void ColormapPreview::removeDefaultLine()
 {
-  delete defaultLine_;
-  defaultLine_ = nullptr;
+  delete alphaPath_;
+  alphaPath_ = nullptr;
 }
 
 void ColormapPreview::addPoint(const QPointF& point)
@@ -163,8 +170,32 @@ void ColormapPreview::addPoint(const QPointF& point)
   removeDefaultLine();
 
   static QPen pointPen(Qt::white, 1);
-  scene()->addEllipse(point.x() - 4, point.y() - 4, 8, 8, pointPen, QBrush(Qt::black));
-  alphaPoints_.append(point);
+  auto item = scene()->addEllipse(point.x() - 4, point.y() - 4, 8, 8, pointPen, QBrush(Qt::black));
+  item->setZValue(1);
+  alphaPoints_.insert(point);
+
+  drawAlphaPolyline();
+}
+
+void ColormapPreview::drawAlphaPolyline()
+{
+  delete alphaPath_;
+  auto pathItem = new QGraphicsPathItem();
+  alphaPath_ = pathItem;
+  pathItem->setPen(alphaLinePen);
+  QPainterPath path;
+  QPointF from = defaultStart_;
+  path.moveTo(from);
+
+  for (const auto& point : alphaPoints_)
+  {
+    path.lineTo(point);
+    path.moveTo(point);
+  }
+
+  pathItem->setPath(path);
+  pathItem->setZValue(0);
+  scene()->addItem(alphaPath_);
 }
 
 void ColormapPreview::clearAlphaPoints()

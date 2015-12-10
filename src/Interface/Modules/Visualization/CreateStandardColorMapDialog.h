@@ -37,6 +37,14 @@
 namespace SCIRun {
   namespace Gui {
 
+    struct SortedByXCoordinate
+    {
+      bool operator()(const QPointF& p1, const QPointF& p2) const
+      {
+        return p1.x() < p2.x();
+      }
+    };
+
     class ColormapPreview : public QGraphicsView
     {
     Q_OBJECT
@@ -52,8 +60,10 @@ namespace SCIRun {
       void addPoint(const QPointF& point);
       void addDefaultLine();
       void removeDefaultLine();
-      QGraphicsLineItem* defaultLine_;
-      QList<QPointF> alphaPoints_;
+      void drawAlphaPolyline();
+      QGraphicsItem* alphaPath_;
+      QPointF defaultStart_, defaultEnd_;
+      std::set<QPointF, SortedByXCoordinate> alphaPoints_;
     };
 
     class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,
