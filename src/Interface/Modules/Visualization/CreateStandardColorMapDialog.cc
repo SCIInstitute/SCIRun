@@ -130,6 +130,10 @@ ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
   : QGraphicsView(scene, parent)
 {
   setSceneRect(QRectF(0, 0, 365, 83));
+  QPen pen;
+  pen.setWidth(1);
+  pen.setBrush(Qt::red);
+  this->scene()->addLine(-10, 42, 500, 42, pen);
 }
 
 void ColormapPreview::mousePressEvent(QMouseEvent* event)
@@ -137,9 +141,13 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
   QGraphicsView::mousePressEvent(event);
   Q_EMIT clicked(event->x(), event->y());
 
-  auto p = mapToScene(event->pos());
-  QPen pen;  
-  pen.setWidth(1);
-  pen.setBrush(Qt::white);
-  scene()->addEllipse(p.x(), p.y(), 9, 9, pen, QBrush(Qt::black));
+  auto center = mapToScene(event->pos());
+  
+  addPoint(center);
+}
+
+void ColormapPreview::addPoint(const QPointF& point)
+{
+  static QPen pointPen(Qt::white, 1);
+  scene()->addEllipse(point.x() - 4, point.y() - 4, 8, 8, pointPen, QBrush(Qt::black));
 }

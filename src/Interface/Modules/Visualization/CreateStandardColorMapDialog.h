@@ -46,6 +46,8 @@ namespace SCIRun {
         void clicked(int x, int y);
     protected:
         virtual void mousePressEvent(QMouseEvent* event) override;
+    private:
+      void addPoint(const QPointF& point);
     };
 
     class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,
