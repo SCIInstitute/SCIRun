@@ -36,7 +36,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Console;
 
-CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type, int param) const
+CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
 {
   switch (type)
   {
@@ -51,7 +51,9 @@ CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type, int param) co
   case PrintModules:
     return boost::make_shared<PrintModulesCommand>();
   case LoadNetworkFile:
-    return boost::make_shared<LoadFileCommandGui>(param);
+    return boost::make_shared<LoadFileCommandGui>();
+  case SaveNetworkFile:
+    return boost::make_shared<NetworkSaveCommand>();
   case RunPythonScript:
     return boost::make_shared<RunPythonScriptCommandGui>();
   case SetupDataDirectory:
@@ -65,4 +67,5 @@ CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type, int param) co
   default:
     THROW_INVALID_ARGUMENT("Unknown global command type.");
   }
+  return {};
 }
