@@ -37,10 +37,10 @@ using namespace SCIRun::Core::Console;
 class NothingCommand : public ConsoleCommand
 {
 public:
-  virtual bool execute() { return true; }
+  virtual bool execute() override { return true; }
 };
 
-CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type, int param) const
+CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
 {
   switch (type)
   {
@@ -53,7 +53,9 @@ CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type, int param
   case PrintVersion:
     return boost::make_shared<PrintVersionCommand>();
   case LoadNetworkFile:
-    return boost::make_shared<LoadFileCommandConsole>(param);
+    return boost::make_shared<LoadFileCommandConsole>();
+  case SaveNetworkFile:
+    return boost::make_shared<SaveFileCommandConsole>();
   case RunPythonScript:
     return boost::make_shared<RunPythonScriptCommandConsole>();
   case ExecuteCurrentNetwork:
@@ -65,4 +67,5 @@ CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type, int param
   default:
     THROW_INVALID_ARGUMENT("Unknown global command type.");
   }
+  return {};
 }

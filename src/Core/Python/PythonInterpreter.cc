@@ -28,6 +28,7 @@
 
 /// @todo Documentation Core/Python/PythonInterpreter.cc
 
+#ifdef BUILD_WITH_PYTHON
 #ifdef _MSC_VER
 //#pragma warning( push )
 #pragma warning( disable: 4244 )
@@ -697,3 +698,4 @@ std::string PythonInterpreter::EscapeSingleQuotedString( const std::string& str 
 	static const boost::regex reg( "[\\\\']" );
 	return boost::regex_replace( str, reg, "\\\\$&", boost::regex_constants::format_default );
 }
+#endif

@@ -146,6 +146,7 @@ private:
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool quitAfterExecute_;
+  bool runningPythonScript_ = false;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
