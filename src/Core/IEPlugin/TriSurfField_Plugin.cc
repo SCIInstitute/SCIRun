@@ -32,30 +32,29 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Logging/LoggerInterface.h>
-//#include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/IEPlugin/TriSurfField_Plugin.h>
 #include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Algorithms/Legacy/DataIO/VTKToTriSurfReader.h>
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 using namespace SCIRun;
-//using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
 
-#include <Core/Algorithms/Legacy/DataIO/VTKToTriSurfReader.h>
-
 FieldHandle SCIRun::VtkToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle outputField = 0;
-  SCIRunAlgo::VTKToTriSurfReader reader(pr);
+  FieldHandle outputField;
+  VTKToTriSurfReader reader(pr);
 
   if (! reader.run(filename, outputField) )
   {
-    if (pr) pr->error("Convert VTK file to SCIRun TriSurf field failed.");
-    return FieldHandle(0);
+    if (pr)
+      pr->error("Convert VTK file to SCIRun TriSurf field failed.");
+    return nullptr;
   }
   return outputField;
 }

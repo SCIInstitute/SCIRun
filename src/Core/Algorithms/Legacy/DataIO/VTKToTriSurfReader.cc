@@ -26,14 +26,15 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/DataIO/VTKToTriSurfReader.h>
+#include <Core/Algorithms/Legacy/DataIO/VTKToTriSurfReader.h>
 
-#include <Core/Datatypes/Field.h> 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Datatypes/Mesh.h> 
-#include <Core/Datatypes/VField.h> 
-#include <Core/Datatypes/VMesh.h> 
-#include <Core/Util/StringUtil.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Logging/LoggerInterface.h>
 
 #include <algorithm>
 #include <iostream>
@@ -46,7 +47,14 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
-namespace SCIRunAlgo {
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Geometry;
+
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
 
 // TODO: add vector and tensor data support
 
@@ -55,10 +63,10 @@ class TriSurfScalarDataReaderPrivate
 {
 public:
   std::vector<T> data_;
-  
+
   TriSurfScalarDataReaderPrivate(std::ifstream& fileStream)
     : fileStream_(fileStream) {}
-  
+
   void
   readScalarData();
 
@@ -72,7 +80,7 @@ public:
   typedef std::vector<std::string> StringList;
   typedef std::vector<double> PointList;
   typedef std::vector<VMesh::index_type> ElemList;
-  
+
   enum DATA_TYPE
   {
     UNKNOWN,
@@ -81,43 +89,43 @@ public:
     VECTOR,
     TENSOR
   };
-  
-  VTKToTriSurfReaderPrivate(ProgressReporter* pr)
+
+  VTKToTriSurfReaderPrivate(LoggerHandle pr)
     : pr_(pr),
       meshType_(TRISURFMESH_E),
       meshBasisType_(LINEARMESH_E),
       fieldDataBasisType_(NODATA_E),
       fieldDataType_(NONE_E),
+      vtkDataType_(UNKNOWN),
       POINTS_DIM(3),
       CELL_SIZE(3),
       numPointsFromFile_(0),
       numCellsFromFile_(0),
-      numDataValuesFromFile_(0),
-      vtkDataType_(UNKNOWN)
+      numDataValuesFromFile_(0)
   {
     this->fileStream_.exceptions( std::ifstream::badbit );
   }
-  
+
   bool
   readFile(const std::string& vtk_filename, FieldHandle& fieldHandle);
 
-private:  
-  ProgressReporter* pr_;
+private:
+  LoggerHandle  pr_;
 
   const mesh_info_type meshType_;
   const meshbasis_info_type meshBasisType_; // assuming linear
   databasis_info_type fieldDataBasisType_;
   data_info_type fieldDataType_;
   DATA_TYPE vtkDataType_;
-  
+
   const VMesh::size_type POINTS_DIM;
   const VMesh::size_type CELL_SIZE;
 
   PointList::size_type numPointsFromFile_;
   ElemList::size_type numCellsFromFile_;
   PointList::size_type numDataValuesFromFile_;
-  
-  std::ifstream fileStream_;  
+
+  std::ifstream fileStream_;
   PointList points_;
   ElemList elements_;
 
@@ -131,13 +139,13 @@ private:
 
     return line;
   }
-  
+
   void
   readPoints();
 
   VMesh::size_type
   readElements();
-  
+
   bool
   parseDatasetDefinition(const std::string& line);
 
@@ -149,45 +157,46 @@ private:
 
   bool
   parseDataDefinition(std::string& line);
-  
+
   bool
   matchPoints(const std::string& line)
   {
     return ( line.find("POINTS") != std::string::npos );
   }
-  
+
   bool
   matchCell(const std::string& line)
   {
     return ( ( line.find("POLYGONS") != std::string::npos ) ||
              ( line.find("VERTICES") != std::string::npos ) );
   }
-  
+
   bool
   matchPointData(const std::string& line)
   {
     return ( line.find("POINT_DATA") != std::string::npos );
   }
-  
+
   bool
   matchCellData(const std::string& line)
   {
     return ( line.find("CELL_DATA") != std::string::npos );
   }
 };
+}}}
 
 template<class T>
 void
 TriSurfScalarDataReaderPrivate<T>::readScalarData()
 {
-  std::string line;  
+  std::string line;
 
   this->data_.clear();
-  
+
   boost::regex re("^[-.]?[[:digit:]].*$", boost::regex::extended);
 
   int linecounter = 0;
-  
+
   while ( std::getline(this->fileStream_, line, '\n') )
   {
     // Scalar data should be one continous block.
@@ -226,11 +235,11 @@ VTKToTriSurfReaderPrivate::readPoints()
   std::string line;
   PointList values;
   std::ifstream::streampos pos = this->fileStream_.tellg();
-  
+
   this->points_.clear();
-  
+
   boost::regex re("^[-.]?[[:digit:]].*$", boost::regex::extended);
-  
+
   while ( std::getline(this->fileStream_, line, '\n') )
   {
     // Points should be one continous block.
@@ -264,11 +273,11 @@ VTKToTriSurfReaderPrivate::readElements()
 
   this->elements_.clear();
   this->elements_.resize(0);
-  
-  boost::regex re("^[[:digit:]]+[[:space:]]+[[:digit:]]+.*$", boost::regex::extended);  
+
+  boost::regex re("^[[:digit:]]+[[:space:]]+[[:digit:]]+.*$", boost::regex::extended);
 
   while ( std::getline(this->fileStream_, line, '\n') )
-  {    
+  {
     // polygons or vertices should be one continous block,
     // each line starting with the number of points
     if ( boost::regex_match(line, re) )
@@ -307,26 +316,26 @@ VTKToTriSurfReaderPrivate::parseDatasetDefinition(const std::string& line)
   StringList strings;
   const StringList::size_type DEF_LEN = 2;
   boost::split( strings, line, boost::is_any_of(" \t") );
-  
+
   if (strings.size() < DEF_LEN)
   {
     return false;
   }
-  
+
   if (! ( strings[0] == "DATASET" ) && ( strings[1] == "POLYDATA" ) )
   {
     return false;
   }
   return true;
 }
-  
+
 bool
 VTKToTriSurfReaderPrivate::parsePointsDefinition(const std::string& line)
 {
   StringList strings;
   const StringList::size_type DEF_LEN = 3;
   boost::split( strings, line, boost::is_any_of(" \t") );
-  
+
   if (strings.size() < DEF_LEN)
   {
     return false;
@@ -350,7 +359,7 @@ VTKToTriSurfReaderPrivate::parseCellDefinition(const std::string& line)
   StringList strings;
   const StringList::size_type DEF_LEN = 3;
   boost::split( strings, line, boost::is_any_of(" \t") );
-  
+
   if (strings.size() < DEF_LEN)
   {
     return false;
@@ -375,8 +384,8 @@ VTKToTriSurfReaderPrivate::parseDataDefinition(std::string& line)
   const StringList::size_type DEF_LEN = 2;
   const StringList::size_type ATTR_LEN = 3; // newer versions have up to 4
   bool supportedDataFound = false;
-  
-  boost::split( strings, line, boost::is_any_of(" \t") );  
+
+  boost::split( strings, line, boost::is_any_of(" \t") );
   if (strings.size() < DEF_LEN)
   {
     return false;
@@ -400,7 +409,7 @@ VTKToTriSurfReaderPrivate::parseDataDefinition(std::string& line)
     strings.clear();
     if ( boost::regex_match(line, re) )
     {
-      boost::split( strings, line, boost::is_any_of(" \t") );  
+      boost::split( strings, line, boost::is_any_of(" \t") );
       if (strings[0] == "SCALARS")
       {
         vtkDataType_ = SCALAR;
@@ -409,7 +418,7 @@ VTKToTriSurfReaderPrivate::parseDataDefinition(std::string& line)
           continue;
         }
         supportedDataFound = true;
-        
+
         if (strings[2] == "char")
         {
           this->fieldDataType_ = CHAR_E;
@@ -463,7 +472,7 @@ VTKToTriSurfReaderPrivate::parseDataDefinition(std::string& line)
       // TODO: vectors, tensors
     }
   }
-  
+
   return supportedDataFound;
 }
 
@@ -476,17 +485,17 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
   {
     filename = filename + ".vtk";
   }
-  
+
   bool valid_vtk_file = false,
        data_available = false,
        processed_points = false,
        processed_elems = false;
   std::string line;
-  
+
   try
   {
     this->fileStream_.open(filename.c_str());
-    
+
     // part 1: header
     std::getline(this->fileStream_, line, '\n');
     boost::char_separator<char> sep(" \t");
@@ -506,13 +515,13 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
 
       return false;
     }
-    
+
     // discard title (part 2)
     line = discardBlankAndCommentLines();
-    
+
     // part 3: data type (ASCII or BINARY)
     line = discardBlankAndCommentLines();
-    
+
     if ( line.find("ASCII") == std::string::npos )
     {
       if (this->pr_)
@@ -520,11 +529,11 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
 
       return false;
     }
-    
+
     // part 4: geometry/topology
     line = discardBlankAndCommentLines();
     PointList::size_type numCells = 0;
-    
+
     if ( ! parseDatasetDefinition(line) )
     {
       if (this->pr_)
@@ -532,11 +541,11 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
 
       return false;
     }
- 
+
     line = discardBlankAndCommentLines();
-    
+
     if ( matchPoints(line) && (! processed_points) )
-    {      
+    {
       if (! parsePointsDefinition(line) )
       {
         if (this->pr_)
@@ -544,7 +553,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
                            " is not a valid VTK file. Parsing POINTS attribute number of points failed.");
         return false;
       }
-      
+
       readPoints();
       processed_points = true;
     }
@@ -558,15 +567,15 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
                            " is not a valid VTK file. Dataset topology attributes are number of cells and size of cell list.");
         return false;
       }
-      
+
       numCells = readElements();
       processed_elems = true;
     }
 
     line = discardBlankAndCommentLines();
-    
+
     if ( matchPoints(line) && (! processed_points) )
-    {      
+    {
       if (! parsePointsDefinition(line) )
       {
         if (this->pr_)
@@ -574,7 +583,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
                            " is not a valid VTK file. Parsing POINTS attribute number of points failed.");
         return false;
       }
-      
+
       readPoints();
       processed_points = true;
     }
@@ -588,7 +597,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
             " is not a valid VTK file. Dataset topology attributes are number of cells and size of cell list.");
         return false;
       }
-      
+
       numCells = readElements();
       processed_elems = true;
     }
@@ -647,7 +656,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
         {
           if (this->pr_)
             this->pr_->error(filename +
-              " is not compatible with this importer. Only scalar data is currently supported.");        
+              " is not compatible with this importer. Only scalar data is currently supported.");
           return false;
         }
       }
@@ -658,7 +667,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
                               this->meshBasisType_,
                               this->fieldDataBasisType_,
                               this->fieldDataType_);
-    if ( fieldHandle.get_rep() == 0 )
+    if ( !fieldHandle )
     {
       if (this->pr_)
         this->pr_->error("CreateField failed to create a SCIRun field from the VTK file.");
@@ -666,11 +675,11 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
       return false;
     }
     VMesh *vmesh = fieldHandle->vmesh();
-    
+
     for (PointList::size_type p = 0; p <= this->points_.size()-POINTS_DIM; p += POINTS_DIM)
     {
       vmesh->add_point(Point(this->points_[p], this->points_[p+1], this->points_[p+2]));
-    }  
+    }
 
     for (ElemList::size_type e = 0; e <= this->elements_.size()-CELL_SIZE; e += CELL_SIZE)
     {
@@ -679,7 +688,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
       vdata[0] = this->elements_[e]; vdata[1] = this->elements_[e+1]; vdata[2] = this->elements_[e+2];
       vmesh->add_elem(vdata);
     }
-    
+
     if (data_available)
     {
       // TODO: try using boost::variant here to fix repetitive code
@@ -695,7 +704,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           {
             if (this->pr_)
               this->pr_->error("Could not read data from " + filename);
-            
+
             return false;
           }
           vfield->set_values(dataReader.data_);
@@ -709,7 +718,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           {
             if (this->pr_)
               this->pr_->error("Could not read data from " + filename);
-            
+
             return false;
           }
           vfield->set_values(dataReader.data_);
@@ -723,7 +732,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           {
             if (this->pr_)
               this->pr_->error("Could not read data from " + filename);
-            
+
             return false;
           }
           vfield->set_values(dataReader.data_);
@@ -737,7 +746,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           {
             if (this->pr_)
               this->pr_->error("Could not read data from " + filename);
-            
+
             return false;
           }
           vfield->set_values(dataReader.data_);
@@ -751,7 +760,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           {
             if (this->pr_)
               this->pr_->error("Could not read data from " + filename);
-            
+
             return false;
           }
           vfield->set_values(dataReader.data_);
@@ -765,7 +774,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           {
             if (this->pr_)
               this->pr_->error("Could not read data from " + filename);
-            
+
             return false;
           }
           vfield->set_values(dataReader.data_);
@@ -779,7 +788,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           {
             if (this->pr_)
               this->pr_->error("Could not read data from " + filename);
-            
+
             return false;
           }
           vfield->set_values(dataReader.data_);
@@ -793,7 +802,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           {
             if (this->pr_)
               this->pr_->error("Could not read data from " + filename);
-            
+
             return false;
           }
           vfield->set_values(dataReader.data_);
@@ -807,7 +816,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           {
             if (this->pr_)
               this->pr_->error("Could not read data from " + filename);
-            
+
             return false;
           }
           vfield->set_values(dataReader.data_);
@@ -821,7 +830,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
           {
             if (this->pr_)
               this->pr_->error("Could not read data from " + filename);
-            
+
             return false;
           }
           vfield->set_values(dataReader.data_);
@@ -829,7 +838,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
         }
         default:
           if (this->pr_)
-            this->pr_->error("Unsupported data type detected from parsing data section.");        
+            this->pr_->error("Unsupported data type detected from parsing data section.");
           return false;
       }
     }
@@ -840,27 +849,19 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
   {
     if (this->pr_)
       this->pr_->error("Could not open file: " + filename);
-    
+
     return false;
   }
-  
+
   return true;
 }
-  
-VTKToTriSurfReader::VTKToTriSurfReader(ProgressReporter* pr)
-: private_( new VTKToTriSurfReaderPrivate(pr))
-{}
 
-VTKToTriSurfReader::~VTKToTriSurfReader()
+VTKToTriSurfReader::VTKToTriSurfReader(LoggerHandle pr)
+: private_( new VTKToTriSurfReaderPrivate(pr))
 {}
 
 bool
 VTKToTriSurfReader::run(const std::string& filename, FieldHandle& fieldHandle)
 {
-  std::string vtk_filename(filename);
-  bool result = private_->readFile(vtk_filename, fieldHandle);
-
-  return result;
-}
-
+  return private_->readFile(filename, fieldHandle);
 }

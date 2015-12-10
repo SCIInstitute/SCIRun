@@ -1,22 +1,22 @@
 /*
  For more information, please see: http://software.sci.utah.edu
- 
+
  The MIT License
- 
- Copyright (c) 2014 Scientific Computing and Imaging Institute,
+
+ Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
- 
- 
+
+
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
  to deal in the Software without restriction, including without limitation
  the rights to use, copy, modify, merge, publish, distribute, sublicense,
  and/or sell copies of the Software, and to permit persons to whom the
  Software is furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included
  in all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -29,28 +29,25 @@
 #ifndef CORE_ALGORITHMS_DATAIO_VTKTOTRISURFREADER_H
 #define CORE_ALGORITHMS_DATAIO_VTKTOTRISURFREADER_H 1
 
-#include <string>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Logging/LoggerFwd.h>
+#include <Core/Algorithms/Legacy/DataIO/share.h>
 
-#include <boost/shared_ptr.hpp>
-
-#include <Core/Algorithms/Util/AlgoLibrary.h>
-#include <Core/Datatypes/Field.h> 
-
-#include <Core/Algorithms/DataIO/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
+namespace SCIRun
+{
+  namespace Core
+  {
+    namespace Algorithms
+    {
 
 class VTKToTriSurfReaderPrivate;
 typedef boost::shared_ptr< VTKToTriSurfReaderPrivate > ReaderPrivateHandle;
 
 // following VTK legacy format, version 4.2
-class SCISHARE VTKToTriSurfReader : public AlgoLibrary
+class SCISHARE VTKToTriSurfReader
 {
 public:
-  VTKToTriSurfReader(ProgressReporter* pr = 0);
-  ~VTKToTriSurfReader();
+  explicit VTKToTriSurfReader(Core::Logging::LoggerHandle pr);
 
   bool run(const std::string& filename, FieldHandle& fieldHandle);
 
@@ -58,6 +55,6 @@ private:
   ReaderPrivateHandle private_;
 };
 
-} // end namespace SCIRunAlgo
+}}}
 
 #endif
