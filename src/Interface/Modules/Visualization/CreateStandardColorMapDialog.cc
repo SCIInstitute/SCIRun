@@ -66,7 +66,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   previewColorMap_ = new ColormapPreview(scene_, this);
   qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_);
   previewColorMap_->setStyleSheet(buildGradientString(cm));
-  previewColorMap_->setMinimumSize(100,60);
+  previewColorMap_->setMinimumSize(100,40);
   previewColorMap_->show();
   connect(previewColorMap_, SIGNAL(clicked(int,int)), this, SLOT(previewClicked(int,int)));
 }
@@ -137,5 +137,9 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
   QGraphicsView::mousePressEvent(event);
   Q_EMIT clicked(event->x(), event->y());
 
-  scene()->addItem(new QGraphicsEllipseItem(event->x(), event->y(), 3, 3));
+  auto p = mapToScene(event->pos());
+  QPen pen;  
+  pen.setWidth(1);
+  pen.setBrush(Qt::white);
+  scene()->addEllipse(p.x(), p.y(), 9, 9, pen, QBrush(Qt::black));
 }
