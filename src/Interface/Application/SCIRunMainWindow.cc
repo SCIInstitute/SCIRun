@@ -636,7 +636,8 @@ bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
 		{
 			QTextStream stream(&logFile);
 			stream << log;
-			QMessageBox::information(this, "SRN File Import", "SRN File Import log file can be found here: " + logFileName);
+			QMessageBox::information(this, "SRN File Import", "SRN File Import log file can be found here: " + logFileName
+				+ "\n\nAdditionally, check the log directory for a list of missing modules (look for file missingModules.log)");
     }
 		else
 		{
