@@ -26,6 +26,7 @@
  DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef BUILD_WITH_PYTHON
 #ifndef CORE_PYTHON_PYTHONINTERPRETER_H
 #define CORE_PYTHON_PYTHONINTERPRETER_H
 
@@ -123,4 +124,5 @@ public:
 
 }}
 
+#endif
 #endif

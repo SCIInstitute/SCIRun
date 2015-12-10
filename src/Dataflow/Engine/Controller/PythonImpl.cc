@@ -30,7 +30,6 @@
 #ifdef BUILD_WITH_PYTHON
 
 #include <boost/range/adaptor/transformed.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/python/to_python_converter.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ModuleInterface.h>
@@ -38,13 +37,14 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Commands;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
@@ -161,7 +161,7 @@ namespace
       }
     }
 
-    virtual std::string id() const
+    virtual std::string id() const override
     {
       if (module_)
         return module_->get_id();
@@ -244,6 +244,21 @@ namespace
       return std::vector<std::string>();
     }
 
+    virtual std::string stateToString() const override
+    {
+      if (module_)
+      {
+        std::ostringstream ostr;
+        auto state = module_->get_state();
+        for (const auto& key : state->getKeys())
+        {
+          ostr << state->getValue(key) << std::endl;
+        }
+        return ostr.str();
+      }
+      return "[null module]";
+    }
+
     virtual boost::shared_ptr<PyPorts> output() override
     {
       return output_;
@@ -314,7 +329,26 @@ namespace SCIRun {
   }
 }
 
-PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory) {}
+PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory), executionMutex_(nullptr)
+{
+  nec_.connectNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); });
+}
+
+void PythonImpl::setLock(Mutex* mutex)
+{
+  executionMutex_ = mutex;
+}
+
+void PythonImpl::executionFromPythonStart()
+{
+  //std::cout << "Python impl exec start" << std::endl;
+}
+
+void PythonImpl::executionFromPythonFinish(int)
+{
+  if (executionMutex_)
+    executionMutex_->unlock();
+}
 
 boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
 {
@@ -363,45 +397,42 @@ std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, 
 
 std::string PythonImpl::disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
+  //TODO: doesn't work at all since there is no GUI connection to this network change event. Issue is #...
   auto id = impl_->connectionIdLookup_[moduleIdFrom][fromIndex][moduleIdTo][toIndex];
   if (!id.empty())
   {
-    std::cout << "here is the connection id i found: " << id << std::endl;
     nec_.removeConnection(id);
-    return "PythonImpl::disconnect success";
+    return "PythonImpl::disconnect IS NOT IMPLEMENTED";
   }
   else
   {
-    std::cout << "No connection id found" << std::endl;
     return "PythonImpl::disconnect: connection not found";
   }
-
-
 }
 
 std::string PythonImpl::saveNetwork(const std::string& filename)
 {
-  try
-  {
-    /// @todo: duplicated code from SCIRunMainWindow. Obviously belongs in a separate class.
-    NetworkFileHandle file = nec_.saveNetwork();
-    XMLSerializer::save_xml(*file, filename, "networkFile");
-    return filename + " saved.";
-  }
-  catch (...)
-  {
-    return "Save failed.";
-  }
+  auto save = cmdFactory_->create(GlobalCommands::SaveNetworkFile);
+  save->set(Variables::Filename, filename);
+  return save->execute() ? (filename + " saved") : "Save failed";
+  //TODO: provide more informative python return value string
 }
 
 std::string PythonImpl::loadNetwork(const std::string& filename)
 {
-  return "PythonImpl::loadNetwork does nothing";
+  auto load = cmdFactory_->create(GlobalCommands::LoadNetworkFile);
+  load->set(Variables::Filename, filename);
+  return load->execute() ? (filename + " loaded") : "Load failed";
+  //TODO: provide more informative python return value string
 }
 
 std::string PythonImpl::quit(bool force)
 {
-  return "PythonImpl::quit does nothing";
+  if (force)
+    cmdFactory_->create(GlobalCommands::QuitCommand)->execute();
+  else
+    cmdFactory_->create(GlobalCommands::SetupQuitAfterExecute)->execute();
+  return "Quit after execute enabled.";
 }
 
 #endif
