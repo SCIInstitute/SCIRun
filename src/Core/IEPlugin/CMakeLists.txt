@@ -48,7 +48,7 @@ SET(Core_IEPlugin_SRCS
   #StructCurveField_Plugin.cc
   #StructHexVolField_Plugin.cc
   #StructQuadSurfField_Plugin.cc
-  #TriSurfField_Plugin.cc
+  TriSurfField_Plugin.cc
   #TetVolField_Plugin.cc
 )
 
@@ -75,7 +75,7 @@ SET(Core_IEPlugin_HEADERS
   #StructCurveField_Plugin.h
   #StructHexVolField_Plugin.h
   #StructQuadSurfField_Plugin.h
-  #TriSurfField_Plugin.h
+  TriSurfField_Plugin.h
   #TetVolField_Plugin.h
 )
 
