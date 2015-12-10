@@ -31,11 +31,13 @@
 SET(Modules_Legacy_Forward_HEADERS
   BuildBEMatrix.h
   BuildBEMatrixImpl.h
+  InsertVoltageSource.h
 )
 
 SET(Modules_Legacy_Forward_SRCS
   BuildBEMatrix.cc
   BuildBEMatrixImpl.cc
+  InsertVoltageSource.cc
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Forward
