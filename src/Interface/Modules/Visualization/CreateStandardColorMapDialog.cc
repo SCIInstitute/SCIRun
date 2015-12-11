@@ -60,12 +60,12 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(resolutionSlider_, SIGNAL(valueChanged(int)), resolutionSpin_, SLOT(setValue(int)));
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
 
-  ColorMap cm("Rainbow");
+  auto defaultMap = StandardColorMapFactory::create();
 
   scene_ = new QGraphicsScene(this);
   previewColorMap_ = new ColormapPreview(scene_, this);
   qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_);
-  previewColorMap_->setStyleSheet(buildGradientString(cm));
+  previewColorMap_->setStyleSheet(buildGradientString(*defaultMap));
   previewColorMap_->setMinimumSize(100,40);
   previewColorMap_->show();
   connect(previewColorMap_, SIGNAL(clicked(int,int)), this, SLOT(previewClicked(int,int)));
@@ -74,10 +74,10 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
 {
-  ColorMap cm(s.toStdString(), resolutionSlider_->value(),
+  auto cm = StandardColorMapFactory::create(s.toStdString(), resolutionSlider_->value(),
     static_cast<double>(shiftSlider_->value()) / 100.,
     invertCheck_->isChecked());
-  previewColorMap_->setStyleSheet(buildGradientString(cm));
+  previewColorMap_->setStyleSheet(buildGradientString(*cm));
 }
 
 void CreateStandardColorMapDialog::previewClicked(int x, int y)
@@ -143,8 +143,8 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
   Q_EMIT clicked(event->x(), event->y());
 
   auto center = mapToScene(event->pos());
-
   addPoint(center);
+  //TODO: remove point if event & RightMouseButton
 }
 
   static QPen alphaLinePen(Qt::red, 1);

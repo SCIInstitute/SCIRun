@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +27,7 @@
 */
 /// @todo Documentation Core/Datatypes/ColorMap.h
 #ifndef CORE_DATATYPES_COLORMAP_H
-#define CORE_DATATYPES_COLORMAP_H 
+#define CORE_DATATYPES_COLORMAP_H
 
 #include <Core/Datatypes/Datatype.h>
 #include <boost/noncopyable.hpp>
@@ -40,44 +40,42 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
+  class ColorMapStrategy;
+  typedef boost::shared_ptr<ColorMapStrategy> ColorMapStrategyHandle;
+
   class SCISHARE ColorMap : public Datatype
   {
   public:
     // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for it's
     // default input range, we need to transform by default the data into [0,1] range.
-    explicit ColorMap(const std::string& name = "Rainbow", const size_t resolution = 256,
+    explicit ColorMap(ColorMapStrategyHandle color,
+      const std::string& name = "Rainbow", const size_t resolution = 256,
                         const double shift = 0.0, const bool invert = false,
                         const double rescale_scale = .5, const double rescale_shift = 1.);
-      
     virtual ColorMap* clone() const;
 
+    ColorMapStrategyHandle getColorStrategy() const { return color_; }
     std::string getColorMapName() const;
     size_t getColorMapResolution() const;
     double getColorMapShift() const;
     bool getColorMapInvert() const;
     double getColorMapRescaleScale() const;
     double getColorMapRescaleShift() const;
-    
+
     Core::Datatypes::ColorRGB valueToColor(double scalar) const;
     Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Tensor &tensor) const;
     Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
 
     virtual std::string dynamic_type_name() const override { return "ColorMap"; }
-    
+
   private:
     ///<< Internal functions.
     Core::Datatypes::ColorRGB getColorMapVal(double v) const;
     double getTransformedColor(double v) const;
 
-    Core::Datatypes::ColorRGB getRainbowColorMapVal(double f) const;
-    Core::Datatypes::ColorRGB getOldRainbowColorMapVal(double f) const;
-    Core::Datatypes::ColorRGB getBlackbodyColorMapVal(double f) const;
-    Core::Datatypes::ColorRGB getGrayscaleColorMapVal(double f) const;
-    Core::Datatypes::ColorRGB getOrangeBlackLimeColorMapVal(double f) const;
-    Core::Datatypes::ColorRGB getDarkhueColorMapVal(double f) const;
-    
+    ColorMapStrategyHandle color_;
     ///<< The colormap's name.
-    std::string name_;
+    std::string nameInfo_;
     ///<< The resolution of the map [2,256].
     size_t resolution_;
     ///<< The gamma shift.
@@ -88,6 +86,13 @@ namespace Datatypes {
     double rescale_scale_;
     ///<< Rescaling shift (usually -data_min). Shift happens before scale.
     double rescale_shift_;
+  };
+
+  class SCISHARE ColorMapStrategy
+  {
+  public:
+    virtual ~ColorMapStrategy() {}
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const = 0;
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable

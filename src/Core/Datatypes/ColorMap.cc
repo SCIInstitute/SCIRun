@@ -31,12 +31,13 @@
 #include <Core/Datatypes/ColorMap.h>
 #include <iostream>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift,
+ColorMap::ColorMap(ColorMapStrategyHandle color, const std::string& name, const size_t resolution, const double shift,
   const bool invert, const double rescale_scale, const double rescale_shift)
-  : name_(name), resolution_(resolution), shift_(shift),
+  : color_(color), nameInfo_(name), resolution_(resolution), shift_(shift),
   invert_(invert), rescale_scale_(rescale_scale), rescale_shift_(rescale_shift)
 {
 
@@ -47,19 +48,73 @@ ColorMap* ColorMap::clone() const
   return new ColorMap(*this);
 }
 
+namespace detail
+{
+class Rainbow : public ColorMapStrategy
+{
+public:
+  virtual ColorRGB getColorMapVal(double v) const override;
+};
+
+class OldRainbow : public ColorMapStrategy
+{
+public:
+  virtual ColorRGB getColorMapVal(double v) const override;
+};
+
+class Blackbody : public ColorMapStrategy
+{
+public:
+  virtual ColorRGB getColorMapVal(double v) const override;
+};
+
+class Grayscale : public ColorMapStrategy
+{
+public:
+  virtual ColorRGB getColorMapVal(double v) const override;
+};
+
+class OrangeBlackLime : public ColorMapStrategy
+{
+public:
+  virtual ColorRGB getColorMapVal(double v) const override;
+};
+
+class Darkhue : public ColorMapStrategy
+{
+public:
+  virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+};
+}
+
 ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &res,
   const double &shift, const bool &invert,
   const double &rescale_scale, const double &rescale_shift)
 {
-  if (!(name == "Rainbow" ||
-    name == "Old Rainbow" ||
-    name == "Blackbody" ||
-    name == "Grayscale" ||
-    name == "Orange,Black,Lime" ||
-    name == "Darkhue"))
-    THROW_INVALID_ARGUMENT("Color map name not implemented/recognized.");
+    ColorMapStrategyHandle color;
+    if (name == "Rainbow") {
+      color.reset(new detail::Rainbow);
+    }
+    else if (name == "Old Rainbow") {
+      color.reset(new detail::OldRainbow);
+    }
+    else if (name == "Blackbody") {
+      color.reset(new detail::Blackbody);
+    }
+    else if (name == "Grayscale") {
+      color.reset(new detail::Grayscale);
+    }
+    else if (name == "Orange,Black,Lime") {
+      color.reset(new detail::OrangeBlackLime);
+    }
+    else if (name == "Darkhue") {
+      color.reset(new detail::Darkhue);
+    }
+    else
+      THROW_INVALID_ARGUMENT("Color map name not implemented/recognized.");
 
-  return boost::make_shared<ColorMap>(name, res, shift, invert, rescale_scale, rescale_shift);
+
+  return boost::make_shared<ColorMap>(color, name, res, shift, invert, rescale_scale, rescale_shift);
 }
 /**
  * @name getTransformedColor
@@ -68,7 +123,7 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
  * @param v The input value from raw data that will be transformed (usually into [0,1] space).
  * @return The scalar double value transformed into ColorMap space from raw data.
  */
-double ColorMap::getTransformedColor(double f) const 
+double ColorMap::getTransformedColor(double f) const
 {
   /////////////////////////////////////////////////
   //TODO: this seemingly useless code fixes a nasty crash bug on Windows. Don't delete it until a proper fix is implemented!
@@ -104,38 +159,17 @@ double ColorMap::getTransformedColor(double f) const
  * @name getColorMapVal
  * @brief This method returns the RGB value for the current colormap parameters.
  * The input comes from raw data values. To scale to data, ColorMap
- *           must be created with those parameters. The input is transformed, then 
- *           used to select a color from a set of color maps (currently defined by 
+ *           must be created with those parameters. The input is transformed, then
+ *           used to select a color from a set of color maps (currently defined by
  *           strings.
  * @param v The input value from raw data that will be mapped to a color.
  * @return The RGB value mapped from the transformed input into the ColorMap's named map.
  */
-ColorRGB ColorMap::getColorMapVal(double v) const 
+ColorRGB ColorMap::getColorMapVal(double v) const
 {
   double f = getTransformedColor(v);
   //now grab the RGB
-  ColorRGB col;
-
-  if (name_ == "Rainbow") {
-    col = getRainbowColorMapVal(f);
-  }
-  else if (name_ == "Old Rainbow") {
-    col = getOldRainbowColorMapVal(f);
-  }
-  else if (name_ == "Blackbody") {
-    col = getBlackbodyColorMapVal(f);
-  }
-  else if (name_ == "Grayscale") {
-    col = getGrayscaleColorMapVal(f);
-  }
-  else if (name_ == "Orange,Black,Lime") {
-    col = getOrangeBlackLimeColorMapVal(f);
-  }
-  else if (name_ == "Darkhue") {
-    col = getDarkhueColorMapVal(f);
-  }
-
-  return col;
+  return color_->getColorMapVal(f);
 }
 /**
  * @name valueToColor
@@ -178,7 +212,7 @@ ColorRGB ColorMap::valueToColor(const Vector &vector) const {
 // be "brighter" than the other colors. All colors "appear" to be the
 // same brightness.
 // Blue -> Dark Cyan -> Green -> Orange -> Red
-ColorRGB ColorMap::getRainbowColorMapVal(double f) const
+ColorRGB detail::Rainbow::getColorMapVal(double f) const
 {
   ColorRGB col;
   if (f < 0.25)
@@ -194,7 +228,7 @@ ColorRGB ColorMap::getRainbowColorMapVal(double f) const
 
 //The Old Rainbow that simply transitions from blue to red 1 color at a time.
 // Blue -> Cyan -> Green -> Yellow -> Red
-ColorRGB ColorMap::getOldRainbowColorMapVal(double f) const
+ColorRGB detail::OldRainbow::getColorMapVal(double f) const
 {
   ColorRGB col;
   if (f < 0.25)
@@ -211,7 +245,7 @@ ColorRGB ColorMap::getOldRainbowColorMapVal(double f) const
 // This map is designed to appear like a heat-map, where "cooler" (lower) values
 // are darker and approach black, and "hotter" (higher) values are lighter
 // and approach white. In between, you have the red, orange, and yellow transitions.
-ColorRGB ColorMap::getBlackbodyColorMapVal(double f) const
+ColorRGB detail::Blackbody::getColorMapVal(double f) const
 {
   ColorRGB col;
   if (f < 0.333333)
@@ -224,7 +258,7 @@ ColorRGB ColorMap::getBlackbodyColorMapVal(double f) const
 }
 
 // A very simple black to white map with grays in between.
-ColorRGB ColorMap::getGrayscaleColorMapVal(double f) const
+ColorRGB detail::Grayscale::getColorMapVal(double f) const
 {
   ColorRGB col;
   col = ColorRGB(f, f, f);
@@ -233,7 +267,7 @@ ColorRGB ColorMap::getGrayscaleColorMapVal(double f) const
 
 // This color scheme sets a transition of color that goes
 // Orange -> Black -> Lime
-ColorRGB ColorMap::getOrangeBlackLimeColorMapVal(double f) const
+ColorRGB detail::OrangeBlackLime::getColorMapVal(double f) const
 {
   ColorRGB col;
   if (f < 0.5)
@@ -243,7 +277,7 @@ ColorRGB ColorMap::getOrangeBlackLimeColorMapVal(double f) const
   return col;
 }
 
-ColorRGB ColorMap::getDarkhueColorMapVal(double f) const
+ColorRGB detail::Darkhue::getColorMapVal(double f) const
 {
   ColorRGB col;
   if (f < 0.25)
@@ -257,7 +291,7 @@ ColorRGB ColorMap::getDarkhueColorMapVal(double f) const
   return col;
 }
 
-std::string ColorMap::getColorMapName() const { return name_; }
+std::string ColorMap::getColorMapName() const { return nameInfo_; }
 size_t ColorMap::getColorMapResolution() const { return resolution_; }
 double ColorMap::getColorMapShift() const { return shift_; }
 bool ColorMap::getColorMapInvert() const { return invert_; }
