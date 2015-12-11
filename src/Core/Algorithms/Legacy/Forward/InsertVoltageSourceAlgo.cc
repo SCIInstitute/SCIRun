@@ -6,7 +6,7 @@ The MIT License
 Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
-License for the specific language governing rights and limitations under
+
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation
@@ -26,28 +26,22 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Forward/InsertVoltageSourceDialog.h>
+/*
+*  InsertVoltageSource: Insert a voltage source
+*
+*  Written by:
+*   David Weinstein
+*   Department of Computer Science
+*   University of Utah
+*   January 2002
+*
+*/
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Forward;
+#include <Core/Algorithms/Legacy/Forward/InsertVoltageSourceAlgo.h>
 
-InsertVoltageSourceDialog::InsertVoltageSourceDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-}
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-void InsertVoltageSourceDialog::updateFromPortChange(int numPorts, const std::string&)
-{
-
-}
-
-void InsertVoltageSourceDialog::pullSpecial()
-{
-
-}
+#include <Dataflow/Network/Module.h>
+#include <vector>

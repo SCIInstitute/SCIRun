@@ -6,7 +6,7 @@ The MIT License
 Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
-License for the specific language governing rights and limitations under
+
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation
@@ -26,28 +26,41 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Forward/InsertVoltageSourceDialog.h>
+/*
+*  InsertVoltageSource: Insert a voltage source
+*
+*  Written by:
+*   David Weinstein
+*   Department of Computer Science
+*   University of Utah
+*   January 2002
+*
+*/
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Forward;
+#ifndef CORE_ALGORITHMS_LEGACY_FORWARD_INSERTVOLTAGESOURCEALGO_H
+#define CORE_ALGORITHMS_LEGACY_FORWARD_INSERTVOLTAGESOURCEALGO_H
 
-InsertVoltageSourceDialog::InsertVoltageSourceDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Forward/share.h>
+
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Forward {
+
+        class SCISHARE InsertVoltageSourceAlgo
+        {
+        public:
+          InsertVoltageSourceAlgo();
+
+        private:
+          bool outside_;
+          bool groundfirst_;
+        };
+      }
+    }
+  }
 }
 
-void InsertVoltageSourceDialog::updateFromPortChange(int numPorts, const std::string&)
-{
-
-}
-
-void InsertVoltageSourceDialog::pullSpecial()
-{
-
-}
+#endif

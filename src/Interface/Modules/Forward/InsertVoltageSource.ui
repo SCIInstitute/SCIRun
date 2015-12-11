@@ -21,14 +21,17 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QCheckBox" name="interpolateCheckBox_">
+    <widget class="QCheckBox" name="outsideCheckBox_">
      <property name="text">
       <string>Interpolate outside mesh</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="groundNodeOfSecondFieldCheckBox_">
+    <widget class="QCheckBox" name="groundfirstCheckBox_">
      <property name="text">
       <string>Ground first node of second field</string>
      </property>

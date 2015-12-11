@@ -45,7 +45,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Forward;
+//using namespace SCIRun::Core::Algorithms::Forward;
 
 const ModuleLookupInfo InsertVoltageSource::staticInfo_("InsertVoltageSource", "Forward", "SCIRun");
 
@@ -62,23 +62,14 @@ void InsertVoltageSource::setStateDefaults()
 
 void InsertVoltageSource::execute()
 {
-  auto field = getRequiredInputs(InputFEMesh);
+  auto inputField =  getRequiredInput(InputFEMesh);
+  auto voltageSource = getRequiredInput(VoltageSource);
 
   if (needToExecute())
   {
-      /*
     auto state = get_state();
-    auto fieldNames = state->getValue(Parameters::FieldNameList).toVector();
-    auto boundaryConditions = state->getValue(Parameters::BoundaryConditionList).toVector();
-    auto outsideConds = state->getValue(Parameters::OutsideConductivityList).toVector();
-    auto insideConds = state->getValue(Parameters::InsideConductivityList).toVector();
-
-    InsertVoltageSourceImpl impl(fieldNames, boundaryConditions, outsideConds, insideConds, this);
-    MatrixHandle transferMatrix = impl.executeImpl(inputs);
-    auto fieldTypes = impl.getInputTypes();
-    state->setTransientValue(Parameters::FieldTypeList, fieldTypes);
-       */
-    sendOutput(OutputFEMesh, field);
+    //auto useLinear = state->getValue
+    sendOutput(OutputFEMesh, inputField);
 
   }
 }
