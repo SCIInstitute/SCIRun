@@ -145,6 +145,8 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
   auto center = mapToScene(event->pos());
   addPoint(center);
   //TODO: remove point if event & RightMouseButton
+
+  //TODO: points are movable!
 }
 
   static QPen alphaLinePen(Qt::red, 1);
