@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ApplyFEMVoltageSource",
+    "namespace": "Forward",
+    "status": "In Progress.",
+    "description": "Builds the RHS of the FE matrix for voltage sources",
+    "header": "Modules/Legacy/Forward/ApplyFEMVoltageSource.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "InsertVoltageSourceDialog",
+    "header": "Interface/Modules/Forward/ApplyFEMVoltageSourceDialog.h"
+  }
+}

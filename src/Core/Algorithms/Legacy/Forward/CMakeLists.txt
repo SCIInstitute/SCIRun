@@ -31,12 +31,14 @@
 SET(Core_Algorithms_Legacy_Forward_SRCS
   BuildBEMatrixAlgo.cc
   InsertVoltageSourceAlgo.cc
+  ApplyFEMVoltageSourceAlgo.cc
   #CalcTMP.cc
 )
 
 SET(Core_Algorithms_Legacy_Forward_HEADERS
   BuildBEMatrixAlgo.h
   InsertVoltageSourceAlgo.h
+  ApplyFEMVoltageSourceAlgo.h
   #CalcTMP.h
 )
 
