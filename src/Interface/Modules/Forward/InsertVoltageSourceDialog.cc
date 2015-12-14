@@ -27,11 +27,12 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Interface/Modules/Forward/InsertVoltageSourceDialog.h>
+#include <Core/Algorithms/Legacy/Forward/InsertVoltageSourceAlgo.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Forward;
+using namespace SCIRun::Core::Algorithms::Forward;
 
 InsertVoltageSourceDialog::InsertVoltageSourceDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -40,6 +41,9 @@ InsertVoltageSourceDialog::InsertVoltageSourceDialog(const std::string& name, Mo
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+
+  addCheckBoxManager(outsideCheckBox_, Parameters::InterpolateOutside);
+  addCheckBoxManager(groundfirstCheckBox_, Parameters::GroundFirst);
 }
 
 void InsertVoltageSourceDialog::updateFromPortChange(int numPorts, const std::string&)

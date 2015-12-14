@@ -39,13 +39,14 @@
  */
 
 #include <Modules/Legacy/Forward/InsertVoltageSource.h>
+#include <Core/Algorithms/Legacy/Forward/InsertVoltageSourceAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Forward;
+using namespace SCIRun::Core::Algorithms::Forward;
 
 const ModuleLookupInfo InsertVoltageSource::staticInfo_("InsertVoltageSource", "Forward", "SCIRun");
 

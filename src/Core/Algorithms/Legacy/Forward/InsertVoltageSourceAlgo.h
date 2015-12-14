@@ -49,10 +49,14 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Forward {
 
+        ALGORITHM_PARAMETER_DECL(InterpolateOutside);
+        ALGORITHM_PARAMETER_DECL(GroundFirst);
+
         class SCISHARE InsertVoltageSourceAlgo
         {
         public:
           InsertVoltageSourceAlgo();
+          void ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle& isourceH);
 
         private:
           bool outside_;
