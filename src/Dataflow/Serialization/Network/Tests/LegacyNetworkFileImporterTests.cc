@@ -79,10 +79,11 @@ using namespace boost::assign;
 namespace
 {
   HardCodedModuleFactory mf;
+  std::ostringstream dummyLog;
   NetworkFileHandle load(const std::string& file)
   {
     auto dtdpath = TestResources::rootDir() / "Other";
-    LegacyNetworkIO lnio(dtdpath.string(), mf);
+    LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
     auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / file;
     return lnio.load_net(v4file1.string());
   }
@@ -104,7 +105,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleNoState)
 {
   auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf);
+  LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
   auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "oneModule.srn";
   auto networkFile = lnio.load_net(v4file1.string());
   ASSERT_TRUE(networkFile != nullptr);
@@ -164,7 +165,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithSingleModuleWithState
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesNoConnections)
 {
   auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf);
+  LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
   auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "threeModulesNoConnections.srn";
   auto networkFile = lnio.load_net(v4file1.string());
   ASSERT_TRUE(networkFile != nullptr);
@@ -202,7 +203,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesNoConnectio
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnection)
 {
   auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf);
+  LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
   auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "twoModsOneConnection.srn";
   auto networkFile = lnio.load_net(v4file1.string());
   ASSERT_TRUE(networkFile != nullptr);
@@ -233,7 +234,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnecti
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithThreeModulesSameType)
 {
   auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf);
+  LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
   auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "threeSameModulesIDTest.srn";
   auto networkFile = lnio.load_net(v4file1.string());
   ASSERT_TRUE(networkFile != nullptr);
@@ -261,7 +262,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithThreeModulesSameType)
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithMultipleConnections)
 {
   auto dtdpath = TestResources::rootDir() / "Other";
-  LegacyNetworkIO lnio(dtdpath.string(), mf);
+  LegacyNetworkIO lnio(dtdpath.string(), mf, dummyLog);
   auto v4file1 = TestResources::rootDir() / "Other" / "v4nets" / "multiConnections.srn";
   auto networkFile = lnio.load_net(v4file1.string());
   ASSERT_TRUE(networkFile != nullptr);
