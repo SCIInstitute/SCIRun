@@ -124,8 +124,10 @@ namespace Gui {
   {
   public:
     FileImportCommand(const std::string& filename, NetworkEditor* networkEditor) : NetworkFileProcessCommand(filename, networkEditor) {}
+    std::string logContents() const { return logContents_.str(); }
   protected:
     virtual Dataflow::Networks::NetworkFileHandle processXmlFile() override;
+    std::ostringstream logContents_;
   };
 
   class NetworkSaveCommand : public Core::Commands::GuiCommand

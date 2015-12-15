@@ -44,8 +44,6 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  ColorMap cm("Rainbow");
-  previewColorMap_->setStyleSheet(buildGradientString(cm));
 
   addComboBoxManager(colorMapNameComboBox_, Parameters::ColorMapName);
   addSpinBoxManager(resolutionSpin_, Parameters::ColorMapResolution);
@@ -61,6 +59,17 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(shiftSlider_, SIGNAL(valueChanged(int)), this, SLOT(setShiftSpinner(int)));
   connect(resolutionSlider_, SIGNAL(valueChanged(int)), resolutionSpin_, SLOT(setValue(int)));
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
+
+  ColorMap cm("Rainbow");
+
+  scene_ = new QGraphicsScene(this);
+  previewColorMap_ = new ColormapPreview(scene_, this);
+  qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_);
+  previewColorMap_->setStyleSheet(buildGradientString(cm));
+  previewColorMap_->setMinimumSize(100,40);
+  previewColorMap_->show();
+  connect(previewColorMap_, SIGNAL(clicked(int,int)), this, SLOT(previewClicked(int,int)));
+  connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPoints()));
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
@@ -68,8 +77,12 @@ void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
   ColorMap cm(s.toStdString(), resolutionSlider_->value(),
     static_cast<double>(shiftSlider_->value()) / 100.,
     invertCheck_->isChecked());
- // qDebug() << "updating color map: " << s << " " << resolutionSlider_->value() << " " << shiftSlider_->value();
   previewColorMap_->setStyleSheet(buildGradientString(cm));
+}
+
+void CreateStandardColorMapDialog::previewClicked(int x, int y)
+{
+  qDebug() << "color map clicked:" << x << y;
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview()
@@ -111,4 +124,87 @@ void CreateStandardColorMapDialog::setShiftSpinner(int i)
 void CreateStandardColorMapDialog::onInvertCheck(bool b)
 {
   updateColorMapPreview();
+}
+
+ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
+  : QGraphicsView(scene, parent), alphaPath_(nullptr)
+{
+  const int h = 83;
+  const int w = 365;
+  setSceneRect(QRectF(0, 0, w, h));
+  defaultStart_ = QPointF(0, h / 2);
+  defaultEnd_ = QPointF(w, h / 2);
+  addDefaultLine();
+}
+
+void ColormapPreview::mousePressEvent(QMouseEvent* event)
+{
+  QGraphicsView::mousePressEvent(event);
+  Q_EMIT clicked(event->x(), event->y());
+
+  auto center = mapToScene(event->pos());
+
+  addPoint(center);
+}
+
+  static QPen alphaLinePen(Qt::red, 1);
+
+void ColormapPreview::addDefaultLine()
+{
+  delete alphaPath_;
+  alphaPath_ = scene()->addLine(defaultStart_.x(), defaultStart_.y(),
+    defaultEnd_.x(), defaultEnd_.y(),
+    alphaLinePen);
+  alphaPoints_.insert(defaultStart_);
+  alphaPoints_.insert(defaultEnd_);
+}
+
+void ColormapPreview::removeDefaultLine()
+{
+  delete alphaPath_;
+  alphaPath_ = nullptr;
+}
+
+void ColormapPreview::addPoint(const QPointF& point)
+{
+  removeDefaultLine();
+
+  static QPen pointPen(Qt::white, 1);
+  auto item = scene()->addEllipse(point.x() - 4, point.y() - 4, 8, 8, pointPen, QBrush(Qt::black));
+  item->setZValue(1);
+  alphaPoints_.insert(point);
+
+  drawAlphaPolyline();
+}
+
+void ColormapPreview::drawAlphaPolyline()
+{
+  delete alphaPath_;
+  auto pathItem = new QGraphicsPathItem();
+  alphaPath_ = pathItem;
+  pathItem->setPen(alphaLinePen);
+  QPainterPath path;
+  QPointF from = defaultStart_;
+  path.moveTo(from);
+
+  for (const auto& point : alphaPoints_)
+  {
+    path.lineTo(point);
+    path.moveTo(point);
+  }
+
+  pathItem->setPath(path);
+  pathItem->setZValue(0);
+  scene()->addItem(alphaPath_);
+}
+
+void ColormapPreview::clearAlphaPoints()
+{
+  alphaPoints_.clear();
+  for (auto& item : scene()->items())
+  {
+    if (dynamic_cast<QGraphicsEllipseItem*>(item))
+      scene()->removeItem(item);
+  }
+  addDefaultLine();
 }
