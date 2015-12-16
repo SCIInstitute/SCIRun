@@ -359,7 +359,7 @@ SET(SCI_LIBXML2_INCLUDE
    )
 
 INCLUDE_DIRECTORIES( ${SCI_LIBXML2_INCLUDE} )
-ADD_LIBRARY(${SCI_LIBXML2_LIBRARY} ${LIBXML2_SRCS})
+SCIRUN_ADD_LIBRARY(${SCI_LIBXML2_LIBRARY} ${LIBXML2_SRCS})
 
 IF(UNIX)
   TARGET_LINK_LIBRARIES(
@@ -367,28 +367,6 @@ IF(UNIX)
                          ${DL_LIBRARY}
                        )
 ENDIF(UNIX)
-
-# IF(WIN32)
-  # # Windows socket 2 library
-  # FIND_LIBRARY(WS2_LIBRARY ws2_32 PATHS ${MS_SDK_REG_PATH})
-  # TARGET_LINK_LIBRARIES(
-                         # ${SCI_LIBXML2_LIBRARY}
-                         # ${WS2_LIBRARY}
-                       # )
-
-  # SET_TARGET_PROPERTIES(${SCI_LIBXML2_LIBRARY}
-                        # PROPERTIES
-                        # DEFINE_SYMBOL _MBCS
-                       # )
-
-  # IF(BUILD_SHARED_LIBS)
-    # SET_TARGET_PROPERTIES(${SCI_LIBXML2_LIBRARY}
-                          # PROPERTIES
-                          # DEFINE_SYMBOL _USRDLL
-                          # DEFINE_SYMBOL _WINDLL
-                       # )
-  # ENDIF(BUILD_SHARED_LIBS)
-# ENDIF(WIN32)
 
 IF(ENABLE_PIC)
   SET_TARGET_PROPERTIES(${SCI_LIBXML2_LIBRARY}
