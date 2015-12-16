@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,30 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_@ModuleName@DIALOG_H
-#define INTERFACE_MODULES_@ModuleName@DIALOG_H
+///@file  TestModuleSimple.cc
+///
 
-#include <Interface/Modules/Fields/ui_@ModuleName@Dialog.h>
-#include <boost/shared_ptr.hpp>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Modules/String/TestModuleSimple.h>
+#include <Core/Datatypes/String.h>
 
-namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE @ModuleName@Dialog : public ModuleDialogGeneric,
-  public Ui::@ModuleName@
+using namespace SCIRun;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+
+/// @class TestModuleSimple
+/// @brief This module splits out a string. 
+
+const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple", "String", "SCIRun");
+
+
+TestModuleSimple::TestModuleSimple() : Module(staticInfo_,false)
 {
-	Q_OBJECT
-	
-public:
-  @ModuleName@Dialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull() override;
-};
-
-}
+  INITIALIZE_PORT(OutputString);
 }
 
-#endif
+
+void
+TestModuleSimple::execute()
+{
+  
+  std::string message_string;
+  
+  message_string = "You stay classy, Planet Earth!";
+  
+  StringHandle msH(new String(message_string));
+  sendOutput(OutputString, msH);
+}
+
+
+
