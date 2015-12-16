@@ -28,7 +28,7 @@
 
 #include <Modules/Legacy/Forward/CalcTMP.h>
 #include <Core/Datatypes/DenseMatrix.h>
-//#include <Packages/BioPSE/Core/Algorithms/NumApproximation/CalcTMP.h>
+#include <Modules/Legacy/Forward/CalcTMPAlgo.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -69,29 +69,28 @@ CalcTMP::CalcTMP()
 
 void CalcTMP::execute()
 {
-  auto amplitudes = getOptionalInput(Amplitude);
-  auto deps = getOptionalInput(Depolarization_Time);
-  auto depslopes = getOptionalInput(Depolarization_Slope);;
-  auto platslopes = getOptionalInput(Plateau_Slope);;
-  auto reps = getOptionalInput(Repolarization_Time);;
-  auto repslopes = getOptionalInput(Repolarization_Slope);;
-  auto rests = getOptionalInput(Rest_Potential);;
+  auto amplitudes = getRequiredInput(Amplitude);
+  auto deps = getRequiredInput(Depolarization_Time);
+  auto depslopes = getRequiredInput(Depolarization_Slope);
+  auto platslopes = getRequiredInput(Plateau_Slope);
+  auto reps = getRequiredInput(Repolarization_Time);
+  auto repslopes = getRequiredInput(Repolarization_Slope);
+  auto rests = getRequiredInput(Rest_Potential);
 
   MatrixHandle tmps;
 
   if (needToExecute())
   {
-    /* TODO LATER
-    algo_.calc_TMPs(amplitudes,
+    const int numSamples = 500;
+    BioPSE::CalcTMPAlgo::calc_TMPs(amplitudes,
                     deps,
                     depslopes,
                     platslopes,
                     reps,
                     repslopes,
                     rests,
-                    500,
-                    TMPs);
-                    */
+                    numSamples,
+                    tmps);
 
     sendOutput(TMPs, tmps);
   }
