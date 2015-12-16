@@ -41,10 +41,9 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-namespace BioPSE {
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Forward;
 
 bool CalcTMPAlgo::calc_single_TMP(
           const double amplitude,
@@ -161,20 +160,20 @@ bool CalcTMPAlgo::calc_all_TMPs(
   DenseMatrix mat(1, TMP_values.ncols());
   for(index_type node = 0; node < nnodes; ++node)
   {
-    if (!calc_single_TMP(amplitudes.get(node,0),
-                         deps.get(node,0),
-                         depslopes.get(node,0),
-                         platslopes.get(node,0),
-                         reps.get(node,0),
-                         repslopes.get(node,0),
-                         rests.get(node,0),
+    if (!calc_single_TMP(amplitudes(node,0),
+                         deps(node,0),
+                         depslopes(node,0),
+                         platslopes(node,0),
+                         reps(node,0),
+                         repslopes(node,0),
+                         rests(node,0),
                          mat))
     {
       return false;
     }
     for(index_type t = 0; t < TMP_values.ncols(); ++t)
     {
-      TMP_values.put(node, t, mat.get(0, t));
+      TMP_values(node, t) = mat(0, t);
     }
   }
 
@@ -205,20 +204,15 @@ bool CalcTMPAlgo::calc_TMPs(MatrixHandle amplitudes,
 
   output.reset(new DenseMatrix(amplitudes->nrows(), nsamples));
 
+  //TODO: refactor algo to take DenseMatrix directly from module
   DenseMatrixHandle ampDense(matrix_cast::as_dense(amplitudes));
+  DenseMatrixHandle depsDense(matrix_cast::as_dense(deps));
+  DenseMatrixHandle depslopesDense(matrix_cast::as_dense(depslopes));
+  DenseMatrixHandle platslopesDense(matrix_cast::as_dense(platslopes));
+  DenseMatrixHandle repsDense(matrix_cast::as_dense(reps));
+  DenseMatrixHandle repslopesDense(matrix_cast::as_dense(repslopes));
+  DenseMatrixHandle restsDense(matrix_cast::as_dense(rests));
 
-  return calc_all_TMPs(*ampDense,
-    *ampDense,*ampDense,*ampDense,*ampDense,*ampDense,*ampDense,
-                  //
-                  // *(deps->dense()),
-                  // *(depslopes->dense()),
-                  // *(platslopes->dense()),
-                  // *(reps->dense()),
-                  // *(repslopes->dense()),
-                  // *(rests->dense()),
-
-                  *output);
+  return calc_all_TMPs(*ampDense, *depsDense, *depslopesDense, *platslopesDense, *repsDense, *repslopesDense, *restsDense,
+    *output);
 }
-
-
-} // end namespace BioPSE

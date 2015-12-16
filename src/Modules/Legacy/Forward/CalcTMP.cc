@@ -34,23 +34,9 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Forward;
+using namespace SCIRun::Core::Algorithms::Forward;
 
 const ModuleLookupInfo CalcTMP::staticInfo_("CalcTMP", "Forward", "SCIRun");
-
-/*
-class CalcTMP : public Module, public CalcTMPAlgo {
-  public:
-    CalcTMP(GuiContext*);
-    virtual ~CalcTMP() {}
-
-    virtual void execute();
-
-  private:
-    //SCIRunAlgo::CalcTMPAlgo algo_;
-    CalcTMPAlgo algo_;
-};
-*/
 
 CalcTMP::CalcTMP()
   : Module(staticInfo_, false)
@@ -63,7 +49,6 @@ CalcTMP::CalcTMP()
   INITIALIZE_PORT(Repolarization_Slope);
   INITIALIZE_PORT(Rest_Potential);
   INITIALIZE_PORT(TMPs);
-  //algo_.set_progress_reporter(this);
 }
 
 
@@ -82,7 +67,9 @@ void CalcTMP::execute()
   if (needToExecute())
   {
     const int numSamples = 500;
-    BioPSE::CalcTMPAlgo algo;
+    //TODO: algo hookup
+    CalcTMPAlgo algo;
+    algo.setLogger(getLogger());
     algo.calc_TMPs(amplitudes,
                     deps,
                     depslopes,
