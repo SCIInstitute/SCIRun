@@ -1067,10 +1067,13 @@ namespace {
     return SCIRunMainWindow::Instance()->newInterface() ? Qt::green : Qt::darkGreen;
   }
 
+  const QString bullet = "* ";
+  const QString favoritesText = bullet + "Favorites";
+
   void addFavoriteMenu(QTreeWidget* tree)
   {
     auto faves = new QTreeWidgetItem();
-    faves->setText(0, "Favorites");
+    faves->setText(0, favoritesText);
     faves->setForeground(0, favesColor());
 
     tree->addTopLevelItem(faves);
@@ -1081,7 +1084,7 @@ namespace {
     for (int i = 0; i < tree->topLevelItemCount(); ++i)
     {
       auto top = tree->topLevelItem(i);
-      if (top->text(0) == "Favorites")
+      if (top->text(0) == favoritesText)
       {
         return top;
       }
@@ -1116,7 +1119,7 @@ namespace {
   void addSnippetMenu(QTreeWidget* tree)
 	{
 		auto snips = new QTreeWidgetItem();
-		snips->setText(0, "Snippets");
+    snips->setText(0, bullet + "Snippets");
 		snips->setForeground(0, favesColor());
 
 		//hard-code a few popular ones.
