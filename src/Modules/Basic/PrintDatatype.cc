@@ -46,6 +46,11 @@ PrintDatatypeModule::PrintDatatypeModule()
   INITIALIZE_PORT(Input);
 }
 
+void PrintDatatypeModule::setStateDefaults()
+{
+  get_state()->setValue(ReceivedValue, std::string());
+}
+
 void PrintDatatypeModule::execute()
 {
   auto data = getRequiredInput(Input);

@@ -74,8 +74,6 @@ IF(BUILD_WITH_PYTHON)
     ${PYTHON_INCLUDE_DIR}
   )
 
-  ADD_DEPENDENCIES(Engine_Network Python_external)
-
 ELSE()
 
   TARGET_LINK_LIBRARIES(Engine_Network

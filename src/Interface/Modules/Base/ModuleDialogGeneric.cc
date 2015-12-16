@@ -245,13 +245,13 @@ public:
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     FromQStringConverter fromLabelConverter = boost::bind(&QString::toStdString, _1),
     ToQStringConverter toLabelConverter = &QString::fromStdString) :
-  WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
+  WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
   {
     connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
   }
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     const GuiStringTranslationMap& stringMap) :
-  WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), stringMap_(stringMap)
+    WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), stringMap_(stringMap)
   {
     if (stringMap_.empty())
     {
@@ -332,7 +332,7 @@ class TwoChoiceBooleanComboBoxSlotManager : public WidgetSlotManager
 {
 public:
   TwoChoiceBooleanComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox)
+    WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox)
   {
     connect(comboBox, SIGNAL(activated(int)), this, SLOT(push()));
   }
@@ -369,7 +369,7 @@ class TextEditSlotManager : public WidgetSlotManager
 {
 public:
   TextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), textEdit_(textEdit)
+    WidgetSlotManager(state, dialog, textEdit, stateKey), stateKey_(stateKey), textEdit_(textEdit)
   {
     connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
   }
@@ -401,7 +401,7 @@ class LineEditSlotManager : public WidgetSlotManager
 {
 public:
   LineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) :
-      WidgetSlotManager(state, dialog), stateKey_(stateKey), lineEdit_(lineEdit)
+    WidgetSlotManager(state, dialog, lineEdit, stateKey), stateKey_(stateKey), lineEdit_(lineEdit)
   {
     connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
   }
@@ -433,7 +433,7 @@ class DoubleLineEditSlotManager : public WidgetSlotManager
 {
 public:
   DoubleLineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) :
-      WidgetSlotManager(state, dialog), stateKey_(stateKey), lineEdit_(lineEdit)
+    WidgetSlotManager(state, dialog, lineEdit, stateKey), stateKey_(stateKey), lineEdit_(lineEdit)
       {
         connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
       }
@@ -473,7 +473,7 @@ class SpinBoxSlotManager : public WidgetSlotManager
 {
 public:
   SpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSpinBox* spinBox) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox)
+    WidgetSlotManager(state, dialog, spinBox, stateKey), stateKey_(stateKey), spinBox_(spinBox)
   {
     connect(spinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
   }
@@ -505,7 +505,7 @@ class DoubleSpinBoxSlotManager : public WidgetSlotManager
 {
 public:
   DoubleSpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox)
+    WidgetSlotManager(state, dialog, spinBox, stateKey), stateKey_(stateKey), spinBox_(spinBox)
   {
     connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(push()));
   }
@@ -537,7 +537,7 @@ class CheckBoxSlotManager : public WidgetSlotManager
 {
 public:
   CheckBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QCheckBox* checkBox) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), checkBox_(checkBox)
+    WidgetSlotManager(state, dialog, checkBox, stateKey), stateKey_(stateKey), checkBox_(checkBox)
   {
     connect(checkBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
   }
@@ -569,7 +569,7 @@ class CheckableButtonSlotManager : public WidgetSlotManager
 {
 public:
   CheckableButtonSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QAbstractButton* checkable) :
-      WidgetSlotManager(state, dialog), stateKey_(stateKey), checkable_(checkable)
+    WidgetSlotManager(state, dialog, checkable, stateKey), stateKey_(stateKey), checkable_(checkable)
       {
         connect(checkable_, SIGNAL(clicked()), this, SLOT(push()));
       }
@@ -601,7 +601,7 @@ class DynamicLabelSlotManager : public WidgetSlotManager
 {
 public:
   DynamicLabelSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLabel* label) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), label_(label)
+    WidgetSlotManager(state, dialog, label, stateKey), stateKey_(stateKey), label_(label)
   {
   }
   virtual void pull() override
@@ -630,7 +630,7 @@ class SliderSlotManager : public WidgetSlotManager
 {
 public:
   SliderSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSlider* slider) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), slider_(slider)
+    WidgetSlotManager(state, dialog, slider, stateKey), stateKey_(stateKey), slider_(slider)
   {
   }
   virtual void pull() override
@@ -659,10 +659,13 @@ class RadioButtonGroupSlotManager : public WidgetSlotManager
 {
 public:
   RadioButtonGroupSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, std::initializer_list<QRadioButton*> radioButtons) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), radioButtons_(radioButtons)
+    WidgetSlotManager(state, dialog, nullptr, stateKey), stateKey_(stateKey), radioButtons_(radioButtons) //TODO: need to pass all of them...
   {
     for (auto button : radioButtons_)
+    {
       connect(button, SIGNAL(clicked()), this, SLOT(push()));
+      button->setToolTip(QString::fromStdString(stateKey.name_));
+    }
   }
   virtual void pull() override
   {

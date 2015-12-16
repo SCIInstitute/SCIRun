@@ -55,7 +55,7 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 
   auto network = controller.getNetwork();
@@ -189,7 +189,7 @@ TEST_F(ModuleReplaceTests, CurrentConnectionsFilterReplacements)
   auto filter = builder.build();
 
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
   auto network = controller.getNetwork();
   ModuleHandle send = controller.addModule("SendTestMatrix");

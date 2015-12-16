@@ -25,7 +25,7 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(sqlite_GIT_TAG "origin/seg3d_external_test")
+SET(sqlite_GIT_TAG "origin/master")
 
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).

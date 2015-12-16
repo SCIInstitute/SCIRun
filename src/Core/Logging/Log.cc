@@ -184,6 +184,11 @@ namespace SCIRun
           cppLogger_.addAppender(appender);
         }
 
+        void clearAppenders()
+        {
+          cppLogger_.removeAllAppenders();
+        }
+
         log4cpp::Priority::PriorityLevel translate(LogLevel level)
         {
           // Translate pix logging level to cpp logging level
@@ -306,6 +311,11 @@ void Log::log(LogLevel level, const std::string& msg)
 void Log::addCustomAppender(boost::shared_ptr<LogAppenderStrategy> appender)
 {
   impl_->addCustomAppender(new Log4cppAppenderAdaptor(appender, "custom"));
+}
+
+void Log::clearAppenders()
+{
+  impl_->clearAppenders();
 }
 
 Log::Stream& SCIRun::Core::Logging::operator<<(Log& log, LogLevel level)

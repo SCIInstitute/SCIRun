@@ -54,11 +54,11 @@ If you have an old batch of changed files (check with `git status`), you can `gi
 
 To convert an old module, find the v4 source code and make sure it's in a place that makes sense. Some of the module code directory tree has been simplified.
 
-## 5. Edit CMakeLists.txt (between 1-5 of them, depending on layers needed and testing)
-* Some old modules are where they need to be and just need a line uncommented in the CMake file; others will need to be added to a new, existing library, or in a brand new library. Steps for this: contact @dcwhite.
-
-## 6. Create Module header
+## 5. Create Module header
 TODO
+
+## 6. Edit CMakeLists.txt (between 1-5 of them, depending on layers needed and testing)
+* Some old modules are where they need to be and just need a line uncommented in the CMake file; others will need to be added to a new, existing library, or in a brand new library. Steps for this: contact @dcwhite.
 
 ## 7. Edit Module source file in order to compile
 TODO

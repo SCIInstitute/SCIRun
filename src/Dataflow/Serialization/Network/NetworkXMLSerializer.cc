@@ -39,6 +39,7 @@
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/lambda/lambda.hpp>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
@@ -82,10 +83,18 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
     ScopedControllerSignalDisabler scsd(controller_);
     for (const auto& modPair : data.modules)
     {
-      ModuleHandle module = controller_->addModule(modPair.second.module);
-      module->set_id(modPair.first);
-      ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
-      module->set_state(state);
+      try
+      {
+        ModuleHandle module = controller_->addModule(modPair.second.module);
+        module->set_id(modPair.first);
+        ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
+        module->set_state(state);
+      }
+      catch (Core::InvalidArgumentException& e)
+      {
+        static std::ofstream missingModulesFile((Core::Logging::Log::logDirectory() / "missingModules.log").string());
+        missingModulesFile << "File load problem: " << e.what() << std::endl;
+      }
     }
   }
 
@@ -96,7 +105,12 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
     ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
     ModuleHandle to = network->lookupModule(conn.in_.moduleId_);
 
-    controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+    if (from && to)
+      controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+    else
+    {
+      Core::Logging::Log::get() << Core::Logging::ERROR_LOG << "File load error: connection not created between modules " << conn.out_.moduleId_ << " and " << conn.in_.moduleId_ << std::endl;
+    }
   }
 
   return network;
@@ -130,7 +144,7 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const 
 
   std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
   std::sort(connectionsSorted.begin(), connectionsSorted.end());
-  
+
   for (const auto& conn : connectionsSorted)
   {
     auto modOut = info.moduleIdMapping.find(conn.out_.moduleId_);

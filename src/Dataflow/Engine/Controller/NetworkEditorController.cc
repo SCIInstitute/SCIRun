@@ -60,16 +60,18 @@ using namespace SCIRun::Dataflow::Networks::ReplacementImpl;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory,
-  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, NetworkEditorSerializationManager* nesm) :
+  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, GlobalCommandFactoryHandle cmdFactory, NetworkEditorSerializationManager* nesm) :
   theNetwork_(new Network(mf, sf, af, reex)),
   moduleFactory_(mf),
   stateFactory_(sf),
   algoFactory_(af),
   reexFactory_(reex),
   executorFactory_(executorFactory),
+  cmdFactory_(cmdFactory),
   serializationManager_(nesm),
   signalSwitch_(true)
 {
@@ -78,12 +80,13 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   /// @todo should this class own the network or just keep a reference?
 
 #ifdef BUILD_WITH_PYTHON
-  NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this));
+  NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this, cmdFactory_));
 #endif
 }
 
 NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
-  : theNetwork_(network), executorFactory_(executorFactory), serializationManager_(nesm)
+  : theNetwork_(network), executorFactory_(executorFactory), serializationManager_(nesm),
+  signalSwitch_(true)
 {
 }
 
@@ -305,7 +308,7 @@ void NetworkEditorController::printNetwork() const
   }
 }
 
-void NetworkEditorController::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
+boost::optional<ConnectionId> NetworkEditorController::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
   ENSURE_NOT_NULL(from, "from port");
   ENSURE_NOT_NULL(to, "to port");
@@ -326,12 +329,12 @@ void NetworkEditorController::requestConnection(const PortDescriptionInterface* 
       connectionAdded_(desc);
 
     printNetwork();
+    return id;
   }
-  else
-  {
-    Log::get() << NOTICE << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module." << std::endl;
-    invalidConnection_(desc);
-  }
+
+  Log::get() << NOTICE << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module." << std::endl;
+  invalidConnection_(desc);
+  return boost::none;
 }
 
 void NetworkEditorController::removeConnection(const ConnectionId& id)
@@ -578,7 +581,7 @@ NetworkGlobalSettings& NetworkEditorController::getSettings()
 
 void NetworkEditorController::setExecutorType(int type)
 {
-  executionManager_.setExecutionStrategy(executorFactory_->create((ExecutionStrategy::Type)type));
+  executionManager_.setExecutionStrategy(executorFactory_->create(static_cast<ExecutionStrategy::Type>(type)));
 }
 
 const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescriptions() const
