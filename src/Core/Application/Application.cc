@@ -68,6 +68,7 @@ namespace SCIRun
       boost::filesystem::path app_filename_;
       ApplicationParametersHandle parameters_;
       NetworkEditorControllerHandle controller_;
+      GlobalCommandFactoryHandle cmdFactory_;
       void start_eai();
     };
   }
@@ -116,6 +117,12 @@ std::string Application::applicationName() const
   return applicationHelper.applicationName();
 }
 
+void Application::setCommandFactory(GlobalCommandFactoryHandle cmdFactory)
+{
+  ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+  private_->cmdFactory_ = cmdFactory;
+}
+
 ApplicationParametersHandle Application::parameters() const
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
@@ -151,6 +158,7 @@ void Application::readCommandLine(int argc, const char* argv[])
 NetworkEditorControllerHandle Application::controller()
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+  ENSURE_NOT_NULL(private_->cmdFactory_, "Application internals are uninitialized!");
 
   if (!private_->controller_)
   {
@@ -160,7 +168,7 @@ NetworkEditorControllerHandle Application::controller()
     ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->threadMode()));
     AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
     ReexecuteStrategyFactoryHandle reexFactory(new DynamicReexecutionStrategyFactory(parameters()->reexecuteMode()));
-    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory));
+    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory, private_->cmdFactory_));
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();
@@ -172,11 +180,12 @@ NetworkEditorControllerHandle Application::controller()
   return private_->controller_;
 }
 
-void Application::executeCommandLineRequests(Commands::GlobalCommandFactoryHandle cmdFactory)
+void Application::executeCommandLineRequests()
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+  ENSURE_NOT_NULL(private_->cmdFactory_, "Application internals (command factory) are uninitialized!");
 
-  GlobalCommandBuilderFromCommandLine builder(cmdFactory);
+  GlobalCommandBuilderFromCommandLine builder(private_->cmdFactory_);
   auto queue = builder.build(parameters());
   queue->runAll();
 }

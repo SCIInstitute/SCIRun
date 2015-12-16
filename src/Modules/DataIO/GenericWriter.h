@@ -38,8 +38,8 @@
 ///
 
 #include <boost/filesystem.hpp>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/Module.h>
-#include <Core/Persistent/Pstreams.h>
 #include <Core/Datatypes/String.h>
 
 namespace SCIRun {
@@ -47,15 +47,15 @@ namespace SCIRun {
     namespace DataIO {
 
 template <class HType, class PortTag>
-class GenericWriter : public SCIRun::Dataflow::Networks::Module,
+class GenericWriter : public Dataflow::Networks::Module,
   public Has2InputPorts<PortTag, StringPortTag>,
   public HasNoOutputPorts
 {
 public:
   GenericWriter(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
-  virtual ~GenericWriter() { }
 
-  virtual void execute();
+  virtual void setStateDefaults() override;
+  virtual void execute() override;
 
   INPUT_PORT(1, Filename, String);
 
@@ -86,9 +86,15 @@ GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std:
     //confirm_(get_ctx()->subVar("confirm"), sci_getenv_p("SCIRUN_CONFIRM_OVERWRITE")),
 		//confirm_once_(get_ctx()->subVar("confirm-once"),0),
     stateFilename_(stateFilename),
-    objectPortName_(0)
+    objectPortName_(nullptr)
 {
   INITIALIZE_PORT(Filename);
+}
+
+template <class HType, class PortTag>
+void GenericWriter<HType, PortTag>::setStateDefaults()
+{
+  get_state()->setValue(stateFilename_, std::string());
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

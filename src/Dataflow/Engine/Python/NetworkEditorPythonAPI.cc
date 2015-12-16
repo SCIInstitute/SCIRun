@@ -32,13 +32,17 @@
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Python/SCIRunPythonModule.h>
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Thread;
 
 boost::shared_ptr<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
-ExecutableLookup* NetworkEditorPythonAPI::lookup_ = 0;
-std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules_;
+ExecutableLookup* NetworkEditorPythonAPI::lookup_ = nullptr;
+std::map<std::string, boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules_;
+Mutex NetworkEditorPythonAPI::pythonLock_("Python");
 
 
 template< class T >
@@ -57,15 +61,16 @@ public:
   }
 };
 
-void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl) 
+void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl)
 {
   if (!impl_)
   {
     impl_ = impl;
+    impl_->setLock(&pythonLock_);
 
-    boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >, 
+    boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >,
       StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
-    boost::python::to_python_converter< std::vector< std::string >, 
+    boost::python::to_python_converter< std::vector< std::string >,
       StdVectorToListConverter< std::string >, true >();
   }
 }
@@ -77,10 +82,11 @@ void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
 
 boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string& name)
 {
+  Guard g(pythonLock_.get());
   if (impl_)
   {
     auto m = impl_->addModule(name);
-    modules_.push_back(m);
+    modules_[m->id()] = m;
     return m;
   }
   else
@@ -92,9 +98,10 @@ boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string&
 
 std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
 {
+  Guard g(pythonLock_.get());
   if (impl_)
   {
-    modules_.erase(std::remove_if(modules_.begin(), modules_.end(), [&](boost::shared_ptr<PyModule> m) -> bool { bool same = m->id() == id; if (same) m->reset(); return same; }), modules_.end());
+    modules_.erase(id);
     return impl_->removeModule(id);
   }
   else
@@ -105,21 +112,51 @@ std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
 
 std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules()
 {
-  return modules_;
+  Guard g(pythonLock_.get());
+  std::vector<boost::shared_ptr<PyModule>> moduleList;
+  boost::copy(modules_ | boost::adaptors::map_values, std::back_inserter(moduleList));
+  return moduleList;
 }
 
 std::string NetworkEditorPythonAPI::executeAll()
 {
+  
   if (impl_)
+  {
+    pythonLock_.lock();
     return impl_->executeAll(lookup_);
+  }
   else
   {
-    return "Null implementation or execution context: NetworkEditorPythonAPI::executeAll()"; 
+    return "Null implementation or execution context: NetworkEditorPythonAPI::executeAll()";
+  }
+}
+
+std::string NetworkEditorPythonAPI::connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
+{
+  Guard g(pythonLock_.get());
+  if (impl_)
+    return impl_->connect(moduleIdFrom, fromIndex, moduleIdTo, toIndex);
+  else
+  {
+    return "Null implementation or execution context: NetworkEditorPythonAPI::connect()";
+  }
+}
+
+std::string NetworkEditorPythonAPI::disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
+{
+  Guard g(pythonLock_.get());
+  if (impl_)
+    return impl_->disconnect(moduleIdFrom, fromIndex, moduleIdTo, toIndex);
+  else
+  {
+    return "Null implementation or execution context: NetworkEditorPythonAPI::disconnect()";
   }
 }
 
 std::string NetworkEditorPythonAPI::saveNetwork(const std::string& filename)
 {
+  Guard g(pythonLock_.get());
   if (impl_)
     return impl_->saveNetwork(filename);
   else
@@ -130,6 +167,7 @@ std::string NetworkEditorPythonAPI::saveNetwork(const std::string& filename)
 
 std::string NetworkEditorPythonAPI::loadNetwork(const std::string& filename)
 {
+  Guard g(pythonLock_.get());
   if (impl_)
     return impl_->loadNetwork(filename);
   else
@@ -140,6 +178,7 @@ std::string NetworkEditorPythonAPI::loadNetwork(const std::string& filename)
 
 std::string NetworkEditorPythonAPI::quit(bool force)
 {
+  Guard g(pythonLock_.get());
   if (impl_)
     return impl_->quit(force);
   else
@@ -148,10 +187,68 @@ std::string NetworkEditorPythonAPI::quit(bool force)
   }
 }
 
+boost::python::object NetworkEditorPythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
+{
+  Guard g(pythonLock_.get());
+  auto modIter = modules_.find(moduleId);
+  if (modIter != modules_.end())
+    return modIter->second->getattr(stateVariable);
+  return boost::python::object();
+}
+
+std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
+{
+  Guard g(pythonLock_.get());
+  auto modIter = modules_.find(moduleId);
+  if (modIter != modules_.end())
+  {
+    modIter->second->setattr(stateVariable, value);
+    return "Value set";
+  }
+  return "Module or value not found";
+}
+
+std::string NetworkEditorPythonAPI::scirun_dump_module_state(const std::string& moduleId)
+{
+  Guard g(pythonLock_.get());
+  auto modIter = modules_.find(moduleId);
+  if (modIter != modules_.end())
+  {
+    return modIter->second->stateToString();
+  }
+  return "Module not found";
+}
+
 /// @todo: bizarre reason for this return type and casting. but it works.
 boost::shared_ptr<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
 {
+  Guard g(NetworkEditorPythonAPI::getLock().get());
   from.connect(to);
   auto ptr = const_cast<PyPort&>(to).shared_from_this();
   return boost::ref(ptr);
+}
+
+std::string SimplePythonAPI::scirun_add_module(const std::string& name)
+{
+  return NetworkEditorPythonAPI::addModule(name)->id();
+}
+
+std::string SimplePythonAPI::scirun_quit()
+{
+  return NetworkEditorPythonAPI::quit(false);
+}
+
+std::string SimplePythonAPI::scirun_force_quit()
+{
+  return NetworkEditorPythonAPI::quit(true);
+}
+
+boost::python::object SimplePythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
+{
+  return NetworkEditorPythonAPI::scirun_get_module_state(moduleId, stateVariable);
+}
+
+std::string SimplePythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
+{
+  return NetworkEditorPythonAPI::scirun_set_module_state(moduleId, stateVariable, value);
 }

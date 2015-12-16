@@ -35,6 +35,7 @@
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Core::Commands;
+using namespace SCIRun::Core::Algorithms;
 
   GlobalCommandBuilderFromCommandLine::GlobalCommandBuilderFromCommandLine(GlobalCommandFactoryHandle cmdFactory) : cmdFactory_(cmdFactory)
   {
@@ -85,7 +86,9 @@ using namespace SCIRun::Core::Commands;
       // last = params->inputFiles().size()
       for (int i = 0; i < last; ++i)
       {
-        q->enqueue(cmdFactory_->create(LoadNetworkFile, i));
+        auto load = cmdFactory_->create(LoadNetworkFile);
+        load->set(Name("FileNum"), i);
+        q->enqueue(load);
 
         if (params->executeNetwork())
           q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));

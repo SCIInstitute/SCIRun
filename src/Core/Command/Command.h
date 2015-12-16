@@ -32,6 +32,7 @@
 #define CORE_COMMAND_COMMAND_H
 
 #include <boost/shared_ptr.hpp>
+#include <Core/Algorithms/Base/AlgorithmParameterList.h>
 #include <Core/Command/share.h>
 
 namespace SCIRun
@@ -47,8 +48,6 @@ namespace SCIRun
         virtual bool execute() = 0;
       };
 
-      typedef boost::shared_ptr<Command> CommandHandle;
-
       class SCISHARE UndoableCommand : public Command
       {
       public:
@@ -63,11 +62,17 @@ namespace SCIRun
         virtual void redo() = 0;
       };
 
-      class SCISHARE GuiCommand : public Command
+      class SCISHARE ParameterizedCommand : public Algorithms::AlgorithmParameterList, public Command
       {
       };
 
-      class SCISHARE ConsoleCommand : public Command
+      typedef boost::shared_ptr<ParameterizedCommand> CommandHandle;
+
+      class SCISHARE GuiCommand : public ParameterizedCommand
+      {
+      };
+
+      class SCISHARE ConsoleCommand : public ParameterizedCommand
       {
       };
 
@@ -79,6 +84,7 @@ namespace SCIRun
         PrintVersion,
         PrintModules,
         LoadNetworkFile,
+        SaveNetworkFile,
         RunPythonScript,
         SetupDataDirectory,
         ExecuteCurrentNetwork,

@@ -28,6 +28,7 @@
 
 /// @todo Documentation Core/Python/PythonInterpreter.cc
 
+#ifdef BUILD_WITH_PYTHON
 #ifdef _MSC_VER
 //#pragma warning( push )
 #pragma warning( disable: 4244 )
@@ -282,7 +283,7 @@ void PythonInterpreter::initialize_eventhandler()
   lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
 
   // for test executable
-  if (lib_path == "./SCIRun_test")
+  if ( lib_path.stem() == "SCIRun_test" )
   {
     boost::filesystem::path full_lib_path(PYTHONLIBDIR);
     full_lib_path /= PYTHONLIB;
@@ -697,3 +698,4 @@ std::string PythonInterpreter::EscapeSingleQuotedString( const std::string& str 
 	static const boost::regex reg( "[\\\\']" );
 	return boost::regex_replace( str, reg, "\\\\$&", boost::regex_constants::format_default );
 }
+#endif

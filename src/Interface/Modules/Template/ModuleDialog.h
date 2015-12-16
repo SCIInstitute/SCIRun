@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_@ModuleName@DIALOG_H
 #define INTERFACE_MODULES_@ModuleName@DIALOG_H
 
-#include "Interface/Modules/Fields/ui_@ModuleName@Dialog.h"
+#include <Interface/Modules/Fields/ui_@ModuleName@Dialog.h>
 #include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/share.h>

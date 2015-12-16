@@ -49,7 +49,5 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Graphics_Datatypes)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_DEPENDENCIES(Graphics_Datatypes Boost_external)
-
 #SCIRUN_ADD_TEST_DIR(Tests)
 

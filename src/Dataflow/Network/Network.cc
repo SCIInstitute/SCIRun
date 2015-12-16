@@ -161,7 +161,7 @@ ModuleHandle Network::module(size_t i) const
 ModuleHandle Network::lookupModule(const ModuleId& id) const
 {
   Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
-  return i == modules_.end() ? ModuleHandle() : *i;
+  return i == modules_.end() ? nullptr : *i;
 }
 
 ExecutableObject* Network::lookupExecutable(const ModuleId& id) const

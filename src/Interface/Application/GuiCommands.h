@@ -31,6 +31,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Command/Command.h>
+#include <QString>
 
 class QSplashScreen;
 class QTimer;
@@ -39,57 +40,58 @@ namespace SCIRun {
 namespace Gui {
 
   class NetworkEditor;
+  class SCIRunMainWindow;
 
   class LoadFileCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    explicit LoadFileCommandGui(int index) : index_(index) {}
-    virtual bool execute();
+    LoadFileCommandGui();
+    virtual bool execute() override;
   private:
-    int index_;
+    int index_ = 0;
   };
 
   class RunPythonScriptCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class ExecuteCurrentNetworkCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class QuitAfterExecuteCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class QuitCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class ShowMainWindowGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class SetupDataDirectoryCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class ShowSplashScreenGui : public Core::Commands::GuiCommand
   {
   public:
     ShowSplashScreenGui();
-    virtual bool execute();
+    virtual bool execute() override;
   private:
     static void initSplashScreen();
     static QSplashScreen* splash_;
@@ -100,7 +102,7 @@ namespace Gui {
   {
   public:
     NetworkFileProcessCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
-    virtual bool execute();
+    virtual bool execute() override;
 
     Dataflow::Networks::NetworkFileHandle file_;
   protected:
@@ -122,8 +124,17 @@ namespace Gui {
   {
   public:
     FileImportCommand(const std::string& filename, NetworkEditor* networkEditor) : NetworkFileProcessCommand(filename, networkEditor) {}
+    std::string logContents() const { return logContents_.str(); }
   protected:
     virtual Dataflow::Networks::NetworkFileHandle processXmlFile() override;
+    std::ostringstream logContents_;
+  };
+
+  class NetworkSaveCommand : public Core::Commands::GuiCommand
+  {
+  public:
+    NetworkSaveCommand();
+    virtual bool execute() override;
   };
 }
 }

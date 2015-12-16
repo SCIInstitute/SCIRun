@@ -6,6 +6,12 @@
 *.swp
 *.vcxproj*
 *DS_Store
+src/Documentation/*/*/*.aux
+src/Documentation/*/*/*.blg
+src/Documentation/*/*/*.bbl
+src/Documentation/*/*/*.log
+src/Documentation/*/*/*.out
+src/Documentation/*/*/*.toc
 bin*/*/*
 bin64/*
 doc/*

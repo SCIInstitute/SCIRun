@@ -106,7 +106,7 @@ namespace Networks {
   {
   public:
     virtual ~ConnectionMakerService() {}
-    virtual void requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
+    virtual boost::optional<ConnectionId> requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
   };
 
   class SCISHARE NetworkEditorControllerInterface : public ConnectionMakerService
