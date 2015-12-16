@@ -405,7 +405,8 @@ MESSAGE(STATUS "Configuring CPMs")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # CPM Setup.
-set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/cpm-packages" CACHE TYPE STRING)
+#set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/cpm-packages" CACHE TYPE STRING)
+set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
 find_package(Git)
 if(NOT GIT_FOUND)
   message(FATAL_ERROR "CPM requires Git.")
