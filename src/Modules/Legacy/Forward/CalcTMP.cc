@@ -53,7 +53,7 @@ class CalcTMP : public Module, public CalcTMPAlgo {
 */
 
 CalcTMP::CalcTMP()
-  : Module(staticInfo_)
+  : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(Amplitude);
   INITIALIZE_PORT(Depolarization_Time);
@@ -76,9 +76,9 @@ void CalcTMP::execute()
   auto reps = getOptionalInput(Repolarization_Time);;
   auto repslopes = getOptionalInput(Repolarization_Slope);;
   auto rests = getOptionalInput(Rest_Potential);;
-  
+
   MatrixHandle tmps;
-  
+
   if (needToExecute())
   {
     /* TODO LATER
