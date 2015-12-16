@@ -25,31 +25,31 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Math/SortMatrix.h
 
-#ifndef INTERFACE_MODULES_@ModuleName@DIALOG_H
-#define INTERFACE_MODULES_@ModuleName@DIALOG_H
+#ifndef MODULES_MATH_SortMatrix_H
+#define MODULES_MATH_SortMatrix_H
 
-#include <Interface/Modules/Fields/ui_@ModuleName@Dialog.h>
-#include <boost/shared_ptr.hpp>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Modules {
+namespace Math {
   
-class SCISHARE @ModuleName@Dialog : public ModuleDialogGeneric,
-  public Ui::@ModuleName@
-{
-	Q_OBJECT
-	
-public:
-  @ModuleName@Dialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull() override;
-};
-
-}
-}
+  class SCISHARE SortMatrix : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
+  {
+  public:
+    SortMatrix();
+    virtual void execute();
+    virtual void setStateDefaults();
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    
+    INPUT_PORT(0, InputMatrix, Matrix);
+    OUTPUT_PORT(0, OutputMatrix, Matrix);
+  };
+}}}
 
 #endif
