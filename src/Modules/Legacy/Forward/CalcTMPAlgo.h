@@ -41,46 +41,49 @@
 #define PACKAGES_BIOPSE_CORE_ALGORITHMS_NUMAPPROXIMATION_CALCTMP_H
 
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Modules/Legacy/Forward/share.h>
 
 namespace BioPSE {
 
 
-class SCISHARE CalcTMPAlgo
+class SCISHARE CalcTMPAlgo : public SCIRun::Core::Algorithms::AlgorithmBase
 {
 public:
 
   // assumes TMP_values is sized to 1 x nsamples
-  static bool calc_single_TMP(const double amplitude,
+  bool calc_single_TMP(const double amplitude,
                        const double dep,
                        const double depslope,
                        const double platslope,
                        const double rep,
                        const double repslope,
                        const double rest,
-                       DenseMatrix& TMP_values);
+                       SCIRun::Core::Datatypes::DenseMatrix& TMP_values);
 
   // assumes TMP_values is already sized to nnodes x nsamples
-  static bool calc_all_TMPs(const DenseMatrix& amplitudes,
-                     const DenseMatrix& deps,
-                     const DenseMatrix& depslopes,
-                     const DenseMatrix& platslopes,
-                     const DenseMatrix& reps,
-                     const DenseMatrix& repslopes,
-                     const DenseMatrix& rests,
-                     DenseMatrix& TMP_values);
+  bool calc_all_TMPs(const SCIRun::Core::Datatypes::DenseMatrix& amplitudes,
+                     const SCIRun::Core::Datatypes::DenseMatrix& deps,
+                     const SCIRun::Core::Datatypes::DenseMatrix& depslopes,
+                     const SCIRun::Core::Datatypes::DenseMatrix& platslopes,
+                     const SCIRun::Core::Datatypes::DenseMatrix& reps,
+                     const SCIRun::Core::Datatypes::DenseMatrix& repslopes,
+                     const SCIRun::Core::Datatypes::DenseMatrix& rests,
+                     SCIRun::Core::Datatypes::DenseMatrix& TMP_values);
 
 
   // normal entry case
-  static bool calc_TMPs(MatrixHandle amplitudes,
-                 MatrixHandle deps,
-                 MatrixHandle depslopes,
-                 MatrixHandle platslopes,
-                 MatrixHandle reps,
-                 MatrixHandle repslopes,
-                 MatrixHandle rests,
+  bool calc_TMPs(SCIRun::Core::Datatypes::MatrixHandle amplitudes,
+                 SCIRun::Core::Datatypes::MatrixHandle deps,
+                 SCIRun::Core::Datatypes::MatrixHandle depslopes,
+                 SCIRun::Core::Datatypes::MatrixHandle platslopes,
+                 SCIRun::Core::Datatypes::MatrixHandle reps,
+                 SCIRun::Core::Datatypes::MatrixHandle repslopes,
+                 SCIRun::Core::Datatypes::MatrixHandle rests,
                  unsigned int nsamples,
-                 MatrixHandle& output);
+                 SCIRun::Core::Datatypes::DenseMatrixHandle& output);
+
+  virtual SCIRun::Core::Algorithms::AlgorithmOutput run_generic(const SCIRun::Core::Algorithms::AlgorithmInput&) const override { throw "todo"; }
 };
 
 

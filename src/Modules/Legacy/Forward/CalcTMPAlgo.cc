@@ -39,10 +39,12 @@
 
 #include <Modules/Legacy/Forward/CalcTMPAlgo.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 namespace BioPSE {
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 
 bool CalcTMPAlgo::calc_single_TMP(
           const double amplitude,
@@ -80,7 +82,7 @@ bool CalcTMPAlgo::calc_single_TMP(
 
   double tdep = -dep;
   double trep = -rep;
-  const double maxAmpl = 1e-6;
+  double maxAmpl = 1e-6;
 
   for(index_type t = 0; t < ncols; ++t)
   {
@@ -206,13 +208,14 @@ bool CalcTMPAlgo::calc_TMPs(MatrixHandle amplitudes,
   DenseMatrixHandle ampDense(matrix_cast::as_dense(amplitudes));
 
   return calc_all_TMPs(*ampDense,
-
-                  *(deps->dense()),
-                  *(depslopes->dense()),
-                  *(platslopes->dense()),
-                  *(reps->dense()),
-                  *(repslopes->dense()),
-                  *(rests->dense()),
+    *ampDense,*ampDense,*ampDense,*ampDense,*ampDense,*ampDense,
+                  //
+                  // *(deps->dense()),
+                  // *(depslopes->dense()),
+                  // *(platslopes->dense()),
+                  // *(reps->dense()),
+                  // *(repslopes->dense()),
+                  // *(rests->dense()),
 
                   *output);
 }

@@ -77,12 +77,13 @@ void CalcTMP::execute()
   auto repslopes = getRequiredInput(Repolarization_Slope);
   auto rests = getRequiredInput(Rest_Potential);
 
-  MatrixHandle tmps;
+  DenseMatrixHandle tmps;
 
   if (needToExecute())
   {
     const int numSamples = 500;
-    BioPSE::CalcTMPAlgo::calc_TMPs(amplitudes,
+    BioPSE::CalcTMPAlgo algo;
+    algo.calc_TMPs(amplitudes,
                     deps,
                     depslopes,
                     platslopes,
