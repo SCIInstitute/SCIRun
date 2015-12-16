@@ -524,8 +524,6 @@ It is often easiest to modify existing code to fit your purposes than create new
 If desired, there is also the template files described in Chapter~\ref{sec:files} to use as a basis.  
 In this example, we will provide the code needed, so it is not necessary to copy another module.  
 
-%TODO maybe make a branch with examples?
-
 Begin with the module config file.  
 Create a new text file in module factory configuration directory (\emph{src/Modules/Factory/Config/}) for the new module.  
 I should be named \emph{TestModuleSimple.module} or something similar.  
@@ -593,6 +591,8 @@ As mentioned in Section~\ref{sec:config}, the header files for most modules do n
 This example in particular contains only elements common to most other modules.
 The key to creating the header files is to ensure that the module name is correct in every place it occurs, that the namespace (StringManip) matches the module config file and that the ports are numbered and labeled correctly.  
 
+If desired, the final version of the header file is in the source code: \emph{src/Modules/Examples/TestModuleSimple.h}.
+
 \section{Module Source Code}
 \label{sec:examp_source}
 
@@ -633,6 +633,8 @@ TestModuleSimple::execute()
 
 \section{Building and Testing}
 \label{sec:testing}
+
+For comparison, the final version of the module code file is in the source code: \emph{src/Modules/Examples/TestModuleSimple.cc}.
 
 After these files are modified correctly,  the only step remaining before building is adding the module code and header to the compiler list.  
 Open the \emph{src/Modules/String/CMakeLists.txt} file.  
@@ -990,8 +992,9 @@ The setup code is mostly the same, except there are dynamic ports, so much of th
 \section{Finished Code}
 \label{sec:finished}
 
-
-%TODO add references to the files.  
+For the sake of comparison, the final version of the code for this module is included in the source code in the Example files.
+The module code files are in \emph{src/Modules/Examples/}, \emph{TestModuleSimpleUI.cc} and \emph{TestModuleSimpleUI.h}.
+The module UI code files are in \emph{src/interface/Modules/Examples/}, \emph{TestModuleSimpleUIDialog.cc}, \emph{TestModuleSimpleUIDialog.h}, and \emph{TestModuleSimpleUIDialog.ui}.  
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1136,6 +1139,8 @@ Notice that the algorithm file header is included.
 Also, most of the code in this file links the algorithm code directly to either the UI (with \emph{setStateIntFromAlgo}, and \emph{setAlgoIntFromState}) or SCIRun (\emph{sendOutputFromAlgorithm}). 
 This allows most of the code to reside in the algorithm code and makes SCIRun more modular.
 
+The final module header and cc files are included in the source code in \emph{src/Modules/Examples/}.  \emph{SortMatrix.cc} and \emph{SortMatrix.h}.
+
 \section{Module UI Code}
 \label{sec:algo_ui}
 
@@ -1211,6 +1216,7 @@ The key difference in this file is the line that pulls the inputs from the UI us
 This function pulls a set of radio buttons and creates a toggle switch to assign it to a variable.  
 The order of the button names is important, as that determines the integer values of the variable when it is pressed, i.e., in the order shown, ascending will be 0 and descending will be 1.
 
+The final module UI code files are included in the source code in \emph{src/Interface/Modules/Examples/}.  \emph{SortMatrixDialog.ui}, \emph{SortMatrixDialog.cc} and \emph{SortMatrixDialog.h}.
 
 \section{Module Algorithm Code}
 \label{sec:algo}
@@ -1388,6 +1394,8 @@ This algorithm uses the common inputs defined in the \emph{AlgorithmVariableName
 This allows for fewer declarations in the header file and is slightly easier to use.  
 Also of note is that this algorithm is only implemented for dense matrices.
 This is because some support for sparse matrices hasn't been implemented at the time of writing this tutorial. 
+
+The final module algorithm header and cc files are included in the source code in \emph{src/Core/Algorithms/Examples/}.  \emph{SortMatrixAlgo.cc} and \emph{SortMatrixAlgo.h}.
 
 \section{Building and Testing}
 \label{sec:algo_building}
