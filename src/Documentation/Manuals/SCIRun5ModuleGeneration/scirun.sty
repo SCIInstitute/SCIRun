@@ -1,0 +1,300 @@
+% PACKAGES NEEDED
+
+\usepackage{ifpdf}
+\usepackage[centertags]{amsmath}
+%\usepackage{authordate1-4}
+\usepackage{color}
+\usepackage{fancyhdr}
+
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\pdfcompresslevel=9
+\else
+\usepackage{graphicx}
+\fi
+
+\ifpdf
+ \usepackage[pdftex,colorlinks=true,pdfhighlight=/N,citecolor=black,pagecolor=black,urlcolor=blue,linkcolor=black]{hyperref}
+  \pdfinfo{
+    /Author (\@author)
+    /Creator (TeX) 
+    /Producer (pdfLaTeX)
+    /Title (\@title)
+    /Subject (SCIRun 5.0 Documentation)
+    /Keywords (SCIRun) 
+}
+\fi
+
+
+\usepackage[normal,nooneline]{caption2}
+\usepackage[normal,footnotesize,nooneline]{subfigure}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{helvet}
+\usepackage{float}
+
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\abs}[1]{\left|#1\right|}
+
+\newcommand{\del}{\nabla}
+\newcommand{\vctr}[1]{\mathbf{#1}}  % Position vector
+\newcommand{\vctrnp}[1]{\mathbf{\widehat{#1}}}  % Non position vector
+\newcommand{\mtrx}[1]{\mathbf{\Bar{#1}}}
+\newcommand{\Grad}[1]{\del #1}
+\newcommand{\Div}[1]{\del \cdot \vctr{#1}}
+\newcommand{\Curl}[1]{\del \times \vctr{#1}}
+
+\newcommand{\ddt}[1]{\tfrac{\partial}{\partial t} #1}
+\newcommand{\Cmplx}[1]{\Hat{#1}}
+\newcommand{\cmplx}[1]{\Hat{#1}}
+\newcommand{\Unit}[1]{\Tilde{#1}}
+\newcommand{\Prop}[1]{\mathbf{P}(#1)}
+\newcommand{\Max}[1]{\text{max}(#1)}
+\newcommand{\SCIRunVersion}{5.0\space}
+
+
+% DEFITION OF THE PAGE LAYOUT
+%  DEFINITION OF MARGINS ETC.
+
+% define offset parameters
+\hoffset 0pt
+\voffset 0pt
+
+%define papersize
+\paperwidth 597pt
+\paperheight 845pt
+
+%define margins
+
+\oddsidemargin 0pt \evensidemargin 18pt
+\topmargin 0pt
+\headheight 15pt
+\headsep 0pt
+\footskip 40pt
+
+\marginparwidth 20pt \marginparsep 10pt
+
+% define text body
+
+\textheight 640pt \textwidth 435pt
+
+
+% Disallow page breaks at hyphens (this will give some underfull vbox's,
+% so an alternative is to use \brokenpenalty=100 and manually search
+% for and fix such page breaks)
+%\brokenpenalty=100
+
+% SOME HANDY DEFITIONS
+
+\def\nonumchapter#1{%
+        \chapter*{#1}
+        \addcontentsline{toc}{chapter}{#1}}
+
+% Redefine \thebibliography to go to a new page and put an entry in the
+% table of contents
+%\let\@ldthebibliography\thebibliography
+%\renewcommand{\thebibliography}[1]{%
+%        \newpage
+%        \addcontentsline{toc}{chapter}{Bibliography}
+%        \@ldthebibliography{#1}
+%}
+
+%\let\@ldbibliography\bibliography
+%\renewcommand{\bibliography}[1]{\ifprint@bib\@ldbibliography{#1}\fi}
+
+% cause empty pages to be really empty no headers and footers
+
+%\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else
+%  \hbox{}
+%  \vspace*{\fill}
+%  \vspace{\fill}
+%  \thispagestyle{empty}
+%  \newpage
+% \if@twocolumn\hbox{}\newpage\fi\fi\fi}
+
+% Introduce Introduction style each chapter will start by a brief description like an abstract
+
+% >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+% Define commands for the documentation
+
+\newenvironment{introduction}{\helv}{\normalfont}
+%\newenvironment{introduction}{\normalfont}{\normalfont}
+\newenvironment{body}{}{\normalfont}
+
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.65}
+\renewcommand{\floatpagefraction}{0.80}
+
+% define helvetica font
+\newcommand{\helv}{\fontfamily{phv}\fontseries{b}\fontsize{9}{11}\selectfont}
+\newcommand{\helvnf}{\fontfamily{phv}\fontsize{11}{12}\selectfont}
+
+% define captions
+%\renewcommand\captionfont{\small}%
+%\renewcommand\captionlabelfont{\bfseries}%
+\setcaptionmargin{0pt}%
+\setlength\captionindent{0pt}%
+\renewcommand*\captionlabeldelim{.}%
+
+% distances in subfig environment
+\renewcommand\subfigtopskip{0pt}
+\renewcommand\subfigbottomskip{0pt}
+\renewcommand\subfigcapskip{0pt}
+
+% Custom description list
+% code adapted from amsbook.cls
+\newcommand{\customdescrlabel}[1]{\hspace\labelsep \upshape\bfseries #1:}
+\newenvironment{customdesc}{\list{}{%
+  \advance\leftmargini6\p@ \itemindent-12\p@
+  \labelwidth\z@ \let\makelabel\customdescrlabel}%
+}{
+  \endlist
+}
+\let\endcustomdesc=\endlist % for efficiency
+
+% Special font for environment variables
+\newcommand{\textenvvar}[1]{\texttt{#1}}
+
+% LINE SPACING -----------------------------------------------------------
+\newlength{\defbaselineskip}
+\setlength{\defbaselineskip}{\baselineskip}
+\newcommand{\setlinespacing}[1]%
+           {\setlength{\baselineskip}{#1 \defbaselineskip}}
+\newcommand{\doublespacing}{\setlength{\baselineskip}%
+                           {2.0 \defbaselineskip}}
+\newcommand{\singlespacing}{\setlength{\baselineskip}{\defbaselineskip}}
+
+\newcommand{\setchapterheading}
+
+% number of listings in table of contents
+\setcounter{tocdepth}{2}
+
+% define fancy header settings
+\newcommand{\SetHeaders}{\fancypagestyle{plain}{%
+        \fancyhf{} % Clear all fields
+        \renewcommand{\headrulewidth}{0pt}
+        \renewcommand{\footrulewidth}{0.6pt}
+        \fancyfoot[LO]{}
+        \fancyfoot[RE]{}
+        \fancyfoot[LE]{\helv \thepage \hspace{20pt} \setchapterheading}
+        \fancyfoot[RO]{\helv \leftmark \hspace{20pt}\thepage}}
+        \pagestyle{plain}}
+
+% DEFINE PAGES PRECEDING CONTENTS
+
+\newcommand{\enquote}[1]{``#1''}
+
+\newcommand{\comment}[1]{{\helv#1}}
+\newcommand{\needreference}{{\helv (NEED REFERENCE)}}
+
+\newcommand{\bllt}{\textbullet \qquad}
+
+%\renewcommand{\includegraphics}[1]{}
+
+\renewcommand{\@makechapterhead}[1]{%
+  \vspace*{60\p@}%
+  {\parindent \z@ \raggedleft \normalfont
+    \helvnf
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        {\Large\bfseries \@chapapp\space \thechapter}
+        \par\nobreak
+        \line(1,0){72}
+        \vskip 20\p@
+      \fi
+    \fi
+    \interlinepenalty\@M
+    \Huge #1\par\nobreak
+    \vskip 40\p@
+  }}
+
+\renewcommand{\@makeschapterhead}[1]{%
+  \vspace*{60\p@}%
+  {\parindent \z@ \raggedleft \normalfont
+    \helvnf
+    \interlinepenalty\@M
+    \Huge #1\par\nobreak
+    \vskip 40\p@
+  }}
+
+\renewcommand\section{\@startsection {section}{1}{\z@}%
+                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
+                                   {2.3ex \@plus.2ex}%
+                                   {\helvnf\Large}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\helvnf\large}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\helvnf\normalsize}}
+                                     
+\def\maketitle{%
+	\addtolength{\headwidth}{\marginparsep}
+	\addtolength{\headwidth}{\marginparwidth}
+
+        \thispagestyle{empty}
+        \vspace*{60\p@}%
+         {\parindent \z@ \raggedleft \normalfont
+    	 \helvnf
+           {\Huge\bf\expandafter{\@title}}
+             \par\nobreak
+             \line(1,0){72}
+             \vskip 20\p@
+        	}
+        \vskip1in
+        {\parindent \z@ \raggedleft \normalfont
+    	 \helvnf
+           {\Large {\bf SCIRun 5.0 Documentation}\\[12pt]
+            \normalsize
+            Center for Integrative Biomedical Computing\\
+            Scientific Computing \& Imaging Institute\\
+            University of Utah\\}
+             \par\nobreak
+        	}
+        \vskip 0.5in
+        {\parindent \z@ \raggedleft \normalfont
+    	 \helvnf
+           {\normalsize
+            SCIRun software download:\\[6pt]
+            {\bf http://software.sci.utah.edu} \\[6pt]
+            Center for Integrative Biomedical Computing:\\[6pt]
+            {\bf http://www.sci.utah.edu/cibc} \\}
+             \par\nobreak
+        	}
+
+        \vskip 0.5in
+        {\parindent \z@ \raggedleft \normalfont
+    	 \helvnf
+           {\small
+             This project was supported by grants from the National Center for Research Resources
+             \textbf{(5P41RR012553-14)} and the National Institute of General Medical Sciences\\
+             \textbf{(8 P41 GM103545-14)} from the National Institutes of Health. \\}
+             \par\nobreak
+        	}
+
+        \vskip 0.5in
+        {\parindent \z@ \raggedleft \normalfont
+    	 \helvnf
+           \normalsize Author(s):\\[2pt]
+            {\normalsize\expandafter{\@author}}
+             \par\nobreak
+             \line(1,0){72}
+             \vskip 20\p@
+        	}
+
+        \SetHeaders
+                        
+        \tableofcontents
+
+        \newpage
+        \renewcommand{\setchapterheading}{\chaptername \hspace{6pt} \thechapter}
+
+        \SetHeaders
+
+      }
+      
+    
