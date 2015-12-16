@@ -30,6 +30,7 @@
 #include <Core/IEPlugin/NrrdField_Plugin.h>
 #include <Core/IEPlugin/MatlabFiles_Plugin.h>
 #include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>
+#include <Core/IEPlugin/EcgsimFileToMatrix_Plugin.h>
 #include <Core/IEPlugin/PointCloudField_Plugin.h>
 #include <Core/IEPlugin/CurveField_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
@@ -60,4 +61,6 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter PointCloudField_plugin("PointCloudField", "*.pts *.pos *.txt", "", TextToPointCloudField_reader, PointCloudFieldToText_writer);
 
   static FieldIEPluginLegacyAdapter CurveField_plugin("CurveField", "*.pts *.pos *.edge", "", TextToCurveField_reader, CurveFieldToTextBaseIndexZero_writer);
+
+  static MatrixIEPluginLegacyAdapter EcgsimFileMatrix_plugin("ECGSimFile", "", "", EcgsimFileMatrix_reader, EcgsimFileMatrix_writer);
 }

@@ -37,9 +37,12 @@
  */
  
 
-// This is a plugin is meant to read simple text files with pure data
-// in ascii format into a SCIRun matrix.
-
+#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
+#include <Core/IEPlugin/EcgsimFileToMatrix_Plugin.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Logging/LoggerInterface.h>
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
@@ -47,14 +50,14 @@
 #include <fstream>
 #include <sstream>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Datatypes;
 
-MatrixHandle EcgsimFileMatrix_reader(ProgressReporter *pr, const char *filename);
-bool EcgsimFileMatrix_writer(ProgressReporter *pr, MatrixHandle matrix, const char *filename);
-
-MatrixHandle EcgsimFileMatrix_reader(ProgressReporter *pr, const char *filename)
+MatrixHandle SCIRun::EcgsimFileMatrix_reader(LoggerHandle pr, const char *filename)
 {
-  MatrixHandle result;
+  DenseMatrixHandle result;
 
   int ncols = 0;
   int nrows = 0;
@@ -154,14 +157,14 @@ MatrixHandle EcgsimFileMatrix_reader(ProgressReporter *pr, const char *filename)
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
 
-    result = new DenseMatrix(header_rows,header_cols);
-    if (result.get_rep() == 0)
+    result.reset(new DenseMatrix(header_rows,header_cols));
+    if (!result)
     {
       if (pr) pr->error("Could not allocate matrix");
       return(result);
     }
     
-    double* dataptr = result->get_data_pointer();
+    double* dataptr = result->data();
     int k = 0;
 
     try
@@ -211,23 +214,22 @@ MatrixHandle EcgsimFileMatrix_reader(ProgressReporter *pr, const char *filename)
 }
 
 
-bool EcgsimFileMatrix_writer(ProgressReporter *pr, MatrixHandle matrix, const char *filename)
+bool SCIRun::EcgsimFileMatrix_writer(LoggerHandle pr, MatrixHandle matrixInput, const char *filename)
 {
 
   std::ofstream outputfile;
   outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
 
-  MatrixHandle temp = matrix->dense();
-  matrix = temp;
+  DenseMatrixHandle matrix = matrix_cast::as_dense(matrixInput);
   
-  if (matrix.get_rep() == 0)
+  if (!matrix)
   {
     if (pr) pr->error("Empty matrix detected");
     return(false);
   }
 
-  double* dataptr = matrix->get_data_pointer();
-  if (dataptr == 0)
+  double* dataptr = matrix->data();
+  if (!dataptr)
   {
     if (pr) pr->error("Empty matrix detected");
     return(false);
@@ -261,7 +263,5 @@ bool EcgsimFileMatrix_writer(ProgressReporter *pr, MatrixHandle matrix, const ch
   return (true);
 }
 
-static MatrixIEPlugin EcgsimFileMatrix_plugin("ECGSimFile","", "",EcgsimFileMatrix_reader,EcgsimFileMatrix_writer);
 
-} // end namespace
 
