@@ -42,18 +42,16 @@ namespace SCIRun {
       {
       public:
         CalcTMP();
-        virtual void setStateDefaults() {}
-        virtual void execute();
+        virtual void setStateDefaults() override {}
+        virtual void execute() override;
 
         INPUT_PORT(0, Amplitude, Matrix);
-         //TODO: real names
-        INPUT_PORT(1, i1, Matrix);
-        INPUT_PORT(2, i2, Matrix);
-        INPUT_PORT(3, i3, Matrix);
-        INPUT_PORT(4, i4, Matrix);
-        INPUT_PORT(5, i5, Matrix);
-        INPUT_PORT(6, i6, Matrix);
-        //end todo names
+        INPUT_PORT(1, Depolarization_Time, Matrix);
+        INPUT_PORT(2, Depolarization_Slope, Matrix);
+        INPUT_PORT(3, Plateau_Slope, Matrix);
+        INPUT_PORT(4, Repolarization_Time, Matrix);
+        INPUT_PORT(5, Repolarization_Slope, Matrix);
+        INPUT_PORT(6, Rest_Potential, Matrix);
         OUTPUT_PORT(0, TMPs, Matrix);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;

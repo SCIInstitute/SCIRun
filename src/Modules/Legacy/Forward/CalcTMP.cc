@@ -56,12 +56,12 @@ CalcTMP::CalcTMP()
   : Module(staticInfo_)
 {
   INITIALIZE_PORT(Amplitude);
-  INITIALIZE_PORT(i1);
-  INITIALIZE_PORT(i2);
-  INITIALIZE_PORT(i3);
-  INITIALIZE_PORT(i4);
-  INITIALIZE_PORT(i5);
-  INITIALIZE_PORT(i6);
+  INITIALIZE_PORT(Depolarization_Time);
+  INITIALIZE_PORT(Depolarization_Slope);
+  INITIALIZE_PORT(Plateau_Slope);
+  INITIALIZE_PORT(Repolarization_Time);
+  INITIALIZE_PORT(Repolarization_Slope);
+  INITIALIZE_PORT(Rest_Potential);
   INITIALIZE_PORT(TMPs);
   //algo_.set_progress_reporter(this);
 }
@@ -69,26 +69,16 @@ CalcTMP::CalcTMP()
 
 void CalcTMP::execute()
 {
-  MatrixHandle amplitudes = getRequiredInput(Amplitude);
-  auto deps = getOptionalInput(i1);
-
-
-
-
-  MatrixHandle depslopes;
-  MatrixHandle platslopes;
-  MatrixHandle reps;
-  MatrixHandle repslopes;
-  MatrixHandle rests;
+  auto amplitudes = getOptionalInput(Amplitude);
+  auto deps = getOptionalInput(Depolarization_Time);
+  auto depslopes = getOptionalInput(Depolarization_Slope);;
+  auto platslopes = getOptionalInput(Plateau_Slope);;
+  auto reps = getOptionalInput(Repolarization_Time);;
+  auto repslopes = getOptionalInput(Repolarization_Slope);;
+  auto rests = getOptionalInput(Rest_Potential);;
+  
   MatrixHandle tmps;
-
-  // get_input_handle("Depolarization Time", deps, false);
-  // get_input_handle("Depolarization Slope", depslopes, false);
-  // get_input_handle("Plateau Slope", platslopes, false);
-  // get_input_handle("Repolarization Time", reps, false);
-  // get_input_handle("Repolarization Slope", repslopes, false);
-  // get_input_handle("Rest Potential", rests, false);
-
+  
   if (needToExecute())
   {
     /* TODO LATER
