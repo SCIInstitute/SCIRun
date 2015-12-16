@@ -135,7 +135,8 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle&
   imeshH->get_property("conductivity_table", conds);
 
   // get our own local copy of the Field and mesh
-  imeshH.detach();
+  //imeshH.detach();
+  FieldHandle outputMesh(imeshH->clone());
 
   int outside = outside_.get();
 
@@ -145,12 +146,12 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle&
   vmesh->synchronize(Mesh::LOCATE_E);
 
   VMesh::Node::array_type nbrs;
-  Array1<std::vector<std::pair<double, double> > > closest(nnodes);
+  std::vector<std::vector<std::pair<double, double> > > closest(nnodes);
   // store the dist/val
   // to source nodes
-  Array1<int> have_some(nnodes);
-  have_some.initialize(0);
-  Array1<VMesh::Node::index_type> bc_nodes;
+  std::vector<int> have_some(nnodes);
+  //have_some.initialize(0);
+  std::vector<VMesh::Node::index_type> bc_nodes;
 
   for (size_t di=0; di<dirichlet.size(); di++)
   {
@@ -204,7 +205,7 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle&
     {
       std::pair<double, double> p(dmin, val);
       have_some[nmin]=1;
-      bc_nodes.add(nmin);
+      bc_nodes.push_back(nmin);
       closest[nmin].push_back(p);
     }
   }
@@ -221,7 +222,7 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle&
   imeshH->set_property("dirichlet", dirichlet, false);
   imeshH->set_property("conductivity_table", conds, false);
 
-  send_output_handle("FEMesh", imeshH);
+  //send_output_handle("FEMesh", imeshH);
   */
 }
 
