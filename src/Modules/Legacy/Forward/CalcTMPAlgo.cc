@@ -6,7 +6,7 @@
    Copyright (c) 2011 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -64,47 +64,47 @@ bool CalcTMPAlgo::calc_single_TMP(
           amplitude: Amplitude
   Output: Dense Matrix (1xsize of matrix) containing the transmembrane potential
   */
-  
+
   size_type nrows = TMP_values.nrows();
   size_type ncols = TMP_values.ncols();
-  
+
   if(nrows != 1){
-    error("CalcTMPAlgo: TMP_values size incorrect");
+    error("CalcTMPAlgo: TMP_values size incorrect: require rows == 1");
     return false;
   }
-  
+
   if(ncols <= 0){
-    error("CalcTMPAlgo: TMP_values size incorrect");
+    error("CalcTMPAlgo: TMP_values size incorrect: need non-empty matrix");
     return false;
   }
-  
+
   double tdep = -dep;
   double trep = -rep;
-  double maxAmpl = 1e-6;
-  
+  const double maxAmpl = 1e-6;
+
   for(index_type t = 0; t < ncols; ++t)
   {
     double vali = 1.0 / (1.0 + exp(-depslope * tdep)) *
     (1.0 / (1.0 + exp(platslope * trep))) *
     (1.0 / (1.0 + exp(repslope  * trep)));
-    TMP_values.put(0,t,vali);
+    TMP_values(0,t) = vali;
     if(vali > maxAmpl)
     {
       maxAmpl = vali;
     }
-    
+
     tdep += 1.0;
     trep += 1.0;
   }
   double ampl = (amplitude - rest) / maxAmpl;
   for(index_type t = 0; t < ncols; ++t)
   {
-    TMP_values.put(0,t,TMP_values.get(0,t)*ampl + rest);
+    TMP_values(0,t) = TMP_values(0,t) * ampl + rest;
   }
-  
+
   return true;
 }
-  
+
 bool CalcTMPAlgo::calc_all_TMPs(
                 const DenseMatrix& amplitudes,
                 const DenseMatrix& deps,
@@ -126,13 +126,13 @@ bool CalcTMPAlgo::calc_all_TMPs(
     error("CalcTMPAlgo: All inputs must be of size 1 x nodes");
     return false;
   }
-  
+
   size_type nnodes = amplitudes.nrows();
   if(nnodes <= 0){
     error("CalcTMPAlgo: Size of inputs must be > 0");
     return false;
   }
-  
+
   if(deps.nrows()       != nnodes ||
      depslopes.nrows()  != nnodes ||
      platslopes.nrows() != nnodes ||
@@ -143,19 +143,19 @@ bool CalcTMPAlgo::calc_all_TMPs(
     error("CalcTMPAlgo: All inputs sizes must match");
     return false;
   }
-  
+
   if(TMP_values.nrows() != nnodes)
   {
     error("CalcTMPAlgo: MP_values size does not match number of nodes");
     return false;
   }
-  
+
   if(TMP_values.ncols() <= 0)
   {
     error("CalcTMPAlgo: Number of columns in TMP_values must be greater than 0 for output");
     return false;
   }
-  
+
   DenseMatrix mat(1, TMP_values.ncols());
   for(index_type node = 0; node < nnodes; ++node)
   {
@@ -175,10 +175,10 @@ bool CalcTMPAlgo::calc_all_TMPs(
       TMP_values.put(node, t, mat.get(0, t));
     }
   }
-  
+
   return true;
 }
-  
+
 bool CalcTMPAlgo::calc_TMPs(MatrixHandle amplitudes,
                             MatrixHandle deps,
                             MatrixHandle depslopes,
@@ -187,7 +187,7 @@ bool CalcTMPAlgo::calc_TMPs(MatrixHandle amplitudes,
                             MatrixHandle repslopes,
                             MatrixHandle rests,
                             unsigned int nsamples,
-                            MatrixHandle& output)
+                            DenseMatrixHandle& output)
 {
   if(matrix_is::sparse(amplitudes) ||
      matrix_is::sparse(deps) ||
@@ -200,21 +200,21 @@ bool CalcTMPAlgo::calc_TMPs(MatrixHandle amplitudes,
     error("CalcTMPAlgo: Sparse matrices not supported.");
     return false;
   }
-  
-  output = new DenseMatrix(amplitudes->nrows(), nsamples);
-  
-  if(!calc_all_TMPs(*(amplitudes->dense()),
-                    *(deps->dense()),
-                    *(depslopes->dense()),
-                    *(platslopes->dense()),
-                    *(reps->dense()),
-                    *(repslopes->dense()),
-                    *(rests->dense()),
-                    *(output->dense())))
-  {
-    return false;
-  }
-  return true;
+
+  output.reset(new DenseMatrix(amplitudes->nrows(), nsamples));
+
+  DenseMatrixHandle ampDense(matrix_cast::as_dense(amplitudes));
+
+  return calc_all_TMPs(*ampDense,
+
+                  *(deps->dense()),
+                  *(depslopes->dense()),
+                  *(platslopes->dense()),
+                  *(reps->dense()),
+                  *(repslopes->dense()),
+                  *(rests->dense()),
+
+                  *output);
 }
 
 

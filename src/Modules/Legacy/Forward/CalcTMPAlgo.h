@@ -6,7 +6,7 @@
    Copyright (c) 2011 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -49,9 +49,8 @@
 #include <map>
 #include <string>
 
-//#define maxAmpl 1e-6
-
 #include <Packages/BioPSE/Core/Algorithms/NumApproximation/share.h>
+
 namespace BioPSE {
 
 using namespace SCIRun;
@@ -62,7 +61,7 @@ class SCISHARE CalcTMPAlgo : public AlgoLibrary
 private:
 
 
-   
+
 public:
 
   // assumes TMP_values is sized to 1 x nsamples
@@ -74,7 +73,7 @@ public:
                        const double repslope,
                        const double rest,
                        DenseMatrix& TMP_values);
-  
+
   // assumes TMP_values is already sized to nnodes x nsamples
   bool calc_all_TMPs(const DenseMatrix& amplitudes,
                      const DenseMatrix& deps,
@@ -84,7 +83,7 @@ public:
                      const DenseMatrix& repslopes,
                      const DenseMatrix& rests,
                      DenseMatrix& TMP_values);
-  
+
 
   // normal entry case
   bool calc_TMPs(MatrixHandle amplitudes,
