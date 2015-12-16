@@ -26,26 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H
-#define INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H 1
+#include <Interface/Modules/Fields/ConvertMeshToPointCloudDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <QtGui>
 
-#include "Interface/Modules/Math/ui_ReportMatrixSliceMeasureDialog.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun {
-  namespace Gui {
-    class SCISHARE ReportMatrixSliceMeasureDialog : public ModuleDialogGeneric,
-    public Ui::ReportMatrixSliceMeasureDialog
-    {
-      Q_OBJECT
-      
-    public:
-      ReportMatrixSliceMeasureDialog(const std::string& name,
-                                     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-                                     QWidget* parent = 0);
-    };
-  }
+ConvertMeshToPointCloudDialog::ConvertMeshToPointCloudDialog(const std::string& name, ModuleStateHandle state,
+	QWidget* parent/* = 0*/)
+	: ModuleDialogGeneric(state, parent)
+{
+	setupUi(this);
+	setWindowTitle(QString::fromStdString(name));
+	fixSize();
+
+  addRadioButtonGroupManager({nodeButton_,dataButton_ }, Variables::Operator);
 }
-
-#endif

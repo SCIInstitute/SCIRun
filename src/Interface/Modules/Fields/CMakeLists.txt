@@ -52,6 +52,7 @@ SET(Interface_Modules_Fields_FORMS
   calculatedistancetofieldboundary.ui #TODO: fix case
   MapFieldDataOntoElems.ui
   ConvertIndicesToFieldData.ui
+  ConvertMeshToPointCloudDialog.ui
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
   GenerateSinglePointProbeFromField.ui
@@ -94,6 +95,7 @@ SET(Interface_Modules_Fields_HEADERS
   ClipFieldByFunctionDialog.h
   RefineMeshDialog.h
   ConvertFieldBasisDialog.h
+  ConvertMeshToPointCloudDialog.h
   share.h
   SwapFieldDataWithMatrixEntriesDialog.h
   EditMeshBoundingBoxDialog.h
@@ -136,6 +138,7 @@ SET(Interface_Modules_Fields_SOURCES
   RefineMeshDialog.cc
   EditMeshBoundingBoxDialog.cc
   ConvertIndicesToFieldDataDialog.cc
+  ConvertMeshToPointCloudDialog.cc
   ExtractSimpleIsosurfaceDialog.cc
   RegisterWithCorrespondencesDialog.cc
   GeneratePointSamplesFromFieldDialog.cc

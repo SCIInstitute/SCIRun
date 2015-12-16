@@ -27,48 +27,33 @@
 */
 
 // Include the algorithm
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToPointCloudMesh.h>
-
-// Base class for the module
-#include <Dataflow/Network/Module.h>
-
-// Ports included in the module
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-// For Windows support
-#include <Dataflow/Modules/Fields/share.h>
-
-namespace SCIRun {
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
+#include <Modules/Legacy/Fields/ConvertMeshToPointCloud.h>
 
 /// @class ConvertMeshToPointCloud
 /// @brief Convert a structured field into an unstructured field for editing. 
 
-class ConvertMeshToPointCloud : public Module
-{
-  public:
-    ConvertMeshToPointCloud(GuiContext* ctx);
-    virtual ~ConvertMeshToPointCloud() {}
-    virtual void execute();
-  
-  private:
-    SCIRunAlgo::ConvertMeshToPointCloudMeshAlgo algo_;
-      
-  private:
-      GuiInt datalocation_;
-};
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-DECLARE_MAKER(ConvertMeshToPointCloud)
-ConvertMeshToPointCloud::ConvertMeshToPointCloud(GuiContext* ctx)
-  : Module("ConvertMeshToPointCloud", ctx, Filter, "ChangeMesh", "SCIRun"),
-    datalocation_(get_ctx()->subVar("datalocation"))
+const ModuleLookupInfo ConvertMeshToPointCloud::staticInfo_("ConvertMeshToPointCloud", "ChangeMesh", "SCIRun");
+
+ConvertMeshToPointCloud::ConvertMeshToPointCloud(): Module(staticInfo_)
 {
-  /// Forward errors to the module
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(Mesh);
+  INITIALIZE_PORT(PointCloud);
 }
 
+void ConvertMeshToPointCloud::setStateDefaults()
+{
+}
+
+  
 void
 ConvertMeshToPointCloud::execute()
 {
+  /*
   // Define fieldhandles
   FieldHandle ifield, ofield;
   
@@ -93,7 +78,7 @@ ConvertMeshToPointCloud::execute()
     // Send to output to the output port
     send_output_handle("Field", ofield);
   }
+   */
+  
 }
-
-} // End namespace SCIRun
 
