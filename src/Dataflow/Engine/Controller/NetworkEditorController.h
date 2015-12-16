@@ -37,6 +37,7 @@
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
 #include <Dataflow/Network/ModuleFactory.h> // todo split out replacement impl types
+#include <Core/Command/CommandFactory.h>
 #include <Dataflow/Engine/Controller/share.h>
 
 namespace SCIRun {
@@ -89,6 +90,7 @@ namespace Engine {
       ExecutionStrategyFactoryHandle executorFactory,
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       Networks::ReexecuteStrategyFactoryHandle reexFactory,
+      Core::Commands::GlobalCommandFactoryHandle cmdFactory,
       Networks::NetworkEditorSerializationManager* nesm = 0);
     NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = 0);
 
@@ -102,21 +104,21 @@ namespace Engine {
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     void connectNewModule(const Networks::ModuleHandle& moduleToConnectTo, const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
 
-    void requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to);
+    boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
     void executeAll(const Networks::ExecutableLookup* lookup);
     void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup);
 
-    virtual Networks::NetworkFileHandle saveNetwork() const;
-    virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
+    virtual Networks::NetworkFileHandle saveNetwork() const override;
+    virtual void loadNetwork(const Networks::NetworkFileHandle& xml) override;
 
     Networks::NetworkFileHandle serializeNetworkFragment(Networks::ModuleFilter modFilter, Networks::ConnectionFilter connFilter) const;
     void appendToNetwork(const Networks::NetworkFileHandle& xml);
 //////////////////////End: To be Pythonized///////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-    virtual void clear();
+    virtual void clear() override;
 
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
@@ -170,6 +172,7 @@ namespace Engine {
     Networks::ReexecuteStrategyFactoryHandle reexFactory_;
     ExecutionStrategyHandle currentExecutor_;
     ExecutionStrategyFactoryHandle executorFactory_;
+    Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
     Networks::NetworkEditorSerializationManager* serializationManager_;
 
     ExecutionQueueManager executionManager_;

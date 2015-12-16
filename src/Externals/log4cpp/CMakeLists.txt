@@ -97,7 +97,7 @@ ENDIF (WIN32)
 
 # This works because log4cpp is part of the SCIRun git repository.
 # If this project gets moved to a CMake external project, this directive will have to be revised.
-ADD_DEPENDENCIES(${SCI_LOG4CPP_LIBRARY} Boost_external)
+#ADD_DEPENDENCIES(${SCI_LOG4CPP_LIBRARY} Boost_external)
 
 
 #INSTALL (

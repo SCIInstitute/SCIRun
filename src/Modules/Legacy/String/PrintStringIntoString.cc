@@ -145,7 +145,6 @@ PrintStringIntoString::execute()
                   if (currentstring)
                   {
                     str = currentstring->value();
-                    std::cout<<" string " << inputport <<" = " << str <<std::endl;
                   }
                 }
               }

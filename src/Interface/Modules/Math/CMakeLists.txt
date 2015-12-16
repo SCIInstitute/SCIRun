@@ -41,6 +41,7 @@ SET(Interface_Modules_Math_FORMS
   BuildNoiseColumnMatrix.ui
   ReportColumnMatrixMisfit.ui
   CollectMatrices.ui
+  ReportMatrixSliceMeasureDialog.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -58,6 +59,7 @@ SET(Interface_Modules_Math_HEADERS
   BuildNoiseColumnMatrixDialog.h
   ReportColumnMatrixMisfitDialog.h
   CollectMatricesDialog.h
+  ReportMatrixSliceMeasureDialog.h
 )
 
 IF(WITH_QWT_WIDGETS)
@@ -80,6 +82,7 @@ SET(Interface_Modules_Math_SOURCES
   BuildNoiseColumnMatrixDialog.cc
   ReportColumnMatrixMisfitDialog.cc
   CollectMatricesDialog.cc
+  ReportMatrixSliceMeasureDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})

@@ -66,10 +66,11 @@ private:
 public:
   void readCommandLine(int argc, const char* argv[]);
 
+  void setCommandFactory(Commands::GlobalCommandFactoryHandle cmdFactory);
   CommandLine::ApplicationParametersHandle parameters() const;
   boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller();
 
-  void executeCommandLineRequests(Commands::GlobalCommandFactoryHandle cmdFactory);
+  void executeCommandLineRequests();
 
   boost::filesystem::path executablePath() const;
   boost::filesystem::path configDirectory() const;

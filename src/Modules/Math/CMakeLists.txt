@@ -38,6 +38,7 @@ SET(Modules_Math_SRCS
   EvaluateLinearAlgebraBinary.cc
   GetMatrixSlice.cc
   ReportMatrixInfo.cc
+  ReportMatrixSliceMeasure.cc
   SolveLinearSystem.cc
   ComputePCA.cc
 )
@@ -54,6 +55,7 @@ SET(Modules_Math_HEADERS
   EvaluateLinearAlgebraBinary.h
   GetMatrixSlice.h
   ReportMatrixInfo.h
+  ReportMatrixSliceMeasure.h
   share.h
   SolveLinearSystem.h
   ComputePCA.h

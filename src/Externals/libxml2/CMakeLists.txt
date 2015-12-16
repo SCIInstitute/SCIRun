@@ -28,7 +28,15 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 IF(COMMAND CMAKE_POLICY)
   CMAKE_POLICY(VERSION 2.6)
-ENDIF(COMMAND CMAKE_POLICY)
+
+  IF(CMAKE_VERSION VERSION_GREATER 3.0)
+    # TODO: when support for versions older than 2.8.12 is dropped,
+    # enable new policy and get rid of version check
+    #
+    # see https://cmake.org/cmake/help/v3.0/policy/CMP0042.html
+    CMAKE_POLICY(SET CMP0042 OLD)
+  ENDIF()
+ENDIF()
 
 PROJECT(libxml2)
 
@@ -351,7 +359,7 @@ SET(SCI_LIBXML2_INCLUDE
    )
 
 INCLUDE_DIRECTORIES( ${SCI_LIBXML2_INCLUDE} )
-ADD_LIBRARY(${SCI_LIBXML2_LIBRARY} ${LIBXML2_SRCS})
+SCIRUN_ADD_LIBRARY(${SCI_LIBXML2_LIBRARY} ${LIBXML2_SRCS})
 
 IF(UNIX)
   TARGET_LINK_LIBRARIES(
@@ -359,28 +367,6 @@ IF(UNIX)
                          ${DL_LIBRARY}
                        )
 ENDIF(UNIX)
-
-# IF(WIN32)
-  # # Windows socket 2 library
-  # FIND_LIBRARY(WS2_LIBRARY ws2_32 PATHS ${MS_SDK_REG_PATH})
-  # TARGET_LINK_LIBRARIES(
-                         # ${SCI_LIBXML2_LIBRARY}
-                         # ${WS2_LIBRARY}
-                       # )
-
-  # SET_TARGET_PROPERTIES(${SCI_LIBXML2_LIBRARY}
-                        # PROPERTIES
-                        # DEFINE_SYMBOL _MBCS
-                       # )
-
-  # IF(BUILD_SHARED_LIBS)
-    # SET_TARGET_PROPERTIES(${SCI_LIBXML2_LIBRARY}
-                          # PROPERTIES
-                          # DEFINE_SYMBOL _USRDLL
-                          # DEFINE_SYMBOL _WINDLL
-                       # )
-  # ENDIF(BUILD_SHARED_LIBS)
-# ENDIF(WIN32)
 
 IF(ENABLE_PIC)
   SET_TARGET_PROPERTIES(${SCI_LIBXML2_LIBRARY}
