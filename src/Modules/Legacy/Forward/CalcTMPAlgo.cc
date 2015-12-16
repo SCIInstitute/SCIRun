@@ -37,8 +37,8 @@
  *   May 2011
  */
 
-#include <Packages/BioPSE/Core/Algorithms/NumApproximation/CalcTMP.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Modules/Legacy/Forward/CalcTMPAlgo.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 namespace BioPSE {
 

@@ -40,32 +40,18 @@
 #ifndef PACKAGES_BIOPSE_CORE_ALGORITHMS_NUMAPPROXIMATION_CALCTMP_H
 #define PACKAGES_BIOPSE_CORE_ALGORITHMS_NUMAPPROXIMATION_CALCTMP_H
 
-#include <Core/Algorithms/Util/AlgoLibrary.h>
-
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Matrix.h>
-
-#include <algorithm>
-#include <map>
-#include <string>
-
-#include <Packages/BioPSE/Core/Algorithms/NumApproximation/share.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Modules/Legacy/Forward/share.h>
 
 namespace BioPSE {
 
-using namespace SCIRun;
 
-class SCISHARE CalcTMPAlgo : public AlgoLibrary
+class SCISHARE CalcTMPAlgo
 {
-
-private:
-
-
-
 public:
 
   // assumes TMP_values is sized to 1 x nsamples
-  bool calc_single_TMP(const double amplitude,
+  static bool calc_single_TMP(const double amplitude,
                        const double dep,
                        const double depslope,
                        const double platslope,
@@ -75,7 +61,7 @@ public:
                        DenseMatrix& TMP_values);
 
   // assumes TMP_values is already sized to nnodes x nsamples
-  bool calc_all_TMPs(const DenseMatrix& amplitudes,
+  static bool calc_all_TMPs(const DenseMatrix& amplitudes,
                      const DenseMatrix& deps,
                      const DenseMatrix& depslopes,
                      const DenseMatrix& platslopes,
@@ -86,7 +72,7 @@ public:
 
 
   // normal entry case
-  bool calc_TMPs(MatrixHandle amplitudes,
+  static bool calc_TMPs(MatrixHandle amplitudes,
                  MatrixHandle deps,
                  MatrixHandle depslopes,
                  MatrixHandle platslopes,
