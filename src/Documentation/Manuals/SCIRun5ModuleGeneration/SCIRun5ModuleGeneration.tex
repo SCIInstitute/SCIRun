@@ -57,7 +57,7 @@ You should be able to see both your and the original repositories when you use t
 \begin{verbatim}
 $ git remote -v
 \end{verbatim}
-The fork is good to go, but you will need to sync the fork occationally to keep up with the changes in the main repository.  To sync your fork, use the following commands:
+The fork is good to go, but you will need to sync the fork occasionally to keep up with the changes in the main repository.  To sync your fork, use the following commands:
 \begin{verbatim}
 $ git fetch upstream
 $ git checkout master
@@ -90,7 +90,7 @@ Scope: \hyperref[sec:overview]{Overview of Files Needed for each Module} - \hype
 
 There are only three files required to create a module, though more may be needed depending on the function of the module.
 In addition to the required module source code and header files (\emph{modulename.cc} and \emph{modulename.h}), a module configuration file is needed.
-The module configuration file (\emph{modulename.module}) contains a description of the module and its state and names all the files needed for the module to be included in SCIRUn.  
+The module configuration file (\emph{modulename.module}) contains a description of the module and its state and names all the files needed for the module to be included in SCIRun.  
 
 Simple modules without user interfaces (UIs) can be created with the previously list three files alone.
 However, if the module function needs a UI, there are three additional files needed.  
@@ -149,6 +149,7 @@ These files should be located in the proper directory with the \emph{src/Modules
 For example purposes, we will show and discuss the template files included in the \emph{src/Modules/Template/} directory.
 
 \subsection{Module Header File}
+\label{sec:header}
 
 The module header file functions as a typical C++ header file, containing code establishing the module object and structure.  
 The \emph{ModuleTemplate.h} file found in \emph{src/Modules/Template/} provides an example of the kind of coding needed for a module header.  
@@ -237,6 +238,7 @@ The 'setStateDefault' function is how the default state variables are set.
 If there is no UI and therefore no state variables, this function can be set to empty in this file and omitted from the .cc file.  
 
 \subsection{Module Code File}
+\label{sec:modulecc}
 
 The module header file functions as a typical C++ file, containing the functions for the module.  
 The \emph{ModuleTemplate.cc} file found in \emph{src/Modules/Template/} provides an example of the kind of coding needed for a module .cc file.  
@@ -592,7 +594,7 @@ This example in particular contains only elements common to most other modules.
 The key to creating the header files is to ensure that the module name is correct in every place it occurs, that the namespace (StringManip) matches the module config file and that the ports are numbered and labeled correctly.  
 
 \section{Module Source Code}
-\label{examp_source}
+\label{sec:examp_source}
 
 The final file needed for this module is the source code file (\emph{ModuleTemplate.cc}).
 The functionality used in this module is minimal to show how the essential functions.  
@@ -1440,16 +1442,174 @@ Scope: \hyperref[sec:strategy]{Strategy} - \hyperref[sec:changes]{Common Functio
 The strategy for converting a module from SCIRun 4 to SCIRun 5 is very similar to the strategy of making a new module, which is to start with the basics, and add all the necessary parts piece by piece.  
 This is demonstrated in our previous examples, especially in Chapters~\ref{sec:ex_simple}~\&~\ref{sec:ex_UI}.
 
+Another document outlining the steps to convert a module which may be helpful is in the source code: \emph{src/Documentation/Manuals/ModuleConversionSteps.md}.
+It can also be found on \href{https://github.com/SCIInstitute/SCIRun/blob/master/src/Documentation/Manuals/ModuleConversionSteps.md}{github}.
 
-There is another document outlining the steps to convert a module.
-It is \emph{src/Documentation/Manuals/ModuleConversionSteps.md} and can also be found on \href{https://github.com/SCIInstitute/SCIRun/blob/master/src/Documentation/Manuals/ModuleConversionSteps.md}{github}.
+\subsection{Set up Git Branch}
+
+In order for all the hard work of converting a module to be useful for all the users of SCIRun, be sure to use git and github for version control.  Make sure that you have your own fork, sync to the SCIRun repository (Section~\ref{sec:forking}).  
+Create a new branch in your fork for each module conversion (Section~\ref{sec:forking}) and be sure to commit your changes frequently.  
+
+\subsection{Create a Module Configuration file}
+
+Create a module configuration file (Section~\ref{sec:config}) for the module in the \emph{src/Modules/Factory/Config/} directory.  
+I may be easiest to copy an existing file and change it.
+Be sure that all the names match the appropriate names of other files and fields in other files.
+It will be easier if the naming convention shown in Section~\ref{sec:config} (name, nameDialog, nameAlgo, etc.)
+Leave fields blank with "N/A".
+For now, it can help to only fill in the first section \verb|"module"|, as we will be adding the UI and the algorithm piece by piece.  
+
+\subsection{Create a Module Header file}
+
+Virtually all modules in SCIRun 4 did not have header files for the module code, so one will need to be created for it.  
+Copy the template header file (Section~\ref{sec:header}) or another module header file.  
+The header file needs to be in the same location as the module .cc file (next Section).
+Change all the references to match the name of the module.
+Change the port names, number, and type.
+Make sure all functions used in the module code are declared in the header.  
+
+\subsection{Get Module to Build Without Functionality}
+
+Getting the module code from SCIRun 4 working in SCIRun 5 can be challenging because there are a number of infrastructure and function changes.  
+For this reason, it can beneficial to start with the basic code and build from there.  
+Most of the SCIRun 4 module code is in the  \emph{src/Modules/Legacy/} directory, and can remain there.  
+Make sure the header file is also in this directory.  
+
+Once the files are in the correct place, begin by removing all the SCIRun 4 specific code. 
+If desired, the SCIRun 4 code can be commented out for now instead of deleted, but should be cleaned up before submitting a pull request.  
+Remove any port header file includes, such as: \verb|#include <Dataflow/Network/Ports/FieldPort.h>|, and The \verb|DECLARE_MAKER| function.
+Remove the class declaration, as the header should already contain the essential declarations.
+We will add more as needed.  
+
+Make sure that the namespaces used are correct (at least two,Fields/Math/etc and Networks, are needed, Section~\ref{sec:modulecc}).
+Make sure that the module header is included and the other headers included have the correct path. 
+Change the module constructor (\verb|@modulename@::@modulename@()| in the template example) to match the format shown in Section~\ref{sec:modulecc} with the correct port names.
+Add \verb|staticInfo_| varible as in Section~\ref{sec:modulecc}.
+Add a blank \verb|setStateDefaults()| function:
+\begin{verbatim}
+void @ModuleName@::setStateDefaults(){ }
+\end{verbatim}
+or, if there is no module UI planned, add empty curly brackets to the header file declaration as discussed in Section~\ref{sec:header}.  
+
+The only code that will carry over is probably the \verb|execute()| and other functions coded in the module, so everything else can be removed. 
+Any helper functions will be should moved to an algorithm file later, but for now comment them out.
+Also comment out the content of the executable for now.  
+
+In this state, the three module files (config, header, and cc file) should be similar to the simplest example (Chapter~\ref{sec:ex_simple}), but the execute function will empty for now. 
+Add the header and cc files the \emph{CMakeList.txt} file in the directory they are in and try to build SCIRun.
+If there are build errors, check Section~\ref{sec:errors} for some ideas for how to correct them.  
+The goal of building the code at this point it to make sure that the code which interacts with SCIRun is working properly before there are other mistakes in the code.
+
+Once SCIRun builds, open it and find the new module.  
+There will probably be a warning about creating UI because the code is expecting one and there isn't one.  
+Make sure all the ports are there and are correctly names (hover the mouse over the port).  
+
+If there is no UI planned for this module, add a `false' input to the module constructor (Sections~\ref{sec:modulecc}~\&~\ref{sec:examp_source}).  
+Otherwise, continue with the next step.
+
+\subsection{Add Module UI}
+
+Once the module is building without functionality, a module UI can be added.  
+Begin by copying the UI files from another module with a similar interface, or the template files in \emph{src/Interface/Modules/Template/}.
+Rename the three UI files (Section~\ref{sec:ui}) and place them in the appropriate file in \emph{src/Interface/Modules/}.
+The file names and subsequent function and item names in the UI code should be the same as the module with `Dialog' appended to it.
+
+In the module design file, use the Qt editor to create the UI that is needed by adding and removing widgets as needed (see Sections~\ref{sec:addUI}~\&~\ref{sec:algo_ui}).  
+Make sure that the name of the module and the name of the inputs are correctly named.  
+
+Next, modify the dialog header file so that the names of the module and dialog are corrected.  
+There usually isn't anything extra needed with the dialog header.
+Similarly modify the module dialog cc file. 
+Now add code to interpret the inputs from the widgets placed in the UI (Section~\ref{sec:ui}). 
+It may be helpful to look at other modules with similar UIs to determine which functions are needed  (see Sections~\ref{sec:addUI}~\&~\ref{sec:algo_ui} for simple examples).
+
+Now that the interface files are created, fill out the Interface section of the module configuration file.  
+Make sure the names are consistent across files. 
+Add all three files to \emph{CMakeList.txt} in the directory that the files are in.  
+Try to build SCIRun. If there are any errors, see Section~\ref{sec:errors} for ideas to resolve them.  
+Once SCIRun is built, pull up the module and check the module UI.  
+There will not be any functionality or defaults set, but the look should be correct.  
+If the UI is correct, the UI code should be complete.
+
+\subsection{Add Module Algorithm Files}
+
+Module algorithm code isn't necessary if the module is simple.  
+However using the algorithm class can be an easy way to work with the UI.
+Therefore, if the module that is being ported does not have algorithm code, consider adding it.  
+If no algorithm code will be added to the module, skip this step.  
+
+Copy the algorithm code from SCIRUn 4 to the appropriate directory within \emph{src/Core/Algorithms/} (some algorithms have been copied and not ported to SCIRun 5).
+If there was no algorithm code in SCIRun 4, copy a similar module algorithm code or the template code found in \emph{src/Core/Algorithms/Template} and modify the names to match the module name with `Algo' added to it.  
+For now, comment out all the code within each of the functions, except any necessary return commands.  
+Some of the functions may need name changes to match the general format in Section~\ref{sec:algo}.  
+
+Now fill out the algorithm section of the module configuration file.  
+Add the algorithm code and header files to the \emph{CMakeList.txt} file in the directory that the algorithm code is in (or possibly the parent directory).  
+Include the algorithm header in the module code.  
+Build SCIRun. If there are no build errors, start adding the commented out code as described in the next section.
+
+\subsection{Add Module and Algorithm Functionality}
+
+If all the previous steps are completed, all the files needed for the module have been created and the infrastructure code is working.  
+Next, the functional code of the module will need some work to get working.  
+This step of converting the modules is the most specific to the module and could require the most experience to know the various functions that may have been changed in SCIRun 5. 
+However, there may be some modules that require very little code changes in this step.  
+Section~\ref{sec:changes} provides some examples of commonly used functions in SCIRun 4 and the replacement in SCIRun 5.
+The key to making the module code functional is similar to the other steps, i.e., expose one small piece at a time. 
+
+If there is a UI for the module, the state variables defaults need to be set.  
+These need to be set in the \verb|setStateDefaults| function.
+If there is algorithm code, these default definitions can be passed to the algorithm code, such as the example in Chapter~\ref{sec:ex_algo}.
+If there is no algorithm code, the state variables may need to be declared in the module code, as in UI example (Chapter~\ref{sec:ex_UI}).
+After setting the state defaults (and building the code), the module UI should display the defaults.
+
+When converting the module code, if may be easier to start on the more standardized code, then work toward the more specific code, as we have been doing through this tutorial.  
+For example, it may be easier to get the input and output calls working (as in Chapter~\ref{sec:ex_simple}), and then work on making the output what it needs to.  
+Then, if there is algorithm code for the module, start by getting the algorithm call in the module code working with the algorithm code commented out, then work on the algorithm code.
+See Sections~\ref{sec:changes}~\&~\ref{sec:errors} for ideas to convert and fix specific functions and pieces of code.  
+
+\subsection{Module Testing}
+
+Testing for a new module should occur intermittently while converting the code to make debugging easier, as we described in earlier steps.  
+As you are trying to convert the module, test the module regularly to make sure that the output of module is as expected.  
+Before finishing and submitting the module, test several types of inputs into make sure that the module behaves as intended.  
+Since the module is converted from SCIRun 4, compare the outputs of the different  versions.  
+
+In addition to making sure that the module works as expected, the module will need to be tested regularly for regression testing.  
+A regression testing network and unit test code is needed for the module.  
+The testing network should show different uses of the module if there are different function. 
+For unit testing see Chapter~\ref{sec:unit_tests} for information on creating unit test for the converted module.  
+
+\subsection{Module Documentation}
+
+Make sure your module is documented properly in the git commits and code in addition to the module documentation as described in Chapter~\ref{sec:Documenting}.
+
+\subsection{Github Pull Request}
+
+With the module fully completed, we can now submit it to be included in the main release of SCIRun using a pull request.  
+Since there was a branch created for the new module, there should be regular commits as the module is ported.
+For the the pull request, make sure all the changes have been committed to the branch meant for the new module.  
+Now make sure that the branch is up to date with the latest changes in the main branch of SCIRun. 
+To do this, sync your fork and merge the SCIRun master branch as shown in the Section~\ref{sec:forking}.
+Make sure the module branch is merge with the master branch and make sure that your local changes are pushed to github.  
+To make a pull request, there is usually a short cut on the main github page of the SCIRun or you can check out the \href{https://help.github.com/articles/using-pull-requests/}{github help page about it}.  
+Add some comments to the developers to know what to look for when reviewing the code. 
+If you have changes to make, either that you noticed or requested by the developer, just commit it to the same branch and push it github and the pull request will track the changes until it is merged.  
 
 
 \section{Common Function Changes}
 \label{sec:changes}
 
+\verb|if (input.get_rep() == 0)|
+
 \section{Common Build Errors}
 \label{sec:errors}
+
+\begin{verbatim}
+ConvertMeshToPointCloudDialog.h:32:10: fatal error: 
+      'Interface/Modules/Field/ui_ConvertMeshToPointCloudDialog.h' file not found
+      \end{verbatim}
+      
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
