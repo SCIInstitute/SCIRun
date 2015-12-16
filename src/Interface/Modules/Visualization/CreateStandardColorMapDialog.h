@@ -37,6 +37,35 @@
 namespace SCIRun {
   namespace Gui {
 
+    struct SortedByXCoordinate
+    {
+      bool operator()(const QPointF& p1, const QPointF& p2) const
+      {
+        return p1.x() < p2.x();
+      }
+    };
+
+    class ColormapPreview : public QGraphicsView
+    {
+    Q_OBJECT
+    public:
+      explicit ColormapPreview(QGraphicsScene* scene, QWidget* parent = nullptr);
+    public Q_SLOTS:
+      void clearAlphaPoints();
+    Q_SIGNALS:
+      void clicked(int x, int y);
+    protected:
+      virtual void mousePressEvent(QMouseEvent* event) override;
+    private:
+      void addPoint(const QPointF& point);
+      void addDefaultLine();
+      void removeDefaultLine();
+      void drawAlphaPolyline();
+      QGraphicsItem* alphaPath_;
+      QPointF defaultStart_, defaultEnd_;
+      std::set<QPointF, SortedByXCoordinate> alphaPoints_;
+    };
+
     class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,
       public Ui::CreateStandardColorMap
     {
@@ -46,7 +75,7 @@ namespace SCIRun {
       CreateStandardColorMapDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = 0);
-      private Q_SLOTS:
+    private Q_SLOTS:
       void updateColorMapPreview();
       void updateColorMapPreview(const QString& s);
       const QString buildGradientString(const SCIRun::Core::Datatypes::ColorMap& cm);
@@ -54,9 +83,11 @@ namespace SCIRun {
       void setResolutionSlider(int i);
       void setShiftSpinner(int i);
       void onInvertCheck(bool b);
-
+      void previewClicked(int x, int y);
+    private:
+      QGraphicsScene* scene_;
+      ColormapPreview* previewColorMap_;
     };
-
   }
 }
 
