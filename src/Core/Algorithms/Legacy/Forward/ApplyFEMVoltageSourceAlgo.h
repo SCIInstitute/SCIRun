@@ -57,7 +57,7 @@ namespace SCIRun {
         {
         public:
           ApplyFEMVoltageSourceAlgo();
-          void ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle& isourceH);
+          void ExecuteAlgorithm(FieldHandle& hField, MatrixHandle& hMatIn);
 
         private:
         };

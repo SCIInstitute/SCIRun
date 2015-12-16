@@ -41,6 +41,10 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Core/Algorithms/Legacy/Forward/ApplyFEMVoltageSourceAlgo.h>
 
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -52,7 +56,9 @@ DEALINGS IN THE SOFTWARE.
 #include <vector>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Forward;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
 ApplyFEMVoltageSourceAlgo::ApplyFEMVoltageSourceAlgo()
@@ -61,47 +67,47 @@ ApplyFEMVoltageSourceAlgo::ApplyFEMVoltageSourceAlgo()
 }
 
 
-void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle& isourceH)
-{/*
+void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& hField, MatrixHandle& hMatIn)
+{
   //! Obtaining handles to computation objects
-  FieldHandle hField;
-  get_input_handle("Mesh", hField, true);
+  //FieldHandle hField;
+  //get_input_handle("Mesh", hField, true);
   
   std::vector<std::pair<int, double> > dirBC;
 
   if (bcFlag_.get() == "DirSub") 
   {
     if (!hField->get_property("dirichlet", dirBC))
-      warning("The input field doesn't contain Dirichlet boundary conditions.");
+      //warning("The input field doesn't contain Dirichlet boundary conditions.");
   }
   
-  MatrixHandle hMatIn;
-  get_input_handle("Stiffness Matrix", hMatIn, true); 
+  //MatrixHandle hMatIn;
+  //get_input_handle("Stiffness Matrix", hMatIn, true); 
   
   SparseRowMatrix *matIn;
-  if (!(matIn = dynamic_cast<SparseRowMatrix*>(hMatIn.get_rep()))) 
+  if (!(matIn = dynamic_cast<SparseRowMatrix*>(hMatIn.get()))) 
   {
-    error("Input stiffness matrix wasn't sparse.");
+    //error("Input stiffness matrix wasn't sparse.");
     return;
   }
   
   if (matIn->nrows() != matIn->ncols()) 
   {
-    error("Input stiffness matrix wasn't square.");
+    //error("Input stiffness matrix wasn't square.");
     return;
   }
   
   SparseRowMatrix *mat = matIn->clone();
   
   unsigned int nsize=matIn->ncols();
-  ColumnMatrix* rhs = new ColumnMatrix(nsize);
+  DenseColumnMatrix* rhs = new DenseColumnMatrix(nsize);
   
   MatrixHandle  hRhsIn;
-  ColumnMatrix* rhsIn = 0;
+  DenseColumnMatrix* rhsIn = 0;
   
   // -- if the user passed in a vector the right size, copy it into ours 
   if (get_input_handle("RHS", hRhsIn, false) && 
-      hRhsIn.get_rep())
+      hRhsIn.get())
   {
     rhsIn = hRhsIn->column();
     if (rhsIn && (rhsIn->nrows() == nsize))
@@ -111,18 +117,18 @@ void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandl
     }
     else
     {
-      rhs->zero();    
+      rhs->Zero();    
     }
   }
   else
   {
-    rhs->zero();
+    rhs->Zero();
   }
   
   std::string bcFlag = bcFlag_.get();
     
   if (bcFlag=="GroundZero") dirBC.push_back(std::pair<int, double>(0,0.0));
-  else if (bcFlag == "DirSub") hField->vfield()->get_property("dirichlet", dirBC);
+  //else if (bcFlag == "DirSub") hField->vfield()->get_property("dirichlet", dirBC);
 
   //! adjusting matrix for Dirichlet BC
   index_type *idcNz; 
@@ -172,11 +178,11 @@ void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandl
 
   //! Sending result
   MatrixHandle mat_tmp(mat);
-  send_output_handle("Forward Matrix", mat_tmp);
+  //send_output_handle("Forward Matrix", mat_tmp);
 
   MatrixHandle rhs_tmp(rhs);
-  send_output_handle("RHS", rhs_tmp);
-  */
+  //send_output_handle("RHS", rhs_tmp);
+  
 }
 
 ALGORITHM_PARAMETER_DEF(Forward, ApplyDirichlet);
