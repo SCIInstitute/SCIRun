@@ -33,7 +33,6 @@ SET(Interface_Modules_String_FORMS
   NetworkNotes.ui
   PrintMatrixIntoStringDialog.ui
   PrintStringIntoStringDialog.ui
-  TestModuleSimpleUIDialog.ui
 )
 
 SET(Interface_Modules_String_HEADERS
@@ -43,7 +42,6 @@ SET(Interface_Modules_String_HEADERS
   NetworkNotesDialog.h
   PrintMatrixIntoStringDialog.h
   PrintStringIntoStringDialog.h
-  TestModuleSimpleUIDialog.h
 )
 
 SET(Interface_Modules_String_SOURCES 
@@ -52,7 +50,6 @@ SET(Interface_Modules_String_SOURCES
   NetworkNotesDialog.cc
   PrintMatrixIntoStringDialog.cc
   PrintStringIntoStringDialog.cc
-  TestModuleSimpleUIDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_String_FORMS_HEADERS ${Interface_Modules_String_FORMS})
