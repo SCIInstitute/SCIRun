@@ -614,6 +614,7 @@ void SCIRunMainWindow::importLegacyNetwork()
 
 bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
 {
+	bool success = false;
   if (!filename.isEmpty())
   {
     FileImportCommand command(filename.toStdString(), networkEditor_);
@@ -622,14 +623,28 @@ bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
       statusBar()->showMessage(tr("File imported: ") + filename, 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
       networkEditor_->viewport()->update();
-      return true;
+      success = true;
     }
     else
     {
       statusBar()->showMessage(tr("File import failed: ") + filename, 2000);
     }
+		auto log = QString::fromStdString(command.logContents());
+		auto logFileName = latestNetworkDirectory_.path() + "/" + ("importLog_" + strippedName(filename) + ".log");
+		QFile logFile(logFileName); //todo: add timestamp
+    if (logFile.open(QFile::WriteOnly | QFile::Text))
+		{
+			QTextStream stream(&logFile);
+			stream << log;
+			QMessageBox::information(this, "SRN File Import", "SRN File Import log file can be found here: " + logFileName
+				+ "\n\nAdditionally, check the log directory for a list of missing modules (look for file missingModules.log)");
+    }
+		else
+		{
+			QMessageBox::information(this, "SRN File Import", "Failed to write SRN File Import log file: " + logFileName);
+		}
   }
-  return false;
+  return success;
 }
 
 bool SCIRunMainWindow::newNetwork()
@@ -979,6 +994,7 @@ void SCIRunMainWindow::setupPythonConsole()
   connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
   pythonConsole_->setVisible(false);
   pythonConsole_->setFloating(true);
+	pythonConsole_->setObjectName("PythonConsole");
   addDockWidget(Qt::TopDockWidgetArea, pythonConsole_);
 #else
   actionPythonConsole_->setEnabled(false);
@@ -1051,10 +1067,13 @@ namespace {
     return SCIRunMainWindow::Instance()->newInterface() ? Qt::green : Qt::darkGreen;
   }
 
+  const QString bullet = "* ";
+  const QString favoritesText = bullet + "Favorites";
+
   void addFavoriteMenu(QTreeWidget* tree)
   {
     auto faves = new QTreeWidgetItem();
-    faves->setText(0, "Favorites");
+    faves->setText(0, favoritesText);
     faves->setForeground(0, favesColor());
 
     tree->addTopLevelItem(faves);
@@ -1065,7 +1084,7 @@ namespace {
     for (int i = 0; i < tree->topLevelItemCount(); ++i)
     {
       auto top = tree->topLevelItem(i);
-      if (top->text(0) == "Favorites")
+      if (top->text(0) == favoritesText)
       {
         return top;
       }
@@ -1100,7 +1119,7 @@ namespace {
   void addSnippetMenu(QTreeWidget* tree)
 	{
 		auto snips = new QTreeWidgetItem();
-		snips->setText(0, "Snippets");
+    snips->setText(0, bullet + "Snippets");
 		snips->setForeground(0, favesColor());
 
 		//hard-code a few popular ones.

@@ -6,8 +6,8 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
-   Permission is hereby granted, free of charge, to any person obtaining a
+
+Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
    the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -26,32 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_READ_MATRIX_H
-#define MODULES_DATAIO_READ_MATRIX_H
+#ifndef MODULES_LEGACY_FORWARD_CalcTMP_H__
+#define MODULES_LEGACY_FORWARD_CalcTMP_H__
 
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Forward/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace DataIO {
+  namespace Modules {
+    namespace Forward {
 
-  class SCISHARE ReadMatrix : public GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag>
-  {
-  public:
-    typedef GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
-    ReadMatrix();
-    virtual void execute();
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
+      class SCISHARE CalcTMP : public Dataflow::Networks::Module,
+        public Has7InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+        public Has1OutputPort<MatrixPortTag>
+      {
+      public:
+        CalcTMP();
+        virtual void setStateDefaults() override {}
+        virtual void execute() override;
 
-    OUTPUT_PORT(0, Matrix, Matrix);
+        INPUT_PORT(0, Amplitude, Matrix);
+        INPUT_PORT(1, Depolarization_Time, Matrix);
+        INPUT_PORT(2, Depolarization_Slope, Matrix);
+        INPUT_PORT(3, Plateau_Slope, Matrix);
+        INPUT_PORT(4, Repolarization_Time, Matrix);
+        INPUT_PORT(5, Repolarization_Slope, Matrix);
+        INPUT_PORT(6, Rest_Potential, Matrix);
+        OUTPUT_PORT(0, TMPs, Matrix);
 
-    static std::string fileTypeList();
-  };
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
 
-}}}
+    }
+  }
+}
 
 #endif

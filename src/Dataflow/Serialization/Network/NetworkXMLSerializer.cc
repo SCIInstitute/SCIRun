@@ -92,7 +92,8 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
       }
       catch (Core::InvalidArgumentException& e)
       {
-        Core::Logging::Log::get() << Core::Logging::ERROR_LOG << "File load error: " << e.what() << std::endl;
+        static std::ofstream missingModulesFile((Core::Logging::Log::logDirectory() / "missingModules.log").string());
+        missingModulesFile << "File load problem: " << e.what() << std::endl;
       }
     }
   }
@@ -109,7 +110,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
     else
     {
       Core::Logging::Log::get() << Core::Logging::ERROR_LOG << "File load error: connection not created between modules " << conn.out_.moduleId_ << " and " << conn.in_.moduleId_ << std::endl;
-    }                                                                                                                        
+    }
   }
 
   return network;
@@ -143,7 +144,7 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const 
 
   std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
   std::sort(connectionsSorted.begin(), connectionsSorted.end());
-  
+
   for (const auto& conn : connectionsSorted)
   {
     auto modOut = info.moduleIdMapping.find(conn.out_.moduleId_);

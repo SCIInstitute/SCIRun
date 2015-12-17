@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_READ_MATRIX_H
-#define MODULES_DATAIO_READ_MATRIX_H
+///@file  TestModuleSimple.cc
+///
 
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+#include <Modules/String/TestModuleSimple.h>
+#include <Core/Datatypes/String.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace DataIO {
+using namespace SCIRun;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-  class SCISHARE ReadMatrix : public GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag>
-  {
-  public:
-    typedef GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
-    ReadMatrix();
-    virtual void execute();
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
+/// @class TestModuleSimple
+/// @brief This module splits out a string. 
 
-    OUTPUT_PORT(0, Matrix, Matrix);
+const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple", "String", "SCIRun");
 
-    static std::string fileTypeList();
-  };
 
-}}}
+TestModuleSimple::TestModuleSimple() : Module(staticInfo_,false)
+{
+  INITIALIZE_PORT(OutputString);
+}
 
-#endif
+
+void
+TestModuleSimple::execute()
+{
+  
+  std::string message_string;
+  
+  message_string = "You stay classy, Planet Earth!";
+  
+  StringHandle msH(new String(message_string));
+  sendOutput(OutputString, msH);
+}
+
+
+

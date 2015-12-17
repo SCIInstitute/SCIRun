@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,39 +26,60 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Fields/@ModuleName@.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Algorithms/Field/@ModuleName@Algo.h>
+///@file  TestModuleSimpleUI.cc
+///
 
-using namespace SCIRun::Modules::Fields;
+#include <Modules/String/TestModuleSimpleUI.h>
+#include <Core/Datatypes/String.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Modules::StringManip;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
+//using namespace SCIRun::Core::Algorithms;
 
-const ModuleLookupInfo @ModuleName@::staticInfo_("@ModuleName@", "NewField", "SCIRun");
+/// @class TestModuleSimpleUI
+/// @brief This module splits out a string.
 
-@ModuleName@::@ModuleName@() : Module(staticInfo_)
+SCIRun::Core::Algorithms::AlgorithmParameterName TestModuleSimpleUI::FormatString("FormatString");
+
+const ModuleLookupInfo TestModuleSimpleUI::staticInfo_("TestModuleSimpleUI", "String", "SCIRun");
+
+
+TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
 {
-  //initialize all ports.
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(InputString);
+  INITIALIZE_PORT(OutputString);
 }
 
-//This function should be blank if there is no UI for the module.
-void @ModuleName@::setStateDefaults()
+void TestModuleSimpleUI::setStateDefaults()
 {
   auto state = get_state();
-  setStateBoolFromAlgo(Parameters::Knob1);
-  setStateDoubleFromAlgo(Parameters::Knob2);
+  state->setValue(FormatString,std::string ("[Insert message here]"));
 }
 
-void @ModuleName@::execute()
+
+void
+TestModuleSimpleUI::execute()
 {
-  auto field = getRequiredInput(InputField);
-
-  setAlgoBoolFromState(Parameters::Knob1);
-  setAlgoDoubleFromState(Parameters::Knob2);
-  auto output = algo().run(withInputData((InputField, field)));
-
-  sendOutputFromAlgorithm(OutputField, output);
+  
+  std::string message_string;
+  
+  auto  stringH = getOptionalInput(InputString);
+  
+  auto state = get_state();
+  
+  if (stringH && *stringH)
+  {
+    state -> setValue(FormatString, (*stringH) -> value());
+  }
+  
+  //message_string = "You stay classy, Planet Earth!";
+  message_string = state -> getValue(FormatString).toString();
+  
+  StringHandle msH(new String(message_string));
+  sendOutput(OutputString, msH);
 }
+
+
+

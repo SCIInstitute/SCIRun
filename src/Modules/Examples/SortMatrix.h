@@ -25,33 +25,31 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Math/SortMatrix.h
 
-#ifndef MODULES_DATAIO_READ_MATRIX_H
-#define MODULES_DATAIO_READ_MATRIX_H
+#ifndef MODULES_MATH_SortMatrix_H
+#define MODULES_MATH_SortMatrix_H
 
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Modules {
-namespace DataIO {
-
-  class SCISHARE ReadMatrix : public GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag>
+namespace Math {
+  
+  class SCISHARE SortMatrix : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
   {
   public:
-    typedef GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
-    ReadMatrix();
+    SortMatrix();
     virtual void execute();
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
-
-    OUTPUT_PORT(0, Matrix, Matrix);
-
-    static std::string fileTypeList();
+    virtual void setStateDefaults();
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    
+    INPUT_PORT(0, InputMatrix, Matrix);
+    OUTPUT_PORT(0, OutputMatrix, Matrix);
   };
-
 }}}
 
 #endif

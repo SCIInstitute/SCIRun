@@ -26,32 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_READ_MATRIX_H
-#define MODULES_DATAIO_READ_MATRIX_H
+#ifndef INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
+#define INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
 
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+#include <Interface/Modules/String/ui_TestModuleSimpleUIDialog.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/String/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace DataIO {
+namespace Gui {
+  
+class SCISHARE TestModuleSimpleUIDialog : public ModuleDialogGeneric,
+  public Ui::TestModuleSimpleUIDialog
+{
+	Q_OBJECT
+	
+public:
+  TestModuleSimpleUIDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+};
 
-  class SCISHARE ReadMatrix : public GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag>
-  {
-  public:
-    typedef GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
-    ReadMatrix();
-    virtual void execute();
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
-
-    OUTPUT_PORT(0, Matrix, Matrix);
-
-    static std::string fileTypeList();
-  };
-
-}}}
+}
+}
 
 #endif

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +26,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_READ_MATRIX_H
-#define MODULES_DATAIO_READ_MATRIX_H
+#include <Modules/Math/SortMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/Math/SortMatrixAlgo.h>
 
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
-namespace SCIRun {
-namespace Modules {
-namespace DataIO {
+/// @class SortMatrix
+/// @brief This module sorts the matrix entries into ascending or descending order.
 
-  class SCISHARE ReadMatrix : public GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag>
+const ModuleLookupInfo SortMatrix::staticInfo_("SortMatrix", "Math", "SCIRun");
+
+SortMatrix::SortMatrix() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(OutputMatrix);
+}
+
+void SortMatrix::setStateDefaults()
+{
+  setStateIntFromAlgo(Variables::Method);
+}
+
+void
+SortMatrix::execute()
+{
+  auto input = getRequiredInput(InputMatrix);
+  
+  if (needToExecute())
   {
-  public:
-    typedef GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
-    ReadMatrix();
-    virtual void execute();
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
+    setAlgoIntFromState(Variables::Method);
 
-    OUTPUT_PORT(0, Matrix, Matrix);
+    auto output = algo().run_generic(withInputData((InputMatrix, input)));
+    
+    sendOutputFromAlgorithm(OutputMatrix, output);
+    
+  }
+}
 
-    static std::string fileTypeList();
-  };
 
-}}}
 
-#endif

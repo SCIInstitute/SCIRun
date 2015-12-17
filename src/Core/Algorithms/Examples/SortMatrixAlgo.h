@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_READ_MATRIX_H
-#define MODULES_DATAIO_READ_MATRIX_H
+#ifndef CORE_ALGORITHMS_MATH_SortMatrixALGO_H
+#define CORE_ALGORITHMS_MATH_SortMatrixALGO_H
 
-#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+
+
+#include <string>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+#include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace DataIO {
+namespace Core {
+namespace Algorithms {
+namespace Math {
 
-  class SCISHARE ReadMatrix : public GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag>
-  {
+class SCISHARE SortMatrixAlgo : public AlgorithmBase
+{
+
   public:
-    typedef GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
-    ReadMatrix();
-    virtual void execute();
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
+    SortMatrixAlgo();
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+  
+    bool Sort(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int method) const;
+  
+    bool Quicksort(double* input, index_type lo, index_type hi) const;
+    index_type Partition(double* input, index_type lo, index_type hi) const;
+};
 
-    OUTPUT_PORT(0, Matrix, Matrix);
-
-    static std::string fileTypeList();
-  };
-
-}}}
-
+      }}}}// end SCIRun namespace
 #endif
