@@ -106,6 +106,7 @@ std::vector<bool> RefineCleaverMeshAlgorithm::SelectMeshElements(FieldHandle inp
  input_vmesh->synchronize(Mesh::NODES_E);
  if(matrix)
  {
+  std::cout << "drin: " << std::endl;
   if(input_vfld->num_values() != matrix->nrows() || input_vfld->num_values() != matrix->ncols())
   {
    error("Dimensions of provided MATRIX input (second module input port) does not fit provided FIELD (first module input port).");
@@ -168,7 +169,6 @@ std::vector<bool> RefineCleaverMeshAlgorithm::SelectMeshElements(FieldHandle inp
 	 result[(long)idx]=false; 
 	}
       }
-
      break;
     }
     case 1: /// this is the edge selection criteria
@@ -324,15 +324,16 @@ std::vector<bool> RefineCleaverMeshAlgorithm::SelectMeshElements(FieldHandle inp
    std::vector<bool> tmp; 
    return tmp; 
  }
-  
+
  bool MeshDoNoSplitSurfaceTets = get(RefineCleaverMeshDoNoSplitSurfaceTets).toBool();
- 
+
  if (MeshDoNoSplitSurfaceTets)
- {
+ {  
+  std::cout << "oh?: " << std::endl;
   GetFieldBoundaryAlgo getfieldbound_algo;
   MatrixHandle mapping;
   getfieldbound_algo.run(input,output,mapping);
-
+  std::cout << "oh!: " << std::endl;
   if (mapping)
   {
    SparseRowMatrixHandle tmp = boost::make_shared<SparseRowMatrix>(*matrix_cast::as_sparse(mapping));
@@ -354,6 +355,7 @@ std::vector<bool> RefineCleaverMeshAlgorithm::SelectMeshElements(FieldHandle inp
   }
 
  }
+
  return result;
 }
 
@@ -570,7 +572,7 @@ FieldHandle RefineCleaverMeshAlgorithm::RefineMesh(FieldHandle input, std::vecto
  FieldHandle result;
  VMesh* input_vmesh = input->vmesh();
  std::vector<double> edge_lengths,tet_field_values;std::vector<int> remaining_edges(2); 
- VMesh::Node::array_type onodes(4); 
+ VMesh::Node::array_type onodes(4),onodes2(4); 
  edge_lengths.resize(6);
  if(elems_to_split.size()!=input_vmesh->num_elems())
  {
@@ -581,7 +583,8 @@ FieldHandle RefineCleaverMeshAlgorithm::RefineMesh(FieldHandle input, std::vecto
  tet_field_values.resize(input_vmesh->num_elems());
  input_vmesh->synchronize(Mesh::NODES_E);
  DenseMatrixHandle new_tets(new DenseMatrix(2*elems_to_split.size(), 4)),new_nodes(new DenseMatrix(2*elems_to_split.size(), 3)),two_new_tets(new DenseMatrix(2, 4));
- long tet_count=0,node_count=input_vmesh->num_nodes(),zz=0;
+ long tet_count=0,node_count=input_vmesh->num_nodes();
+
  for (long idx=0;idx<elems_to_split.size();idx++) // this for loop can be parallized
  {
    input_vmesh->get_nodes(onodes, (VMesh::Elem::index_type)elems_to_split[idx]);
@@ -624,33 +627,77 @@ FieldHandle RefineCleaverMeshAlgorithm::RefineMesh(FieldHandle input, std::vecto
       (*new_tets)(tet_count++,3)=(*two_new_tets)(1,3);       
        break;
     }
-    case 2:
+    case 2: /// 2 edges have the same (maximum) lentgth = 4 new tets need to be created
     {
       Point out;
-      ComputeEdgeMidPoint(pos[0], p1, p2, p3, p4, out);
+      ComputeEdgeMidPoint(pos[0], p1, p2, p3, p4, out);      /// first cut point
       SplitTet(onodes, pos[0], two_new_tets, node_count);
       (*new_nodes)(node_count  ,0)=out.x(); 
       (*new_nodes)(node_count  ,1)=out.y(); 
-      (*new_nodes)(node_count++,2)=out.z();   
-       remaining_edges=getEdgeCoding(pos[1]);
+      (*new_nodes)(node_count++,2)=out.z();  
+      remaining_edges=getEdgeCoding(pos[1]);
       remaining_edges[0]=onodes[remaining_edges[0]-1];
       remaining_edges[1]=onodes[remaining_edges[1]-1];
-      int ind=-1;   
-      for(int i=0;i<2;i++) // find the remaining edges in two_new_tets
-      {
-       int count=0;
-       for(int j=0;j<4;j++)
-       {
-         if (remaining_edges[0]==(*two_new_tets)(i,j) || remaining_edges[1]==(*two_new_tets)(i,j))
-	   count++;
-       }
-       if (count==2) // found edge that need to be splitted into 2 tets
-        {
-	 ind=i;
-	 break;
-        }
-      }
+      input_vmesh->get_center(p1, (VMesh::Node::index_type)remaining_edges[0]);
+      input_vmesh->get_center(p2, (VMesh::Node::index_type)remaining_edges[1]);
+      Point out2((p1.x()+p2.x())/2, (p1.y()+p2.y())/2, (p1.z()+p2.z())/2);  /// second cut point
+      onodes[0] =(*two_new_tets)(0,0); onodes[0] =(*two_new_tets)(0,1);  onodes[0] =(*two_new_tets)(0,2); onodes[0] =(*two_new_tets)(0,3);
+      onodes2[0]=(*two_new_tets)(1,0); onodes2[0]=(*two_new_tets)(1,1);  onodes2[0]=(*two_new_tets)(1,2); onodes2[0]=(*two_new_tets)(1,3);
+      SplitTet(onodes, pos[1], two_new_tets, node_count); 
+      (*new_nodes)(node_count  ,0)=out2.x(); 
+      (*new_nodes)(node_count  ,1)=out2.y(); 
+      (*new_nodes)(node_count++,2)=out2.z();  
       
+      (*new_tets)(tet_count  ,0)=(*two_new_tets)(0,0); /// new tet 1 and 2
+      (*new_tets)(tet_count  ,1)=(*two_new_tets)(0,1); 
+      (*new_tets)(tet_count  ,2)=(*two_new_tets)(0,2); 
+      std::cout << "t1:" << (*new_tets)(tet_count  ,0) << " " << (*new_tets)(tet_count  ,1) << " " << (*new_tets)(tet_count  ,2) << " " << (*two_new_tets)(0,3) << std::endl;
+      (*new_tets)(tet_count++,3)=(*two_new_tets)(0,3);
+      (*new_tets)(tet_count  ,0)=(*two_new_tets)(1,0); 
+      (*new_tets)(tet_count  ,1)=(*two_new_tets)(1,1); 
+      (*new_tets)(tet_count  ,2)=(*two_new_tets)(1,2); 
+      std::cout << "t2:" << (*new_tets)(tet_count  ,0) << " " << (*new_tets)(tet_count  ,1) << " " << (*new_tets)(tet_count  ,2) << " " << (*two_new_tets)(1,3) << std::endl;
+      (*new_tets)(tet_count++,3)=(*two_new_tets)(1,3);  
+      
+      SplitTet(onodes2, pos[1], two_new_tets, node_count); 
+      (*new_tets)(tet_count  ,0)=(*two_new_tets)(0,0); /// new tet 3 and 4
+      (*new_tets)(tet_count  ,1)=(*two_new_tets)(0,1); 
+      (*new_tets)(tet_count  ,2)=(*two_new_tets)(0,2); 
+      std::cout << "t3:" << (*new_tets)(tet_count  ,0) << " " << (*new_tets)(tet_count  ,1) << " " << (*new_tets)(tet_count  ,2) << " " << (*two_new_tets)(0,3) << std::endl;
+      (*new_tets)(tet_count++,3)=(*two_new_tets)(0,3);
+      (*new_tets)(tet_count  ,0)=(*two_new_tets)(1,0); 
+      (*new_tets)(tet_count  ,1)=(*two_new_tets)(1,1); 
+      (*new_tets)(tet_count  ,2)=(*two_new_tets)(1,2);
+      std::cout << "t4:" << (*new_tets)(tet_count  ,0) << " " << (*new_tets)(tet_count  ,1) << " " << (*new_tets)(tet_count  ,2) << " " << (*two_new_tets)(1,3) << std::endl;
+      (*new_tets)(tet_count++,3)=(*two_new_tets)(1,3);  
+      
+      /*     
+      std::vector<Point> points(4); 
+      for(int i=0;i<2;i++) 
+      {
+       for(int j=0;j<4;j++)
+        {
+	  int elem_node=(*two_new_tets)(i,j);
+	  if(elem_node>input_vmesh->num_nodes())
+	    points[j]=out;
+	     else
+	     {
+	      Point p0;
+	      input_vmesh->get_center(p0,(VMesh::Elem::index_type)elem_node);
+	      points[j]=p0;
+	     }
+	}
+	
+        edge_lengths=getEdgeLengths(points[0], points[1], points[2], points[3]); /// find the longest edge
+	std::vector<int> pos2 = maxi(edge_lengths);
+      }*/
+      //std::cout << "c:" << count << " " << ind << std::endl;
+      
+      /*
+      if (ind==-1)
+      {
+       error("unexpected error in refinemesh() - this message should not appear"); 
+      } else
       if (ind==0) /// not tested
       {
         (*new_tets)(tet_count  ,0)=(*two_new_tets)(1,0); /// save the tet that will not be splitted because it does not contain the second large edge that is equal
@@ -766,11 +813,11 @@ FieldHandle RefineCleaverMeshAlgorithm::RefineMesh(FieldHandle input, std::vecto
       {
         error("Second long edge could not be found. This message should not appear.");
       }
-      
+      */
       break;
     }
    }
- 
+   
  }
  
  // create new field
@@ -805,7 +852,6 @@ bool RefineCleaverMeshAlgorithm::runImpl(FieldHandle input, DenseMatrixHandle ma
   using namespace Parameters;
   int RadioButtonChoice = get(RefineCleaverMeshRadioButtons).toInt();
   int count=0;
-  
   // start a loop here until selection_vector has no 1s - selection criteria is fulfilled?
   
   std::vector<bool> selection_vector = SelectMeshElements(input, matrix, RadioButtonChoice, count);
@@ -820,7 +866,7 @@ bool RefineCleaverMeshAlgorithm::runImpl(FieldHandle input, DenseMatrixHandle ma
   
   std::vector<long> elems_to_split;
   elems_to_split.resize(count);
-  
+
   count=0;
   for (long i=0;i<selection_vector.size();i++)
   {
