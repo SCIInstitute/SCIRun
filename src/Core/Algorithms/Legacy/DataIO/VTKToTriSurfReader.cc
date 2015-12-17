@@ -134,7 +134,7 @@ private:
   {
     std::string line;
     std::getline(this->fileStream_, line, '\n');
-    while ( (! this->fileStream_.eof()) && ( (line.size() < 1) || (line[0] == '#') ) )
+    while ( (! this->fileStream_.eof()) && ( (line.size() < 1) || (line[0] == '#') || (line[0] == '\r') ) )
       std::getline(this->fileStream_, line, '\n');
 
     return line;
@@ -498,7 +498,7 @@ VTKToTriSurfReaderPrivate::readFile(const std::string& vtk_filename, FieldHandle
 
     // part 1: header
     std::getline(this->fileStream_, line, '\n');
-    boost::char_separator<char> sep(" \t");
+    boost::char_separator<char> sep(" \t\r");
     boost::tokenizer< boost::char_separator<char> > tokens(line, sep);
     BOOST_FOREACH(std::string t, tokens)
     {
