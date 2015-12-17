@@ -6,8 +6,8 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
-   Permission is hereby granted, free of charge, to any person obtaining a
+
+Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
    the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -26,30 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_@ModuleName@DIALOG_H
-#define INTERFACE_MODULES_@ModuleName@DIALOG_H
+#ifndef MODULES_LEGACY_FORWARD_CalcTMP_H__
+#define MODULES_LEGACY_FORWARD_CalcTMP_H__
 
-#include <Interface/Modules/Fields/ui_@ModuleName@Dialog.h>
-#include <boost/shared_ptr.hpp>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Forward/share.h>
 
 namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE @ModuleName@Dialog : public ModuleDialogGeneric,
-  public Ui::@ModuleName@
-{
-	Q_OBJECT
-	
-public:
-  @ModuleName@Dialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull() override;
-};
+  namespace Modules {
+    namespace Forward {
 
-}
+      class SCISHARE CalcTMP : public Dataflow::Networks::Module,
+        public Has7InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+        public Has1OutputPort<MatrixPortTag>
+      {
+      public:
+        CalcTMP();
+        virtual void setStateDefaults() override {}
+        virtual void execute() override;
+
+        INPUT_PORT(0, Amplitude, Matrix);
+        INPUT_PORT(1, Depolarization_Time, Matrix);
+        INPUT_PORT(2, Depolarization_Slope, Matrix);
+        INPUT_PORT(3, Plateau_Slope, Matrix);
+        INPUT_PORT(4, Repolarization_Time, Matrix);
+        INPUT_PORT(5, Repolarization_Slope, Matrix);
+        INPUT_PORT(6, Rest_Potential, Matrix);
+        OUTPUT_PORT(0, TMPs, Matrix);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+
+    }
+  }
 }
 
 #endif

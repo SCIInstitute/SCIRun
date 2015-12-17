@@ -31,12 +31,16 @@
 SET(Modules_Legacy_Forward_HEADERS
   BuildBEMatrix.h
   BuildBEMatrixImpl.h
+  CalcTMP.h
+  CalcTMPAlgo.h
   InsertVoltageSource.h
 )
 
 SET(Modules_Legacy_Forward_SRCS
   BuildBEMatrix.cc
   BuildBEMatrixImpl.cc
+  CalcTMP.cc
+  CalcTMPAlgo.cc
   InsertVoltageSource.cc
 )
 
