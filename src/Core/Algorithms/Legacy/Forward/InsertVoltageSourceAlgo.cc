@@ -53,14 +53,15 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::Forward;
 using namespace SCIRun::Core::Geometry;
 
-InsertVoltageSourceAlgo::InsertVoltageSourceAlgo() : groundfirst_(false), outside_(false)
+InsertVoltageSourceAlgo::InsertVoltageSourceAlgo(bool groundFirst, bool outside) 
+  : groundfirst_(groundFirst), outside_(outside)
 {
 
 }
 
 
 void InsertVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle& isourceH)
-{/*
+{
   //FieldHandle imeshH;
   //get_input_handle("FEMesh", imeshH, true);
 
@@ -89,7 +90,7 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle&
 
   VMesh*  mesh = isourceH->vmesh();
 
-  if (groundfirst)
+  if (groundfirst_)
   {
     Point pnt;
     if (isourceH->vmesh()->num_nodes() == 0)
@@ -129,10 +130,13 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle&
   }
 
   std::vector<std::pair<int, double> > dirichlet;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   imeshH->get_property("dirichlet", dirichlet);
 
   std::vector<std::pair<std::string, Tensor> > conds;
   imeshH->get_property("conductivity_table", conds);
+#endif
 
   // get our own local copy of the Field and mesh
   //imeshH.detach();
@@ -219,11 +223,13 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle&
     dirichlet.push_back(std::pair<int, double>((int)bc_nodes[i], val));
   }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   imeshH->set_property("dirichlet", dirichlet, false);
   imeshH->set_property("conductivity_table", conds, false);
+#endif
 
   //send_output_handle("FEMesh", imeshH);
-  */
+  
 }
 
 ALGORITHM_PARAMETER_DEF(Forward, InterpolateOutside);
