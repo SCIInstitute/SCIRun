@@ -32,11 +32,13 @@ SET(Core_Algorithms_Legacy_DataIO_SRCS
   DataIOAlgo.cc
   #MRCReader.cc
   ObjToFieldReader.cc
+  VTKToTriSurfReader.cc
   #StreamData/StreamACQFile.cc
 )
 
 SET(Core_Algorithms_Legacy_DataIO_HEADERS
   ObjToFieldReader.h
+  VTKToTriSurfReader.h
   DataIOAlgo.h
 )
 

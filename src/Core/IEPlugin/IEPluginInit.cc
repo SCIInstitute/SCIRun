@@ -30,8 +30,10 @@
 #include <Core/IEPlugin/NrrdField_Plugin.h>
 #include <Core/IEPlugin/MatlabFiles_Plugin.h>
 #include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>
+#include <Core/IEPlugin/EcgsimFileToMatrix_Plugin.h>
 #include <Core/IEPlugin/PointCloudField_Plugin.h>
 #include <Core/IEPlugin/CurveField_Plugin.h>
+#include <Core/IEPlugin/TriSurfField_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/IEPlugin/IEPluginInit.h>
@@ -44,10 +46,10 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "*.obj", "", ObjToField_reader, FieldToObj_writer);
 
   static FieldIEPluginLegacyAdapter NrrdToField_plugin("NrrdFile","*.nhdr *.nrrd", "*.nrrd", NrrdToField_reader, FieldToNrrd_writer);
-  static FieldIEPluginLegacyAdapter NodalNrrdToField_plugin("NrrdFile[DataOnNodes]","*.nhdr *.nrrd", "", Nodal_NrrdToField_reader, 0);
-  static FieldIEPluginLegacyAdapter ModalNrrdToField_plugin("NrrdFile[DataOnElements]","*.nhdr *.nrrd", "", Modal_NrrdToField_reader, 0);
-  static FieldIEPluginLegacyAdapter IPNodalNrrdToField_plugin("NrrdFile[DataOnNodes,InvertParity]","*.nhdr *.nrrd", "", IPNodal_NrrdToField_reader, 0);
-  static FieldIEPluginLegacyAdapter IPModalNrrdToField_plugin("NrrdFile[DataOnElements,InvertParity]","*.nhdr *.nrrd", "", IPModal_NrrdToField_reader, 0);
+  static FieldIEPluginLegacyAdapter NodalNrrdToField_plugin("NrrdFile[DataOnNodes]","*.nhdr *.nrrd", "", Nodal_NrrdToField_reader, nullptr);
+  static FieldIEPluginLegacyAdapter ModalNrrdToField_plugin("NrrdFile[DataOnElements]","*.nhdr *.nrrd", "", Modal_NrrdToField_reader, nullptr);
+  static FieldIEPluginLegacyAdapter IPNodalNrrdToField_plugin("NrrdFile[DataOnNodes,InvertParity]","*.nhdr *.nrrd", "", IPNodal_NrrdToField_reader, nullptr);
+  static FieldIEPluginLegacyAdapter IPModalNrrdToField_plugin("NrrdFile[DataOnElements,InvertParity]","*.nhdr *.nrrd", "", IPModal_NrrdToField_reader, nullptr);
 
   static FieldIEPluginLegacyAdapter MatlabField_plugin("Matlab Field", "*.mat", "*.mat", MatlabField_reader, MatlabField_writer);
 
@@ -60,4 +62,15 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter PointCloudField_plugin("PointCloudField", "*.pts *.pos *.txt", "", TextToPointCloudField_reader, PointCloudFieldToText_writer);
 
   static FieldIEPluginLegacyAdapter CurveField_plugin("CurveField", "*.pts *.pos *.edge", "", TextToCurveField_reader, CurveFieldToTextBaseIndexZero_writer);
+
+  static MatrixIEPluginLegacyAdapter EcgsimFileMatrix_plugin("ECGSimFile", "", "", EcgsimFileMatrix_reader, EcgsimFileMatrix_writer);
+
+  static FieldIEPluginLegacyAdapter TriSurfField_plugin("TriSurfField", "*.fac *.tri *.pts *.pos", "", TextToTriSurfField_reader, TriSurfFieldToTextBaseIndexZero_writer);
+  static FieldIEPluginLegacyAdapter TriSurfFieldBaseIndexOne_plugin("TriSurfField[BaseIndex 1]", "*.fac *.pts", "", nullptr, TriSurfFieldToTextBaseIndexOne_writer);
+  static FieldIEPluginLegacyAdapter CVRTI_FacPtsFileToTriSurf_plugin("CVRTI_FacPtsFileToTriSurf", "*.fac *.tri *.pts *.pos", "", TextToTriSurfField_reader, TriSurfFieldToTextBaseIndexZero_writer);
+  static FieldIEPluginLegacyAdapter TriSurfFieldToM_plugin("TriSurfFieldToM", "*.m", "", MToTriSurfField_reader, TriSurfFieldToM_writer);
+  static FieldIEPluginLegacyAdapter TriSurfFieldVtk_plugin("TriSurfFieldToVtk", "*.vtk", "", nullptr, TriSurfFieldToVtk_writer);
+  static FieldIEPluginLegacyAdapter VtkFromTriSurfField_plugin("VtkToTriSurfField", "*.vtk", "", VtkToTriSurfField_reader, nullptr);
+  static FieldIEPluginLegacyAdapter TriSurfFieldToExotxt_plugin("TriSurfFieldToExotxt", "*.ex2", "", nullptr, TriSurfFieldToExotxt_writer);
+  static FieldIEPluginLegacyAdapter TriSurfFieldToExotxtBaseIndexOne_plugin("TriSurfFieldToExotxt[BaseIndex 1]", "*.ex2", "", nullptr, TriSurfFieldToExotxtBaseIndexOne_writer);
 }
