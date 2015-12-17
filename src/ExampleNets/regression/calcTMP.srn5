@@ -32,8 +32,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>FileTypeName</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>FileTypeName</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>ECGSimFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/ecgsim/normal_male_ventricles.user.ampl</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -48,8 +72,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>ECGSimFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/ecgsim/normal_male_ventricles.user.dep</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -64,8 +112,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>ECGSimFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/ecgsim/normal_male_ventricles.user.depslope</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -80,8 +152,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>ECGSimFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/ecgsim/normal_male_ventricles.user.platslope</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -96,8 +192,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>ECGSimFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/ecgsim/normal_male_ventricles.user.rep</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -112,8 +232,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>ECGSimFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/ecgsim/normal_male_ventricles.user.repslope</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -128,8 +272,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>ECGSimFile</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/ecgsim/normal_male_ventricles.user.rest</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -151,12 +319,12 @@
 				</second>
 			</item>
 		</modules>
-		<connections class_id="8" tracking_level="0" version="0">
+		<connections class_id="12" tracking_level="0" version="0">
 			<count>8</count>
 			<item_version>0</item_version>
-			<item class_id="9" tracking_level="0" version="0">
+			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CalcTMP:0</moduleId1_>
-				<port1_ class_id="10" tracking_level="0" version="0">
+				<port1_ class_id="14" tracking_level="0" version="0">
 					<name>TMPs</name>
 					<id>0</id>
 				</port1_>
@@ -252,12 +420,12 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="11" tracking_level="0" version="0">
+	<modulePositions class_id="15" tracking_level="0" version="0">
 		<count>9</count>
 		<item_version>0</item_version>
-		<item class_id="12" tracking_level="0" version="0">
+		<item class_id="16" tracking_level="0" version="0">
 			<first>CalcTMP:0</first>
-			<second class_id="13" tracking_level="0" version="0">
+			<second class_id="17" tracking_level="0" version="0">
 				<first>3.28500000000000000e+002</first>
 				<second>2.38500000000000000e+002</second>
 			</second>
@@ -286,8 +454,8 @@
 		<item>
 			<first>ReadMatrix:3</first>
 			<second>
-				<first>6.42000000000000000e+002</first>
-				<second>7.20000000000000000e+001</second>
+				<first>6.08000000000000000e+002</first>
+				<second>7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
@@ -319,17 +487,17 @@
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="14" tracking_level="0" version="0">
+	<moduleNotes class_id="18" tracking_level="0" version="0">
 		<count>8</count>
 		<item_version>0</item_version>
-		<item class_id="15" tracking_level="0" version="0">
+		<item class_id="19" tracking_level="0" version="0">
 			<first>CalcTMP:0</first>
-			<second class_id="16" tracking_level="0" version="0">
+			<second class_id="20" tracking_level="0" version="0">
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Calculate Transmembrane Potentials&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Calculate Transmembrane Potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Calculate Transmembrane Potentials</noteText>
 				<position>0</position>
 				<fontSize>8</fontSize>
@@ -342,7 +510,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Amplitudes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Amplitudes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Amplitudes</noteText>
 				<position>3</position>
 				<fontSize>8</fontSize>
@@ -355,7 +523,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Dep Time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Dep Time&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Dep Time</noteText>
 				<position>3</position>
 				<fontSize>8</fontSize>
@@ -368,7 +536,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Dep Slopes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Dep Slopes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Dep Slopes</noteText>
 				<position>3</position>
 				<fontSize>8</fontSize>
@@ -381,7 +549,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Plateau Slopes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Plateau Slopes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Plateau Slopes</noteText>
 				<position>3</position>
 				<fontSize>8</fontSize>
@@ -394,7 +562,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Rep Times&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Rep Times&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Rep Times</noteText>
 				<position>3</position>
 				<fontSize>8</fontSize>
@@ -407,7 +575,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Rep Slopes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Rep Slopes&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Rep Slopes</noteText>
 				<position>3</position>
 				<fontSize>8</fontSize>
@@ -420,7 +588,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Rest Potentials&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Rest Potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Rest Potentials</noteText>
 				<position>3</position>
 				<fontSize>8</fontSize>
@@ -431,10 +599,10 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="17" tracking_level="0" version="0">
+	<moduleTags class_id="21" tracking_level="0" version="0">
 		<count>9</count>
 		<item_version>0</item_version>
-		<item class_id="18" tracking_level="0" version="0">
+		<item class_id="22" tracking_level="0" version="0">
 			<first>CalcTMP:0</first>
 			<second>0</second>
 		</item>
