@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,30 +26,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_@ModuleName@DIALOG_H
-#define INTERFACE_MODULES_@ModuleName@DIALOG_H
+#include <Modules/Math/SortMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/Math/SortMatrixAlgo.h>
 
-#include <Interface/Modules/Fields/ui_@ModuleName@Dialog.h>
-#include <boost/shared_ptr.hpp>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
-namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE @ModuleName@Dialog : public ModuleDialogGeneric,
-  public Ui::@ModuleName@
+/// @class SortMatrix
+/// @brief This module sorts the matrix entries into ascending or descending order.
+
+const ModuleLookupInfo SortMatrix::staticInfo_("SortMatrix", "Math", "SCIRun");
+
+SortMatrix::SortMatrix() : Module(staticInfo_)
 {
-	Q_OBJECT
-	
-public:
-  @ModuleName@Dialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull() override;
-};
-
-}
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(OutputMatrix);
 }
 
-#endif
+void SortMatrix::setStateDefaults()
+{
+  setStateIntFromAlgo(Variables::Method);
+}
+
+void
+SortMatrix::execute()
+{
+  auto input = getRequiredInput(InputMatrix);
+  
+  if (needToExecute())
+  {
+    setAlgoIntFromState(Variables::Method);
+
+    auto output = algo().run_generic(withInputData((InputMatrix, input)));
+    
+    sendOutputFromAlgorithm(OutputMatrix, output);
+    
+  }
+}
+
+
+
