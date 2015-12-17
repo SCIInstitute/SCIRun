@@ -411,8 +411,16 @@ void PythonInterpreter::initialize( bool needProgramName /*const wchar_t* progra
 
   initialize_eventhandler();
 
+  {
+    auto out = [](const std::string& s) { std::cout << "[PYTHON] " << s << std::endl; };
+    auto error = [](const std::string& s) { std::cerr << "[PYTHON ERROR] " << s << std::endl; };
+    output_signal_.connect(out);
+    error_signal_.connect(error);
+  }
+
   //this->private_->thread_condition_variable_.wait( lock );
   this->private_->initialized_ = true;
+
   std::cerr << "Python initialized." << std::endl;
 }
 
