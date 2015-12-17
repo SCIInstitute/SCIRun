@@ -86,6 +86,7 @@
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SimulateForwardMagneticFieldAlgorithm.h>
 #include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
+#include <Core/Algorithms/Field/RefineCleaverMeshAlgorithm.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
@@ -189,6 +190,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceAlgo)
 	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
       ADD_MODULE_ALGORITHM(ClipVolumeByIsovalue, ClipMeshByIsovalueAlgo)
+      ADD_MODULE_ALGORITHM(RefineCleaverMesh, RefineCleaverMeshAlgorithm)
      ;
   }
 }

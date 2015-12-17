@@ -58,6 +58,7 @@ SET(Interface_Modules_Fields_FORMS
   GeneratePointSamplesFromFieldOrWidget.ui
   GeneratePointSamplesFromField.ui
   RefineMesh.ui
+  RefineCleaverMesh.ui
   ConvertFieldBasis.ui
   swapfielddatawithmatrixentries.ui
   EditMeshBoundingBox.ui
@@ -93,6 +94,7 @@ SET(Interface_Modules_Fields_HEADERS
   GenerateSinglePointProbeFromFieldDialog.h
   ClipFieldByFunctionDialog.h
   RefineMeshDialog.h
+  RefineCleaverMeshDialog.h
   ConvertFieldBasisDialog.h
   share.h
   SwapFieldDataWithMatrixEntriesDialog.h
@@ -134,6 +136,7 @@ SET(Interface_Modules_Fields_SOURCES
   ClipFieldByFunctionDialog.cc
   SwapFieldDataWithMatrixEntriesDialog.cc
   RefineMeshDialog.cc
+  RefineCleaverMeshDialog.cc
   EditMeshBoundingBoxDialog.cc
   ConvertIndicesToFieldDataDialog.cc
   ExtractSimpleIsosurfaceDialog.cc
