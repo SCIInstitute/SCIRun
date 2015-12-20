@@ -629,46 +629,73 @@ FieldHandle RefineCleaverMeshAlgorithm::RefineMesh(FieldHandle input, std::vecto
     }
     case 2: /// 2 edges have the same (maximum) lentgth = 4 new tets need to be created
     {
+      std::cout << "ok!" << std::endl;
       Point out;
       ComputeEdgeMidPoint(pos[0], p1, p2, p3, p4, out);      /// first cut point
       SplitTet(onodes, pos[0], two_new_tets, node_count);
       (*new_nodes)(node_count  ,0)=out.x(); 
       (*new_nodes)(node_count  ,1)=out.y(); 
-      (*new_nodes)(node_count++,2)=out.z();  
+      (*new_nodes)(node_count++,2)=out.z(); 
+       std::cout << "nn:" << out.x() << " " << out.y() << " " << out.z() <<std::endl;
+      
+      /*     
       remaining_edges=getEdgeCoding(pos[1]);
       remaining_edges[0]=onodes[remaining_edges[0]-1];
       remaining_edges[1]=onodes[remaining_edges[1]-1];
       input_vmesh->get_center(p1, (VMesh::Node::index_type)remaining_edges[0]);
       input_vmesh->get_center(p2, (VMesh::Node::index_type)remaining_edges[1]);
       Point out2((p1.x()+p2.x())/2, (p1.y()+p2.y())/2, (p1.z()+p2.z())/2);  /// second cut point
-      onodes[0] =(*two_new_tets)(0,0); onodes[0] =(*two_new_tets)(0,1);  onodes[0] =(*two_new_tets)(0,2); onodes[0] =(*two_new_tets)(0,3);
-      onodes2[0]=(*two_new_tets)(1,0); onodes2[0]=(*two_new_tets)(1,1);  onodes2[0]=(*two_new_tets)(1,2); onodes2[0]=(*two_new_tets)(1,3);
-      SplitTet(onodes, pos[1], two_new_tets, node_count); 
-      (*new_nodes)(node_count  ,0)=out2.x(); 
-      (*new_nodes)(node_count  ,1)=out2.y(); 
-      (*new_nodes)(node_count++,2)=out2.z();  
+      std::cout << "nn2:" << out2.x() << " " << out2.y() << " " << out2.z() <<std::endl;
+      */
+      
+      //cut the two_new_tets again
+      onodes[0] =(*two_new_tets)(0,0); onodes[1] =(*two_new_tets)(0,1);  onodes[2] =(*two_new_tets)(0,2); onodes[3] =(*two_new_tets)(0,3);
+      onodes2[0]=(*two_new_tets)(1,0); onodes2[1]=(*two_new_tets)(1,1);  onodes2[2]=(*two_new_tets)(1,2); onodes2[3]=(*two_new_tets)(1,3);
+      
+      std::cout << "1t:" << onodes[0] << " " << onodes[1] << " " << onodes[2] << " " << onodes[3] << std::endl;
+      std::cout << "2t:" << onodes2[0] << " " << onodes2[1] << " " << onodes2[2] << " " << onodes2[3] << std::endl;
+      
+      input_vmesh->get_center(p1,onodes[0]);
+      input_vmesh->get_center(p2,onodes[1]);
+      input_vmesh->get_center(p3,onodes[2]);
+      input_vmesh->get_center(p4,onodes[3]);
+      edge_lengths=getEdgeLengths(p1, p2, p3, p4);  
+      std::vector<int> pos = maxi(edge_lengths); 
+      ComputeEdgeMidPoint(pos[0], p1, p2, p3, p4, out);  
+      SplitTet(onodes, pos[0], two_new_tets, node_count); 
+      (*new_nodes)(node_count  ,0)=out.x(); 
+      (*new_nodes)(node_count  ,1)=out.y(); 
+      (*new_nodes)(node_count++,2)=out.z();  
       
       (*new_tets)(tet_count  ,0)=(*two_new_tets)(0,0); /// new tet 1 and 2
       (*new_tets)(tet_count  ,1)=(*two_new_tets)(0,1); 
       (*new_tets)(tet_count  ,2)=(*two_new_tets)(0,2); 
-      std::cout << "t1:" << (*new_tets)(tet_count  ,0) << " " << (*new_tets)(tet_count  ,1) << " " << (*new_tets)(tet_count  ,2) << " " << (*two_new_tets)(0,3) << std::endl;
       (*new_tets)(tet_count++,3)=(*two_new_tets)(0,3);
       (*new_tets)(tet_count  ,0)=(*two_new_tets)(1,0); 
       (*new_tets)(tet_count  ,1)=(*two_new_tets)(1,1); 
       (*new_tets)(tet_count  ,2)=(*two_new_tets)(1,2); 
-      std::cout << "t2:" << (*new_tets)(tet_count  ,0) << " " << (*new_tets)(tet_count  ,1) << " " << (*new_tets)(tet_count  ,2) << " " << (*two_new_tets)(1,3) << std::endl;
       (*new_tets)(tet_count++,3)=(*two_new_tets)(1,3);  
       
-      SplitTet(onodes2, pos[1], two_new_tets, node_count); 
+      
+      input_vmesh->get_center(p1,onodes[0]);
+      input_vmesh->get_center(p2,onodes[1]);
+      input_vmesh->get_center(p3,onodes[2]);
+      input_vmesh->get_center(p4,onodes[3]);
+      edge_lengths=getEdgeLengths(p1, p2, p3, p4);  
+      std::vector<int> pos = maxi(edge_lengths); 
+      ComputeEdgeMidPoint(pos[0], p1, p2, p3, p4, out);  
+      SplitTet(onodes2, pos[0], two_new_tets, node_count); 
+      (*new_nodes)(node_count  ,0)=out.x(); 
+      (*new_nodes)(node_count  ,1)=out.y(); 
+      (*new_nodes)(node_count++,2)=out.z();  
+      
       (*new_tets)(tet_count  ,0)=(*two_new_tets)(0,0); /// new tet 3 and 4
       (*new_tets)(tet_count  ,1)=(*two_new_tets)(0,1); 
       (*new_tets)(tet_count  ,2)=(*two_new_tets)(0,2); 
-      std::cout << "t3:" << (*new_tets)(tet_count  ,0) << " " << (*new_tets)(tet_count  ,1) << " " << (*new_tets)(tet_count  ,2) << " " << (*two_new_tets)(0,3) << std::endl;
       (*new_tets)(tet_count++,3)=(*two_new_tets)(0,3);
       (*new_tets)(tet_count  ,0)=(*two_new_tets)(1,0); 
       (*new_tets)(tet_count  ,1)=(*two_new_tets)(1,1); 
       (*new_tets)(tet_count  ,2)=(*two_new_tets)(1,2);
-      std::cout << "t4:" << (*new_tets)(tet_count  ,0) << " " << (*new_tets)(tet_count  ,1) << " " << (*new_tets)(tet_count  ,2) << " " << (*two_new_tets)(1,3) << std::endl;
       (*new_tets)(tet_count++,3)=(*two_new_tets)(1,3);  
       
       /*     
