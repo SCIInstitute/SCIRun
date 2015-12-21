@@ -43,4 +43,11 @@ CollectMatricesDialog::CollectMatricesDialog(const std::string& name, ModuleStat
   addRadioButtonGroupManager({ rowRadioButton_, columnRadioButton_ }, Parameters::CollectRowIndicator);
   addRadioButtonGroupManager({ appendRadioButton_, replaceRadioButton_ }, Parameters::CollectAppendIndicator);
   addRadioButtonGroupManager({ prependRadioButton_, postpendRadioButton_ }, Parameters::CollectPrependIndicator);
+
+  connect(clearOutputPushButton_, SIGNAL(clicked()), this, SLOT(clearOutputClicked()));
+}
+
+void CollectMatricesDialog::clearOutputClicked()
+{
+  state_->setTransientValue(Parameters::ClearCollectMatricesOutput, true);
 }
