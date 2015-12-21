@@ -101,32 +101,28 @@ namespace Gui {
   class NetworkFileProcessCommand : public Core::Commands::GuiCommand
   {
   public:
-    NetworkFileProcessCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
+    NetworkFileProcessCommand();
     virtual bool execute() override;
 
     Dataflow::Networks::NetworkFileHandle file_;
   protected:
-    virtual Dataflow::Networks::NetworkFileHandle processXmlFile() = 0;
+    virtual Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) = 0;
     int guiProcess(const Dataflow::Networks::NetworkFileHandle& file);
-    std::string filename_;
     NetworkEditor* networkEditor_;
   };
 
   class FileOpenCommand : public NetworkFileProcessCommand
   {
-  public:
-    FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : NetworkFileProcessCommand(filename, networkEditor) {}
   protected:
-    virtual Dataflow::Networks::NetworkFileHandle processXmlFile() override;
+    virtual Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) override;
   };
 
   class FileImportCommand : public NetworkFileProcessCommand
   {
   public:
-    FileImportCommand(const std::string& filename, NetworkEditor* networkEditor) : NetworkFileProcessCommand(filename, networkEditor) {}
     std::string logContents() const { return logContents_.str(); }
   protected:
-    virtual Dataflow::Networks::NetworkFileHandle processXmlFile() override;
+    virtual Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) override;
     std::ostringstream logContents_;
   };
 
