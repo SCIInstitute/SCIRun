@@ -39,52 +39,61 @@ namespace Console {
   class SCISHARE LoadFileCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    explicit LoadFileCommandConsole(int index) : index_(index) {}
-    virtual bool execute();
+    LoadFileCommandConsole();
+    virtual bool execute() override;
   private:
-    int index_;
+    int index_ = 0;
+  };
+
+  class SCISHARE SaveFileCommandConsole : public Core::Commands::ConsoleCommand
+  {
+  public:
+    //LoadFileCommandConsole();
+    virtual bool execute() override;
+  //private:
+  //  int index_ = 0;
   };
 
   class SCISHARE RunPythonScriptCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class SCISHARE ExecuteCurrentNetworkCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class SCISHARE QuitAfterExecuteCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class SCISHARE QuitCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class SCISHARE PrintHelpCommand : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class SCISHARE PrintVersionCommand : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   class SCISHARE PrintModulesCommand : public Core::Commands::ConsoleCommand
   {
   public:
-    virtual bool execute();
+    virtual bool execute() override;
   };
 
   /// @TODO

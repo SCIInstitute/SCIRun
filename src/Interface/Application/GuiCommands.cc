@@ -27,14 +27,15 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <QtGui>
-#include <QtConcurrentRun>
 #include <numeric>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/NetworkEditor.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -43,16 +44,30 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Application/Utility.h>
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
+#include <boost/algorithm/string.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
 using namespace Commands;
 using namespace SCIRun::Dataflow::Networks;
+using namespace Algorithms;
+
+LoadFileCommandGui::LoadFileCommandGui()
+{
+  addParameter(Name("FileNum"), 0);
+  addParameter(Variables::Filename, std::string());
+}
 
 bool LoadFileCommandGui::execute()
 {
-  auto inputFiles = Application::Instance().parameters()->inputFiles();
-  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFiles[index_]));
+  std::string inputFile;
+  auto inputFilesFromCommandLine = Application::Instance().parameters()->inputFiles();
+  if (!inputFilesFromCommandLine.empty())
+    inputFile = inputFilesFromCommandLine[index_];
+  else
+    inputFile = get(Variables::Filename).toString();
+
+  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile));
 }
 
 bool ExecuteCurrentNetworkCommandGui::execute()
@@ -226,7 +241,7 @@ NetworkFileHandle FileImportCommand::processXmlFile()
 {
   auto dtdpath = Core::Application::Instance().executablePath();
   const auto& modFactory = Core::Application::Instance().controller()->moduleFactory();
-  LegacyNetworkIO lnio(dtdpath.string(), modFactory);
+  LegacyNetworkIO lnio(dtdpath.string(), modFactory, logContents_);
   return lnio.load_net(filename_);
 }
 
@@ -244,5 +259,28 @@ bool SetupDataDirectoryCommandGui::execute()
 
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
 
+  return true;
+}
+
+NetworkSaveCommand::NetworkSaveCommand()
+{
+  addParameter(Variables::Filename, std::string());
+}
+
+bool NetworkSaveCommand::execute()
+{
+  auto filename = get(Variables::Filename).toString();
+  std::string fileNameWithExtension = filename;
+  if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
+    fileNameWithExtension += ".srn5";
+
+  auto file = Application::Instance().controller()->saveNetwork();
+
+  XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
+  SCIRunMainWindow::Instance()->setCurrentFile(QString::fromStdString(fileNameWithExtension));
+
+  SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
+  GuiLogger::Instance().logInfo("File save done: " + QString::fromStdString(filename));
+  SCIRunMainWindow::Instance()->setWindowModified(false);
   return true;
 }

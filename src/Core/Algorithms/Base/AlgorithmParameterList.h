@@ -45,6 +45,7 @@
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Utils/StringUtil.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Algorithms/Base/AlgorithmInterfaces.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
@@ -56,8 +57,8 @@ namespace Algorithms {
   {
   public:
     AlgorithmParameterList();
-    bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
-    const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
+    bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) override;
+    const AlgorithmParameter& get(const AlgorithmParameterName& key) const override;
 
     bool set_option(const AlgorithmParameterName& key, const std::string& value);
     bool get_option(const AlgorithmParameterName& key, std::string& value) const;

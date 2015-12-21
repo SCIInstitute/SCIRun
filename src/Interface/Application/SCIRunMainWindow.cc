@@ -34,6 +34,7 @@
 #include <boost/assign/std/vector.hpp>
 #include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
@@ -61,10 +62,7 @@
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Core/Application/Version.h>
-
-#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-
 #include <Core/Command/CommandFactory.h>
 
 #ifdef BUILD_WITH_PYTHON
@@ -563,41 +561,10 @@ void SCIRunMainWindow::saveNetworkAs()
     saveNetworkFile(filename);
 }
 
-class NetworkSaveCommand : public GuiCommand
-{
-public:
-  NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window);
-  virtual bool execute() override;
-private:
-  QString filename_;
-  NetworkEditor* editor_;
-  SCIRunMainWindow* window_;
-};
-
-NetworkSaveCommand::NetworkSaveCommand(const QString& filename, NetworkEditor* editor, SCIRunMainWindow* window) : 
-filename_(filename), editor_(editor), window_(window)
-{}
-
-bool NetworkSaveCommand::execute()
-{
-  std::string fileNameWithExtension = filename_.toStdString();
-  if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
-    fileNameWithExtension += ".srn5";
-
-  NetworkFileHandle file = editor_->saveNetwork();
-
-  XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
-  window_->setCurrentFile(QString::fromStdString(fileNameWithExtension));
-
-  window_->statusBar()->showMessage("File saved: " + filename_, 2000);
-  GuiLogger::Instance().logInfo("File save done: " + filename_);
-  window_->setWindowModified(false);
-  return true;
-}
-
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
-  NetworkSaveCommand save(fileName, networkEditor_, this);
+  NetworkSaveCommand save;
+  save.set(Variables::Filename, fileName.toStdString());
   save.execute();
 }
 
@@ -647,6 +614,7 @@ void SCIRunMainWindow::importLegacyNetwork()
 
 bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
 {
+	bool success = false;
   if (!filename.isEmpty())
   {
     FileImportCommand command(filename.toStdString(), networkEditor_);
@@ -655,14 +623,28 @@ bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
       statusBar()->showMessage(tr("File imported: ") + filename, 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
       networkEditor_->viewport()->update();
-      return true;
+      success = true;
     }
     else
     {
       statusBar()->showMessage(tr("File import failed: ") + filename, 2000);
     }
+		auto log = QString::fromStdString(command.logContents());
+		auto logFileName = latestNetworkDirectory_.path() + "/" + ("importLog_" + strippedName(filename) + ".log");
+		QFile logFile(logFileName); //todo: add timestamp
+    if (logFile.open(QFile::WriteOnly | QFile::Text))
+		{
+			QTextStream stream(&logFile);
+			stream << log;
+			QMessageBox::information(this, "SRN File Import", "SRN File Import log file can be found here: " + logFileName
+				+ "\n\nAdditionally, check the log directory for a list of missing modules (look for file missingModules.log)");
+    }
+		else
+		{
+			QMessageBox::information(this, "SRN File Import", "Failed to write SRN File Import log file: " + logFileName);
+		}
   }
-  return false;
+  return success;
 }
 
 bool SCIRunMainWindow::newNetwork()
@@ -751,7 +733,7 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 
 bool SCIRunMainWindow::okToContinue()
 {
-  if (isWindowModified() && !Application::Instance().parameters()->isRegressionMode() && !quitAfterExecute_)
+  if (isWindowModified() && !Application::Instance().parameters()->isRegressionMode() && !quitAfterExecute_ && !runningPythonScript_)
   {
     int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"),
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
@@ -1012,6 +994,7 @@ void SCIRunMainWindow::setupPythonConsole()
   connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
   pythonConsole_->setVisible(false);
   pythonConsole_->setFloating(true);
+	pythonConsole_->setObjectName("PythonConsole");
   addDockWidget(Qt::TopDockWidgetArea, pythonConsole_);
 #else
   actionPythonConsole_->setEnabled(false);
@@ -1021,6 +1004,7 @@ void SCIRunMainWindow::setupPythonConsole()
 void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
+  runningPythonScript_ = true;
   GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
   SCIRun::Core::PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   SCIRun::Core::PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
@@ -1083,10 +1067,13 @@ namespace {
     return SCIRunMainWindow::Instance()->newInterface() ? Qt::green : Qt::darkGreen;
   }
 
+  const QString bullet = "* ";
+  const QString favoritesText = bullet + "Favorites";
+
   void addFavoriteMenu(QTreeWidget* tree)
   {
     auto faves = new QTreeWidgetItem();
-    faves->setText(0, "Favorites");
+    faves->setText(0, favoritesText);
     faves->setForeground(0, favesColor());
 
     tree->addTopLevelItem(faves);
@@ -1097,7 +1084,7 @@ namespace {
     for (int i = 0; i < tree->topLevelItemCount(); ++i)
     {
       auto top = tree->topLevelItem(i);
-      if (top->text(0) == "Favorites")
+      if (top->text(0) == favoritesText)
       {
         return top;
       }
@@ -1132,7 +1119,7 @@ namespace {
   void addSnippetMenu(QTreeWidget* tree)
 	{
 		auto snips = new QTreeWidgetItem();
-		snips->setText(0, "Snippets");
+    snips->setText(0, bullet + "Snippets");
 		snips->setForeground(0, favesColor());
 
 		//hard-code a few popular ones.
