@@ -30,7 +30,7 @@
 #ifdef BUILD_WITH_PYTHON
 
 #include <boost/range/adaptor/transformed.hpp>
-#include <boost/range/algorithm_ext/push_back.hpp>
+#include <boost/unordered_map.hpp>
 #include <boost/python/to_python_converter.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ModuleInterface.h>
@@ -44,6 +44,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
@@ -55,22 +56,22 @@ namespace
     PyPortImpl(boost::shared_ptr<PortDescriptionInterface> port, NetworkEditorController& nec) : port_(port), nec_(nec)
     {
     }
-    virtual std::string name() const
+    virtual std::string name() const override
     {
       return port_ ? port_->get_portname() : "<Null>";
     }
 
-    virtual std::string type() const
+    virtual std::string type() const override
     {
       return port_ ? port_->get_typename() : "<Null>";
     }
 
-    virtual bool isInput() const
+    virtual bool isInput() const override
     {
       return port_ ? port_->isInput() : false;
     }
 
-    virtual void connect(const PyPort& other) const
+    virtual void connect(const PyPort& other) const override
     {
       auto otherPort = dynamic_cast<const PyPortImpl*>(&other);
       if (port_ && otherPort)
@@ -109,7 +110,7 @@ namespace
       }
     }
 
-    virtual boost::shared_ptr<PyPort> getattr(const std::string& name)
+    virtual boost::shared_ptr<PyPort> getattr(const std::string& name) override
     {
       auto port = std::find_if(ports_.begin(), ports_.end(), [&](boost::shared_ptr<PyPortImpl> p) { return name == p->name(); });
       if (port != ports_.end())
@@ -120,7 +121,7 @@ namespace
       throw boost::python::error_already_set();
     }
 
-    virtual boost::shared_ptr<PyPort> getitem(int index)
+    virtual boost::shared_ptr<PyPort> getitem(int index) override
     {
       if (index < 0)
         index += size();
@@ -132,7 +133,7 @@ namespace
       return ports_[index];
     }
 
-    virtual size_t size() const
+    virtual size_t size() const override
     {
       return ports_.size();
     }
@@ -167,19 +168,19 @@ namespace
       return "<Null module>";
     }
 
-    virtual void showUI()
+    virtual void showUI() override
     {
       if (module_)
         module_->setUiVisible(true);
     }
 
-    virtual void hideUI()
+    virtual void hideUI() override
     {
       if (module_)
         module_->setUiVisible(false);
     }
 
-    virtual void reset()
+    virtual void reset() override
     {
       module_.reset();
       input_->reset();
@@ -188,17 +189,20 @@ namespace
       output_.reset();
     }
 
-    virtual boost::python::object getattr(const std::string& name)
+    virtual boost::python::object getattr(const std::string& name) override
     {
       if (module_)
       {
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
         if (!state->containsKey(apn))
-          return boost::python::object();
+        {
+          throw std::invalid_argument("Module state key " + name + " not defined.");
+        }
 
         auto v = state->getValue(apn);
 
+//TODO: extract and use for state get/set
         /// @todo: extract
         if ( const int* p = boost::get<int>( &v.value() ) )
           return boost::python::object(*p);
@@ -214,17 +218,21 @@ namespace
       return boost::python::object();
     }
 
-    virtual void setattr(const std::string& name, boost::python::object object)
+    virtual void setattr(const std::string& name, boost::python::object object) override
     {
       if (module_)
       {
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
+        if (!state->containsKey(apn))
+        {
+          throw std::invalid_argument("Module state key " + name + " not defined.");
+        }
         state->setValue(apn, convert(object));
       }
     }
 
-    virtual std::vector<std::string> stateVars() const
+    virtual std::vector<std::string> stateVars() const override
     {
       if (module_)
       {
@@ -236,12 +244,12 @@ namespace
       return std::vector<std::string>();
     }
 
-    virtual boost::shared_ptr<PyPorts> output()
+    virtual boost::shared_ptr<PyPorts> output() override
     {
       return output_;
     }
 
-    virtual boost::shared_ptr<PyPorts> input()
+    virtual boost::shared_ptr<PyPorts> input() override
     {
       return input_;
     }
@@ -251,6 +259,7 @@ namespace
     NetworkEditorController& nec_;
     boost::shared_ptr<PyPortsImpl> input_, output_;
 
+//TODO: extract and use for state get/set
     AlgorithmParameter::Value convert(boost::python::object object) const
     {
       AlgorithmParameter::Value value;
@@ -293,7 +302,19 @@ namespace
   };
 }
 
-PythonImpl::PythonImpl(NetworkEditorController& nec) : nec_(nec) {}
+namespace SCIRun {
+  namespace Dataflow {
+    namespace Engine {
+      class PythonImplImpl
+      {
+      public:
+        std::map<std::string, std::map<int, std::map<std::string, std::map<int, std::string>>>> connectionIdLookup_; //seems silly
+      };
+    }
+  }
+}
+
+PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory) {}
 
 boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
 {
@@ -324,17 +345,38 @@ std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
   return "Execution finished.";
 }
 
-std::string PythonImpl::connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2)
+std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
   auto network = nec_.getNetwork();
-  auto mod1 = network->lookupModule(ModuleId(moduleId1));
-  auto mod2 = network->lookupModule(ModuleId(moduleId2));
-  return "PythonImpl::connect does nothing";
+  auto modFrom = network->lookupModule(ModuleId(moduleIdFrom));
+  auto outputPort = modFrom->outputPorts().at(fromIndex);
+  auto modTo = network->lookupModule(ModuleId(moduleIdTo));
+  auto inputPort = modTo->inputPorts().at(toIndex);
+  auto id = nec_.requestConnection(outputPort.get(), inputPort.get());
+  if (id)
+  {
+    impl_->connectionIdLookup_[moduleIdFrom][fromIndex][moduleIdTo][toIndex] = id->id_;
+  }
+
+  return "PythonImpl::connect success";
 }
 
-std::string PythonImpl::disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2)
+std::string PythonImpl::disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
 {
-  return "PythonImpl::disconnect does nothing";
+  auto id = impl_->connectionIdLookup_[moduleIdFrom][fromIndex][moduleIdTo][toIndex];
+  if (!id.empty())
+  {
+    std::cout << "here is the connection id i found: " << id << std::endl;
+    nec_.removeConnection(id);
+    return "PythonImpl::disconnect success";
+  }
+  else
+  {
+    std::cout << "No connection id found" << std::endl;
+    return "PythonImpl::disconnect: connection not found";
+  }
+
+
 }
 
 std::string PythonImpl::saveNetwork(const std::string& filename)

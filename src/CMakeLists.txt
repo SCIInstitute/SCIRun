@@ -28,10 +28,19 @@
 IF(UNIX)
   # temporary - needed to make Travis CI build work
   # TODO: revisit and delete when CMake 2.8.11 or greater is available
+  # or switch to another CI tool
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7 FATAL_ERROR)
 ELSE()
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
-ENDIF(UNIX)
+ENDIF()
+
+IF(CMAKE_VERSION VERSION_GREATER 3.0)
+  # TODO: when support for versions older than 2.8.12 is dropped,
+  # enable new policy and get rid of version check
+  #
+  # see https://cmake.org/cmake/help/v3.0/policy/CMP0042.html
+  CMAKE_POLICY(SET CMP0042 OLD)
+ENDIF()
 
 PROJECT(SCIRun)
 
@@ -303,6 +312,16 @@ IF(APPLE)
 
   SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
   MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
+
+  FIND_PROGRAM(SED
+    NAMES sed
+  )
+  MARK_AS_ADVANCED(SED)
+
+  FIND_PROGRAM(AWK
+    NAMES awk
+  )
+  MARK_AS_ADVANCED(AWK)
 ENDIF()
 
 
@@ -885,6 +904,10 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
 
   SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
+  IF(BUILD_WITH_PYTHON)
+    SET_PROPERTY(TARGET Core_Python_Tests     PROPERTY FOLDER "Core/Tests")
+    SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
+  ENDIF()
 ENDIF()
 
 #SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
@@ -898,9 +921,7 @@ SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
-  SET_PROPERTY(TARGET Core_Python_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
-  SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
 ENDIF()
 
 IF(WITH_TETGEN)

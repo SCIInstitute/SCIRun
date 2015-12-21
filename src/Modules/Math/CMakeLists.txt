@@ -31,11 +31,14 @@ SET(Modules_Math_SRCS
   #SelectSubMatrix.cc
   #GetSubmatrix.cc 
   AppendMatrix.cc
+  ConvertMatrixToScalar.cc
+  ConvertScalarToMatrix.cc
   CreateMatrix.cc
   EvaluateLinearAlgebraUnary.cc
   EvaluateLinearAlgebraBinary.cc
   GetMatrixSlice.cc
   ReportMatrixInfo.cc
+  ReportMatrixSliceMeasure.cc
   SolveLinearSystem.cc
   ComputePCA.cc
 )
@@ -45,11 +48,14 @@ SET(Modules_Math_HEADERS
   #SelectSubMatrix.h
   #GetSubmatrix.h
   AppendMatrix.h
+  ConvertMatrixToScalar.cc
+  ConvertScalarToMatrix.h
   CreateMatrix.h
   EvaluateLinearAlgebraUnary.h
   EvaluateLinearAlgebraBinary.h
   GetMatrixSlice.h
   ReportMatrixInfo.h
+  ReportMatrixSliceMeasure.h
   share.h
   SolveLinearSystem.h
   ComputePCA.h

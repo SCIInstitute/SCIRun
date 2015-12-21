@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>3</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>ConvertNrrdToField:0</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>Teem</package_name_>
+						<category_name_>Converters</category_name_>
+						<module_name_>ConvertNrrdToField</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>3</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>ConvertParity</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>ConvertParity</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>Do Not Correct</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DataLocation</name>
+								</first>
+								<second>
+									<name>DataLocation</name>
+									<value>
+										<which>2</which>
+										<value>Node</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FieldType</name>
+								</first>
+								<second>
+									<name>FieldType</name>
+									<value>
+										<which>2</which>
+										<value>Auto</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReadNrrd:0</first>
+				<second>
+					<module>
+						<package_name_>Teem</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>ReadNrrd</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>Nrrd Files</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>C:/Dev/Dropbox/Saves/2x2array_250um_res10um.nhdr</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>2</count>
+			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>ConvertNrrdToField:0</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadNrrd:0</moduleId1_>
+				<port1_>
+					<name>Output_Data</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ConvertNrrdToField:0</moduleId2_>
+				<port2_>
+					<name>InputNrrd</name>
+					<id>0</id>
+				</port2_>
+			</item>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="15" tracking_level="0" version="0">
+		<count>3</count>
+		<item_version>0</item_version>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>ConvertNrrdToField:0</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-2.26000000000000000e+002</first>
+				<second>-1.83000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReadNrrd:0</first>
+			<second>
+				<first>-2.55000000000000000e+002</first>
+				<second>-2.89000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:0</first>
+			<second>
+				<first>-2.11000000000000000e+002</first>
+				<second>-4.90000000000000000e+001</second>
+			</second>
+		</item>
+	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>3</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>ConvertNrrdToField:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadNrrd:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:0</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
+</networkFile>
+</boost_serialization>
+

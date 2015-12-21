@@ -26,24 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Logging/LoggerInterface.h>
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Geometry;
+
 namespace SCIRun {
 
-FieldHandle TextToCurveField_reader(ProgressReporter *pr, const char *filename);
+FieldHandle TextToCurveField_reader(LoggerHandle pr, const char *filename);
 
-bool CurveFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
-bool CurveFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
+bool CurveFieldToTextBaseIndexZero_writer(LoggerHandle pr, FieldHandle fh, const char *filename);
+bool CurveFieldToTextBaseIndexOne_writer(LoggerHandle pr, FieldHandle fh, const char *filename);
 
-FieldHandle TextToCurveField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle TextToCurveField_reader(LoggerHandle pr, const char *filename)
 {
   FieldHandle result = 0;
 
@@ -431,7 +436,7 @@ FieldHandle TextToCurveField_reader(ProgressReporter *pr, const char *filename)
   return (result);
 }
 
-bool CurveFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool CurveFieldToTextBaseIndexZero_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
 
@@ -539,7 +544,7 @@ bool CurveFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh, 
   return true;
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool CurveFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
@@ -646,8 +651,9 @@ bool CurveFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, c
   }
   return true;
 }
+#endif
 
-static FieldIEPlugin CurveField_plugin("CurveField", "{.pts} {.pos} {.edge}", "", TextToCurveField_reader, CurveFieldToTextBaseIndexZero_writer);
-static FieldIEPlugin CurveFieldBaseIndexOne_plugin("CurveField[BaseIndex 1]", "{.pts} {.edge}", "", 0, CurveFieldToTextBaseIndexOne_writer);
+//static FieldIEPlugin CurveField_plugin("CurveField", "{.pts} {.pos} {.edge}", "", TextToCurveField_reader, CurveFieldToTextBaseIndexZero_writer);
+//static FieldIEPlugin CurveFieldBaseIndexOne_plugin("CurveField[BaseIndex 1]", "{.pts} {.edge}", "", 0, CurveFieldToTextBaseIndexOne_writer);
 
 } // end namespace

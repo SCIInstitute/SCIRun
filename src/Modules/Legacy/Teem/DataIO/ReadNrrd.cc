@@ -294,33 +294,36 @@ ReadNrrd::execute()
 {
   update_state(NeedData);
 
-  auto nrrd = read_nrrd();
-
-  if (!nrrd)
+  if (needToExecute())
   {
-    error("Please load a nrrd.");
-    return;
-  }
+    auto nrrd = read_nrrd();
+
+    if (!nrrd)
+    {
+      error("Please load a nrrd.");
+      return;
+    }
 
 #if 0
-  // A hack to make PowerApps at least work with old types of Nrrds
-  Nrrd* nrrd = read_handle_->nrrd_;
-  if (nrrd->spaceDim == 0)
-  {
-    size_t dim = nrrd->dim;
-    for (size_t j=0; j<dim;j++)
+    // A hack to make PowerApps at least work with old types of Nrrds
+    Nrrd* nrrd = read_handle_->nrrd_;
+    if (nrrd->spaceDim == 0)
     {
-      if (IsNan(nrrd->axis[j].min) && IsNan(nrrd->axis[j].max)
-        && !IsNan(nrrd->axis[j].spacing))
+      size_t dim = nrrd->dim;
+      for (size_t j=0; j<dim;j++)
       {
-        nrrd->axis[j].min = 0.0;
-        nrrd->axis[j].max = (nrrd->axis[j].size-1)*nrrd->axis[j].spacing;
-      }
+        if (IsNan(nrrd->axis[j].min) && IsNan(nrrd->axis[j].max)
+          && !IsNan(nrrd->axis[j].spacing))
+        {
+          nrrd->axis[j].min = 0.0;
+          nrrd->axis[j].max = (nrrd->axis[j].size-1)*nrrd->axis[j].spacing;
+        }
     }
   }
 #endif
 
-  sendOutput(Output_Data, nrrd);
+    sendOutput(Output_Data, nrrd);
 
-  update_state(Completed);
+    update_state(Completed);
+  }
 }
