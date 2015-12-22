@@ -38,16 +38,17 @@ namespace SCIRun {
 
       class SCISHARE GetFieldDataModule : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<MatrixPortTag>
+        public Has2OutputPorts<MatrixPortTag, NrrdPortTag>
       {
       public:
         GetFieldDataModule();
 
-        virtual void execute();
-        virtual void setStateDefaults() {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, OutputMatrix, Matrix);
+        OUTPUT_PORT(1, OutputNrrd, NrrdDataType);
       };
 
     }

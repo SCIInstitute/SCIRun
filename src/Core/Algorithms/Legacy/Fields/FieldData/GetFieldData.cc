@@ -54,18 +54,24 @@ GetFieldDataAlgo::GetFieldDataAlgo()
 AlgorithmOutput GetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
- 
-  DenseMatrixHandle output_matrix;
-  output_matrix = run(input_field);
+
+  auto output_matrix = runImpl<DenseMatrix>(input_field);
+  //auto output_nrrd = run<NrrdData>(input_field);
   
   AlgorithmOutput output;
   output[Variables::OutputMatrix] = output_matrix;
+  //output[Variables::OutputNrrd] = output_nrrd;
 
   return output;
 }
 
-/// Function call to convert data from Field into Matrix data
 DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
+{
+  return runImpl<DenseMatrix>(input_field);
+}
+
+template <class MatrixReturnType>
+boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImpl(FieldHandle input_field) const
 {
   if (!input_field)
   {
@@ -77,7 +83,7 @@ DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
   VField* vfield1 = input_field->vfield();
 
   /// Check whether we have data
-  if (! vfield1)
+  if (!vfield1)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not obtain VField interface");
   }
@@ -87,18 +93,20 @@ DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
     THROW_ALGORITHM_INPUT_ERROR("Invalid input field (no data)");
   }
 
+  boost::shared_ptr<MatrixReturnType> mat;
   if (vfield1->is_scalar())
-    return (GetScalarFieldDataV(input_field));
+    if (GetScalarFieldDataV(input_field, mat)) return mat;
   if (vfield1->is_vector())
-    return (GetVectorFieldDataV(input_field));
+    if (GetVectorFieldDataV(input_field, mat)) return mat;
   if (vfield1->is_tensor())
-    return (GetTensorFieldDataV(input_field));
+    if (GetTensorFieldDataV(input_field, mat)) return mat;
   
   THROW_ALGORITHM_INPUT_ERROR("Unknown field data type!");
+  return nullptr;
 }
 
-
-DenseMatrixHandle GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle& input) const
+template <>
+bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
 {
   /// Obtain virtual interface
   VField* vfield = input->vfield();
@@ -108,15 +116,15 @@ DenseMatrixHandle GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle& input) cons
   VMesh::size_type esize = vfield->num_evalues();
   
   /// Create output object
-  DenseMatrixHandle output(new DenseMatrix(size+esize, 1));
+  output.reset(new DenseMatrix(size+esize, 1));
   
   if (!output)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not allocate output matrix");
-    return DenseMatrixHandle();
+    return false;
   }
     
-  for (VMesh::Elem::index_type idx = 0; idx < size; idx++)
+  for (VMesh::Elem::index_type idx = 0; idx < size; ++idx)
   { 
      vfield->get_value((*output)(idx, 0),idx);
   }
@@ -131,23 +139,23 @@ DenseMatrixHandle GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle& input) cons
   } 
 #endif
   
-  return output;
+  return true;
 }
 
-
-DenseMatrixHandle GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle& input) const
+template <>
+bool GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
 {
   VField* vfield = input->vfield();
   
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
   
-  DenseMatrixHandle output(new DenseMatrix(size+esize, 3));
+  output.reset(new DenseMatrix(size+esize, 3));
 
   if (!output)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not allocate output matrix");
-    return DenseMatrixHandle();
+    return false;
   }
 
   Vector val;
@@ -173,23 +181,23 @@ DenseMatrixHandle GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle& input) cons
   }
   #endif
  
-  return output;
+  return true;
 }
 
-
-DenseMatrixHandle GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle& input) const
+template <>
+bool GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
 {
   VField* vfield = input->vfield();
   
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
   
-  DenseMatrixHandle output(new DenseMatrix(size+esize, 6));
+  output.reset(new DenseMatrix(size+esize, 6));
 
   if (!output)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not allocate output matrix");
-    return DenseMatrixHandle();
+    return false;
   }
 
   Tensor val;
@@ -221,47 +229,11 @@ DenseMatrixHandle GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle& input) cons
   }
   #endif
 
-  return output;
+  return true;
 }
 
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-/// Function call to convert data from Field into Matrix data
-bool GetFieldDataAlgo::run(FieldHandle& input)
-{
-  algo_start("GetFieldData");
-  
-  /// Check whether we have a field.
-  if (input.get_rep() == 0)
-  {
-    error("No input source field");
-    algo_end(); return (false);
-  }
-  
-  /// Construct a class with all the type information of this field
-  FieldInformation fi(input);
-
-  /// Check whether we have data
-  if (fi.is_nodata())
-  {
-    error("Field does not contain any data");
-    algo_end(); return (false);
-  }
-  
-  /// Depending on the data type select a sub algorithm
-  if (fi.is_scalar())
-    return(GetScalarFieldDataV(this,input,output));
-
-  else if (fi.is_vector())
-    return(GetVectorFieldDataV(this,input,output));
-
-  else if (fi.is_tensor())
-    return(GetTensorFieldDataV(this,input,output));
-
-  error("Unknown data type");
-  algo_end(); return (false);*/
-}
 
 bool 
 GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)

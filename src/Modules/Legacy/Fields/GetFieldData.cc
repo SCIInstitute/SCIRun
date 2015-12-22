@@ -31,10 +31,9 @@
 
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
-#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -88,18 +87,19 @@ void GetFieldDataModule::execute()
     send_output_handle("Nrrd Data", nrrddata);
 
   }
-  #endif
-  
+#endif
+
   ///NO Nrrd support yet !!!
   FieldHandle input = getRequiredInput(InputField);
-  
+
   ///inputs_changed_ || !oport_cached("Matrix Nodes")
   if (needToExecute())
-  { 
-   update_state(Executing);  
-   
-   auto output = algo().run_generic(withInputData((InputField, input)));
+  {
+    update_state(Executing);
 
-   sendOutputFromAlgorithm(OutputMatrix, output);
+    auto output = algo().run_generic(withInputData((InputField, input)));
+
+    sendOutputFromAlgorithm(OutputMatrix, output);
+    sendOutputFromAlgorithm(OutputNrrd, output);
   }
 }

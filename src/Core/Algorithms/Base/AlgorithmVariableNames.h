@@ -76,6 +76,7 @@ public:
   static const AlgorithmOutputName Solution;
   static const AlgorithmOutputName OutputField;
   static const AlgorithmOutputName OutputMatrix;
+  static const AlgorithmOutputName OutputNrrd;
   static const AlgorithmOutputName ListOfOutputFields;
 };
 
