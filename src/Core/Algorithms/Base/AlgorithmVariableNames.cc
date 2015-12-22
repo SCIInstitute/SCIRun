@@ -62,6 +62,7 @@ INPUT(ListOfInputFields)
 INPUT(InputFields)
 INPUT(Source)
 INPUT(Destination)
+INPUT(InputNrrd)
 
 OUTPUT(MatrixInfo)
 OUTPUT(Result)
