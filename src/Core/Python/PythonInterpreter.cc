@@ -267,7 +267,7 @@ void PythonInterpreter::initialize_eventhandler()
   Py_SetProgramName(const_cast< wchar_t* >(this->private_->programName()));
 
   PRINT_PY_INIT_DEBUG(4);
-  boost::filesystem::path lib_path(this->private_->programName());
+  boost::filesystem::path lib_path = Application::Instance().executablePath().parent_path();
   //std::wcout << "lib_path: " << lib_path.wstring() << std::endl;
   std::wstringstream lib_paths;
 #if defined( _WIN32 )
@@ -279,11 +279,11 @@ void PythonInterpreter::initialize_eventhandler()
 #if defined( __APPLE__ )
   std::vector<boost::filesystem::path> lib_path_list;
   // relative paths
-  lib_path_list.push_back(lib_path.parent_path().parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
-  lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
+  lib_path_list.push_back(lib_path.parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
+  lib_path_list.push_back(lib_path / PYTHONPATH);
 
   // for test executable
-  if ( lib_path.stem() == "SCIRun_test" )
+  if ( boost::filesystem::path(Application::Instance().parameters()->entireCommandLine()).stem() == "SCIRun_test" )
   {
     boost::filesystem::path full_lib_path(PYTHONLIBDIR);
     full_lib_path /= PYTHONLIB;
