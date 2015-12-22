@@ -52,7 +52,7 @@ SetFieldDataModule::SetFieldDataModule() :  Module(staticInfo_)
 
 void SetFieldDataModule::setStateDefaults()
 {
-  setStateBoolFromAlgo(SetFieldDataAlgo::keepTypeCheckBox);
+  setStateBoolFromAlgo(Parameters::keepTypeCheckBox);
 }
 
 void SetFieldDataModule::execute()

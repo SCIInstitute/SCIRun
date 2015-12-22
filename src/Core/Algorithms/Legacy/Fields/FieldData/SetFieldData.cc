@@ -37,6 +37,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 #include <teem/nrrd.h>
 
@@ -48,11 +49,12 @@ using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 
+ALGORITHM_PARAMETER_DEF(Fields, keepTypeCheckBox);
+
 SetFieldDataAlgo::SetFieldDataAlgo()
 {
-  addParameter(keepTypeCheckBox, false);
+  addParameter(Parameters::keepTypeCheckBox, false);
 }
-
 
 bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHandle data, size_type& numvals, FieldInformation& fi) const
 {
@@ -82,7 +84,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
     if (ncols == 1)
     {
       found = true;
-      if (get(keepTypeCheckBox).toBool())
+      if (get(Parameters::keepTypeCheckBox).toBool())
         fi.set_data_type(input_field->vfield()->get_data_type());
       else
         fi.set_data_type("double");
@@ -124,7 +126,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
     /// do we have a scalar, vector, or tensor  ?
     if (data->nrows() == 1)
     {
-      if (get(keepTypeCheckBox).toBool())
+      if (get(Parameters::keepTypeCheckBox).toBool())
         fi.set_data_type(input_field->vfield()->get_data_type());
       else
         fi.set_data_type("double");
@@ -411,7 +413,7 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
   VMesh::size_type numelems = imesh->num_elems();
   VMesh::size_type numenodes = numnodes + numelems;
 
-  size_type numvals = 0;
+  size_t numvals;
 
   bool found = verify_input_data(input_field, data, numvals, fi);
 
@@ -460,8 +462,6 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
 
   return output;
 }
-
-AlgorithmParameterName SetFieldDataAlgo::keepTypeCheckBox("keepTypeCheckBox");
 
 AlgorithmOutput SetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 {
@@ -1021,7 +1021,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, NrrdDataHandle data, FieldHand
         if( data->getNrrd()->dim == dims.size() ||
           data->getNrrd()->axis[0].size == 1 ) 
         {
-          if (get(keepTypeCheckBox).toBool())
+          if (get(Parameters::keepTypeCheckBox).toBool())
             fi.set_data_type(input->vfield()->get_data_type());
           else
             fi.set_data_type("double");
