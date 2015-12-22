@@ -37,6 +37,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 
 using namespace SCIRun;
 using namespace Core::Algorithms::Fields;
@@ -46,21 +47,29 @@ using namespace Core::Utility;
 using namespace Core::Algorithms;
 using namespace Core::Logging;
 
+ALGORITHM_PARAMETER_DEF(Fields, CalcMatrix);
+ALGORITHM_PARAMETER_DEF(Fields, CalcNrrd);
+
 GetFieldDataAlgo::GetFieldDataAlgo()
 {
-
+  addParameter(Parameters::CalcMatrix, true);
+  addParameter(Parameters::CalcNrrd, false);
 }
 
 AlgorithmOutput GetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
 
-  auto output_matrix = runImpl<DenseMatrix>(input_field);
-  //auto output_nrrd = run<NrrdData>(input_field);
-  
   AlgorithmOutput output;
-  output[Variables::OutputMatrix] = output_matrix;
-  //output[Variables::OutputNrrd] = output_nrrd;
+
+  if (get(Parameters::CalcMatrix).toBool())
+  {
+    output[Variables::OutputMatrix] = run(input_field);;
+  }
+  if (get(Parameters::CalcNrrd).toBool())
+  {
+    output[Variables::OutputNrrd] = runNrrd(input_field);;
+  }
 
   return output;
 }
@@ -70,9 +79,16 @@ DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
   return runImpl<DenseMatrix>(input_field);
 }
 
+NrrdDataHandle GetFieldDataAlgo::runNrrd(FieldHandle input_field) const
+{
+  return runImpl<NrrdData>(input_field);
+}
+
 template <class MatrixReturnType>
 boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImpl(FieldHandle input_field) const
 {
+  ScopedAlgorithmStatusReporter asr(this, "GetFieldData");
+
   if (!input_field)
   {
     THROW_ALGORITHM_INPUT_ERROR("No input field was provided");
@@ -128,7 +144,6 @@ bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, DenseMatrixHandle&
   { 
      vfield->get_value((*output)(idx, 0),idx);
   }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (vfield->basis_order() == 2)
   {
     vfield->vmesh()->synchronize(Mesh::EDGES_E);
@@ -137,7 +152,6 @@ bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, DenseMatrixHandle&
       vfield->get_evalue((*output)(idx, 0),idx);
     }
   } 
-#endif
   
   return true;
 }
@@ -166,7 +180,6 @@ bool GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle input, DenseMatrixHandle&
     (*output)(idx, 1) = val.y();
     (*output)(idx, 2) = val.z();
   }
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (vfield->basis_order() == 2)
   {
     vfield->vmesh()->synchronize(Mesh::EDGES_E);
@@ -179,7 +192,6 @@ bool GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle input, DenseMatrixHandle&
       (*output)(idx, 2) = val.z();
     }  
   }
-  #endif
  
   return true;
 }
@@ -200,43 +212,38 @@ bool GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle input, DenseMatrixHandle&
     return false;
   }
 
-  Tensor val;
+  Tensor tensor;
   for (VMesh::index_type idx=0; idx<size; idx++)
   {
-    vfield->get_value(val,idx);
-    (*output)(idx, 0) = val.val(0,0);
-    (*output)(idx, 1) = val.val(0,1);
-    (*output)(idx, 2) = val.val(0,2);
-    (*output)(idx, 3) = val.val(1,1);
-    (*output)(idx, 4) = val.val(1,2);
-    (*output)(idx, 5) = val.val(2,2);   
+    vfield->get_value(tensor,idx);
+    (*output)(idx, 0) = tensor.val(0,0);
+    (*output)(idx, 1) = tensor.val(0,1);
+    (*output)(idx, 2) = tensor.val(0,2);
+    (*output)(idx, 3) = tensor.val(1,1);
+    (*output)(idx, 4) = tensor.val(1,2);
+    (*output)(idx, 5) = tensor.val(2,2);   
   }
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (vfield->basis_order() == 2)
   {
      vfield->vmesh()->synchronize(Mesh::EDGES_E);
    
     for (VMesh::index_type idx=size; idx<esize+size; idx++)
     {
-      vfield->get_evalue(val,idx);
-      (*output)(idx, 0) = static_cast<double>(val.mat_[0][0]);
-      (*output)(idx, 1) = static_cast<double>(val.mat_[0][1]);
-      (*output)(idx, 2) = static_cast<double>(val.mat_[0][2]);
-      (*output)(idx, 3) = static_cast<double>(val.mat_[1][1]);
-      (*output)(idx, 4) = static_cast<double>(val.mat_[1][2]);
-      (*output)(idx, 5) = static_cast<double>(val.mat_[2][2]);    
+      vfield->get_evalue(tensor,idx);
+      (*output)(idx, 0) = tensor.val(0, 0);
+      (*output)(idx, 1) = tensor.val(0, 1);
+      (*output)(idx, 2) = tensor.val(0, 2);
+      (*output)(idx, 3) = tensor.val(1, 1);
+      (*output)(idx, 4) = tensor.val(1, 2);
+      (*output)(idx, 5) = tensor.val(2, 2);
     }  
   }
-  #endif
 
   return true;
 }
 
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-bool 
-GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
+template <>
+bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, NrrdDataHandle& output) const
 {
   /// Obtain virtual interface
   VField* vfield = input->vfield();
@@ -246,20 +253,18 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
   VMesh::size_type esize = vfield->num_evalues();
   
   /// Create output object
-  output = new NrrdData();
+  output.reset(new NrrdData());
 
-  if (output.get_rep() == 0)
+  if (!output)
   {
-    algo->error("Could not allocate output nrrd");
-    algo->algo_end(); return (false);
+    error("Could not allocate output nrrd");
+    return (false);
   }
-  
-  output->nrrd_ = nrrdNew();
 
-  if (output->nrrd_ == 0)
+  if (!output->getNrrd())
   {
-    algo->error("Could not allocate output nrrd");
-    algo->algo_end(); return (false);
+    error("Could not allocate output nrrd");
+    return (false);
   }
 
   size_t nrrddims[1]; 
@@ -267,8 +272,8 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 
   if (vfield->is_char())
   {
-    nrrdAlloc_nva(output->nrrd_,nrrdTypeChar,1,nrrddims);
-    char* dataptr = reinterpret_cast<char *>(output->nrrd_->data);
+    nrrdAlloc_nva(output->getNrrd(),nrrdTypeChar,1,nrrddims);
+    char* dataptr = reinterpret_cast<char *>(output->getNrrd()->data);
     // get all the values as doubles
     vfield->get_values(dataptr,size);
     
@@ -281,8 +286,8 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 
   if (vfield->is_unsigned_char())
   {
-    nrrdAlloc_nva(output->nrrd_,nrrdTypeUChar,1,nrrddims);
-    unsigned char* dataptr = reinterpret_cast<unsigned char *>(output->nrrd_->data);
+    nrrdAlloc_nva(output->getNrrd(),nrrdTypeUChar,1,nrrddims);
+    unsigned char* dataptr = reinterpret_cast<unsigned char *>(output->getNrrd()->data);
     // get all the values as doubles
     vfield->get_values(dataptr,size);
     
@@ -295,8 +300,8 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 
   if (vfield->is_short())
   {
-    nrrdAlloc_nva(output->nrrd_,nrrdTypeShort,1,nrrddims);
-    short* dataptr = reinterpret_cast<short *>(output->nrrd_->data);
+    nrrdAlloc_nva(output->getNrrd(),nrrdTypeShort,1,nrrddims);
+    short* dataptr = reinterpret_cast<short *>(output->getNrrd()->data);
     // get all the values as doubles
     vfield->get_values(dataptr,size);
     
@@ -309,8 +314,8 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 
   if (vfield->is_unsigned_short())
   {
-    nrrdAlloc_nva(output->nrrd_,nrrdTypeUShort,1,nrrddims);
-    unsigned short* dataptr = reinterpret_cast<unsigned short *>(output->nrrd_->data);
+    nrrdAlloc_nva(output->getNrrd(),nrrdTypeUShort,1,nrrddims);
+    unsigned short* dataptr = reinterpret_cast<unsigned short *>(output->getNrrd()->data);
     // get all the values as doubles
     vfield->get_values(dataptr,size);
     
@@ -323,8 +328,8 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 
   if (vfield->is_int())
   {
-    nrrdAlloc_nva(output->nrrd_,nrrdTypeInt,1,nrrddims);
-    int* dataptr = reinterpret_cast<int *>(output->nrrd_->data);
+    nrrdAlloc_nva(output->getNrrd(),nrrdTypeInt,1,nrrddims);
+    int* dataptr = reinterpret_cast<int *>(output->getNrrd()->data);
     // get all the values as doubles
     vfield->get_values(dataptr,size);
     
@@ -337,8 +342,8 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 
   if (vfield->is_unsigned_int())
   {
-    nrrdAlloc_nva(output->nrrd_,nrrdTypeUInt,1,nrrddims);
-    unsigned int* dataptr = reinterpret_cast<unsigned int *>(output->nrrd_->data);
+    nrrdAlloc_nva(output->getNrrd(),nrrdTypeUInt,1,nrrddims);
+    unsigned int* dataptr = reinterpret_cast<unsigned int *>(output->getNrrd()->data);
     // get all the values as doubles
     vfield->get_values(dataptr,size);
     
@@ -351,8 +356,8 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 
   if (vfield->is_longlong())
   {
-    nrrdAlloc_nva(output->nrrd_,nrrdTypeLLong,1,nrrddims);
-    long long* dataptr = reinterpret_cast<long long *>(output->nrrd_->data);
+    nrrdAlloc_nva(output->getNrrd(),nrrdTypeLLong,1,nrrddims);
+    long long* dataptr = reinterpret_cast<long long *>(output->getNrrd()->data);
     // get all the values as doubles
     vfield->get_values(dataptr,size);
     
@@ -365,8 +370,8 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 
   if (vfield->is_unsigned_longlong())
   {
-    nrrdAlloc_nva(output->nrrd_,nrrdTypeULLong,1,nrrddims);
-    unsigned long long* dataptr = reinterpret_cast<unsigned long long *>(output->nrrd_->data);
+    nrrdAlloc_nva(output->getNrrd(), nrrdTypeULLong, 1, nrrddims);
+    unsigned long long* dataptr = reinterpret_cast<unsigned long long *>(output->getNrrd()->data);
     // get all the values as doubles
     vfield->get_values(dataptr,size);
     
@@ -379,8 +384,8 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 
   if (vfield->is_float())
   {
-    nrrdAlloc_nva(output->nrrd_,nrrdTypeFloat,1,nrrddims);
-    float* dataptr = reinterpret_cast<float *>(output->nrrd_->data);
+    nrrdAlloc_nva(output->getNrrd(), nrrdTypeFloat, 1, nrrddims);
+    float* dataptr = reinterpret_cast<float *>(output->getNrrd()->data);
     // get all the values as doubles
     vfield->get_values(dataptr,size);
     
@@ -393,8 +398,8 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 
   if (vfield->is_double())
   {
-    nrrdAlloc_nva(output->nrrd_,nrrdTypeDouble,1,nrrddims);
-    double* dataptr = reinterpret_cast<double *>(output->nrrd_->data);
+    nrrdAlloc_nva(output->getNrrd(), nrrdTypeDouble, 1, nrrddims);
+    double* dataptr = reinterpret_cast<double *>(output->getNrrd()->data);
     // get all the values as doubles
     vfield->get_values(dataptr,size);
     
@@ -405,40 +410,38 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
     }
   }
   
-  algo->algo_end(); return (true);*/
+  return (true);
 }
 
-
+template <>
 bool 
-GetVectorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
+GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle input, NrrdDataHandle& output) const
 {
   VField* vfield = input->vfield();
   
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
   
-  output = new NrrdData();
+  output.reset(new NrrdData());
 
-  if (output.get_rep() == 0)
+  if (!output)
   {
-    algo->error("Could not allocate output nrrd");
-    algo->algo_end(); return (false);
+    error("Could not allocate output nrrd");
+    return (false);
   }
   
-  output->nrrd_ = nrrdNew();
-
-  if (output->nrrd_ == 0)
+  if (!output->getNrrd())
   {
-    algo->error("Could not allocate output nrrd");
-    algo->algo_end(); return (false);
+    error("Could not allocate output nrrd");
+    return (false);
   }
 
   size_t nrrddims[2]; 
   nrrddims[0] = 3;
   nrrddims[1] = size+esize;
 
-  nrrdAlloc_nva(output->nrrd_,nrrdTypeDouble,2,nrrddims);
-  double* dataptr = reinterpret_cast<double *>(output->nrrd_->data);
+  nrrdAlloc_nva(output->getNrrd(), nrrdTypeDouble, 2, nrrddims);
+  double* dataptr = reinterpret_cast<double *>(output->getNrrd()->data);
 
   Vector val;
   int k = 0;
@@ -464,52 +467,50 @@ GetVectorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
       k+=3;
     }  
   }
-  algo->algo_end(); return (true);*/
+  return (true);
 }
 
-
+template <>
 bool
-GetTensorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
+GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle input, NrrdDataHandle& output) const
 {
   VField* vfield = input->vfield();
   
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
 
-  output = new NrrdData();
+  output.reset(new NrrdData());
 
-  if (output.get_rep() == 0)
+  if (!output)
   {
-    algo->error("Could not allocate output nrrd");
-    algo->algo_end(); return (false);
+    error("Could not allocate output nrrd");
+    return (false);
   }
   
-  output->nrrd_ = nrrdNew();
-
-  if (output->nrrd_ == 0)
+  if (!output->getNrrd())
   {
-    algo->error("Could not allocate output nrrd");
-    algo->algo_end(); return (false);
+    error("Could not allocate output nrrd");
+    return (false);
   }
 
   size_t nrrddims[2]; 
   nrrddims[0] = 6;
   nrrddims[1] = size+esize;
 
-  nrrdAlloc_nva(output->nrrd_,nrrdTypeDouble,2,nrrddims);
-  double* dataptr = reinterpret_cast<double *>(output->nrrd_->data);
+  nrrdAlloc_nva(output->getNrrd(), nrrdTypeDouble, 2, nrrddims);
+  double* dataptr = reinterpret_cast<double *>(output->getNrrd()->data);
 
-  Tensor val;
+  Tensor tensor;
   int k = 0;
   for (VMesh::index_type i=0; i<size; i++)
   {
-    vfield->get_value(val,i);
-    dataptr[k] = static_cast<double>(val.mat_[0][0]);
-    dataptr[k+1] = static_cast<double>(val.mat_[0][1]);
-    dataptr[k+2] = static_cast<double>(val.mat_[0][2]);
-    dataptr[k+3] = static_cast<double>(val.mat_[1][1]);
-    dataptr[k+4] = static_cast<double>(val.mat_[1][2]);
-    dataptr[k+5] = static_cast<double>(val.mat_[2][2]);    
+    vfield->get_value(tensor,i);
+    dataptr[k] = tensor.val(0,0);
+    dataptr[k+1] = tensor.val(0,1);
+    dataptr[k+2] = tensor.val(0,2);
+    dataptr[k+3] = tensor.val(1,1);
+    dataptr[k+4] = tensor.val(1,2);
+    dataptr[k+5] = tensor.val(2,2);    
     k+=6;
   }
   
@@ -519,21 +520,15 @@ GetTensorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
     
     for (VMesh::index_type i=0; i<esize; i++)
     {
-      vfield->get_evalue(val,i);
-      dataptr[k] = static_cast<double>(val.mat_[0][0]);
-      dataptr[k+1] = static_cast<double>(val.mat_[0][1]);
-      dataptr[k+2] = static_cast<double>(val.mat_[0][2]);
-      dataptr[k+3] = static_cast<double>(val.mat_[1][1]);
-      dataptr[k+4] = static_cast<double>(val.mat_[1][2]);
-      dataptr[k+5] = static_cast<double>(val.mat_[2][2]);    
+      vfield->get_evalue(tensor,i);
+      dataptr[k] = tensor.val(0,0);
+      dataptr[k+1] = tensor.val(0,1);
+      dataptr[k+2] = tensor.val(0,2);
+      dataptr[k+3] = tensor.val(1,1);
+      dataptr[k+4] = tensor.val(1,2);
+      dataptr[k+5] = tensor.val(2,2);    
       k+=6;
     }  
   }
-  algo->algo_end(); return (true);
-
+  return (true);
 }
-
-
-
-} // namespace SCIRunAlgo
-#endif

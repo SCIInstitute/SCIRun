@@ -38,12 +38,16 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
+        ALGORITHM_PARAMETER_DECL(CalcMatrix);
+        ALGORITHM_PARAMETER_DECL(CalcNrrd);
+
         class SCISHARE GetFieldDataAlgo : public AlgorithmBase
         {
         public:
           GetFieldDataAlgo();
                 
           Datatypes::DenseMatrixHandle run(FieldHandle input_field) const;
+          NrrdDataHandle runNrrd(FieldHandle input_field) const;
 
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 
