@@ -41,6 +41,7 @@ DEALINGS IN THE SOFTWARE.
 #define CORE_ALGORITHMS_LEGACY_FORWARD_INSERTVOLTAGESOURCEALGO_H
 
 #include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Forward/share.h>
 
@@ -52,11 +53,13 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(InterpolateOutside);
         ALGORITHM_PARAMETER_DECL(GroundFirst);
 
-        class SCISHARE InsertVoltageSourceAlgo
+        class SCISHARE InsertVoltageSourceAlgo //: public AlgorithmBase
         {
         public:
           InsertVoltageSourceAlgo();
-          void ExecuteAlgorithm(FieldHandle& imeshH, FieldHandle& isourceH);
+          InsertVoltageSourceAlgo(bool groundFirst, bool outside);
+          void ExecuteAlgorithm(const FieldHandle& isourceH, FieldHandle& omeshH, Datatypes::DenseMatrixHandle& odirichletMatrix);
+          //virtual AlgorithmOutput run_generic(const AlgorithmInput&) const;
 
         private:
           bool outside_;

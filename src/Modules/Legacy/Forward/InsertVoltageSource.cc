@@ -41,6 +41,7 @@
 #include <Modules/Legacy/Forward/InsertVoltageSource.h>
 #include <Core/Algorithms/Legacy/Forward/InsertVoltageSourceAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -55,6 +56,7 @@ InsertVoltageSource::InsertVoltageSource() : Module(staticInfo_)
   INITIALIZE_PORT(InputFEMesh);
   INITIALIZE_PORT(VoltageSource);
   INITIALIZE_PORT(OutputFEMesh);
+  INITIALIZE_PORT(OutputDirichletMatrix);
 }
 
 void InsertVoltageSource::setStateDefaults()
@@ -69,8 +71,15 @@ void InsertVoltageSource::execute()
   if (needToExecute())
   {
     auto state = get_state();
-    //auto useLinear = state->getValue
-    sendOutput(OutputFEMesh, inputField);
+    auto groundFirst = state->getValue(Parameters::GroundFirst).toBool();
+    auto outside = state->getValue(Parameters::InterpolateOutside).toBool();
+    FieldHandle outputField(inputField->clone());
+    DenseMatrixHandle dirichletMatrix;
+    InsertVoltageSourceAlgo algo(groundFirst, outside);
+    algo.ExecuteAlgorithm(voltageSource, outputField, dirichletMatrix);
+
+    sendOutput(OutputFEMesh, outputField);
+    //sendOutput(OutputDirichletMatrix, dirichletMatrix);
 
   }
 }

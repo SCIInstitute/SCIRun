@@ -39,7 +39,7 @@ namespace SCIRun {
 
       class SCISHARE InsertVoltageSource : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
+        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
       {
       public:
         InsertVoltageSource();
@@ -49,6 +49,7 @@ namespace SCIRun {
         INPUT_PORT(0, InputFEMesh, LegacyField);
         INPUT_PORT(1, VoltageSource, LegacyField);
         OUTPUT_PORT(0, OutputFEMesh, LegacyField);
+        OUTPUT_PORT(1, OutputDirichletMatrix, Matrix);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
