@@ -49,6 +49,8 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, OutputMatrix, Matrix);
         OUTPUT_PORT(1, OutputNrrd, NrrdDataType);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }
