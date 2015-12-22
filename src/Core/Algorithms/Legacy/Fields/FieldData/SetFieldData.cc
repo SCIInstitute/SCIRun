@@ -226,12 +226,12 @@ bool SetFieldDataAlgo::setscalardata(VField* ofield, DenseMatrixHandle data, siz
 
     ofield->set_values(values);
 
-    if (numevals) 
+    if (numevals)
     {
       std::vector<double> values2(numevals);
       if (((nrows == 1)&&(ncols == numvals))) for (VField::index_type j=numnvals; j<numvals+numevals; j++) values[j] = (* data)(0,j);
       if (((ncols == 1)&&(nrows == numvals))) for (VField::index_type j=numnvals; j<numvals+numevals; j++) values[j] = (* data)(j,0);
-      ofield->set_evalues(values2);    
+      ofield->set_evalues(values2);
       //if (numevals) ofield->set_evalues(matrixdata,numevals);
     }
 
@@ -277,7 +277,7 @@ bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle data, siz
     {
       Vector v((* data)(0,i),(* data)(1,i),(* data)(2,i));
       ofield->set_evalue(v,i);
-    } 
+    }
   }
   else if (((nrows == 1) && (ncols == 3)) || ((ncols == 1) && (nrows == 3)))
   {
@@ -298,7 +298,7 @@ bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle data, siz
 bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
 {
   /// Fill field with Tensor values
-  /// Handle 6 by n data 
+  /// Handle 6 by n data
   if ((ncols == 6) && (nrows == numvals))
   {
     Vector v[6];
@@ -310,8 +310,8 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      v[0]=(* data)(i,0); v[1]=(* data)(i,1);	v[2]=(* data)(i,2);	  
-      v[3]=(* data)(i,3); v[4]=(* data)(i,4);	v[5]=(* data)(i,5);		  
+      v[0]=(* data)(i,0); v[1]=(* data)(i,1);	v[2]=(* data)(i,2);
+      v[3]=(* data)(i,3); v[4]=(* data)(i,4);	v[5]=(* data)(i,5);
       ofield->set_evalues(v,i);
     }
   }
@@ -326,8 +326,8 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      v[0]=(* data)(0,i); v[1]=(* data)(1,i);	v[2]=(* data)(2,i);	  
-      v[3]=(* data)(3,i); v[4]=(* data)(4,i);	v[5]=(* data)(5,i);		  
+      v[0]=(* data)(0,i); v[1]=(* data)(1,i);	v[2]=(* data)(2,i);
+      v[3]=(* data)(3,i); v[4]=(* data)(4,i);	v[5]=(* data)(5,i);
       ofield->set_evalues(v,i);
     }
   }
@@ -338,7 +338,7 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
     if ((ncols == 1) && (nrows == 6)) { v[0] = (*data)(0, 0); v[1] = (*data)(1, 0); v[2] = (*data)(2, 0); v[3] = (*data)(3, 0); v[4] = (*data)(4, 0); v[5] = (*data)(5, 0); }
     ofield->set_all_values(v);
   }
-  /// Handle 9 by n data 
+  /// Handle 9 by n data
   else if ((ncols == 9) && (nrows == numvals))
   {
     Vector v[9];
@@ -351,9 +351,9 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      v[0]=(* data)(i,0); v[1]=(* data)(i,1);	v[2]=(* data)(i,2);	  
+      v[0]=(* data)(i,0); v[1]=(* data)(i,1);	v[2]=(* data)(i,2);
       v[3]=(* data)(i,3); v[4]=(* data)(i,4);	v[5]=(* data)(i,5);
-      v[6]=(* data)(i,6); v[7]=(* data)(i,7);	v[8]=(* data)(i,8);		  
+      v[6]=(* data)(i,6); v[7]=(* data)(i,7);	v[8]=(* data)(i,8);
       ofield->set_evalues(v,i);
     }
   }
@@ -369,9 +369,9 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      v[0]=(* data)(0,i); v[1]=(* data)(1,i);	v[2]=(* data)(2,i);	  
+      v[0]=(* data)(0,i); v[1]=(* data)(1,i);	v[2]=(* data)(2,i);
       v[3]=(* data)(3,i); v[4]=(* data)(4,i);	v[5]=(* data)(5,i);
-      v[6]=(* data)(6,i); v[7]=(* data)(7,i);	v[8]=(* data)(8,i);		  
+      v[6]=(* data)(6,i); v[7]=(* data)(7,i);	v[8]=(* data)(8,i);
       ofield->set_evalues(v,i);
     }
   }
@@ -413,7 +413,7 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
   VMesh::size_type numelems = imesh->num_elems();
   VMesh::size_type numenodes = numnodes + numelems;
 
-  size_t numvals;
+  size_type numvals;
 
   bool found = verify_input_data(input_field, data, numvals, fi);
 
@@ -498,7 +498,7 @@ bool SetFieldDataV(FieldHandle output, NrrdDataHandle nrrd, const std::string& d
     for(VMesh::index_type idx=0; idx<num_values; idx++)
     {
       Vector v(data[k],data[k+1],data[k+2]); k += 3;
-      vfield->set_value(v,idx); 
+      vfield->set_value(v,idx);
     }
   }
   else if (datatype == "Tensor6")
@@ -507,8 +507,8 @@ bool SetFieldDataV(FieldHandle output, NrrdDataHandle nrrd, const std::string& d
     for(VMesh::index_type idx=0; idx<num_values; idx++)
     {
       Tensor tensor(data[k],data[k+1],data[k+2],data[k+3],data[k+4],data[k+5]);
-      k += 6;                                                                                     
-      vfield->set_value(tensor,idx); 
+      k += 6;
+      vfield->set_value(tensor,idx);
     }
   }
   else if (datatype == "Tensor7")
@@ -518,7 +518,7 @@ bool SetFieldDataV(FieldHandle output, NrrdDataHandle nrrd, const std::string& d
     {
       Tensor tensor(data[k+1],data[k+2],data[k+3],data[k+4],data[k+5],data[k+6]);
       k += 7;
-      vfield->set_value(tensor,idx); 
+      vfield->set_value(tensor,idx);
     }
   }
   else if (datatype == "Tensor9")
@@ -528,10 +528,10 @@ bool SetFieldDataV(FieldHandle output, NrrdDataHandle nrrd, const std::string& d
     {
       Tensor tensor(data[k],data[k+1],data[k+2],data[k+4],data[k+5],data[k+8]);
       k += 9;
-      vfield->set_value(tensor,idx); 
+      vfield->set_value(tensor,idx);
     }
   }
-  return (true);      
+  return (true);
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -541,13 +541,13 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
   if (!input)
   {
     error("No input field was provided");
-    return (false);  
+    return (false);
   }
 
   if (!(data.get_rep()))
   {
     error("No input matrix was provided");
-    return (false);    
+    return (false);
   }
 
   FieldInformation fi(input);
@@ -581,13 +581,13 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
     if (column_index >= 0) ncols = 1;
 
     /// do we have a scalar, vector, or tensor
-    if (ncols == 1) 
+    if (ncols == 1)
     {
-      std::string scalardatatype = get_option("scalardatatype");     
+      std::string scalardatatype = get_option("scalardatatype");
       fi.set_data_type(scalardatatype);
       found = true;
     }
-    else if (ncols == 3) 
+    else if (ncols == 3)
     {
       fi.make_vector();
       found = true;
@@ -624,24 +624,24 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
     found = true;
 
     /// do we have a scalar, vector, or tensor  ?
-    if (data->nrows() == 1) 
+    if (data->nrows() == 1)
     {
       std::string scalardatatype;
       get_option("scalardatatype",scalardatatype);
 
       fi.set_data_type(scalardatatype);
     }
-    else if (data->nrows() == 3) 
-    { 
-      fi.make_vector(); 
+    else if (data->nrows() == 3)
+    {
+      fi.make_vector();
     }
     else if ((data->nrows() == 6)||
       (data->nrows() == 7)||
-      (data->nrows() == 9)) 
-    { 
-      fi.make_tensor(); 
+      (data->nrows() == 9))
+    {
+      fi.make_tensor();
     }
-    else 
+    else
     {
       found = false;
     }
@@ -669,24 +669,24 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
     if (data->nrows() == 1)
     {
       found = true;
-      if (data->ncols() == 1) 
+      if (data->ncols() == 1)
       {
         std::string scalardatatype;
         get_option("scalardatatype",scalardatatype);
 
         fi.set_data_type(scalardatatype);
       }
-      else if (data->ncols() == 3) 
-      { 
-        fi.make_vector(); 
+      else if (data->ncols() == 3)
+      {
+        fi.make_vector();
       }
       else if ((data->ncols() == 6)||
         (data->nrows() == 7)||
-        (data->ncols() == 9)) 
-      {  
-        fi.make_tensor(); 
-      }    
-      else 
+        (data->ncols() == 9))
+      {
+        fi.make_tensor();
+      }
+      else
       {
         found = false;
       }
@@ -694,22 +694,22 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
     else if (data->ncols() == 1)
     {
       found = true;
-      if (data->nrows() == 1) 
+      if (data->nrows() == 1)
       {
         std::string scalardatatype;
         get_option("scalardatatype",scalardatatype);
 
         fi.set_data_type(scalardatatype);
       }
-      else if (data->nrows() == 3) 
-      { 
-        fi.make_vector(); 
+      else if (data->nrows() == 3)
+      {
+        fi.make_vector();
       }
       else if ((data->nrows() == 6)||
         (data->nrows() == 7)||
         (data->nrows() == 9))
-      { 
-        fi.make_tensor(); 
+      {
+        fi.make_tensor();
       }
       else
       {
@@ -727,11 +727,11 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
   output = CreateField(fi,input->mesh());
   CopyProperties(*input, *output);
 
-  if (!output) 
+  if (!output)
   {
     error("Could not create output field and output interface");
-    return (false);  
-  }  
+    return (false);
+  }
 
   VField* ofield = output->vfield();
 
@@ -750,7 +750,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
 
   double* matrixdata = densematrix->get_data_pointer();
   size_type nrows = densematrix->nrows();
-  size_type ncols = densematrix->ncols(); 
+  size_type ncols = densematrix->ncols();
 
   size_type numnvals = numvals;
   size_type numevals = 0;
@@ -784,7 +784,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
       else
       {
         error("Internal error (data not scalar)");
-        return (false);        
+        return (false);
       }
     }
 
@@ -814,12 +814,12 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
       {
         Vector v(matrixdata[i],matrixdata[i+numvals],matrixdata[i+2*numvals]);
         ofield->set_value(v,i);
-      }    
+      }
       for (VMesh::index_type i=0; i< numevals; i++)
       {
         Vector v(matrixdata[i],matrixdata[i+numvals],matrixdata[i+2*numvals]);
         ofield->set_evalue(v,i);
-      }    
+      }
     }
     else if (((nrows == 1)&&(ncols == 3))||((ncols == 1)&&(nrows == 3)))
     {
@@ -829,13 +829,13 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
     else
     {
       error("Internal error (data not vector)");
-      return (false);        
+      return (false);
     }
   }
   else if (fi.is_tensor())
   {
     /// Fill field with Tensor values
-    /// Handle 6 by n data 
+    /// Handle 6 by n data
     if ((ncols == 6)&&(nrows == numvals))
     {
       int k = 0;
@@ -878,7 +878,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
         matrixdata[3],matrixdata[4],matrixdata[5]);
       ofield->set_all_values(v);
     }
-    /// Handle 9 by n data 
+    /// Handle 9 by n data
     else if ((ncols == 9)&&(nrows == numvals))
     {
       int k = 0;
@@ -919,12 +919,12 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
       Tensor v(matrixdata[0],matrixdata[1],matrixdata[2],
         matrixdata[4],matrixdata[5],matrixdata[8]);
       ofield->set_all_values(v);
-    }    
+    }
     else
     {
       error("Internal error (data not tensor)");
-      return (false);        
-    }  
+      return (false);
+    }
   }
 
   return (true);
@@ -938,13 +938,13 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, NrrdDataHandle data, FieldHand
   if (!input)
   {
     error("No input field was provided");
-    return (false);  
+    return (false);
   }
 
   if (!data)
   {
     error("No input nrrd was provided");
-    return (false);    
+    return (false);
   }
 
   FieldInformation fi(input);
@@ -953,24 +953,24 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, NrrdDataHandle data, FieldHand
   VMesh::size_type numnodes = imesh->num_nodes();
   VMesh::size_type numelems = imesh->num_elems();
 
-  std::string output_datatype = "";   
+  std::string output_datatype = "";
 
   VMesh::size_type numvals = 0;
 
   /// If structured see if the nrrd looks like the mesh
-  if( imesh->is_structuredmesh() ) 
+  if( imesh->is_structuredmesh() )
   {
     VMesh::dimension_type dims;
     imesh->get_dimensions( dims );
 
     if( data->getNrrd()->dim   == dims.size() ||
-      data->getNrrd()->dim-1 == dims.size() ) 
+      data->getNrrd()->dim-1 == dims.size() )
     {
       numvals = 1;
 
       /// count number of entries, disregarding vector or tensor
       /// components
-      for (int d=data->getNrrd()->dim-1, m=dims.size()-1; m>=0; d--, m--) 
+      for (int d=data->getNrrd()->dim-1, m=dims.size()-1; m>=0; d--, m--)
       {
         numvals *= data->getNrrd()->axis[d].size;
       }
@@ -979,15 +979,15 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, NrrdDataHandle data, FieldHand
       /// the data is structured then it should match the mesh.
 
       /// Node check
-      if( numvals == numnodes ) 
+      if( numvals == numnodes )
       {
         fi.make_lineardata();
 
         /// check dimensions
-        for (int d=data->getNrrd()->dim-1, m=dims.size()-1; m>=0; d--, m--) 
+        for (int d=data->getNrrd()->dim-1, m=dims.size()-1; m>=0; d--, m--)
         {
           if (static_cast<Mesh::size_type>(data->getNrrd()->axis[d].size) !=
-            dims[m]) 
+            dims[m])
           {
             numvals = 0;
             break;
@@ -996,14 +996,14 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, NrrdDataHandle data, FieldHand
       }
 
       /// Element check
-      else if( numvals == numelems ) 
+      else if( numvals == numelems )
       {
         fi.make_constantdata();
 
         /// check dimensions
-        for (int d=data->getNrrd()->dim-1, m=dims.size()-1; m>=0; d--, m--) 
+        for (int d=data->getNrrd()->dim-1, m=dims.size()-1; m>=0; d--, m--)
         {
-          if (static_cast<Mesh::size_type>(data->getNrrd()->axis[d].size) != dims[m]-1) 
+          if (static_cast<Mesh::size_type>(data->getNrrd()->axis[d].size) != dims[m]-1)
           {
             numvals = 0;
             break;
@@ -1011,35 +1011,35 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, NrrdDataHandle data, FieldHand
         }
       }
       /// No match
-      else 
+      else
       {
         numvals = 0;
       }
 
-      if( numvals ) 
+      if( numvals )
       {
         if( data->getNrrd()->dim == dims.size() ||
-          data->getNrrd()->axis[0].size == 1 ) 
+          data->getNrrd()->axis[0].size == 1 )
         {
           if (get(Parameters::keepTypeCheckBox).toBool())
             fi.set_data_type(input->vfield()->get_data_type());
           else
             fi.set_data_type("double");
-        } 
-        else if ( data->getNrrd()->axis[0].size == 3 ) 
+        }
+        else if ( data->getNrrd()->axis[0].size == 3 )
         {
           output_datatype = "Vector";
           fi.make_vector();
-        } 
+        }
         else if ( data->getNrrd()->axis[0].size == 6 )
         {
           output_datatype = "Tensor6";
-          fi.make_tensor();        
+          fi.make_tensor();
         }
         else if ( data->getNrrd()->axis[0].size == 7 )
         {
           output_datatype = "Tensor7";
-          fi.make_tensor();        
+          fi.make_tensor();
         }
         else if ( data->getNrrd()->axis[0].size == 9 )
         {
@@ -1055,38 +1055,38 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, NrrdDataHandle data, FieldHand
   {
     if( data->getNrrd()->dim == 1 &&
       (static_cast<Mesh::size_type>(data->getNrrd()->axis[0].size) == numnodes ||
-      static_cast<Mesh::size_type>(data->getNrrd()->axis[0].size) == numelems) ) 
+      static_cast<Mesh::size_type>(data->getNrrd()->axis[0].size) == numelems) )
     {
 
       numvals = data->getNrrd()->axis[0].size;
 
       output_datatype = "Scalar";
-    } 
+    }
     else if( data->getNrrd()->dim == 2 &&
       (static_cast<Mesh::size_type>(data->getNrrd()->axis[1].size) == numnodes ||
-      static_cast<Mesh::size_type>(data->getNrrd()->axis[1].size) == numelems) ) 
+      static_cast<Mesh::size_type>(data->getNrrd()->axis[1].size) == numelems) )
     {
 
       numvals = data->getNrrd()->axis[1].size;
 
-      if( data->getNrrd()->axis[0].size == 1 ) 
+      if( data->getNrrd()->axis[0].size == 1 )
       {
         output_datatype = "Scalar";
-      } 
-      else if ( data->getNrrd()->axis[0].size == 3 ) 
+      }
+      else if ( data->getNrrd()->axis[0].size == 3 )
       {
         output_datatype = "Vector";
         fi.make_vector();
-      } 
+      }
       else if ( data->getNrrd()->axis[0].size == 6 )
       {
         output_datatype = "Tensor6";
-        fi.make_tensor();        
+        fi.make_tensor();
       }
       else if ( data->getNrrd()->axis[0].size == 7 )
       {
         output_datatype = "Tensor7";
-        fi.make_tensor();        
+        fi.make_tensor();
       }
       else if ( data->getNrrd()->axis[0].size == 9 )
       {
@@ -1122,20 +1122,20 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, NrrdDataHandle data, FieldHand
           warning("NrrdData dimensions do not match any of the fields dimensions");
           warning("except the total number so reshaping the dimensions to match.");
 
-          if ( data->getNrrd()->axis[0].size == 3 ) 
+          if ( data->getNrrd()->axis[0].size == 3 )
           {
             output_datatype = "Vector";
             fi.make_vector();
-          } 
+          }
           else if ( data->getNrrd()->axis[0].size == 6 )
           {
             output_datatype = "Tensor6";
-            fi.make_tensor();        
+            fi.make_tensor();
           }
           else if ( data->getNrrd()->axis[0].size == 7 )
           {
             output_datatype = "Tensor7";
-            fi.make_tensor();        
+            fi.make_tensor();
           }
           else if ( data->getNrrd()->axis[0].size == 9 )
           {
@@ -1185,5 +1185,5 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, NrrdDataHandle data, FieldHand
   }
 
   error("Nrrd datatype is not supported");
-  return (false); 
+  return (false);
 }
