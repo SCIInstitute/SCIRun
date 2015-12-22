@@ -21,7 +21,7 @@
 \chapter{SCIRun Overview} \label{overview}
 
 \begin{introduction}
-This tutorial demonstrates how to create new modules in SCIRun \SCIRunVersion.  It will walk through all the files needed and the basic module structure used by modules.  These instructions assume a basic understanding in C++ coding and other basic programing skills
+This tutorial demonstrates how to create new modules in SCIRun \SCIRunVersion.  It will walk through all the files needed and the basic module structure used by modules.  These instructions assume a basic understanding in C++ coding and other basic programming skills
 \end{introduction}
 
 \section{Software requirements}
@@ -112,7 +112,7 @@ See the examples in the following chapters for details.  %TODO reference other c
 The module configuration file contains all the information need for the module factory to create necessary linkage and helper files for module to be properly included into SCIRun.  
 Module configuration files should be located in \emph{src/Modules/Factory/Config/}.  
 It is a text file that describes fields specific to the module delimited by curly brackets.  
-There are three fields ``module", ``algorithm", and ``UI" and within each field are subfields ``name" and ``header", and others depending on the field.  
+There are three fields \verb|"module"|, \verb|"algorithm"|, and \verb|"UI"| and within each field are subfields \verb|"name"| and \verb|"header"|, and others depending on the field.  
 The following is an example that reflects the template files included in the source code.
 \begin{verbatim}
 {
@@ -135,10 +135,10 @@ The following is an example that reflects the template files included in the sou
 }
 \end{verbatim}
 This config file example would not build.  
-We will include specific examples that will build and work in following chapters of this tutorial (Chapters---). %TODO reference other chapters.
+We will include specific examples that will build and work in following chapters of this tutorial (Chapters~\ref{sec:ex_simple}, ~\ref{sec:ex_UI}, and ~\ref{sec:ex_algo}).
 
-As mentioned before, the UI and algorithm files are not required to generated a module, therefore the subfields for the ``algorithm" or ``UI" fields can changed to ``N/A" to indicate that these files do not exist.  
-Please refer to Section~\ref{} for an example.  %TODO reference other chapters.
+As mentioned before, the UI and algorithm files are not required to generated a module, therefore the subfields for the \verb|"algorithm"| or \verb|"UI"| fields can changed to \verb|"N/A"| to indicate that these files do not exist.  
+Please refer to Section~\ref{sec:examp_config} for an example. 
 
 \section{Module Source Code}
 \label{sec:module}
@@ -234,8 +234,8 @@ However, it can be better to do this within the module to control the exception.
 
 If there is a UI with the module in question, the state variables may be needed to pass data between the module and the UI.  
 State variables will need to be declared here as public (see Section~\ref{sec:connectUI} for an example).  
-The 'setStateDefault' function is how the default state variables are set.  
-If there is no UI and therefore no state variables, this function can be set to empty in this file and omitted from the .cc file.  
+The \verb|setStateDefault| function is how the default state variables are set.  
+If there is no UI and therefore no state variables, this function can be set to empty in this file (\verb|virtual void setStateDefaults() {};|) and omitted from the .cc file.  
 
 \subsection{Module Code File}
 \label{sec:modulecc}
@@ -394,9 +394,9 @@ void @ModuleName@Dialog::pull()
 The module dialog code is mostly for passing data between the module and the UI and changing the UI when require by the module.  
 Parameters and inputs can be passed straight to the algorithm, as templated in this example.  
 The 'pull' functions are optional to use data from the module and algorithm to either display in the UI or to use to change the options or appearance of the UI.  
-There can be other forms of 'pull', such as 'pullSpecial'
-A 'push' function can be used in conjunction with 'pull'.
-These functions, 'pull' and 'push' are automatic functions in the module UI.
+There can be other forms of 'pull', such as \verb|pullSpecial|
+A \verb|push| function can be used in conjunction with \verb|pull|.
+These functions, \verb|pull| and \verb|push| are automatic functions in the module UI.
 
 \section{Algorithm Code}
 \label{sec:algo}
@@ -494,7 +494,7 @@ AlgorithmOutput @AlgorithmName@Algo::run_generic(const
 This template shows the algorithm using some of the defined names from \emph{Core/Algorithms/Base/AlgorithmVariableNames.h}, using the Variable namespace.
 This allows for easy use of common inputs and output to the algorithm.  
 If other or more values are needed, they can be declared in the header.  
-Also of note, the default values for the UI are set in the '@AlgorithmName@Algo()' function, and then in the module code, the 'setStateDefault ' function pulls the values from the algorithm.  
+Also of note, the default values for the UI are set in the \verb|@AlgorithmName@Algo()| function, and then in the module code, the \verb|setStateDefault| function pulls the values from the algorithm.  
 This only works if the algorithm files are linked in the module configuration file. 
 
 There are several algorithms already implemented in SCIRun.  
@@ -657,7 +657,7 @@ SET(Modules_String_HEADERS
 
 After changing the CMakeList.txt file, build SCIRun using the build script, or if you have already built SCIRun recently, go to the \emph{SCIRun\_root/bin/SCIRun} directory and run make.  
 Take note of any build errors, if there is a problem in the with any module factory files, make sure that there are no mistakes in the the module configuration file and build again.  
-Check out the common build errors in section [TODO]. %TODO, add section reference
+Check out the common build errors in Section~\ref{sec:errors}.
 
 After SCIRun builds completely, Launch SCIRun and test the module.  
 You can use the PrintDatatype module to view the string that this module outputs. 
@@ -735,18 +735,18 @@ TestModuleSimpleUI::execute()
   É
   
 \end{verbatim}
-Another change you may notice is to remove the 'false' input in the constructor line:
+Another change you may notice is to remove the \verb|'false'| input in the constructor line:
 \begin{verbatim}
 TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
 \end{verbatim}
-The 'false' options means that there is no module.  
+The \verb|'false'| options means that there is no module.  
 Removing the options changes the input to 'true', which allows for a module UI.  
 If no UI file is found, a default UI will be used.  
 
 With these changes, we should try to build.  
 Make sure the files are added to the CMakeList.txt file in \emph{src/Modules/String/} as we showed in the previous chapter.  
 If there are build errors, check for spelling mismatches.
-Also, check out the common build errors in section [TODO]. %TODO, add section reference
+Also, check out the common build errors in Section~\ref{sec:errors}
 Once SCIRun is built, you can try to add the new module to the workspace. 
 SCIRun will give you a warning dialogue about not finding a UI file, so it will create a default one.
 This UI is not connected to anything, so it won't affect the module at all, but you should be able to open the UI and see it ( a slider and two buttons).
@@ -769,10 +769,10 @@ The naming convention often used is to add 'Dialog' to the end of the module nam
 Next, we need to use the QT editor to design a module UI.  
 Copy the QT module file from \emph{src/Interface/Modules/Template/ModuleDesignerFile.ui} to \emph{src/Interface/Modules/String/TestModuleSimpleUIDialog.ui}.  
 Open the \emph{TestModuleSimpleUIDialog.ui} file in the Qt editor, which provides a graphic method for modifying and compiling the design file.
-First, delete the check box and input scroll wheel widgets and delete the 'knob 2' label.
-Next, add a \emph{line edit widget} by finding it in the \emph{Widgdet Box} window (in the \emph{Input Widget} section) and clicking and dragging it next to the remaining label.  
-Change the text of the remaining label to 'My String:' or something similar.
-Finally, change the name of the of the \emph{line edit widget} to \emph{inputstring\_} and the name of the \emph{QDialog} object to \emph{TestModuleSimpleUIDialog}.  
+First, delete the check box and input scroll wheel widgets and delete the \verb|knob 2| label.
+Next, add a \verb|line edit widget| by finding it in the \emph{Widgdet Box} window (in the \emph{Input Widget} section) and clicking and dragging it next to the remaining label.  
+Change the text of the remaining label to \verb|My String:| or something similar.
+Finally, change the name of the of the \verb|line edit widget| to \verb|inputstring_| and the name of the \verb|QDialog| object to \emph{TestModuleSimpleUIDialog}.  
 This can be done in the \emph{Object Inspector} or in the \emph{Property Editor} when the appropriate object is clicked.  
 Figure~\ref{fig:simpleUI} shows what the module should look like in the Qt editor.
 
@@ -809,7 +809,7 @@ public:
 }}
 #endif
 \end{verbatim}
-The \emph{TestModuleSimpleUIDialog.cc} requires similar treatment, but will require the addition of few more changes.  Add and include for the module header file, change the namespace from 'Field' to 'StringManip', and delete the last two lines from the main function.
+The \emph{TestModuleSimpleUIDialog.cc} requires similar treatment, but will require the addition of few more changes.  Add and include for the module header file, change the namespace from \verb|Field| to \verb|StringManip|, and delete the last two lines from the main function.
 The code should be:
 \begin{verbatim}
 #include <Interface/Modules/String/TestModuleSimpleUIDialog.h>
@@ -876,13 +876,13 @@ This line needs to go near the end in the main function of the module dialog cod
 \begin{verbatim}
 addLineEditManager(inputstring_,TestModuleSimpleUI::FormatString);
 \end{verbatim}
-This function will read the value of 'inputstring\_' and set it to 'FormatString', which we have included as if it was part of the 'TestModuleSimpleUI' namespace.  
+This function will read the value of \verb|inputstring| and set it to \verb|FormatString|, which we have included as if it was part of the \verb|TestModuleSimpleUI| namespace.  
 We will need to include it as such, by adding it as a public function in the \emph{TestModuleSimpleUI.h} file.
 \begin{verbatim}
 static Core::Algorithms::AlgorithmParameterName FormatString;
 \end{verbatim}
-This should be the final declaration in the public list (after the 'staticInfo\_' declaration).
-Another change in this file is to modify the 'setStateDefault' function so that it is not empty.  
+This should be the final declaration in the public list (after the \verb|staticInfo_| declaration).
+Another change in this file is to modify the \verb|setStateDefault| function so that it is not empty.  
 Remove the curly brackets from this:
 \begin{verbatim}
 virtual void setStateDefaults() {};
@@ -908,7 +908,7 @@ void TestModuleSimpleUI::setStateDefaults()
 }
 \end{verbatim}
 With these three additions, the code should build.
-If you load the module, you should she the default message ("[Insert message here]") in the input field.  
+If you load the module, you should she the default message (\verb|"[Insert message here]"|) in the input field.  
 Changing this will still not affect the output because the execute function is still hard coded for a specific message.  
 
 Now we need to change the execute function to use the UI inputs, which is very simple.  
@@ -1136,7 +1136,7 @@ SortMatrix::execute()
 }
 \end{verbatim}
 Notice that the algorithm file header is included. 
-Also, most of the code in this file links the algorithm code directly to either the UI (with \emph{setStateIntFromAlgo}, and \emph{setAlgoIntFromState}) or SCIRun (\emph{sendOutputFromAlgorithm}). 
+Also, most of the code in this file links the algorithm code directly to either the UI (with \verb|setStateIntFromAlgo|, and \verb|setAlgoIntFromState|) or SCIRun (\verb|sendOutputFromAlgorithm|). 
 This allows most of the code to reside in the algorithm code and makes SCIRun more modular.
 
 The final module header and cc files are included in the source code in \emph{src/Modules/Examples/}.  \emph{SortMatrix.cc} and \emph{SortMatrix.h}.
@@ -1153,8 +1153,8 @@ We will make the \emph{SortMatrixDialog.ui} in the Qt editor as we did previousl
 It may be easier to copy a previously created UI file and modify it that to create one from scratch.  
 Copy the \emph{src/Interface/Template/ModuleDesignerFile.ui} file and rename it.
 Delete the widgets in the UI and add two radial button widgets (drag from the 'Widget Box' window).
-Change the labels to 'ascending' and 'descending', and the names (in the 'Object Inpector' window) to 'ascendButton\_' and 'descendButton\_'.  
-You will also need to make sure to change the name of the QDialog to 'SortMatrixDialog' (also in the 'Object Inpector').
+Change the labels to 'ascending' and 'descending', and the names (in the 'Object Inpector' window) to \verb|ascendButton_| and \verb|descendButton_|.  
+You will also need to make sure to change the name of the \verb|QDialog| to \verb|SortMatrixDialog| (also in the 'Object Inpector').
 The placement of the buttons and the size of the window and boxes can be adjusted in the 'Property Editor' window.
 The UI should look similar to Figure~\ref{fig:algoUI}.
 
@@ -1212,7 +1212,7 @@ SortMatrixDialog::SortMatrixDialog(const std::string& name,
   	Variables::Method);
 }
 \end{verbatim}
-The key difference in this file is the line that pulls the inputs from the UI using \emph{addRadioButtonGroupManager}.
+The key difference in this file is the line that pulls the inputs from the UI using \verb|addRadioButtonGroupManager|.
 This function pulls a set of radio buttons and creates a toggle switch to assign it to a variable.  
 The order of the button names is important, as that determines the integer values of the variable when it is pressed, i.e., in the order shown, ascending will be 0 and descending will be 1.
 
@@ -1263,16 +1263,16 @@ class SCISHARE SortMatrixAlgo : public AlgorithmBase
       }}}}
 #endif
 \end{verbatim}
-In this Algorithm, we have three functions to help implement the sorting algorithm, which will be called in the \emph{run\_generic} function.  
+In this Algorithm, we have three functions to help implement the sorting algorithm, which will be called in the \verb|run_generic| function.  
 
 The \emph{SortMatrixAlgo.cc} file contains the computation code for he module.
 There are five functions in it.
-The first \emph{SortMatrixAlgo()} sets up the defaults for the parameters that are set in the module UI.
-\emph{run\_generic} is the main function of the algorithm and the module.  
+The first \verb|SortMatrixAlgo()| sets up the defaults for the parameters that are set in the module UI.
+\verb|run\_generic| is the main function of the algorithm and the module.  
 It mostly takes the inputs from the module and sends the data to use in the helper functions.
-\emph{Sort} is the main helper function, which further processes the data into a format that be quickly sorted.  
-\emph{Quicksort} uses the output of \emph{Partition} to spilt the matrix into smaller and smaller chunks and recursively calls itself until the matrix is sorted.
-\emph{Partition} properly places the last entry in the matrix subset, with the values larger after and those lower before, and splits the matrix at that new place for the next iteration.  
+\verb|Sort| is the main helper function, which further processes the data into a format that be quickly sorted.  
+\verb|Quicksort| uses the output of \verb|Partition| to spilt the matrix into smaller and smaller chunks and recursively calls itself until the matrix is sorted.
+\verb|Partition| properly places the last entry in the matrix subset, with the values larger after and those lower before, and splits the matrix at that new place for the next iteration.  
 The code should be similar to this:
 \begin{verbatim}
 #include <Core/Algorithms/Math/SortMatrixAlgo.h>
@@ -1390,7 +1390,7 @@ SortMatrixAlgo::Partition(double* input, index_type lo, index_type hi) const
   return ind;
 }
 \end{verbatim}
-This algorithm uses the common inputs defined in the \emph{AlgorithmVariableNames.h} file with the Variable namespace (Variable:Method, Variable:InputMatrix, and Variable:OutputMatrix.  
+This algorithm uses the common inputs defined in the \emph{AlgorithmVariableNames.h} file with the Variable namespace (\verb|Variable:Method|, \verb|Variable:InputMatrix|, and \verb|Variable:OutputMatrix|.  
 This allows for fewer declarations in the header file and is slightly easier to use.  
 Also of note is that this algorithm is only implemented for dense matrices.
 This is because some support for sparse matrices hasn't been implemented at the time of writing this tutorial. 
@@ -1407,7 +1407,7 @@ Be sure to added all eight files to the appropriate \emph{CMakeList.txt} files i
 Just add each of the filenames to the appropriate lists within the \emph{CMakeList.txt} file, as shown in the previous examples (Sections~\ref{sec:testing},~\ref{sec:duplicate},~\&~\ref{sec:addUI})
 
 When creating new modules, it can be easier to added the code in a piecemeal fashion.
-This would entail get SCIRun to build with just the bare minimum of the algorithm code (only \emph{run\_generic} with no calls other functions) then to add the other functions in a step by step manner.  
+This would entail get SCIRun to build with just the bare minimum of the algorithm code (only \verb|run_generic| with no calls other functions) then to add the other functions in a step by step manner.  
 This allows for easier debugging and a more systematic process to get the module working.  
 Check Section~\ref{sec:errors} for common build problem.
 
@@ -1464,8 +1464,9 @@ Create a module configuration file (Section~\ref{sec:config}) for the module in 
 I may be easiest to copy an existing file and change it.
 Be sure that all the names match the appropriate names of other files and fields in other files.
 It will be easier if the naming convention shown in Section~\ref{sec:config} (name, nameDialog, nameAlgo, etc.)
-Leave fields blank with "N/A".
+Leave fields blank with \verb|"N/A"|.
 For now, it can help to only fill in the first section \verb|"module"|, as we will be adding the UI and the algorithm piece by piece.  
+Commit the changes to the local branch for the module.
 
 \subsection{Create a Module Header file}
 
@@ -1475,6 +1476,7 @@ The header file needs to be in the same location as the module .cc file (next Se
 Change all the references to match the name of the module.
 Change the port names, number, and type.
 Make sure all functions used in the module code are declared in the header.  
+Commit the changes to the local branch for the module.
 
 \subsection{Get Module to Build Without Functionality}
 
@@ -1495,7 +1497,10 @@ Change the module constructor (\verb|@modulename@::@modulename@()| in the templa
 Add \verb|staticInfo_| varible as in Section~\ref{sec:modulecc}.
 Add a blank \verb|setStateDefaults()| function:
 \begin{verbatim}
-void @ModuleName@::setStateDefaults(){ }
+void @ModuleName@::setStateDefaults()
+{
+ 
+}
 \end{verbatim}
 or, if there is no module UI planned, add empty curly brackets to the header file declaration as discussed in Section~\ref{sec:header}.  
 
@@ -1511,8 +1516,9 @@ The goal of building the code at this point it to make sure that the code which 
 Once SCIRun builds, open it and find the new module.  
 There will probably be a warning about creating UI because the code is expecting one and there isn't one.  
 Make sure all the ports are there and are correctly names (hover the mouse over the port).  
+Commit all changes to the local branch.
 
-If there is no UI planned for this module, add a `false' input to the module constructor (Sections~\ref{sec:modulecc}~\&~\ref{sec:examp_source}).  
+If there is no UI planned for this module, add a \verb|'false'| input to the module constructor (Sections~\ref{sec:modulecc}~\&~\ref{sec:examp_source}).  
 Otherwise, continue with the next step.
 
 \subsection{Add Module UI}
@@ -1538,6 +1544,7 @@ Try to build SCIRun. If there are any errors, see Section~\ref{sec:errors} for i
 Once SCIRun is built, pull up the module and check the module UI.  
 There will not be any functionality or defaults set, but the look should be correct.  
 If the UI is correct, the UI code should be complete.
+Commit all changes to the local branch.
 
 \subsection{Add Module Algorithm Files}
 
@@ -1555,6 +1562,7 @@ Now fill out the algorithm section of the module configuration file.
 Add the algorithm code and header files to the \emph{CMakeList.txt} file in the directory that the algorithm code is in (or possibly the parent directory).  
 Include the algorithm header in the module code.  
 Build SCIRun. If there are no build errors, start adding the commented out code as described in the next section.
+Commit all changes to the local branch.
 
 \subsection{Add Module and Algorithm Functionality}
 
@@ -1575,6 +1583,7 @@ When converting the module code, if may be easier to start on the more standardi
 For example, it may be easier to get the input and output calls working (as in Chapter~\ref{sec:ex_simple}), and then work on making the output what it needs to.  
 Then, if there is algorithm code for the module, start by getting the algorithm call in the module code working with the algorithm code commented out, then work on the algorithm code.
 See Sections~\ref{sec:changes}~\&~\ref{sec:errors} for ideas to convert and fix specific functions and pieces of code.  
+Commit all changes to the local branch.
 
 \subsection{Module Testing}
 
@@ -1587,6 +1596,7 @@ In addition to making sure that the module works as expected, the module will ne
 A regression testing network and unit test code is needed for the module.  
 The testing network should show different uses of the module if there are different function. 
 For unit testing see Chapter~\ref{sec:unit_tests} for information on creating unit test for the converted module.  
+Commit all test, including the test networks, to the local branch.
 
 \subsection{Module Documentation}
 
@@ -1604,19 +1614,30 @@ To make a pull request, there is usually a short cut on the main github page of 
 Add some comments to the developers to know what to look for when reviewing the code. 
 If you have changes to make, either that you noticed or requested by the developer, just commit it to the same branch and push it github and the pull request will track the changes until it is merged.  
 
-
 \section{Common Function Changes}
 \label{sec:changes}
 
-\verb|if (input.get_rep() == 0)|
+\begin{tabular}{|l|l|l|}
+\hline
+\bf{SCIRun4} & \bf{SCIRun 5} & \bf{Notes}\\ 
+\hline
+\verb|if (input.get_rep() == 0)| & \verb|if (!input)| & checks for an empty handle\\
+\hline
+\end{tabular}
 
 \section{Common Build Errors}
 \label{sec:errors}
 
+\begin{itemize}
+\item
 \begin{verbatim}
 ConvertMeshToPointCloudDialog.h:32:10: fatal error: 
       'Interface/Modules/Field/ui_ConvertMeshToPointCloudDialog.h' file not found
-      \end{verbatim}
+\end{verbatim}
+In this instance, the path to the header is misspelled.
+
+
+\end{itemize}
       
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
