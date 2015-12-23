@@ -95,6 +95,7 @@ namespace SCIRun {
             void inputShiftKeyDown(bool shiftDown);
             
             /// \todo Selecting objects...
+			void select(const glm::ivec2& pos, std::list<Graphics::Datatypes::GeometryHandle> &objList, int port);
             
             /// \todo Obtaining data from mesh objects in order to spatially partition
             ///       them and provide quick object feedback.
