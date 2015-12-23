@@ -123,7 +123,7 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
  * @param v The input value from raw data that will be transformed (usually into [0,1] space).
  * @return The scalar double value transformed into ColorMap space from raw data.
  */
-double ColorMap::getTransformedColor(double f) const
+double ColorMap::getTransformedValue(double f) const
 {
   /////////////////////////////////////////////////
   //TODO: this seemingly useless code fixes a nasty crash bug on Windows. Don't delete it until a proper fix is implemented!
@@ -167,10 +167,24 @@ double ColorMap::getTransformedColor(double f) const
  */
 ColorRGB ColorMap::getColorMapVal(double v) const
 {
-  double f = getTransformedColor(v);
+  double f = getTransformedValue(v);
   //now grab the RGB
-  return color_->getColorMapVal(f);
+  auto colorWithoutAlpha = color_->getColorMapVal(f);
+  //TODO:
+  //return applyAlpha(f, colorWithoutAlpha);
+  return colorWithoutAlpha;
 }
+/*
+ColorRGB applyAlpha(double transformed, colorWithoutAlpha)
+...easy
+
+
+double alpha(double transformedValue)
+{
+  // interpolate in alphaLookup_
+}
+*/
+
 /**
  * @name valueToColor
  * @brief Takes a scalar value and directly passes into getColorMap.

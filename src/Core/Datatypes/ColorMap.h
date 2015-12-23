@@ -52,6 +52,7 @@ namespace Datatypes {
       const std::string& name = "Rainbow", const size_t resolution = 256,
                         const double shift = 0.0, const bool invert = false,
                         const double rescale_scale = .5, const double rescale_shift = 1.);
+                        //TODO: pass in alpha vector
     virtual ColorMap* clone() const;
 
     ColorMapStrategyHandle getColorStrategy() const { return color_; }
@@ -71,7 +72,7 @@ namespace Datatypes {
   private:
     ///<< Internal functions.
     Core::Datatypes::ColorRGB getColorMapVal(double v) const;
-    double getTransformedColor(double v) const;
+    double getTransformedValue(double v) const;
 
     ColorMapStrategyHandle color_;
     ///<< The colormap's name.
@@ -86,6 +87,8 @@ namespace Datatypes {
     double rescale_scale_;
     ///<< Rescaling shift (usually -data_min). Shift happens before scale.
     double rescale_shift_;
+
+    std::vector<double> alphaLookup_;
   };
 
   class SCISHARE ColorMapStrategy
@@ -93,6 +96,14 @@ namespace Datatypes {
   public:
     virtual ~ColorMapStrategy() {}
     virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const = 0;
+  };
+
+  //TODO: not sure this needs to be abstract
+  class SCISHARE AlphaMapping
+  {
+  public:
+    virtual ~AlphaMapping() {}
+    virtual double alpha(double transformedValue) const = 0;
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable

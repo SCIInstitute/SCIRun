@@ -50,6 +50,8 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   addDoubleSpinBoxManager(shiftSpin_, Parameters::ColorMapShift);
   addCheckBoxManager(invertCheck_, Parameters::ColorMapInvert);
 
+  //TODO: hook up mapping between alpha graph and vector of doubles stored in state.
+
   connect(colorMapNameComboBox_, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(updateColorMapPreview(const QString&)));
   connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(setShiftSlider(double)));
   connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(setResolutionSlider(int)));
@@ -83,6 +85,7 @@ void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
 void CreateStandardColorMapDialog::previewClicked(int x, int y)
 {
   qDebug() << "color map clicked:" << x << y;
+  //TODO: update alpha vector between changed points.
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview()
