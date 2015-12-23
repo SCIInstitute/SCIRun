@@ -393,7 +393,6 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
 
 FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle data) const
 {
-
   if (!input_field)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not obtain input field");
