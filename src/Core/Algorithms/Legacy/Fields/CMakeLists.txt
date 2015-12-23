@@ -225,15 +225,14 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
   Core_Geometry_Primitives
   Core_Basis
   Algorithms_Math
-  #${SCI_TEEM_LIBRARY}
 )
 
 IF(FALSE)
-IF(WITH_TETGEN)
-  TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
-     ${SCI_TETGEN_LIBRARY}
-  )
-ENDIF(WITH_TETGEN)
+  IF(WITH_TETGEN)
+    TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
+      ${TETGEN_LIBRARY}
+    )
+  ENDIF()
 ENDIF()
 
 IF(BUILD_SHARED_LIBS)
