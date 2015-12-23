@@ -43,8 +43,3 @@ ADD_SUBDIRECTORY(cleaver)
 
 MESSAGE(STATUS "Configuring libxml2")
 ADD_SUBDIRECTORY(libxml2)
-
-IF(WITH_TETGEN)
-  MESSAGE(STATUS "Configuring tetgen")
-  ADD_SUBDIRECTORY(tetgen)
-ENDIF(WITH_TETGEN)

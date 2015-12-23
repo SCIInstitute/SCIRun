@@ -43,7 +43,7 @@
 #include <Dataflow/Network/Module.h>
 
 #define TETLIBRARY   // Required definition for use of tetgen library
-#include <tetgen/tetgen.h>
+#include <tetgen.h>
 
 #include <sstream>
 
