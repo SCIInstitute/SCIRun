@@ -267,7 +267,6 @@ void PythonInterpreter::initialize_eventhandler()
   Py_SetProgramName(const_cast< wchar_t* >(this->private_->programName()));
 
   PRINT_PY_INIT_DEBUG(4);
-  boost::filesystem::path lib_path = Application::Instance().executablePath().parent_path();
   //std::wcout << "lib_path: " << lib_path.wstring() << std::endl;
   std::wstringstream lib_paths;
 #if defined( _WIN32 )
@@ -277,6 +276,7 @@ void PythonInterpreter::initialize_eventhandler()
 #endif
   PRINT_PY_INIT_DEBUG(5);
 #if defined( __APPLE__ )
+  boost::filesystem::path lib_path = Application::Instance().executablePath().parent_path();
   std::vector<boost::filesystem::path> lib_path_list;
   // relative paths
   lib_path_list.push_back(lib_path.parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
@@ -308,7 +308,8 @@ void PythonInterpreter::initialize_eventhandler()
 
   Py_SetPath( lib_paths.str().c_str() );
 #elif defined (_WIN32)
-  boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH / PYTHONNAME;
+  boost::filesystem::path lib_path = Application::Instance().executablePath();
+  boost::filesystem::path top_lib_path = lib_path / PYTHONPATH / PYTHONNAME;
   //std::cout << "top_lib_path: " << top_lib_path.string() << std::endl;
   boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
   //std::cout << "dynload_lib_path: " << dynload_lib_path.string() << std::endl;
@@ -321,7 +322,8 @@ void PythonInterpreter::initialize_eventhandler()
   PRINT_PY_INIT_DEBUG(6);
 #else
   // linux...
-  boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH;
+  boost::filesystem::path lib_path = Application::Instance().executablePath();
+  boost::filesystem::path top_lib_path = lib_path / PYTHONPATH;
   boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
   boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
   boost::filesystem::path plat_lib_path = top_lib_path / "plat-linux";
