@@ -42,8 +42,8 @@ namespace SCIRun {
       {
       public:
         ReportStringInfo();
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() {}
+        virtual void setStateDefaults() {}
         
         INPUT_PORT(0, Full_Filename, String);
         

@@ -44,22 +44,12 @@ using namespace SCIRun;
 
 const ModuleLookupInfo CalculateNodeLocationFrequency::staticInfo_("CalculateNodeLocationFrequency", "NewField", "SCIRun");
 
-#if 0
-const AlgorithmParameterName CreateLatVol::XSize("XSize");
-const AlgorithmParameterName CreateLatVol::YSize("YSize");
-const AlgorithmParameterName CreateLatVol::ZSize("ZSize");
-const AlgorithmParameterName CreateLatVol::PadPercent("PadPercent");
-const AlgorithmParameterName CreateLatVol::DataAtLocation("DataAtLocation");
-const AlgorithmParameterName CreateLatVol::ElementSizeNormalized("ElementSizeNormalized");
-
-CreateLatVol::CreateLatVol()
+CalculateNodeLocationFrequency::CalculateNodeLocationFrequency()
   : Module(staticInfo_)
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(LatVolSize);
-  INITIALIZE_PORT(OutputField);
 }
 
+#if 0
 void CreateLatVol::setStateDefaults()
 {
   auto state = get_state();

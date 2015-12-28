@@ -25,6 +25,20 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  *  DEALINGS IN THE SOFTWARE.
  */
+
+#include <Modules/Legacy/String/JoinStrings.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Dataflow::Networks;
+
+const ModuleLookupInfo JoinStrings::staticInfo_("JoinStrings", "String", "SCIRun");
+
+JoinStrings::JoinStrings() : Module(staticInfo_)
+{
+
+}
+
 #if 0
 #include <Core/Datatypes/String.h>
 

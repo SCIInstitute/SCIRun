@@ -42,7 +42,7 @@ namespace SCIRun {
       {
       public:
         GetNetworkFileName();
-        virtual void execute();
+        virtual void execute() {}
         virtual void setStateDefaults() {}
         
         OUTPUT_PORT(0, Pathname, String);

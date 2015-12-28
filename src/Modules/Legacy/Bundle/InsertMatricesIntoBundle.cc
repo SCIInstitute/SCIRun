@@ -26,6 +26,26 @@
   DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Bundle/InsertMatricesIntoBundle.h>
+
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+
+const ModuleLookupInfo InsertMatricesIntoBundle::staticInfo_("InsertMatricesIntoBundle", "Bundle", "SCIRun");
+
+InsertMatricesIntoBundle::InsertMatricesIntoBundle()
+  : Module(staticInfo_)
+{
+}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Bundle.h>

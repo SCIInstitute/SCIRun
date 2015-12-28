@@ -42,8 +42,8 @@ namespace SCIRun {
       {
       public:
         JoinStrings();
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() {}
+        virtual void setStateDefaults() {}
         
         INPUT_PORT_DYNAMIC(0, Full_Filename, String);
         OUTPUT_PORT(0, Pathname, String);

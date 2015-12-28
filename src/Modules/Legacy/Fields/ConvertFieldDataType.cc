@@ -28,6 +28,17 @@
 	
 #include <Modules/Legacy/Fields/ConvertFieldDataType.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+
+const ModuleLookupInfo ConvertFieldDataType::staticInfo_("ConvertFieldDataType", "ChangeFieldData", "SCIRun");
+
+ConvertFieldDataType::ConvertFieldDataType() : Module(staticInfo_)
+{
+
+}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 // Include the algorithm

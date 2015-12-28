@@ -25,6 +25,27 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+#include <Modules/Legacy/Bundle/InsertStringsIntoBundle.h>
+
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+
+const ModuleLookupInfo InsertStringsIntoBundle::staticInfo_("InsertStringsIntoBundle", "Bundle", "SCIRun");
+
+InsertStringsIntoBundle::InsertStringsIntoBundle()
+  : Module(staticInfo_)
+{
+}
+
 #if 0
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Bundle.h>

@@ -26,6 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 /// @todo Documentation Modules/Legacy/String/GetNetworkFileName.cc
+
+#include <Modules/Legacy/String/GetNetworkFileName.h>
+
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+
+const ModuleLookupInfo GetNetworkFileName::staticInfo_("GetNetworkFileName", "String", "SCIRun");
+
+GetNetworkFileName::GetNetworkFileName()
+  : Module(staticInfo_)
+{
+}
+
 #if 0
 #include <Core/Util/Environment.h>
 

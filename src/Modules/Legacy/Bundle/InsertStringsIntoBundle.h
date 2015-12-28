@@ -42,8 +42,8 @@ namespace SCIRun {
       {
       public:
         InsertStringsIntoBundle();
-        virtual void setStateDefaults();
-        virtual void execute();
+        virtual void setStateDefaults() {}
+        virtual void execute() {}
 
         INPUT_PORT(0, InputBundle, Bundle);
         INPUT_PORT_DYNAMIC(1, InputStrings, String);
@@ -52,7 +52,7 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName StringNameList;
         static const Core::Algorithms::AlgorithmParameterName StringNames[];
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
         static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
       };

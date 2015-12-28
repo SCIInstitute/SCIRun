@@ -26,6 +26,26 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
+#include <Modules/Legacy/String/ReportStringInfo.h>
+
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+
+const ModuleLookupInfo ReportStringInfo::staticInfo_("ReportStringInfo", "String", "SCIRun");
+
+ReportStringInfo::ReportStringInfo()
+  : Module(staticInfo_)
+{
+}
+
 #if 0
 #include <Core/Datatypes/String.h>
 #include <Dataflow/Network/Ports/StringPort.h>
