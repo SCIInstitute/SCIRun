@@ -97,6 +97,7 @@ namespace SCIRun {
       void sendGeometryFeedbackToState(int x, int y);
 
     protected:
+      virtual void mousePressEvent(QMouseEvent* event);
       virtual void closeEvent(QCloseEvent* evt) override;
       virtual void showEvent(QShowEvent* evt) override;
       virtual void hideEvent(QHideEvent* evt) override;

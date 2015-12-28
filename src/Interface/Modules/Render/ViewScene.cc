@@ -118,6 +118,13 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 }
 
+void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
+{
+	auto spire = mSpire.lock();
+	std::list<Graphics::Datatypes::GeometryHandle> objList;
+	spire->select(glm::ivec2(event->x(), event->y()), objList, 0);
+}
+
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 {
 	// NOTE: At one point this was required because the renderer was
