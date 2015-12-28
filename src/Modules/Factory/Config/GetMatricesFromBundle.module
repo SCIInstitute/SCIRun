@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetMatricesFromBundle",
+    "namespace": "Bundles",
+    "status": "Converted",
+    "description": "Retrieves a matrix object from a bundle",
+    "header": "Modules/Legacy/Bundle/GetMatricesFromBundle.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}
