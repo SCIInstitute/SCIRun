@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_BUNDLE_GETMATRICESFROMBUNDLE_H__
-#define MODULES_LEGACY_BUNDLE_GETMATRICESFROMBUNDLE_H__
+#ifndef MODULES_LEGACY_BUNDLE_INSERTSTRINGSINTOBUNDLE_H__
+#define MODULES_LEGACY_BUNDLE_INSERTSTRINGSINTOBUNDLE_H__
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Bundle/share.h>
@@ -35,29 +35,26 @@
 namespace SCIRun {
   namespace Modules {
     namespace Bundles {
-
-      /// @class GetMatricesFromBundle
-      /// @brief This module retrieves a matrix object from a bundle.
-
-      class SCISHARE GetMatricesFromBundle : public Dataflow::Networks::Module,
-        public Has1InputPort<BundlePortTag>,
-        public Has7OutputPorts<BundlePortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>
+      
+      class SCISHARE InsertStringsIntoBundle : public Dataflow::Networks::Module,
+        public Has2InputPorts<BundlePortTag, DynamicPortTag<StringPortTag>>,
+        public Has1OutputPort<BundlePortTag>
       {
       public:
-        GetMatricesFromBundle();
-        virtual void setStateDefaults() {}
-        virtual void execute() {}
+        InsertStringsIntoBundle();
+        virtual void setStateDefaults();
+        virtual void execute();
 
         INPUT_PORT(0, InputBundle, Bundle);
+        INPUT_PORT_DYNAMIC(1, InputStrings, String);
         OUTPUT_PORT(0, OutputBundle, Bundle);
-        OUTPUT_PORT(1, matrix1, Matrix);
-        OUTPUT_PORT(2, matrix2, Matrix);
-        OUTPUT_PORT(3, matrix3, Matrix);
-        OUTPUT_PORT(4, matrix4, Matrix);
-        OUTPUT_PORT(5, matrix5, Matrix);
-        OUTPUT_PORT(6, matrix6, Matrix);
+
+        static Core::Algorithms::AlgorithmParameterName StringNameList;
+        static const Core::Algorithms::AlgorithmParameterName StringNames[];
 
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
       };
 
     }

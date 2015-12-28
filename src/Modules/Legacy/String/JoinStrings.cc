@@ -25,7 +25,7 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  *  DEALINGS IN THE SOFTWARE.
  */
- 
+#if 0
 #include <Core/Datatypes/String.h>
 
 #include <Dataflow/Network/Ports/StringPort.h>
@@ -79,3 +79,4 @@ JoinStrings::execute()
 } // End namespace SCIRun
 
 
+#endif

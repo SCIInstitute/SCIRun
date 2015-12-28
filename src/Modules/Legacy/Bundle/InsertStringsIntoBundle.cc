@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+#if 0
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Bundle.h>
 
@@ -163,3 +163,4 @@ void InsertStringsIntoBundle::execute()
   }
 }
 
+#endif

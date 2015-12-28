@@ -29,11 +29,11 @@
 # CMakeLists.txt for Dataflow/Modules/String
 
 SET(Modules_Legacy_String_SRCS
-  #GetNetworkFileName.cc
+  GetNetworkFileName.cc
   #ChooseString.cc
   #CreateString.cc
-  #ReportStringInfo.cc
-  #JoinStrings.cc
+  ReportStringInfo.cc
+  JoinStrings.cc
   PrintMatrixIntoString.cc
   PrintStringIntoString.cc
   #GetFileName.cc
@@ -44,6 +44,10 @@ SET(Modules_Legacy_String_HEADERS
   PrintMatrixIntoString.h
   PrintStringIntoString.h
   SplitFileName.h
+  ReportStringInfo.h
+  JoinStrings.h
+  GetNetworkFileName.h
+  share.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_String ${Modules_Legacy_String_SRCS} ${Modules_Legacy_String_HEADERS})

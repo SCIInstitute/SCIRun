@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,42 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_BUNDLE_GETMATRICESFROMBUNDLE_H__
-#define MODULES_LEGACY_BUNDLE_GETMATRICESFROMBUNDLE_H__
+#include <iostream>
+#include <Modules/Basic/ChooseInput.h>
+#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/String.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Bundle/share.h>
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Bundles {
+const ModuleLookupInfo ChooseInput::staticInfo_("ChooseInput", "Basic", "SCIRun");
 
-      /// @class GetMatricesFromBundle
-      /// @brief This module retrieves a matrix object from a bundle.
-
-      class SCISHARE GetMatricesFromBundle : public Dataflow::Networks::Module,
-        public Has1InputPort<BundlePortTag>,
-        public Has7OutputPorts<BundlePortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>
-      {
-      public:
-        GetMatricesFromBundle();
-        virtual void setStateDefaults() {}
-        virtual void execute() {}
-
-        INPUT_PORT(0, InputBundle, Bundle);
-        OUTPUT_PORT(0, OutputBundle, Bundle);
-        OUTPUT_PORT(1, matrix1, Matrix);
-        OUTPUT_PORT(2, matrix2, Matrix);
-        OUTPUT_PORT(3, matrix3, Matrix);
-        OUTPUT_PORT(4, matrix4, Matrix);
-        OUTPUT_PORT(5, matrix5, Matrix);
-        OUTPUT_PORT(6, matrix6, Matrix);
-
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
-
-    }
-  }
+ChooseInput::ChooseInput()
+  : Module(staticInfo_)
+{
+  INITIALIZE_PORT(Input);
 }
 
-#endif
+void ChooseInput::setStateDefaults()
+{
+
+}
+
+void ChooseInput::execute()
+{
+
+}

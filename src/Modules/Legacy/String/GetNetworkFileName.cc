@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 /// @todo Documentation Modules/Legacy/String/GetNetworkFileName.cc
-
+#if 0
 #include <Core/Util/Environment.h>
 
 #include <Dataflow/Network/Module.h>
@@ -70,3 +70,4 @@ GetNetworkFileName::execute()
 } // End namespace SCIRun
 
 
+#endif

@@ -26,6 +26,7 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
+#if 0
 #include <Core/Datatypes/String.h>
 #include <Dataflow/Network/Ports/StringPort.h>
 #include <Dataflow/Network/Module.h>
@@ -82,3 +83,4 @@ ReportStringInfo::execute()
 } // End namespace SCIRun
 
 
+#endif

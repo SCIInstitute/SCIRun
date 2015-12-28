@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,40 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_BUNDLE_GETMATRICESFROMBUNDLE_H__
-#define MODULES_LEGACY_BUNDLE_GETMATRICESFROMBUNDLE_H__
+#ifndef MODULES_FIELDS_CALCULATENODELOCATIONFREQUENCY_H__
+#define MODULES_FIELDS_CALCULATENODELOCATIONFREQUENCY_H__
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Bundle/share.h>
+#include <Modules/Fields/share.h>
 
 namespace SCIRun {
   namespace Modules {
-    namespace Bundles {
+    namespace Fields {
 
-      /// @class GetMatricesFromBundle
-      /// @brief This module retrieves a matrix object from a bundle.
-
-      class SCISHARE GetMatricesFromBundle : public Dataflow::Networks::Module,
-        public Has1InputPort<BundlePortTag>,
-        public Has7OutputPorts<BundlePortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>
+      class SCISHARE CalculateNodeLocationFrequency : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
       {
       public:
-        GetMatricesFromBundle();
-        virtual void setStateDefaults() {}
+        CalculateNodeLocationFrequency();
+
         virtual void execute() {}
+        virtual void setStateDefaults() {}
 
-        INPUT_PORT(0, InputBundle, Bundle);
-        OUTPUT_PORT(0, OutputBundle, Bundle);
-        OUTPUT_PORT(1, matrix1, Matrix);
-        OUTPUT_PORT(2, matrix2, Matrix);
-        OUTPUT_PORT(3, matrix3, Matrix);
-        OUTPUT_PORT(4, matrix4, Matrix);
-        OUTPUT_PORT(5, matrix5, Matrix);
-        OUTPUT_PORT(6, matrix6, Matrix);
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, OutputField, LegacyField);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        //static const Core::Algorithms::AlgorithmParameterName XSize;
+        //static const Core::Algorithms::AlgorithmParameterName YSize;
+        //static const Core::Algorithms::AlgorithmParameterName ZSize;
+        //static const Core::Algorithms::AlgorithmParameterName PadPercent;
+        //static const Core::Algorithms::AlgorithmParameterName DataAtLocation;
+        //static const Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
+        
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
-
     }
   }
 }

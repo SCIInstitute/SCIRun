@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,42 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_BUNDLE_GETMATRICESFROMBUNDLE_H__
-#define MODULES_LEGACY_BUNDLE_GETMATRICESFROMBUNDLE_H__
+#ifndef MODULES_BASIC_CHOOSEINPUT_H
+#define MODULES_BASIC_CHOOSEINPUT_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Bundle/share.h>
+#include <Modules/Basic/share.h>
 
 namespace SCIRun {
   namespace Modules {
-    namespace Bundles {
+    namespace Basic {
 
-      /// @class GetMatricesFromBundle
-      /// @brief This module retrieves a matrix object from a bundle.
-
-      class SCISHARE GetMatricesFromBundle : public Dataflow::Networks::Module,
-        public Has1InputPort<BundlePortTag>,
-        public Has7OutputPorts<BundlePortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>
+      class SCISHARE ChooseInput : public SCIRun::Dataflow::Networks::Module,
+        public Has1InputPort<DatatypePortTag>,
+        public HasNoOutputPorts
       {
       public:
-        GetMatricesFromBundle();
-        virtual void setStateDefaults() {}
-        virtual void execute() {}
+        ChooseInput();
+        virtual void execute();
+        virtual void setStateDefaults();
 
-        INPUT_PORT(0, InputBundle, Bundle);
-        OUTPUT_PORT(0, OutputBundle, Bundle);
-        OUTPUT_PORT(1, matrix1, Matrix);
-        OUTPUT_PORT(2, matrix2, Matrix);
-        OUTPUT_PORT(3, matrix3, Matrix);
-        OUTPUT_PORT(4, matrix4, Matrix);
-        OUTPUT_PORT(5, matrix5, Matrix);
-        OUTPUT_PORT(6, matrix6, Matrix);
+        INPUT_PORT(0, Input, Datatype);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
-
-    }
-  }
-}
+ }}}
 
 #endif
