@@ -48,7 +48,7 @@ ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleSt
 
 void ReportMatrixInfoDialog::pullAndDisplayInfo() 
 {
-  auto info = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
+  auto info = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
   auto str = ReportMatrixInfoAlgorithm::summarize(info);
   matrixInfoTextEdit_->setPlainText(QString::fromStdString(str));
 }

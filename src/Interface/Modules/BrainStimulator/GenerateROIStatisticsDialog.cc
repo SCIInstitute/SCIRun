@@ -97,7 +97,7 @@ void GenerateROIStatisticsDialog::push()
 
 void GenerateROIStatisticsDialog::pullSpecial()
 {
-  auto tableHandle = optional_any_cast_or_default<VariableHandle>(state_->getTransientValue(Parameters::StatisticsTableValues));
+  auto tableHandle = transient_value_cast<VariableHandle>(state_->getTransientValue(Parameters::StatisticsTableValues));
 
   if (tableHandle)
   {
@@ -129,13 +129,13 @@ void GenerateROIStatisticsDialog::pullSpecial()
   }
 
   /// get the strings PhysicalUnit / CoordinateSpaceLabel from state (directly from module level) and show it above GUI tables
-  std::string PhysicalUnitString = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::PhysicalUnitStr));  /// change GUI Labels due to physical unit and used coordinate space
+  std::string PhysicalUnitString = transient_value_cast<std::string>(state_->getTransientValue(Parameters::PhysicalUnitStr));  /// change GUI Labels due to physical unit and used coordinate space
   if (!PhysicalUnitString.empty())
   {
     StatisticsTableGroupBox->setTitle("Statistics for ROIs: " + QString::fromStdString(PhysicalUnitString));
   }
 
-  std::string CoordinateSpaceLabelStr = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::CoordinateSpaceLabelStr));  /// change GUI Labels due to physical unit and used coordinate space
+  std::string CoordinateSpaceLabelStr = transient_value_cast<std::string>(state_->getTransientValue(Parameters::CoordinateSpaceLabelStr));  /// change GUI Labels due to physical unit and used coordinate space
   if (!CoordinateSpaceLabelStr.empty())
   {
     ROITableGroupBox->setTitle("Specify ROI: " + QString::fromStdString(CoordinateSpaceLabelStr));

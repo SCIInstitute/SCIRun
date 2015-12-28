@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,48 +26,41 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h> 
-#include <Core/Datatypes/Mesh.h> 
-#include <Core/Datatypes/FieldInformation.h> 
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Logging/LoggerInterface.h>
+#include <Core/IEPlugin/TriSurfField_Plugin.h>
+#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Algorithms/Legacy/DataIO/VTKToTriSurfReader.h>
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
-#include <Core/Algorithms/DataIO/VTKToTriSurfReader.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 
-namespace SCIRun {
-
-FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename);
-FieldHandle MToTriSurfField_reader(ProgressReporter *pr, const char *filename);
-FieldHandle VtkToTriSurfField_reader(ProgressReporter *pr, const char *filename);
-
-bool TriSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
-bool TriSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
-bool TriSurfFieldToM_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
-bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
-bool TriSurfFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
-bool TriSurfFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
-
-FieldHandle VtkToTriSurfField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::VtkToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle outputField = 0;
-  SCIRunAlgo::VTKToTriSurfReader reader(pr);
+  FieldHandle outputField;
+  VTKToTriSurfReader reader(pr);
 
   if (! reader.run(filename, outputField) )
   {
-    if (pr) pr->error("Convert VTK file to SCIRun TriSurf field failed.");
-    return FieldHandle(0);
+    if (pr)
+      pr->error("Convert VTK file to SCIRun TriSurf field failed.");
+    return nullptr;
   }
   return outputField;
 }
-  
-FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename)
+
+FieldHandle SCIRun::TextToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
   FieldHandle result = 0;
-  
+
   std::string fac_fn(filename);
   std::string pts_fn(filename);
 
@@ -80,14 +73,14 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
     {
       std::ifstream inputfile;
       inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-      inputfile.open(fac_fn.c_str());           
+      inputfile.open(fac_fn.c_str());
     }
-    
+
     catch (...)
     {
       if (pr) pr->error("Could not open file: "+fac_fn);
       return (result);
-    }   
+    }
   }
   else
   {
@@ -97,9 +90,9 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
     {
       try
       {
-        std::ifstream inputfile;    
+        std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        fac_fn = base + ".fac"; 
+        fac_fn = base + ".fac";
         inputfile.open(fac_fn.c_str());
       }
       catch (...)
@@ -108,10 +101,10 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
         {
           std::ifstream inputfile;
           inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-          fac_fn = base + ".tri"; 
-          inputfile.open(fac_fn.c_str());           
+          fac_fn = base + ".tri";
+          inputfile.open(fac_fn.c_str());
         }
-        
+
         catch (...)
         {
           if (pr) pr->error("Could not open file: "+base + ".fac");
@@ -125,18 +118,18 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
       {
         std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        inputfile.open(fac_fn.c_str());           
+        inputfile.open(fac_fn.c_str());
       }
-      
+
       catch (...)
       {
         if (pr) pr->error("Could not open file: "+fac_fn);
         return (result);
-      }       
+      }
     }
   }
-  
-  
+
+
   pos = pts_fn.find_last_of(".");
   if (pos == std::string::npos)
   {
@@ -145,14 +138,14 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
     {
       std::ifstream inputfile;
       inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-      inputfile.open(pts_fn.c_str());           
+      inputfile.open(pts_fn.c_str());
     }
-    
+
     catch (...)
     {
       if (pr) pr->error("Could not open file: "+pts_fn);
       return (result);
-    }   
+    }
   }
   else
   {
@@ -162,9 +155,9 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
     {
       try
       {
-        std::ifstream inputfile;    
+        std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        pts_fn = base + ".pts"; 
+        pts_fn = base + ".pts";
         inputfile.open(pts_fn.c_str());
       }
       catch (...)
@@ -173,10 +166,10 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
         {
           std::ifstream inputfile;
           inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-          pts_fn = base + ".pos"; 
-          inputfile.open(pts_fn.c_str());           
+          pts_fn = base + ".pos";
+          inputfile.open(pts_fn.c_str());
         }
-        
+
         catch (...)
         {
           if (pr) pr->error("Could not open file: "+base + ".pts");
@@ -190,25 +183,25 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
       {
         std::ifstream inputfile;
         inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-        inputfile.open(pts_fn.c_str());           
+        inputfile.open(pts_fn.c_str());
       }
-      
+
       catch (...)
       {
         if (pr) pr->error("Could not open file: "+pts_fn);
         return (result);
-      }       
+      }
     }
-  } 
-  
-  
+  }
+
+
   int ncols = 0;
   int nrows = 0;
   int line_ncols = 0;
   int num_elems = 0, num_nodes = 0;
-  
+
   std::string line;
-   
+
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE NUMBER OF NODES
   // AND CHECK THE FILE'S INTEGRITY.
 
@@ -217,7 +210,7 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
 
   bool has_header = false;
   bool first_line = true;
-  
+
   std::vector<double> values;
 
   {
@@ -234,16 +227,16 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-        
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
-        
-        multiple_from_string(line,values);      
+
+        multiple_from_string(line,values);
         line_ncols = values.size();
-        
+
         if (first_line_pts)
         {
           if (line_ncols > 0)
@@ -258,7 +251,7 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
               has_header_pts = false;
               first_line_pts = false;
               nrows++;
-              ncols = line_ncols; 
+              ncols = line_ncols;
             }
             else
             {
@@ -298,13 +291,13 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
   if (0 == num_nodes) {
     num_nodes = nrows;
   }
-  
+
   nrows = 0;
   ncols = 0;
   line_ncols = 0;
-  
+
   bool zero_based = false;
-  
+
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
@@ -319,14 +312,14 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-        
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
           if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
         }
 
-        multiple_from_string(line,values);      
+        multiple_from_string(line,values);
         line_ncols = values.size();
 
         for (size_t j=0; j<values.size(); j++) if (values[j] == 0.0) zero_based = true;
@@ -345,7 +338,7 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
               has_header = false;
               first_line = false;
               nrows++;
-              ncols = line_ncols; 
+              ncols = line_ncols;
             }
             else
             {
@@ -386,15 +379,15 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
   {
     num_elems = nrows;
   }
-  
+
   FieldInformation fi("TriSurfMesh", 1,"double");
   result = CreateField(fi);
-  
+
   VMesh *mesh = result->vmesh();
 
   mesh->node_reserve(num_nodes);
   mesh->elem_reserve(num_elems);
-  
+
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
@@ -402,17 +395,17 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
     try
     {
       inputfile.open(pts_fn.c_str());
-    
+
       std::vector<double> vdata(3);
-      
+
       for(int i = 0; i < num_nodes && getline(inputfile,line,'\n'); ++i)
       {
         if (line.size() > 0)
         {
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
-        }   
-      
+        }
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0;p<line.size();p++)
         {
@@ -420,7 +413,7 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
         }
 
         multiple_from_string(line,values);
-              
+
         if (values.size() == 3) mesh->add_point(Point(values[0],values[1],values[2]));
         if (values.size() == 2) mesh->add_point(Point(values[0],values[1],0.0));
       }
@@ -432,7 +425,7 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
     }
     inputfile.close();
   }
-  
+
   {
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
@@ -440,20 +433,20 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
     try
     {
       inputfile.open(fac_fn.c_str());
-    
+
       VMesh::Node::array_type vdata;
       vdata.resize(3);
-      
+
       std::vector<VMesh::index_type> ivalues;
-      
+
       for (int i = 0; i < num_elems && getline(inputfile,line,'\n'); ++i)
       {
         if (line.size() > 0)
         {
           // block out comments
           if ((line[0] == '#')||(line[0] == '%')) continue;
-        }   
-      
+        }
+
         // replace comma's and tabs with white spaces
         for (size_t p = 0; p < line.size(); p++)
         {
@@ -466,7 +459,7 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
           if (zero_based) vdata[j] = ivalues[j];
           else vdata[j] = ivalues[j]-1;
         }
-        
+
         if (ivalues.size() > 2) mesh->add_elem(vdata);
       }
     }
@@ -476,18 +469,18 @@ FieldHandle TextToTriSurfField_reader(ProgressReporter *pr, const char *filename
       return (result);
     }
     inputfile.close();
-  }   
+  }
 
   return (result);
 }
-  
-FieldHandle MToTriSurfField_reader(ProgressReporter *pr, const char *filename)
+
+FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename)
 {
   FieldHandle result = 0;
-  
+
   FieldInformation fi("TriSurfMesh", "TriLinearLgn", "double");
   result = CreateField(fi);
-  
+
   VMesh *mesh = result->vmesh();
 
   std::ifstream instr(filename);
@@ -518,7 +511,7 @@ FieldHandle MToTriSurfField_reader(ProgressReporter *pr, const char *filename)
       instr >> x >> y >> z;
       mesh->add_point(Point(x,y,z));
       //cerr << "Added point #"<< i <<": ("
-      //   << x << ", " << y << ", " << z << ")" << endl;    
+      //   << x << ", " << y << ", " << z << ")" << endl;
     } else if (type == "Face") {
       VMesh::Node::array_type n(3);
       unsigned int n1, n2, n3;
@@ -542,12 +535,12 @@ FieldHandle MToTriSurfField_reader(ProgressReporter *pr, const char *filename)
   return (result);
 }
 
-bool TriSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToTextBaseIndexZero_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
 
   // Points file
-  { 
+  {
     std::ofstream outputfile;
     outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
     std::string pts_fn(filename);
@@ -558,16 +551,16 @@ bool TriSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh
 
     if (pos == std::string::npos)
     {
-      pts_fn += fileExt; 
+      pts_fn += fileExt;
     }
     else if (ext != fileExt)
     {
-      pts_fn = base + fileExt; 
-    } 
+      pts_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(pts_fn.c_str());            
+      outputfile.open(pts_fn.c_str());
 
       // these appear to be reasonable formatting flags for output
       std::ios_base::fmtflags ff;
@@ -575,7 +568,7 @@ bool TriSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh
       ff |= outputfile.showpoint; // write floating-point values including always the decimal point
       ff |= outputfile.fixed; // write floating point values in fixed-point notation
       outputfile.flags(ff);
-        
+
       VMesh::Node::iterator nodeIter;
       VMesh::Node::iterator nodeIterEnd;
       VMesh::Node::size_type nodeSize;
@@ -593,7 +586,7 @@ bool TriSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh
         outputfile << p.x() << " " << p.y() << " " << p.z() << "\n";
         ++nodeIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open and write to file: "+ pts_fn);
@@ -614,49 +607,48 @@ bool TriSurfFieldToTextBaseIndexZero_writer(ProgressReporter *pr, FieldHandle fh
 
     if (pos == std::string::npos)
     {
-      facs_fn += fileExt; 
+      facs_fn += fileExt;
     }
     else if (ext != fileExt)
     {
-      facs_fn = base + fileExt; 
-    } 
+      facs_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(facs_fn.c_str());           
+      outputfile.open(facs_fn.c_str());
 
       VMesh::Face::iterator faceIter;
       VMesh::Face::iterator faceIterEnd;
       VMesh::Face::size_type faceSize;
       VMesh::Node::array_type faceNodes(3);
-      
+
       mesh->begin(faceIter);
       mesh->end(faceIterEnd);
       mesh->size(faceSize);
-      
+
       while (faceIter != faceIterEnd) {
         mesh->get_nodes(faceNodes, *faceIter);
         outputfile << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << "\n";
         ++faceIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open and write to file: "+ facs_fn);
       return (false);
-    }    
+    }
     outputfile.close();
   }
   return (true);
 }
 
-
-bool TriSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToTextBaseIndexOne_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
 
   // Points file
-  { 
+  {
     std::ofstream outputfile;
     outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
     std::string pts_fn(filename);
@@ -667,16 +659,16 @@ bool TriSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh,
 
     if (pos == std::string::npos)
     {
-      pts_fn += fileExt; 
+      pts_fn += fileExt;
     }
     else
     {
-      pts_fn = base + fileExt; 
-    } 
+      pts_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(pts_fn.c_str());            
+      outputfile.open(pts_fn.c_str());
 
       // these appear to be reasonable formatting flags for output
       std::ios_base::fmtflags ff;
@@ -684,7 +676,7 @@ bool TriSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh,
       ff |= outputfile.showpoint; // write floating-point values including always the decimal point
       ff |= outputfile.fixed; // write floating point values in fixed-point notation
       outputfile.flags(ff);
-        
+
       VMesh::Node::iterator nodeIter;
       VMesh::Node::iterator nodeIterEnd;
       VMesh::Node::size_type nodeSize;
@@ -723,28 +715,28 @@ bool TriSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh,
 
     if (pos == std::string::npos)
     {
-      facs_fn += fileExt; 
+      facs_fn += fileExt;
     }
     else
     {
-      facs_fn = base + fileExt; 
-    } 
+      facs_fn = base + fileExt;
+    }
 
     try
     {
-      outputfile.open(facs_fn.c_str());           
+      outputfile.open(facs_fn.c_str());
 
       VMesh::Face::iterator faceIter;
       VMesh::Face::iterator faceIterEnd;
       VMesh::Face::size_type faceSize;
       VMesh::Node::array_type faceNodes(3);
-      
+
       mesh->begin(faceIter);
       mesh->end(faceIterEnd);
       mesh->size(faceSize);
-      
+
       int baseIndex = 1;
-      
+
       while (faceIter != faceIterEnd) {
         mesh->get_nodes(faceNodes, *faceIter);
         outputfile << faceNodes[0] + baseIndex << " "
@@ -752,18 +744,18 @@ bool TriSurfFieldToTextBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh,
                    << faceNodes[2] + baseIndex << "\n";
         ++faceIter;
       }
-    }     
+    }
     catch (...)
     {
       if (pr) pr->error("Could not open and write to file: "+ facs_fn);
       return (false);
-    }    
+    }
     outputfile.close();
   }
   return (true);
 }
 
-bool TriSurfFieldToM_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToM_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
 
@@ -777,16 +769,16 @@ bool TriSurfFieldToM_writer(ProgressReporter *pr, FieldHandle fh, const char *fi
 
   if (pos == std::string::npos)
   {
-    m_fn += fileExt; 
+    m_fn += fileExt;
   }
   else
   {
-    m_fn = base + fileExt; 
-  } 
+    m_fn = base + fileExt;
+  }
 
   try
   {
-    outputfile.open(m_fn.c_str());            
+    outputfile.open(m_fn.c_str());
 
     // these appear to be reasonable formatting flags for output
     std::ios_base::fmtflags ff;
@@ -794,7 +786,7 @@ bool TriSurfFieldToM_writer(ProgressReporter *pr, FieldHandle fh, const char *fi
     ff |= outputfile.showpoint; // write floating-point values including always the decimal point
     ff |= outputfile.fixed; // write floating point values in fixed-point notation
     outputfile.flags(ff);
-      
+
     VMesh::Node::iterator nodeIter;
     VMesh::Node::iterator nodeIterEnd;
     VMesh::Node::size_type nodeSize;
@@ -812,9 +804,9 @@ bool TriSurfFieldToM_writer(ProgressReporter *pr, FieldHandle fh, const char *fi
       ++nodeIter;
     }
 
-    VMesh::Face::iterator faceIter; 
-    VMesh::Face::iterator faceIterEnd; 
-    VMesh::Face::size_type faceSize; 
+    VMesh::Face::iterator faceIter;
+    VMesh::Face::iterator faceIterEnd;
+    VMesh::Face::size_type faceSize;
     VMesh::Node::array_type faceNodes(3);
 
     mesh->size(faceSize);
@@ -826,7 +818,7 @@ bool TriSurfFieldToM_writer(ProgressReporter *pr, FieldHandle fh, const char *fi
       outputfile << "Face " << count++ << " " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << std::endl;
       ++faceIter;
     }
-  }     
+  }
   catch (...)
   {
     if (pr) pr->error("Could not open and write to file: "+ m_fn);
@@ -836,7 +828,7 @@ bool TriSurfFieldToM_writer(ProgressReporter *pr, FieldHandle fh, const char *fi
   return (true);
 }
 
-bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToVtk_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   VMesh *mesh = fh->vmesh();
 
@@ -845,7 +837,7 @@ bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *
     if (pr) pr->error("Input field didn't have a TriSurfMesh (type_name=" + mtd->get_name() + ")");
     return (false);
   }
-  
+
   std::ofstream outputfile;
   outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
   std::string vtk_fn(filename);
@@ -856,16 +848,16 @@ bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *
 
   if (pos == std::string::npos)
   {
-    vtk_fn += fileExt; 
+    vtk_fn += fileExt;
   }
   else
   {
-    vtk_fn = base + fileExt; 
-  } 
+    vtk_fn = base + fileExt;
+  }
 
   try
   {
-    outputfile.open(vtk_fn.c_str());            
+    outputfile.open(vtk_fn.c_str());
 
     // these appear to be reasonable formatting flags for output
     std::ios_base::fmtflags ff;
@@ -877,7 +869,7 @@ bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *
     outputfile << "# vtk DataFile Version 3.0" << std::endl
                << "vtk output\nASCII"<< std::endl
               << "DATASET POLYDATA" << std::endl << std::endl;
-      
+
     VMesh::Node::iterator nodeIter;
     VMesh::Node::iterator nodeIterEnd;
     VMesh::Node::size_type nodeSize;
@@ -895,9 +887,9 @@ bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *
       ++nodeIter;
     }
 
-    VMesh::Face::iterator faceIter; 
-    VMesh::Face::iterator faceIterEnd; 
-    VMesh::Face::size_type faceSize; 
+    VMesh::Face::iterator faceIter;
+    VMesh::Face::iterator faceIterEnd;
+    VMesh::Face::size_type faceSize;
     VMesh::Node::array_type faceNodes(3);
 
     mesh->size(faceSize);
@@ -910,7 +902,7 @@ bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *
       outputfile << "3 " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << std::endl;
       ++faceIter;
     }
-  }     
+  }
   catch (...)
   {
     if (pr) pr->error("Could not open and write to file: "+ vtk_fn);
@@ -920,7 +912,7 @@ bool TriSurfFieldToVtk_writer(ProgressReporter *pr, FieldHandle fh, const char *
   return (true);
 }
 
-bool TriSurfFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToExotxt_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("TriSurfField") !=
       std::string::npos)
@@ -931,15 +923,15 @@ bool TriSurfFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const cha
   }
 
   VMesh *mesh = fh->vmesh();
-  VMesh::Node::iterator niter; 
-  VMesh::Node::iterator niter_end; 
-  VMesh::Node::size_type nsize; 
+  VMesh::Node::iterator niter;
+  VMesh::Node::iterator niter_end;
+  VMesh::Node::size_type nsize;
   mesh->begin(niter);
   mesh->end(niter_end);
   mesh->size(nsize);
-  VMesh::Face::size_type fsize; 
-  VMesh::Face::iterator fiter; 
-  VMesh::Face::iterator fiter_end; 
+  VMesh::Face::size_type fsize;
+  VMesh::Face::iterator fiter;
+  VMesh::Face::iterator fiter_end;
   VMesh::Node::array_type fac_nodes(3);
   mesh->size(fsize);
   mesh->begin(fiter);
@@ -983,11 +975,11 @@ bool TriSurfFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const cha
   fprintf( f_out, "         1%10d      TRI3      ! ID, elements, name\n", tri_size );
   fprintf( f_out, "         3         0      ! nodes per element, attributes\n" );
   fprintf( f_out, "! Connectivity\n" );
-  
+
   std::cerr << "Number of tris = "<< fsize <<"\n";
   while(fiter != fiter_end) {
     mesh->get_nodes(fac_nodes, *fiter);
-    fprintf(f_out, "%d %d %d\n", 
+    fprintf(f_out, "%d %d %d\n",
       (int)fac_nodes[0],
       (int)fac_nodes[1],
       (int)fac_nodes[2]);
@@ -1018,7 +1010,7 @@ bool TriSurfFieldToExotxt_writer(ProgressReporter *pr, FieldHandle fh, const cha
   return (true);
 }
 
-bool TriSurfFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldToExotxtBaseIndexOne_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
   if (fh->get_type_description(Field::MESH_TD_E)->get_name().find("TriSurfField") !=
       std::string::npos)
@@ -1029,15 +1021,15 @@ bool TriSurfFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle f
   }
 
   VMesh *mesh = fh->vmesh();
-  VMesh::Node::iterator niter; 
-  VMesh::Node::iterator niter_end; 
-  VMesh::Node::size_type nsize; 
+  VMesh::Node::iterator niter;
+  VMesh::Node::iterator niter_end;
+  VMesh::Node::size_type nsize;
   mesh->begin(niter);
   mesh->end(niter_end);
   mesh->size(nsize);
-  VMesh::Face::size_type fsize; 
-  VMesh::Face::iterator fiter; 
-  VMesh::Face::iterator fiter_end; 
+  VMesh::Face::size_type fsize;
+  VMesh::Face::iterator fiter;
+  VMesh::Face::iterator fiter_end;
   VMesh::Node::array_type fac_nodes(3);
   mesh->size(fsize);
   mesh->begin(fiter);
@@ -1081,12 +1073,12 @@ bool TriSurfFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle f
   fprintf( f_out, "         1%10d      TRI3      ! ID, elements, name\n", tri_size );
   fprintf( f_out, "         3         0      ! nodes per element, attributes\n" );
   fprintf( f_out, "! Connectivity\n" );
-  
+
   //cerr << "Number of tris = "<< fsize <<"\n";
   int baseIndex = 1;
   while(fiter != fiter_end) {
     mesh->get_nodes(fac_nodes, *fiter);
-    fprintf(f_out, "%d %d %d\n", 
+    fprintf(f_out, "%d %d %d\n",
       (int)fac_nodes[0]+baseIndex,
       (int)fac_nodes[1]+baseIndex,
       (int)fac_nodes[2]+baseIndex);
@@ -1116,14 +1108,3 @@ bool TriSurfFieldToExotxtBaseIndexOne_writer(ProgressReporter *pr, FieldHandle f
 
   return (true);
 }
-
-static FieldIEPlugin TriSurfField_plugin("TriSurfField", "{.fac} {.tri} {.pts} {.pos}", "", TextToTriSurfField_reader, TriSurfFieldToTextBaseIndexZero_writer);
-static FieldIEPlugin TriSurfFieldBaseIndexOne_plugin("TriSurfField[BaseIndex 1]", "{.fac} {.pts}", "", 0, TriSurfFieldToTextBaseIndexOne_writer);
-static FieldIEPlugin CVRTI_FacPtsFileToTriSurf_plugin("CVRTI_FacPtsFileToTriSurf", "{.fac} {.tri} {.pts} {.pos}", "", TextToTriSurfField_reader, TriSurfFieldToTextBaseIndexZero_writer);
-static FieldIEPlugin TriSurfFieldToM_plugin("TriSurfFieldToM", "{.m}", "", MToTriSurfField_reader, TriSurfFieldToM_writer);
-static FieldIEPlugin TriSurfFieldVtk_plugin("TriSurfFieldToVtk", "{.vtk}", "", 0, TriSurfFieldToVtk_writer);
-static FieldIEPlugin VtkFromTriSurfField_plugin("VtkToTriSurfField", "{.vtk}", "", VtkToTriSurfField_reader, 0);
-static FieldIEPlugin TriSurfFieldToExotxt_plugin("TriSurfFieldToExotxt", "{.ex2}", "", 0, TriSurfFieldToExotxt_writer);
-static FieldIEPlugin TriSurfFieldToExotxtBaseIndexOne_plugin("TriSurfFieldToExotxt[BaseIndex 1]", "{.ex2}", "", 0, TriSurfFieldToExotxtBaseIndexOne_writer);
-
-} // end namespace

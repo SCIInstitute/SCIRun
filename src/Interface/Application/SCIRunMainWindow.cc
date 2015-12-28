@@ -581,7 +581,8 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename)
 {
   if (!filename.isEmpty())
   {
-    FileOpenCommand command(filename.toStdString(), networkEditor_);
+    FileOpenCommand command;
+    command.set(Variables::Filename, filename.toStdString());
     if (command.execute())
     {
       setCurrentFile(filename);
@@ -617,7 +618,8 @@ bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
 	bool success = false;
   if (!filename.isEmpty())
   {
-    FileImportCommand command(filename.toStdString(), networkEditor_);
+    FileImportCommand command;
+    command.set(Variables::Filename, filename.toStdString());
     if (command.execute())
     {
       statusBar()->showMessage(tr("File imported: ") + filename, 2000);
