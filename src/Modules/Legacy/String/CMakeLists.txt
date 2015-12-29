@@ -54,19 +54,8 @@ SCIRUN_ADD_LIBRARY(Modules_Legacy_String ${Modules_Legacy_String_SRCS} ${Modules
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_String
   Core_Datatypes
-  #Core_Exceptions
-  #Core_Geom
-  #Core_Geometry
-  #Core_GeomInterface
-  #Dataflow_GuiInterface
-  #Core_Persistent
-  #Core_Thread
-  #Dataflow_TkExtensions
-  #Core_Util
+  Core_Utils
   Dataflow_Network
-  #${TK_LIBRARY}
-  #${GL_LIBRARY}
-  #${M_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

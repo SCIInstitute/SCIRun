@@ -64,6 +64,7 @@
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Command/CommandFactory.h>
+#include <Core/Utils/CurrentFileName.h>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
@@ -665,6 +666,7 @@ bool SCIRunMainWindow::newNetwork()
 void SCIRunMainWindow::setCurrentFile(const QString& fileName)
 {
   currentFile_ = fileName;
+  SCIRun::Core::setCurrentFileName(currentFile_.toStdString());
   setWindowModified(false);
   QString shownName = tr("Untitled");
   if (!currentFile_.isEmpty())

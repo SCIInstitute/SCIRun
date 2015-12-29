@@ -45,6 +45,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
 #include <boost/algorithm/string.hpp>
+#include <Core/Utils/CurrentFileName.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
@@ -197,6 +198,7 @@ bool NetworkFileProcessCommand::execute()
       networkEditor_->centerOn(center);
 
       GuiLogger::Instance().logInfoStd("File load done (" + filename + ").");
+      SCIRun::Core::setCurrentFileName(filename);
       return true;
     }
     GuiLogger::Instance().logErrorStd("File load failed (" + filename + "): null xml returned.");
@@ -273,6 +275,9 @@ bool NetworkSaveCommand::execute()
   SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
   GuiLogger::Instance().logInfo("File save done: " + QString::fromStdString(filename));
   SCIRunMainWindow::Instance()->setWindowModified(false);
+
+  SCIRun::Core::setCurrentFileName(filename);
+
   return true;
 }
 
