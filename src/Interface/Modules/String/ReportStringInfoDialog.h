@@ -26,28 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#ifndef INTERFACE_MODULES_REPORT_STRING_INFO_H
+#define INTERFACE_MODULES_REPORT_STRING_INFO_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Math;
+#include "Interface/Modules/Math/ui_ReportStringInfo.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+namespace SCIRun {
+namespace Gui {
+
+class SCISHARE ReportStringInfoDialog : public ModuleDialogGeneric,
+  public Ui::ReportStringInfo
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-  
-  buttonBox->setVisible(false);
+	Q_OBJECT
+
+public:
+  ReportStringInfoDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void moduleExecuted() { pullAndDisplayInfo(); }
+private Q_SLOTS:
+  void pullAndDisplayInfo();
+};
+
+}
 }
 
-void ReportMatrixInfoDialog::pullAndDisplayInfo() 
-{
-  auto info = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
-  auto str = ReportMatrixInfoAlgorithm::summarize(info);
-  matrixInfoTextEdit_->setPlainText(QString::fromStdString(str));
-}
+#endif

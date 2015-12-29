@@ -42,10 +42,10 @@ namespace SCIRun {
       {
       public:
         ReportStringInfo();
-        virtual void execute() {}
-        virtual void setStateDefaults() {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
         
-        INPUT_PORT(0, Full_Filename, String);
+        INPUT_PORT(0, Input, String);
         
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };

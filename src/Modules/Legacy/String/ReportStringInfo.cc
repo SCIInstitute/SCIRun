@@ -27,80 +27,25 @@
  */
 
 #include <Modules/Legacy/String/ReportStringInfo.h>
-
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::StringManip;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
 
 const ModuleLookupInfo ReportStringInfo::staticInfo_("ReportStringInfo", "String", "SCIRun");
 
 ReportStringInfo::ReportStringInfo()
   : Module(staticInfo_)
 {
+  INITIALIZE_PORT(Input);
 }
 
-#if 0
-#include <Core/Datatypes/String.h>
-#include <Dataflow/Network/Ports/StringPort.h>
-#include <Dataflow/Network/Module.h>
-
-namespace SCIRun {
-
-using namespace SCIRun;
-
-/// @class ReportStringInfo
-/// @brief This module can be used to display the contents of a string. 
-
-class ReportStringInfo : public Module {
-public:
-  ReportStringInfo(GuiContext*);
-
-  virtual ~ReportStringInfo();
-
-  virtual void execute();
-
-private:
-  GuiString  inputstring_;
-};
-
-
-
-DECLARE_MAKER(ReportStringInfo)
-ReportStringInfo::ReportStringInfo(GuiContext* ctx)
-  : Module("ReportStringInfo", ctx, Source, "String", "SCIRun"),
-    inputstring_(get_ctx()->subVar("inputstring"), "")
+void ReportStringInfo::execute()
 {
+  auto s = getRequiredInput(Input);
+  auto val = s->value();
+  auto display = val.empty() ? std::string("<empty string>") : val;
+  get_state()->setTransientValue("StringContents", display);
 }
-
-ReportStringInfo::~ReportStringInfo()
-{
-}
-
-void
-ReportStringInfo::execute()
-{
-  StringHandle handle;
-  if (!get_input_handle("Input", handle, false))
-  {
-    inputstring_.set("<empty string>");
-    return;
-  }
-  else
-  {
-    inputstring_.set(handle->get());
-  }
-
-  TCLInterface::execute(get_id() + " update");
-}
-
-} // End namespace SCIRun
-
-
-#endif

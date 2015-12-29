@@ -26,28 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
+#include <Interface/Modules/String/ReportStringInfoDialog.h>
+#include <Modules/Legacy/String/ReportStringInfo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Math;
 
-ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleStateHandle state,
+ReportStringInfoDialog::ReportStringInfoDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-  buttonBox->setVisible(false);
 }
 
 void ReportMatrixInfoDialog::pullAndDisplayInfo() 
 {
-  auto info = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
-  auto str = ReportMatrixInfoAlgorithm::summarize(info);
-  matrixInfoTextEdit_->setPlainText(QString::fromStdString(str));
+  auto info = transient_value_cast<std::string>(state_->getTransientValue("StringContents"));
+  stringInfoTextEdit_->setPlainText(QString::fromStdString(str));
 }
