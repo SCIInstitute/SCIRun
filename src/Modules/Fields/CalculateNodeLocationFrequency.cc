@@ -45,7 +45,7 @@ using namespace SCIRun;
 const ModuleLookupInfo CalculateNodeLocationFrequency::staticInfo_("CalculateNodeLocationFrequency", "NewField", "SCIRun");
 
 CalculateNodeLocationFrequency::CalculateNodeLocationFrequency()
-  : Module(staticInfo_)
+  : Module(staticInfo_, false)
 {
 }
 

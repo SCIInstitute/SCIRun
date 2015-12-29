@@ -37,15 +37,17 @@ namespace SCIRun {
     namespace Basic {
 
       class SCISHARE ChooseInput : public SCIRun::Dataflow::Networks::Module,
-        public Has1InputPort<DatatypePortTag>,
-        public HasNoOutputPorts
+        public Has1InputPort<DynamicPortTag<DatatypePortTag>>,
+        public Has1OutputPort<DatatypePortTag>
       {
       public:
         ChooseInput();
         virtual void execute();
         virtual void setStateDefaults();
+        virtual bool hasDynamicPorts() const override { return true; }
 
-        INPUT_PORT(0, Input, Datatype);
+        INPUT_PORT_DYNAMIC(0, Input, Datatype);
+        OUTPUT_PORT(0, Output, Datatype);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };

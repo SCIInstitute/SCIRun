@@ -43,7 +43,7 @@ using namespace SCIRun::Core::Geometry;
 const ModuleLookupInfo GetNetworkFileName::staticInfo_("GetNetworkFileName", "String", "SCIRun");
 
 GetNetworkFileName::GetNetworkFileName()
-  : Module(staticInfo_)
+  : Module(staticInfo_, false)
 {
 }
 

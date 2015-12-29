@@ -34,7 +34,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 const ModuleLookupInfo JoinStrings::staticInfo_("JoinStrings", "String", "SCIRun");
 
-JoinStrings::JoinStrings() : Module(staticInfo_)
+JoinStrings::JoinStrings() : Module(staticInfo_, false)
 {
 
 }

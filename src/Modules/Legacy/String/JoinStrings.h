@@ -44,6 +44,7 @@ namespace SCIRun {
         JoinStrings();
         virtual void execute() {}
         virtual void setStateDefaults() {}
+        virtual bool hasDynamicPorts() const override { return true; }
         
         INPUT_PORT_DYNAMIC(0, Full_Filename, String);
         OUTPUT_PORT(0, Pathname, String);

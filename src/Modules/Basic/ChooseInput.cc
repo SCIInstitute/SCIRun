@@ -37,12 +37,13 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
-const ModuleLookupInfo ChooseInput::staticInfo_("ChooseInput", "Basic", "SCIRun");
+const ModuleLookupInfo ChooseInput::staticInfo_("ChooseInput", "Flow Control", "SCIRun");
 
 ChooseInput::ChooseInput()
   : Module(staticInfo_)
 {
   INITIALIZE_PORT(Input);
+  INITIALIZE_PORT(Output);
 }
 
 void ChooseInput::setStateDefaults()
