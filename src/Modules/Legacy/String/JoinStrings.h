@@ -42,12 +42,12 @@ namespace SCIRun {
       {
       public:
         JoinStrings();
-        virtual void execute() {}
-        virtual void setStateDefaults() {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
         virtual bool hasDynamicPorts() const override { return true; }
         
-        INPUT_PORT_DYNAMIC(0, Full_Filename, String);
-        OUTPUT_PORT(0, Pathname, String);
+        INPUT_PORT_DYNAMIC(0, Input, String);
+        OUTPUT_PORT(0, Output, String);
         
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
