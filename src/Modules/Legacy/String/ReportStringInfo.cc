@@ -35,6 +35,7 @@ using namespace SCIRun::Modules::StringManip;
 using namespace SCIRun::Core::Datatypes;
 
 const ModuleLookupInfo ReportStringInfo::staticInfo_("ReportStringInfo", "String", "SCIRun");
+const std::string ReportStringInfo::infoKey_("StringContents");
 
 ReportStringInfo::ReportStringInfo()
   : Module(staticInfo_)
@@ -47,5 +48,5 @@ void ReportStringInfo::execute()
   auto s = getRequiredInput(Input);
   auto val = s->value();
   auto display = val.empty() ? std::string("<empty string>") : val;
-  get_state()->setTransientValue("StringContents", display);
+  get_state()->setTransientValue(infoKey_, display);
 }

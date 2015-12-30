@@ -29,7 +29,6 @@
 #include <Interface/Modules/String/ReportStringInfoDialog.h>
 #include <Modules/Legacy/String/ReportStringInfo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -43,8 +42,8 @@ ReportStringInfoDialog::ReportStringInfoDialog(const std::string& name, ModuleSt
   fixSize();
 }
 
-void ReportMatrixInfoDialog::pullAndDisplayInfo() 
+void ReportStringInfoDialog::pullAndDisplayInfo()
 {
-  auto info = transient_value_cast<std::string>(state_->getTransientValue("StringContents"));
+  auto str = transient_value_cast<std::string>(state_->getTransientValue(SCIRun::Modules::StringManip::ReportStringInfo::infoKey_));
   stringInfoTextEdit_->setPlainText(QString::fromStdString(str));
 }

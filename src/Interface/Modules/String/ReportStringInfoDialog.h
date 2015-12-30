@@ -29,9 +29,9 @@
 #ifndef INTERFACE_MODULES_REPORT_STRING_INFO_H
 #define INTERFACE_MODULES_REPORT_STRING_INFO_H
 
-#include "Interface/Modules/Math/ui_ReportStringInfo.h"
+#include "Interface/Modules/String/ui_ReportStringInfo.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <Interface/Modules/String/share.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -44,8 +44,8 @@ class SCISHARE ReportStringInfoDialog : public ModuleDialogGeneric,
 public:
   ReportStringInfoDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void moduleExecuted() { pullAndDisplayInfo(); }
+    QWidget* parent = nullptr);
+  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
 private Q_SLOTS:
   void pullAndDisplayInfo();
 };

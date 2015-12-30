@@ -48,6 +48,7 @@ namespace SCIRun {
         INPUT_PORT(0, Input, String);
         
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const std::string infoKey_;
       };
     }}}
 
