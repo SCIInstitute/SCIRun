@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ScaleFieldMeshAndData",
+    "namespace": "Fields",
+    "status": "Converted",
+    "description": "Applies a scale factor to node locations of the data and/or the data itself",
+    "header": "Modules/Legacy/Fields/ScaleFieldMeshAndData.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

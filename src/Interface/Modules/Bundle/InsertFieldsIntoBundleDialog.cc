@@ -42,11 +42,12 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
 
 void InsertFieldsIntoBundleDialog::pullSpecial()
 {
-  auto numFields = optional_any_cast_or_default<int>(state_->getTransientValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields.name()));
+  auto numFields = transient_value_cast<int>(state_->getTransientValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields.name()));
   tableWidget->setRowCount(numFields);
   for (int i = 0; i < numFields; ++i)
   {

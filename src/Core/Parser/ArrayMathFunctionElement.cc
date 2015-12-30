@@ -27,10 +27,8 @@
 //  
 
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
 
 #include <Core/Parser/ArrayMathInterpreter.h>
 #include <Core/Parser/ArrayMathFunctionCatalog.h>
@@ -60,7 +58,8 @@ bool center_fn(SCIRun::ArrayMathProgramCode& pc)
   while(data0 != data0_end) 
   {
     Point p;
-    data1->get_center(p,idx); idx++;
+    data1->get_center(p,idx);
+    ++idx;
     *data0 = p.x(); data0++;
     *data0 = p.y(); data0++;
     *data0 = p.z(); data0++;
@@ -85,7 +84,8 @@ bool center_fe(SCIRun::ArrayMathProgramCode& pc)
   while(data0 != data0_end) 
   {
     Point p;
-    data1->get_center(p,idx); idx++;
+    data1->get_center(p,idx);
+    ++idx;
     *data0 = p.x(); data0++;
     *data0 = p.y(); data0++;
     *data0 = p.z(); data0++;
@@ -109,7 +109,8 @@ bool size_fn(SCIRun::ArrayMathProgramCode& pc)
 
   while(data0 != data0_end) 
   {
-    *data0 = data1->get_size(idx); idx++; data0++;
+    *data0 = data1->get_size(idx);
+    ++idx; data0++;
   }
   
   return (true);
@@ -130,7 +131,8 @@ bool size_fe(SCIRun::ArrayMathProgramCode& pc)
 
   while(data0 != data0_end) 
   {
-    *data0 = data1->get_size(idx); idx++; data0++;
+    *data0 = data1->get_size(idx);
+    ++idx; data0++;
   }
   
   return (true);
@@ -154,7 +156,8 @@ bool normal_fn(SCIRun::ArrayMathProgramCode& pc)
   while(data0 != data0_end) 
   {
     Vector v;
-    data1->get_normal(v,idx); idx++;
+    data1->get_normal(v,idx);
+    ++idx;
     *data0 = v.x(); data0++;
     *data0 = v.y(); data0++;
     *data0 = v.z(); data0++;
@@ -182,7 +185,8 @@ bool normal_fe(SCIRun::ArrayMathProgramCode& pc)
   while(data0 != data0_end) 
   {
     Vector v;
-    data1->get_normal(v,coords,idx); idx++;
+    data1->get_normal(v,coords,idx);
+    ++idx;
     *data0 = v.x(); data0++;
     *data0 = v.y(); data0++;
     *data0 = v.z(); data0++;
@@ -197,7 +201,7 @@ bool dimension_fn(SCIRun::ArrayMathProgramCode& pc)
   // Get where the data needs to be stored
   double* data0 = pc.get_variable(0); 
   // Get the field where the data is coming from
-  SCIRun::VMesh* data1 = pc.get_vmesh(1);
+  VMesh* data1 = pc.get_vmesh(1);
 
   double* data0_end = data0 + pc.get_size();
   SCIRun::VMesh::Node::index_type idx = pc.get_index();
@@ -218,7 +222,7 @@ bool dimension_fe(SCIRun::ArrayMathProgramCode& pc)
   // Get where the data needs to be stored
   double* data0 = pc.get_variable(0); 
   // Get the field where the data is coming from
-  SCIRun::VMesh* data1 = pc.get_vmesh(1);
+  auto data1 = pc.get_vmesh(1);
 
   double* data0_end = data0 + pc.get_size();
   

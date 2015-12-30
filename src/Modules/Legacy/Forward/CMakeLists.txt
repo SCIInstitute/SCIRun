@@ -31,6 +31,8 @@
 SET(Modules_Legacy_Forward_HEADERS
   BuildBEMatrix.h
   BuildBEMatrixImpl.h
+  CalcTMP.h
+  CalcTMPAlgo.h
   InsertVoltageSource.h
   ApplyFEMVoltageSource.h
 )
@@ -38,6 +40,8 @@ SET(Modules_Legacy_Forward_HEADERS
 SET(Modules_Legacy_Forward_SRCS
   BuildBEMatrix.cc
   BuildBEMatrixImpl.cc
+  CalcTMP.cc
+  CalcTMPAlgo.cc
   InsertVoltageSource.cc
   ApplyFEMVoltageSource.cc
 )

@@ -211,7 +211,7 @@ void BuildBEMatrixDialog::pullFieldTypes()
 {
   using namespace TableColumns;
   Pulling p(this);
-  auto typeList = optional_any_cast_or_default<FieldTypeListType>(state_->getTransientValue(Parameters::FieldTypeList));
+  auto typeList = transient_value_cast<FieldTypeListType>(state_->getTransientValue(Parameters::FieldTypeList));
   const int rows = std::min(static_cast<int>(typeList.size()), tableWidget->rowCount());
   for (int row = 0; row < rows; ++row)
   {

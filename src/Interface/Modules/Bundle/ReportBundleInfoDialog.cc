@@ -42,6 +42,6 @@ ReportBundleInfoDialog::ReportBundleInfoDialog(const std::string& name, ModuleSt
 
 void ReportBundleInfoDialog::pullAndDisplayInfo()
 {
-  auto info = optional_any_cast_or_default<std::string>(state_->getTransientValue("ReportedInfo"));
+  auto info = transient_value_cast<std::string>(state_->getTransientValue("ReportedInfo"));
   bundleInfoTextEdit_->setPlainText(QString::fromStdString(info));
 }

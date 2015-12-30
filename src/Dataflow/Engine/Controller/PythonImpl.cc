@@ -426,6 +426,14 @@ std::string PythonImpl::loadNetwork(const std::string& filename)
   //TODO: provide more informative python return value string
 }
 
+std::string PythonImpl::importNetwork(const std::string& filename)
+{
+  auto import = cmdFactory_->create(GlobalCommands::ImportNetworkFile);
+  import->set(Variables::Filename, filename);
+  return import->execute() ? (filename + " imported") : "Import failed";
+  //TODO: provide more informative python return value string
+}
+
 std::string PythonImpl::quit(bool force)
 {
   if (force)

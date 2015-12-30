@@ -176,6 +176,17 @@ std::string NetworkEditorPythonAPI::loadNetwork(const std::string& filename)
   }
 }
 
+std::string NetworkEditorPythonAPI::importNetwork(const std::string& filename)
+{
+  Guard g(pythonLock_.get());
+  if (impl_)
+    return impl_->importNetwork(filename);
+  else
+  {
+    return "Null implementation: NetworkEditorPythonAPI::importNetwork()";
+  }
+}
+
 std::string NetworkEditorPythonAPI::quit(bool force)
 {
   Guard g(pythonLock_.get());

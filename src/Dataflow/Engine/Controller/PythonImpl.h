@@ -56,6 +56,7 @@ namespace Engine {
     virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     virtual std::string saveNetwork(const std::string& filename) override;
     virtual std::string loadNetwork(const std::string& filename) override;
+    virtual std::string importNetwork(const std::string& filename) override;
     virtual std::string quit(bool force) override;
     virtual void setLock(Core::Thread::Mutex* mutex) override;
   private:

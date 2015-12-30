@@ -115,6 +115,7 @@ namespace SCIRun
     virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup* lookup) = 0;
     virtual std::string saveNetwork(const std::string& filename) = 0;
     virtual std::string loadNetwork(const std::string& filename) = 0;
+    virtual std::string importNetwork(const std::string& filename) = 0;
     virtual std::string quit(bool force) = 0;
     virtual void setLock(Core::Thread::Mutex* mutex) = 0;
   };

@@ -29,11 +29,11 @@
 # CMakeLists.txt for Dataflow/Modules/String
 
 SET(Modules_Legacy_String_SRCS
-  #GetNetworkFileName.cc
+  GetNetworkFileName.cc
   #ChooseString.cc
   #CreateString.cc
-  #ReportStringInfo.cc
-  #JoinStrings.cc
+  ReportStringInfo.cc
+  JoinStrings.cc
   PrintMatrixIntoString.cc
   PrintStringIntoString.cc
   #GetFileName.cc
@@ -44,25 +44,18 @@ SET(Modules_Legacy_String_HEADERS
   PrintMatrixIntoString.h
   PrintStringIntoString.h
   SplitFileName.h
+  ReportStringInfo.h
+  JoinStrings.h
+  GetNetworkFileName.h
+  share.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_String ${Modules_Legacy_String_SRCS} ${Modules_Legacy_String_HEADERS})
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_String
   Core_Datatypes
-  #Core_Exceptions
-  #Core_Geom
-  #Core_Geometry
-  #Core_GeomInterface
-  #Dataflow_GuiInterface
-  #Core_Persistent
-  #Core_Thread
-  #Dataflow_TkExtensions
-  #Core_Util
+  Core_Utils
   Dataflow_Network
-  #${TK_LIBRARY}
-  #${GL_LIBRARY}
-  #${M_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
