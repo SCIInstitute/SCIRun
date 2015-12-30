@@ -42,13 +42,17 @@ namespace SCIRun {
       {
       public:
         ChooseInput();
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
         virtual bool hasDynamicPorts() const override { return true; }
+        //virtual void portAddedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
+        //virtual void portRemovedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
 
         INPUT_PORT_DYNAMIC(0, Input, Datatype);
         OUTPUT_PORT(0, Output, Datatype);
 
+        static const Core::Algorithms::AlgorithmParameterName InputIndex;
+        
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
  }}}

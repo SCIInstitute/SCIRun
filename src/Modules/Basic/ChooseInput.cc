@@ -26,18 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <Modules/Basic/ChooseInput.h>
 #include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/Scalar.h>
-#include <Core/Datatypes/String.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
 
 const ModuleLookupInfo ChooseInput::staticInfo_("ChooseInput", "Flow Control", "SCIRun");
+
+const SCIRun::Core::Algorithms::AlgorithmParameterName ChooseInput::InputIndex("InputIndex");
 
 ChooseInput::ChooseInput()
   : Module(staticInfo_)
@@ -48,7 +47,7 @@ ChooseInput::ChooseInput()
 
 void ChooseInput::setStateDefaults()
 {
-
+  get_state()->setValue(InputIndex, 0);
 }
 
 void ChooseInput::execute()
