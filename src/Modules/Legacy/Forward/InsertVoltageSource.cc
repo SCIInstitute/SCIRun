@@ -41,7 +41,7 @@
 #include <Modules/Legacy/Forward/InsertVoltageSource.h>
 #include <Core/Algorithms/Legacy/Forward/InsertVoltageSourceAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -79,7 +79,6 @@ void InsertVoltageSource::execute()
     algo.ExecuteAlgorithm(voltageSource, outputField, dirichletMatrix);
 
     sendOutput(OutputFEMesh, outputField);
-    //sendOutput(OutputDirichletMatrix, dirichletMatrix);
-
+    sendOutput(OutputDirichletMatrix, dirichletMatrix);
   }
 }
