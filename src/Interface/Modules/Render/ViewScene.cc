@@ -157,6 +157,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 			auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
 			if (realObj)
 			{
+				//filter out objs
 				objList.push_back(realObj);
 				//spire->handleGeomObject(realObj, port);
 				//validObjects.push_back(name);
