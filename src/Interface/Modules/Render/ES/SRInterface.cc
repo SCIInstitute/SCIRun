@@ -275,10 +275,16 @@ namespace SCIRun {
 			fboName);
 		fboMan->bindFBO(fboId);
 
+		//a map from selection id to name
+		std::map<uint32_t, std::string> selMap;
+
 		//modify and add each object to draw
 		for (auto& obj : objList)
 		{
 			std::string objectName = obj->uniqueID();
+			uint32_t selid = getSelectIDForName(objectName);
+			selMap.insert(std::make_pair(selid, objectName));
+
 			BBox bbox; // Bounding box containing all vertex buffer objects.
 			// Check to see if the object already exists in our list. If so, then
 			// remove the object. We will re-add it.
@@ -689,6 +695,11 @@ namespace SCIRun {
     {
       return (static_cast<uint64_t>(std::hash<std::string>()(name)) >> 8) + (static_cast<uint64_t>(port) << 56);
     }
+
+	uint32_t SRInterface::getSelectIDForName(const std::string& name)
+	{
+		return (static_cast<uint32_t>(std::hash<std::string>()(name)));
+	}
 
     //------------------------------------------------------------------------------
     void SRInterface::handleGeomObject(GeometryHandle obj, int port)

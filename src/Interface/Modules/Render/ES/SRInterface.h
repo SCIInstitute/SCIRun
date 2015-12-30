@@ -228,6 +228,7 @@ namespace SCIRun {
             // hashing. The simplest approach would be to have all names placed in a
             // hash multimap with a list which assigns ids to names.
             uint64_t getEntityIDForName(const std::string& name, int port);
+			uint32_t getSelectIDForName(const std::string& name);
             
             // Adds a VBO to the given entityID.
             void addVBOToEntity(uint64_t entityID, const std::string& vboName);

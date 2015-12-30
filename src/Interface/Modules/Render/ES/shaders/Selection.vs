@@ -28,13 +28,13 @@
 
 // Uniforms
 uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
-uniform uint    iColor;             // Uniform color
+uniform vec4    uColor;             // Uniform color
 
 // Attributes
 attribute vec3  aPos;
 
 // Outputs to the fragment shader.
-varying uint    fColor;
+varying vec4    fColor;
 
 void main( void )
 {
