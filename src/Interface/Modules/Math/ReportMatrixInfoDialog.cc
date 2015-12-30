@@ -29,7 +29,6 @@
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

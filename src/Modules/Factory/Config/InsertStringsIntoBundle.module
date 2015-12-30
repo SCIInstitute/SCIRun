@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "InsertStringsIntoBundle",
+    "namespace": "Bundles",
+    "status": "Converted",
+    "description": "Inserts a string object into a bundle",
+    "header": "Modules/Legacy/Bundle/InsertStringsIntoBundle.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "InsertStringsIntoBundleDialog",
+    "header": "Interface/Modules/Bundle/InsertStringsIntoBundleDialog.h"
+  }
+}

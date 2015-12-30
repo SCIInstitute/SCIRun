@@ -42,6 +42,7 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
 
 void InsertFieldsIntoBundleDialog::pullSpecial()

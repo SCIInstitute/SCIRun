@@ -43,8 +43,8 @@ namespace SCIRun {
       public:
         CollectFields();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() {}
+        virtual void setStateDefaults() {}
 
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, Buffer_Size, Int32);
