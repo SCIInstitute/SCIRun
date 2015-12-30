@@ -36,25 +36,31 @@ namespace SCIRun {
   namespace Modules {
     namespace Bundles {
       
+      /// @class InsertStringsIntoBundle
+      /// @brief This module inserts a string object into a bundle.
+      
       class SCISHARE InsertStringsIntoBundle : public Dataflow::Networks::Module,
         public Has2InputPorts<BundlePortTag, DynamicPortTag<StringPortTag>>,
         public Has1OutputPort<BundlePortTag>
       {
       public:
         InsertStringsIntoBundle();
-        virtual void setStateDefaults() {}
-        virtual void execute() {}
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
+        virtual bool hasDynamicPorts() const override { return true; }
+        virtual void portAddedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
+        virtual void portRemovedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
 
         INPUT_PORT(0, InputBundle, Bundle);
         INPUT_PORT_DYNAMIC(1, InputStrings, String);
         OUTPUT_PORT(0, OutputBundle, Bundle);
 
-        static Core::Algorithms::AlgorithmParameterName StringNameList;
-        static const Core::Algorithms::AlgorithmParameterName StringNames[];
+        static const Core::Algorithms::AlgorithmParameterName BundleName;
+        static const Core::Algorithms::AlgorithmParameterName NumStrings;
+        static const Core::Algorithms::AlgorithmParameterName StringNames;
+        static const Core::Algorithms::AlgorithmParameterName StringReplace;
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      private:
-        static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
       };
 
     }

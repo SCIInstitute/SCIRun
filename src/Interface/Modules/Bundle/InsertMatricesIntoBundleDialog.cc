@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Bundle/InsertFieldsIntoBundle.h>
-#include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
+#include <Modules/Legacy/Bundle/InsertMatricesIntoBundle.h>
+#include <Interface/Modules/Bundle/InsertMatricesIntoBundleDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
@@ -35,7 +35,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& name, ModuleStateHandle state,
+InsertMatricesIntoBundleDialog::InsertMatricesIntoBundleDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -45,13 +45,13 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
 
-void InsertFieldsIntoBundleDialog::pullSpecial()
+void InsertMatricesIntoBundleDialog::pullSpecial()
 {
-  auto numFields = transient_value_cast<int>(state_->getTransientValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields.name()));
-  tableWidget->setRowCount(numFields);
-  for (int i = 0; i < numFields; ++i)
+  auto numMatrices = transient_value_cast<int>(state_->getTransientValue(SCIRun::Modules::Bundles::InsertMatricesIntoBundle::NumMatrices.name()));
+  tableWidget->setRowCount(numMatrices);
+  for (int i = 0; i < numMatrices; ++i)
   {
-    auto name = new QTableWidgetItem(tr("Field %1").arg(i+1));
+    auto name = new QTableWidgetItem(tr("Matrix %1").arg(i+1));
     tableWidget->setItem(i, 0, name);
     auto check = new QTableWidgetItem();
     check->setCheckState(Qt::Checked);
