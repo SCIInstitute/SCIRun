@@ -631,6 +631,11 @@ namespace SCIRun {
 			}
 		}
 
+		updateCamera();
+		updateWorldLight();
+
+		mCore.execute(0, 50);
+
 		GLuint value;
 		if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
 			(GLvoid*)&value))

@@ -120,9 +120,58 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
+	//newGeometryValue
+	LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+
+	Guard lock(Modules::Render::ViewScene::mutex_.get());
+
+	LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+
 	auto spire = mSpire.lock();
-	std::list<Graphics::Datatypes::GeometryHandle> objList;
-	spire->select(glm::ivec2(event->x(), event->y()), objList, 0);
+	if (!spire)
+		return;
+	spire->removeAllGeomObjects();
+
+	// Grab the geomData transient value.
+	auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+	if (geomDataTransient && !geomDataTransient->empty())
+	{
+		auto geomData = optional_any_cast_or_default<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+		if (!geomData)
+		{
+			LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
+			return;
+		}
+		if (!spire)
+		{
+			LOG_DEBUG("Logical error: Spire lock not acquired.");
+			return;
+		}
+	
+		//getting geom list
+		std::list<Graphics::Datatypes::GeometryHandle> objList;
+
+		for (auto it = geomData->begin(); it != geomData->end(); ++it)
+		{
+			auto obj = *it;
+			auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
+			if (realObj)
+			{
+				objList.push_back(realObj);
+				//spire->handleGeomObject(realObj, port);
+				//validObjects.push_back(name);
+			}
+		}
+
+		spire->select(glm::ivec2(event->x(), event->y()), objList, 0);
+	}
+	else
+	{
+		if (!spire)
+			return;
+		spire->removeAllGeomObjects();
+	}
+
 }
 
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
