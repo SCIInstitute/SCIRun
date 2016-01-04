@@ -65,6 +65,8 @@ SET(Interface_Modules_Fields_FORMS
   registerwithcorrespondences.ui
   ClipVolumeByIsovalue.ui
   ChooseInput.ui
+  convertfielddatatype.ui
+  scalefieldmeshanddata.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -105,6 +107,8 @@ SET(Interface_Modules_Fields_HEADERS
   GeneratePointSamplesFromFieldOrWidgetDialog.h
   ClipVolumeByIsovalueDialog.h
   ChooseInputDialog.h
+  ScaleFieldMeshAndDataDialog.h
+  ConvertFieldDataTypeDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -144,6 +148,8 @@ SET(Interface_Modules_Fields_SOURCES
   GeneratePointSamplesFromFieldOrWidgetDialog.cc
   ClipVolumeByIsovalueDialog.cc
   ChooseInputDialog.cc
+  ScaleFieldMeshAndDataDialog.cc
+  ConvertFieldDataTypeDialog.cc
 )
 
 IF(WITH_TETGEN)
