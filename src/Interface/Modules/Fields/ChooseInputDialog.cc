@@ -27,14 +27,12 @@
 */
 
 #include <Interface/Modules/Fields/ChooseInputDialog.h>
-//#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
-//#include <Dataflow/Network/ModuleStateInterface.h>
-//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Modules/Basic/ChooseInput.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::FlowControl;
 
 ChooseInputDialog::ChooseInputDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -43,6 +41,11 @@ ChooseInputDialog::ChooseInputDialog(const std::string& name, ModuleStateHandle 
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //addDoubleSpinBoxManager(IsoValueSpinBox_, ClipMeshByIsovalueAlgo::ScalarIsoValue);
-  //addRadioButtonGroupManager({ lessthanRadioButton_,  greaterthanRadioButton_}, ClipMeshByIsovalueAlgo::LessThanIsoValue);
+  addSpinBoxManager(portIndexSpinBox_, Parameters::PortIndex);
+}
+
+void ChooseInputDialog::pullSpecial()
+{
+  auto numInputs = transient_value_cast<int>(state_->getTransientValue(Parameters::PortMax));
+  portIndexSpinBox_->setMaximum(numInputs - 1);
 }

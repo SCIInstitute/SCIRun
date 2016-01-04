@@ -30,9 +30,21 @@
 #define MODULES_BASIC_CHOOSEINPUT_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Modules/Basic/share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace FlowControl {
+
+        ALGORITHM_PARAMETER_DECL(PortIndex);
+        ALGORITHM_PARAMETER_DECL(PortMax);
+
+      }
+    }
+  }
+
   namespace Modules {
     namespace Basic {
 
@@ -51,9 +63,9 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(0, Input, Datatype);
         OUTPUT_PORT(0, Output, Datatype);
 
-        static const Core::Algorithms::AlgorithmParameterName InputIndex;
-        
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        void portChangeImpl();
       };
  }}}
 
