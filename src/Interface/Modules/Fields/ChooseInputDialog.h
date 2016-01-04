@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,35 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_CHOOSEINPUT_H
-#define MODULES_BASIC_CHOOSEINPUT_H
+#ifndef INTERFACE_MODULES_CHOOSEINPUTDialog_H
+#define INTERFACE_MODULES_CHOOSEINPUTDialog_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Basic/share.h>
+#include "Interface/Modules/Fields/ui_ChooseInput.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Basic {
+namespace Gui {
 
-      class SCISHARE ChooseInput : public SCIRun::Dataflow::Networks::Module,
-        public Has1InputPort<DynamicPortTag<DatatypePortTag>>,
-        public Has1OutputPort<DatatypePortTag>
-      {
-      public:
-        ChooseInput();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
-        virtual bool hasDynamicPorts() const override { return true; }
-        virtual void portAddedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
-        virtual void portRemovedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
+class SCISHARE ChooseInputDialog : public ModuleDialogGeneric,
+  public Ui::ChooseInput
+{
+	Q_OBJECT
 
-        INPUT_PORT_DYNAMIC(0, Input, Datatype);
-        OUTPUT_PORT(0, Output, Datatype);
+public:
+  ChooseInputDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+};
 
-        static const Core::Algorithms::AlgorithmParameterName InputIndex;
-        
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
- }}}
+}
+}
 
 #endif

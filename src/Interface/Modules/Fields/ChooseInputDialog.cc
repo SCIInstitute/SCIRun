@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,35 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_CHOOSEINPUT_H
-#define MODULES_BASIC_CHOOSEINPUT_H
+#include <Interface/Modules/Fields/ChooseInputDialog.h>
+//#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
+//#include <Dataflow/Network/ModuleStateInterface.h>
+//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+//#include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Basic/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Basic {
-
-      class SCISHARE ChooseInput : public SCIRun::Dataflow::Networks::Module,
-        public Has1InputPort<DynamicPortTag<DatatypePortTag>>,
-        public Has1OutputPort<DatatypePortTag>
-      {
-      public:
-        ChooseInput();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
-        virtual bool hasDynamicPorts() const override { return true; }
-        virtual void portAddedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
-        virtual void portRemovedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
-
-        INPUT_PORT_DYNAMIC(0, Input, Datatype);
-        OUTPUT_PORT(0, Output, Datatype);
-
-        static const Core::Algorithms::AlgorithmParameterName InputIndex;
-        
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
- }}}
-
-#endif
+ChooseInputDialog::ChooseInputDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  //addDoubleSpinBoxManager(IsoValueSpinBox_, ClipMeshByIsovalueAlgo::ScalarIsoValue);
+  //addRadioButtonGroupManager({ lessthanRadioButton_,  greaterthanRadioButton_}, ClipMeshByIsovalueAlgo::LessThanIsoValue);
+}

@@ -54,3 +54,23 @@ void ChooseInput::execute()
 {
 
 }
+
+void ChooseInput::portAddedSlot(const ModuleId& mid, const PortId& pid)
+{
+  ////TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
+  //if (mid == id_)
+  //{
+  //  int fields = num_input_ports() - 2; // -1 for empty end, -1 for bundle port 0
+  //  get_state()->setTransientValue(NumFields, fields);
+  //}
+}
+
+void ChooseInput::portRemovedSlot(const ModuleId& mid, const PortId& pid)
+{
+  ////TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
+  //if (mid == id_)
+  //{
+  //  int fields = num_input_ports() - 2; // -1 for empty end, -1 for bundle port 0
+  //  get_state()->setTransientValue(NumFields, fields);
+  //}
+}

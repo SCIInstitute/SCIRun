@@ -64,6 +64,7 @@ SET(Interface_Modules_Fields_FORMS
   ExtractSimpleIsosurface.ui
   registerwithcorrespondences.ui
   ClipVolumeByIsovalue.ui
+  ChooseInput.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -103,6 +104,7 @@ SET(Interface_Modules_Fields_HEADERS
   GeneratePointSamplesFromFieldDialog.h
   GeneratePointSamplesFromFieldOrWidgetDialog.h
   ClipVolumeByIsovalueDialog.h
+  ChooseInputDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -141,6 +143,7 @@ SET(Interface_Modules_Fields_SOURCES
   GeneratePointSamplesFromFieldDialog.cc
   GeneratePointSamplesFromFieldOrWidgetDialog.cc
   ClipVolumeByIsovalueDialog.cc
+  ChooseInputDialog.cc
 )
 
 IF(WITH_TETGEN)
