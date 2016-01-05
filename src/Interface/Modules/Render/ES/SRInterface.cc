@@ -485,7 +485,12 @@ namespace SCIRun {
 		if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
 			(GLvoid*)&value))
 		{
+			std::cout << pos.x << "\t" << pos.y << "\n";
 			//selection in value
+			auto it = selMap.find(value);
+			if (it != selMap.end())
+				std::cout << it->second << " is selected.\n"
+				<< pos.x << "\t" << pos.y << "\n";
 		}
 		//release and restore fbo
 		fboMan->unbindFBO();

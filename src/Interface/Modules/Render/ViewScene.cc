@@ -167,7 +167,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 						break;
 					}
 				}
-				//if (isWidget)
+				if (isWidget)
 					objList.push_back(realObj);
 			}
 		}
