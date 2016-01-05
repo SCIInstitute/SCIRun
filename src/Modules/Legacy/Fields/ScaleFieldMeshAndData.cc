@@ -41,24 +41,6 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-namespace SCIRun {
-
-class ScaleFieldMeshAndData : public Module {
-  public:
-    ScaleFieldMeshAndData(GuiContext*);
-    virtual ~ScaleFieldMeshAndData() {}
-    virtual void execute();
-
-  private:
-    GuiDouble guidatascale_;
-    GuiDouble guigeomscale_;   
-    GuiInt    guiusegeomcenter_;  
-    
-    SCIRunAlgo::ScaleFieldMeshAndDataAlgo algo_;
-};
-#endif
-
 const ModuleLookupInfo ScaleFieldMeshAndData::staticInfo_("ScaleFieldMeshAndData", "ChangeMesh", "SCIRun");
 
 ScaleFieldMeshAndData::ScaleFieldMeshAndData()

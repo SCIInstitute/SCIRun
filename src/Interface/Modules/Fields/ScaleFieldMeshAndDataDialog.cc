@@ -27,11 +27,11 @@
 */
 
 #include <Interface/Modules/Fields/ScaleFieldMeshAndDataDialog.h>
-//#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 ScaleFieldMeshAndDataDialog::ScaleFieldMeshAndDataDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,7 +41,7 @@ ScaleFieldMeshAndDataDialog::ScaleFieldMeshAndDataDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-	//addLineEditManager(nameLineEdit_, Parameters::InputFieldName);
-	//addLineEditManager(basisLineEdit_,  Parameters::InputType);
-	//addComboBoxManager(basisComboBox_, Parameters::OutputType);
+  addDoubleSpinBoxManager(dataScaleDoubleSpinBox_, Parameters::data_scale);
+  addDoubleSpinBoxManager(geomScaleDoubleSpinBox_, Parameters::mesh_scale);
+  addCheckBoxManager(useCenterOfGeometryCheckBox_, Parameters::scale_from_center);
 }

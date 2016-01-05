@@ -30,6 +30,8 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -125,14 +127,13 @@ ScaleFieldMeshAndDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 
 AlgorithmOutput ScaleFieldMeshAndDataAlgo::run_generic(const AlgorithmInput& input) const
 {
-  throw "todo";
-  //auto field = input.get<Field>(Variables::InputField);
+  auto field = input.get<Field>(Variables::InputField);
 
-  //FieldHandle outputField;
-  //if (!runImpl(field, outputField))
-  //  THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  FieldHandle outputField;
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
-  //AlgorithmOutput output;
-  //output[Variables::OutputField] = outputField;
-  //return output;
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
 }

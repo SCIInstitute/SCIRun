@@ -136,8 +136,44 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>data_scale</name>
+								</first>
+								<second>
+									<name>data_scale</name>
+									<value>
+										<which>1</which>
+										<value>2.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>mesh_scale</name>
+								</first>
+								<second>
+									<name>mesh_scale</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>scale_from_center</name>
+								</first>
+								<second>
+									<name>scale_from_center</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -204,18 +240,6 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportFieldInfo:1</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateLatVol:0</moduleId1_>
-				<port1_>
-					<name>OutputField</name>
-					<id>0</id>
-				</port1_>
 				<moduleId2_>SetFieldDataToConstantValue:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
@@ -229,6 +253,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportFieldInfo:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetFieldDataToConstantValue:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:1</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
