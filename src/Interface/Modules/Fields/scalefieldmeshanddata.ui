@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>292</width>
+    <width>300</width>
     <height>135</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>292</width>
+    <width>300</width>
     <height>135</height>
    </size>
   </property>
@@ -41,6 +41,9 @@
       </item>
       <item row="1" column="2">
        <widget class="QDoubleSpinBox" name="geomScaleDoubleSpinBox_">
+        <property name="decimals">
+         <number>15</number>
+        </property>
         <property name="maximum">
          <double>999999999.000000000000000</double>
         </property>
@@ -58,6 +61,9 @@
       </item>
       <item row="0" column="2">
        <widget class="QDoubleSpinBox" name="dataScaleDoubleSpinBox_">
+        <property name="decimals">
+         <number>15</number>
+        </property>
         <property name="maximum">
          <double>999999999.000000000000000</double>
         </property>

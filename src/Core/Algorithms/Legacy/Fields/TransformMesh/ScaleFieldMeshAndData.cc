@@ -52,8 +52,7 @@ ScaleFieldMeshAndDataAlgo::ScaleFieldMeshAndDataAlgo()
 namespace
 {
   template <class T>
-  void
-  ScaleFieldMeshAndDataAlgoT(double scale, FieldHandle output)
+  void scale(double scale, FieldHandle output)
   {
     std::vector<T> values;
     output->vfield()->get_values(values);
@@ -106,18 +105,18 @@ ScaleFieldMeshAndDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   if (datascale != 1.0)
   {
     VField* ofield = output->vfield();
-    if (ofield->is_tensor()) ScaleFieldMeshAndDataAlgoT<Tensor>(datascale,output);
-    if (ofield->is_vector()) ScaleFieldMeshAndDataAlgoT<Vector>(datascale,output);
-    if (ofield->is_double()) ScaleFieldMeshAndDataAlgoT<double>(datascale,output);
-    if (ofield->is_float()) ScaleFieldMeshAndDataAlgoT<float>(datascale,output);
-    if (ofield->is_char()) ScaleFieldMeshAndDataAlgoT<char>(datascale,output);
-    if (ofield->is_unsigned_char()) ScaleFieldMeshAndDataAlgoT<unsigned char>(datascale,output);
-    if (ofield->is_short()) ScaleFieldMeshAndDataAlgoT<short>(datascale,output);
-    if (ofield->is_unsigned_short()) ScaleFieldMeshAndDataAlgoT<unsigned short>(datascale,output);
-    if (ofield->is_int()) ScaleFieldMeshAndDataAlgoT<int>(datascale,output);
-    if (ofield->is_unsigned_int()) ScaleFieldMeshAndDataAlgoT<unsigned int>(datascale,output);
-    if (ofield->is_longlong()) ScaleFieldMeshAndDataAlgoT<long long>(datascale,output);
-    if (ofield->is_unsigned_longlong()) ScaleFieldMeshAndDataAlgoT<unsigned long long>(datascale,output);
+    if (ofield->is_tensor()) scale<Tensor>(datascale,output);
+    if (ofield->is_vector()) scale<Vector>(datascale,output);
+    if (ofield->is_double()) scale<double>(datascale,output);
+    if (ofield->is_float()) scale<float>(datascale,output);
+    if (ofield->is_char()) scale<char>(datascale,output);
+    if (ofield->is_unsigned_char()) scale<unsigned char>(datascale,output);
+    if (ofield->is_short()) scale<short>(datascale,output);
+    if (ofield->is_unsigned_short()) scale<unsigned short>(datascale,output);
+    if (ofield->is_int()) scale<int>(datascale,output);
+    if (ofield->is_unsigned_int()) scale<unsigned int>(datascale,output);
+    if (ofield->is_longlong()) scale<long long>(datascale,output);
+    if (ofield->is_unsigned_longlong()) scale<unsigned long long>(datascale,output);
   }
 
   CopyProperties(*input, *output);
