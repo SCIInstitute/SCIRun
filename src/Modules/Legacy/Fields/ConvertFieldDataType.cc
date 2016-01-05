@@ -27,34 +27,35 @@
 */
 	
 #include <Modules/Legacy/Fields/ConvertFieldDataType.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldDataType.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
+using namespace Core::Algorithms::Fields;
+
+/// @class ConvertFieldDataType
+/// @brief ConvertFieldDataType is used to change the type of data associated
+/// with the field elements. 
 
 const ModuleLookupInfo ConvertFieldDataType::staticInfo_("ConvertFieldDataType", "ChangeFieldData", "SCIRun");
 
 ConvertFieldDataType::ConvertFieldDataType() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+}
 
+void ConvertFieldDataType::setStateDefaults()
+{
+  setStateStringFromAlgoOption(Parameters::FieldDatatype);
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
-// Include the algorithm
-#include <Core/Algorithms/Fields/FieldData/ConvertFieldDataType.h>
-
-// The module class
-#include <Dataflow/Network/Module.h>
-
-// We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
-
 namespace SCIRun {
 
-/// @class ConvertFieldDataType
-/// @brief ConvertFieldDataType is used to change the type of data associated
-/// with the field elements. 
 
 class ConvertFieldDataType : public Module {
   public:
@@ -73,7 +74,6 @@ class ConvertFieldDataType : public Module {
   
 };
 
-DECLARE_MAKER(ConvertFieldDataType)
 
 ConvertFieldDataType::ConvertFieldDataType(GuiContext* ctx)
   : Module("ConvertFieldDataType", ctx, Filter, "ChangeFieldData", "SCIRun"),
@@ -90,37 +90,29 @@ ConvertFieldDataType::~ConvertFieldDataType()
   fldname_.set("---");
   inputdatatype_.set("---");
 }
+#endif
 
-void
-ConvertFieldDataType::execute()
+void ConvertFieldDataType::execute()
 {
-  /// define input/output handles:
-  FieldHandle input;
-  FieldHandle output;
-  get_input_handle("Input Field",input,true);
+  auto input = getRequiredInput(InputField);
 
-
-  // Only do work if needed:
-  if (inputs_changed_ || outputdatatype_.changed() || 
-      !oport_cached("Output Field"))
+  if (needToExecute())
   {    
     update_state(Executing);
     /// Set the method to use
-    algo_.set_option("datatype",outputdatatype_.get());
+    setAlgoOptionFromState(Parameters::FieldDatatype);
 
-    if(!(algo_.run(input,output))) return;
+    auto output = algo().run_generic(withInputData((InputField, input)));
     
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     inputdatatype_.set(input->vfield()->get_data_type());
 
     /// Relay some information to user
     std::string name = input->get_name();
     if (name == "") name = "--- no name ---";
     fldname_.set(name);
+#endif
 
-    /// send data downstream:
-    send_output_handle("Output Field", output, true);    
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }
-
-} // End namespace SCIRun
-#endif
