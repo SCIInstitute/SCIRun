@@ -41,9 +41,11 @@ IF(APPLE)
   ADD_EXECUTABLE(${TEST_APPLICATION_NAME}
     ${SCIRunMain_SOURCES}
   )
-  TARGET_LINK_LIBRARIES(${TEST_APPLICATION_NAME}
-    Interface_Application
-  )
+  IF(NOT BUILD_HEADLESS)
+    TARGET_LINK_LIBRARIES(${TEST_APPLICATION_NAME}
+      Interface_Application
+    )
+  ENDIF()
 
   LIST(APPEND SCIRunMain_SOURCES "${APPLICATION_OSX_ICON_FULL_PATH}")
   SET_SOURCE_FILES_PROPERTIES(${APPLICATION_OSX_ICON_FULL_PATH}
@@ -85,9 +87,14 @@ ELSE()
 ENDIF()
 
 TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
-  Interface_Application
   Core_Util_Legacy
 )
+
+IF(NOT BUILD_HEADLESS)
+  TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
+    Interface_Application
+  )
+ENDIF()
 
 IF(BUILD_WITH_PYTHON)
   TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
@@ -145,12 +152,17 @@ IF(APPLE AND BUILD_BUNDLE)
     SET(SCIRUN_LIBS "Core_Application"
                     "Core_Python"
                     "SCIRunPythonAPI"
-                    "Interface_Application"
                     "Engine_Network"
-                    "Interface_Modules_Factory"
-                    "Interface_Modules_Render"
                     "Core_ConsoleApplication"
     )
+    IF(BUILD_HEADLESS)
+      LIST(APPEND SCIRUN_LIBS
+                  "Interface_Application"
+                  "Interface_Modules_Factory"
+                  "Interface_Modules_Render"
+      )
+    ENDIF()
+
     FOREACH(lib ${SCIRUN_LIBS})
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
         POST_BUILD
