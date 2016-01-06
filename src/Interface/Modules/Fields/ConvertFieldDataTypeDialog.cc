@@ -27,11 +27,12 @@
 */
 
 #include <Interface/Modules/Fields/ConvertFieldDataTypeDialog.h>
-//#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldDataTypeDialog.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldDataType.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 ConvertFieldDataTypeDialog::ConvertFieldDataTypeDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,7 +42,7 @@ ConvertFieldDataTypeDialog::ConvertFieldDataTypeDialog(const std::string& name, 
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-	//addLineEditManager(nameLineEdit_, Parameters::InputFieldName);
-	//addLineEditManager(basisLineEdit_,  Parameters::InputType);
-	//addComboBoxManager(basisComboBox_, Parameters::OutputType);
+  addDynamicLabelManager(inputNameLabel_, Parameters::InputFieldName);
+  addDynamicLabelManager(typeNameLabel_, Parameters::InputType);
+  addComboBoxManager(outputFieldTypeComboBox_, Parameters::FieldDatatype);
 }

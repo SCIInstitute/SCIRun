@@ -28,7 +28,9 @@
 	
 #include <Modules/Legacy/Fields/ConvertFieldDataType.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldDataType.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
@@ -99,19 +101,18 @@ void ConvertFieldDataType::execute()
   if (needToExecute())
   {    
     update_state(Executing);
-    /// Set the method to use
     setAlgoOptionFromState(Parameters::FieldDatatype);
 
     auto output = algo().run_generic(withInputData((InputField, input)));
     
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    inputdatatype_.set(input->vfield()->get_data_type());
+    auto state = get_state();
+    state->setValue(Parameters::InputType, input->vfield()->get_data_type());
 
     /// Relay some information to user
-    std::string name = input->get_name();
-    if (name == "") name = "--- no name ---";
-    fldname_.set(name);
-#endif
+    std::string name = input->properties().get_name();
+    if (name.empty()) 
+      name = "--- no name ---";
+    state->setValue(Parameters::InputFieldName, name);
 
     sendOutputFromAlgorithm(OutputField, output);
   }
