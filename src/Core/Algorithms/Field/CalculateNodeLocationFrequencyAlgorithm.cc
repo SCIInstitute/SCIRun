@@ -74,7 +74,7 @@ FieldHandle CalculateNodeLocationFrequencyAlgo::runImpl(FieldHandle input) const
     THROW_ALGORITHM_INPUT_ERROR("Could not allocate output field");
 
   auto facade(input->mesh()->getFacade());
-  boost::unordered_map<Point, size_t, PointHash> pointFreq;
+  boost::unordered_map<Point, unsigned int, PointHash> pointFreq;
   for (const auto& node : facade->nodes())
   {
     pointFreq[node.point()]++;
@@ -98,4 +98,3 @@ AlgorithmOutput CalculateNodeLocationFrequencyAlgo::run_generic(const AlgorithmI
   output[Variables::OutputField] = runImpl(inputField);
   return output;
 }
-
