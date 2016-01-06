@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_CALCULATENODELOCATIONFREQUENCY_H__
-#define MODULES_FIELDS_CALCULATENODELOCATIONFREQUENCY_H__
+#ifndef ALGORITHMS_MATH_CalculateNodeLocationFrequencyAlgorithm_H
+#define ALGORITHMS_MATH_CalculateNodeLocationFrequencyAlgorithm_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Field/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
+  
+  class SCISHARE CalculateNodeLocationFrequencyAlgo : public AlgorithmBase
+  {
+  public:
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+    FieldHandle runImpl(FieldHandle input) const;
+  };
 
-      class SCISHARE CalculateNodeLocationFrequency : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
-      {
-      public:
-        CalculateNodeLocationFrequency();
-
-        virtual void execute() override;
-        virtual void setStateDefaults() override {}
-
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, OutputField, LegacyField);
-                
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
-    }
-  }
-}
+}}}}
 
 #endif

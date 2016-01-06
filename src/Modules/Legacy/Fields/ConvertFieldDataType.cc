@@ -54,46 +54,6 @@ void ConvertFieldDataType::setStateDefaults()
   setStateStringFromAlgoOption(Parameters::FieldDatatype);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-namespace SCIRun {
-
-
-class ConvertFieldDataType : public Module {
-  public:
-    ConvertFieldDataType(GuiContext* ctx);
-
-    virtual ~ConvertFieldDataType();
-    virtual void		execute();
-
-  private:
-    SCIRunAlgo::ConvertFieldDataTypeAlgo algo_;
-
-  private:
-    GuiString		outputdatatype_;   // the out field type
-    GuiString		inputdatatype_;    // the input field type
-    GuiString		fldname_;          // the input field name
-  
-};
-
-
-ConvertFieldDataType::ConvertFieldDataType(GuiContext* ctx)
-  : Module("ConvertFieldDataType", ctx, Filter, "ChangeFieldData", "SCIRun"),
-    outputdatatype_(get_ctx()->subVar("outputdatatype"), "double"),
-    inputdatatype_(get_ctx()->subVar("inputdatatype", false), "---"),
-    fldname_(get_ctx()->subVar("fldname", false), "---")
-{
-  /// Forward errors to the module
-  algo_.set_progress_reporter(this);
-}
-
-ConvertFieldDataType::~ConvertFieldDataType()
-{
-  fldname_.set("---");
-  inputdatatype_.set("---");
-}
-#endif
-
 void ConvertFieldDataType::execute()
 {
   auto input = getRequiredInput(InputField);
