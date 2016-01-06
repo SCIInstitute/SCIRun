@@ -98,11 +98,14 @@ namespace SCIRun {
 
     protected:
       virtual void mousePressEvent(QMouseEvent* event);
+      virtual void keyPressEvent(QKeyEvent* event);
+      virtual void keyReleaseEvent(QKeyEvent*event);
       virtual void closeEvent(QCloseEvent* evt) override;
       virtual void showEvent(QShowEvent* evt) override;
       virtual void hideEvent(QHideEvent* evt) override;
       virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
+      void selectObject(const int x, const int y);
       bool isObjectUnselected(const std::string& name);
       void addToolBar();
       void addAutoViewButton();
@@ -133,6 +136,7 @@ namespace SCIRun {
       bool showConfiguration_;
       bool itemValueChanged_;
       bool invertZoom_;
+      bool shiftdown_;
       QColor bgColor_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;

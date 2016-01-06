@@ -48,7 +48,7 @@ using namespace SCIRun::Modules::Render;
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false), itemValueChanged_(true),
-  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false)
+  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false), shiftdown_(false)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -120,6 +120,35 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
+  if (shiftdown_)
+  {
+    selectObject(event->x(), event->y());
+    newGeometryValue();
+  }
+}
+
+void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
+{
+  switch (event->key())
+  {
+  case Qt::Key_Shift:
+    shiftdown_ = true;
+    break;
+  }
+}
+
+void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
+{
+  switch (event->key())
+  {
+  case Qt::Key_Shift:
+    shiftdown_ = false;
+    break;
+  }
+}
+
+void ViewSceneDialog::selectObject(const int x, const int y)
+{
 	//newGeometryValue
 	LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
@@ -147,7 +176,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 			LOG_DEBUG("Logical error: Spire lock not acquired.");
 			return;
 		}
-	
+
 		//getting geom list
 		std::list<Graphics::Datatypes::GeometryHandle> objList;
 
@@ -172,7 +201,9 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 			}
 		}
 
-		spire->select(glm::ivec2(event->x(), event->y()), objList, 0);
+		spire->select(glm::ivec2(x - mGLWidget->pos().x(),
+			y - mGLWidget->pos().y()), objList, 0);
+
 	}
 	else
 	{

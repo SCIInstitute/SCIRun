@@ -278,6 +278,7 @@ namespace SCIRun {
 
 		//a map from selection id to name
 		std::map<uint32_t, std::string> selMap;
+		std::vector<uint64_t> entityList;
 
 		//modify and add each object to draw
 		for (auto& obj : objList)
@@ -472,6 +473,7 @@ namespace SCIRun {
 					pass.renderState.mSortType = mRenderSortType;
 					pass.renderState.set(RenderState::ActionFlags::USE_BLEND, false);
 					mCore.addComponent(entityID, pass);
+					entityList.push_back(entityID);
 				}
 			}
 		}
@@ -494,6 +496,10 @@ namespace SCIRun {
 		}
 		//release and restore fbo
 		fboMan->unbindFBO();
+
+		for (auto& it : entityList)
+			mCore.removeEntity(it);
+		//mCore.clearAllComponentContainers();
 	}
 
     //------------------------------------------------------------------------------
