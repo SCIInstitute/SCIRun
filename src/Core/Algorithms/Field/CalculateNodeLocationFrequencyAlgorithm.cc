@@ -29,11 +29,11 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Field/CalculateNodeLocationFrequencyAlgorithm.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 #include <boost/unordered_map.hpp>
 
 using namespace SCIRun::Core::Algorithms;
@@ -55,7 +55,7 @@ namespace
 
 FieldHandle CalculateNodeLocationFrequencyAlgo::runImpl(FieldHandle input) const
 {
-  ScopedAlgorithmStatusReporter asr(this, "CalculateGradients");
+  ScopedAlgorithmStatusReporter asr(this, "CalculateNodeLocationFrequencyAlgo");
 
   if (!input)
     THROW_ALGORITHM_INPUT_ERROR("No input field");
@@ -66,7 +66,6 @@ FieldHandle CalculateNodeLocationFrequencyAlgo::runImpl(FieldHandle input) const
     THROW_ALGORITHM_INPUT_ERROR("Only point cloud input is supported at this time.");
 
   fi.make_unsigned_int();
-
   fi.make_lineardata();
 
   auto output = CreateField(fi, input->mesh());
@@ -74,26 +73,21 @@ FieldHandle CalculateNodeLocationFrequencyAlgo::runImpl(FieldHandle input) const
   if (!output)
     THROW_ALGORITHM_INPUT_ERROR("Could not allocate output field");
 
-  //std::map<
-
-  VMesh::points_type points;
-  input->vmesh()->get_all_node_centers(points);
-
-  boost::unordered_map<Point, int, PointHash> pointFreq;
-  std::cout << "Points of mesh: \n";
-  for (const auto& p : points)
+  auto facade(input->mesh()->getFacade());
+  boost::unordered_map<Point, size_t, PointHash> pointFreq;
+  for (const auto& node : facade->nodes())
   {
-    std::cout << p << std::endl;
-    pointFreq[p]++;
+    pointFreq[node.point()]++;
   }
-  std::cout << "Point freq: " << std::endl;
-  for (const auto& x : pointFreq)
-  {
-    std::cout << x.first << " : " << x.second << std::endl;
-  }
-  
 
-  return nullptr;
+  auto outputFacade(output->mesh()->getFacade());
+  auto ofield = output->vfield();
+  for (const auto& node : outputFacade->nodes())
+  {
+    ofield->set_value(pointFreq[node.point()], node.index());
+  }
+
+  return output;
 }
 
 AlgorithmOutput CalculateNodeLocationFrequencyAlgo::run_generic(const AlgorithmInput& input) const
