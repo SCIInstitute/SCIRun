@@ -78,6 +78,24 @@ namespace
         nec_.requestConnection(port_.get(), otherPort->port_.get());
     }
 
+    virtual std::string datatypeToString() const override
+    {
+      auto input = boost::dynamic_pointer_cast<InputPortInterface>(port_);
+      if (input)
+      {
+        auto data = input->getData();
+        if (!data)
+          return "[No data]";
+        if (!*data)
+          return "[Null data]";
+        return (*data)->dynamic_type_name();
+      }
+      auto output = boost::dynamic_pointer_cast<OutputPortInterface>(port_);
+      if (output)
+        return "Output port data not available yet!";
+      return "INVALID PORT";
+    }
+
     void reset()
     {
       port_.reset();

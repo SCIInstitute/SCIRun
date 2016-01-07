@@ -120,7 +120,6 @@ std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules()
 
 std::string NetworkEditorPythonAPI::executeAll()
 {
-  
   if (impl_)
   {
     pythonLock_.lock();
@@ -254,12 +253,26 @@ std::string SimplePythonAPI::scirun_force_quit()
   return NetworkEditorPythonAPI::quit(true);
 }
 
-boost::python::object SimplePythonAPI::scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable)
+std::string NetworkEditorPythonAPI::scirun_get_module_input(const std::string& moduleId, int portIndex)
 {
-  return NetworkEditorPythonAPI::scirun_get_module_state(moduleId, stateVariable);
+  Guard g(pythonLock_.get());
+
+  auto modIter = modules_.find(moduleId);
+  if (modIter != modules_.end())
+  {
+    auto port = modIter->second->input()->getitem(portIndex);
+    if (port)
+    {
+      return "INPUT FROM " + moduleId + " port " + boost::lexical_cast<std::string>(portIndex) + " NAME = " + port->name()
+        + "  Value String: " + port->datatypeToString();
+    }
+    return "Port not available";
+  }
+  return "Module not found";
 }
 
-std::string SimplePythonAPI::scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
+std::string NetworkEditorPythonAPI::scirun_get_module_output(const std::string& moduleId, int portIndex)
 {
-  return NetworkEditorPythonAPI::scirun_set_module_state(moduleId, stateVariable, value);
+  Guard g(pythonLock_.get());
+  return "OUTPUT FROM " + moduleId + " port " + boost::lexical_cast<std::string>(portIndex);
 }

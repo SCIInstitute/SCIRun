@@ -73,6 +73,7 @@ namespace SCIRun
     virtual std::string type() const = 0;
     virtual bool isInput() const = 0;
     virtual void connect(const PyPort& other) const = 0;
+    virtual std::string datatypeToString() const = 0; //TODO: precursor to getting actual data off of port
   };
 
   class SCISHARE PyConnection

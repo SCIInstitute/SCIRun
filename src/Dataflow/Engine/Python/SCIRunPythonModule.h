@@ -66,7 +66,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
 
   boost::python::def("addModule", &NetworkEditorPythonAPI::addModule);
   boost::python::def("removeModule", &NetworkEditorPythonAPI::removeModule);
-  boost::python::def("modules", &NetworkEditorPythonAPI::modules);
+  //boost::python::def("modules", &NetworkEditorPythonAPI::modules); //TODO: buggy
   boost::python::def("executeAll", &NetworkEditorPythonAPI::executeAll);
   boost::python::def("saveNetwork", &NetworkEditorPythonAPI::saveNetwork);
   boost::python::def("loadNetwork", &NetworkEditorPythonAPI::loadNetwork);
@@ -82,9 +82,12 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
   boost::python::def("scirun_connect_modules", &NetworkEditorPythonAPI::connect);
   boost::python::def("scirun_disconnect_modules", &NetworkEditorPythonAPI::disconnect);
 
-  boost::python::def("scirun_get_module_state", &SimplePythonAPI::scirun_get_module_state);
-  boost::python::def("scirun_set_module_state", &SimplePythonAPI::scirun_set_module_state);
+  boost::python::def("scirun_get_module_state", &NetworkEditorPythonAPI::scirun_get_module_state);
+  boost::python::def("scirun_set_module_state", &NetworkEditorPythonAPI::scirun_set_module_state);
   boost::python::def("scirun_dump_module_state", &NetworkEditorPythonAPI::scirun_dump_module_state);
+
+  boost::python::def("scirun_get_module_input", &NetworkEditorPythonAPI::scirun_get_module_input);
+  boost::python::def("scirun_get_module_output", &NetworkEditorPythonAPI::scirun_get_module_output);
 
   boost::python::def("scirun_save_network", &NetworkEditorPythonAPI::saveNetwork);
   boost::python::def("scirun_load_network", &NetworkEditorPythonAPI::loadNetwork);

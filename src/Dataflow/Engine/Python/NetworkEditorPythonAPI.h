@@ -53,6 +53,8 @@ namespace SCIRun {
     static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
     static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
     static std::string scirun_dump_module_state(const std::string& moduleId);
+    static std::string scirun_get_module_input(const std::string& moduleId, int portIndex);
+    static std::string scirun_get_module_output(const std::string& moduleId, int portIndex);
 
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);
@@ -66,7 +68,7 @@ namespace SCIRun {
     static void setExecutionContext(Dataflow::Networks::ExecutableLookup* lookup);
     static Core::Thread::Mutex& getLock() { return pythonLock_; }
   private:
-    NetworkEditorPythonAPI();
+    NetworkEditorPythonAPI() = delete;
     static boost::shared_ptr<NetworkEditorPythonInterface> impl_;
     static Dataflow::Networks::ExecutableLookup* lookup_;
     static std::map<std::string, boost::shared_ptr<PyModule>> modules_;
@@ -77,12 +79,11 @@ namespace SCIRun {
   {
   public:
     static std::string scirun_add_module(const std::string& name);
-    static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
-    static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
+
     static std::string scirun_quit();
     static std::string scirun_force_quit();
   private:
-    SimplePythonAPI();
+    SimplePythonAPI() = delete;
   };
 
 }
