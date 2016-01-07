@@ -130,7 +130,7 @@ void CreateStandardColorMapDialog::onInvertCheck(bool b)
 }
 
 ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
-  : QGraphicsView(scene, parent), alphaPath_(nullptr)
+  : QGraphicsView(scene, parent), alphaPath_(nullptr), alphaFunction_(ALPHA_SAMPLES, DEFAULT_ALPHA)
 {
   const int h = 83;
   const int w = 365;
@@ -138,15 +138,19 @@ ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
   defaultStart_ = QPointF(0, h / 2);
   defaultEnd_ = QPointF(w, h / 2);
   addDefaultLine();
+  connect(this, SIGNAL(clicked(int,int)), this, SLOT(updateAlphaFunction()));
+  updateAlphaFunction();
 }
 
 void ColormapPreview::mousePressEvent(QMouseEvent* event)
 {
   QGraphicsView::mousePressEvent(event);
-  Q_EMIT clicked(event->x(), event->y());
 
   auto center = mapToScene(event->pos());
   addPoint(center);
+
+  Q_EMIT clicked(event->x(), event->y());
+
   //TODO: remove point if event & RightMouseButton
 
   //TODO: points are movable!
@@ -184,6 +188,7 @@ void ColormapPreview::addPoint(const QPointF& point)
 
 void ColormapPreview::drawAlphaPolyline()
 {
+  qDebug() << "start drawAlphaPolyline";
   delete alphaPath_;
   auto pathItem = new QGraphicsPathItem();
   alphaPath_ = pathItem;
@@ -201,6 +206,7 @@ void ColormapPreview::drawAlphaPolyline()
   pathItem->setPath(path);
   pathItem->setZValue(0);
   scene()->addItem(alphaPath_);
+  qDebug() << "end drawAlphaPolyline";
 }
 
 void ColormapPreview::clearAlphaPoints()
@@ -212,4 +218,24 @@ void ColormapPreview::clearAlphaPoints()
       scene()->removeItem(item);
   }
   addDefaultLine();
+  alphaFunction_.assign(ALPHA_SAMPLES, DEFAULT_ALPHA);
+}
+
+void ColormapPreview::updateAlphaFunction()
+{
+  //from v4, color endpoints (0 and 1) are fixed at alpha = 0.5.
+  // alphaFunction_ will sample from in between these endpoints, evenly spaced throughout open interval (0,1)
+  qDebug() << "Updating alpha function.";
+
+  if (alphaPath_)
+  {
+    auto shape = alphaPath_->shape();
+    qDebug() << "Shape: " << shape;
+  }
+
+
+  for (size_t i = 0; i < alphaFunction_.size(); ++i)
+  {
+    qDebug() << "Color: " << (i+1) / static_cast<double>(ALPHA_SAMPLES+1) << "Alpha: " << alphaFunction_[i];
+  }
 }

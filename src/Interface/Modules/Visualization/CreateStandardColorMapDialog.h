@@ -52,6 +52,7 @@ namespace SCIRun {
       explicit ColormapPreview(QGraphicsScene* scene, QWidget* parent = nullptr);
     public Q_SLOTS:
       void clearAlphaPoints();
+      void updateAlphaFunction();
     Q_SIGNALS:
       void clicked(int x, int y);
     protected:
@@ -64,6 +65,9 @@ namespace SCIRun {
       QGraphicsItem* alphaPath_;
       QPointF defaultStart_, defaultEnd_;
       std::set<QPointF, SortedByXCoordinate> alphaPoints_;
+      const size_t ALPHA_SAMPLES = 10;
+      const double DEFAULT_ALPHA = 0.5;
+      std::vector<double> alphaFunction_;
     };
 
     class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,
