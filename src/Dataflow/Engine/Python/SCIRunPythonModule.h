@@ -64,6 +64,11 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .def("__setattr__", &PyModule::setattr)
     ;
 
+  boost::python::class_<PyDatatype, boost::shared_ptr<PyDatatype>, boost::noncopyable>("SCIRun::PyDatatype", boost::python::no_init)
+    .add_property("type", &PyDatatype::type)
+    .add_property("value", &PyDatatype::value)
+  ;
+
   boost::python::def("addModule", &NetworkEditorPythonAPI::addModule);
   boost::python::def("removeModule", &NetworkEditorPythonAPI::removeModule);
   //boost::python::def("modules", &NetworkEditorPythonAPI::modules); //TODO: buggy
@@ -86,8 +91,10 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
   boost::python::def("scirun_set_module_state", &NetworkEditorPythonAPI::scirun_set_module_state);
   boost::python::def("scirun_dump_module_state", &NetworkEditorPythonAPI::scirun_dump_module_state);
 
+  boost::python::def("scirun_get_module_input_type", &NetworkEditorPythonAPI::scirun_get_module_input_type);
+  //boost::python::def("scirun_get_module_output", &NetworkEditorPythonAPI::scirun_get_module_output);
+
   boost::python::def("scirun_get_module_input", &NetworkEditorPythonAPI::scirun_get_module_input);
-  boost::python::def("scirun_get_module_output", &NetworkEditorPythonAPI::scirun_get_module_output);
 
   boost::python::def("scirun_save_network", &NetworkEditorPythonAPI::saveNetwork);
   boost::python::def("scirun_load_network", &NetworkEditorPythonAPI::loadNetwork);

@@ -66,6 +66,14 @@ namespace SCIRun
     virtual boost::shared_ptr<class PyPorts> input() = 0;
   };
 
+  class SCISHARE PyDatatype
+  {
+  public:
+    virtual ~PyDatatype() {}
+    virtual std::string type() const = 0;
+    virtual boost::python::object value() const = 0;
+  };
+
   class SCISHARE PyPort : public boost::enable_shared_from_this<PyPort>
   {
   public:
@@ -75,6 +83,7 @@ namespace SCIRun
     virtual bool isInput() const = 0;
     virtual void connect(const PyPort& other) const = 0;
     virtual std::string dataTypeName() const = 0; //TODO: precursor to getting actual data off of port
+    virtual boost::shared_ptr<PyDatatype> data() const = 0;
   };
 
   class SCISHARE PyConnection

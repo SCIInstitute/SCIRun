@@ -41,6 +41,7 @@ namespace SCIRun {
 
   class NetworkEditorPythonInterface;
   class PyModule;
+  class PyDatatype;
 
   class SCISHARE NetworkEditorPythonAPI
   {
@@ -53,8 +54,10 @@ namespace SCIRun {
     static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
     static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
     static std::string scirun_dump_module_state(const std::string& moduleId);
-    static std::string scirun_get_module_input(const std::string& moduleId, int portIndex);
-    static std::string scirun_get_module_output(const std::string& moduleId, int portIndex);
+    static std::string scirun_get_module_input_type(const std::string& moduleId, int portIndex);
+    //static std::string scirun_get_module_output_type(const std::string& moduleId, int portIndex);
+
+    static boost::shared_ptr<PyDatatype> scirun_get_module_input(const std::string& moduleId, int portIndex);
 
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);

@@ -40,16 +40,55 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
 namespace
 {
+  class PyDatatypeString : public PyDatatype
+  {
+  public:
+    explicit PyDatatypeString(StringHandle underlying) : underlying_(underlying)
+    {
+    }
+
+    virtual std::string type() const override
+    {
+      if (underlying_)
+        return underlying_->dynamic_type_name();
+      return "[Null String]";
+    }
+
+    virtual boost::python::object value() const override
+    {
+      boost::python::object str(std::string(underlying_->value()));
+      return str;
+    }
+
+  private:
+    StringHandle underlying_;
+  };
+
+  class PyDatatypeFactory
+  {
+  public:
+    static boost::shared_ptr<PyDatatype> createWrapper(DatatypeHandle data)
+    {
+      auto str = boost::dynamic_pointer_cast<String>(data);
+      if (str)
+        return boost::make_shared<PyDatatypeString>(str);
+
+      return nullptr;
+    }
+  };
+
   class PyPortImpl : public PyPort
   {
   public:
@@ -80,20 +119,26 @@ namespace
 
     virtual std::string dataTypeName() const override
     {
-      auto input = boost::dynamic_pointer_cast<InputPortInterface>(port_);
-      if (input)
-      {
-        auto data = input->getData();
-        if (!data)
-          return "[No data]";
-        if (!*data)
-          return "[Null data]";
-        return (*data)->dynamic_type_name();
-      }
       auto output = boost::dynamic_pointer_cast<OutputPortInterface>(port_);
       if (output)
         return "Output port data not available yet!";
-      return "INVALID PORT";
+
+      auto data = getDataImpl();
+      if (!data)
+        return "[No data]";
+      if (!*data)
+        return "[Null data]";
+      return (*data)->dynamic_type_name();
+    }
+
+    virtual boost::shared_ptr<PyDatatype> data() const override
+    {
+      auto dataOpt = getDataImpl();
+      if (dataOpt && *dataOpt)
+      {
+        return PyDatatypeFactory::createWrapper(*dataOpt);
+      }
+      return nullptr;
     }
 
     void reset()
@@ -101,6 +146,15 @@ namespace
       port_.reset();
     }
   private:
+    DatatypeHandleOption getDataImpl() const
+    {
+      auto input = boost::dynamic_pointer_cast<InputPortInterface>(port_);
+      if (input)
+      {
+        return input->getData();
+      }
+      return boost::none;
+    }
     boost::shared_ptr<PortDescriptionInterface> port_;
     NetworkEditorController& nec_;
   };

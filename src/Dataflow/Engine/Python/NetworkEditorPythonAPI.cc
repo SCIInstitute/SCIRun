@@ -253,7 +253,7 @@ std::string SimplePythonAPI::scirun_force_quit()
   return NetworkEditorPythonAPI::quit(true);
 }
 
-std::string NetworkEditorPythonAPI::scirun_get_module_input(const std::string& moduleId, int portIndex)
+std::string NetworkEditorPythonAPI::scirun_get_module_input_type(const std::string& moduleId, int portIndex)
 {
   Guard g(pythonLock_.get());
 
@@ -271,8 +271,24 @@ std::string NetworkEditorPythonAPI::scirun_get_module_input(const std::string& m
   return "Module not found";
 }
 
-std::string NetworkEditorPythonAPI::scirun_get_module_output(const std::string& moduleId, int portIndex)
+//std::string NetworkEditorPythonAPI::scirun_get_module_output(const std::string& moduleId, int portIndex)
+//{
+//  Guard g(pythonLock_.get());
+//  return "OUTPUT FROM " + moduleId + " port " + boost::lexical_cast<std::string>(portIndex);
+//}
+
+boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input(const std::string& moduleId, int portIndex)
 {
   Guard g(pythonLock_.get());
-  return "OUTPUT FROM " + moduleId + " port " + boost::lexical_cast<std::string>(portIndex);
+
+  auto modIter = modules_.find(moduleId);
+  if (modIter != modules_.end())
+  {
+    auto port = modIter->second->input()->getitem(portIndex);
+    if (port)
+    {
+      return port->data();
+    }
+  }
+  return nullptr;
 }
