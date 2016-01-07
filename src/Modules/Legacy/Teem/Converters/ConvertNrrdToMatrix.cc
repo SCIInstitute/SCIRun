@@ -244,9 +244,9 @@ ConvertNrrdToMatrix::create_column_matrix(NrrdDataHandle dataH)
   remark("Creating column matrix");
   unsigned int rows = dataH->getNrrd()->axis[0].size;
 
-  DenseColumnMatrixHandle matrix(new DenseColumnMatrix(rows));
+  DenseMatrixHandle matrix(new DenseMatrix(rows, 1));
 
-  PTYPE *val = (PTYPE*)dataH->getNrrd()->data;
+  PTYPE *val = reinterpret_cast<PTYPE*>(dataH->getNrrd()->data);
   double *data = matrix->data();
 
   std::copy(val, val + dataH->getNrrd()->axis[0].size, data);
@@ -264,7 +264,7 @@ ConvertNrrdToMatrix::create_dense_matrix(NrrdDataHandle dataH)
 
   DenseMatrixHandle matrix(new DenseMatrix(rows, cols));
 
-  PTYPE *val = (PTYPE*)dataH->getNrrd()->data;
+  PTYPE *val = reinterpret_cast<PTYPE*>(dataH->getNrrd()->data);
   double *data = matrix->data();
 
   for (unsigned int r = 0; r < rows; r++) {

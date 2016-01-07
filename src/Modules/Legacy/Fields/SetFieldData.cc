@@ -31,41 +31,45 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-ModuleLookupInfo SetFieldDataModule::staticInfo_("SetFieldData", "ChangeFieldData", "SCIRun");
+const ModuleLookupInfo SetFieldDataModule::staticInfo_("SetFieldData", "ChangeFieldData", "SCIRun");
 
 SetFieldDataModule::SetFieldDataModule() :  Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(InputNrrd);
   INITIALIZE_PORT(OutputField);
 }
 
 void SetFieldDataModule::setStateDefaults()
 {
-  setStateBoolFromAlgo(SetFieldDataAlgo::keepTypeCheckBox);
+  setStateBoolFromAlgo(Parameters::keepTypeCheckBox);
 }
 
 void SetFieldDataModule::execute()
 {
   auto input_field = getRequiredInput(InputField);
-  auto input_matrix = getRequiredInput(InputMatrix);
-  ///NO Nrrd support yet !!!
+  auto input_matrix = getOptionalInput(InputMatrix);
+  auto input_nrrd = getOptionalInput(InputNrrd);
 
-  ///inputs_changed_ || !oport_cached("Matrix Nodes")
   if (needToExecute())
   {    
     update_state(Executing);
 
-    auto output = algo().run_generic(withInputData((InputField, input_field)(InputMatrix, input_matrix)));
+    auto output = algo().run_generic(withInputData(
+      (InputField, input_field)
+      (InputMatrix, optionalAlgoInput(input_matrix))
+      (InputNrrd, optionalAlgoInput(input_nrrd))
+      ));
 
     sendOutputFromAlgorithm(OutputField, output);
   }

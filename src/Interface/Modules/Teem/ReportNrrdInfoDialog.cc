@@ -44,6 +44,6 @@ ReportNrrdInfoDialog::ReportNrrdInfoDialog(const std::string& name, ModuleStateH
 
 void ReportNrrdInfoDialog::pullAndDisplayInfo() 
 {
-  auto info = optional_any_cast_or_default<std::string>(state_->getTransientValue(Variables::ObjectInfo));
+  auto info = transient_value_cast<std::string>(state_->getTransientValue(Variables::ObjectInfo));
   nrrdInfoTextEdit_->setPlainText(QString::fromStdString(info));
 }

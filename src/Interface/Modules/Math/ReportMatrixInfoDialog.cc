@@ -29,7 +29,6 @@
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -48,7 +47,7 @@ ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleSt
 
 void ReportMatrixInfoDialog::pullAndDisplayInfo() 
 {
-  auto info = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
+  auto info = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
   auto str = ReportMatrixInfoAlgorithm::summarize(info);
   matrixInfoTextEdit_->setPlainText(QString::fromStdString(str));
 }

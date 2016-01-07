@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "InsertMatricesIntoBundle",
+    "namespace": "Bundles",
+    "status": "Converted",
+    "description": "Inserts a matrix object into a bundle",
+    "header": "Modules/Legacy/Bundle/InsertMatricesIntoBundle.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "InsertMatricesIntoBundleDialog",
+    "header": "Interface/Modules/Bundle/InsertMatricesIntoBundleDialog.h"
+  }
+}

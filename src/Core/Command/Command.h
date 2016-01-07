@@ -85,6 +85,7 @@ namespace SCIRun
         PrintModules,
         LoadNetworkFile,
         SaveNetworkFile,
+        ImportNetworkFile,
         RunPythonScript,
         SetupDataDirectory,
         ExecuteCurrentNetwork,

@@ -135,10 +135,8 @@ class VImageMesh : public VMeshShared<MESH> {
     virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
 
     /// Get the centers of a series of nodes
-    virtual void get_centers(Point* points, 
-                             VMesh::Node::array_type& array) const;
-    virtual void get_centers(Point* points, 
-                             VMesh::Elem::array_type& array) const;
+    virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const;
+    virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const;
 
     virtual double get_size(VMesh::Node::index_type i) const;
     virtual double get_size(VMesh::Edge::index_type i) const;
@@ -901,8 +899,7 @@ get_center(Point &p, VMesh::DElem::index_type idx) const
 
 template <class MESH>
 void
-VImageMesh<MESH>::
-get_centers(Point* points, VMesh::Node::array_type& array) const
+VImageMesh<MESH>::get_centers(Point* points, const VMesh::Node::array_type& array) const
 {
   for (size_t k=0; k <array.size(); k++)
   {
@@ -917,8 +914,7 @@ get_centers(Point* points, VMesh::Node::array_type& array) const
  
 template <class MESH>
 void
-VImageMesh<MESH>::
-get_centers(Point* points, VMesh::Elem::array_type& array) const
+VImageMesh<MESH>::get_centers(Point* points, const VMesh::Elem::array_type& array) const
 {
   for (size_t k=0; k <array.size(); k++)
   {
@@ -2087,10 +2083,8 @@ public:
   virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
 
   /// Get the centers of a series of nodes
-  virtual void get_centers(Point* points, 
-                           VMesh::Node::array_type& array) const;
-  virtual void get_centers(Point* points, 
-                           VMesh::Elem::array_type& array) const;
+  virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const;
+  virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const;
   
   virtual double get_size(VMesh::Node::index_type i) const;
   virtual double get_size(VMesh::Edge::index_type i) const;
@@ -2338,9 +2332,7 @@ get_center(Point &p, VMesh::DElem::index_type idx) const
 
 template <class MESH>
 void
-VStructQuadSurfMesh<MESH>::
-get_centers(Point* points, 
-            VMesh::Node::array_type& array) const
+VStructQuadSurfMesh<MESH>::get_centers(Point* points, const VMesh::Node::array_type& array) const
 {
   for (size_t j=0; j <array.size(); j++)
   {
@@ -2350,9 +2342,7 @@ get_centers(Point* points,
  
 template <class MESH>
 void
-VStructQuadSurfMesh<MESH>::
-get_centers(Point* points, 
-            VMesh::Elem::array_type& array) const
+VStructQuadSurfMesh<MESH>::get_centers(Point* points, const VMesh::Elem::array_type& array) const
 {
   Point p;
   StackVector<VMesh::index_type,4> nodes;

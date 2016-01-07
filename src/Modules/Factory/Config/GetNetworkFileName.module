@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetNetworkFileName",
+    "namespace": "StringManip",
+    "status": "Converted",
+    "description": "Retrieves the name of the current network",
+    "header": "Modules/Legacy/String/GetNetworkFileName.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

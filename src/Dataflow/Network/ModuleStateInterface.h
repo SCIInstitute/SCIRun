@@ -101,7 +101,7 @@ namespace Networks {
   }
 
   template <class T>
-  T optional_any_cast_or_default(const boost::optional<boost::any>& x)
+  T transient_value_cast(const ModuleStateInterface::TransientValueOption& x)
   {
     return x ? any_cast_or_default_<T>(*x) : T();
   }

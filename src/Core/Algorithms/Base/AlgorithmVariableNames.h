@@ -67,6 +67,7 @@ public:
   static const AlgorithmInputName InputFields;
   static const AlgorithmInputName Source;
   static const AlgorithmInputName Destination;
+  static const AlgorithmInputName InputNrrd;
 
   static const AlgorithmOutputName MatrixInfo;
   static const AlgorithmOutputName Result;
@@ -75,6 +76,7 @@ public:
   static const AlgorithmOutputName Solution;
   static const AlgorithmOutputName OutputField;
   static const AlgorithmOutputName OutputMatrix;
+  static const AlgorithmOutputName OutputNrrd;
   static const AlgorithmOutputName ListOfOutputFields;
 };
 
