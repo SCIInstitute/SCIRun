@@ -264,7 +264,7 @@ std::string NetworkEditorPythonAPI::scirun_get_module_input(const std::string& m
     if (port)
     {
       return "INPUT FROM " + moduleId + " port " + boost::lexical_cast<std::string>(portIndex) + " NAME = " + port->name()
-        + "  Value String: " + port->datatypeToString();
+        + "  Typename: " + port->dataTypeName();
     }
     return "Port not available";
   }
