@@ -42,6 +42,7 @@ namespace Math {
     ALGORITHM_PARAMETER_DECL(CollectAppendIndicator);
     ALGORITHM_PARAMETER_DECL(CollectRowIndicator);
     ALGORITHM_PARAMETER_DECL(CollectPrependIndicator);
+    ALGORITHM_PARAMETER_DECL(ClearCollectMatricesOutput);
 
     class SCISHARE CollectMatricesAlgorithmBase : public AlgorithmBase
     {

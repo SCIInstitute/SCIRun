@@ -64,6 +64,9 @@ SET(Interface_Modules_Fields_FORMS
   ExtractSimpleIsosurface.ui
   registerwithcorrespondences.ui
   ClipVolumeByIsovalue.ui
+  ChooseInput.ui
+  convertfielddatatype.ui
+  scalefieldmeshanddata.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -103,6 +106,9 @@ SET(Interface_Modules_Fields_HEADERS
   GeneratePointSamplesFromFieldDialog.h
   GeneratePointSamplesFromFieldOrWidgetDialog.h
   ClipVolumeByIsovalueDialog.h
+  ChooseInputDialog.h
+  ScaleFieldMeshAndDataDialog.h
+  ConvertFieldDataTypeDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -141,6 +147,9 @@ SET(Interface_Modules_Fields_SOURCES
   GeneratePointSamplesFromFieldDialog.cc
   GeneratePointSamplesFromFieldOrWidgetDialog.cc
   ClipVolumeByIsovalueDialog.cc
+  ChooseInputDialog.cc
+  ScaleFieldMeshAndDataDialog.cc
+  ConvertFieldDataTypeDialog.cc
 )
 
 IF(WITH_TETGEN)
@@ -167,6 +176,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Fields
   Modules_Fields
   Interface_Modules_Base
   Modules_Legacy_Fields
+  Modules_Basic
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )

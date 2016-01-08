@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #include <Interface/Modules/Fields/EditMeshBoundingBoxDialog.h>
 #include <Modules/Fields/EditMeshBoundingBox.h>
@@ -36,7 +36,7 @@ typedef SCIRun::Modules::Fields::EditMeshBoundingBox EditMeshBoundingBoxModule;
 
 EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-: ModuleDialogGeneric(state, parent), scale_(0.1)
+  : ModuleDialogGeneric(state, parent), scale_(0.1)
 {
   setupUi(this);
   //custom value for cylinder size
@@ -61,23 +61,23 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   addDynamicLabelManager(inputSizeYLabel_, EditMeshBoundingBoxModule::InputSizeY);
   addDynamicLabelManager(inputSizeZLabel_, EditMeshBoundingBoxModule::InputSizeZ);
 
-    addDoubleSpinBoxManager(&spinner_scale_, EditMeshBoundingBoxModule::Scale);
-    connectButtonToExecuteSignal(downScaleToolButton_);
-    connectButtonToExecuteSignal(upScaleToolButton_);
-    connectButtonToExecuteSignal(doubleDownScaleToolButton_);
-    connectButtonToExecuteSignal(doubleUpScaleToolButton_);
-    spinner_scale_.setValue(scale_);
+  addDoubleSpinBoxManager(&spinner_scale_, EditMeshBoundingBoxModule::Scale);
+  connectButtonToExecuteSignal(downScaleToolButton_);
+  connectButtonToExecuteSignal(upScaleToolButton_);
+  connectButtonToExecuteSignal(doubleDownScaleToolButton_);
+  connectButtonToExecuteSignal(doubleUpScaleToolButton_);
+  spinner_scale_.setValue(scale_);
 
-    connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleUpPush()));
-    connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleUpPush()));
-    connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDownPush()));
-    connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleDownPush()));
+  connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleUpPush()));
+  connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleUpPush()));
+  connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDownPush()));
+  connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleDownPush()));
 
 
   createExecuteInteractivelyToggleAction();
 }
 
-void EditMeshBoundingBoxDialog::ScaleUpPush() { scale_*=1.25; spinner_scale_.setValue(scale_); }
-void EditMeshBoundingBoxDialog::ScaleDoubleUpPush() { scale_*=1.5625; spinner_scale_.setValue(scale_); }
-void EditMeshBoundingBoxDialog::ScaleDownPush() { scale_*=0.8; spinner_scale_.setValue(scale_); }
-void EditMeshBoundingBoxDialog::ScaleDoubleDownPush() { scale_*=0.64; spinner_scale_.setValue(scale_); }
+void EditMeshBoundingBoxDialog::ScaleUpPush() { scale_ *= 1.25; spinner_scale_.setValue(scale_); }
+void EditMeshBoundingBoxDialog::ScaleDoubleUpPush() { scale_ *= 1.5625; spinner_scale_.setValue(scale_); }
+void EditMeshBoundingBoxDialog::ScaleDownPush() { scale_ *= 0.8; spinner_scale_.setValue(scale_); }
+void EditMeshBoundingBoxDialog::ScaleDoubleDownPush() { scale_ *= 0.64; spinner_scale_.setValue(scale_); }

@@ -89,7 +89,7 @@ void ViewScene::updateTransientList()
 {
   auto transient = get_state()->getTransientValue(Parameters::GeomData);
 
-  auto geoms = optional_any_cast_or_default<GeomListPtr>(transient);
+  auto geoms = transient_value_cast<GeomListPtr>(transient);
   if (!geoms)
   {
     geoms.reset(new GeomList());
@@ -147,7 +147,7 @@ void ViewScene::execute()
     do
     {
       auto transient = state->getTransientValue(Parameters::ScreenshotData);
-      screenshotData = optional_any_cast_or_default<DenseMatrixHandle>(transient);
+      screenshotData = transient_value_cast<DenseMatrixHandle>(transient);
       if (screenshotData)
       {
         sendOutput(ScreenshotData, screenshotData);
