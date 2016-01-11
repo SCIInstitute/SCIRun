@@ -165,7 +165,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
-    auto geomData = optional_any_cast_or_default<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+    auto geomData = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
     if (!geomData)
     {
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
