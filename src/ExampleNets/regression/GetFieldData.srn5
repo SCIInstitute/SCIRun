@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
-<networkFile class_id="0" tracking_level="0" version="2">
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>20</count>
+			<count>28</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>GetFieldData:79</first>
@@ -446,13 +446,237 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>ReportMatrixInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportNrrdInfo:0</first>
+				<second>
+					<module>
+						<package_name_>Teem</package_name_>
+						<category_name_>Misc</category_name_>
+						<module_name_>ReportNrrdInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportNrrdInfo:1</first>
+				<second>
+					<module>
+						<package_name_>Teem</package_name_>
+						<category_name_>Misc</category_name_>
+						<module_name_>ReportNrrdInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportNrrdInfo:2</first>
+				<second>
+					<module>
+						<package_name_>Teem</package_name_>
+						<category_name_>Misc</category_name_>
+						<module_name_>ReportNrrdInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportNrrdInfo:3</first>
+				<second>
+					<module>
+						<package_name_>Teem</package_name_>
+						<category_name_>Misc</category_name_>
+						<module_name_>ReportNrrdInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>10</count>
+			<count>18</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ReadField:15</moduleId1_>
+				<moduleId1_>GetFieldData:80</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>OutputMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldData:80</moduleId1_>
+				<port1_>
+					<name>OutputNrrd</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportNrrdInfo:1</moduleId2_>
+				<port2_>
+					<name>Query_Nrrd</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldData:81</moduleId1_>
+				<port1_>
+					<name>OutputMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:1</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldData:81</moduleId1_>
+				<port1_>
+					<name>OutputNrrd</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportNrrdInfo:0</moduleId2_>
+				<port2_>
+					<name>Query_Nrrd</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldData:83</moduleId1_>
+				<port1_>
+					<name>OutputMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldData:84</moduleId1_>
+				<port1_>
+					<name>OutputNrrd</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportNrrdInfo:2</moduleId2_>
+				<port2_>
+					<name>Query_Nrrd</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldData:87</moduleId1_>
+				<port1_>
+					<name>OutputNrrd</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportNrrdInfo:3</moduleId2_>
+				<port2_>
+					<name>Query_Nrrd</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldData:88</moduleId1_>
+				<port1_>
+					<name>OutputMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:3</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadField:15</moduleId1_>
+				<port1_>
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
@@ -573,146 +797,202 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>20</count>
+		<count>28</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>GetFieldData:79</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1895</first>
-				<second>-1389</second>
+				<first>-1.89500000000000000e+003</first>
+				<second>-1.38900000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:80</first>
 			<second>
-				<first>-2248</first>
-				<second>-1398</second>
+				<first>-2.24800000000000000e+003</first>
+				<second>-1.39800000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:81</first>
 			<second>
-				<first>-2241</first>
-				<second>-1120</second>
+				<first>-2.24100000000000000e+003</first>
+				<second>-1.12000000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:82</first>
 			<second>
-				<first>-1626</first>
-				<second>-1385</second>
+				<first>-1.62600000000000000e+003</first>
+				<second>-1.38500000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:83</first>
 			<second>
-				<first>-1630</first>
-				<second>-1158</second>
+				<first>-1.63000000000000000e+003</first>
+				<second>-1.15800000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:84</first>
 			<second>
-				<first>-1896</first>
-				<second>-1160</second>
+				<first>-1.89600000000000000e+003</first>
+				<second>-1.16000000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:85</first>
 			<second>
-				<first>-1907</first>
-				<second>-876</second>
+				<first>-1.90700000000000000e+003</first>
+				<second>-8.76000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:86</first>
 			<second>
-				<first>-1646</first>
-				<second>-875</second>
+				<first>-1.64600000000000000e+003</first>
+				<second>-8.75000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:87</first>
 			<second>
-				<first>-1650</first>
-				<second>-635</second>
+				<first>-1.65000000000000000e+003</first>
+				<second>-6.35000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:88</first>
 			<second>
-				<first>-1906</first>
-				<second>-638</second>
+				<first>-1.90600000000000000e+003</first>
+				<second>-6.38000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:15</first>
 			<second>
-				<first>-1647</first>
-				<second>-980</second>
+				<first>-1.64700000000000000e+003</first>
+				<second>-9.80000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:46</first>
 			<second>
-				<first>-1907</first>
-				<second>-981</second>
+				<first>-1.90700000000000000e+003</first>
+				<second>-9.81000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:60</first>
 			<second>
-				<first>-1628</first>
-				<second>-1496</second>
+				<first>-1.62800000000000000e+003</first>
+				<second>-1.49600000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:61</first>
 			<second>
-				<first>-1900</first>
-				<second>-1496</second>
+				<first>-1.90000000000000000e+003</first>
+				<second>-1.49600000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:62</first>
 			<second>
-				<first>-1897</first>
-				<second>-1266</second>
+				<first>-1.89700000000000000e+003</first>
+				<second>-1.26600000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:63</first>
 			<second>
-				<first>-1629</first>
-				<second>-1260</second>
+				<first>-1.62900000000000000e+003</first>
+				<second>-1.26000000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:64</first>
 			<second>
-				<first>-1648</first>
-				<second>-738</second>
+				<first>-1.64800000000000000e+003</first>
+				<second>-7.38000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:65</first>
 			<second>
-				<first>-1905</first>
-				<second>-745</second>
+				<first>-1.90500000000000000e+003</first>
+				<second>-7.45000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:77</first>
 			<second>
-				<first>-2255</first>
-				<second>-1512</second>
+				<first>-2.25500000000000000e+003</first>
+				<second>-1.51200000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:78</first>
 			<second>
-				<first>-2239</first>
-				<second>-1228</second>
+				<first>-2.23900000000000000e+003</first>
+				<second>-1.22800000000000000e+003</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:0</first>
+			<second>
+				<first>-2.15500000000000000e+003</first>
+				<second>-1.27500000000000000e+003</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:1</first>
+			<second>
+				<first>-2.20300000000000000e+003</first>
+				<second>-9.96000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>
+				<first>-1.54900000000000000e+003</first>
+				<second>-1.03500000000000000e+003</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:3</first>
+			<second>
+				<first>-1.91200000000000000e+003</first>
+				<second>-4.59000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportNrrdInfo:0</first>
+			<second>
+				<first>-2.20700000000000000e+003</first>
+				<second>-8.54000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportNrrdInfo:1</first>
+			<second>
+				<first>-2.31000000000000000e+003</first>
+				<second>-1.24500000000000000e+003</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportNrrdInfo:2</first>
+			<second>
+				<first>-1.87000000000000000e+003</first>
+				<second>-1.02200000000000000e+003</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportNrrdInfo:3</first>
+			<second>
+				<first>-1.53900000000000000e+003</first>
+				<second>-4.94000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -724,6 +1004,122 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>28</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>GetFieldData:79</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldData:80</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldData:81</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldData:82</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldData:83</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldData:84</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldData:85</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldData:86</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldData:87</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetFieldData:88</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:15</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:46</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:60</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:61</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:62</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:63</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:64</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:65</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:77</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:78</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:3</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportNrrdInfo:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportNrrdInfo:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportNrrdInfo:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportNrrdInfo:3</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
 </networkFile>
 </boost_serialization>
 

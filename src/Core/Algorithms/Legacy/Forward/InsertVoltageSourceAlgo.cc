@@ -207,7 +207,8 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
     }
   }
 
-  DenseMatrix dirichlet(1, bc_nodes.size());
+  const unsigned int columns = 2;
+  odirichletMatrix.reset(new DenseMatrix(bc_nodes.size(), columns));
   for (size_type i=0; i<bc_nodes.size(); i++)
   {
     double val=0;
@@ -215,17 +216,13 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
     for (int j=0; j<nsrcs; j++)
       val+=closest[bc_nodes[i]][j].second/nsrcs;
     //dirichlet.push_back(std::pair<int, double>((int)bc_nodes[i], val));
-    dirichlet((int)bc_nodes[i], val);
+    (*odirichletMatrix) << (int)bc_nodes[i], val;
   }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   omeshH->set_property("dirichlet", dirichlet, false);
   omeshH->set_property("conductivity_table", conds, false);
 #endif
-
-  std::cout << "here is the matric dirichlet:\n" << dirichlet << std::endl;
-
-  //odirichletMatrix->addTo(dirichlet);
 }
 
 ALGORITHM_PARAMETER_DEF(Forward, InterpolateOutside);

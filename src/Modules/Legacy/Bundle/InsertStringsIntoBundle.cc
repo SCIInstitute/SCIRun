@@ -26,6 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Bundle/InsertStringsIntoBundle.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <Core/Datatypes/String.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Core::Datatypes;
+
+#if 0
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Bundle.h>
 
@@ -163,3 +176,134 @@ void InsertStringsIntoBundle::execute()
   }
 }
 
+#endif
+
+const ModuleLookupInfo InsertStringsIntoBundle::staticInfo_("InsertStringsIntoBundle", "Bundle", "SCIRun");
+const AlgorithmParameterName InsertStringsIntoBundle::NumStrings("NumStrings");
+const AlgorithmParameterName InsertStringsIntoBundle::StringNames("StringNames");
+const AlgorithmParameterName InsertStringsIntoBundle::StringReplace("StringReplace");
+
+InsertStringsIntoBundle::InsertStringsIntoBundle() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputBundle);
+  INITIALIZE_PORT(OutputBundle);
+  INITIALIZE_PORT(InputStrings);
+}
+
+void InsertStringsIntoBundle::setStateDefaults()
+{
+
+}
+
+void InsertStringsIntoBundle::portAddedSlot(const ModuleId& mid, const PortId& pid)
+{
+  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
+  if (mid == id_)
+  {
+    int strings = num_input_ports() - 2; // -1 for empty end, -1 for bundle port 0
+    get_state()->setTransientValue(NumStrings, strings);
+  }
+}
+
+void InsertStringsIntoBundle::portRemovedSlot(const ModuleId& mid, const PortId& pid)
+{
+  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
+  if (mid == id_)
+  {
+    int strings = num_input_ports() - 2; // -1 for empty end, -1 for bundle port 0
+    get_state()->setTransientValue(NumStrings, strings);
+  }
+}
+
+void InsertStringsIntoBundle::execute()
+{
+  auto bundleOption = getOptionalInput(InputBundle);
+  auto strings = getRequiredDynamicInputs(InputStrings);
+
+  //if (inputs_changed_ || guiString1name_.changed() || 
+  //  guiString2name_.changed() || guiString3name_.changed() ||
+  //  guiString4name_.changed() || guiString5name_.changed() ||
+  //  guiString6name_.changed() || 
+  //  guireplace1_.changed() || guireplace2_.changed() ||
+  //  guireplace3_.changed() || guireplace4_.changed() ||
+  //  guireplace5_.changed() || guireplace6_.changed() ||
+  //  guibundlename_.changed() || !oport_cached("bundle"))
+  if (needToExecute())
+  {
+    update_state(Executing);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    std::string bundlename = guibundlename_.get();
+#endif
+    BundleHandle bundle;
+    if (bundleOption && *bundleOption)
+    {
+      bundle.reset((*bundleOption)->clone());
+    }
+    else
+    {
+      bundle.reset(new Bundle());
+      if (!bundle)
+      {
+        THROW_ALGORITHM_PROCESSING_ERROR("Could not allocate new bundle");
+      }
+    }
+
+    //TODO: instead grab a vector of tuple<string,bool>. need to modify Variable::Value again
+    auto stringNames = get_state()->getValue(StringNames).toVector();
+    auto replace = get_state()->getValue(StringReplace).toVector();
+
+    for (int i = 0; i < strings.size(); ++i)
+    {
+      auto string = strings[i];
+      if (string)
+      {
+        auto name = i < stringNames.size() ? stringNames[i].toString() : ("String" + boost::lexical_cast<std::string>(i));
+        auto replaceString = i < replace.size() ? replace[i].toBool() : true;
+        if (replaceString || !bundle->isString(name))
+        {
+          bundle->set(name, string);
+        }
+      }
+    }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    if (bundlename != "")
+    {
+      handle->set_property("name", bundlename, false);
+    }
+#endif
+
+    sendOutput(OutputBundle, bundle);
+  }
+}
+
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+private:
+  GuiString     guiString6name_;
+
+  GuiInt        guireplace6_;
+
+  GuiString     guibundlename_;
+};
+
+
+InsertFieldsIntoBundle::InsertFieldsIntoBundle(GuiContext* ctx)
+  : Module("InsertFieldsIntoBundle", ctx, Filter, "Bundle", "SCIRun"),
+  guifield1name_(get_ctx()->subVar("field1-name"), "field1"),
+  guifield2name_(get_ctx()->subVar("field2-name"), "field2"),
+  guifield3name_(get_ctx()->subVar("field3-name"), "field3"),
+  guifield4name_(get_ctx()->subVar("field4-name"), "field4"),
+  guifield5name_(get_ctx()->subVar("field5-name"), "field5"),
+  guifield6name_(get_ctx()->subVar("field6-name"), "field6"),
+  guireplace1_(get_ctx()->subVar("replace1"), 1),
+  guireplace2_(get_ctx()->subVar("replace2"), 1),
+  guireplace3_(get_ctx()->subVar("replace3"), 1),
+  guireplace4_(get_ctx()->subVar("replace4"), 1),
+  guireplace5_(get_ctx()->subVar("replace5"), 1),
+  guireplace6_(get_ctx()->subVar("replace6"), 1),
+  guibundlename_(get_ctx()->subVar("bundlename", false), "")
+{
+}
+
+#endif

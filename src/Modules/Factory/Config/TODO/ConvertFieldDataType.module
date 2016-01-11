@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertFieldDataType",
+    "namespace": "Fields",
+    "status": "Converted",
+    "description": "Changes type of data associated with field elements. ",
+    "header": "Modules/Legacy/Fields/ConvertFieldDataType.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

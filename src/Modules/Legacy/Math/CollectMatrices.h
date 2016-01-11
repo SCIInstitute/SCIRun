@@ -40,18 +40,21 @@ namespace SCIRun {
 			public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
 			public Has1OutputPort<MatrixPortTag>
 			{
-				public:
-					CollectMatrices();
-					virtual void setStateDefaults() override;
-					virtual void execute() override;
+			public:
+				CollectMatrices();
+				virtual void setStateDefaults() override;
+				virtual void execute() override;
 
-					INPUT_PORT(0, Optional_BaseMatrix, Matrix);
-					INPUT_PORT(1, SubMatrix, Matrix);
-					OUTPUT_PORT(0, CompositeMatrix, Matrix);
+				INPUT_PORT(0, Optional_BaseMatrix, Matrix);
+				INPUT_PORT(1, SubMatrix, Matrix);
+				OUTPUT_PORT(0, CompositeMatrix, Matrix);
 
-          const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-        private:
-          boost::shared_ptr<class CollectMatricesImpl> impl_;
+        const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      protected: 
+        virtual void postStateChangeInternalSignalHookup() override;
+      private:
+        boost::shared_ptr<class CollectMatricesImpl> impl_;
+        void checkForClearOutput();
 			};
 
 }}};

@@ -49,7 +49,7 @@ namespace SCIRun {
         INPUT_PORT(0, InputFEMesh, LegacyField);
         INPUT_PORT(1, VoltageSource, LegacyField);
         OUTPUT_PORT(0, OutputFEMesh, LegacyField);
-        OUTPUT_PORT(1, OutputDirichletMatrix, Matrix);
+        OUTPUT_PORT(1, OutputDirichletMatrix, DenseMatrix);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };

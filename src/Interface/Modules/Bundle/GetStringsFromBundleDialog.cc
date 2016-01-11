@@ -53,7 +53,7 @@ GetStringsFromBundleDialog::GetStringsFromBundleDialog(const std::string& name, 
 
 void GetStringsFromBundleDialog::pullSpecial()
 {
-  auto names = optional_any_cast_or_default<std::vector<std::string>>(state_->getTransientValue(GetStringsFromBundle::StringNameList.name()));
+  auto names = transient_value_cast<std::vector<std::string>>(state_->getTransientValue(GetStringsFromBundle::StringNameList.name()));
   if (stringNames_ != names)
   {
     stringNames_ = names;
