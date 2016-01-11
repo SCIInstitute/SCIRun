@@ -39,7 +39,7 @@ namespace SCIRun {
       template <typename T>
       boost::shared_ptr<T> optionalAlgoInput(boost::optional<boost::shared_ptr<T>> opt)
       {
-        return opt.get_value_or(boost::shared_ptr<T>());
+        return opt.get_value_or(nullptr);
       }
 
     }}}

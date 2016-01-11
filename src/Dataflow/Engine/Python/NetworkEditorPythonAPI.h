@@ -34,6 +34,7 @@
 #include <vector>
 #include <boost/python.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Thread/Mutex.h>
 #include <Dataflow/Engine/Python/share.h>
 
 namespace SCIRun {
@@ -51,31 +52,35 @@ namespace SCIRun {
     static std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
     static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
     static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
+    static std::string scirun_dump_module_state(const std::string& moduleId);
 
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);
     static std::string loadNetwork(const std::string& filename);
+    static std::string importNetwork(const std::string& filename);
+    
     static std::string quit(bool force);
 
     static void setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl);
     /// @todo: smelly!
     static void setExecutionContext(Dataflow::Networks::ExecutableLookup* lookup);
+    static Core::Thread::Mutex& getLock() { return pythonLock_; }
   private:
     NetworkEditorPythonAPI();
     static boost::shared_ptr<NetworkEditorPythonInterface> impl_;
     static Dataflow::Networks::ExecutableLookup* lookup_;
-    static std::vector<boost::shared_ptr<PyModule>> modules_;
+    static std::map<std::string, boost::shared_ptr<PyModule>> modules_;
+    static Core::Thread::Mutex pythonLock_;
   };
 
   class SCISHARE SimplePythonAPI
   {
   public:
     static std::string scirun_add_module(const std::string& name);
-    static std::string scirun_connect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex);
-    static std::string scirun_disconnect_modules(const std::string& modIdFrom, int fromIndex, const std::string& modIdTo, int toIndex);
     static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
     static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
-    static std::string scirun_quit(bool force);
+    static std::string scirun_quit();
+    static std::string scirun_force_quit();
   private:
     SimplePythonAPI();
   };

@@ -43,15 +43,15 @@ namespace SCIRun {
       public:
         ScaleFieldMeshAndData();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, GeomScaleFactor, Double);
         INPUT_PORT(2, DataScaleFactor, Double);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
     }
   }

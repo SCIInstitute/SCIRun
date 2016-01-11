@@ -39,7 +39,7 @@ namespace Console {
   class SCISHARE ConsoleGlobalCommandFactory : public Core::Commands::GlobalCommandFactory
   {
   public:
-    virtual Core::Commands::CommandHandle create(Core::Commands::GlobalCommands type, int param) const override;
+    virtual Core::Commands::CommandHandle create(Core::Commands::GlobalCommands type) const override;
   };
 
 }}}

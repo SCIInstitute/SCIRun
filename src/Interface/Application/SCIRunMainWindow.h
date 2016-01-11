@@ -79,6 +79,9 @@ public:
   void addToDataDirectory(const QString& dir);
   void setCurrentFile(const QString& fileName);
 
+  //TODO: extract another interface for command objects
+  NetworkEditor* networkEditor() { return networkEditor_; }
+
   bool newInterface() const;
   bool isInFavorites(const QString& module) const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
@@ -146,6 +149,7 @@ private:
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool quitAfterExecute_;
+  bool runningPythonScript_ = false;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();

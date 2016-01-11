@@ -42,6 +42,7 @@ using namespace SCIRun::Core::Datatypes;
 ALGORITHM_PARAMETER_DEF(Math, CollectAppendIndicator);
 ALGORITHM_PARAMETER_DEF(Math, CollectRowIndicator);
 ALGORITHM_PARAMETER_DEF(Math, CollectPrependIndicator);
+ALGORITHM_PARAMETER_DEF(Math, ClearCollectMatricesOutput);
 
 MatrixHandle
 CollectDenseMatricesAlgorithm::concat_cols(MatrixHandle m1H, MatrixHandle m2H) const

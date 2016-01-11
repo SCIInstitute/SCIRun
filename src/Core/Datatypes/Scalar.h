@@ -43,8 +43,8 @@ namespace Datatypes {
   public:
     explicit Scalar(const T& val) : val_(val) {}
     T value() const { return val_; }
-    virtual Scalar* clone() const { return new Scalar(*this); }
-    virtual std::string dynamic_type_name() const { return "Scalar"; }
+    virtual Scalar* clone() const override { return new Scalar(*this); }
+    virtual std::string dynamic_type_name() const override { return "Scalar"; }
   private:
     T val_;
   };

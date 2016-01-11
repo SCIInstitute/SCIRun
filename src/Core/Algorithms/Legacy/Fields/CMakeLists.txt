@@ -40,7 +40,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/CalculateGradientsAlgo.h
   FieldData/CalculateVectorMagnitudesAlgo.h
   #FieldData/ConvertMappingMatrixToFieldData.h
-  #FieldData/ConvertFieldDataType.h
+  FieldData/ConvertFieldDataType.h
   #FieldData/CalculateLatVolGradientsAtNodes.h
   #FieldData/GetFieldData.h
   FieldData/SetFieldData.h
@@ -133,7 +133,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   FieldData/CalculateVectorMagnitudesAlgo.cc
   #FieldData/CalculateFieldDataMetric.cc
-#FieldData/ConvertFieldDataType.cc
+  FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
   FieldData/SwapFieldDataWithMatrixEntriesAlgo.cc
   FieldData/ConvertIndicesToFieldDataAlgo.cc
@@ -219,21 +219,21 @@ SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
   Core_Datatypes
   Core_Datatypes_Legacy_Field
+  Core_Datatypes_Legacy_Nrrd
   Algorithms_Base
   Core_Exceptions_Legacy
   Core_Thread
   Core_Geometry_Primitives
   Core_Basis
   Algorithms_Math
-  #${SCI_TEEM_LIBRARY}
 )
 
 IF(FALSE)
-IF(WITH_TETGEN)
-  TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
-     ${SCI_TETGEN_LIBRARY}
-  )
-ENDIF(WITH_TETGEN)
+  IF(WITH_TETGEN)
+    TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
+      ${TETGEN_LIBRARY}
+    )
+  ENDIF()
 ENDIF()
 
 IF(BUILD_SHARED_LIBS)
