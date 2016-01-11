@@ -73,7 +73,7 @@ namespace SCIRun {
     Q_SIGNALS:
       void newGeometryValueForwarder();
 
-    protected Q_SLOTS:
+      protected Q_SLOTS:
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
@@ -144,8 +144,8 @@ namespace SCIRun {
       bool saveScreenshotOnNewGeometry_;
 
       friend class ViewSceneControlsDock;
-		};
-	}
+    };
+  }
 }
 
 #endif
