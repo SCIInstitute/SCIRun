@@ -128,7 +128,7 @@ namespace SCIRun
     virtual std::string loadNetwork(const std::string& filename) = 0;
     virtual std::string importNetwork(const std::string& filename) = 0;
     virtual std::string quit(bool force) = 0;
-    virtual void setLock(Core::Thread::Mutex* mutex) = 0;
+    virtual void setUnlockFunc(boost::function<void()> unlock) = 0;
   };
 
 }

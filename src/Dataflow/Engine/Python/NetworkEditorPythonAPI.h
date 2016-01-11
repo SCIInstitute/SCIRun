@@ -35,6 +35,7 @@
 #include <boost/python.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Thread/Mutex.h>
+#include <atomic>
 #include <Dataflow/Engine/Python/share.h>
 
 namespace SCIRun {
@@ -58,6 +59,7 @@ namespace SCIRun {
     //static std::string scirun_get_module_output_type(const std::string& moduleId, int portIndex);
 
     static boost::shared_ptr<PyDatatype> scirun_get_module_input(const std::string& moduleId, int portIndex);
+    static boost::python::object scirun_get_module_input_copy(const std::string& moduleId, int portIndex);
 
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);
@@ -75,7 +77,9 @@ namespace SCIRun {
     static boost::shared_ptr<NetworkEditorPythonInterface> impl_;
     static Dataflow::Networks::ExecutableLookup* lookup_;
     static std::map<std::string, boost::shared_ptr<PyModule>> modules_;
+    static void unlock();
     static Core::Thread::Mutex pythonLock_;
+    static std::atomic<bool> executeLockedFromPython_;
   };
 
   class SCISHARE SimplePythonAPI

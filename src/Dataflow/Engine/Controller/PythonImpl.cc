@@ -401,14 +401,14 @@ namespace SCIRun {
   }
 }
 
-PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory), executionMutex_(nullptr)
+PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory)
 {
   nec_.connectNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); });
 }
 
-void PythonImpl::setLock(Mutex* mutex)
+void PythonImpl::setUnlockFunc(boost::function<void()> unlock)
 {
-  executionMutex_ = mutex;
+  unlock_ = unlock;
 }
 
 void PythonImpl::executionFromPythonStart()
@@ -418,8 +418,12 @@ void PythonImpl::executionFromPythonStart()
 
 void PythonImpl::executionFromPythonFinish(int)
 {
-  if (executionMutex_)
-    executionMutex_->unlock();
+  if (unlock_)
+  {
+    //std::cout << "executionMutex_->unlock attempt " << boost::this_thread::get_id() << std::endl;
+    unlock_();
+    //std::cout << "executionMutex_->unlock done " << boost::this_thread::get_id() << std::endl;
+  }
 }
 
 boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
