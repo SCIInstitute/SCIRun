@@ -43,6 +43,7 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -145,9 +146,7 @@ namespace
 
     virtual std::string type() const override
     {
-      if (underlying_)
-        return underlying_->dynamic_type_name();
-      return "[Null Matrix]";
+      return underlying_->dynamic_type_name();
     }
 
     virtual boost::python::object value() const override
@@ -158,6 +157,48 @@ namespace
   private:
     SparseRowMatrixHandle underlying_;
   };
+
+  class PyDatatypeField : public PyDatatype
+  {
+  public:
+    explicit PyDatatypeField(FieldHandle underlying) : underlying_(underlying)
+    {
+    }
+
+    virtual std::string type() const override
+    {
+      return underlying_->dynamic_type_name();
+    }
+
+    virtual boost::python::object value() const override
+    {
+      return boost::python::object("TODO FIELD");
+    }
+
+  private:
+    FieldHandle underlying_;
+  };
+
+  /*
+   // Make sure that errors are forwarded in the conversion process
+  matlabconverter mc(pr);
+  matlabarray ma;
+  std::string name;
+ 
+  try
+  {
+    // We want all the annotation. A field without annotation is hard to use
+    mc.converttostructmatrix();
+    // Convert the object
+    mc.sciFieldTOmlArray(field,ma);
+    // Get the name
+    field->properties().get_property("name",name);
+    // If no name, set a default
+    if ((name=="")||(!mc.isvalidmatrixname(name))) name = "scirunfield";
+  
+  */
+
+
 
   class PyDatatypeFactory
   {
@@ -178,6 +219,11 @@ namespace
         auto sparse = boost::dynamic_pointer_cast<SparseRowMatrix>(data);
         if (sparse)
           return boost::make_shared<PyDatatypeSparseRowMatrix>(sparse);
+      }
+      {
+        auto field = boost::dynamic_pointer_cast<Field>(data);
+        if (field)
+          return boost::make_shared<PyDatatypeField>(field);
       }
       return nullptr;
     }

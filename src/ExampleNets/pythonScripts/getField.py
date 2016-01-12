@@ -1,0 +1,8 @@
+m5 = scirun_add_module("CreateLatVol")
+scirun_set_module_state(m5, "XSize", 2)
+scirun_set_module_state(m5, "YSize", 2)
+scirun_set_module_state(m5, "ZSize", 2)
+m6 = scirun_add_module("ReportFieldInfo")
+scirun_connect_modules(m5, 0, m6, 0)
+scirun_execute_all()
+scirun_get_module_input_copy(m6, 0)
