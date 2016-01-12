@@ -41,6 +41,8 @@
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -52,6 +54,20 @@ using namespace SCIRun::Dataflow::Networks;
 
 namespace
 {
+  template <class T>
+  boost::python::list toPythonList(const DenseMatrixGeneric<T>& dense)
+  {
+    boost::python::list list;
+    for (int i = 0; i < dense.nrows(); ++i)
+    {
+      boost::python::list row;
+      for (int j = 0; j < dense.ncols(); ++j)
+        row.append(dense(i,j));
+      list.append(row);
+    }
+    return list;
+  }
+
   class PyDatatypeString : public PyDatatype
   {
   public:
@@ -61,9 +77,7 @@ namespace
 
     virtual std::string type() const override
     {
-      if (underlying_)
-        return underlying_->dynamic_type_name();
-      return "[Null String]";
+      return underlying_->dynamic_type_name();
     }
 
     virtual boost::python::object value() const override
@@ -76,15 +90,71 @@ namespace
     StringHandle underlying_;
   };
 
+  class PyDatatypeDenseMatrix : public PyDatatype
+  {
+  public:
+    explicit PyDatatypeDenseMatrix(DenseMatrixHandle underlying) : underlying_(underlying)
+    {
+    }
+
+    virtual std::string type() const override
+    {
+      return underlying_->dynamic_type_name();
+    }
+
+    virtual boost::python::object value() const override
+    {
+      return toPythonList(*underlying_);
+    }
+
+  private:
+    DenseMatrixHandle underlying_;
+  };
+
+  class PyDatatypeSparseRowMatrix : public PyDatatype
+  {
+  public:
+    explicit PyDatatypeSparseRowMatrix(SparseRowMatrixHandle underlying) : underlying_(underlying)
+    {
+    }
+
+    virtual std::string type() const override
+    {
+      if (underlying_)
+        return underlying_->dynamic_type_name();
+      return "[Null Matrix]";
+    }
+
+    virtual boost::python::object value() const override
+    {
+      //boost::python::object str(std::string(underlying_->value()));
+      return boost::python::object("TODO SPARSE MATRIX");
+    }
+
+  private:
+    SparseRowMatrixHandle underlying_;
+  };
+
   class PyDatatypeFactory
   {
   public:
     static boost::shared_ptr<PyDatatype> createWrapper(DatatypeHandle data)
     {
-      auto str = boost::dynamic_pointer_cast<String>(data);
-      if (str)
-        return boost::make_shared<PyDatatypeString>(str);
-
+      {
+        auto str = boost::dynamic_pointer_cast<String>(data);
+        if (str)
+          return boost::make_shared<PyDatatypeString>(str);
+      }
+      {
+        auto dense = boost::dynamic_pointer_cast<DenseMatrix>(data);
+        if (dense)
+          return boost::make_shared<PyDatatypeDenseMatrix>(dense);
+      }
+      {
+        auto sparse = boost::dynamic_pointer_cast<SparseRowMatrix>(data);
+        if (sparse)
+          return boost::make_shared<PyDatatypeSparseRowMatrix>(sparse);
+      }
       return nullptr;
     }
   };
