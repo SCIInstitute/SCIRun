@@ -43,6 +43,7 @@ DEALINGS IN THE SOFTWARE.
 #define CORE_ALGORITHMS_LEGACY_FORWARD_APPLYFEMVOLTAGESOURCEALGO_H
 
 #include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Forward/share.h>
 
@@ -57,7 +58,7 @@ namespace SCIRun {
         {
         public:
           ApplyFEMVoltageSourceAlgo();
-          void ExecuteAlgorithm(FieldHandle& hField, MatrixHandle& hMatIn);
+          void ExecuteAlgorithm(FieldHandle& hField, Datatypes::MatrixHandle& hMatIn);
 
         private:
         };

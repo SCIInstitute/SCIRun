@@ -43,6 +43,7 @@
 #include <Modules/Legacy/Forward/ApplyFEMVoltageSource.h>
 #include <Core/Algorithms/Legacy/Forward/ApplyFEMVoltageSourceAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -57,6 +58,7 @@ ApplyFEMVoltageSource::ApplyFEMVoltageSource() : Module(staticInfo_)
   INITIALIZE_PORT(Mesh);
   INITIALIZE_PORT(StiffnessMatrix);
   INITIALIZE_PORT(RHS);
+  INITIALIZE_PORT(Dirichlet);
   INITIALIZE_PORT(ForwardMatrix);
   INITIALIZE_PORT(OutputRHS);
 }
@@ -67,6 +69,18 @@ void ApplyFEMVoltageSource::setStateDefaults()
 
 void ApplyFEMVoltageSource::execute()
 {
+  auto inputMesh = getRequiredInput(Mesh);
+  auto stiffnessMatrix = getRequiredInput(StiffnessMatrix);
+  auto rhsMatrix = getOptionalInput(RHS);
+  auto dirichlet = getOptionalInput(Dirichlet);
+
+  if (needToExecute())
+  {
+    auto state = get_state();
+    auto applyDirichlet = state->getValue(Parameters::ApplyDirichlet).toBool();
+    std::cout << "applyDirichlet: " << applyDirichlet << std::endl;
+  }
+
   /*
   auto inputField =  getRequiredInput(InputFEMesh);
   auto voltageSource = getRequiredInput(VoltageSource);

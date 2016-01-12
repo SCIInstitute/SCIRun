@@ -42,6 +42,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Legacy/Forward/ApplyFEMVoltageSourceAlgo.h>
 
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -68,7 +69,7 @@ ApplyFEMVoltageSourceAlgo::ApplyFEMVoltageSourceAlgo()
 
 
 void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& hField, MatrixHandle& hMatIn)
-{
+{/*
   //! Obtaining handles to computation objects
   //FieldHandle hField;
   //get_input_handle("Mesh", hField, true);
@@ -128,7 +129,7 @@ void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& hField, MatrixHand
   std::string bcFlag = bcFlag_.get();
     
   if (bcFlag=="GroundZero") dirBC.push_back(std::pair<int, double>(0,0.0));
-  //else if (bcFlag == "DirSub") hField->vfield()->get_property("dirichlet", dirBC);
+  else if (bcFlag == "DirSub") hField->vfield()->get_property("dirichlet", dirBC);
 
   //! adjusting matrix for Dirichlet BC
   index_type *idcNz; 
@@ -182,7 +183,7 @@ void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& hField, MatrixHand
 
   MatrixHandle rhs_tmp(rhs);
   //send_output_handle("RHS", rhs_tmp);
-  
+  */
 }
 
 ALGORITHM_PARAMETER_DEF(Forward, ApplyDirichlet);

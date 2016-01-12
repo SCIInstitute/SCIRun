@@ -38,7 +38,7 @@ namespace SCIRun {
     namespace Forward {
 
       class SCISHARE ApplyFEMVoltageSource : public Dataflow::Networks::Module,
-        public Has3InputPorts<FieldPortTag, MatrixPortTag, MatrixPortTag>,
+        public Has4InputPorts<FieldPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
         public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
       {
       public:
@@ -49,6 +49,7 @@ namespace SCIRun {
         INPUT_PORT(0, Mesh, LegacyField);
         INPUT_PORT(1, StiffnessMatrix, Matrix);
         INPUT_PORT(2, RHS, Matrix);
+        INPUT_PORT(3, Dirichlet, DenseMatrix);
         OUTPUT_PORT(0, ForwardMatrix, Matrix);
         OUTPUT_PORT(1, OutputRHS, Matrix);
 
