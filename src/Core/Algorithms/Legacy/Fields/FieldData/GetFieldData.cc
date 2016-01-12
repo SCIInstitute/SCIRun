@@ -122,7 +122,7 @@ boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImpl(FieldHandle input_
 }
 
 template <>
-bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
+bool SCIRun::Core::Algorithms::Fields::GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
 {
   /// Obtain virtual interface
   VField* vfield = input->vfield();
@@ -157,7 +157,7 @@ bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, DenseMatrixHandle&
 }
 
 template <>
-bool GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
+bool SCIRun::Core::Algorithms::Fields::GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
 {
   VField* vfield = input->vfield();
   
@@ -197,7 +197,7 @@ bool GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle input, DenseMatrixHandle&
 }
 
 template <>
-bool GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
+bool SCIRun::Core::Algorithms::Fields::GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
 {
   VField* vfield = input->vfield();
   
@@ -243,7 +243,7 @@ bool GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle input, DenseMatrixHandle&
 }
 
 template <>
-bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, NrrdDataHandle& output) const
+bool SCIRun::Core::Algorithms::Fields::GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, NrrdDataHandle& output) const
 {
   /// Obtain virtual interface
   VField* vfield = input->vfield();
@@ -415,7 +415,7 @@ bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, NrrdDataHandle& ou
 
 template <>
 bool 
-GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle input, NrrdDataHandle& output) const
+SCIRun::Core::Algorithms::Fields::GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle input, NrrdDataHandle& output) const
 {
   VField* vfield = input->vfield();
   
@@ -472,7 +472,7 @@ GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle input, NrrdDataHandle& output)
 
 template <>
 bool
-GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle input, NrrdDataHandle& output) const
+SCIRun::Core::Algorithms::Fields::GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle input, NrrdDataHandle& output) const
 {
   VField* vfield = input->vfield();
   
