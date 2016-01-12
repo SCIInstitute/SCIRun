@@ -7,12 +7,12 @@
     "header": "Modules/Legacy/Fields/ConvertFieldDataType.h"
   },
   "algorithm": {
-    "name": "N/A",
-    "namespace": "N/A",
-    "header": "N/A"
+    "name": "ConvertFieldDataTypeAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldDataType.h"
   },
   "UI": {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "ConvertFieldDataTypeDialog",
+    "header": "Interface/Modules/Fields/ConvertFieldDataTypeDialog.h"
   }
 }

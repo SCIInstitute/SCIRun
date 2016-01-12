@@ -7,12 +7,12 @@
     "header": "Modules/Legacy/Fields/ScaleFieldMeshAndData.h"
   },
   "algorithm": {
-    "name": "N/A",
-    "namespace": "N/A",
-    "header": "N/A"
+    "name": "ScaleFieldMeshAndDataAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h"
   },
   "UI": {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "ScaleFieldMeshAndDataDialog",
+    "header": "Interface/Modules/Fields/ScaleFieldMeshAndDataDialog.h"
   }
 }

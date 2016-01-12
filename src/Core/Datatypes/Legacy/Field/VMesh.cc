@@ -457,13 +457,13 @@ VMesh::get_center(Point &, DElem::index_type) const
 }
 
 void 
-VMesh::get_centers(Point*, Node::array_type&) const
+VMesh::get_centers(Point*, const Node::array_type&) const
 {
   ASSERTFAIL("VMesh interface: get_centers(Point*,Node::array_type) has not been implemented");
 }
 
 void 
-VMesh::get_centers(Point*, Elem::array_type&) const
+VMesh::get_centers(Point*, const Elem::array_type&) const
 {
   ASSERTFAIL("VMesh interface: get_centers(Point*,Elem::array_type) has not been implemented");
 }

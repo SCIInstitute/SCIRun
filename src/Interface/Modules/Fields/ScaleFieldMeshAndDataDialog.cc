@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,34 +25,23 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Datatypes/Scalar.h
 
-#ifndef CORE_DATATYPES_SCALAR_H
-#define CORE_DATATYPES_SCALAR_H
+#include <Interface/Modules/Fields/ScaleFieldMeshAndDataDialog.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+ScaleFieldMeshAndDataDialog::ScaleFieldMeshAndDataDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-  template <typename T>
-  class Scalar : public Datatype
-  {
-  public:
-    explicit Scalar(const T& val) : val_(val) {}
-    T value() const { return val_; }
-    virtual Scalar* clone() const override { return new Scalar(*this); }
-    virtual std::string dynamic_type_name() const override { return "Scalar"; }
-  private:
-    T val_;
-  };
-
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
-
-}}}
-
-
-#endif
+  addDoubleSpinBoxManager(dataScaleDoubleSpinBox_, Parameters::data_scale);
+  addDoubleSpinBoxManager(geomScaleDoubleSpinBox_, Parameters::mesh_scale);
+  addCheckBoxManager(useCenterOfGeometryCheckBox_, Parameters::scale_from_center);
+}

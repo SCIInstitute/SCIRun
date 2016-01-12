@@ -43,19 +43,12 @@ namespace SCIRun {
       public:
         CalculateNodeLocationFrequency();
 
-        virtual void execute() {}
-        virtual void setStateDefaults() {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, OutputField, LegacyField);
-
-        //static const Core::Algorithms::AlgorithmParameterName XSize;
-        //static const Core::Algorithms::AlgorithmParameterName YSize;
-        //static const Core::Algorithms::AlgorithmParameterName ZSize;
-        //static const Core::Algorithms::AlgorithmParameterName PadPercent;
-        //static const Core::Algorithms::AlgorithmParameterName DataAtLocation;
-        //static const Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
-        
+                
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
     }

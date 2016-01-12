@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 # 
 #  The MIT License
@@ -24,36 +23,25 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-SET(Algorithms_Field_SRCS
-  ReportFieldInfoAlgorithm.cc
-  InterfaceWithCleaverAlgorithm.cc
-  CalculateNodeLocationFrequencyAlgorithm.cc
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+SET(freetype_GIT_TAG "origin/seg3d_external_test")
+
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
+ExternalProject_Add(Freetype_external
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/freetype.git"
+  GIT_TAG ${freetype_GIT_TAG}
+  PATCH_COMMAND ""
+  INSTALL_DIR ""
+  INSTALL_COMMAND ""
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
 )
 
-SET(Algorithms_Field_HEADERS
-  ReportFieldInfoAlgorithm.h
-  InterfaceWithCleaverAlgorithm.h
-  CalculateNodeLocationFrequencyAlgorithm.h
-  share.h
-)
+ExternalProject_Get_Property(Freetype_external BINARY_DIR)
+SET(Freetype_DIR ${BINARY_DIR} CACHE PATH "")
 
-SCIRUN_ADD_LIBRARY(Algorithms_Field 
-  ${Algorithms_Field_HEADERS}
-  ${Algorithms_Field_SRCS}
-)
-
-TARGET_LINK_LIBRARIES(Algorithms_Field
-  Core_Datatypes
-  Core_Datatypes_Legacy_Field
-  Algorithms_Base
-  cleaver
-  ${SCI_BOOST_LIBRARY}
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Algorithms_Field)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
+MESSAGE(STATUS "Freetype_DIR: ${Freetype_DIR}")

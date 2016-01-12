@@ -27,16 +27,16 @@
 */
 
 #include <Modules/Basic/ChooseInput.h>
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::FlowControl;
 
 const ModuleLookupInfo ChooseInput::staticInfo_("ChooseInput", "Flow Control", "SCIRun");
 
-const SCIRun::Core::Algorithms::AlgorithmParameterName ChooseInput::InputIndex("InputIndex");
+ALGORITHM_PARAMETER_DEF(FlowControl, PortIndex);
+ALGORITHM_PARAMETER_DEF(FlowControl, PortMax);
 
 ChooseInput::ChooseInput()
   : Module(staticInfo_)
@@ -47,10 +47,44 @@ ChooseInput::ChooseInput()
 
 void ChooseInput::setStateDefaults()
 {
-  get_state()->setValue(InputIndex, 0);
+  get_state()->setValue(Parameters::PortIndex, 0);
+  get_state()->setTransientValue(Parameters::PortMax, 0);
 }
 
 void ChooseInput::execute()
 {
+  auto inputs = getRequiredDynamicInputs(Input);
+  auto index = get_state()->getValue(Parameters::PortIndex).toInt();
+  if (index < inputs.size())
+  {
+    sendOutput(Output, inputs[index]);
+  }
+  else
+  {
+    error("Port index out of range: " + boost::lexical_cast<std::string>(index));
+  }
+}
 
+void ChooseInput::portAddedSlot(const ModuleId& mid, const PortId&)
+{
+  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
+  if (mid == id_)
+  {
+    portChangeImpl();
+  }
+}
+
+void ChooseInput::portRemovedSlot(const ModuleId& mid, const PortId&)
+{
+  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
+  if (mid == id_)
+  {
+    portChangeImpl();
+  }
+}
+
+void ChooseInput::portChangeImpl()
+{
+  int inputs = num_input_ports() - 1; // -1 for empty end
+  get_state()->setTransientValue(Parameters::PortMax, inputs);
 }

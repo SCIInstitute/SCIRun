@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,34 +25,31 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Datatypes/Scalar.h
 
-#ifndef CORE_DATATYPES_SCALAR_H
-#define CORE_DATATYPES_SCALAR_H
+#ifndef INTERFACE_MODULES_CHOOSEINPUTDialog_H
+#define INTERFACE_MODULES_CHOOSEINPUTDialog_H
 
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/share.h>
+#include "Interface/Modules/Fields/ui_ChooseInput.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+namespace Gui {
 
-  template <typename T>
-  class Scalar : public Datatype
-  {
-  public:
-    explicit Scalar(const T& val) : val_(val) {}
-    T value() const { return val_; }
-    virtual Scalar* clone() const override { return new Scalar(*this); }
-    virtual std::string dynamic_type_name() const override { return "Scalar"; }
-  private:
-    T val_;
-  };
+class SCISHARE ChooseInputDialog : public ModuleDialogGeneric,
+  public Ui::ChooseInput
+{
+	Q_OBJECT
 
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
+public:
+  ChooseInputDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+protected:
+  virtual void pullSpecial() override;
+};
 
-}}}
-
+}
+}
 
 #endif

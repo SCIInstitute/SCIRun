@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,34 +25,27 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Datatypes/Scalar.h
 
-#ifndef CORE_DATATYPES_SCALAR_H
-#define CORE_DATATYPES_SCALAR_H
+#include <Interface/Modules/Fields/ChooseInputDialog.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Modules/Basic/ChooseInput.h>
 
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::FlowControl;
 
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+ChooseInputDialog::ChooseInputDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  addSpinBoxManager(portIndexSpinBox_, Parameters::PortIndex);
+}
 
-  template <typename T>
-  class Scalar : public Datatype
-  {
-  public:
-    explicit Scalar(const T& val) : val_(val) {}
-    T value() const { return val_; }
-    virtual Scalar* clone() const override { return new Scalar(*this); }
-    virtual std::string dynamic_type_name() const override { return "Scalar"; }
-  private:
-    T val_;
-  };
-
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
-
-}}}
-
-
-#endif
+void ChooseInputDialog::pullSpecial()
+{
+  auto numInputs = transient_value_cast<int>(state_->getTransientValue(Parameters::PortMax));
+  portIndexSpinBox_->setMaximum(numInputs - 1);
+}

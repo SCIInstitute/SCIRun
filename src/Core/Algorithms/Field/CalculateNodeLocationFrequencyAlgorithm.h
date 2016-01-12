@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,34 +25,25 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Datatypes/Scalar.h
 
-#ifndef CORE_DATATYPES_SCALAR_H
-#define CORE_DATATYPES_SCALAR_H
+#ifndef ALGORITHMS_MATH_CalculateNodeLocationFrequencyAlgorithm_H
+#define ALGORITHMS_MATH_CalculateNodeLocationFrequencyAlgorithm_H
 
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/share.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Field/share.h>
 
 namespace SCIRun {
 namespace Core {
-namespace Datatypes {
-
-  template <typename T>
-  class Scalar : public Datatype
+namespace Algorithms {
+namespace Fields {
+  
+  class SCISHARE CalculateNodeLocationFrequencyAlgo : public AlgorithmBase
   {
   public:
-    explicit Scalar(const T& val) : val_(val) {}
-    T value() const { return val_; }
-    virtual Scalar* clone() const override { return new Scalar(*this); }
-    virtual std::string dynamic_type_name() const override { return "Scalar"; }
-  private:
-    T val_;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+    FieldHandle runImpl(FieldHandle input) const;
   };
 
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
-
-}}}
-
+}}}}
 
 #endif
