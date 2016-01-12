@@ -1621,9 +1621,14 @@ If you have changes to make, either that you noticed or requested by the develop
 \hline
 \bf{SCIRun4} & \bf{SCIRun 5} & \bf{Notes}\\ 
 \hline
-\verb|if (input.get_rep() == 0)| & \verb|if (!input)| & checks for an empty handle\\
+\verb|if (input.get_rep() == 0)| & \verb|if (!input)| & Checks for an empty handle.\\
+                                                                                 & & Works for all major handle types. \\
+\hline
+
 \hline
 \end{tabular}
+
+
 
 \section{Common Build Errors}
 \label{sec:errors}
