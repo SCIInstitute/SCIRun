@@ -68,6 +68,31 @@ namespace
     return list;
   }
 
+  template <class T>
+  boost::python::list toPythonList(const SparseRowMatrixGeneric<T>& sparse)
+  {
+    boost::python::list rows, columns, values;
+    
+    for (int i = 0; i < sparse.nonZeros(); ++i)
+    {
+      values.append(sparse.valuePtr()[i]);
+    }
+    for (int i = 0; i < sparse.nonZeros(); ++i)
+    {
+      columns.append(sparse.innerIndexPtr()[i]);
+    }
+    for (int i = 0; i < sparse.outerSize(); ++i)
+    {
+      rows.append(sparse.outerIndexPtr()[i]);
+    }
+    
+    boost::python::list list;
+    list.append(rows);
+    list.append(columns);
+    list.append(values);
+    return list;
+  }
+
   class PyDatatypeString : public PyDatatype
   {
   public:
@@ -127,8 +152,7 @@ namespace
 
     virtual boost::python::object value() const override
     {
-      //boost::python::object str(std::string(underlying_->value()));
-      return boost::python::object("TODO SPARSE MATRIX");
+      return toPythonList(*underlying_);
     }
 
   private:
