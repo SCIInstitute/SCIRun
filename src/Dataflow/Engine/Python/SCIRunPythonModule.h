@@ -94,8 +94,10 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
   boost::python::def("scirun_get_module_input_type", &NetworkEditorPythonAPI::scirun_get_module_input_type);
   //boost::python::def("scirun_get_module_output", &NetworkEditorPythonAPI::scirun_get_module_output);
 
-  boost::python::def("scirun_get_module_input", &NetworkEditorPythonAPI::scirun_get_module_input);
-  boost::python::def("scirun_get_module_input_copy", &NetworkEditorPythonAPI::scirun_get_module_input_copy);
+  boost::python::def("scirun_get_module_input_object", &NetworkEditorPythonAPI::scirun_get_module_input_object);
+  boost::python::def("scirun_get_module_input_value", &NetworkEditorPythonAPI::scirun_get_module_input_value);
+  boost::python::def("scirun_get_module_input_object_by_index", &NetworkEditorPythonAPI::scirun_get_module_input_object_index);
+  boost::python::def("scirun_get_module_input_value_by_index", &NetworkEditorPythonAPI::scirun_get_module_input_value_index);
 
   boost::python::def("scirun_save_network", &NetworkEditorPythonAPI::saveNetwork);
   boost::python::def("scirun_load_network", &NetworkEditorPythonAPI::loadNetwork);

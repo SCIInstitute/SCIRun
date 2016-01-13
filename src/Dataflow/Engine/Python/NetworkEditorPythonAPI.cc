@@ -288,7 +288,8 @@ std::string NetworkEditorPythonAPI::scirun_get_module_input_type(const std::stri
 //  return "OUTPUT FROM " + moduleId + " port " + boost::lexical_cast<std::string>(portIndex);
 //}
 
-boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input(const std::string& moduleId, int portIndex)
+//TODO: refactor copy/paste
+boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object_index(const std::string& moduleId, int portIndex)
 {
   Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input"*/);
 
@@ -304,11 +305,36 @@ boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input(co
   return nullptr;
 }
 
-boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_copy(const std::string& moduleId, int portIndex)
+boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object(const std::string& moduleId, const std::string& portName)
 {
-  auto pyData = scirun_get_module_input(moduleId, portIndex);
+  Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input"*/);
+
+  auto modIter = modules_.find(moduleId);
+  if (modIter != modules_.end())
+  {
+    auto port = modIter->second->input()->getattr(portName);
+    if (port)
+    {
+      return port->data();
+    }
+  }
+  return nullptr;
+}
+
+boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value_index(const std::string& moduleId, int portIndex)
+{
+  auto pyData = scirun_get_module_input_object_index(moduleId, portIndex);
   Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input_copy"*/);
   if (pyData)
     return pyData->value();
   return {};
+}
+
+boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value(const std::string& moduleId, const std::string& portName)
+{
+  auto pyData = scirun_get_module_input_object(moduleId, portName);
+  Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input_copy"*/);
+  if (pyData)
+    return pyData->value();
+  return{};
 }
