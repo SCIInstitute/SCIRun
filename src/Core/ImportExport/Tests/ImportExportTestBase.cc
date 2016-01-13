@@ -262,8 +262,4 @@ TEST(MatlabFieldFormatTest, CheckMatlabStructure)
         break;
     }
   }
-
-
-
-  FAIL() << "TODO";
 }
