@@ -107,6 +107,7 @@ namespace SCIRun {
       virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
       void selectObject(const int x, const int y);
+      void restoreObjColor();
       bool isObjectUnselected(const std::string& name);
       void addToolBar();
       void addAutoViewButton();

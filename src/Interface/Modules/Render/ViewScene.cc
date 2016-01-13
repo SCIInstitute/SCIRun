@@ -127,10 +127,58 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   }
 }
 
+void ViewSceneDialog::restoreObjColor()
+{
+  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+
+  Guard lock(Modules::Render::ViewScene::mutex_.get());
+
+  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+
+  auto spire = mSpire.lock();
+  if (!spire)
+    return;
+
+  std::string selName = spire->getSelection();
+  if (selName != "")
+  {
+    auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+    if (geomDataTransient && !geomDataTransient->empty())
+    {
+      auto geomData = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+      if (!geomData)
+      {
+        LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
+        return;
+      }
+      for (auto it = geomData->begin(); it != geomData->end(); ++it)
+      {
+        auto obj = *it;
+        auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
+        if (realObj->uniqueID() == selName)
+        {
+          selected_ = true;
+          for (auto& pass : realObj->mPasses)
+          {
+            pass.addUniform("uAmbientColor",
+              glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+            pass.addUniform("uDiffuseColor",
+              glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            pass.addUniform("uSpecularColor",
+              glm::vec4(0.1f, 1.0f, 1.0f, 1.0f));
+          }
+          break;
+        }
+      }
+    }
+  }
+}
+
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
   if (selected_)
   {
+    restoreObjColor();
     newGeometryValue();
     selected_ = false;
   }

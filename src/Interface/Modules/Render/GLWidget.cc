@@ -129,6 +129,7 @@ void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
