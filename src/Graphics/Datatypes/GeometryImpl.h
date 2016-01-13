@@ -193,12 +193,32 @@ namespace SCIRun {
 
         void addUniform(const std::string& name, float scalar)
         {
-          mUniforms.push_back(Uniform(name, scalar));
+          bool existed = false;
+          for (auto& i : mUniforms)
+          {
+            if (i.name == name && i.type == Uniform::UNIFORM_SCALAR)
+            {
+              i.data.x = scalar;
+              existed = true;
+            }
+          }
+          if (!existed)
+            mUniforms.push_back(Uniform(name, scalar));
         }
 
         void addUniform(const std::string& name, const glm::vec4& vector)
         {
-          mUniforms.push_back(Uniform(name, vector));
+          bool existed = false;
+          for (auto& i : mUniforms)
+          {
+            if (i.name == name && i.type == Uniform::UNIFORM_VEC4)
+            {
+              i.data = vector;
+              existed = true;
+            }
+          }
+          if (!existed)
+            mUniforms.push_back(Uniform(name, vector));
         }
 
         void addUniform(const Uniform& uniform)

@@ -143,6 +143,9 @@ namespace SCIRun {
       /// Set Transparency Rener Type
       void setTransparencyRendertype(RenderState::TransparencySortType rType);
 
+      /// get name of the selection
+      std::string &getSelection();
+
     private:
 
       class DepthIndex {
@@ -258,7 +261,7 @@ namespace SCIRun {
       int                               mZoomSpeed;
       MouseMode                         mMouseMode;       ///< Current mouse mode.
 
-
+      std::string                       mSelected;        ///< Current selection
       size_t                            mScreenWidth;     ///< Screen width in pixels.
       size_t                            mScreenHeight;    ///< Screen height in pixels.
 

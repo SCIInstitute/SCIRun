@@ -98,6 +98,7 @@ namespace SCIRun {
 
     protected:
       virtual void mousePressEvent(QMouseEvent* event);
+      virtual void mouseReleaseEvent(QMouseEvent* event);
       virtual void keyPressEvent(QKeyEvent* event);
       virtual void keyReleaseEvent(QKeyEvent*event);
       virtual void closeEvent(QCloseEvent* evt) override;
@@ -137,6 +138,7 @@ namespace SCIRun {
       bool itemValueChanged_;
       bool invertZoom_;
       bool shiftdown_;
+      bool selected_;
       QColor bgColor_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;

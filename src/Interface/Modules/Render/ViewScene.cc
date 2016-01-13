@@ -48,7 +48,7 @@ using namespace SCIRun::Modules::Render;
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false), itemValueChanged_(true),
-  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false), shiftdown_(false)
+  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false), shiftdown_(false), selected_(false)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -124,6 +124,15 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   {
     selectObject(event->x(), event->y());
     newGeometryValue();
+  }
+}
+
+void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
+{
+  if (selected_)
+  {
+    newGeometryValue();
+    selected_ = false;
   }
 }
 
@@ -203,6 +212,27 @@ void ViewSceneDialog::selectObject(const int x, const int y)
 
     spire->select(glm::ivec2(x - mGLWidget->pos().x(),
       y - mGLWidget->pos().y()), objList, 0);
+    std::string selName = spire->getSelection();
+    if (selName != "")
+    {
+      for (auto &obj : objList)
+      {
+        if (obj->uniqueID() == selName)
+        {
+          selected_ = true;
+          for (auto& pass : obj->mPasses)
+          {
+            pass.addUniform("uAmbientColor",
+              glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
+            pass.addUniform("uDiffuseColor",
+              glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            pass.addUniform("uSpecularColor",
+              glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
+          }
+          break;
+        }
+      }
+    }
 
   }
   else

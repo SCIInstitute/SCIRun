@@ -88,8 +88,8 @@ public:
     USE_MINOR_RADIUS,
     USE_PITCH,
 
-	// Rendering Options
-	USE_BLEND,
+    // Rendering Options
+    USE_BLEND,
 
     MAX_ACTION_FLAGS
   };
