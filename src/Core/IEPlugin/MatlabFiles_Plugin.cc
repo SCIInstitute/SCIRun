@@ -246,8 +246,7 @@ SCIRun::MatlabField_reader(LoggerHandle pr, const char *filename)
 }
 
 bool
-SCIRun::MatlabField_writer(LoggerHandle pr,
-			   FieldHandle field, const char *filename)
+SCIRun::MatlabField_writer(LoggerHandle pr, FieldHandle field, const char *filename)
 {
   matlabfile mf;
   // Make sure that errors are forwarded in the conversion process
