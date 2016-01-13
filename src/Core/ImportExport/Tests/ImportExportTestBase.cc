@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -226,8 +226,6 @@ TEST(MatlabFieldFormatTest, CheckMatlabStructure)
 
     mc.converttostructmatrix();
     mc.sciFieldTOmlArray(field, ma);
-    if ((name == "") || (!mc.isvalidmatrixname(name)))
-      name = "scirunfield";
   }
 
   std::cout << "Base type: " << ma.gettype() << std::endl;
@@ -236,10 +234,33 @@ TEST(MatlabFieldFormatTest, CheckMatlabStructure)
   for (const auto& fieldName : ma.getfieldnames())
   {
     auto subField = ma.getfield(0, fieldName);
-    std::cout << "Name: " << fieldName << 
+    std::cout << "Name: " << fieldName <<
       " Type: " << subField.gettype() <<
       " Dims: " << subField.getnumdims() << " (" << subField.getm() << "x" << subField.getn() << ")"
       << std::endl;
+    switch (subField.gettype())
+    {
+      case matfilebase::miUINT8:
+      {
+        auto str = subField.getstring();
+        std::cout << "string: " << str << std::endl;
+        break;
+      }
+      case matfilebase::miDOUBLE:
+      {
+        std::vector<double> v;
+        subField.getnumericarray(v);
+        std::cout << "double array: (vector) " << v.size() << "\n";
+        for (const auto& x : v)
+          std::cout << x << " ";
+        std::cout << std::endl;
+
+        break;
+      }
+      default:
+        std::cout << "some other array: " << std::endl;
+        break;
+    }
   }
 
 

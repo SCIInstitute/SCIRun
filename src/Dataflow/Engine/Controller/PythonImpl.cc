@@ -44,6 +44,9 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Matlab/matlabfile.h>
+#include <Core/Matlab/matlabarray.h>
+#include <Core/Matlab/matlabconverter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -52,9 +55,21 @@ using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::MatlabIO;
 
 namespace
 {
+  template <class T>
+  boost::python::list toPythonList(const std::vector<T>& vec)
+  {
+    boost::python::list list;
+    for (const auto& v : vec)
+    {
+      list.append(v);
+    }
+    return list;
+  }
+
   template <class T>
   boost::python::list toPythonList(const DenseMatrixGeneric<T>& dense)
   {
@@ -73,7 +88,7 @@ namespace
   boost::python::list toPythonList(const SparseRowMatrixGeneric<T>& sparse)
   {
     boost::python::list rows, columns, values;
-    
+
     for (int i = 0; i < sparse.nonZeros(); ++i)
     {
       values.append(sparse.valuePtr()[i]);
@@ -86,7 +101,7 @@ namespace
     {
       rows.append(sparse.outerIndexPtr()[i]);
     }
-    
+
     boost::python::list list;
     list.append(rows);
     list.append(columns);
@@ -163,6 +178,34 @@ namespace
   public:
     explicit PyDatatypeField(FieldHandle underlying) : underlying_(underlying)
     {
+      matlabarray ma;
+      matlabconverter mc(nullptr);
+      mc.converttostructmatrix();
+      mc.sciFieldTOmlArray(underlying_, ma);
+
+      for (const auto& fieldName : ma.getfieldnames())
+      {
+        auto subField = ma.getfield(0, fieldName);
+        switch (subField.gettype())
+        {
+          case matfilebase::miUINT8:
+          {
+            auto str = subField.getstring();
+            matlabStructure_[fieldName] = str;
+            break;
+          }
+          case matfilebase::miDOUBLE:
+          {
+            std::vector<double> v;
+            subField.getnumericarray(v);
+            matlabStructure_[fieldName] = toPythonList(v);
+            break;
+          }
+          default:
+            std::cout << "some other array: " << std::endl;
+            break;
+        }
+      }
     }
 
     virtual std::string type() const override
@@ -172,33 +215,13 @@ namespace
 
     virtual boost::python::object value() const override
     {
-      return boost::python::object("TODO FIELD");
+      return matlabStructure_;
     }
 
   private:
     FieldHandle underlying_;
+    boost::python::dict matlabStructure_;
   };
-
-  /*
-   // Make sure that errors are forwarded in the conversion process
-  matlabconverter mc(pr);
-  matlabarray ma;
-  std::string name;
- 
-  try
-  {
-    // We want all the annotation. A field without annotation is hard to use
-    mc.converttostructmatrix();
-    // Convert the object
-    mc.sciFieldTOmlArray(field,ma);
-    // Get the name
-    field->properties().get_property("name",name);
-    // If no name, set a default
-    if ((name=="")||(!mc.isvalidmatrixname(name))) name = "scirunfield";
-  
-  */
-
-
 
   class PyDatatypeFactory
   {
