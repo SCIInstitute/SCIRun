@@ -143,12 +143,14 @@ void GLWidget::keyPressEvent(QKeyEvent* event)
 {
   std::cout << "key down" << std::endl;
   mGraphics->inputShiftKeyDown(event->key() == Qt::Key_Shift);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::keyReleaseEvent(QKeyEvent* event)
 {
   mGraphics->inputShiftKeyDown(false);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
