@@ -403,10 +403,10 @@ namespace SCIRun {
             }
 
             // Load vertex and fragment shader will use an already loaded program.
-            //					shaderMan->loadVertexAndFragmentShader(mCore, entityID, "Shaders/Selection");
+            //shaderMan->loadVertexAndFragmentShader(mCore, entityID, "Shaders/Selection");
             //					addShaderToEntity(entityID, "Shaders/Selection");
             //					shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
-            const char* selectionShaderName = "_memSelection";
+            const char* selectionShaderName = "Shaders/Selection";
             GLuint shaderID = shaderMan->getIDForAsset(selectionShaderName);
             if (shaderID == 0)
             {
@@ -558,7 +558,7 @@ namespace SCIRun {
       return (static_cast<uint32_t>(std::hash<std::string>()(name)));
     }
 
-    glm::vec4& SRInterface::getVectorForID(const uint32_t id)
+    glm::vec4 SRInterface::getVectorForID(const uint32_t id)
     {
       float a = ((id >> 24) & 0xff) / 255.0f;
       float b = ((id >> 16) & 0xff) / 255.0f;

@@ -232,7 +232,7 @@ namespace SCIRun {
       // hash multimap with a list which assigns ids to names.
       uint64_t getEntityIDForName(const std::string& name, int port);
       uint32_t getSelectIDForName(const std::string& name);
-      glm::vec4& getVectorForID(const uint32_t id);
+      glm::vec4 getVectorForID(const uint32_t id);
       uint32_t getIDForVector(const glm::vec4& vec);
 
       // Adds a VBO to the given entityID.
