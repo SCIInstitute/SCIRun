@@ -62,8 +62,8 @@ public:
   virtual void get_center(Core::Geometry::Point &point, VMesh::Elem::index_type i) const;
   virtual void get_center(Core::Geometry::Point &point, VMesh::DElem::index_type i) const;
 
-  virtual void get_centers(Core::Geometry::Point* points, VMesh::Node::array_type& array) const;
-  virtual void get_centers(Core::Geometry::Point* points, VMesh::Elem::array_type& array) const;
+  virtual void get_centers(Core::Geometry::Point* points, const VMesh::Node::array_type& array) const;
+  virtual void get_centers(Core::Geometry::Point* points, const VMesh::Elem::array_type& array) const;
 
   virtual double get_size(VMesh::Edge::index_type i) const;
   virtual double get_size(VMesh::Face::index_type i) const;
@@ -676,9 +676,7 @@ get_center(Core::Geometry::Point &p, VMesh::DElem::index_type idx) const
 
 template <class MESH>
 void
-VUnstructuredMesh<MESH>::
-get_centers(Core::Geometry::Point* points, 
-            VMesh::Node::array_type& array) const
+VUnstructuredMesh<MESH>::get_centers(Core::Geometry::Point* points, const VMesh::Node::array_type& array) const
 {
   for (size_t j=0; j <array.size(); j++)
   {
@@ -688,9 +686,7 @@ get_centers(Core::Geometry::Point* points,
  
 template <class MESH>
 void
-VUnstructuredMesh<MESH>::
-get_centers(Core::Geometry::Point* points, 
-            VMesh::Elem::array_type& array) const
+VUnstructuredMesh<MESH>::get_centers(Core::Geometry::Point* points, const VMesh::Elem::array_type& array) const
 {
   for (size_t j=0; j <array.size(); j++)
   {

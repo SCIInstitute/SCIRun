@@ -267,7 +267,6 @@ void PythonInterpreter::initialize_eventhandler()
   Py_SetProgramName(const_cast< wchar_t* >(this->private_->programName()));
 
   PRINT_PY_INIT_DEBUG(4);
-  boost::filesystem::path lib_path(this->private_->programName());
   //std::wcout << "lib_path: " << lib_path.wstring() << std::endl;
   std::wstringstream lib_paths;
 #if defined( _WIN32 )
@@ -277,13 +276,14 @@ void PythonInterpreter::initialize_eventhandler()
 #endif
   PRINT_PY_INIT_DEBUG(5);
 #if defined( __APPLE__ )
+  boost::filesystem::path lib_path = Application::Instance().executablePath().parent_path();
   std::vector<boost::filesystem::path> lib_path_list;
   // relative paths
-  lib_path_list.push_back(lib_path.parent_path().parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
-  lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
+  lib_path_list.push_back(lib_path.parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
+  lib_path_list.push_back(lib_path / PYTHONPATH);
 
   // for test executable
-  if ( lib_path.stem() == "SCIRun_test" )
+  if ( boost::filesystem::path(Application::Instance().parameters()->entireCommandLine()).stem() == "SCIRun_test" )
   {
     boost::filesystem::path full_lib_path(PYTHONLIBDIR);
     full_lib_path /= PYTHONLIB;
@@ -308,7 +308,8 @@ void PythonInterpreter::initialize_eventhandler()
 
   Py_SetPath( lib_paths.str().c_str() );
 #elif defined (_WIN32)
-  boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH / PYTHONNAME;
+  boost::filesystem::path lib_path = Application::Instance().executablePath();
+  boost::filesystem::path top_lib_path = lib_path / PYTHONPATH / PYTHONNAME;
   //std::cout << "top_lib_path: " << top_lib_path.string() << std::endl;
   boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
   //std::cout << "dynload_lib_path: " << dynload_lib_path.string() << std::endl;
@@ -321,7 +322,8 @@ void PythonInterpreter::initialize_eventhandler()
   PRINT_PY_INIT_DEBUG(6);
 #else
   // linux...
-  boost::filesystem::path top_lib_path = lib_path.parent_path() / PYTHONPATH;
+  boost::filesystem::path lib_path = Application::Instance().executablePath();
+  boost::filesystem::path top_lib_path = lib_path / PYTHONPATH;
   boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
   boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
   boost::filesystem::path plat_lib_path = top_lib_path / "plat-linux";
@@ -411,8 +413,16 @@ void PythonInterpreter::initialize( bool needProgramName /*const wchar_t* progra
 
   initialize_eventhandler();
 
+  {
+    auto out = [](const std::string& s) { std::cout << "[PYTHON] " << s << std::endl; };
+    auto error = [](const std::string& s) { std::cerr << "[PYTHON ERROR] " << s << std::endl; };
+    output_signal_.connect(out);
+    error_signal_.connect(error);
+  }
+
   //this->private_->thread_condition_variable_.wait( lock );
   this->private_->initialized_ = true;
+
   std::cerr << "Python initialized." << std::endl;
 }
 

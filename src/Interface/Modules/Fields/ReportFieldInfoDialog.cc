@@ -45,7 +45,7 @@ ReportFieldInfoDialog::ReportFieldInfoDialog(const std::string& name, ModuleStat
 
 void ReportFieldInfoDialog::pullAndDisplayInfo() 
 {
-  auto info = optional_any_cast_or_default<ReportFieldInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
+  auto info = transient_value_cast<ReportFieldInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
   auto str = ReportFieldInfoAlgorithm::summarize(info);
   fieldInfoTextEdit_->setPlainText(QString::fromStdString(str));
 }

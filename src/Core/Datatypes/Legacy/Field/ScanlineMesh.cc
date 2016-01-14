@@ -116,10 +116,8 @@ public:
   virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
 
   /// Get the centers of a series of nodes
-  virtual void get_centers(Point* points,
-			   VMesh::Node::array_type& array) const;
-  virtual void get_centers(Point* points,
-			   VMesh::Elem::array_type& array) const;
+  virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const;
+  virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const;
   
   virtual double get_size(VMesh::Node::index_type i) const;
   virtual double get_size(VMesh::Edge::index_type i) const;
@@ -621,8 +619,7 @@ VScanlineMesh<MESH>::get_center(Point &p, VMesh::DElem::index_type idx) const
 
 template <class MESH>
 void
-VScanlineMesh<MESH>::get_centers(Point* points, 
-                                     VMesh::Node::array_type& array) const
+VScanlineMesh<MESH>::get_centers(Point* points, const VMesh::Node::array_type& array) const
 {
   for (size_t j=0; j <array.size(); j++)
   {
@@ -633,8 +630,7 @@ VScanlineMesh<MESH>::get_centers(Point* points,
  
 template <class MESH>
 void
-VScanlineMesh<MESH>::get_centers(Point* points, 
-                                     VMesh::Elem::array_type& array) const
+VScanlineMesh<MESH>::get_centers(Point* points, const VMesh::Elem::array_type& array) const
 {
   for (size_t j=0; j <array.size(); j++)
   {
@@ -1633,8 +1629,8 @@ public:
   virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
 
   /// Get the centers of a series of nodes
-  virtual void get_centers(Point* points, VMesh::Node::array_type& array) const;
-  virtual void get_centers(Point* points, VMesh::Elem::array_type& array) const;
+  virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const;
+  virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const;
   
   virtual double get_size(VMesh::Node::index_type i) const;
   virtual double get_size(VMesh::Edge::index_type i) const;
@@ -1827,8 +1823,7 @@ VStructCurveMesh<MESH>::get_center(Point &p, VMesh::DElem::index_type idx) const
 
 template <class MESH>
 void
-VStructCurveMesh<MESH>::get_centers(Point* points, 
-                                     VMesh::Node::array_type& array) const
+VStructCurveMesh<MESH>::get_centers(Point* points, const VMesh::Node::array_type& array) const
 {
   for (size_t j=0; j <array.size(); j++)
   {
@@ -1838,8 +1833,7 @@ VStructCurveMesh<MESH>::get_centers(Point* points,
  
 template <class MESH>
 void
-VStructCurveMesh<MESH>::get_centers(Point* points, 
-                                     VMesh::Elem::array_type& array) const
+VStructCurveMesh<MESH>::get_centers(Point* points, const VMesh::Elem::array_type& array) const
 {
   for (size_t j=0; j <array.size(); j++)
   {

@@ -85,32 +85,32 @@ CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output) const
   VField::size_type num_nodes = imesh->num_nodes();
   
   VField::size_type num_fielddata = ifield->num_values();
-  
+
   if ((num_fielddata != num_nodes) && (num_fielddata != num_elems))
     THROW_ALGORITHM_INPUT_ERROR("Input data inconsistent");
-  
+
   int cnt = 0;
-  StackVector<double,3> grad;
-  for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
+  StackVector<double, 3> grad;
+  for (VMesh::Elem::index_type idx = 0; idx < num_elems; ++idx)
   {
     ifield->gradient(grad, coords, idx); /** Segmentation Fault Here **/
-    
-    Vector v(grad[0],grad[1],grad[2]);
-    
-    ofield->set_value(v,idx);
-    
+
+    Vector v(grad[0], grad[1], grad[2]);
+
+    ofield->set_value(v, idx);
+
     cnt++;
-    if (cnt == 400) 
+    if (cnt == 400)
     {
-        cnt = 0; 
-        update_progress_max(idx,num_elems); 
-    } 
+      cnt = 0;
+      update_progress_max(idx, num_elems);
+    }
   }
   return (true);
 }
 
-AlgorithmInputName CalculateGradientsAlgo::ScalarField("ScalarField");
-AlgorithmOutputName CalculateGradientsAlgo::VectorField("VectorField");
+const AlgorithmInputName CalculateGradientsAlgo::ScalarField("ScalarField");
+const AlgorithmOutputName CalculateGradientsAlgo::VectorField("VectorField");
 AlgorithmOutput CalculateGradientsAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(ScalarField);

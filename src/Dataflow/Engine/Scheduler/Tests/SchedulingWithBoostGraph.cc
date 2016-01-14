@@ -228,8 +228,8 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   boost::this_thread::sleep(boost::posix_time::milliseconds(800));
 
   //grab reporting module state
-  ReportMatrixInfoAlgorithm::Outputs reportOutput = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
-  DenseMatrixHandle receivedMatrix = optional_any_cast_or_default<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
+  ReportMatrixInfoAlgorithm::Outputs reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
+  DenseMatrixHandle receivedMatrix = transient_value_cast<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
   ASSERT_TRUE(receivedMatrix.get() != nullptr);
   //verify results
@@ -281,8 +281,8 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   boost::this_thread::sleep(boost::posix_time::milliseconds(800));
 
   //grab reporting module state
-  ReportMatrixInfoAlgorithm::Outputs reportOutput = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
-  DenseMatrixHandle receivedMatrix = optional_any_cast_or_default<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
+  ReportMatrixInfoAlgorithm::Outputs reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
+  DenseMatrixHandle receivedMatrix = transient_value_cast<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
   ASSERT_TRUE(receivedMatrix.get() != nullptr);
   //verify results

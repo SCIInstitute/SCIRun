@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertFieldDataType",
+    "namespace": "Fields",
+    "status": "Converted",
+    "description": "Changes type of data associated with field elements. ",
+    "header": "Modules/Legacy/Fields/ConvertFieldDataType.h"
+  },
+  "algorithm": {
+    "name": "ConvertFieldDataTypeAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldDataType.h"
+  },
+  "UI": {
+    "name": "ConvertFieldDataTypeDialog",
+    "header": "Interface/Modules/Fields/ConvertFieldDataTypeDialog.h"
+  }
+}

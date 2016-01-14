@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ChooseInput",
+    "namespace": "Basic",
+    "status": "Generalized v4 module",
+    "description": "Passes one input downstream based on user-entered index",
+    "header": "Modules/Basic/ChooseInput.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ChooseInputDialog",
+    "header": "Interface/Modules/Fields/ChooseInputDialog.h"
+  }
+}

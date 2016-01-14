@@ -79,6 +79,9 @@ public:
   void addToDataDirectory(const QString& dir);
   void setCurrentFile(const QString& fileName);
 
+  //TODO: extract another interface for command objects
+  NetworkEditor* networkEditor() { return networkEditor_; }
+
   bool newInterface() const;
   bool isInFavorites(const QString& module) const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,40 +24,37 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_CONVERTFIELDDATATYPE_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_CONVERTFIELDDATATYPE_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+        ALGORITHM_PARAMETER_DECL(FieldDatatype);
 
-namespace SCIRunAlgo {
+        class SCISHARE ConvertFieldDataTypeAlgo : public AlgorithmBase
+        {
+        public:
+          ConvertFieldDataTypeAlgo();
+          bool runImpl(FieldHandle input, FieldHandle& output) const;
 
-using namespace SCIRun;
+          //static const AlgorithmInputName ScalarField;
+          //static const AlgorithmOutputName VectorField;
 
-class SCISHARE ConvertFieldDataTypeAlgo : public AlgoBase
-{
-  public:
-    /// Set defaults
-    ConvertFieldDataTypeAlgo()
-    {
-      /// The output type
-      add_option("datatype","double","char|unsigned char|short|unsigned short|int|unsigned int|float|double|Vector|Tensor");
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
+
+      }
     }
-  
-    bool run(FieldHandle input, FieldHandle& output);
-};
-
-} // end namespace SCIRunAlgo
-
+  }
+}
 #endif
 

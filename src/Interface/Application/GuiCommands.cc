@@ -45,6 +45,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
 #include <boost/algorithm/string.hpp>
+#include <Core/Utils/CurrentFileName.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
@@ -160,12 +161,12 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 
 bool NetworkFileProcessCommand::execute()
 {
-  if (!filename_.empty())
-    GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename_));
+  auto filename = get(Variables::Filename).toString();
+  GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename));
 
   try
   {
-    auto file = processXmlFile();
+    auto file = processXmlFile(filename);
 
     if (file)
     {
@@ -177,7 +178,7 @@ bool NetworkFileProcessCommand::execute()
       else
       {
         int numModules = static_cast<int>(file->network.modules.size());
-        QProgressDialog progress("Loading network " + QString::fromStdString(filename_), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
+        QProgressDialog progress("Loading network " + QString::fromStdString(filename), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
         progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
@@ -196,31 +197,23 @@ bool NetworkFileProcessCommand::execute()
       QPointF center = findCenterOfNetworkFile(*file);
       networkEditor_->centerOn(center);
 
-      GuiLogger::Instance().logInfoStd("File load done (" + filename_ + ").");
+      GuiLogger::Instance().logInfoStd("File load done (" + filename + ").");
+      SCIRun::Core::setCurrentFileName(filename);
       return true;
     }
-    else
-    {
-      if (!filename_.empty())
-      {
-        GuiLogger::Instance().logErrorStd("File load failed (" + filename_ + "): null xml returned.");
-      }
-    }
+    GuiLogger::Instance().logErrorStd("File load failed (" + filename + "): null xml returned.");
   }
   catch (ExceptionBase& e)
   {
-    if (!filename_.empty())
-      GuiLogger::Instance().logErrorStd("File load failed (" + filename_ + "): exception in load_xml, " + e.what());
+    GuiLogger::Instance().logErrorStd("File load failed (" + filename + "): exception in load_xml, " + e.what());
   }
   catch (std::exception& ex)
   {
-    if (!filename_.empty())
-      GuiLogger::Instance().logErrorStd("File load failed(" + filename_ + "): exception in load_xml, " + ex.what());
+    GuiLogger::Instance().logErrorStd("File load failed(" + filename + "): exception in load_xml, " + ex.what());
   }
   catch (...)
   {
-    if (!filename_.empty())
-      GuiLogger::Instance().logErrorStd("File load failed(" + filename_ + "): Unknown exception in load_xml.");
+    GuiLogger::Instance().logErrorStd("File load failed(" + filename + "): Unknown exception in load_xml.");
   }
   return false;
 }
@@ -232,17 +225,17 @@ int NetworkFileProcessCommand::guiProcess(const NetworkFileHandle& file)
   return static_cast<int>(file->network.modules.size()) + 1;
 }
 
-NetworkFileHandle FileOpenCommand::processXmlFile()
+NetworkFileHandle FileOpenCommand::processXmlFile(const std::string& filename)
 {
-  return XMLSerializer::load_xml<NetworkFile>(filename_);
+  return XMLSerializer::load_xml<NetworkFile>(filename);
 }
 
-NetworkFileHandle FileImportCommand::processXmlFile()
+NetworkFileHandle FileImportCommand::processXmlFile(const std::string& filename)
 {
   auto dtdpath = Core::Application::Instance().executablePath();
   const auto& modFactory = Core::Application::Instance().controller()->moduleFactory();
   LegacyNetworkIO lnio(dtdpath.string(), modFactory, logContents_);
-  return lnio.load_net(filename_);
+  return lnio.load_net(filename);
 }
 
 bool RunPythonScriptCommandGui::execute()
@@ -282,5 +275,13 @@ bool NetworkSaveCommand::execute()
   SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
   GuiLogger::Instance().logInfo("File save done: " + QString::fromStdString(filename));
   SCIRunMainWindow::Instance()->setWindowModified(false);
+
+  SCIRun::Core::setCurrentFileName(filename);
+
   return true;
+}
+
+NetworkFileProcessCommand::NetworkFileProcessCommand() : networkEditor_(SCIRunMainWindow::Instance()->networkEditor())
+{
+  addParameter(Variables::Filename, std::string());
 }

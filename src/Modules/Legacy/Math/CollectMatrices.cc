@@ -63,6 +63,7 @@ class CollectMatricesImpl
 public:
   MatrixHandle matrixH_;
   boost::shared_ptr<CollectMatricesAlgorithmBase> create_algo(MatrixHandle aH, MatrixHandle bH) const;
+  void resetMatrix() { matrixH_.reset(); }
 };
 }}}
 
@@ -80,35 +81,13 @@ void CollectMatrices::setStateDefaults()
   state->setValue(Parameters::CollectAppendIndicator, 0);
   state->setValue(Parameters::CollectRowIndicator, 0);
   state->setValue(Parameters::CollectPrependIndicator, 0);
+  postStateChangeInternalSignalHookup();
 }
 
-#if 0
-namespace SCIRun {
-
-
-class CollectMatrices : public Module
+void CollectMatrices::postStateChangeInternalSignalHookup()
 {
-public:
-  explicit CollectMatrices(GuiContext* ctx);
-  virtual void execute();
-  virtual void tcl_command(GuiArgs&, void *);
-private:
-  MatrixHandle matrixH_;
-  GuiInt append_;   // append or replace
-  GuiInt row_;      // row or column
-  GuiInt front_;    // append at the beginning or the end
-
-  Algo::CollectMatricesAlgorithmBase* create_algo(MatrixHandle aH, MatrixHandle bH) const;
-};
-
-CollectMatrices::CollectMatrices(GuiContext* ctx)
-: Module("CollectMatrices", ctx, Filter,"Math", "SCIRun"),
-  append_(get_ctx()->subVar("append"), 0),
-  row_(get_ctx()->subVar("row"), 0),
-  front_(get_ctx()->subVar("front"), 0)
-{
+  get_state()->connect_state_changed([this]() { checkForClearOutput(); });
 }
-#endif
 
 /// @todo: match output matrix type with input type.
 void
@@ -220,24 +199,6 @@ CollectMatrices::execute()
   }
 }
 
-#if 0
-void
-CollectMatrices::tcl_command(GuiArgs& args, void* userdata)
-{
-  if (args[1] == "clear")
-  {
-    matrixH_ = 0;
-    remark("Collected matrix buffer has been cleared.");
-  }
-  else
-  {
-    Module::tcl_command(args, userdata);
-  }
-}
-
-} // End namespace SCIRun
-#endif
-
 boost::shared_ptr<CollectMatricesAlgorithmBase>
 CollectMatricesImpl::create_algo(MatrixHandle aH, MatrixHandle bH) const
 {
@@ -245,4 +206,15 @@ CollectMatricesImpl::create_algo(MatrixHandle aH, MatrixHandle bH) const
     return boost::make_shared<CollectSparseRowMatricesAlgorithm>();
   else
     return boost::make_shared<CollectDenseMatricesAlgorithm>();
+}
+
+void CollectMatrices::checkForClearOutput()
+{
+  bool clear = transient_value_cast<bool>(get_state()->getTransientValue(Parameters::ClearCollectMatricesOutput));
+  if (clear)
+  {
+    impl_->resetMatrix();
+    get_state()->setTransientValue(Parameters::ClearCollectMatricesOutput, false);
+    remark("Collected matrix buffer has been cleared.");
+  }
 }

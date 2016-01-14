@@ -28,7 +28,10 @@
 /// @todo Documentation Modules/Legacy/Fields/ScaleFieldMeshAndData.cc
 
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
-
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Scalar.h>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 
 using namespace SCIRun::Modules::Fields;
@@ -38,31 +41,10 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-namespace SCIRun {
-
-class ScaleFieldMeshAndData : public Module {
-  public:
-    ScaleFieldMeshAndData(GuiContext*);
-    virtual ~ScaleFieldMeshAndData() {}
-    virtual void execute();
-
-  private:
-    GuiDouble guidatascale_;
-    GuiDouble guigeomscale_;   
-    GuiInt    guiusegeomcenter_;  
-    
-    SCIRunAlgo::ScaleFieldMeshAndDataAlgo algo_;
-};
-#endif
-
-ModuleLookupInfo ScaleFieldMeshAndData::staticInfo_("ScaleFieldMeshAndData", "ChangeMesh", "SCIRun");
+const ModuleLookupInfo ScaleFieldMeshAndData::staticInfo_("ScaleFieldMeshAndData", "ChangeMesh", "SCIRun");
 
 ScaleFieldMeshAndData::ScaleFieldMeshAndData()
   : Module(staticInfo_)
-    //guidatascale_(ctx->subVar("datascale")),
-    //guigeomscale_(ctx->subVar("geomscale")),
-    //guiusegeomcenter_(ctx->subVar("usegeomcenter"))
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeomScaleFactor);
@@ -73,53 +55,37 @@ ScaleFieldMeshAndData::ScaleFieldMeshAndData()
 void ScaleFieldMeshAndData::setStateDefaults()
 {
   auto state = get_state();
-
-  //state->setValue(Parameters::ResampleMethod, std::string("box"));
-  //setStateDoubleFromAlgo(Parameters::ResampleGaussianSigma);
-  //setStateDoubleFromAlgo(Parameters::ResampleGaussianExtend);
-  //setStateDoubleFromAlgo(Parameters::ResampleXDim);
-  //setStateDoubleFromAlgo(Parameters::ResampleYDim);
-  //setStateDoubleFromAlgo(Parameters::ResampleZDim);
-  //setStateBoolFromAlgo(Parameters::ResampleXDimUseScalingFactor);
-  //setStateBoolFromAlgo(Parameters::ResampleYDimUseScalingFactor);
-  //setStateBoolFromAlgo(Parameters::ResampleZDimUseScalingFactor);
+  setStateDoubleFromAlgo(Parameters::data_scale);
+  setStateDoubleFromAlgo(Parameters::mesh_scale);
+  setStateBoolFromAlgo(Parameters::scale_from_center);
 }
 
 void ScaleFieldMeshAndData::execute()
 {
-#if 0
-  FieldHandle input, output;
-  MatrixHandle DataScale,GeomScale;
+  auto input = getRequiredInput(InputField);
+  auto dataScale = getOptionalInput(DataScaleFactor);
+  auto geomScale = getOptionalInput(GeomScaleFactor);
   
-  get_input_handle("Field",input,true);
-  get_input_handle("DataScaleFactor",DataScale,false);
-  get_input_handle("GeomScaleFactor",GeomScale,false);
-  
-  if (inputs_changed_ || guidatascale_.changed() || guigeomscale_.changed() || 
-      guiusegeomcenter_.changed() || !oport_cached("Field"))
+  if (needToExecute())
   {
     update_state(Executing);
 
-    if (DataScale.get_rep() && DataScale->ncols() > 0 && DataScale->nrows() > 0) 
+    if (dataScale && *dataScale) 
     {
-      double datascale = DataScale->get(0,0);
-      guidatascale_.set(datascale);
-      get_ctx()->reset();
+      double scale = (*dataScale)->value();
+      get_state()->setValue(Parameters::data_scale, scale);
     }
 
-    if (GeomScale.get_rep() && GeomScale->ncols() > 0 && GeomScale->nrows() > 0) 
+    if (geomScale && *geomScale)
     {
-      double geomscale = GeomScale->get(0,0);
-      guigeomscale_.set(geomscale);
-      get_ctx()->reset();
+      double scale = (*geomScale)->value();
+      get_state()->setValue(Parameters::mesh_scale, scale);
     }
 
-    algo_.set_scalar("data_scale",guidatascale_.get());
-    algo_.set_scalar("mesh_scale",guigeomscale_.get());
-    algo_.set_bool("scale_from_center",guiusegeomcenter_.get());
-    if(!(algo_.run(input, output))) return;
-    
-    send_output_handle("Field", output);
+    setAlgoDoubleFromState(Parameters::data_scale);
+    setAlgoDoubleFromState(Parameters::mesh_scale);
+    setAlgoBoolFromState(Parameters::scale_from_center);
+    auto output = algo().run_generic(withInputData((InputField, input)));
+    sendOutputFromAlgorithm(OutputField, output);
   }
-#endif
 }

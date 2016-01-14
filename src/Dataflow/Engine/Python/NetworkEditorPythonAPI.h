@@ -35,12 +35,14 @@
 #include <boost/python.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Thread/Mutex.h>
+#include <atomic>
 #include <Dataflow/Engine/Python/share.h>
 
 namespace SCIRun {
 
   class NetworkEditorPythonInterface;
   class PyModule;
+  class PyDatatype;
 
   class SCISHARE NetworkEditorPythonAPI
   {
@@ -53,10 +55,22 @@ namespace SCIRun {
     static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
     static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
     static std::string scirun_dump_module_state(const std::string& moduleId);
+    static std::string scirun_get_module_input_type(const std::string& moduleId, int portIndex);
+    //static std::string scirun_get_module_output_type(const std::string& moduleId, int portIndex);
+
+    //TODO: these don't work on Mac
+    static boost::shared_ptr<PyDatatype> scirun_get_module_input_object_index(const std::string& moduleId, int portIndex);
+    static boost::shared_ptr<PyDatatype> scirun_get_module_input_object(const std::string& moduleId, const std::string& portName);
+
+    //these work on all platforms
+    static boost::python::object scirun_get_module_input_value_index(const std::string& moduleId, int portIndex);
+    static boost::python::object scirun_get_module_input_value(const std::string& moduleId, const std::string& portName);
 
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);
     static std::string loadNetwork(const std::string& filename);
+    static std::string importNetwork(const std::string& filename);
+    
     static std::string quit(bool force);
 
     static void setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl);
@@ -64,23 +78,24 @@ namespace SCIRun {
     static void setExecutionContext(Dataflow::Networks::ExecutableLookup* lookup);
     static Core::Thread::Mutex& getLock() { return pythonLock_; }
   private:
-    NetworkEditorPythonAPI();
+    NetworkEditorPythonAPI() = delete;
     static boost::shared_ptr<NetworkEditorPythonInterface> impl_;
     static Dataflow::Networks::ExecutableLookup* lookup_;
     static std::map<std::string, boost::shared_ptr<PyModule>> modules_;
+    static void unlock();
     static Core::Thread::Mutex pythonLock_;
+    static std::atomic<bool> executeLockedFromPython_;
   };
 
   class SCISHARE SimplePythonAPI
   {
   public:
     static std::string scirun_add_module(const std::string& name);
-    static boost::python::object scirun_get_module_state(const std::string& moduleId, const std::string& stateVariable);
-    static std::string scirun_set_module_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value);
+
     static std::string scirun_quit();
     static std::string scirun_force_quit();
   private:
-    SimplePythonAPI();
+    SimplePythonAPI() = delete;
   };
 
 }
