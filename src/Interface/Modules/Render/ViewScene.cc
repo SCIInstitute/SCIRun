@@ -52,7 +52,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-	setFocusPolicy(Qt::StrongFocus);
+  setFocusPolicy(Qt::StrongFocus);
 
   addToolBar();
 
