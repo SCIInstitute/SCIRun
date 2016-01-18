@@ -71,6 +71,21 @@ namespace
   }
 
   template <class T>
+  boost::python::list toPythonListOfLists(const std::vector<T>& vec, int dim1, int dim2)
+  {
+    boost::python::list list;
+    auto iter = vec.begin();
+    for (int i = 0; i < dim1; ++i)
+    {
+      boost::python::list row;
+      for (int j = 0; j < dim2; ++j)
+        row.append(*iter++);
+      list.append(row);
+    }
+    return list;
+  }
+
+  template <class T>
   boost::python::list toPythonList(const DenseMatrixGeneric<T>& dense)
   {
     boost::python::list list;
@@ -198,7 +213,10 @@ namespace
           {
             std::vector<double> v;
             subField.getnumericarray(v);
-            matlabStructure_[fieldName] = toPythonList(v);
+            if (1 != subField.getm() && 1 != subField.getn())
+              matlabStructure_[fieldName] = toPythonListOfLists(v, subField.getn(), subField.getm());
+            else
+              matlabStructure_[fieldName] = toPythonList(v);
             break;
           }
           default:
