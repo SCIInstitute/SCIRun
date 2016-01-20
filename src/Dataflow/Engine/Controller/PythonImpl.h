@@ -51,6 +51,8 @@ namespace Engine {
     PythonImpl(NetworkEditorController& nec, Core::Commands::GlobalCommandFactoryHandle cmdFactory);
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name) override;
     virtual std::string removeModule(const std::string& id) override;
+    virtual std::vector<boost::shared_ptr<PyModule>> moduleList() const override;
+    virtual boost::shared_ptr<PyModule> findModule(const std::string& id) const override;
     virtual std::string executeAll(const Networks::ExecutableLookup* lookup) override;
     virtual std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
@@ -63,6 +65,7 @@ namespace Engine {
     void executionFromPythonStart();
     void executionFromPythonFinish(int);
     boost::shared_ptr<PythonImplImpl> impl_;
+    std::map<std::string, boost::shared_ptr<PyModule>> modules_;
     NetworkEditorController& nec_;
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
     boost::function<void()> unlock_;

@@ -29,7 +29,6 @@
 
 #ifdef BUILD_WITH_PYTHON
 
-#include <boost/range/adaptor/transformed.hpp>
 #include <boost/python/to_python_converter.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ModuleInterface.h>
@@ -47,6 +46,9 @@
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -59,17 +61,6 @@ using namespace SCIRun::MatlabIO;
 
 namespace
 {
-  template <class T>
-  boost::python::list toPythonList(const std::vector<T>& vec)
-  {
-    boost::python::list list;
-    for (const auto& v : vec)
-    {
-      list.append(v);
-    }
-    return list;
-  }
-
   template <class T>
   boost::python::list toPythonListOfLists(const std::vector<T>& vec, int dim1, int dim2)
   {
@@ -216,7 +207,7 @@ namespace
             if (1 != subField.getm() && 1 != subField.getn())
               matlabStructure_[fieldName] = toPythonListOfLists(v, subField.getn(), subField.getm());
             else
-              matlabStructure_[fieldName] = toPythonList(v);
+              matlabStructure_[fieldName] = SCIRun::toPythonList(v);
             break;
           }
           default:
@@ -614,13 +605,16 @@ boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
     std::cout << "Module added: " + m->get_id().id_ << std::endl;
   else
     std::cout << "Module add failed, no such module type" << std::endl;
-  return boost::make_shared<PyModuleImpl>(m, nec_);
+  auto pyM = boost::make_shared<PyModuleImpl>(m, nec_);
+  modules_[pyM->id()] = pyM;
+  return pyM;
 }
 
 std::string PythonImpl::removeModule(const std::string& id)
 {
   try
   {
+    modules_.erase(id);
     nec_.removeModule(ModuleId(id));
     return "Module removed";
   }
@@ -628,6 +622,19 @@ std::string PythonImpl::removeModule(const std::string& id)
   {
     return "No module by that id";
   }
+}
+
+std::vector<boost::shared_ptr<PyModule>> PythonImpl::moduleList() const
+{
+  std::vector<boost::shared_ptr<PyModule>> modules;
+  boost::copy(modules_ | boost::adaptors::map_values, std::back_inserter(modules));
+  return modules;
+}
+
+boost::shared_ptr<PyModule> PythonImpl::findModule(const std::string& id) const
+{
+  auto modIter = modules_.find(id);
+  return modIter != modules_.end() ? modIter->second : nullptr;
 }
 
 std::string PythonImpl::executeAll(const ExecutableLookup* lookup)

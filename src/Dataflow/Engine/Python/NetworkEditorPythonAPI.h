@@ -43,12 +43,13 @@ namespace SCIRun {
   class NetworkEditorPythonInterface;
   class PyModule;
   class PyDatatype;
+  typedef boost::shared_ptr<PyModule> PyModulePtr;
 
   class SCISHARE NetworkEditorPythonAPI
   {
   public:
-    static boost::shared_ptr<PyModule> addModule(const std::string& name);
-    static std::vector<boost::shared_ptr<PyModule>> modules();
+    static PyModulePtr addModule(const std::string& name);
+    static std::vector<PyModulePtr> modules();
     static std::string removeModule(const std::string& id);
     static std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
     static std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex);
@@ -81,7 +82,6 @@ namespace SCIRun {
     NetworkEditorPythonAPI() = delete;
     static boost::shared_ptr<NetworkEditorPythonInterface> impl_;
     static Dataflow::Networks::ExecutableLookup* lookup_;
-    static std::map<std::string, boost::shared_ptr<PyModule>> modules_;
     static void unlock();
     static Core::Thread::Mutex pythonLock_;
     static std::atomic<bool> executeLockedFromPython_;
@@ -94,6 +94,7 @@ namespace SCIRun {
 
     static std::string scirun_quit();
     static std::string scirun_force_quit();
+    static boost::python::object scirun_module_ids();
   private:
     SimplePythonAPI() = delete;
   };
