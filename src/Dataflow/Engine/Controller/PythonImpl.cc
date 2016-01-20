@@ -576,6 +576,8 @@ namespace SCIRun {
 PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory)
 {
   nec_.connectNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); });
+  nec_.connectModuleAdded([this](const std::string& id, ModuleHandle m, ModuleCounter mc) { pythonModuleAddedSlot(id, m, mc); });
+  nec_.connectModuleRemoved([this](const ModuleId& id) { pythonModuleRemovedSlot(id); });
 }
 
 void PythonImpl::setUnlockFunc(boost::function<void()> unlock)
@@ -592,9 +594,7 @@ void PythonImpl::executionFromPythonFinish(int)
 {
   if (unlock_)
   {
-    //std::cout << "executionMutex_->unlock attempt " << boost::this_thread::get_id() << std::endl;
     unlock_();
-    //std::cout << "executionMutex_->unlock done " << boost::this_thread::get_id() << std::endl;
   }
 }
 
@@ -605,16 +605,20 @@ boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
     std::cout << "Module added: " + m->get_id().id_ << std::endl;
   else
     std::cout << "Module add failed, no such module type" << std::endl;
+  
+  return modules_[m->get_id().id_];
+}
+
+void PythonImpl::pythonModuleAddedSlot(const std::string& modId, ModuleHandle m, ModuleCounter)
+{
   auto pyM = boost::make_shared<PyModuleImpl>(m, nec_);
   modules_[pyM->id()] = pyM;
-  return pyM;
 }
 
 std::string PythonImpl::removeModule(const std::string& id)
 {
   try
   {
-    modules_.erase(id);
     nec_.removeModule(ModuleId(id));
     return "Module removed";
   }
@@ -622,6 +626,11 @@ std::string PythonImpl::removeModule(const std::string& id)
   {
     return "No module by that id";
   }
+}
+
+void PythonImpl::pythonModuleRemovedSlot(const ModuleId& mid)
+{
+  modules_.erase(mid);
 }
 
 std::vector<boost::shared_ptr<PyModule>> PythonImpl::moduleList() const

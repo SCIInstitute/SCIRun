@@ -62,6 +62,8 @@ namespace Engine {
     virtual std::string quit(bool force) override;
     virtual void setUnlockFunc(boost::function<void()> unlock) override;
   private:
+    void pythonModuleAddedSlot(const std::string&, Networks::ModuleHandle, ModuleCounter);
+    void pythonModuleRemovedSlot(const Networks::ModuleId&);
     void executionFromPythonStart();
     void executionFromPythonFinish(int);
     boost::shared_ptr<PythonImplImpl> impl_;
