@@ -24,30 +24,34 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
-#ifndef INTERFACE_MODULES_SCALEFIELDMESHANDDATADIALOG_H
-#define INTERFACE_MODULES_SCALEFIELDMESHANDDATADIALOG_H
+#ifndef INTERFACE_MODULES_FORWARD_INSERTVOLTAGESOURCEDIALOG_H
+#define INTERFACE_MODULES_FORWARD_INSERTVOLTAGESOURCEDIALOG_H
 
-#include "Interface/Modules/Fields/ui_scalefieldmeshanddata.h"
+#include "Interface/Modules/Forward/ui_InsertVoltageSource.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Interface/Modules/Forward/share.h>
 
 namespace SCIRun {
-  namespace Gui {
+namespace Gui {
 
-    class SCISHARE ScaleFieldMeshAndDataDialog : public ModuleDialogGeneric,
-      public Ui::ScaleFieldMeshAndData
-    {
-      Q_OBJECT
+class SCISHARE InsertVoltageSourceDialog : public ModuleDialogGeneric,
+  public Ui::InsertVoltageSource
+{
+	Q_OBJECT
 
-    public:
-      ScaleFieldMeshAndDataDialog(const std::string& name,
-        SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = 0);
-    };
+public:
+  InsertVoltageSourceDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+public Q_SLOTS:
+  virtual void updateFromPortChange(int numPorts, const std::string&) override;
+protected:
+  virtual void pullSpecial() override;
+};
 
-  }
+}
 }
 
 #endif

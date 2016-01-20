@@ -52,7 +52,29 @@ namespace Core
       boost::mutex impl_;
     };
     
+    template <class Lock>
+    class DebugGuard : public boost::lock_guard<Lock>
+    {
+    public:
+      explicit DebugGuard(boost::mutex& mutex, const std::string& name = "") : boost::lock_guard<Lock>(mutex), name_(name)
+      {
+        std::cout << "DebugGuard() " << name_ << std::endl;
+      }
+      ~DebugGuard()
+      {
+        std::cout << "~DebugGuard() " << name_ << std::endl;
+      }
+    private:
+      std::string name_;
+    };
+
+    typedef DebugGuard<boost::mutex> NamedGuard;
+
+#ifndef _DEBUG
     typedef boost::lock_guard<boost::mutex> Guard;
+#else
+    typedef NamedGuard Guard;
+#endif
   }
 }
 }

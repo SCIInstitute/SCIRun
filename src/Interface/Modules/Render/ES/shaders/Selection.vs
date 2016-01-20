@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,30 +24,20 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
-#ifndef INTERFACE_MODULES_SCALEFIELDMESHANDDATADIALOG_H
-#define INTERFACE_MODULES_SCALEFIELDMESHANDDATADIALOG_H
+// Uniforms
+uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
+uniform vec4    uColor;             // Uniform color
 
-#include "Interface/Modules/Fields/ui_scalefieldmeshanddata.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+// Attributes
+attribute vec3  aPos;
 
-namespace SCIRun {
-  namespace Gui {
+// Outputs to the fragment shader.
+varying vec4    fColor;
 
-    class SCISHARE ScaleFieldMeshAndDataDialog : public ModuleDialogGeneric,
-      public Ui::ScaleFieldMeshAndData
-    {
-      Q_OBJECT
-
-    public:
-      ScaleFieldMeshAndDataDialog(const std::string& name,
-        SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = 0);
-    };
-
-  }
+void main( void )
+{
+  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+  fColor      = uColor;
 }
-
-#endif

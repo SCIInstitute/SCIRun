@@ -1,0 +1,6 @@
+m5 = scirun_add_module("ReadMatrix")
+m6 = scirun_add_module("ReportMatrixInfo")
+scirun_connect_modules(m5, 0, m6, 0)
+scirun_set_module_state(m5, "Filename", "C:/Dev/Dropbox/1234.mat")
+scirun_execute_all()
+scirun_get_module_input_copy(m6, 0)

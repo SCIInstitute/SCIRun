@@ -753,6 +753,7 @@ bool SCIRunMainWindow::okToContinue()
 }
 
 //TODO: hook up to modules' state_changed_sig_t via GlobalStateManager
+//TODO: pass a boolean here to avoid updating total modules when only connections are made--saves a lock
 void SCIRunMainWindow::networkModified()
 {
   setWindowModified(true);

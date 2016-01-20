@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 # 
 #  The MIT License
@@ -15,7 +14,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software.
+#  in all copies or substantial portions of the Software. 
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,36 +23,25 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-# CMakeLists.txt for Packages/BioPSE/Core/Algorithms/NumApproximation
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+SET(freetype_GIT_TAG "origin/seg3d_external_test")
 
-SET(Core_Algorithms_Legacy_Forward_SRCS
-  BuildBEMatrixAlgo.cc
-  InsertVoltageSourceAlgo.cc
-  #CalcTMP.cc
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
+ExternalProject_Add(Freetype_external
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/freetype.git"
+  GIT_TAG ${freetype_GIT_TAG}
+  PATCH_COMMAND ""
+  INSTALL_DIR ""
+  INSTALL_COMMAND ""
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
 )
 
-SET(Core_Algorithms_Legacy_Forward_HEADERS
-  BuildBEMatrixAlgo.h
-  InsertVoltageSourceAlgo.h
-  #CalcTMP.h
-)
+ExternalProject_Get_Property(Freetype_external BINARY_DIR)
+SET(Freetype_DIR ${BINARY_DIR} CACHE PATH "")
 
-SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Forward 
-  ${Core_Algorithms_Legacy_Forward_SRCS}
-  ${Core_Algorithms_Legacy_Forward_HEADERS}
-  )
-
-TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Forward
-  Algorithms_Base
-  Core_Datatypes
-  Core_Datatypes_Legacy_Field
-  Core_Geometry_Primitives
-  Core_Math
-  Core_Basis
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Forward)
-ENDIF(BUILD_SHARED_LIBS)
+MESSAGE(STATUS "Freetype_DIR: ${Freetype_DIR}")
