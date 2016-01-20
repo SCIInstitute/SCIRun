@@ -903,6 +903,7 @@ namespace SCIRun {
                 component.setUniformName("uTX0");
                 component.textureType = GL_TEXTURE_2D;
                 component.glid = mFontTexture;
+                glBindTexture(GL_TEXTURE_2D, mFontTexture);
                 mCore.addComponent(entityID, component);
               }
               // Ensure common uniforms are covered.
@@ -1362,7 +1363,7 @@ namespace SCIRun {
       //read in the font data
       bool success = true;
       auto fontPath = SCIRun::Core::Application::Instance().executablePath() / "Assets" / "times_new_roman.font";
-      std::ifstream in(fontPath.string());
+      std::ifstream in(fontPath.string(), std::ifstream::binary);
       if (in.fail())
       {
         //try the MAC App location if the UNIX/Windows location didn't work.
@@ -1378,33 +1379,45 @@ namespace SCIRun {
       {
         size_t w, h;
         in >> w >> h;
+        char temp;
+        in.read(reinterpret_cast<char*>(&temp), sizeof(char));
         uint16_t *font_data = new uint16_t[w*h];
         in.read(reinterpret_cast<char*>(font_data), sizeof(uint16_t)*w*h);
         in.close();
-        std::vector<uint8_t> font;
-        font.reserve(w * h * 4);
+        //std::vector<uint8_t> font;
+        //font.reserve(w * h * 4);
+        char* font = new char[w * h * 4];
         for (size_t i = 0; i < w*h; i++)
         {
           uint16_t pixel = font_data[i];
+/*          font.push_back(static_cast<uint8_t>(pixel >> 8));
           font.push_back(static_cast<uint8_t>(pixel >> 8));
           font.push_back(static_cast<uint8_t>(pixel >> 8));
-          font.push_back(static_cast<uint8_t>(pixel >> 8));
-          font.push_back(static_cast<uint8_t>(pixel & 0x00ff));
+          font.push_back(static_cast<uint8_t>(pixel & 0x00ff));*/
+          font[i * 4] = (pixel & 0x00ff);
+          font[i * 4 + 1] = (pixel & 0x00ff);
+          font[i * 4 + 2] = (pixel & 0x00ff);
+          font[i * 4 + 3] = (pixel >> 8);
         }
 
         // Build font texture
+        GL(glActiveTexture(GL_TEXTURE0));
         GL(glGenTextures(1, &mFontTexture));
         GL(glBindTexture(GL_TEXTURE_2D, mFontTexture));
+        GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
         GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        GL(glPixelStorei(GL_UNPACK_ROW_LENGTH, w));
         GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-        GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
+        //GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
         GL(glTexImage2D(GL_TEXTURE_2D, 0,
-          GL_RGBA8,
-          static_cast<GLsizei>(w), static_cast<GLsizei>(h), 0,
           GL_RGBA,
-          GL_UNSIGNED_BYTE, reinterpret_cast<char*>(&font[0])));
+          GLsizei(w), GLsizei(h), 0,
+          GL_RGBA,
+          GL_UNSIGNED_BYTE, (GLvoid*)font));
         delete font_data;
+        delete font;
       }
     }
   } // namespace Render
