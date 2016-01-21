@@ -227,15 +227,23 @@ void ColormapPreview::updateAlphaFunction()
   // alphaFunction_ will sample from in between these endpoints, evenly spaced throughout open interval (0,1)
   qDebug() << "Updating alpha function.";
 
-  if (alphaPath_)
-  {
-    auto shape = alphaPath_->shape();
-    qDebug() << "Shape: " << shape;
-  }
+  // if (alphaPath_)
+  // {
+  //   auto shape = alphaPath_->shape();
+  //   qDebug() << "Shape: " << shape;
+  // }
 
-
-  for (size_t i = 0; i < alphaFunction_.size(); ++i)
+  auto shape = alphaPath_->shape();
+  for (int i = -1; i <= alphaFunction_.size(); ++i)
   {
-    qDebug() << "Color: " << (i+1) / static_cast<double>(ALPHA_SAMPLES+1) << "Alpha: " << alphaFunction_[i];
+    double color = (i+1) / static_cast<double>(ALPHA_SAMPLES+1);
+    if (i >= 0 && i < alphaFunction_.size())
+      qDebug() << "Color: " << color << "Alpha: " << alphaFunction_[i];
+    else
+      qDebug() << "Color: " << color << "Alpha: " << 0.5;
+
+    auto pap = shape.pointAtPercent(color);
+    qDebug() << "\t" << "Point at percent: " << pap;
+    qDebug() << "\t" << "Computed alpha: " << (1 - pap.y() / sceneRect().height());
   }
 }
