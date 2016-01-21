@@ -827,6 +827,8 @@ namespace SCIRun {
                 {
                   addIBOToEntity(entityID, pass.iboName);
                 }
+                //add texture
+                addTextToEntity(entityID, pass.text);
               }
               else
               {
@@ -895,7 +897,7 @@ namespace SCIRun {
               mCore.addComponent(entityID, state);
               RenderBasicGeom geom;
               mCore.addComponent(entityID, geom);
-              if (pass.passName.find("TextFont") != std::string::npos)
+              /*if (pass.passName.find("TextFont") != std::string::npos)
               { //this is a font texture
                 // Construct texture component and add it to our entity for rendering.
                 ren::Texture component;
@@ -903,9 +905,8 @@ namespace SCIRun {
                 component.setUniformName("uTX0");
                 component.textureType = GL_TEXTURE_2D;
                 component.glid = mFontTexture;
-                glBindTexture(GL_TEXTURE_2D, mFontTexture);
                 mCore.addComponent(entityID, component);
-              }
+              }*/
               // Ensure common uniforms are covered.
               ren::CommonUniforms commonUniforms;
               mCore.addComponent(entityID, commonUniforms);
@@ -967,6 +968,38 @@ namespace SCIRun {
 
         mCore.addComponent(entityID, ibo);
       }
+    }
+
+    //------------------------------------------------------------------------------
+    void SRInterface::addTextToEntity(uint64_t entityID, const Graphics::Datatypes::SpireText& text)
+    {
+      if (text.name == "")
+        return;
+
+       //texture man
+      std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
+      std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
+      if (!textureMan)
+        return;
+
+      std::stringstream ss;
+      ss << "FontTexture:" << entityID;
+      std::string assetName = ss.str();
+
+      ren::Texture texture;
+
+      CPM_ES_CEREAL_NS::CerealHeap<ren::Texture>* contTex =
+        mCore.getOrCreateComponentContainer<ren::Texture>();
+      std::pair<const ren::Texture*, size_t> component =
+        contTex->getComponent(entityID);
+      if (component.first == nullptr)
+        texture = textureMan->createTexture(assetName, text.glyph);
+      else
+        texture = *component.first;
+
+      texture.textureUnit = 0;
+      texture.setUniformName("uTX0");
+      mCore.addComponent(entityID, texture);
     }
 
     //------------------------------------------------------------------------------

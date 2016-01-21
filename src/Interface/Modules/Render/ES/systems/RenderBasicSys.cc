@@ -40,11 +40,13 @@
 #include <es-render/comp/IBO.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
 #include <es-render/comp/Shader.hpp>
+#include <es-render/comp/Texture.hpp>
 #include <es-render/comp/GLState.hpp>
 #include <es-render/comp/VecUniform.hpp>
 #include <es-render/comp/MatUniform.hpp>
 #include <es-render/comp/StaticGLState.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
+#include <es-render/comp/StaticTextureMan.hpp>
 
 #include <bserialize/BSerialize.hpp>
 
@@ -73,6 +75,7 @@ class RenderBasicSys :
                              gen::StaticGlobalTime,
                              ren::VBO,
                              ren::IBO,
+                             ren::Texture,
                              ren::CommonUniforms,
                              ren::VecUniform,
                              ren::MatUniform,
@@ -81,7 +84,8 @@ class RenderBasicSys :
                              StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
-                             ren::StaticVBOMan>
+                             ren::StaticVBOMan,
+                             ren::StaticTextureMan>
 {
 public:
 
@@ -107,6 +111,7 @@ public:
       const es::ComponentGroup<gen::StaticGlobalTime>& time,
       const es::ComponentGroup<ren::VBO>& vbo,
       const es::ComponentGroup<ren::IBO>& ibo,
+      const es::ComponentGroup<ren::Texture>& textures,
       const es::ComponentGroup<ren::CommonUniforms>& commonUniforms,
       const es::ComponentGroup<ren::VecUniform>& vecUniforms,
       const es::ComponentGroup<ren::MatUniform>& matUniforms,
@@ -115,7 +120,8 @@ public:
       const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
-      const es::ComponentGroup<ren::StaticVBOMan>& vboMan) override
+      const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
+      const es::ComponentGroup<ren::StaticTextureMan>& texMan) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -210,6 +216,13 @@ public:
 
     // Apply matrix uniforms (if any).
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}
+
+    // bind textures
+    for (const ren::Texture& tex : textures)
+    {
+      GL(glActiveTexture(GL_TEXTURE0 + tex.textureUnit));
+      GL(glBindTexture(tex.textureType, tex.glid));
+    }
 
     geom.front().attribs.bind();
 
@@ -337,6 +350,13 @@ public:
     if (blend)
     {
       GL(glEnable(GL_BLEND));
+    }
+
+    // unbind textures
+    for (const ren::Texture& tex : textures)
+    {
+      GL(glActiveTexture(GL_TEXTURE0 + tex.textureUnit));
+      GL(glBindTexture(tex.textureType, 0));
     }
 
     geom.front().attribs.unbind();

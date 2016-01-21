@@ -33,6 +33,10 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 
+//freetype
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 // CPM modules
 #include <glm/glm.hpp>
 #include <var-buffer/VarBuffer.hpp>
@@ -123,6 +127,14 @@ namespace SCIRun {
         std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
       };
 
+      struct SpireText
+      {
+        SpireText() : name(""), glyph(0) {}
+        SpireText(const char* c, FT_GlyphSlot g) :
+          name(c), glyph(g) {}
+        std::string                           name;
+        FT_GlyphSlot                          glyph;
+      };
 
       /// Defines a Spire object 'pass'.
       struct SpireSubPass
@@ -131,7 +143,8 @@ namespace SCIRun {
         SpireSubPass(const std::string& name, const std::string& vboName,
           const std::string& iboName, const std::string& program,
           ColorScheme scheme, const RenderState& state,
-          RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo) :
+          RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo,
+          const SpireText& text) :
           passName(name),
           vboName(vboName),
           iboName(iboName),
@@ -141,7 +154,8 @@ namespace SCIRun {
           vbo(vbo),
           ibo(ibo),
           scalar(1.0),
-          mColorScheme(scheme)
+          mColorScheme(scheme),
+          text(text)
         {}
 
         static const char* getName() { return "SpireSubPass"; }
@@ -160,6 +174,7 @@ namespace SCIRun {
         RenderType    renderType;
         SpireVBO			vbo;
         SpireIBO			ibo;
+        SpireText     text;//draw a string (usually single character) on geometry
         double        scalar;
 
         struct Uniform

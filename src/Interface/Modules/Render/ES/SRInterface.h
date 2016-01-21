@@ -34,6 +34,10 @@
 #include <Interface/Modules/Render/GLContext.h>
 #include "Core.h"
 
+//freetype
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 // CPM Modules
 #include <es-render/util/Shader.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
@@ -146,6 +150,12 @@ namespace SCIRun {
       /// get name of the selection
       std::string &getSelection();
 
+      /// initialize free type lib
+      void initFreeType(const std::string& libName, size_t size);
+
+      /// reload free type
+      void reloadFreeType(const std::string& libName, size_t size);
+
     private:
 
       class DepthIndex {
@@ -241,6 +251,9 @@ namespace SCIRun {
       // Adds an IBO to the given entityID.
       void addIBOToEntity(uint64_t entityID, const std::string& iboName);
 
+      //add a texture to the given entityID.
+      void addTextToEntity(uint64_t entityID, const Graphics::Datatypes::SpireText& text);
+
       // Adds a shader to the given entityID. Represents different materials
       // associated with different passes.
       void addShaderToEntity(uint64_t entityID, const std::string& shaderName);
@@ -286,6 +299,7 @@ namespace SCIRun {
       RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
+
     };
 
   } // namespace Render

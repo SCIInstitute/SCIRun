@@ -30,6 +30,7 @@
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Application/Application.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 
 using namespace SCIRun;
@@ -44,6 +45,8 @@ ShowColorMapModule::ShowColorMapModule() : GeometryGeneratingModule(ModuleLookup
 {
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(GeometryOutput);
+  auto fontPath = SCIRun::Core::Application::Instance().executablePath() / "Fonts" / "FreeSans.ttf";
+  initFreeType(fontPath.string(), 14);
 }
 
 void ShowColorMapModule::setStateDefaults()
@@ -181,8 +184,10 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   renState.set(RenderState::IS_ON, true);
   renState.set(RenderState::HAS_DATA, true);
   
+  SpireText text;
+
   SpireSubPass pass(passName, vboName, iboName, shader,
-    COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO, geomIBO);
+    COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO, geomIBO, text);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -193,7 +198,140 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   geom->mIBOs.push_back(geomIBO);
   geom->mVBOs.push_back(geomVBO);
   geom->mPasses.push_back(pass);
+
+  //text
+  if (!ftInit_ || !ftValid_)
+    return geom;
+  char str2[128];
+  std::stringstream sd;
+  sd << "%." << sigdig << "f";
+  std::vector<Vector> txt_coords;
+  double increment = 1. / static_cast<double>(numlabel - 1);
+  double textSize = 10. * static_cast<double>(txtsize + 3);
+  const double dash_size = 20.;
+  const double pipe_size = 40.;
+  size_t count = 0;
+  for (double i = 0.; i <= 1.000000001; i += increment)
   {
+    std::stringstream ss;
+    sprintf(str2, sd.str().c_str(), i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift());
+    ss << str2 << " " << st->getValue(Units).toString();
+    Vector shift = Vector((displaySide == 0) ?
+      (xTrans > 50 ? -(textSize*strlen(ss.str().c_str())) : 4.*dash_size) : 0.,
+      (displaySide == 0) ?
+      0. : (yTrans > 50 ? (-textSize - pipe_size / 2.) : pipe_size), i);
+
+    const char *p;
+    for (p = ss.str().c_str(); *p; p++)
+    {
+      count++;
+      points.clear();
+      indices.clear();
+      txt_coords.clear();
+
+      if (FT_Load_Char(ftFace_, *p, FT_LOAD_RENDER))
+        continue;
+      FT_GlyphSlot g = ftFace_->glyph;
+
+      //triangle 1
+      points.push_back(shift + Vector(0.0, 0.0, 0.0));
+      points.push_back(shift + Vector(0.0, g->bitmap.rows, 0.0));
+      points.push_back(shift + Vector(g->bitmap.width, 0.0, 0.0));
+      //triangle 2
+      points.push_back(shift + Vector(0.0, g->bitmap.rows, 0.0));
+      points.push_back(shift + Vector(g->bitmap.width, 0.0, 0.0));
+      points.push_back(shift + Vector(g->bitmap.width, g->bitmap.rows, 0.0));
+      //triangle 1
+      txt_coords.push_back(Vector(0.0, 0.0, 0.0));
+      txt_coords.push_back(Vector(0.0, 1.0, 0.0));
+      txt_coords.push_back(Vector(1.0, 0.0, 0.0));
+      //triangle 2
+      txt_coords.push_back(Vector(0.0, 1.0, 0.0));
+      txt_coords.push_back(Vector(1.0, 0.0, 0.0));
+      txt_coords.push_back(Vector(1.0, 1.0, 0.0));
+      //triangle 1
+      indices.push_back(0);
+      indices.push_back(1);
+      indices.push_back(2);
+      //triangle 2
+      indices.push_back(3);
+      indices.push_back(4);
+      indices.push_back(5);
+
+      numVBOElements = (uint32_t)points.size();
+
+      // IBO/VBOs and sizes
+      iboSize = sizeof(uint32_t) * (uint32_t)indices.size();
+      vboSize = sizeof(float) * 5 * (uint32_t)points.size();
+
+      std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr2(
+        new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
+      std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr2(
+        new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+
+      CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer2 = iboBufferSPtr2.get();
+      CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer2 = vboBufferSPtr2.get();
+
+      for (auto a : indices) iboBuffer2->write(a);
+      for (size_t i = 0; i < points.size(); i++) {
+        vboBuffer2->write(static_cast<float>(points[i].x()));
+        vboBuffer2->write(static_cast<float>(points[i].y()));
+        vboBuffer2->write(static_cast<float>(points[i].z()));
+        vboBuffer2->write(static_cast<float>(txt_coords[i].x()));
+        vboBuffer2->write(static_cast<float>(txt_coords[i].y()));
+      }
+
+      //add the actual points and colors
+      uniqueNodeID = id + "colorMapLegendTextFont" + ss.str() +
+        static_cast<std::ostringstream*>(&(std::ostringstream() << count))->str();
+      vboName = uniqueNodeID + "VBO" +
+        static_cast<std::ostringstream*>(&(std::ostringstream() << count))->str();
+      iboName = uniqueNodeID + "IBO" +
+        static_cast<std::ostringstream*>(&(std::ostringstream() << count))->str();
+      passName = uniqueNodeID + "Pass" +
+        static_cast<std::ostringstream*>(&(std::ostringstream() << count))->str();
+
+      // NOTE: Attributes will depend on the color scheme. We will want to
+      // normalize the colors if the color scheme is COLOR_IN_SITU.
+
+      // Construct VBO.
+      shader = "Shaders/ColorMapLegendText";
+      attribs.clear();
+      attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+      attribs.push_back(SpireVBO::AttributeData("aTexCoord", 2 * sizeof(float)));
+      uniforms.clear();
+      uniforms.push_back(SpireSubPass::Uniform("uXTranslate", static_cast<float>(xTrans)));
+      uniforms.push_back(SpireSubPass::Uniform("uYTranslate", static_cast<float>(yTrans)));
+      uniforms.push_back(SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
+      uniforms.push_back(SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
+      uniforms.push_back(SpireSubPass::Uniform("uColor", glm::vec4(red, green, blue, 1.0f)));
+      SpireVBO geomVBO2 = SpireVBO(vboName, attribs, vboBufferSPtr2,
+        numVBOElements, BBox(), true);
+
+      geom->mVBOs.push_back(geomVBO2);
+
+      // Construct IBO.
+
+      SpireIBO geomIBO2(iboName, SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
+      geom->mIBOs.push_back(geomIBO2);
+      renState.set(RenderState::USE_COLORMAP, false);
+      renState.set(RenderState::USE_TRANSPARENCY, true);
+      char c[2] = { p[0], 0 };
+      SpireText text(c, g);
+
+      SpireSubPass pass2(passName, vboName, iboName, shader,
+        COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO2, geomIBO2, text);
+
+      // Add all uniforms generated above to the pass.
+      for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
+      //******************************************************************************************
+      // TODO we're not adding this geometry (font) until we debug for it to work on Windows.
+      geom->mPasses.push_back(pass2);
+      //******************************************************************************************
+    }
+  }
+
+/*  {
     //########################################
     // Now render the numbers for the scale bar
 
@@ -293,8 +431,10 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
     geom->mIBOs.push_back(geomIBO2);
     renState.set(RenderState::USE_COLORMAP, false);
     renState.set(RenderState::USE_TRANSPARENCY, true);
+    SpireText text;
+
     SpireSubPass pass2(passName, vboName, iboName, shader,
-      COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO2, geomIBO2);
+      COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO2, geomIBO2, text);
 
     // Add all uniforms generated above to the pass.
     for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
@@ -302,8 +442,68 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
     // TODO we're not adding this geometry (font) until we debug for it to work on Windows.
     geom->mPasses.push_back(pass2);
     //******************************************************************************************
-  }
+  }*/
   return geom;
+}
+
+void ShowColorMapModule::initFreeType(const std::string &libName, size_t size)
+{
+  FT_Error err;
+  if (!ftInit_)
+  {
+    err = FT_Init_FreeType(&ftLib_);
+    if (!err)
+      ftInit_ = true;
+  }
+
+  if (!ftInit_) return;
+
+  err = FT_New_Face(ftLib_, libName.c_str(), 0, &ftFace_);
+  if (!err)
+    ftValid_ = true;
+
+  if (ftValid_)
+  {
+    err = FT_Select_Charmap(ftFace_, FT_ENCODING_UNICODE);
+    err = FT_Set_Pixel_Sizes(ftFace_, 0, size);
+  }
+}
+
+void ShowColorMapModule::loadNewFace(const std::string &libName, size_t size)
+{
+  FT_Error err;
+  if (!ftInit_)
+  {
+    err = FT_Init_FreeType(&ftLib_);
+    if (!err)
+      ftInit_ = true;
+  }
+
+  if (!ftInit_) return;
+
+  if (ftValid_)
+  {
+    FT_Done_Face(ftFace_);
+    ftValid_ = false;
+  }
+
+  err = FT_New_Face(ftLib_, libName.c_str(), 0, &ftFace_);
+  if (!err)
+    ftValid_ = true;
+
+  if (ftValid_)
+  {
+    err = FT_Select_Charmap(ftFace_, FT_ENCODING_UNICODE);
+    err = FT_Set_Pixel_Sizes(ftFace_, 0, size);
+  }
+}
+
+void ShowColorMapModule::setFaceSize(size_t size)
+{
+  if (!ftValid_)
+    return;
+
+  FT_Set_Pixel_Sizes(ftFace_, 0, size);
 }
 
 const AlgorithmParameterName ShowColorMapModule::DisplaySide("DisplaySide");
