@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,9 +30,16 @@
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/ImportExport/ColorMap/ColorMapIEPlugin.h>
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Core/Matlab/matlabfile.h>
+#include <Core/Matlab/matlabarray.h>
+#include <Core/Matlab/matlabconverter.h>
 
 using namespace SCIRun;
+using namespace Testing;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::MatlabIO;
+using namespace SCIRun::Core::Logging;
 
 TEST(ImportExportPluginManagerTest, CanCreate)
 {
@@ -204,4 +211,55 @@ TEST(WriteMatrixTests, FileExtensionRegex)
   EXPECT_EQ("ObjToField", fileTypeDescriptionFromDialogBoxFilter("ObjToField (*.obj)"));
   EXPECT_EQ("SCIRun Field ASCII", fileTypeDescriptionFromDialogBoxFilter("SCIRun Field ASCII (*.fld)"));
   EXPECT_EQ("SCIRun Field Binary", fileTypeDescriptionFromDialogBoxFilter("SCIRun Field Binary (*.fld)"));
+}
+
+TEST(MatlabFieldFormatTest, CheckMatlabStructure)
+{
+  auto field = CreateEmptyLatVol(3, 4, 5);
+  ASSERT_TRUE(field != nullptr);
+
+  matlabarray ma;
+
+  {
+    matlabconverter mc(nullptr);
+    std::string name;
+
+    mc.converttostructmatrix();
+    mc.sciFieldTOmlArray(field, ma);
+  }
+
+  std::cout << "Base type: " << ma.gettype() << std::endl;
+
+  std::cout << "Fields:" << std::endl;
+  for (const auto& fieldName : ma.getfieldnames())
+  {
+    auto subField = ma.getfield(0, fieldName);
+    std::cout << "Name: " << fieldName <<
+      " Type: " << subField.gettype() <<
+      " Dims: " << subField.getnumdims() << " (" << subField.getm() << "x" << subField.getn() << ")"
+      << std::endl;
+    switch (subField.gettype())
+    {
+      case matfilebase::miUINT8:
+      {
+        auto str = subField.getstring();
+        std::cout << "string: " << str << std::endl;
+        break;
+      }
+      case matfilebase::miDOUBLE:
+      {
+        std::vector<double> v;
+        subField.getnumericarray(v);
+        std::cout << "double array: (vector) " << v.size() << "\n";
+        for (const auto& x : v)
+          std::cout << x << " ";
+        std::cout << std::endl;
+
+        break;
+      }
+      default:
+        std::cout << "some other array: " << std::endl;
+        break;
+    }
+  }
 }
