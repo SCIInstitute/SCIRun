@@ -218,7 +218,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     
 // PREALOCATE VARIABLES and MATRICES
     DenseMatrix M1, M2, M3, M4;
-    DenseMatrix inverseG(M,N);
+ //   DenseMatrix inverseG(M,N);
     DenseColumnMatrix y;
     DenseMatrix forward_transpose = forwardMatrix_->transpose();
     DenseColumnMatrix solution(M);
