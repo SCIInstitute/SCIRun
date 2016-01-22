@@ -44,8 +44,11 @@ ShowColorMapModule::ShowColorMapModule() : GeometryGeneratingModule(ModuleLookup
 {
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(GeometryOutput);
-  std::string fontPath = "Fonts/FreeSans.ttf";
-  initFreeType(fontPath.string(), 14);
+  ftInit_ = false;
+  ftValid_ = false;
+  //std::string fontPath = "Fonts/FreeSans.ttf";
+  std::string fontPath = "E:\\SCIRun\\bin\\SCIRun\\Fonts\\FreeSans.ttf";
+  initFreeType(fontPath, 50);
 }
 
 void ShowColorMapModule::setStateDefaults()
@@ -213,6 +216,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   for (double i = 0.; i <= 1.000000001; i += increment)
   {
     std::stringstream ss;
+    std::string oneline;
     sprintf(str2, sd.str().c_str(), i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift());
     ss << str2 << " " << st->getValue(Units).toString();
     Vector shift = Vector((displaySide == 0) ?
@@ -220,8 +224,9 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       (displaySide == 0) ?
       0. : (yTrans > 50 ? (-textSize - pipe_size / 2.) : pipe_size), i);
 
+    oneline = ss.str();
     const char *p;
-    for (p = ss.str().c_str(); *p; p++)
+    for (p = oneline.c_str(); *p; p++)
     {
       count++;
       points.clear();
@@ -241,13 +246,13 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       points.push_back(shift + Vector(g->bitmap.width, 0.0, 0.0));
       points.push_back(shift + Vector(g->bitmap.width, g->bitmap.rows, 0.0));
       //triangle 1
+      txt_coords.push_back(Vector(0.0, 1.0, 0.0));
       txt_coords.push_back(Vector(0.0, 0.0, 0.0));
-      txt_coords.push_back(Vector(0.0, 1.0, 0.0));
-      txt_coords.push_back(Vector(1.0, 0.0, 0.0));
-      //triangle 2
-      txt_coords.push_back(Vector(0.0, 1.0, 0.0));
-      txt_coords.push_back(Vector(1.0, 0.0, 0.0));
       txt_coords.push_back(Vector(1.0, 1.0, 0.0));
+      //triangle 2
+      txt_coords.push_back(Vector(0.0, 0.0, 0.0));
+      txt_coords.push_back(Vector(1.0, 1.0, 0.0));
+      txt_coords.push_back(Vector(1.0, 0.0, 0.0));
       //triangle 1
       indices.push_back(0);
       indices.push_back(1);
@@ -256,6 +261,8 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       indices.push_back(3);
       indices.push_back(4);
       indices.push_back(5);
+
+      shift += Vector(g->bitmap.width, 0.0, 0.0);
 
       numVBOElements = (uint32_t)points.size();
 
@@ -316,7 +323,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       renState.set(RenderState::USE_COLORMAP, false);
       renState.set(RenderState::USE_TRANSPARENCY, true);
       char c[2] = { p[0], 0 };
-      SpireText text(c, g);
+      SpireText text(c, ftFace_);
 
       SpireSubPass pass2(passName, vboName, iboName, shader,
         COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO2, geomIBO2, text);

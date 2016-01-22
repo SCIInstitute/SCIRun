@@ -129,11 +129,19 @@ namespace SCIRun {
 
       struct SpireText
       {
-        SpireText() : name(""), glyph(0) {}
-        SpireText(const char* c, FT_GlyphSlot g) :
-          name(c), glyph(g) {}
+        SpireText() : name(""), width(0), height(0) {}
+        SpireText(const char* c, FT_Face f) :
+          name(c)
+        {
+          width = f->glyph->bitmap.width;
+          height = f->glyph->bitmap.rows;
+          for (auto i = 0; i < width*height; ++i)
+            bitmap.push_back(f->glyph->bitmap.buffer[i]);
+        }
         std::string                           name;
-        FT_GlyphSlot                          glyph;
+        size_t                                width;
+        size_t                                height;
+        std::vector<uint8_t>                  bitmap;
       };
 
       /// Defines a Spire object 'pass'.

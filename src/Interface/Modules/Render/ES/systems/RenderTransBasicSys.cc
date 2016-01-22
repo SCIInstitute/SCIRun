@@ -101,8 +101,11 @@ public:
                                   ren::GLState,
                                   ren::StaticGLState,
                                   ren::CommonUniforms,
+                                  LightingUniforms,
                                   ren::VecUniform,
-                                  ren::MatUniform>(type);
+                                  ren::MatUniform,
+                                  ren::Texture,
+                                  ren::StaticTextureMan>(type);
   }
 
 private:

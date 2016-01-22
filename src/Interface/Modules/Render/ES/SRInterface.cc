@@ -993,7 +993,7 @@ namespace SCIRun {
       std::pair<const ren::Texture*, size_t> component =
         contTex->getComponent(entityID);
       if (component.first == nullptr)
-        texture = textureMan->createTexture(assetName, text.glyph);
+        texture = textureMan->createTexture(assetName, text.width, text.height, text.bitmap);
       else
         texture = *component.first;
 
