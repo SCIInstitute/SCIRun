@@ -99,7 +99,7 @@ QComboBox* BuildBEMatrixDialog::makeComboBoxItem(int i) const
 QDoubleSpinBox* BuildBEMatrixDialog::makeDoubleEntryItem(int row, int col) const
 {
   auto spin = new QDoubleSpinBox();
-  spin->setValue((row + col + 1) % 2);
+  spin->setValue((row + col + 1) % 6);
   const char* slot = col == TableColumns::InsideConductivity ? SLOT(pushInsides()) : SLOT(pushOutsides());
   connect(spin, SIGNAL(valueChanged(double)), this, slot);
   return spin;
