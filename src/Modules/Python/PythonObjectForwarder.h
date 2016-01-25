@@ -42,8 +42,8 @@ namespace Python {
   {
   public:
     PythonObjectForwarder();
-    virtual void execute();
-    virtual void setStateDefaults();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
     OUTPUT_PORT(0, NewString, String);
 	
 	static const Dataflow::Networks::ModuleLookupInfo staticInfo_;

@@ -28,6 +28,7 @@
 
 #include <Modules/Python/PythonObjectForwarder.h>
 #include <Core/Datatypes/String.h>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
@@ -36,7 +37,7 @@ using namespace SCIRun::Core::Algorithms;
 
 const ModuleLookupInfo PythonObjectForwarder::staticInfo_("PythonObjectForwarder", "Python", "SCIRun");
 
-PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_) 
+PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_, false) 
 {
   INITIALIZE_PORT(NewString);
 }
@@ -47,4 +48,28 @@ void PythonObjectForwarder::setStateDefaults()
 
 void PythonObjectForwarder::execute()
 {
+  const std::string key = "PythonString";
+  auto state = get_state();
+  int tries = 0;
+  const int MAX_TRIES = 50;
+  auto valueOption = state->getTransientValue(key);
+  while (tries < MAX_TRIES && !valueOption)
+  {
+    std::cout << "PythonObjectForwarder looking up value attempt # " << tries << std::endl;
+
+    valueOption = state->getTransientValue(key);
+
+    tries++;
+    boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+  }
+  if (valueOption)
+  {
+    auto valueStr = transient_value_cast<std::string>(valueOption);
+    if (!valueStr.empty())
+      sendOutput(NewString, boost::make_shared<String>(valueStr));
+    else
+      sendOutput(NewString, boost::make_shared<String>("Empty string or non-string received"));
+  }
+  else
+    sendOutput(NewString, boost::make_shared<String>("No value received"));
 }

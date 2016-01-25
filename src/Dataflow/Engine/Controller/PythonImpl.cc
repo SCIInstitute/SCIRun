@@ -528,7 +528,7 @@ namespace
     boost::shared_ptr<PyPortsImpl> input_, output_;
 
 //TODO: extract and use for state get/set
-    AlgorithmParameter::Value convert(boost::python::object object) const
+    AlgorithmParameter::Value convert(const boost::python::object& object) const
     {
       AlgorithmParameter::Value value;
 
