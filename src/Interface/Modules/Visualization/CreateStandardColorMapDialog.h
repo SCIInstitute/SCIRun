@@ -62,6 +62,10 @@ namespace SCIRun {
       void addDefaultLine();
       void removeDefaultLine();
       void drawAlphaPolyline();
+      double pointYToAlpha(double y) const;
+      QPointF colorToPoint(double color) const;
+      double interpolateAlphaLineValue(const QPointF& leftEndpoint, const QPointF& rightEndpoint, double color) const;
+      std::pair<QPointF,QPointF> alphaLineEndpointsAtColor(double color) const;
       QGraphicsItem* alphaPath_;
       QPointF defaultStart_, defaultEnd_;
       std::set<QPointF, SortedByXCoordinate> alphaPoints_;
