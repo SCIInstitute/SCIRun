@@ -64,7 +64,7 @@ void PythonObjectForwarder::execute()
   }
   if (valueOption)
   {
-    auto valueStr = transient_value_cast<std::string>(valueOption);
+    auto valueStr = makeVariable("name", transient_value_cast<AlgorithmParameter::Value>(valueOption)).toString();
     if (!valueStr.empty())
       sendOutput(NewString, boost::make_shared<String>(valueStr));
     else

@@ -442,46 +442,76 @@ namespace
       output_.reset();
     }
 
-    virtual boost::python::object getattr(const std::string& name) override
+    virtual boost::python::object getattr(const std::string& name, bool transient) override
     {
       if (module_)
       {
-        auto state = module_->get_state();
-        AlgorithmParameterName apn(name);
-        if (!state->containsKey(apn))
+        if (!transient)
         {
-          throw std::invalid_argument("Module state key " + name + " not defined.");
+          auto state = module_->get_state();
+          AlgorithmParameterName apn(name);
+          if (!state->containsKey(apn))
+          {
+            throw std::invalid_argument("Module state key " + name + " not defined.");
+          }
+
+          auto v = state->getValue(apn);
+        
+  //TODO: extract and use for state get/set
+          /// @todo: extract
+          if ( const int* p = boost::get<int>( &v.value() ) )
+            return boost::python::object(*p);
+          else if ( const std::string* p = boost::get<std::string>( &v.value() ) )
+            return boost::python::object(*p);
+          else if ( const double* p = boost::get<double>( &v.value() ) )
+            return boost::python::object(*p);
+          else if ( const bool* p = boost::get<bool>( &v.value() ) )
+            return boost::python::object(*p);
+
+          return boost::python::object();
         }
+        else
+        {
+          auto state = module_->get_state();
+          AlgorithmParameterName apn(name);
 
-        auto v = state->getValue(apn);
+          auto v = state->getTransientValue(apn);
 
-//TODO: extract and use for state get/set
-        /// @todo: extract
-        if ( const int* p = boost::get<int>( &v.value() ) )
-          return boost::python::object(*p);
-        else if ( const std::string* p = boost::get<std::string>( &v.value() ) )
-          return boost::python::object(*p);
-        else if ( const double* p = boost::get<double>( &v.value() ) )
-          return boost::python::object(*p);
-        else if ( const bool* p = boost::get<bool>( &v.value() ) )
-          return boost::python::object(*p);
-
-        return boost::python::object();
+          //TODO: extract and use for state get/set
+          /// @todo: extract
+          if (transient_value_check<int>(v))
+            return boost::python::object(transient_value_cast<int>(v));
+          if (transient_value_check<std::string>(v))
+            return boost::python::object(transient_value_cast<std::string>(v));
+          if (transient_value_check<double>(v))
+            return boost::python::object(transient_value_cast<double>(v));
+          if (transient_value_check<bool>(v))
+            return boost::python::object(transient_value_cast<bool>(v));
+          
+          return boost::python::object();
+        }
       }
       return boost::python::object();
     }
 
-    virtual void setattr(const std::string& name, boost::python::object object) override
+    virtual void setattr(const std::string& name, boost::python::object object, bool transient) override
     {
       if (module_)
       {
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
-        if (!state->containsKey(apn))
+        if (!transient)
         {
-          throw std::invalid_argument("Module state key " + name + " not defined.");
+          if (!state->containsKey(apn))
+          {
+            throw std::invalid_argument("Module state key " + name + " not defined.");
+          }
+          state->setValue(apn, convert(object));
         }
-        state->setValue(apn, convert(object));
+        else
+        {
+          state->setTransientValue(apn, convert(object));
+        }
       }
     }
 

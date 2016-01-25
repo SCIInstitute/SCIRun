@@ -205,7 +205,7 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_state(const std:
   Guard g(pythonLock_.get());
   auto module = impl_->findModule(moduleId);
   if (module)
-    return module->getattr(stateVariable);
+    return module->getattr(stateVariable, false);
   return boost::python::object();
 }
 
@@ -215,8 +215,29 @@ std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& m
   auto module = impl_->findModule(moduleId);
   if (module)
   {
-    module->setattr(stateVariable, value);
+    module->setattr(stateVariable, value, false);
     return "Value set";
+  }
+  return "Module or value not found";
+}
+
+boost::python::object NetworkEditorPythonAPI::scirun_get_module_transient_state(const std::string& moduleId, const std::string& stateVariable)
+{
+  Guard g(pythonLock_.get());
+  auto module = impl_->findModule(moduleId);
+  if (module)
+    return module->getattr(stateVariable, true);
+  return boost::python::object();
+}
+
+std::string NetworkEditorPythonAPI::scirun_set_module_transient_state(const std::string& moduleId, const std::string& stateVariable, const boost::python::object& value)
+{
+  Guard g(pythonLock_.get());
+  auto module = impl_->findModule(moduleId);
+  if (module)
+  {
+    module->setattr(stateVariable, value, true);
+    return "Transient value set";
   }
   return "Module or value not found";
 }
