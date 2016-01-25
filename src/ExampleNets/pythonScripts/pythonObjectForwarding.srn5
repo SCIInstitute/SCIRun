@@ -45,7 +45,7 @@
 			<item class_id="9" tracking_level="0" version="0">
 				<moduleId1_>PythonObjectForwarder:0</moduleId1_>
 				<port1_ class_id="10" tracking_level="0" version="0">
-					<name>NewString</name>
+					<name>PythonString</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportStringInfo:0</moduleId2_>

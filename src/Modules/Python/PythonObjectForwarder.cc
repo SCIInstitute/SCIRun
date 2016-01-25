@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2016 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -37,9 +37,11 @@ using namespace SCIRun::Core::Algorithms;
 
 const ModuleLookupInfo PythonObjectForwarder::staticInfo_("PythonObjectForwarder", "Python", "SCIRun");
 
-PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_, false) 
+PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_) 
 {
-  INITIALIZE_PORT(NewString);
+  INITIALIZE_PORT(PythonMatrix);
+  INITIALIZE_PORT(PythonField);
+  INITIALIZE_PORT(PythonString);
 }
 
 void PythonObjectForwarder::setStateDefaults()
@@ -66,10 +68,8 @@ void PythonObjectForwarder::execute()
   {
     auto valueStr = makeVariable("name", transient_value_cast<AlgorithmParameter::Value>(valueOption)).toString();
     if (!valueStr.empty())
-      sendOutput(NewString, boost::make_shared<String>(valueStr));
+      sendOutput(PythonString, boost::make_shared<String>(valueStr));
     else
-      sendOutput(NewString, boost::make_shared<String>("Empty string or non-string received"));
+      sendOutput(PythonString, boost::make_shared<String>("Empty string or non-string received"));
   }
-  else
-    sendOutput(NewString, boost::make_shared<String>("No value received"));
 }

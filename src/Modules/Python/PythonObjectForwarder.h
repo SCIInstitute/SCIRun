@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2016 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -37,14 +37,16 @@ namespace Modules {
 namespace Python {
   
   class SCISHARE PythonObjectForwarder : public SCIRun::Dataflow::Networks::Module,
-    public Has1OutputPort<StringPortTag>,
+    public Has3OutputPorts<MatrixPortTag, FieldPortTag, StringPortTag>,
     public HasNoInputPorts
   {
   public:
     PythonObjectForwarder();
     virtual void execute() override;
     virtual void setStateDefaults() override;
-    OUTPUT_PORT(0, NewString, String);
+    OUTPUT_PORT(0, PythonMatrix, Matrix);
+    OUTPUT_PORT(1, PythonField, LegacyField);
+    OUTPUT_PORT(2, PythonString, String);
 	
 	static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
