@@ -444,9 +444,9 @@ void SCIRunMainWindow::setupInputWidgets()
     actionDelete_,
     moduleSelectorTreeWidget_,
     actionRunScript_;
-#ifdef BUILD_WITH_PYTHON
-  widgets += pythonConsole_;
-#endif
+//#ifdef BUILD_WITH_PYTHON
+//  widgets += pythonConsole_;
+//#endif
 
   WidgetDisablingService::Instance().addWidgets(widgets.begin(), widgets.end());
   WidgetDisablingService::Instance().addWidgets(recentFileActions_.begin(), recentFileActions_.end());
