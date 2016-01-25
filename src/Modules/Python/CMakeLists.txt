@@ -26,18 +26,29 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Basic)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(Legacy)
-ADD_SUBDIRECTORY(BrainStimulator)
+SET(Modules_Python_SRCS
+  PythonObjectForwarder.cc
+)
 
-IF(BUILD_WITH_PYTHON)
-  ADD_SUBDIRECTORY(Python)
-ENDIF()
+SET(Modules_Python_HEADERS
+  PythonObjectForwarder.h
+  share.h
+)
+
+SCIRUN_ADD_LIBRARY(Modules_Python 
+  ${Modules_Python_HEADERS}
+  ${Modules_Python_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_Python
+  Dataflow_Network
+  Core_Datatypes
+  Algorithms_Base
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Python)
+ENDIF(BUILD_SHARED_LIBS)
+
+SCIRUN_ADD_TEST_DIR(Tests)
+

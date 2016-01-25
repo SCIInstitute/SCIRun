@@ -26,18 +26,21 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Basic)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(Legacy)
-ADD_SUBDIRECTORY(BrainStimulator)
+SET(Modules_Python_Tests_SRCS
+  PythonObjectForwarderTest.cc
+)
 
-IF(BUILD_WITH_PYTHON)
-  ADD_SUBDIRECTORY(Python)
-ENDIF()
+SCIRUN_ADD_UNIT_TEST(Modules_Python_Tests
+  ${Modules_Python_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_Python_Tests
+  Modules_Python
+  Modules_Factory
+  Core_Datatypes
+  Dataflow_Network
+  Dataflow_State
+  gtest_main
+  gtest
+  gmock
+)
