@@ -135,8 +135,12 @@ namespace SCIRun {
         {
           width = f->glyph->bitmap.width;
           height = f->glyph->bitmap.rows;
-          for (auto i = 0; i < width*height; ++i)
-            bitmap.push_back(f->glyph->bitmap.buffer[i]);
+          size_t s = width*height;
+          bitmap.resize(s);
+          std::copy(f->glyph->bitmap.buffer,
+            f->glyph->bitmap.buffer + s, bitmap.begin());
+          //for (auto i = 0; i < width*height; ++i)
+          //  bitmap.push_back(f->glyph->bitmap.buffer[i]);
         }
         std::string                           name;
         size_t                                width;

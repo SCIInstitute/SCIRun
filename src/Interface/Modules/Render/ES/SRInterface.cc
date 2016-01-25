@@ -442,10 +442,6 @@ namespace SCIRun {
             gen::Transform trafo;
             mCore.addComponent(entityID, trafo);
 
-            // Add lighting uniform checks
-            //LightingUniforms lightUniforms;
-            //mCore.addComponent(entityID, lightUniforms);
-
             // Add SCIRun render state.
             SRRenderState state;
             state.state = pass.renderState;
@@ -455,10 +451,6 @@ namespace SCIRun {
             ren::CommonUniforms commonUniforms;
             mCore.addComponent(entityID, commonUniforms);
 
-            for (const auto& uniform : pass.mUniforms)
-            {
-              applyUniform(entityID, uniform);
-            }
             SpireSubPass::Uniform uniform(
               "uColor", selCol);
             applyUniform(entityID, uniform);

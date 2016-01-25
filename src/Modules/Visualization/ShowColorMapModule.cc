@@ -30,6 +30,7 @@
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Application/Application.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 
 using namespace SCIRun;
@@ -46,8 +47,10 @@ ShowColorMapModule::ShowColorMapModule() : GeometryGeneratingModule(ModuleLookup
   INITIALIZE_PORT(GeometryOutput);
   ftInit_ = false;
   ftValid_ = false;
-  //std::string fontPath = "Fonts/FreeSans.ttf";
-  std::string fontPath = "E:\\SCIRun\\bin\\SCIRun\\Fonts\\FreeSans.ttf";
+  std::string filesystemRoot = Core::Application::Instance().executablePath().string();
+  std::string sep;
+  sep += boost::filesystem::path::preferred_separator;
+  std::string fontPath = filesystemRoot + sep + "Fonts" + sep + "FreeSans.ttf";
   initFreeType(fontPath, 50);
 }
 
@@ -237,22 +240,28 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
         continue;
       FT_GlyphSlot g = ftFace_->glyph;
 
+      double x = shift.x() + g->bitmap_left;
+      double y = -shift.y() - g->bitmap_top;
+      double z = shift.z();
+      double w = g->bitmap.width;
+      double h = g->bitmap.rows;
+
       //triangle 1
-      points.push_back(shift + Vector(0.0, 0.0, 0.0));
-      points.push_back(shift + Vector(0.0, g->bitmap.rows, 0.0));
-      points.push_back(shift + Vector(g->bitmap.width, 0.0, 0.0));
+      points.push_back(Vector(x, -y, z));
+      points.push_back(Vector(x+w, -y, z));
+      points.push_back(Vector(x, -y-h, z));
       //triangle 2
-      points.push_back(shift + Vector(0.0, g->bitmap.rows, 0.0));
-      points.push_back(shift + Vector(g->bitmap.width, 0.0, 0.0));
-      points.push_back(shift + Vector(g->bitmap.width, g->bitmap.rows, 0.0));
+      points.push_back(Vector(x, -y-h, z));
+      points.push_back(Vector(x+w, -y, z));
+      points.push_back(Vector(x+w, -y-h, z));
       //triangle 1
-      txt_coords.push_back(Vector(0.0, 1.0, 0.0));
       txt_coords.push_back(Vector(0.0, 0.0, 0.0));
-      txt_coords.push_back(Vector(1.0, 1.0, 0.0));
-      //triangle 2
-      txt_coords.push_back(Vector(0.0, 0.0, 0.0));
-      txt_coords.push_back(Vector(1.0, 1.0, 0.0));
       txt_coords.push_back(Vector(1.0, 0.0, 0.0));
+      txt_coords.push_back(Vector(0.0, 1.0, 0.0));
+      //triangle 2
+      txt_coords.push_back(Vector(0.0, 1.0, 0.0));
+      txt_coords.push_back(Vector(1.0, 0.0, 0.0));
+      txt_coords.push_back(Vector(1.0, 1.0, 0.0));
       //triangle 1
       indices.push_back(0);
       indices.push_back(1);
@@ -262,7 +271,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       indices.push_back(4);
       indices.push_back(5);
 
-      shift += Vector(g->bitmap.width, 0.0, 0.0);
+      shift += Vector(g->advance.x >> 6, g->advance.y >> 6, 0.0);
 
       numVBOElements = (uint32_t)points.size();
 

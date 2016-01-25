@@ -55,6 +55,7 @@ SCIRUN_ADD_LIBRARY(Modules_Visualization
 )
 
 TARGET_LINK_LIBRARIES(Modules_Visualization
+  Core_Application
   Dataflow_Network
   Core_Datatypes
   Core_Datatypes_Mesh
