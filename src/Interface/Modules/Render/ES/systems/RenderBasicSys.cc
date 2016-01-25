@@ -177,7 +177,8 @@ public:
         }
       }
 
-      const_cast<LightingUniforms&>(lightUniforms.front()).checkUniformArray(shader.front().glid);
+      if (lightUniforms.size() > 0)
+        const_cast<LightingUniforms&>(lightUniforms.front()).checkUniformArray(shader.front().glid);
     }
 
     // Check to see if we have GLState. If so, apply it relative to the
@@ -215,7 +216,8 @@ public:
 
     // Apply vector uniforms (if any).
     for (const ren::VecUniform& unif : vecUniforms) {unif.applyUniform();}
-    lightUniforms.front().applyUniform(worldLight.front().lightDir);
+    if (lightUniforms.size() > 0)
+      lightUniforms.front().applyUniform(worldLight.front().lightDir);
 
     // Apply matrix uniforms (if any).
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}

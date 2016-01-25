@@ -443,8 +443,8 @@ namespace SCIRun {
             mCore.addComponent(entityID, trafo);
 
             // Add lighting uniform checks
-            LightingUniforms lightUniforms;
-            mCore.addComponent(entityID, lightUniforms);
+            //LightingUniforms lightUniforms;
+            //mCore.addComponent(entityID, lightUniforms);
 
             // Add SCIRun render state.
             SRRenderState state;
