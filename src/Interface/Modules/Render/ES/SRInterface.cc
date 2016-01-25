@@ -87,7 +87,7 @@ namespace SCIRun {
       mCamera(new SRCamera(*this))  // Should come after all vars have been initialized.
     {
       // Create default colormaps.
-      generateTextures();
+      //generateTextures();
 
       showOrientation_ = true;
       autoRotate_ = false;
