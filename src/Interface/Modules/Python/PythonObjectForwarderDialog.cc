@@ -27,11 +27,11 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Interface/Modules/Python/PythonObjectForwarderDialog.h>
-//#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
+#include <Modules/Python/PythonObjectForwarder.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-
+using namespace SCIRun::Core::Algorithms::Python;
 
 PythonObjectForwarderDialog::PythonObjectForwarderDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,34 +41,9 @@ PythonObjectForwarderDialog::PythonObjectForwarderDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  //lambdaMethod_.insert(StringPair("Direct entry", "single"));
-  //lambdaMethod_.insert(StringPair("Slider", "slider"));
-  //lambdaMethod_.insert(StringPair("L-curve", "lcurve"));
-
-  //WidgetStyleMixin::tabStyle(inputTabWidget_);
-
-  //addDoubleLineEditManager(lCurveLambdaLineEdit_, SolveInverseProblemWithTikhonovModule::LambdaCorner);
-  //addSpinBoxManager(lambdaNumberSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaNum);
-  //addDoubleSpinBoxManager(lambdaDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaFromDirectEntry);
-  //addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMin);
-  //addDoubleSpinBoxManager(lambdaMaxDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMax);
-  //addDoubleSpinBoxManager(lambdaResolutionDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaResolution);
-  //addDoubleSpinBoxManager(lCurveMinDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMin);
-  //addDoubleSpinBoxManager(lCurveMaxDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMax);
-
-  //addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaSliderValue);
-
-  //addRadioButtonGroupManager({ autoRadioButton_, underRadioButton_, overRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovCase);
-  //addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovSolutionSubcase);
-  //addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovResidualSubcase);
-
-  //addComboBoxManager(lambdaMethodComboBox_, SolveInverseProblemWithTikhonovModule::RegularizationMethod, lambdaMethod_);
-  //addTextEditManager(lCurveTextEdit_, SolveInverseProblemWithTikhonovModule::LCurveText);
-
-  //connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
-  //connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
-  //connect(lambdaMinDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMin(double)));
-  //connect(lambdaMaxDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMax(double)));
+  addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
+  addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
+  
   //connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
 }
 

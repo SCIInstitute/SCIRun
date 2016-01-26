@@ -34,6 +34,10 @@ using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Python;
+
+ALGORITHM_PARAMETER_DEF(Python, PollingIntervalMilliseconds);
+ALGORITHM_PARAMETER_DEF(Python, NumberOfRetries);
 
 const ModuleLookupInfo PythonObjectForwarder::staticInfo_("PythonObjectForwarder", "Python", "SCIRun");
 
@@ -46,6 +50,9 @@ PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_)
 
 void PythonObjectForwarder::setStateDefaults()
 {
+  auto state = get_state();
+  state->setValue(Parameters::PollingIntervalMilliseconds, 200);
+  state->setValue(Parameters::NumberOfRetries, 50);
 }
 
 void PythonObjectForwarder::execute()
@@ -53,16 +60,17 @@ void PythonObjectForwarder::execute()
   const std::string key = "PythonString";
   auto state = get_state();
   int tries = 0;
-  const int MAX_TRIES = 50;
+  const int maxTries = state->getValue(Parameters::NumberOfRetries).toInt();
+  const int waitTime = state->getValue(Parameters::PollingIntervalMilliseconds).toInt();
   auto valueOption = state->getTransientValue(key);
-  while (tries < MAX_TRIES && !valueOption)
+  while (tries < maxTries && !valueOption)
   {
     std::cout << "PythonObjectForwarder looking up value attempt # " << tries << std::endl;
 
     valueOption = state->getTransientValue(key);
 
     tries++;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(waitTime));
   }
   if (valueOption)
   {

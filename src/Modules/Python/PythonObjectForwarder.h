@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #ifndef MODULES_PYTHON_PYTHONOBJECTFORWARDER_H
 #define MODULES_PYTHON_PYTHONOBJECTFORWARDER_H
@@ -32,25 +32,42 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Python/share.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace Python {
-  
-  class SCISHARE PythonObjectForwarder : public SCIRun::Dataflow::Networks::Module,
-    public Has3OutputPorts<MatrixPortTag, FieldPortTag, StringPortTag>,
-    public HasNoInputPorts
+namespace SCIRun
+{
+  namespace Core
   {
-  public:
-    PythonObjectForwarder();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
-    OUTPUT_PORT(0, PythonMatrix, Matrix);
-    OUTPUT_PORT(1, PythonField, LegacyField);
-    OUTPUT_PORT(2, PythonString, String);
-	
-	static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-  };
+    namespace Algorithms
+    {
+      namespace Python
+      {
+        ALGORITHM_PARAMETER_DECL(PollingIntervalMilliseconds);
+        ALGORITHM_PARAMETER_DECL(NumberOfRetries);
+      }
+    }
+  }
 
-}}}
+  namespace Modules
+  {
+    namespace Python
+    {
+
+      class SCISHARE PythonObjectForwarder : public SCIRun::Dataflow::Networks::Module,
+        public Has3OutputPorts<MatrixPortTag, FieldPortTag, StringPortTag>,
+        public HasNoInputPorts
+      {
+      public:
+        PythonObjectForwarder();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
+        OUTPUT_PORT(0, PythonMatrix, Matrix);
+        OUTPUT_PORT(1, PythonField, LegacyField);
+        OUTPUT_PORT(2, PythonString, String);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+
+    }
+  }
+}
 
 #endif

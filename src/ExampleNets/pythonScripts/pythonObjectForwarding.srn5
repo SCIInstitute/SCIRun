@@ -16,8 +16,32 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>NumberOfRetries</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>NumberOfRetries</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>0</which>
+										<value>50</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PollingIntervalMilliseconds</name>
+								</first>
+								<second>
+									<name>PollingIntervalMilliseconds</name>
+									<value>
+										<which>0</which>
+										<value>200</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -39,12 +63,12 @@
 				</second>
 			</item>
 		</modules>
-		<connections class_id="8" tracking_level="0" version="0">
+		<connections class_id="12" tracking_level="0" version="0">
 			<count>1</count>
 			<item_version>0</item_version>
-			<item class_id="9" tracking_level="0" version="0">
+			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>PythonObjectForwarder:0</moduleId1_>
-				<port1_ class_id="10" tracking_level="0" version="0">
+				<port1_ class_id="14" tracking_level="0" version="0">
 					<name>PythonString</name>
 					<id>0</id>
 				</port1_>
@@ -56,12 +80,12 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="11" tracking_level="0" version="0">
+	<modulePositions class_id="15" tracking_level="0" version="0">
 		<count>2</count>
 		<item_version>0</item_version>
-		<item class_id="12" tracking_level="0" version="0">
+		<item class_id="16" tracking_level="0" version="0">
 			<first>PythonObjectForwarder:0</first>
-			<second class_id="13" tracking_level="0" version="0">
+			<second class_id="17" tracking_level="0" version="0">
 				<first>-3.03000000000000000e+002</first>
 				<second>-3.56000000000000000e+002</second>
 			</second>
@@ -74,7 +98,7 @@
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="14" tracking_level="0" version="0">
+	<moduleNotes class_id="18" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleNotes>
@@ -82,10 +106,10 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="15" tracking_level="0" version="0">
+	<moduleTags class_id="19" tracking_level="0" version="0">
 		<count>2</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
+		<item class_id="20" tracking_level="0" version="0">
 			<first>PythonObjectForwarder:0</first>
 			<second>0</second>
 		</item>
