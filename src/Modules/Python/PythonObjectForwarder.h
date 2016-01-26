@@ -42,6 +42,7 @@ namespace SCIRun
       {
         ALGORITHM_PARAMETER_DECL(PollingIntervalMilliseconds);
         ALGORITHM_PARAMETER_DECL(NumberOfRetries);
+        ALGORITHM_PARAMETER_DECL(PythonObject);
       }
     }
   }

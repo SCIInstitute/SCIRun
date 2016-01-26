@@ -44,9 +44,10 @@ PythonObjectForwarderDialog::PythonObjectForwarderDialog(const std::string& name
   addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
   addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
   
-  //connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
+  connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObject()));
 }
 
 void PythonObjectForwarderDialog::resetObject()
 {
+  state_->setTransientValue(Parameters::PythonObject, boost::any());
 }
