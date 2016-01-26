@@ -40,16 +40,236 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Matlab/matlabfile.h>
+#include <Core/Matlab/matlabarray.h>
+#include <Core/Matlab/matlabconverter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::MatlabIO;
 
 namespace
 {
+  template <class T>
+  boost::python::list toPythonList(const std::vector<T>& vec)
+  {
+    boost::python::list list;
+    for (const auto& v : vec)
+    {
+      list.append(v);
+    }
+    return list;
+  }
+
+  template <class T>
+  boost::python::list toPythonListOfLists(const std::vector<T>& vec, int dim1, int dim2)
+  {
+    boost::python::list list;
+    auto iter = vec.begin();
+    for (int i = 0; i < dim1; ++i)
+    {
+      boost::python::list row;
+      for (int j = 0; j < dim2; ++j)
+        row.append(*iter++);
+      list.append(row);
+    }
+    return list;
+  }
+
+  template <class T>
+  boost::python::list toPythonList(const DenseMatrixGeneric<T>& dense)
+  {
+    boost::python::list list;
+    for (int i = 0; i < dense.nrows(); ++i)
+    {
+      boost::python::list row;
+      for (int j = 0; j < dense.ncols(); ++j)
+        row.append(dense(i,j));
+      list.append(row);
+    }
+    return list;
+  }
+
+  template <class T>
+  boost::python::list toPythonList(const SparseRowMatrixGeneric<T>& sparse)
+  {
+    boost::python::list rows, columns, values;
+
+    for (int i = 0; i < sparse.nonZeros(); ++i)
+    {
+      values.append(sparse.valuePtr()[i]);
+    }
+    for (int i = 0; i < sparse.nonZeros(); ++i)
+    {
+      columns.append(sparse.innerIndexPtr()[i]);
+    }
+    for (int i = 0; i < sparse.outerSize(); ++i)
+    {
+      rows.append(sparse.outerIndexPtr()[i]);
+    }
+
+    boost::python::list list;
+    list.append(rows);
+    list.append(columns);
+    list.append(values);
+    return list;
+  }
+
+  class PyDatatypeString : public PyDatatype
+  {
+  public:
+    explicit PyDatatypeString(StringHandle underlying) : underlying_(underlying)
+    {
+    }
+
+    virtual std::string type() const override
+    {
+      return underlying_->dynamic_type_name();
+    }
+
+    virtual boost::python::object value() const override
+    {
+      boost::python::object str(std::string(underlying_->value()));
+      return str;
+    }
+
+  private:
+    StringHandle underlying_;
+  };
+
+  class PyDatatypeDenseMatrix : public PyDatatype
+  {
+  public:
+    explicit PyDatatypeDenseMatrix(DenseMatrixHandle underlying) : underlying_(underlying)
+    {
+    }
+
+    virtual std::string type() const override
+    {
+      return underlying_->dynamic_type_name();
+    }
+
+    virtual boost::python::object value() const override
+    {
+      return toPythonList(*underlying_);
+    }
+
+  private:
+    DenseMatrixHandle underlying_;
+  };
+
+  class PyDatatypeSparseRowMatrix : public PyDatatype
+  {
+  public:
+    explicit PyDatatypeSparseRowMatrix(SparseRowMatrixHandle underlying) : underlying_(underlying)
+    {
+    }
+
+    virtual std::string type() const override
+    {
+      return underlying_->dynamic_type_name();
+    }
+
+    virtual boost::python::object value() const override
+    {
+      return toPythonList(*underlying_);
+    }
+
+  private:
+    SparseRowMatrixHandle underlying_;
+  };
+
+  class PyDatatypeField : public PyDatatype
+  {
+  public:
+    explicit PyDatatypeField(FieldHandle underlying) : underlying_(underlying)
+    {
+      matlabarray ma;
+      matlabconverter mc(nullptr);
+      mc.converttostructmatrix();
+      mc.sciFieldTOmlArray(underlying_, ma);
+
+      for (const auto& fieldName : ma.getfieldnames())
+      {
+        auto subField = ma.getfield(0, fieldName);
+        switch (subField.gettype())
+        {
+          case matfilebase::miUINT8:
+          {
+            auto str = subField.getstring();
+            matlabStructure_[fieldName] = str;
+            break;
+          }
+          case matfilebase::miDOUBLE:
+          {
+            std::vector<double> v;
+            subField.getnumericarray(v);
+            if (1 != subField.getm() && 1 != subField.getn())
+              matlabStructure_[fieldName] = toPythonListOfLists(v, subField.getn(), subField.getm());
+            else
+              matlabStructure_[fieldName] = toPythonList(v);
+            break;
+          }
+          default:
+            std::cout << "some other array: " << std::endl;
+            break;
+        }
+      }
+    }
+
+    virtual std::string type() const override
+    {
+      return underlying_->dynamic_type_name();
+    }
+
+    virtual boost::python::object value() const override
+    {
+      return matlabStructure_;
+    }
+
+  private:
+    FieldHandle underlying_;
+    boost::python::dict matlabStructure_;
+  };
+
+  class PyDatatypeFactory
+  {
+  public:
+    static boost::shared_ptr<PyDatatype> createWrapper(DatatypeHandle data)
+    {
+      {
+        auto str = boost::dynamic_pointer_cast<String>(data);
+        if (str)
+          return boost::make_shared<PyDatatypeString>(str);
+      }
+      {
+        auto dense = boost::dynamic_pointer_cast<DenseMatrix>(data);
+        if (dense)
+          return boost::make_shared<PyDatatypeDenseMatrix>(dense);
+      }
+      {
+        auto sparse = boost::dynamic_pointer_cast<SparseRowMatrix>(data);
+        if (sparse)
+          return boost::make_shared<PyDatatypeSparseRowMatrix>(sparse);
+      }
+      {
+        auto field = boost::dynamic_pointer_cast<Field>(data);
+        if (field)
+          return boost::make_shared<PyDatatypeField>(field);
+      }
+      return nullptr;
+    }
+  };
+
   class PyPortImpl : public PyPort
   {
   public:
@@ -78,11 +298,44 @@ namespace
         nec_.requestConnection(port_.get(), otherPort->port_.get());
     }
 
+    virtual std::string dataTypeName() const override
+    {
+      auto output = boost::dynamic_pointer_cast<OutputPortInterface>(port_);
+      if (output)
+        return "Output port data not available yet!";
+
+      auto data = getDataImpl();
+      if (!data)
+        return "[No data]";
+      if (!*data)
+        return "[Null data]";
+      return (*data)->dynamic_type_name();
+    }
+
+    virtual boost::shared_ptr<PyDatatype> data() const override
+    {
+      auto dataOpt = getDataImpl();
+      if (dataOpt && *dataOpt)
+      {
+        return PyDatatypeFactory::createWrapper(*dataOpt);
+      }
+      return nullptr;
+    }
+
     void reset()
     {
       port_.reset();
     }
   private:
+    DatatypeHandleOption getDataImpl() const
+    {
+      auto input = boost::dynamic_pointer_cast<InputPortInterface>(port_);
+      if (input)
+      {
+        return input->getData();
+      }
+      return boost::none;
+    }
     boost::shared_ptr<PortDescriptionInterface> port_;
     NetworkEditorController& nec_;
   };
@@ -329,14 +582,14 @@ namespace SCIRun {
   }
 }
 
-PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory), executionMutex_(nullptr)
+PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory)
 {
   nec_.connectNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); });
 }
 
-void PythonImpl::setLock(Mutex* mutex)
+void PythonImpl::setUnlockFunc(boost::function<void()> unlock)
 {
-  executionMutex_ = mutex;
+  unlock_ = unlock;
 }
 
 void PythonImpl::executionFromPythonStart()
@@ -346,8 +599,12 @@ void PythonImpl::executionFromPythonStart()
 
 void PythonImpl::executionFromPythonFinish(int)
 {
-  if (executionMutex_)
-    executionMutex_->unlock();
+  if (unlock_)
+  {
+    //std::cout << "executionMutex_->unlock attempt " << boost::this_thread::get_id() << std::endl;
+    unlock_();
+    //std::cout << "executionMutex_->unlock done " << boost::this_thread::get_id() << std::endl;
+  }
 }
 
 boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
@@ -423,6 +680,14 @@ std::string PythonImpl::loadNetwork(const std::string& filename)
   auto load = cmdFactory_->create(GlobalCommands::LoadNetworkFile);
   load->set(Variables::Filename, filename);
   return load->execute() ? (filename + " loaded") : "Load failed";
+  //TODO: provide more informative python return value string
+}
+
+std::string PythonImpl::importNetwork(const std::string& filename)
+{
+  auto import = cmdFactory_->create(GlobalCommands::ImportNetworkFile);
+  import->set(Variables::Filename, filename);
+  return import->execute() ? (filename + " imported") : "Import failed";
   //TODO: provide more informative python return value string
 }
 

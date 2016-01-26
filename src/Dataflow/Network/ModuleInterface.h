@@ -150,10 +150,10 @@ namespace Networks {
     virtual void send_output_handle(const PortId& id, SCIRun::Core::Datatypes::DatatypeHandle data) = 0;
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
-    virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
+    virtual SCIRun::Core::Logging::LoggerHandle getLogger() const override = 0;
 
     /// @todo functions
-    virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const = 0;
+    virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override = 0;
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
     virtual void setUiToggleFunc(UiToggleFunc func) = 0;
 

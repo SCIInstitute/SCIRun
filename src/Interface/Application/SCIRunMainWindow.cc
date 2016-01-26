@@ -64,6 +64,7 @@
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Command/CommandFactory.h>
+#include <Core/Utils/CurrentFileName.h>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
@@ -581,7 +582,8 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename)
 {
   if (!filename.isEmpty())
   {
-    FileOpenCommand command(filename.toStdString(), networkEditor_);
+    FileOpenCommand command;
+    command.set(Variables::Filename, filename.toStdString());
     if (command.execute())
     {
       setCurrentFile(filename);
@@ -617,7 +619,8 @@ bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
 	bool success = false;
   if (!filename.isEmpty())
   {
-    FileImportCommand command(filename.toStdString(), networkEditor_);
+    FileImportCommand command;
+    command.set(Variables::Filename, filename.toStdString());
     if (command.execute())
     {
       statusBar()->showMessage(tr("File imported: ") + filename, 2000);
@@ -663,6 +666,7 @@ bool SCIRunMainWindow::newNetwork()
 void SCIRunMainWindow::setCurrentFile(const QString& fileName)
 {
   currentFile_ = fileName;
+  SCIRun::Core::setCurrentFileName(currentFile_.toStdString());
   setWindowModified(false);
   QString shownName = tr("Untitled");
   if (!currentFile_.isEmpty())
@@ -749,6 +753,7 @@ bool SCIRunMainWindow::okToContinue()
 }
 
 //TODO: hook up to modules' state_changed_sig_t via GlobalStateManager
+//TODO: pass a boolean here to avoid updating total modules when only connections are made--saves a lock
 void SCIRunMainWindow::networkModified()
 {
   setWindowModified(true);

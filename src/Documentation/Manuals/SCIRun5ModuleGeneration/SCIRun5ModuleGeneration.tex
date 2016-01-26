@@ -1,6 +1,6 @@
 \documentclass[fleqn,11pt,openany]{book}
 
-% These two need to be set before including scirun style package
+% These two need to be set before including SCIRun style package
 \title{SCIRun Module Generation}
 \author{Jess Tate}
 
@@ -21,7 +21,7 @@
 \chapter{SCIRun Overview} \label{overview}
 
 \begin{introduction}
-This tutorial demonstrates how to create new modules in SCIRun \SCIRunVersion.  It will walk through all the files needed and the basic module structure used by modules.  These instructions assume a basic understanding in C++ coding and other basic programing skills
+This tutorial demonstrates how to create new modules in SCIRun \SCIRunVersion.  It will walk through all the files needed and the basic module structure used by modules.  These instructions assume a basic understanding in C++ coding and other basic programming skills
 \end{introduction}
 
 \section{Software requirements}
@@ -102,17 +102,17 @@ Most modules, especially those requiring more than minimal code, should also hav
 This algorithm code and header file (\emph{modulenameAlgo.cc} and \emph{modulenameAlgo.h}) should contain all the computation of the module.
 Though it is possible to build modules without these algorithm files, it is considered good practice to do so.
 
-It is worth noting that each of the \emph{CMakeLists.txt} files in the directories of all of the files (except the module config file).  
+It is worth noting that each of the \emph{CMakeLists.txt} files are in the directories of all of the files (except the module config file).  
 See the examples in the following chapters for details.  %TODO reference other chapters.
 
 
 \section{Module Configuration File}
 \label{sec:config}
 
-The module configuration file contains all the information need for the module factory to create necessary linkage and helper files for module to be properly included into SCIRun.  
+The module configuration file contains all the information needed for the module factory to create necessary linkage and helper files for modules to be properly included into SCIRun.  
 Module configuration files should be located in \emph{src/Modules/Factory/Config/}.  
 It is a text file that describes fields specific to the module delimited by curly brackets.  
-There are three fields ``module", ``algorithm", and ``UI" and within each field are subfields ``name" and ``header", and others depending on the field.  
+There are three fields: ``module", ``algorithm", and ``UI" and within each field are subfields ``name" and ``header", and others depending on the field.  
 The following is an example that reflects the template files included in the source code.
 \begin{verbatim}
 {
@@ -144,7 +144,7 @@ Please refer to Section~\ref{} for an example.  %TODO reference other chapters.
 \label{sec:module}
 
 The Module source code consist of a .cc and .h file that code the actual function of the module.
-However, since most modules use an algorithm file, these files can also be considered the the code that pulls all the relevant information from the algorithm, the UI, and other modules in order to achieve it's proper function.  
+However, since most modules use an algorithm file, these files can also be considered as the code that pulls all the relevant information from the algorithm, the UI, and other modules in order to achieve its proper function.  
 These files should be located in the proper directory with the \emph{src/Modules/} directory.
 For example purposes, we will show and discuss the template files included in the \emph{src/Modules/Template/} directory.
 
@@ -227,8 +227,8 @@ Here is a list of port tags that can be used in SCIRun:
 \end{itemize}
 
 The header is also where the ports are named and the datatype is declared.  
-It is import for the name of each port to be unique, including all the inputs and outputs.  
-When the port is declared and named, the datatype is also specified.  
+It is important for the name of each port to be unique including all the inputs and outputs.  
+When the port is declared and named the datatype is also specified.  
 This declares the datatype expected by the port and can be a subset of the port tag type, e.g., DenseMatrix instead of Matrix.
 However, it can be better to do this within the module to control the exception.  
 
@@ -309,15 +309,15 @@ With the Object Inspector window, the hierarchy and organization of the UI can b
 
 \begin{figure}[H]
 \centerline{
-\scalebox{0.35}{\includegraphics{SCIRun5ModuleGeneration_Figures/QT-editor.png}}}
+\scalebox{0.35}{\frame{\includegraphics{SCIRun5ModuleGeneration_Figures/QT-editor.png}}}}
 \caption{Template module interface design file as seen in the Qt editor.}
 \label{fig:qteditor}
-\end{figure}
+\end{figure} %%FIX CAPTION - Not centered.
 
-When using the editor to make a module UI, there are a few things to consider.
-First, make sure all the relevant objects, including the name of UI (QDialog) is consistent with module dialog code.  
-You can change the size and placement of objects with the property manager, but make sure that you leave some buffer space as some OS will interpret the file slightly differently.  
-The structure of the UI can be changed or destroyed, look at some of the existing modules for examples.
+When using the editor to make a module UI there are a few things to consider.
+First, make sure all the relevant objects including the name of UI (QDialog) is consistent with module dialog code.  
+You can change the size and placement of objects with the property manager, but make sure that you leave some buffer space as some operating systems will interpret the file slightly differently.  
+The structure of the UI can be changed or destroyed. Look at some of the existing modules for examples.
 
 \subsection{Module Dialog Header}
 
@@ -359,7 +359,7 @@ The module dialog header file will be very similar for each module, with only th
 
 \subsection{Module Dialog Code}
 
-The module dialog cc file is used with Qt to establish the functionality of module UI.  
+The module dialog .cc file is used with Qt to establish the functionality of a module UI.  
 Shown here is the example \emph{ModuleDialog.cc} in the \emph{src/Interface/Modules/Template} folder.
 \begin{verbatim}
 #include <Interface/Modules/Fields/@ModuleName@Dialog.h>
@@ -391,8 +391,8 @@ void @ModuleName@Dialog::pull()
 }
 \end{verbatim}
 
-The module dialog code is mostly for passing data between the module and the UI and changing the UI when require by the module.  
-Parameters and inputs can be passed straight to the algorithm, as templated in this example.  
+The module dialog code is mostly used for passing data between the module and the UI, and changing the UI when required by the module.  
+Parameters can be passed straight to the algorithm, as shown in this example.  
 The 'pull' functions are optional to use data from the module and algorithm to either display in the UI or to use to change the options or appearance of the UI.  
 There can be other forms of 'pull', such as 'pullSpecial'
 A 'push' function can be used in conjunction with 'pull'.
@@ -404,7 +404,7 @@ These functions, 'pull' and 'push' are automatic functions in the module UI.
 The Module algorithm files are where most of the computation code should live.  
 There are two files, a header and a .cc file. 
 Making algorithm files can be tricky for a beginner, because there are several options to use due to the flexible nature of SCIRun.  
-However, the module algorithms have more in common that it first appears.
+However, the module algorithms have more in common than are initially apparent.
 The trick to implementing a new module algorithm (as with most things) is look at several other modules that have similar functions and try to emulate those methods.  
 
 Module algorithm code belongs in the relevant directory within the \emph{src/Core/Algorithms/} directory.
@@ -438,12 +438,12 @@ namespace SCIRun {
       }}}}
 #endif 
 \end{verbatim}
-Key difference that may occur in the algorithm header file are the function and variable declarations.
+A key difference that may occur in the algorithm header file is the function and variable declarations.
 Parameters and options for the algorithm may need to be declared here if they are not included in the recognized list (listed in \emph{Core/Algorithms/Base/AlgorithmVariableNames.h}).
 
 \subsection{Module Algorithm Code}
 
-The module algorithm cc file should contain the majority of the computation necessary for the module.
+The module algorithm .cc file should contain the majority of the computation necessary for the module.
 Shown here is the example \emph{AlgorithmTemplate.h} in the \emph{src/Core/Algorithm/Template/} folder.
 \begin{verbatim}
 #include <Core/Algorithms/Field/@AlgorithmName@Algo.h>
@@ -491,14 +491,16 @@ AlgorithmOutput @AlgorithmName@Algo::run_generic(const
 }
 \end{verbatim}
 
-This template shows the algorithm using some of the defined names from \emph{Core/Algorithms/Base/AlgorithmVariableNames.h}, using the Variable namespace.
-This allows for easy use of common inputs and output to the algorithm.  
-If other or more values are needed, they can be declared in the header.  
-Also of note, the default values for the UI are set in the '@AlgorithmName@Algo()' function, and then in the module code, the 'setStateDefault ' function pulls the values from the algorithm.  
+
+This template shows the algorithm using some of the defined names from {\emph{\seqsplit{Core/Algorithms/Base/AlgorithmVariableNames.h}} using the Variable namespace. %%Find better solution for this?
+This allows for easy use of common inputs and outputs for the algorithm.  
+If other or more values are needed they can be declared in the header.  
+Also note that the default values for the UI are set in the '@AlgorithmName@Algo()' function, and then in the module code.
+The 'setStateDefault ' function pulls the values from the algorithm.  
 This only works if the algorithm files are linked in the module configuration file. 
 
 There are several algorithms already implemented in SCIRun.  
-If there there are modules that have similar functionality, you may be able to use some of the functionality already implemented.  
+If there there are modules that have similar functionality you may be able to use some of the functionality already implemented.  
 The module may still need it's own algorithm file.  
 
 
@@ -518,15 +520,15 @@ Scope: \hyperref[sec:examp_config]{Module Config File} - \hyperref[sec:examp_hea
 \section{Module Config File}
 \label{sec:examp_config}
 
-If you have created a fork from the SCIRun git repository, begin by creating a new branch in your repository.  
-Be sure to commit your changes to your repository often, as this can help you and the developers fix and make improvements to the code.
+If you have created a fork from the SCIRun git repository begin by creating a new branch in your repository.  
+Be sure to commit your changes to your repository often as this can help you and the developers fix and make improvements to the code.
 It is often easiest to modify existing code to fit your purposes than create new code, so determine a module that has similar functionality or structure to the new module.  
 If desired, there is also the template files described in Chapter~\ref{sec:files} to use as a basis.  
 In this example, we will provide the code needed, so it is not necessary to copy another module.  
 
 Begin with the module config file.  
-Create a new text file in module factory configuration directory (\emph{src/Modules/Factory/Config/}) for the new module.  
-I should be named \emph{TestModuleSimple.module} or something similar.  
+Create a new text file in the module factory configuration directory (\emph{src/Modules/Factory/Config/}) for the new module.  
+It should be named \emph{TestModuleSimple.module} or something similar.  
 The text of the file should be:
 \begin{verbatim}
 {
@@ -548,15 +550,15 @@ The text of the file should be:
   }
 }
 \end{verbatim}
-The exact text of the status and description can be whatever the creator desires. 
+The exact text of the status and description can be whatever the developer desires. 
 The names of the module and filenames can also be different, but they must match the module code.  
 
 \section{Module Header File}
 \label{sec:examp_header}
 
-Now we move to the module code.
-The module will need to be placed in one of the directories in \emph{src/Modules/}, so choose the directory that fits the modules use the best (do not place the module code in \emph{Factory} or \emph{Template}, and \emph{Legacy} is generally for converted modules from earlier versions of SCIRun)
-Since this module will be only have a string output, we will place the module code in \emph{src/Modules/String/}.
+Now we move on to the module code.
+The module will need to be placed in one of the directories in \emph{src/Modules/}, so choose the directory that fits the modules use best (do not place the module code in \emph{Factory} or \emph{Template}, and \emph{Legacy} is generally for converted modules from earlier versions of SCIRun).
+Since this module will only have a string output, we will place the module code in \emph{src/Modules/String/}.
 In this directory create a file called \emph{TestModuleSimple.h}.  
 This file will be very similar to the \emph{ModuleTemplate.h} file shown earlier.
 In addition to the SCIRun license information, the content of the header file should be:
@@ -591,7 +593,9 @@ As mentioned in Section~\ref{sec:config}, the header files for most modules do n
 This example in particular contains only elements common to most other modules.
 The key to creating the header files is to ensure that the module name is correct in every place it occurs, that the namespace (StringManip) matches the module config file and that the ports are numbered and labeled correctly.  
 
-If desired, the final version of the header file is in the source code: \emph{src/Modules/Examples/TestModuleSimple.h}.
+If desired, the final version of the header file is in the source code: 
+
+\emph{src/Modules/Examples/TestModuleSimple.h}.
 
 \section{Module Source Code}
 \label{sec:examp_source}
@@ -634,7 +638,7 @@ TestModuleSimple::execute()
 \section{Building and Testing}
 \label{sec:testing}
 
-For comparison, the final version of the module code file is in the source code: \emph{src/Modules/Examples/TestModuleSimple.cc}.
+For comparison, the final version of the module code file is in the source code: \emph{\seqsplit{src/Modules/Examples/TestModuleSimple.cc}}.
 
 After these files are modified correctly,  the only step remaining before building is adding the module code and header to the compiler list.  
 Open the \emph{src/Modules/String/CMakeLists.txt} file.  
@@ -681,7 +685,7 @@ Scope: \hyperref[sec:duplicate]{Duplicate the Previous Module} - \hyperref[sec:a
 \section{Duplicate the Previous Module}
 \label{sec:duplicate}
 
-To begin, copy the \emph{TestModuleSimple.module} in the \emph{src/Modules/Factory/Config/} and name the copy \emph{TestModuleSimpleUI.module}.
+To begin copy the \emph{TestModuleSimple.module} in the \emph{src/Modules/Factory/Config/} and name the copy \emph{TestModuleSimpleUI.module}.
 Change the name and header field to reflect the new name of the module, as shown here:
 \begin{verbatim}
   "module": {
@@ -715,7 +719,7 @@ public:
 ...  
 
 \end{verbatim}
-And for the \emph{TestModuleSimpleUI.cc} file:
+For the \emph{TestModuleSimpleUI.cc} file:
 \begin{verbatim}
 #include <Modules/String/TestModuleSimpleUI.h>
 
@@ -743,7 +747,7 @@ The 'false' options means that there is no module.
 Removing the options changes the input to 'true', which allows for a module UI.  
 If no UI file is found, a default UI will be used.  
 
-With these changes, we should try to build.  
+With these changes we should try to build.  
 Make sure the files are added to the CMakeList.txt file in \emph{src/Modules/String/} as we showed in the previous chapter.  
 If there are build errors, check for spelling mismatches.
 Also, check out the common build errors in section [TODO]. %TODO, add section reference
@@ -756,29 +760,31 @@ If everything is working properly, we can move onto the next step of adding our 
 \section{Creating a Custom UI}
 \label{sec:addUI}
 
-To create a new UI, we need to add three new files: a design file, and a cc and header file for the UI.  
+To create a new UI, we need to add three new files: a design file, and a .cc and a header file for the UI.  
 We will need these files linked to the other module code, so we will modify the module config file again to add the name of the UI and the path to the header file. 
 The naming convention often used is to add 'Dialog' to the end of the module name for the name of the UI and the names of the files.
+
 \begin{verbatim}
 "UI": {
     "name": "TestModuleSimpleUIDialog",
     "header": "Interface/Modules/String/TestModuleSimpleUIDialog.h"
   }
-\end{verbatim}
+\end{verbatim} %%Why is there so much white space here?
 
-Next, we need to use the QT editor to design a module UI.  
-Copy the QT module file from \emph{src/Interface/Modules/Template/ModuleDesignerFile.ui} to \emph{src/Interface/Modules/String/TestModuleSimpleUIDialog.ui}.  
+Next we need to use the Qt editor to design a module UI.  
+Copy the Qt module file from \emph{src/Interface/Modules/Template/ModuleDesignerFile.ui} to \emph{\seqsplit{src/Interface/Modules/String/TestModuleSimpleUIDialog.ui}}.  
 Open the \emph{TestModuleSimpleUIDialog.ui} file in the Qt editor, which provides a graphic method for modifying and compiling the design file.
-First, delete the check box and input scroll wheel widgets and delete the 'knob 2' label.
-Next, add a \emph{line edit widget} by finding it in the \emph{Widgdet Box} window (in the \emph{Input Widget} section) and clicking and dragging it next to the remaining label.  
+First, delete the check box, input scroll wheel widgets, and delete the 'knob 2' label.
+Next, add a \emph{line edit widget} by finding it in the \emph{Widgdet Box} window (in the \emph{Input Widget} section) then clicking and dragging it next to the remaining label.  
 Change the text of the remaining label to 'My String:' or something similar.
 Finally, change the name of the of the \emph{line edit widget} to \emph{inputstring\_} and the name of the \emph{QDialog} object to \emph{TestModuleSimpleUIDialog}.  
 This can be done in the \emph{Object Inspector} or in the \emph{Property Editor} when the appropriate object is clicked.  
 Figure~\ref{fig:simpleUI} shows what the module should look like in the Qt editor.
 
 \begin{figure}[H]
-\scalebox{0.4}{\includegraphics{SCIRun5ModuleGeneration_Figures/simpleUI.png}}
-\caption{Module interface design file for the TestModuleSimpleUI module as seen in the Qt editor.}
+\centerline{
+\scalebox{0.4}{\frame{\includegraphics{SCIRun5ModuleGeneration_Figures/simpleUI.png}}}}
+\caption{Module interface design file for the TestModuleSimpleUI module as seen in the Qt editor.} %%Center caption
 \label{fig:simpleUI}
 \end{figure}
 
@@ -829,7 +835,7 @@ TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name,
   fixSize();
 }
 \end{verbatim}
-This should be enough to create a UI for the TestModuleSimpleUI module, but it will not be able interact yet.
+This should be enough to create a UI for the TestModuleSimpleUI module, but it will not be able to interact yet.
 We will need to modify this file later to connect all the required inputs.  
 For now, we can build SCIRun to test the UI design.  
 Make sure that these three new files are added to the \emph{CMakeList.txt} in the \emph{src/Interface/Modules/String/} directory:
@@ -860,7 +866,7 @@ SET(Interface_Modules_String_SOURCES
 
 É
 
-\end{verbatim}
+\end{verbatim} %%Why so much white space?
 
 Once these files are added, SCIRun should build. 
 Load SCIRun and place the TestModuleSimpleUI module.  
@@ -908,7 +914,7 @@ void TestModuleSimpleUI::setStateDefaults()
 }
 \end{verbatim}
 With these three additions, the code should build.
-If you load the module, you should she the default message ("[Insert message here]") in the input field.  
+If you load the module, you should see the default message ("[Insert message here]") in the input field.  
 Changing this will still not affect the output because the execute function is still hard coded for a specific message.  
 
 Now we need to change the execute function to use the UI inputs, which is very simple.  
@@ -994,7 +1000,7 @@ The setup code is mostly the same, except there are dynamic ports, so much of th
 
 For the sake of comparison, the final version of the code for this module is included in the source code in the Example files.
 The module code files are in \emph{src/Modules/Examples/}, \emph{TestModuleSimpleUI.cc} and \emph{TestModuleSimpleUI.h}.
-The module UI code files are in \emph{src/interface/Modules/Examples/}, \emph{TestModuleSimpleUIDialog.cc}, \emph{TestModuleSimpleUIDialog.h}, and \emph{TestModuleSimpleUIDialog.ui}.  
+The module UI code files are in \emph{\seqsplit{src/interface/Modules/Examples/}}, \emph{TestModuleSimpleUIDialog.cc}, \emph{TestModuleSimpleUIDialog.h}, and \emph{TestModuleSimpleUIDialog.ui}.  
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1018,8 +1024,8 @@ Scope: \hyperref[sec:alg_overview]{Module Overview} - \hyperref[sec:algoconfig]{
 \section{Module Overview}
 \label{sec:alg_overview}
 
-As mention in the chapter introduction, we are going to create a module called SortMatrix that will sort the entries of a matrix in ascending or descending order.  
-This module will use a simple simple quick sort algorithm with a \href{https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme}{Lomuto partition scheme}.  
+As mentioned in the chapter introduction, we are going to create a module called SortMatrix that will sort the entries of a matrix in ascending or descending order. %Is this mentioned in the introduction?
+This module will use a simple simple quicksort algorithm with a \href{https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme}{Lomuto partition scheme}.  
 There are some implementations for vector sorting in the STL algorithm library, but this implementation works more generally on matrices and will hopefully be helpful in showing how to implement an algorithm from scratch.
 
 There are eight files needed in total for this module: a module configuration file, module code and header file, a UI design file with UI code and header files, and algorithm code and header files.  
@@ -1088,7 +1094,7 @@ namespace Math {
 }}}
 #endif
 \end{verbatim}
-The import differences in this example is that the namespace and type of ports are different, and to leave the \emph{setStateDefaults()} function without brackets so it can be set in the cc file.  
+The import differences in this example are that the namespace and type of ports are different, and to leave the \emph{setStateDefaults()} function without brackets so it can be set in the .cc file.  
 
 
 The \emph{SortMatrix.cc} file is a bit different from the previous examples.  
@@ -1134,12 +1140,12 @@ SortMatrix::execute()
     sendOutputFromAlgorithm(OutputMatrix, output);
   }
 }
-\end{verbatim}
+\end{verbatim} %%White space?
 Notice that the algorithm file header is included. 
 Also, most of the code in this file links the algorithm code directly to either the UI (with \emph{setStateIntFromAlgo}, and \emph{setAlgoIntFromState}) or SCIRun (\emph{sendOutputFromAlgorithm}). 
 This allows most of the code to reside in the algorithm code and makes SCIRun more modular.
 
-The final module header and cc files are included in the source code in \emph{src/Modules/Examples/}.  \emph{SortMatrix.cc} and \emph{SortMatrix.h}.
+The final module header and .cc files, \emph{SortMatrix.cc} and \emph{SortMatrix.h}, are included in the source code in \emph{src/Modules/Examples/}. %White space?
 
 \section{Module UI Code}
 \label{sec:algo_ui}
@@ -1150,7 +1156,7 @@ As before, we will need three files: \emph{SortMatrixDialog.ui}, \emph{SortMatri
 The process and code for this example is very similar to the previous example.
 
 We will make the \emph{SortMatrixDialog.ui} in the Qt editor as we did previously (Chapter~\ref{sec:ex_UI}).  
-It may be easier to copy a previously created UI file and modify it that to create one from scratch.  
+It may be easier to copy a previously created UI file and modify it rather than to create one from scratch.  
 Copy the \emph{src/Interface/Template/ModuleDesignerFile.ui} file and rename it.
 Delete the widgets in the UI and add two radial button widgets (drag from the 'Widget Box' window).
 Change the labels to 'ascending' and 'descending', and the names (in the 'Object Inpector' window) to 'ascendButton\_' and 'descendButton\_'.  
@@ -1159,8 +1165,8 @@ The placement of the buttons and the size of the window and boxes can be adjuste
 The UI should look similar to Figure~\ref{fig:algoUI}.
 
 \begin{figure}[H]
-\scalebox{0.5}{\includegraphics{SCIRun5ModuleGeneration_Figures/algo_ui.png}}
-\caption{Module interface design file for the SortMatrix module as seen in the Qt editor.}
+\scalebox{0.5}{\frame{\includegraphics{SCIRun5ModuleGeneration_Figures/algo_ui.png}}}
+\caption{Module interface design file for the SortMatrix module as seen in the Qt editor.} %Center caption
 \label{fig:algoUI}
 \end{figure}
 
@@ -1189,7 +1195,7 @@ namespace SCIRun {
 #endif
 \end{verbatim}
 
-\emph{SortMatrixDialog.cc} is also very similar to the dialog cc file in the previous example (Chapter~\ref{sec:ex_UI}):
+\emph{SortMatrixDialog.cc} is also very similar to the dialog .cc file in the previous example (Chapter~\ref{sec:ex_UI}):
 \begin{verbatim}
 #include <Interface/Modules/Math/SortMatrixDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -1221,7 +1227,7 @@ The final module UI code files are included in the source code in \emph{src/Inte
 \section{Module Algorithm Code}
 \label{sec:algo}
 
-The final step in creating this SortMatrix module is to create the module algorithm code.  
+The final step in creating the SortMatrix module is to create the module algorithm code.  
 Two files are needed for the algorithm, \emph{SortMatrixAlgo.h} and \emph{SortMatrixAlgo.h}, which should be located in \emph{src/Core/Algorithms/Math/}. 
 The header file contains all the declarations for the functions needed in the algorithm and should be as follows:
 \begin{verbatim}
@@ -1263,14 +1269,14 @@ class SCISHARE SortMatrixAlgo : public AlgorithmBase
       }}}}
 #endif
 \end{verbatim}
-In this Algorithm, we have three functions to help implement the sorting algorithm, which will be called in the \emph{run\_generic} function.  
+In this algorithm, we have three functions to help implement the sorting algorithm, which will be called in the \emph{run\_generic} function.  
 
-The \emph{SortMatrixAlgo.cc} file contains the computation code for he module.
+The \emph{SortMatrixAlgo.cc} file contains the computation code for the module.
 There are five functions in it.
 The first \emph{SortMatrixAlgo()} sets up the defaults for the parameters that are set in the module UI.
 \emph{run\_generic} is the main function of the algorithm and the module.  
 It mostly takes the inputs from the module and sends the data to use in the helper functions.
-\emph{Sort} is the main helper function, which further processes the data into a format that be quickly sorted.  
+\emph{Sort} is the main helper function, which further processes the data into a format that can be quickly sorted.  
 \emph{Quicksort} uses the output of \emph{Partition} to spilt the matrix into smaller and smaller chunks and recursively calls itself until the matrix is sorted.
 \emph{Partition} properly places the last entry in the matrix subset, with the values larger after and those lower before, and splits the matrix at that new place for the next iteration.  
 The code should be similar to this:
@@ -1395,7 +1401,7 @@ This allows for fewer declarations in the header file and is slightly easier to 
 Also of note is that this algorithm is only implemented for dense matrices.
 This is because some support for sparse matrices hasn't been implemented at the time of writing this tutorial. 
 
-The final module algorithm header and cc files are included in the source code in \emph{src/Core/Algorithms/Examples/}.  \emph{SortMatrixAlgo.cc} and \emph{SortMatrixAlgo.h}.
+The final module algorithm header and .cc files, \emph{SortMatrixAlgo.cc} and \emph{SortMatrixAlgo.h}, are included in the source code in \emph{src/Core/Algorithms/Examples/}. 
 
 \section{Building and Testing}
 \label{sec:algo_building}
@@ -1407,9 +1413,9 @@ Be sure to added all eight files to the appropriate \emph{CMakeList.txt} files i
 Just add each of the filenames to the appropriate lists within the \emph{CMakeList.txt} file, as shown in the previous examples (Sections~\ref{sec:testing},~\ref{sec:duplicate},~\&~\ref{sec:addUI})
 
 When creating new modules, it can be easier to added the code in a piecemeal fashion.
-This would entail get SCIRun to build with just the bare minimum of the algorithm code (only \emph{run\_generic} with no calls other functions) then to add the other functions in a step by step manner.  
+This would entail getting SCIRun to build with just the bare minimum of the algorithm code (only \emph{run\_generic} with no calls other functions) then to add the other functions in a step by step manner.  
 This allows for easier debugging and a more systematic process to get the module working.  
-Check Section~\ref{sec:errors} for common build problem.
+Check Section~\ref{sec:errors} for a common build problem.
 
 \subsection{Testing}
 
@@ -1420,8 +1426,8 @@ In the 4x2 matrix that shown in Figure~\ref{fig:Testalg_net}, the format string 
 Alternatively, the matrix entries can be printed as a list with \verb|%4.2g  | (make sure there is a space at the beginning or end of the string).
 This network can be used to see the input and output of the SortMatrix module.  
 
-If this or another module is not behaving as expected, change the output of some functions and the modules to be some of the intermediate steps, or use \verb|std::cout<< "message" <<std::endl;| to print values as the code is run.  
-Unit Test can also find some bugs in module code.  
+If this or another module is not behaving as expected, change the output of some functions and modules to be some of the intermediate steps, or use \verb|std::cout<< "message" <<std::endl;| to print values as the code is run.  
+Unit Test can also find some bugs in the module code.  
 
 
 \begin{figure}[H]
@@ -1461,7 +1467,7 @@ Create a new branch in your fork for each module conversion (Section~\ref{sec:fo
 \subsection{Create a Module Configuration file}
 
 Create a module configuration file (Section~\ref{sec:config}) for the module in the \emph{src/Modules/Factory/Config/} directory.  
-I may be easiest to copy an existing file and change it.
+It may be easiest to copy an existing file and change it.
 Be sure that all the names match the appropriate names of other files and fields in other files.
 It will be easier if the naming convention shown in Section~\ref{sec:config} (name, nameDialog, nameAlgo, etc.)
 Leave fields blank with "N/A".
@@ -1469,7 +1475,7 @@ For now, it can help to only fill in the first section \verb|"module"|, as we wi
 
 \subsection{Create a Module Header file}
 
-Virtually all modules in SCIRun 4 did not have header files for the module code, so one will need to be created for it.  
+Most of the modules in SCIRun 4 did not have header files for the module code, so one will need to be created for them. 
 Copy the template header file (Section~\ref{sec:header}) or another module header file.  
 The header file needs to be in the same location as the module .cc file (next Section).
 Change all the references to match the name of the module.
@@ -1489,13 +1495,16 @@ Remove any port header file includes, such as: \verb|#include <Dataflow/Network/
 Remove the class declaration, as the header should already contain the essential declarations.
 We will add more as needed.  
 
-Make sure that the namespaces used are correct (at least two,Fields/Math/etc and Networks, are needed, Section~\ref{sec:modulecc}).
+Make sure that the namespaces used are correct (at least two, Fields/Math/etc and Networks, are needed as seen in Section~\ref{sec:modulecc}).
 Make sure that the module header is included and the other headers included have the correct path. 
 Change the module constructor (\verb|@modulename@::@modulename@()| in the template example) to match the format shown in Section~\ref{sec:modulecc} with the correct port names.
-Add \verb|staticInfo_| varible as in Section~\ref{sec:modulecc}.
+Add the \verb|staticInfo_| varible as in Section~\ref{sec:modulecc}.
 Add a blank \verb|setStateDefaults()| function:
 \begin{verbatim}
-void @ModuleName@::setStateDefaults(){ }
+void @ModuleName@::setStateDefaults()
+{
+ 
+}
 \end{verbatim}
 or, if there is no module UI planned, add empty curly brackets to the header file declaration as discussed in Section~\ref{sec:header}.  
 
@@ -1503,14 +1512,14 @@ The only code that will carry over is probably the \verb|execute()| and other fu
 Any helper functions will be should moved to an algorithm file later, but for now comment them out.
 Also comment out the content of the executable for now.  
 
-In this state, the three module files (config, header, and cc file) should be similar to the simplest example (Chapter~\ref{sec:ex_simple}), but the execute function will empty for now. 
-Add the header and cc files the \emph{CMakeList.txt} file in the directory they are in and try to build SCIRun.
+In this state the three module files (config, header, and .cc file) should be similar to the simplest example (Chapter~\ref{sec:ex_simple}), but the execute function will empty for now. 
+Add the header and .cc files the \emph{CMakeList.txt} file in the directory they are in and try to build SCIRun.
 If there are build errors, check Section~\ref{sec:errors} for some ideas for how to correct them.  
 The goal of building the code at this point it to make sure that the code which interacts with SCIRun is working properly before there are other mistakes in the code.
 
 Once SCIRun builds, open it and find the new module.  
-There will probably be a warning about creating UI because the code is expecting one and there isn't one.  
-Make sure all the ports are there and are correctly names (hover the mouse over the port).  
+There will probably be a warning about creating a UI because the code is expecting one and there isn't one.  
+Make sure all the ports are there and are correctly named (hover the mouse over the port).  
 
 If there is no UI planned for this module, add a `false' input to the module constructor (Sections~\ref{sec:modulecc}~\&~\ref{sec:examp_source}).  
 Otherwise, continue with the next step.
@@ -1546,23 +1555,23 @@ However using the algorithm class can be an easy way to work with the UI.
 Therefore, if the module that is being ported does not have algorithm code, consider adding it.  
 If no algorithm code will be added to the module, skip this step.  
 
-Copy the algorithm code from SCIRUn 4 to the appropriate directory within \emph{src/Core/Algorithms/} (some algorithms have been copied and not ported to SCIRun 5).
-If there was no algorithm code in SCIRun 4, copy a similar module algorithm code or the template code found in \emph{src/Core/Algorithms/Template} and modify the names to match the module name with `Algo' added to it.  
+Copy the algorithm code from SCIRun4 to the appropriate directory within \emph{\seqsplit{src/Core/Algorithms/}} (some algorithms have been copied and not ported to SCIRun5).
+If there was no algorithm code in SCIRun4, copy a similar module algorithm code or the template code found in \emph{src/Core/Algorithms/Template} and modify the names to match the module name with `Algo' added to it.  
 For now, comment out all the code within each of the functions, except any necessary return commands.  
 Some of the functions may need name changes to match the general format in Section~\ref{sec:algo}.  
 
 Now fill out the algorithm section of the module configuration file.  
 Add the algorithm code and header files to the \emph{CMakeList.txt} file in the directory that the algorithm code is in (or possibly the parent directory).  
-Include the algorithm header in the module code.  
-Build SCIRun. If there are no build errors, start adding the commented out code as described in the next section.
+Include the algorithm header in the module code and then build SCIRun. 
+If there are no build errors, start adding the commented out code as described in the next section.
 
 \subsection{Add Module and Algorithm Functionality}
 
 If all the previous steps are completed, all the files needed for the module have been created and the infrastructure code is working.  
 Next, the functional code of the module will need some work to get working.  
-This step of converting the modules is the most specific to the module and could require the most experience to know the various functions that may have been changed in SCIRun 5. 
+This step of converting the modules is the most specific to the module and could require the most experience to know the various functions that may have been changed in SCIRun5. 
 However, there may be some modules that require very little code changes in this step.  
-Section~\ref{sec:changes} provides some examples of commonly used functions in SCIRun 4 and the replacement in SCIRun 5.
+Section~\ref{sec:changes} provides some examples of commonly used functions in SCIRun4 and the replacement in SCIRun5.
 The key to making the module code functional is similar to the other steps, i.e., expose one small piece at a time. 
 
 If there is a UI for the module, the state variables defaults need to be set.  

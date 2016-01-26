@@ -1,0 +1,12 @@
+m1 = scirun_add_module("CreateLatVol")
+m2 = scirun_add_module("ReportFieldInfo")
+scirun_connect_modules(m1, 0, m2, 0)
+scirun_execute_all()
+f1 = scirun_get_module_input_value_by_index(m2, 0)
+
+m3 = scirun_add_module("ReadField")
+scirun_set_module_state(m3, "Filename", "%SCIRUNDATADIR%/Fields/density.pts")
+m4 = scirun_add_module("ReportFieldInfo")
+scirun_connect_modules(m3, 0, m4, 0)
+scirun_execute_all()
+f1 = scirun_get_module_input_value_by_index(m4, 0)

@@ -46,10 +46,10 @@ class SCISHARE CalculateGradientsAlgo : public AlgorithmBase
   
     bool run(FieldHandle input, FieldHandle& output) const;
 
-    static AlgorithmInputName ScalarField;
-    static AlgorithmOutputName VectorField;
+    static const AlgorithmInputName ScalarField;
+    static const AlgorithmOutputName VectorField;
 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 };
 
 }}}}

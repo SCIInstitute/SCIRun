@@ -56,15 +56,16 @@ namespace Engine {
     virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     virtual std::string saveNetwork(const std::string& filename) override;
     virtual std::string loadNetwork(const std::string& filename) override;
+    virtual std::string importNetwork(const std::string& filename) override;
     virtual std::string quit(bool force) override;
-    virtual void setLock(Core::Thread::Mutex* mutex) override;
+    virtual void setUnlockFunc(boost::function<void()> unlock) override;
   private:
     void executionFromPythonStart();
     void executionFromPythonFinish(int);
     boost::shared_ptr<PythonImplImpl> impl_;
     NetworkEditorController& nec_;
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
-    Core::Thread::Mutex* executionMutex_;
+    boost::function<void()> unlock_;
   };
 
 }}}

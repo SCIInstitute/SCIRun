@@ -20,6 +20,7 @@
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticIBOMan.hpp>
 #include <es-render/comp/StaticTextureMan.hpp>
+#include <es-render/comp/StaticFBOMan.hpp>
 #include <es-render/comp/StaticGeomMan.hpp>
 #include <es-render/comp/StaticFontMan.hpp>
 #include <es-render/comp/StaticGLState.hpp>
@@ -98,6 +99,9 @@ public:
 
     core.addStaticComponent(ren::StaticIBOMan());
     core.addExemptComponent<ren::StaticIBOMan>();
+
+	core.addStaticComponent(ren::StaticFBOMan());
+	core.addExemptComponent<ren::StaticFBOMan>();
 
     core.addStaticComponent(ren::StaticTextureMan());
     core.addExemptComponent<ren::StaticTextureMan>();

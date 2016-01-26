@@ -37,6 +37,7 @@ SET(Modules_Basic_SRCS
   SendScalar.cc
   SendTestMatrix.cc
   SendScalarModuleState.cc
+  ChooseInput.cc
 )
 
 SET(Modules_Basic_HEADERS
@@ -50,6 +51,7 @@ SET(Modules_Basic_HEADERS
   SendScalar.h
   SendScalarModuleState.h
   SendTestMatrix.h
+  ChooseInput.h
   share.h
 )
 
