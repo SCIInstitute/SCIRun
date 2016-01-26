@@ -70,6 +70,7 @@ namespace SCIRun {
       QPointF defaultStart_, defaultEnd_;
       std::set<QPointF, SortedByXCoordinate> alphaPoints_;
       const size_t ALPHA_SAMPLES = 10;
+      const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
       const double DEFAULT_ALPHA = 0.5;
       std::vector<double> alphaFunction_;
     };

@@ -130,7 +130,7 @@ void CreateStandardColorMapDialog::onInvertCheck(bool b)
 }
 
 ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
-  : QGraphicsView(scene, parent), alphaPath_(nullptr), alphaFunction_(ALPHA_SAMPLES, DEFAULT_ALPHA)
+  : QGraphicsView(scene, parent), alphaPath_(nullptr), alphaFunction_(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA)
 {
   const int h = 83;
   const int w = 365;
@@ -229,7 +229,7 @@ void ColormapPreview::clearAlphaPoints()
       scene()->removeItem(item);
   }
   addDefaultLine();
-  alphaFunction_.assign(ALPHA_SAMPLES, DEFAULT_ALPHA);
+  alphaFunction_.assign(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA);
   updateAlphaFunction();
 }
 
@@ -244,18 +244,18 @@ void ColormapPreview::updateAlphaFunction()
   // for (const auto& p : alphaPoints_)
   //   qDebug() << p;
 
-  for (int i = -1; i <= static_cast<int>(alphaFunction_.size()); ++i)
+  for (int i = 0; i < static_cast<int>(alphaFunction_.size()); ++i)
   {
-    double color = (i+1) / static_cast<double>(ALPHA_SAMPLES+1);
-    if (i >= 0 && i < alphaFunction_.size())
+    if (i > 0 && i < alphaFunction_.size() - 1)
     {
+      double color = i / static_cast<double>(ALPHA_SAMPLES + 1);
       auto between = alphaLineEndpointsAtColor(color);
       alphaFunction_[i] = interpolateAlphaLineValue(between.first, between.second, color);
       // qDebug() << "Color: " << color << "Alpha: " << alphaFunction_[i] << "between points" << between.first << between.second;
     }
     else
     {
-      alphaFunction_[i] = 0.5;
+      alphaFunction_[i] = DEFAULT_ALPHA;
       //qDebug() << "Color: " << color << "Alpha: " << 0.5;
     }
   }
