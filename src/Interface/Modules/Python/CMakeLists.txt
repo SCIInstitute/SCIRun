@@ -27,23 +27,38 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Forward)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Testing)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(BrainStimulator)
-ADD_SUBDIRECTORY(Bundle)
-ADD_SUBDIRECTORY(Matlab)
-ADD_SUBDIRECTORY(Inverse)
-ADD_SUBDIRECTORY(Teem)
+SET(Interface_Modules_Python_FORMS
+  PythonObjectForwarder.ui
+)
 
-IF(BUILD_WITH_PYTHON)
-  ADD_SUBDIRECTORY(Python)
-ENDIF()
+SET(Interface_Modules_Python_HEADERS
+  PythonObjectForwarderDialog.h
+  share.h
+)
+
+SET(Interface_Modules_Python_SOURCES 
+  PythonObjectForwarderDialog.cc
+)
+
+QT4_WRAP_UI(Interface_Modules_Python_FORMS_HEADERS ${Interface_Modules_Python_FORMS})
+QT4_WRAP_CPP(Interface_Modules_Python_HEADERS_MOC ${Interface_Modules_Python_HEADERS})
+
+SCIRUN_ADD_LIBRARY(Interface_Modules_Python
+  ${Interface_Modules_Python_HEADERS}
+  ${Interface_Modules_Python_FORMS_HEADERS}
+  ${Interface_Modules_Python_HEADERS_MOC}
+  ${Interface_Modules_Python_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_Python 
+  Modules_Python
+  Interface_Modules_Base
+  ${SCI_BOOST_LIBRARY}
+  ${QT_LIBRARIES}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Python)
+ENDIF(BUILD_SHARED_LIBS)
+  
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
