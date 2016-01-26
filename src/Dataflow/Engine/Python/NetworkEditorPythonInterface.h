@@ -133,17 +133,6 @@ namespace SCIRun
     virtual std::string quit(bool force) = 0;
     virtual void setUnlockFunc(boost::function<void()> unlock) = 0;
   };
-
-  template <class T>
-  boost::python::list toPythonList(const std::vector<T>& vec)
-  {
-    boost::python::list list;
-    for (const auto& v : vec)
-    {
-      list.append(v);
-    }
-    return list;
-  }
 }
 
 #endif

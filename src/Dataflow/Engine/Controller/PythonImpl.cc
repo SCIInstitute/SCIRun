@@ -44,77 +44,24 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Matlab/matlabfile.h>
-#include <Core/Matlab/matlabarray.h>
-#include <Core/Matlab/matlabconverter.h>
+
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/adaptor/transformed.hpp>
+#include <Core/Python/PythonDatatypeConverter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Python;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::MatlabIO;
+
 
 namespace
 {
-  template <class T>
-  boost::python::list toPythonListOfLists(const std::vector<T>& vec, int dim1, int dim2)
-  {
-    boost::python::list list;
-    auto iter = vec.begin();
-    for (int i = 0; i < dim1; ++i)
-    {
-      boost::python::list row;
-      for (int j = 0; j < dim2; ++j)
-        row.append(*iter++);
-      list.append(row);
-    }
-    return list;
-  }
-
-  template <class T>
-  boost::python::list toPythonList(const DenseMatrixGeneric<T>& dense)
-  {
-    boost::python::list list;
-    for (int i = 0; i < dense.nrows(); ++i)
-    {
-      boost::python::list row;
-      for (int j = 0; j < dense.ncols(); ++j)
-        row.append(dense(i,j));
-      list.append(row);
-    }
-    return list;
-  }
-
-  template <class T>
-  boost::python::list toPythonList(const SparseRowMatrixGeneric<T>& sparse)
-  {
-    boost::python::list rows, columns, values;
-
-    for (int i = 0; i < sparse.nonZeros(); ++i)
-    {
-      values.append(sparse.valuePtr()[i]);
-    }
-    for (int i = 0; i < sparse.nonZeros(); ++i)
-    {
-      columns.append(sparse.innerIndexPtr()[i]);
-    }
-    for (int i = 0; i < sparse.outerSize(); ++i)
-    {
-      rows.append(sparse.outerIndexPtr()[i]);
-    }
-
-    boost::python::list list;
-    list.append(rows);
-    list.append(columns);
-    list.append(values);
-    return list;
-  }
-
   class PyDatatypeString : public PyDatatype
   {
   public:
@@ -182,39 +129,8 @@ namespace
   class PyDatatypeField : public PyDatatype
   {
   public:
-    explicit PyDatatypeField(FieldHandle underlying) : underlying_(underlying)
+    explicit PyDatatypeField(FieldHandle underlying) : underlying_(underlying), matlabStructure_(convertField(underlying))
     {
-      matlabarray ma;
-      matlabconverter mc(nullptr);
-      mc.converttostructmatrix();
-      mc.sciFieldTOmlArray(underlying_, ma);
-
-      for (const auto& fieldName : ma.getfieldnames())
-      {
-        auto subField = ma.getfield(0, fieldName);
-        switch (subField.gettype())
-        {
-          case matfilebase::miUINT8:
-          {
-            auto str = subField.getstring();
-            matlabStructure_[fieldName] = str;
-            break;
-          }
-          case matfilebase::miDOUBLE:
-          {
-            std::vector<double> v;
-            subField.getnumericarray(v);
-            if (1 != subField.getm() && 1 != subField.getn())
-              matlabStructure_[fieldName] = toPythonListOfLists(v, subField.getn(), subField.getm());
-            else
-              matlabStructure_[fieldName] = SCIRun::toPythonList(v);
-            break;
-          }
-          default:
-            std::cout << "some other array: " << std::endl;
-            break;
-        }
-      }
     }
 
     virtual std::string type() const override

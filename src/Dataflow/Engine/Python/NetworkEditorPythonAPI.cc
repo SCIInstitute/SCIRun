@@ -31,8 +31,8 @@
 #include <iostream>
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
-#include <Dataflow/Engine/Python/SCIRunPythonModule.h>
 #include <boost/range/adaptors.hpp>
+#include <Core/Python/PythonDatatypeConverter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Networks;
@@ -349,7 +349,7 @@ boost::python::object NetworkEditorPythonAPI::scirun_get_module_input_value(cons
   Guard g(pythonLock_.get()/*, "NetworkEditorPythonAPI::scirun_get_module_input_copy"*/);
   if (pyData)
     return pyData->value();
-  return{};
+  return {};
 }
 
 boost::python::object SimplePythonAPI::scirun_module_ids()
@@ -357,7 +357,7 @@ boost::python::object SimplePythonAPI::scirun_module_ids()
   auto mods = NetworkEditorPythonAPI::modules();
   std::vector<std::string> ids;
   std::transform(mods.begin(), mods.end(), std::back_inserter(ids), [](const PyModulePtr& pm) { return pm->id(); });
-  return toPythonList(ids);
+  return Core::Python::toPythonList(ids);
 }
 
 std::string NetworkEditorPythonAPI::scirun_set_module_input_value_by_index(const std::string& moduleId, int portIndex, const boost::python::object& value)
