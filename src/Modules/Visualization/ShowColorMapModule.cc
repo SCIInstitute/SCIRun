@@ -30,7 +30,7 @@
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/GeometryPrimitives/Vector.h>
-#include <Core/Application/Application.h>
+//#include <Core/Application/Application.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 
 using namespace SCIRun;
@@ -47,10 +47,11 @@ ShowColorMapModule::ShowColorMapModule() : GeometryGeneratingModule(ModuleLookup
   INITIALIZE_PORT(GeometryOutput);
   ftInit_ = false;
   ftValid_ = false;
-  std::string filesystemRoot = Core::Application::Instance().executablePath().string();
-  std::string sep;
-  sep += boost::filesystem::path::preferred_separator;
-  std::string fontPath = filesystemRoot + sep + "Fonts" + sep + "FreeSans.ttf";
+  //std::string filesystemRoot = Core::Application::Instance().executablePath().string();
+  //std::string sep;
+  //sep += boost::filesystem::path::preferred_separator;
+  //std::string fontPath = filesystemRoot + sep + "Fonts" + sep + "FreeSans.ttf";
+  std::string fontPath = "E:\\SCIRun\\bin\\SCIRun\\Fonts\\FreeSans.ttf";
   initFreeType(fontPath, 50);
 }
 
