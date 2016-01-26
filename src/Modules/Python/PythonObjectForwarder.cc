@@ -63,6 +63,7 @@ void PythonObjectForwarder::execute()
   const int maxTries = state->getValue(Parameters::NumberOfRetries).toInt();
   const int waitTime = state->getValue(Parameters::PollingIntervalMilliseconds).toInt();
   auto valueOption = state->getTransientValue(Parameters::PythonObject);
+  
   while (tries < maxTries && !valueOption)
   {
     std::ostringstream ostr;
@@ -74,9 +75,10 @@ void PythonObjectForwarder::execute()
     tries++;
     boost::this_thread::sleep(boost::posix_time::milliseconds(waitTime));
   }
+
   if (valueOption)
   {
-    auto valueStr = makeVariable("name", transient_value_cast<AlgorithmParameter::Value>(valueOption)).toString();
+    auto valueStr = transient_value_cast<std::string>(valueOption);
     if (!valueStr.empty())
       sendOutput(PythonString, boost::make_shared<String>(valueStr));
     else

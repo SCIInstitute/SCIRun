@@ -35,14 +35,60 @@
 #endif
 
 #include <Core/Python/PythonDatatypeConverter.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/String.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Python;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::MatlabIO;
 
-boost::python::object SCIRun::Core::Python::convertField(FieldHandle field)
+namespace
+{
+  template <class T>
+  boost::python::list toPythonList(const DenseMatrixGeneric<T>& dense)
+  {
+    boost::python::list list;
+    for (int i = 0; i < dense.nrows(); ++i)
+    {
+      boost::python::list row;
+      for (int j = 0; j < dense.ncols(); ++j)
+        row.append(dense(i, j));
+      list.append(row);
+    }
+    return list;
+  }
+
+  template <class T>
+  boost::python::list toPythonList(const SparseRowMatrixGeneric<T>& sparse)
+  {
+    boost::python::list rows, columns, values;
+
+    for (int i = 0; i < sparse.nonZeros(); ++i)
+    {
+      values.append(sparse.valuePtr()[i]);
+    }
+    for (int i = 0; i < sparse.nonZeros(); ++i)
+    {
+      columns.append(sparse.innerIndexPtr()[i]);
+    }
+    for (int i = 0; i < sparse.outerSize(); ++i)
+    {
+      rows.append(sparse.outerIndexPtr()[i]);
+    }
+
+    boost::python::list list;
+    list.append(rows);
+    list.append(columns);
+    list.append(values);
+    return list;
+  }
+}
+
+boost::python::object SCIRun::Core::Python::convertFieldToPython(FieldHandle field)
 {
   matlabarray ma;
   matlabconverter mc(nullptr);
@@ -79,7 +125,29 @@ boost::python::object SCIRun::Core::Python::convertField(FieldHandle field)
   return matlabStructure;
 }
 
+boost::python::object SCIRun::Core::Python::convertMatrixToPython(DenseMatrixHandle matrix)
+{
+  if (matrix)
+    return ::toPythonList(*matrix);
+  return {};
+}
 
+boost::python::object SCIRun::Core::Python::convertMatrixToPython(SparseRowMatrixHandle matrix)
+{
+  if (matrix)
+    return ::toPythonList(*matrix);
+  return {};
+}
+
+boost::python::object SCIRun::Core::Python::convertStringToPython(StringHandle str)
+{
+  if (str)
+  {
+    boost::python::object obj(std::string(str->value()));
+    return obj;
+  }
+  return {};
+}
 
 
 

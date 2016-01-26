@@ -31,9 +31,11 @@
 #define CORE_PYTHON_PYTHONDATATYPECONVERTER_H
 
 #include <boost/python.hpp>
+#include <boost/python/stl_iterator.hpp>
 #include <boost/shared_ptr.hpp>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
+#include <vector>
+#include <Core/Datatypes/DatatypeFwd.h>
+
 
 #include <Core/Python/share.h>
 
@@ -69,46 +71,18 @@ namespace SCIRun
         return list;
       }
 
-      template <class T>
-      boost::python::list toPythonList(const Datatypes::DenseMatrixGeneric<T>& dense)
+      template< typename T >
+      std::vector< T > to_std_vector(const boost::python::object& iterable)
       {
-        boost::python::list list;
-        for (int i = 0; i < dense.nrows(); ++i)
-        {
-          boost::python::list row;
-          for (int j = 0; j < dense.ncols(); ++j)
-            row.append(dense(i, j));
-          list.append(row);
-        }
-        return list;
+        return std::vector< T >(boost::python::stl_input_iterator< T >(iterable),
+          boost::python::stl_input_iterator< T >());
       }
 
-      template <class T>
-      boost::python::list toPythonList(const Datatypes::SparseRowMatrixGeneric<T>& sparse)
-      {
-        boost::python::list rows, columns, values;
 
-        for (int i = 0; i < sparse.nonZeros(); ++i)
-        {
-          values.append(sparse.valuePtr()[i]);
-        }
-        for (int i = 0; i < sparse.nonZeros(); ++i)
-        {
-          columns.append(sparse.innerIndexPtr()[i]);
-        }
-        for (int i = 0; i < sparse.outerSize(); ++i)
-        {
-          rows.append(sparse.outerIndexPtr()[i]);
-        }
-
-        boost::python::list list;
-        list.append(rows);
-        list.append(columns);
-        list.append(values);
-        return list;
-      }
-
-      SCISHARE boost::python::object convertField(FieldHandle field);
+      SCISHARE boost::python::object convertFieldToPython(FieldHandle field);
+      SCISHARE boost::python::object convertMatrixToPython(Datatypes::DenseMatrixHandle matrix);
+      SCISHARE boost::python::object convertMatrixToPython(Datatypes::SparseRowMatrixHandle matrix);
+      SCISHARE boost::python::object convertStringToPython(Datatypes::StringHandle str);
     }
   }
 }

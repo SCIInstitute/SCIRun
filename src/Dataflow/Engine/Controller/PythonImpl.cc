@@ -65,7 +65,7 @@ namespace
   class PyDatatypeString : public PyDatatype
   {
   public:
-    explicit PyDatatypeString(StringHandle underlying) : underlying_(underlying)
+    explicit PyDatatypeString(StringHandle underlying) : underlying_(underlying), str_(convertStringToPython(underlying))
     {
     }
 
@@ -76,18 +76,18 @@ namespace
 
     virtual boost::python::object value() const override
     {
-      boost::python::object str(std::string(underlying_->value()));
-      return str;
+      return str_;
     }
 
   private:
     StringHandle underlying_;
+    boost::python::object str_;
   };
 
   class PyDatatypeDenseMatrix : public PyDatatype
   {
   public:
-    explicit PyDatatypeDenseMatrix(DenseMatrixHandle underlying) : underlying_(underlying)
+    explicit PyDatatypeDenseMatrix(DenseMatrixHandle underlying) : underlying_(underlying), pyMat_(convertMatrixToPython(underlying))
     {
     }
 
@@ -98,17 +98,18 @@ namespace
 
     virtual boost::python::object value() const override
     {
-      return toPythonList(*underlying_);
+      return pyMat_;
     }
 
   private:
     DenseMatrixHandle underlying_;
+    boost::python::list pyMat_;
   };
 
   class PyDatatypeSparseRowMatrix : public PyDatatype
   {
   public:
-    explicit PyDatatypeSparseRowMatrix(SparseRowMatrixHandle underlying) : underlying_(underlying)
+    explicit PyDatatypeSparseRowMatrix(SparseRowMatrixHandle underlying) : underlying_(underlying), pyMat_(convertMatrixToPython(underlying))
     {
     }
 
@@ -119,17 +120,18 @@ namespace
 
     virtual boost::python::object value() const override
     {
-      return toPythonList(*underlying_);
+      return pyMat_;
     }
 
   private:
     SparseRowMatrixHandle underlying_;
+    boost::python::list pyMat_;
   };
 
   class PyDatatypeField : public PyDatatype
   {
   public:
-    explicit PyDatatypeField(FieldHandle underlying) : underlying_(underlying), matlabStructure_(convertField(underlying))
+    explicit PyDatatypeField(FieldHandle underlying) : underlying_(underlying), matlabStructure_(convertFieldToPython(underlying))
     {
     }
 
@@ -422,11 +424,11 @@ namespace
           {
             throw std::invalid_argument("Module state key " + name + " not defined.");
           }
-          state->setValue(apn, convert(object));
+          state->setValue(apn, convert<AlgorithmParameter::Value>(object));
         }
         else
         {
-          state->setTransientValue(apn, convert(object), false);
+          state->setTransientValue(apn, convert<boost::any>(object), false);
         }
       }
     }
@@ -474,44 +476,47 @@ namespace
     boost::shared_ptr<PyPortsImpl> input_, output_;
 
 //TODO: extract and use for state get/set
-    AlgorithmParameter::Value convert(const boost::python::object& object) const
+    template <class ReturnType>
+    ReturnType convert(const boost::python::object& object) const
     {
-      AlgorithmParameter::Value value;
-
       /// @todo: yucky
       {
         boost::python::extract<int> e(object);
         if (e.check())
         {
-          value = e();
-          return value;
+          return e();
         }
       }
       {
         boost::python::extract<double> e(object);
         if (e.check())
         {
-          value = e();
-          return value;
+          return e();
         }
       }
       {
         boost::python::extract<std::string> e(object);
         if (e.check())
         {
-          value = e();
-          return value;
+          return e();
         }
       }
       {
         boost::python::extract<bool> e(object);
         if (e.check())
         {
-          value = e();
-          return value;
+          return e();
         }
       }
-      return value;
+      //{
+      //  auto vec = to_std_vector<double>(object);
+      //  if (!vec.empty())
+      //  {
+      //    return vec;
+      //  }
+      //}
+      std::cerr << "No known conversion from python object to C++ object" << std::endl;
+      return ReturnType();
     }
   };
 }
