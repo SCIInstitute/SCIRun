@@ -163,7 +163,7 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
 
 void ColormapPreview::addDefaultLine()
 {
-  scene()->removeItem(alphaPath_);
+  removeDefaultLine();
   alphaPath_ = scene()->addLine(defaultStart_.x(), defaultStart_.y(),
     defaultEnd_.x(), defaultEnd_.y(),
     alphaLinePen);
@@ -173,8 +173,7 @@ void ColormapPreview::addDefaultLine()
 
 void ColormapPreview::removeDefaultLine()
 {
-  scene()->removeItem(alphaPath_);
-  //delete alphaPath_;
+  delete alphaPath_;
   alphaPath_ = nullptr;
 }
 
@@ -199,7 +198,6 @@ void ColormapPreview::addPoint(const QPointF& point)
 
 void ColormapPreview::drawAlphaPolyline()
 {
-  // qDebug() << "start drawAlphaPolyline";
   removeDefaultLine();
   auto pathItem = new QGraphicsPathItem();
   alphaPath_ = pathItem;
@@ -217,7 +215,6 @@ void ColormapPreview::drawAlphaPolyline()
   pathItem->setPath(path);
   pathItem->setZValue(0);
   scene()->addItem(alphaPath_);
-  // qDebug() << "end drawAlphaPolyline";
 }
 
 void ColormapPreview::clearAlphaPoints()
@@ -237,12 +234,6 @@ void ColormapPreview::updateAlphaFunction()
 {
   //from v4, color endpoints (0 and 1) are fixed at alpha = 0.5.
   // alphaFunction_ will sample from in between these endpoints, evenly spaced throughout open interval (0,1)
-  // qDebug() << "Updating alpha function.";
-
-
-  // qDebug() << "alpha point set:";
-  // for (const auto& p : alphaPoints_)
-  //   qDebug() << p;
 
   for (int i = 0; i < static_cast<int>(alphaFunction_.size()); ++i)
   {
@@ -256,7 +247,6 @@ void ColormapPreview::updateAlphaFunction()
     else
     {
       alphaFunction_[i] = DEFAULT_ALPHA;
-      //qDebug() << "Color: " << color << "Alpha: " << 0.5;
     }
   }
 }
@@ -266,7 +256,6 @@ std::pair<QPointF,QPointF> ColormapPreview::alphaLineEndpointsAtColor(double col
   auto rightIter = alphaPoints_.upper_bound(colorToPoint(color));
   auto right = *rightIter;
   auto left = *(--rightIter);
-  //qDebug() << "alphaLineEndpointsAtColor: " << color << " sceneX " << sceneX << "left point " << left << " right point " << right;
   return {left, right};
 }
 
@@ -279,7 +268,6 @@ double ColormapPreview::interpolateAlphaLineValue(const QPointF& leftEndpoint, c
   const double intercept = rightEndpoint.y() - slope * rightEndpoint.x();
   double alpha = pointYToAlpha(slope * colorToPoint(color).x() + intercept);
 
-  // qDebug() << "interpolateAlphaLineValue: " << color << "Alpha: " << alpha << "between points" << leftEndpoint << rightEndpoint;
   return alpha;
 }
 
