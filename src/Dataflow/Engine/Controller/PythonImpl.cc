@@ -424,11 +424,11 @@ namespace
           {
             throw std::invalid_argument("Module state key " + name + " not defined.");
           }
-          state->setValue(apn, convert<AlgorithmParameter::Value>(object));
+          state->setValue(apn, convert(object).value());
         }
         else
         {
-          state->setTransientValue(apn, convert<boost::any>(object), false);
+          state->setTransientValue(apn, convert(object), false);
         }
       }
     }
@@ -476,36 +476,114 @@ namespace
     boost::shared_ptr<PyPortsImpl> input_, output_;
 
 //TODO: extract and use for state get/set
-    template <class ReturnType>
-    ReturnType convert(const boost::python::object& object) const
+    Variable convert(const boost::python::object& object) const
     {
       /// @todo: yucky
       {
         boost::python::extract<int> e(object);
         if (e.check())
         {
-          return e();
+          return makeVariable("int", e());
         }
       }
       {
         boost::python::extract<double> e(object);
         if (e.check())
         {
-          return e();
+          return makeVariable("double", e());
         }
       }
       {
         boost::python::extract<std::string> e(object);
         if (e.check())
         {
-          return e();
+          return makeVariable("string", e());
         }
       }
       {
         boost::python::extract<bool> e(object);
         if (e.check())
         {
-          return e();
+          return makeVariable("bool", e());
+        }
+      }
+      {
+        boost::python::extract<boost::python::list> e(object);
+        if (e.check())
+        {
+          std::cout << "hello i found a list, i am going to construct a matrix." << std::endl;
+          auto list = e();
+          auto length = len(list);
+          bool makeDense;
+          DenseMatrixHandle dense;
+          if (length > 0)
+          {
+            boost::python::extract<boost::python::list> firstRow(list[0]);
+            if (firstRow.check())
+            {
+              makeDense = true;
+              dense.reset(new DenseMatrix(length, len(firstRow)));
+            }
+            else
+            {
+              boost::python::extract<std::string> innerString(list[0]);
+              if (innerString.check())
+                makeDense = false;
+              else
+                throw std::invalid_argument("Ill-formed list.");
+            }
+          }
+          else
+          {
+            throw std::invalid_argument("Empty list.");
+          }
+          if (makeDense)
+          {
+            
+            for (int i = 0; i < length; ++i)
+            {
+              boost::python::extract<boost::python::list> rowList(list[i]);
+              if (rowList.check())
+              {
+                auto row = rowList();
+                if (len(row) != dense->ncols())
+                  throw std::invalid_argument("Attempted to convert into dense matrix but row lengths are not all equal.");
+                for (int j = 0; j < len(row); ++j)
+                {
+                  (*dense)(i,j) = boost::python::extract<double>(row[i]);
+                }
+              }
+            }
+          }
+          else //sparse
+          {
+            std::cout << "TODO: sparse matrix conversion" << std::endl;
+          }
+
+          //for (int i = 0; i < len(list); ++i)
+          //{
+          //  boost::python::extract<boost::python::list> inner(list[i]);
+          //  if (inner.check())
+          //  {
+          //    std::cout << "hello i found a list of lists, i am going to construct a dense matrix" << std::endl;
+          //  }
+          //  else
+          //  {
+          //    boost::python::extract<std::string> innerString(list[i]);
+          //    if (innerString.check())
+          //    {
+          //      std::cout << "hello i found a list of lists, i am going to construct a sparse matrix" << std::endl;
+          //    }
+          //    else
+          //    {
+          //      std::cout << "hello i cannot figure out how to convert this list, so i am erroring" << std::endl;
+          //      throw std::invalid_argument("Ill-formed list.");
+          //    }
+          //  }
+          //}
+
+          Variable x(Name("matrix"), dense, Variable::DATATYPE_VARIABLE);
+          return x;
         }
       }
       //{
@@ -516,7 +594,7 @@ namespace
       //  }
       //}
       std::cerr << "No known conversion from python object to C++ object" << std::endl;
-      return ReturnType();
+      return Variable();
     }
   };
 }

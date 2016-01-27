@@ -28,6 +28,7 @@
 
 #include <Modules/Python/PythonObjectForwarder.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Python;
@@ -78,10 +79,20 @@ void PythonObjectForwarder::execute()
 
   if (valueOption)
   {
-    auto valueStr = transient_value_cast<std::string>(valueOption);
-    if (!valueStr.empty())
-      sendOutput(PythonString, boost::make_shared<String>(valueStr));
-    else
-      sendOutput(PythonString, boost::make_shared<String>("Empty string or non-string received"));
+    auto var = transient_value_cast<Variable>(valueOption);
+    if (var.name().name() == "string")
+    {
+      auto valueStr = var.toString();
+      if (!valueStr.empty())
+        sendOutput(PythonString, boost::make_shared<String>(valueStr));
+      else
+        sendOutput(PythonString, boost::make_shared<String>("Empty string or non-string received"));
+    }
+    else if (var.name().name() == "matrix")
+    {
+      auto dense = boost::dynamic_pointer_cast<DenseMatrix>(var.getDatatype());
+      if (dense)
+        sendOutput(PythonMatrix, dense);
+    }
   }
 }
