@@ -55,7 +55,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Modules::Teem;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Converter;
+using namespace SCIRun::Core::Algorithms::Teem;
 
 const ModuleLookupInfo BuildDerivedNrrdWithGage::staticInfo_("BuildDerivedNrrdWithGage", "Misc", "Teem");
 
@@ -88,7 +88,7 @@ void BuildDerivedNrrdWithGage::setStateDefaults()
 }
 
 #if 0
-#define SPACING(spc) (AIR_EXISTS(spc) ? spc: 1.0)
+
 
 namespace SCITeem {
 
@@ -154,6 +154,8 @@ namespace
   {
     kind = newkind;
   }
+
+  double SPACING(double spc) { return AIR_EXISTS(spc) ? spc: 1.0; }
 }
 
 void
@@ -178,6 +180,7 @@ BuildDerivedNrrdWithGage::execute()
   char /* *outS,*/ *err = NULL;
   NrrdKernelSpec *k00 = NULL, *k11 = NULL, *k22 = NULL;
 
+  auto state = get_state();
   //attempt to set gageKind
   if (nin->axis[0].size == 1){
     //first axis has only one value, guess it's a scalar field
@@ -185,7 +188,7 @@ BuildDerivedNrrdWithGage::execute()
   } else if (nin->axis[0].kind == nrrdKindScalar){
     //kind set explicitly in nrrd object, guess it's a scalar field
     setMiscKind(kind, gageKindScl);
-  } else if (field_kind_.get() == "Scalar"){
+  } else if (state->getValue(Parameters::FieldKind).toString() == "Scalar"){
     warning("Field Kind is not set in the input Nrrd, making a guess based "\
     "upon the GUI settings.");
     setMiscKind(kind, gageKindScl);
@@ -195,7 +198,8 @@ BuildDerivedNrrdWithGage::execute()
   } else if (nin->axis[0].kind == nrrdKind3Vector){
     //printf("kind set explicitly in nrrd object, guess it's a vector field\n");
     setMiscKind(kind, gageKindVec);
-  } else if (field_kind_.get() == "Vector"){
+  } else if (state->getValue(Parameters::FieldKind).toString() == "Vector")
+  {
     warning("Field Kind is not set in the input Nrrd, making a guess based "\
     "upon the GUI settings.");
     setMiscKind(kind, gageKindVec);
@@ -205,18 +209,18 @@ BuildDerivedNrrdWithGage::execute()
   }
 
   //set the type of output nrrd
-  if (otype_.get() == "double") {
+  if (state->getValue(Parameters::OType).toString() == "double") {
     otype = nrrdTypeDouble;
-  } else if (otype_.get() == "float") {
+  } else if (state->getValue(Parameters::OType).toString() == "float") {
     otype = nrrdTypeFloat;
   } else {
     otype = nrrdTypeDefault;
   }
 
-  what = airEnumVal(kind->enm, quantity_.get().c_str());
+  what = airEnumVal(kind->enm, state->getValue(Parameters::Quantity).toString().c_str());
   if (-1 == what) {
     /* -1 indeed always means "unknown" for any gageKind */
-    std::string err = "couldn't parse " + quantity_.get() + " as measure of ";
+    std::string err = "couldn't parse " + state->getValue(Parameters::Quantity).toString() + " as measure of ";
     char cerr[] = "";
     strcat(cerr, err.c_str());
     strcat(cerr, kind->name);
@@ -240,42 +244,46 @@ BuildDerivedNrrdWithGage::execute()
 
   //set the nrrd kernels' parameters
   std::string k00parms = "";
-  k00parms += valuesType_.get();
+  k00parms += state->getValue(Parameters::ValuesType).toString();
   k00parms += ":";
-  k00parms += valuesNumParm1_.get();
-  if (valuesNumParm2_.get() != ""){
+  k00parms += state->getValue(Parameters::ValuesNumParm1).toString();
+  if (!state->getValue(Parameters::ValuesNumParm2).toString().empty())
+  {
     k00parms += ",";
-    k00parms += valuesNumParm2_.get();
+    k00parms += state->getValue(Parameters::ValuesNumParm2).toString();
   }
-  if (valuesNumParm3_.get() != ""){
+  if (!state->getValue(Parameters::ValuesNumParm3).toString().empty())
+  {
     k00parms += ",";
-    k00parms += valuesNumParm3_.get();
+    k00parms += state->getValue(Parameters::ValuesNumParm3).toString();
   }
 
   std::string k11parms = "";
-  k11parms += dType_.get();
+  k11parms += state->getValue(Parameters::DType).toString();
   k11parms += ":";
-  k11parms += dNumParm1_.get();
-  if (dNumParm2_.get() != ""){
+  k11parms += state->getValue(Parameters::DNumParm1).toString();
+  if (!state->getValue(Parameters::DNumParm2).toString().empty())
+  {
     k11parms += ",";
-    k11parms += dNumParm2_.get();
+    k11parms += state->getValue(Parameters::DNumParm2).toString();
   }
-  if (dNumParm3_.get() != ""){
+  if (!state->getValue(Parameters::DNumParm3).toString().empty())
+  {
     k11parms += ",";
-    k11parms += dNumParm3_.get();
+    k11parms += state->getValue(Parameters::DNumParm3).toString();
   }
 
   std::string k22parms = "";
-  k22parms += ddType_.get();
+  k22parms += state->getValue(Parameters::DDType).toString();
   k22parms += ":";
-  k22parms += ddNumParm1_.get();
-  if (ddNumParm2_.get() != ""){
+  k22parms += state->getValue(Parameters::DDNumParm1).toString();
+  if (!state->getValue(Parameters::DDNumParm2).toString().empty()){
     k22parms += ",";
-    k22parms += ddNumParm2_.get();
+    k22parms += state->getValue(Parameters::DDNumParm2).toString();;
   }
-  if (ddNumParm3_.get() != ""){
+  if (!state->getValue(Parameters::DDNumParm3).toString().empty()){
     k22parms += ",";
-    k22parms += ddNumParm3_.get();
+    k22parms += state->getValue(Parameters::DDNumParm3).toString();;
   }
 
   nrrdKernelSpecParse(k00, k00parms.c_str());
@@ -390,7 +398,6 @@ BuildDerivedNrrdWithGage::execute()
       nrrdAxisInfoMinMaxSet(nout, i, nrrdCenterNode);
   }
 
-  //send the nrrd to the output
   NrrdDataHandle ntmp(new NrrdData(nout));
   sendOutput(OutputNrrd, ntmp);
 }
