@@ -40,10 +40,18 @@
  */
 
 #include <Modules/Legacy/Teem/Converters/SplitFieldIntoNrrdData.h>
-//#include <Core/Algorithms/Converter/ConvertToNrrd.h>
+#include <Core/Algorithms/Legacy/Converter/ConvertToNrrd.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Modules::Teem;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Converters;
 
-
+const ModuleLookupInfo SplitFieldIntoNrrdData::staticInfo_("SplitFieldIntoNrrdData", "Converters", "Teem");
 
 #if 0
 namespace SCITeem {
@@ -63,23 +71,27 @@ class SplitFieldIntoNrrdData : public Module {
 };
 
 } // end namespace SCITeem
+#endif
 
-using namespace SCITeem;
-DECLARE_MAKER(SplitFieldIntoNrrdData)
-
-
-SplitFieldIntoNrrdData::SplitFieldIntoNrrdData(GuiContext *ctx):
-  Module("SplitFieldIntoNrrdData", ctx, Filter, "Converters", "Teem"),
-  gui_label_(get_ctx()->subVar("label"), "unknown")
+SplitFieldIntoNrrdData::SplitFieldIntoNrrdData():
+  Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Data);
+  INITIALIZE_PORT(Points);
+  INITIALIZE_PORT(Connections);
+}
+
+void SplitFieldIntoNrrdData::setStateDefaults()
+{
+
+  //gui_label_(get_ctx()->subVar("label"), "unknown")
 }
 
 void
 SplitFieldIntoNrrdData::execute()
 {
-  FieldHandle field_handle;
-  if (!get_input_handle("Field", field_handle)) return;
+  auto field_handle = getRequiredInput(InputField);
 
   // Just data for lattices, data and points for structured, all for rest.
   bool compute_points_p = true;
@@ -98,20 +110,19 @@ SplitFieldIntoNrrdData::execute()
     compute_data_p = false;
   }
 
-  if (inputs_changed_ ||
-      gui_label_.changed() ||
-      (compute_points_p && !oport_cached("Points")) ||
-      (compute_connects_p && !oport_cached("Connections")) ||
-      (compute_data_p && !oport_cached("Data")) )
+  if (needToExecute())
   {
-    NrrdDataHandle points_handle, connect_handle, data_handle;
+    algo().set(Parameters::BuildPoints, compute_points_p);
+    algo().set(Parameters::BuildConnections, compute_connects_p);
+    algo().set(Parameters::BuildData, compute_data_p);
+    setAlgoStringFromState(Parameters::DataLabel);
 
-    algo_.set_bool("build_points",compute_points_p);
-    algo_.set_bool("build_connections",compute_connects_p);
-    algo_.set_bool("build_data",compute_data_p);
-    algo_.set_string("data_label",gui_label_.get());
-    if(!(algo_.run(field_handle,points_handle, connect_handle, data_handle))) return;
+    auto output = algo().run_generic(withInputData((InputField, field_handle)));
+    sendOutputFromAlgorithm(Points, output);
+    sendOutputFromAlgorithm(Data, output);
+    sendOutputFromAlgorithm(Connections, output);
 
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // Set the Nrrd names and send them.
     std::string property;
     std::string nrrd_name = "Unknown";
@@ -135,6 +146,6 @@ SplitFieldIntoNrrdData::execute()
       data_handle->set_property("Name", nrrd_name + "-Data", false);
       send_output_handle("Data", data_handle);
     }
+  #endif
   }
 }
-#endif
