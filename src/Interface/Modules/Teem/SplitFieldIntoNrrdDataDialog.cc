@@ -28,11 +28,11 @@
 
 #include <Interface/Modules/Teem/SplitFieldIntoNrrdDataDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-//#include <Core/Algorithms/Legacy/Teem/Converter/SplitFieldIntoNrrdData.h>
+#include <Core/Algorithms/Legacy/Converter/ConvertToNrrd.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Teem;
+using namespace SCIRun::Core::Algorithms::Converters;
 
 SplitFieldIntoNrrdDataDialog::SplitFieldIntoNrrdDataDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,5 +41,5 @@ SplitFieldIntoNrrdDataDialog::SplitFieldIntoNrrdDataDialog(const std::string& na
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //addComboBoxManager(dataLocationComboBox_, Parameters::DataLocation);
+  addLineEditManager(labelDataLineEdit_, Parameters::DataLabel);
 }
