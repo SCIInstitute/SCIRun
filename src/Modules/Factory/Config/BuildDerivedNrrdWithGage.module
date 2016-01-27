@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildDerivedNrrdWithGage",
+    "namespace": "Teem",
+    "status": "Ported module",
+    "description": "TODO",
+    "header": "Modules/Legacy/Teem/Misc/BuildDerivedNrrdWithGage.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "BuildDerivedNrrdWithGageDialog",
+    "header": "Interface/Modules/Teem/BuildDerivedNrrdWithGageDialog.h"
+  }
+}
