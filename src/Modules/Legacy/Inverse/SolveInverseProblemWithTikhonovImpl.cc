@@ -205,13 +205,31 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
 // check that rows of fwd matrix equal number of measurements
   if ( M != measuredData_->nrows() )
   {
-    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Input matrix dimensions must agree."));
+      const std::string errorMessage("Input matrix dimensions must agree.");
+      if (pr_)
+      {
+          pr_->error(errorMessage);
+      }
+      else
+      {
+          std::cerr << errorMessage << std::endl;
+      }
+      BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
   }
 
 // check that number of time samples is 1. @JCOLLFONT to change for a more general case later (should add a for loop)
   if (1 != measuredData_->ncols())
   {
-    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Measured data must be a vector"));
+      const std::string errorMessage("Measured data must be a vector");
+      if (pr_)
+      {
+          pr_->error(errorMessage);
+      }
+      else
+      {
+          std::cerr << errorMessage << std::endl;
+      }
+      BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
   }
   
     
@@ -238,53 +256,43 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       //      M3 = (R * R^T)^-1 * A^T
       //      M4 = identity
       //      y = measuredData
-    //.........................................................................
+    //.........................M1,................................................
    
-    std::cerr << "gato: using underdetermined eqs" << std::endl;
     DenseMatrix RRtr(N,N);
     DenseMatrix iRRtr(N,N);
     DenseMatrix CCtr(M,M);
     DenseMatrix iCCtr(M,M);
 
     // DEFINITIONS AND PREALOCATION OF SOURCE REGULARIZATION MATRIX 'R'
-std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
       // if R does not exist, set as identity of size equal to N (columns of fwd matrix)
       if (!sourceWeighting_)
       {
           RRtr = DenseMatrix::Identity(N, N);
           iRRtr = RRtr;
-          
-          std::cerr << "gato: using identity regularization matrix" << std::endl;
-          
       }
       else
       {
           
-          std::cerr << "gato: regularization subcase "<<  regularizationSolutionSubcase_ << " of " << solution_constrained << " or " << solution_constrained_squared << std::endl;
-          
         // if provided the non-squared version of R
         if( regularizationSolutionSubcase_==solution_constrained )
         {
-         std::cerr << "gato: regu matrix size " << sourceWeighting_->nrows() << " and " << sourceWeighting_->ncols() << std::endl;
             // check that the matrix is of appropriate size (equal number of rows as columns in fwd matrix)
             if ( N != sourceWeighting_->ncols() )
             {
-                std::cerr << "gato: beep regu matrix size" << std::endl;
-                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !"));
+                const std::string errorMessage("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !");
+                if (pr_)
+                {
+                    pr_->error(errorMessage);
+                }
+                else
+                {
+                    std::cerr << errorMessage << std::endl;
+                }
+                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
             }
-          
-            std::cerr << "gato: computing inverse of regularization matrix normal" << std::endl;
             RRtr = sourceWeighting_->transpose() * *sourceWeighting_;
             
-            // check if squared regularization matrix is invertible
-            if ( !RRtr.fullPivLu().isInvertible() )
-            {
-                  std::cerr << "gato: inverse failed" << std::endl;
-                THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Regularization matrix in the source space is not invertible.");
-            }
-            // calculate inverse
-            iRRtr = RRtr.inverse().eval();
-                  
+                            
         }
         // otherwise, if the source regularization is provided as the squared version (RR^T)
         else if ( regularizationSolutionSubcase_==solution_constrained_squared )
@@ -292,25 +300,40 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
             // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
             if ( ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() ) )
             {
-                std::cerr << "gato: beep squared  regu matrix size" << std::endl;
-                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !"));
+                const std::string errorMessage("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !");
+                if (pr_)
+                {
+                    pr_->error(errorMessage);
+                }
+                else
+                {
+                    std::cerr << errorMessage << std::endl;
+                }
+                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
             }
-            
-            std::cerr << "gato: computing inverse of regularization matrix squared" << std::endl;
-            RRtr = *sourceWeighting_;
-            
-            // check if squared regularization matrix is invertible
-            if ( !RRtr.fullPivLu().isInvertible() )
-            {
-                std::cerr << "gato: inverse failed" << std::endl;
-                THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Regularization matrix in the source space is not invertible.");
-            }
-            // calculate inverse
-            iRRtr = RRtr.inverse().eval();
-
-            
+            RRtr = *sourceWeighting_;            
             
         }
+          
+        // check if squared regularization matrix is invertible
+         if ( !RRtr.fullPivLu().isInvertible() )
+         {
+             const std::string errorMessage("Regularization matrix in the source space is not invertible.");
+             if (pr_)
+             {
+                 pr_->error(errorMessage);
+             }
+             else
+             {
+                 std::cerr << errorMessage << std::endl;
+             }
+             
+             THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
+          }
+          
+          // COMPUTE inverse
+          iRRtr = RRtr.inverse().eval();
+
       }
       
       
@@ -320,7 +343,6 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
       {
           CCtr = DenseMatrix::Identity(M, M);
           iCCtr = CCtr;
-          std::cerr << "gato: using identity covariance matrix" << std::endl;
           
       }
       else
@@ -331,47 +353,62 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
               // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
               if(M != sensorWeighting_->ncols())
               {
-                   BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !"));
+                  const std::string errorMessage("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !");
+                  if (pr_)
+                  {
+                      pr_->error(errorMessage);
+                  }
+                  else
+                  {
+                      std::cerr << errorMessage << std::endl;
+                  }
+                  BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
               }
               CCtr = sensorWeighting_->transpose() * *sensorWeighting_;
-              std::cerr << "gato: computing inverse of covariance matrix" << std::endl;
-              // check if squared regularization matrix is invertible
-              if ( !CCtr.fullPivLu().isInvertible() )
-              {
-                  std::cerr << "gato: inverse failed" << std::endl;
-                  THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Residual covariance matrix is not invertible.");
-              }
-              iCCtr = CCtr.inverse().eval();
-           
-          }
+                        }
           // otherwise if the source covariance matrix is provided in squared form
           else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
           {
               // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
               if( (M != sensorWeighting_->nrows()) && (M != sensorWeighting_->ncols()) )
               {
-                  BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !"));
+                  const std::string errorMessage("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !");
+                  if (pr_)
+                  {
+                      pr_->error(errorMessage);
+                  }
+                  else
+                  {
+                      std::cerr << errorMessage << std::endl;
+                  }
+                  BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
               }
               
               CCtr = *sensorWeighting_;
-              std::cerr << "gato: computing inverse of covariance matrix" << std::endl;
-              if ( !CCtr.fullPivLu().isInvertible() )
-              {
-                  std::cerr << "gato: inverse failed" << std::endl;
-                  THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Residual covariance matrix is not invertible.");
-              }
-              iCCtr = CCtr.inverse().eval();
-              
           }
+          
+          // check if squared regularization matrix is invertible
+          if ( !CCtr.fullPivLu().isInvertible() )
+          {
+              
+              const std::string errorMessage("Residual covariance matrix is not invertible.");
+              if (pr_)
+              {
+                  pr_->error(errorMessage);
+              }
+              else
+              {
+                  std::cerr << errorMessage << std::endl;
+              }              
+              THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
+          }
+          iCCtr = CCtr.inverse().eval();
+          
+
           
       }
       
-    // DEFINE  M1 = (A * (R^T*R)^-1 * A^T MATRIX FOR FASTER COMPUTATION
-      std::cerr << "gato: computing Ainv(RR)Ath" << std::endl;
-    std::cerr << "gato: inv regu matrix size " << iRRtr.nrows() << " and " << iRRtr.ncols() << std::endl;
-      std::cerr << "gato: inv regu matrix size " << forward_transpose.nrows() << " and " << forward_transpose.ncols() << std::endl;
-      std::cerr << "gato: inv regu matrix size " << forwardMatrix_->nrows() << " and " << forwardMatrix_->ncols() << std::endl;
-      
+    // DEFINE  M1 = (A * (R^T*R)^-1 * A^T MATRIX FOR FASTER COMPUTATION      
       DenseMatrix RAtr = iRRtr * forward_transpose;
        M1 = *forwardMatrix_ * RAtr;
       
@@ -387,7 +424,7 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
     // DEFINE measurement vector
       y = *measuredData_;
       
-      std::cerr << "gato: M matrices precomputed" << std::endl;
+      
       
   }
   //OVERDETERMINED CASE,
@@ -408,7 +445,6 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
         //.........................................................................
         
       
-      std::cerr << "gato: using overdetermined equations" << std::endl;
         // prealocations
       DenseMatrix RtrR(N,N);
       DenseMatrix CtrC(M,M);
@@ -419,9 +455,7 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
         // if R does not exist, set as identity of size equal to N (columns of fwd matrix)
         if (!sourceWeighting_)
         {
-            RtrR = DenseMatrix::Identity(N, N);
-            std::cerr << "gato: identity regularization" << std::endl;
-            
+            RtrR = DenseMatrix::Identity(N, N);            
         }
         else
         {
@@ -432,9 +466,17 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
                 // check that the matrix is of appropriate size (equal number of rows as columns in fwd matrix)
                 if ( N != sourceWeighting_->ncols() )
                 {
-                    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !"));
+                    const std::string errorMessage("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !");
+                    if (pr_)
+                    {
+                        pr_->error(errorMessage);
+                    }
+                    else
+                    {
+                        std::cerr << errorMessage << std::endl;
+                    }
+                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
                 }
-                std::cerr << "gato: non-squared regularization" << std::endl;
                 RtrR = sourceWeighting_->transpose() * *sourceWeighting_;
             }
             // otherwise, if the source regularization is provided as the squared version (RR^T)
@@ -443,9 +485,17 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
                 // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
                 if ( ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() ) )
                 {
-                    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !"));
+                    const std::string errorMessage("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !");
+                    if (pr_)
+                    {
+                        pr_->error(errorMessage);
+                    }
+                    else
+                    {
+                        std::cerr << errorMessage << std::endl;
+                    }
+                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
                 }
-                std::cerr << "gato: squared regularization" << std::endl;
                 RtrR = *sourceWeighting_;
                     
             }
@@ -457,7 +507,6 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
         if (!sensorWeighting_)
         {
             CtrC = DenseMatrix::Identity(M, M);
-            std::cerr << "gato: identity covariance" << std::endl;
         }
         else
         {
@@ -467,9 +516,17 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
                 // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
                 if(M != sensorWeighting_->ncols())
                 {
-                    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !"));
+                    const std::string errorMessage("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !");
+                    if (pr_)
+                    {
+                        pr_->error(errorMessage);
+                    }
+                    else
+                    {
+                        std::cerr << errorMessage << std::endl;
+                    }
+                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
                 }
-                std::cerr << "gato: non-squared COVARIANCE" << std::endl;
                 CtrC = sensorWeighting_->transpose() * *sensorWeighting_;
                 
             }
@@ -479,9 +536,17 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
                 // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
                 if ( (M != sensorWeighting_->nrows()) && (M != sensorWeighting_->ncols()) )
                 {
-                    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !"));
+                    const std::string errorMessage("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !");
+                    if (pr_)
+                    {
+                        pr_->error(errorMessage);
+                    }
+                    else
+                    {
+                        std::cerr << errorMessage << std::endl;
+                    }
+                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
                 }
-                std::cerr << "gato: squared covariance" << std::endl;
                 CtrC = *sensorWeighting_;
                 
             }
@@ -526,15 +591,7 @@ std::cerr << "gato: source weightening "<<  sourceWeighting_ << std::endl;
       }
     }
     else if (input.regMethod_ == "lcurve")
-    {
-        
-        
-        std::cerr << "gato: inv regu matrix size " << M1.nrows() << " and " << M1.ncols() << std::endl;
-        std::cerr << "gato: inv regu matrix size " << M2.nrows() << " and " << M2.ncols() << std::endl;
-        std::cerr << "gato: inv regu matrix size " << M3.nrows() << " and " << M3.ncols() << std::endl;
-        std::cerr << "gato: inv regu matrix size " << M4.nrows() << " and " << M4.ncols() << std::endl;
-        std::cerr << "gato: inv regu matrix size " << y.nrows() << " and " << y.ncols() << std::endl;
-        
+    {        
         lambda = computeLcurve( input, M1, M2, M3, M4, y );
     }
       
@@ -667,7 +724,7 @@ double TikhonovAlgorithmImpl::computeLcurve( const TikhonovAlgorithmImpl::Input&
 
 /////////////////////////
 ///////// compute Inverse solution
-DenseColumnMatrix TikhonovAlgorithmImpl::computeInverseSolution( DenseMatrix M1, DenseMatrix M2, DenseMatrix M3, DenseMatrix M4, DenseColumnMatrix y, double lambda_sq, bool inverseCalculation)
+DenseColumnMatrix TikhonovAlgorithmImpl::computeInverseSolution( DenseMatrix& M1, DenseMatrix& M2, DenseMatrix& M3, DenseMatrix& M4, DenseColumnMatrix& y, double lambda_sq, bool inverseCalculation)
 {
     //............................
     //  OPERATIONS PERFORMED IN THIS SECTION:
@@ -689,20 +746,10 @@ DenseColumnMatrix TikhonovAlgorithmImpl::computeInverseSolution( DenseMatrix M1,
     DenseColumnMatrix solution(sizeSolution);
     DenseMatrix G;
     
-     std::cerr << "gato: G" << std::endl;
     G = M1 + lambda_sq * M2;
-    
-    std::cerr << "gato: size solution " << sizeB << " and " << sizeSolution << std::endl;
-    
-    std::cerr << "gato: inv regu matrix size " << G.nrows() << " and " << G.ncols() << std::endl;
-    
-    std::cerr << "gato: inv regu matrix size " << y.nrows() << " and " << y.ncols() << std::endl;
-    
-    std::cerr << "gato: inv regu matrix size " << b.nrows() << " and " << b.ncols() << std::endl;
     
     try
     {
-         std::cerr << "gato: inverting G" << std::endl;
         LinearAlgebra::solve_lapack(G,  y, b);
     }
     catch (LinearAlgebra::LapackError&)
@@ -732,16 +779,13 @@ DenseColumnMatrix TikhonovAlgorithmImpl::computeInverseSolution( DenseMatrix M1,
         throw;
     }
     
-     std::cerr << "gato: computing solution" << std::endl;
     solution = M3 * b;
     
     if (inverseCalculation)
     {
-         std::cerr << "gato: computing inv(G)" << std::endl;
         inverseG = G.inverse().eval();
         inverseMatrix_.reset( new DenseMatrix( (M3 * inverseG) * M4) );
     }
-     std::cerr << "gato: output solution" << std::endl;
 //     inverseSolution_.reset(new DenseMatrix(solution));
     return solution;
 }

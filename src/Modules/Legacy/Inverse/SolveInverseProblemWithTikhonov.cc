@@ -108,7 +108,6 @@ void SolveInverseProblemWithTikhonov::execute()
       state->getValue(LambdaMin).toDouble(),
       state->getValue(LambdaMax).toDouble(),
       update);
-      std::cerr << "gato: exacuting" << std::endl;
 
 
     algo.run(input);
