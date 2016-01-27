@@ -31,11 +31,13 @@
 SET(Modules_Legacy_Teem_Converters_SRCS
   ConvertNrrdToField.cc
   ConvertNrrdToMatrix.cc
+  SplitFieldIntoNrrdData.cc
 )
 
 SET(Modules_Legacy_Teem_Converters_HEADERS
   ConvertNrrdToField.h
   ConvertNrrdToMatrix.h
+  SplitFieldIntoNrrdData.h
   share.h
 )
 
