@@ -88,11 +88,17 @@ void PythonObjectForwarder::execute()
       else
         sendOutput(PythonString, boost::make_shared<String>("Empty string or non-string received"));
     }
-    else if (var.name().name() == "matrix")
+    else if (var.name().name() == "dense matrix")
     {
       auto dense = boost::dynamic_pointer_cast<DenseMatrix>(var.getDatatype());
       if (dense)
         sendOutput(PythonMatrix, dense);
+    }
+    else if (var.name().name() == "sparse matrix")
+    {
+      auto sparse = boost::dynamic_pointer_cast<SparseRowMatrix>(var.getDatatype());
+      if (sparse)
+        sendOutput(PythonMatrix, sparse);
     }
   }
 }
