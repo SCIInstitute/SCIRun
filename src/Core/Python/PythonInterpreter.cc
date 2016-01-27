@@ -63,7 +63,7 @@
 
 using namespace SCIRun::Core;
 
-namespace SCIRun 
+namespace SCIRun
 {
 namespace Core
 {
@@ -73,13 +73,13 @@ class PythonInterpreterPrivate : public Lockable
 public:
   typedef std::pair< std::string, PyObject* ( * )( void ) > module_entry_type;
   typedef std::list< module_entry_type > module_list_type;
-	
+
   std::string read_from_console( const int bytes = -1 );
 
   const wchar_t* programName() const { return !program_name_.empty() ? &program_name_[0] : L"<unset>"; }
-  void setProgramName(const std::vector<wchar_t>& name) 
-  { 
-    program_name_ = name; 
+  void setProgramName(const std::vector<wchar_t>& name)
+  {
+    program_name_ = name;
     //std::wcout << "PROGRAM NAME SET TO: " << programName() << std::endl;
   }
 
@@ -103,7 +103,7 @@ public:
 	// Python sys.ps2
 	std::string prompt2_;
 
-	// Condition variable to make sure the PythonInterpreter thread has 
+	// Condition variable to make sure the PythonInterpreter thread has
 	// completed initialization before continuing the main thread.
 	boost::condition_variable thread_condition_variable_;
 private:
@@ -222,7 +222,7 @@ BOOST_PYTHON_MODULE( interpreter )
 }
 
 CORE_SINGLETON_IMPLEMENTATION( PythonInterpreter );
-	
+
 PythonInterpreter::PythonInterpreter() :
 	//Core::EventHandler(),
 	private_( new PythonInterpreterPrivate )
@@ -263,7 +263,7 @@ void PythonInterpreter::initialize_eventhandler()
     PyImport_AppendInittab( ( *it ).first.c_str(), ( *it ).second );
   }
   PRINT_PY_INIT_DEBUG(3);
-  std::wcerr << "initialize_eventhandler: program name=" << this->private_->programName() << std::endl;
+  //std::wcerr << "initialize_eventhandler: program name=" << this->private_->programName() << std::endl;
   Py_SetProgramName(const_cast< wchar_t* >(this->private_->programName()));
 
   PRINT_PY_INIT_DEBUG(4);
@@ -335,7 +335,7 @@ void PythonInterpreter::initialize_eventhandler()
 #endif
 
   // TODO: remove debug print when confident python initialization is stable
-  std::wcerr << lib_paths.str() << std::endl;
+  //std::wcerr << lib_paths.str() << std::endl;
   PRINT_PY_INIT_DEBUG(7);
   Py_IgnoreEnvironmentFlag = 1;
   Py_InspectFlag = 1;
@@ -372,7 +372,7 @@ void PythonInterpreter::initialize_eventhandler()
 	PyRun_SimpleString( "import interpreter\n"
 		"__term_io = interpreter.terminalio()\n"
 		"__term_err = interpreter.terminalerr()\n" );
-	PyRun_SimpleString( "import sys\n" 
+	PyRun_SimpleString( "import sys\n"
 		"sys.stdin = __term_io\n"
 		"sys.stdout = __term_io\n"
 		"sys.stderr = __term_err\n" );
@@ -403,10 +403,10 @@ void PythonInterpreter::initialize( bool needProgramName /*const wchar_t* progra
     //  SCIRun::Core::PythonInterpreter::Instance().run_string( "import " + module_name + "\n" );
     //  SCIRun::Core::PythonInterpreter::Instance().run_string( "from " + module_name + " import *\n" );
 
-    std::cerr << "Initializing Python ..." << std::endl;
+    //std::cerr << "Initializing Python ..." << std::endl;
     this->private_->setProgramName(program_name);
     // TODO: remove debug print when confident python initialization is stable
-    std::wcerr << "initialize program name=" << this->private_->programName() << std::endl;
+    //std::wcerr << "initialize program name=" << this->private_->programName() << std::endl;
   }
 //  PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 //  this->start_eventhandler();
@@ -422,6 +422,7 @@ void PythonInterpreter::initialize( bool needProgramName /*const wchar_t* progra
 
   //this->private_->thread_condition_variable_.wait( lock );
   this->private_->initialized_ = true;
+  //std::cerr << "Python initialized." << std::endl;
 
   std::cerr << "Python initialized." << std::endl;
 }
@@ -446,7 +447,7 @@ void PythonInterpreter::run_string( const std::string& command )
 			throw std::invalid_argument( "The python interpreter hasn't been initialized!" );
 		}
 	}
-	
+
 	//if ( !this->is_eventhandler_thread() )
 	//{
 	//	{
@@ -542,7 +543,7 @@ void PythonInterpreter::run_script( const std::string& script )
 
 	//if ( !this->is_eventhandler_thread() )
 	//{
-	//	this->post_event( boost::bind( static_cast< void ( PythonInterpreter::* ) ( std::string ) >( 
+	//	this->post_event( boost::bind( static_cast< void ( PythonInterpreter::* ) ( std::string ) >(
 	//		&PythonInterpreter::run_script ), this, script ) );
 	//	return;
 	//}
@@ -621,7 +622,7 @@ void PythonInterpreter::run_file( const std::string& file_name )
   const char* file = file_name.c_str();
   PyObject *obj = Py_BuildValue("s", file);
   FILE *fp2 = _Py_fopen_obj(obj, "r+");
-  if (fp2) 
+  if (fp2)
   {
     PyRun_SimpleFile(fp2, file);
   }
@@ -666,7 +667,7 @@ void PythonInterpreter::start_terminal()
 	//	this->post_event( boost::bind( &PythonInterpreter::start_terminal, this ) );
 	//	return;
 	//}
-	
+
 	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 	this->private_->terminal_running_ = true;
 	lock.unlock();
@@ -688,7 +689,7 @@ void PythonInterpreter::start_terminal()
 	argv[ 1 ] = 0;
 	Py_Main( 1, argv );
 	delete[] argv;
-	
+
 	lock.lock();
 	this->private_->terminal_running_ = false;
 }
