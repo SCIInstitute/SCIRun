@@ -31,12 +31,16 @@ SET(Interface_Modules_Teem_FORMS
   ReportNrrdInfo.ui
   ConvertNrrdToField.ui
   ConvertNrrdToMatrix.ui
+  BuildDerivedNrrdWithGage.ui
+  SplitFieldIntoNrrdData.ui
 )
 
 SET(Interface_Modules_Teem_HEADERS
   ReportNrrdInfoDialog.h
   ConvertNrrdToFieldDialog.h
   ConvertNrrdToMatrixDialog.h
+  BuildDerivedNrrdWithGageDialog.h
+  SplitFieldIntoNrrdDataDialog.h
   share.h
 )
 
@@ -44,6 +48,8 @@ SET(Interface_Modules_Teem_SOURCES
   ReportNrrdInfoDialog.cc
   ConvertNrrdToFieldDialog.cc
   ConvertNrrdToMatrixDialog.cc
+  BuildDerivedNrrdWithGageDialog.cc
+  SplitFieldIntoNrrdDataDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Teem_FORMS_HEADERS ${Interface_Modules_Teem_FORMS})

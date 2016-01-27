@@ -26,20 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Teem/SplitFieldIntoNrrdDataDialog.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-//#include <Core/Algorithms/Legacy/Teem/Converter/SplitFieldIntoNrrdData.h>
+#ifndef INTERFACE_MODULES_BuildDerivedNrrdWithGageDialog_H
+#define INTERFACE_MODULES_BuildDerivedNrrdWithGageDialog_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Teem;
+#include "Interface/Modules/Teem/ui_BuildDerivedNrrdWithGage.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Teem/share.h>
 
-SplitFieldIntoNrrdDataDialog::SplitFieldIntoNrrdDataDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+namespace SCIRun {
+namespace Gui {
+
+class SCISHARE BuildDerivedNrrdWithGageDialog : public ModuleDialogGeneric,
+  public Ui::BuildDerivedNrrdWithGage
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-  //addComboBoxManager(dataLocationComboBox_, Parameters::DataLocation);
+	Q_OBJECT
+
+public:
+  BuildDerivedNrrdWithGageDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+};
+
 }
+}
+
+#endif

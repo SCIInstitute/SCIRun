@@ -26,20 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Teem/SplitFieldIntoNrrdDataDialog.h>
+#include <Interface/Modules/Teem/BuildDerivedNrrdWithGageDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-//#include <Core/Algorithms/Legacy/Teem/Converter/SplitFieldIntoNrrdData.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Modules/Legacy/Teem/Misc/BuildDerivedNrrdWithGage.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Teem;
+using namespace SCIRun::Core::Algorithms::Teem;
 
-SplitFieldIntoNrrdDataDialog::SplitFieldIntoNrrdDataDialog(const std::string& name, ModuleStateHandle state,
+BuildDerivedNrrdWithGageDialog::BuildDerivedNrrdWithGageDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //addComboBoxManager(dataLocationComboBox_, Parameters::DataLocation);
+  // addComboBoxManager(dataLocationComboBox_, Parameters::DataLocation);
+  // addComboBoxManager(fieldTypeComboBox_, Parameters::FieldType);
+  // addComboBoxManager(convertParityComboBox_, Parameters::ConvertParity);
 }
