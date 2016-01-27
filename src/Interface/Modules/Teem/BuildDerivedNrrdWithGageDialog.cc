@@ -42,7 +42,19 @@ BuildDerivedNrrdWithGageDialog::BuildDerivedNrrdWithGageDialog(const std::string
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  // addComboBoxManager(dataLocationComboBox_, Parameters::DataLocation);
-  // addComboBoxManager(fieldTypeComboBox_, Parameters::FieldType);
-  // addComboBoxManager(convertParityComboBox_, Parameters::ConvertParity);
+  addComboBoxManager(fieldKindComboBox_, Parameters::FieldKind);
+  addComboBoxManager(quantityComboBox_, Parameters::Quantity);
+  addComboBoxManager(outputTypeComboBox_, Parameters::OType);
+  addComboBoxManager(valuesTypeComboBox_, Parameters::ValuesType);
+  addComboBoxManager(dTypeComboBox_, Parameters::DType);
+  addComboBoxManager(ddTypeComboBox_, Parameters::DDType);
+  addLineEditManager(valuesNumParm1LineEdit_, Parameters::ValuesNumParm1);
+  addLineEditManager(valuesNumParm2LineEdit_, Parameters::ValuesNumParm2);
+  addLineEditManager(valuesNumParm3LineEdit_, Parameters::ValuesNumParm3);
+  addLineEditManager(dNumParm1LineEdit_, Parameters::DNumParm1);
+  addLineEditManager(dNumParm2LineEdit_, Parameters::DNumParm2);
+  addLineEditManager(dNumParm3LineEdit_, Parameters::DNumParm3);
+  addLineEditManager(ddNumParm1LineEdit_, Parameters::DDNumParm1);
+  addLineEditManager(ddNumParm2LineEdit_, Parameters::DDNumParm2);
+  addLineEditManager(ddNumParm3LineEdit_, Parameters::DDNumParm3);
 }
