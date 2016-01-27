@@ -28,7 +28,18 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QComboBox" name="comboBox"/>
+    <widget class="QComboBox" name="comboBox">
+     <item>
+      <property name="text">
+       <string>Scalar</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Vector</string>
+      </property>
+     </item>
+    </widget>
    </item>
    <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox">
@@ -51,10 +62,137 @@
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QComboBox" name="comboBox_3"/>
+       <widget class="QComboBox" name="comboBox_3">
+        <item>
+         <property name="text">
+          <string>double</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>float</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>default</string>
+         </property>
+        </item>
+       </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QComboBox" name="comboBox_2"/>
+       <widget class="QComboBox" name="comboBox_2">
+        <item>
+         <property name="text">
+          <string>value</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>gradient vector</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>gradient magnitude</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>normalized gradient</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>tangent projector</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hessian</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Laplacian</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Frob(Hessian)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2nd DD along gradient</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>geometry tensor</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>kappa1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>kappa2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>total curvature</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>shape trace</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>shape index</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>mean curvature</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Gaussian curvature</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1st curvature direction</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2nd curvature direction</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>flowline curvature</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hessian eigenvalues</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>median</string>
+         </property>
+        </item>
+       </widget>
       </item>
       <item row="0" column="0" colspan="2">
        <widget class="QLabel" name="label_2">
@@ -66,7 +204,7 @@
       <item row="1" column="3">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>TextLabel</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -96,7 +234,37 @@
           <widget class="QComboBox" name="comboBox_4">
            <item>
             <property name="text">
+             <string>zero</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>box</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>tent</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>cubic</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>quartic</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>gaussian</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>hann</string>
             </property>
            </item>
            <item>
@@ -151,7 +319,7 @@
       <item>
        <widget class="QGroupBox" name="groupBox_5">
         <property name="title">
-         <string>Reconstructing Values</string>
+         <string>Measuring 1st Derivative</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
@@ -165,12 +333,47 @@
           <widget class="QComboBox" name="comboBox_5">
            <item>
             <property name="text">
-             <string>cubic</string>
+             <string>zero</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>blackman</string>
+             <string>box</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>forwdiff</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>centdiff</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>cubicd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>quarticd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>gaussiand</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>hannd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>blackmand</string>
             </property>
            </item>
           </widget>
@@ -220,7 +423,7 @@
       <item>
        <widget class="QGroupBox" name="groupBox_7">
         <property name="title">
-         <string>Reconstructing Values</string>
+         <string>Measuring 2nd Derivative</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
@@ -234,12 +437,37 @@
           <widget class="QComboBox" name="comboBox_6">
            <item>
             <property name="text">
-             <string>cubic</string>
+             <string>zero</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>blackman</string>
+             <string>box</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>cubicdd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>quarticdd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>gaussiandd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>hanndd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>blackmandd</string>
             </property>
            </item>
           </widget>
