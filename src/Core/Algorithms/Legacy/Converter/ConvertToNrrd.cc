@@ -57,7 +57,7 @@ ConvertToNrrdAlgo::ConvertToNrrdAlgo()
   addParameter(Parameters::BuildPoints, true);
   addParameter(Parameters::BuildConnections, true);
   addParameter(Parameters::BuildData, true);
-  addParameter(Parameters::DataLabel, std::string());
+  addParameter(Parameters::DataLabel, std::string("unknown"));
 }
 
 bool

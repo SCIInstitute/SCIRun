@@ -33,6 +33,28 @@
 #include <Modules/Legacy/Teem/Misc/share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Teem {
+        ALGORITHM_PARAMETER_DECL(FieldKind);
+        ALGORITHM_PARAMETER_DECL(OType);
+        ALGORITHM_PARAMETER_DECL(Quantity);
+        ALGORITHM_PARAMETER_DECL(ValuesType);
+        ALGORITHM_PARAMETER_DECL(ValuesNumParm1);
+        ALGORITHM_PARAMETER_DECL(ValuesNumParm2);
+        ALGORITHM_PARAMETER_DECL(ValuesNumParm3);
+        ALGORITHM_PARAMETER_DECL(DType);
+        ALGORITHM_PARAMETER_DECL(DNumParm1);
+        ALGORITHM_PARAMETER_DECL(DNumParm2);
+        ALGORITHM_PARAMETER_DECL(DNumParm3);
+        ALGORITHM_PARAMETER_DECL(DDType);
+        ALGORITHM_PARAMETER_DECL(DDNumParm1);
+        ALGORITHM_PARAMETER_DECL(DDNumParm2);
+        ALGORITHM_PARAMETER_DECL(DDNumParm3);
+      }
+    }
+  }
+
 namespace Modules {
 namespace Teem {
 

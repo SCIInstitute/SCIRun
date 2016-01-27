@@ -33,16 +33,6 @@
 #include <Modules/Legacy/Teem/Converters/share.h>
 
 namespace SCIRun {
-  //
-  // namespace Core {
-  //   namespace Algorithms {
-  //     namespace Teem {
-  //       ALGORITHM_PARAMETER_DECL(MatrixType);
-  //       ALGORITHM_PARAMETER_DECL(SparseColumns);
-  //     }
-  //   }
-  // }
-
 namespace Modules {
 namespace Teem {
 

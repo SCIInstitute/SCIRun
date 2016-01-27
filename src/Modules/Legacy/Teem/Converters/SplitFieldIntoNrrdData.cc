@@ -53,26 +53,6 @@ using namespace SCIRun::Core::Algorithms::Converters;
 
 const ModuleLookupInfo SplitFieldIntoNrrdData::staticInfo_("SplitFieldIntoNrrdData", "Converters", "Teem");
 
-#if 0
-namespace SCITeem {
-
-using namespace SCIRun;
-
-class SplitFieldIntoNrrdData : public Module {
-  public:
-    SplitFieldIntoNrrdData(GuiContext *ctx);
-    virtual ~SplitFieldIntoNrrdData() {}
-    virtual void execute();
-
-  private:
-    GuiString gui_label_;
-
-    SCIRunAlgo::ConvertToNrrdAlgo algo_;
-};
-
-} // end namespace SCITeem
-#endif
-
 SplitFieldIntoNrrdData::SplitFieldIntoNrrdData():
   Module(staticInfo_)
 {
@@ -84,8 +64,7 @@ SplitFieldIntoNrrdData::SplitFieldIntoNrrdData():
 
 void SplitFieldIntoNrrdData::setStateDefaults()
 {
-
-  //gui_label_(get_ctx()->subVar("label"), "unknown")
+  setStateStringFromAlgo(Parameters::DataLabel);
 }
 
 void

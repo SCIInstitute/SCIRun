@@ -47,6 +47,46 @@
 #include <sstream>
 #include <iostream>
 
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Modules::Teem;
+using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Core::Algorithms::Converter;
+
+const ModuleLookupInfo BuildDerivedNrrdWithGage::staticInfo_("BuildDerivedNrrdWithGage", "Misc", "Teem");
+
+ALGORITHM_PARAMETER_DEF(Teem, FieldKind);
+ALGORITHM_PARAMETER_DEF(Teem, OType);
+ALGORITHM_PARAMETER_DEF(Teem, Quantity);
+ALGORITHM_PARAMETER_DEF(Teem, ValuesType);
+ALGORITHM_PARAMETER_DEF(Teem, ValuesNumParm1);
+ALGORITHM_PARAMETER_DEF(Teem, ValuesNumParm2);
+ALGORITHM_PARAMETER_DEF(Teem, ValuesNumParm3);
+ALGORITHM_PARAMETER_DEF(Teem, DType);
+ALGORITHM_PARAMETER_DEF(Teem, DNumParm1);
+ALGORITHM_PARAMETER_DEF(Teem, DNumParm2);
+ALGORITHM_PARAMETER_DEF(Teem, DNumParm3);
+ALGORITHM_PARAMETER_DEF(Teem, DDType);
+ALGORITHM_PARAMETER_DEF(Teem, DDNumParm1);
+ALGORITHM_PARAMETER_DEF(Teem, DDNumParm2);
+ALGORITHM_PARAMETER_DEF(Teem, DDNumParm3);
+
+BuildDerivedNrrdWithGage::BuildDerivedNrrdWithGage():
+  Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputNrrd);
+  INITIALIZE_PORT(OutputNrrd);
+}
+
+void BuildDerivedNrrdWithGage::setStateDefaults()
+{
+  //setStateStringFromAlgo(Parameters::DataLabel);
+}
+
 #if 0
 #define SPACING(spc) (AIR_EXISTS(spc) ? spc: 1.0)
 
@@ -106,44 +146,25 @@ BuildDerivedNrrdWithGage::BuildDerivedNrrdWithGage(SCIRun::GuiContext *ctx)
   ddNumParm3_(get_ctx()->subVar("ddNumParm3_"))
 {
 }
+#endif
 
-
-BuildDerivedNrrdWithGage::~BuildDerivedNrrdWithGage()
+namespace
 {
+  void setMiscKind(gageKind *& kind, gageKind *newkind)
+  {
+    kind = newkind;
+  }
 }
-
 
 void
 BuildDerivedNrrdWithGage::execute()
 {
   update_state(NeedData);
 
-  NrrdDataHandle nrrd_handle;
-  if (!get_input_handle("nin", nrrd_handle)) return;
+  NrrdDataHandle nrrd_handle = getRequiredInput(InputNrrd);
 
-  Nrrd *nin = nrrd_handle->nrrd_;
+  Nrrd *nin = nrrd_handle->getNrrd();
   Nrrd *nout = nrrdNew();
-
-  //Set the GUI variables
-  field_kind_.reset();
-  otype_.reset();
-  quantity_.reset();
-
-  valuesType_.reset();
-  valuesNumParm1_.reset();
-  valuesNumParm2_.reset();
-  valuesNumParm3_.reset();
-
-  dType_.reset();
-  dNumParm1_.reset();
-  dNumParm2_.reset();
-  dNumParm3_.reset();
-
-  ddType_.reset();
-  ddNumParm1_.reset();
-  ddNumParm2_.reset();
-  ddNumParm3_.reset();
-
 
   gageContext *ctx;
   double gmc, ipos[4], /*opos[4], */ minx, miny, minz, spx, spy, spz;
@@ -371,15 +392,5 @@ BuildDerivedNrrdWithGage::execute()
 
   //send the nrrd to the output
   NrrdDataHandle ntmp(new NrrdData(nout));
-  send_output_handle("nout", ntmp);
+  sendOutput(OutputNrrd, ntmp);
 }
-
-
-void
-BuildDerivedNrrdWithGage::setMiscKind(gageKind *& kind, gageKind *newkind)
-{
-  kind = newkind;
-}
-
-} //End namespace SCITeem
-#endif
