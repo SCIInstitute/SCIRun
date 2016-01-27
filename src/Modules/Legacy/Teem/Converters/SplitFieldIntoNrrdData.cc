@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,12 +39,13 @@
  *
  */
 
-#include <Core/Algorithms/Converter/ConvertToNrrd.h>
+#include <Modules/Legacy/Teem/Converters/SplitFieldIntoNrrdData.h>
+//#include <Core/Algorithms/Converter/ConvertToNrrd.h>
 
-#include <Dataflow/Network/Ports/NrrdPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
 
+
+
+#if 0
 namespace SCITeem {
 
 using namespace SCIRun;
@@ -57,7 +58,7 @@ class SplitFieldIntoNrrdData : public Module {
 
   private:
     GuiString gui_label_;
-    
+
     SCIRunAlgo::ConvertToNrrdAlgo algo_;
 };
 
@@ -77,7 +78,7 @@ SplitFieldIntoNrrdData::SplitFieldIntoNrrdData(GuiContext *ctx):
 void
 SplitFieldIntoNrrdData::execute()
 {
-  FieldHandle field_handle; 
+  FieldHandle field_handle;
   if (!get_input_handle("Field", field_handle)) return;
 
   // Just data for lattices, data and points for structured, all for rest.
@@ -90,7 +91,7 @@ SplitFieldIntoNrrdData::execute()
     remark("Not computing connections for non-editable mesh type.");
     compute_connects_p = false;
   }
-  
+
   if (field_handle->vfield()->basis_order() == -1)
   {
     remark("No data in input field.");
@@ -114,26 +115,26 @@ SplitFieldIntoNrrdData::execute()
     // Set the Nrrd names and send them.
     std::string property;
     std::string nrrd_name = "Unknown";
-    if (field_handle->get_property( "name", property ) && property != "Unknown") 
+    if (field_handle->get_property( "name", property ) && property != "Unknown")
       nrrd_name = property;
 
-    if (points_handle.get_rep()) 
+    if (points_handle.get_rep())
     {
       points_handle->set_property("Name", nrrd_name + "-Points", false);
       send_output_handle("Points", points_handle);
     }
 
-    if (connect_handle.get_rep()) 
+    if (connect_handle.get_rep())
     {
       connect_handle->set_property("Name", nrrd_name + "-Connectivity", false);
       send_output_handle("Connections", connect_handle);
     }
 
-    if (data_handle.get_rep()) 
+    if (data_handle.get_rep())
     {
       data_handle->set_property("Name", nrrd_name + "-Data", false);
       send_output_handle("Data", data_handle);
     }
   }
 }
-
+#endif
