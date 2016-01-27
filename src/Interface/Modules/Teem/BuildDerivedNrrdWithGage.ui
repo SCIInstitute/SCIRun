@@ -28,7 +28,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="fieldKindComboBox_">
      <item>
       <property name="text">
        <string>Scalar</string>
@@ -62,7 +62,7 @@
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QComboBox" name="comboBox_3">
+       <widget class="QComboBox" name="outputTypeComboBox_">
         <item>
          <property name="text">
           <string>double</string>
@@ -81,7 +81,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QComboBox" name="comboBox_2">
+       <widget class="QComboBox" name="quantityComboBox_">
         <item>
          <property name="text">
           <string>value</string>
@@ -202,7 +202,7 @@
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="quantityDescriptionLabel_">
         <property name="text">
          <string/>
         </property>
@@ -231,7 +231,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox_4">
+          <widget class="QComboBox" name="valuesTypeComboBox_">
            <item>
             <property name="text">
              <string>zero</string>
@@ -288,7 +288,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit"/>
+             <widget class="QLineEdit" name="valuesNumParm1LineEdit_"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_8">
@@ -298,7 +298,7 @@
              </widget>
             </item>
             <item row="1" column="1" rowspan="2">
-             <widget class="QLineEdit" name="lineEdit_2"/>
+             <widget class="QLineEdit" name="valuesNumParm2LineEdit_"/>
             </item>
             <item row="2" column="0" rowspan="2">
              <widget class="QLabel" name="label_9">
@@ -308,7 +308,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="lineEdit_3"/>
+             <widget class="QLineEdit" name="valuesNumParm3LineEdit_"/>
             </item>
            </layout>
           </widget>
@@ -330,7 +330,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox_5">
+          <widget class="QComboBox" name="dTypeComboBox_">
            <item>
             <property name="text">
              <string>zero</string>
@@ -392,7 +392,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_4"/>
+             <widget class="QLineEdit" name="dNumParm1LineEdit_"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_12">
@@ -402,7 +402,7 @@
              </widget>
             </item>
             <item row="1" column="1" rowspan="2">
-             <widget class="QLineEdit" name="lineEdit_5"/>
+             <widget class="QLineEdit" name="dNumParm2LineEdit_"/>
             </item>
             <item row="2" column="0" rowspan="2">
              <widget class="QLabel" name="label_13">
@@ -412,7 +412,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="lineEdit_6"/>
+             <widget class="QLineEdit" name="dNumParm3LineEdit_"/>
             </item>
            </layout>
           </widget>
@@ -434,7 +434,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox_6">
+          <widget class="QComboBox" name="ddTypeComboBox_">
            <item>
             <property name="text">
              <string>zero</string>
@@ -486,7 +486,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit_7"/>
+             <widget class="QLineEdit" name="ddNumParm1LineEdit_"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_16">
@@ -496,7 +496,7 @@
              </widget>
             </item>
             <item row="1" column="1" rowspan="2">
-             <widget class="QLineEdit" name="lineEdit_8"/>
+             <widget class="QLineEdit" name="ddNumParm2LineEdit_"/>
             </item>
             <item row="2" column="0" rowspan="2">
              <widget class="QLabel" name="label_17">
@@ -506,7 +506,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="lineEdit_9"/>
+             <widget class="QLineEdit" name="ddNumParm3LineEdit_"/>
             </item>
            </layout>
           </widget>
