@@ -28,10 +28,7 @@
 
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
-#include <Core/Datatypes/String.h>
-#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Python/PythonInterpreter.h>
-#include <boost/thread.hpp>
 #include <boost/algorithm/string.hpp>
 
 using namespace SCIRun::Modules::Python;
@@ -42,8 +39,6 @@ using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
-//ALGORITHM_PARAMETER_DEF(Python, PollingIntervalMilliseconds);
-//ALGORITHM_PARAMETER_DEF(Python, NumberOfRetries);
 ALGORITHM_PARAMETER_DEF(Python, PythonCode);
 
 const ModuleLookupInfo InterfaceWithPython::staticInfo_("InterfaceWithPython", "Python", "SCIRun");
@@ -62,7 +57,7 @@ InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
 void InterfaceWithPython::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Parameters::PythonCode, std::string("1 + 1"));
+  state->setValue(Parameters::PythonCode, std::string("# Insert Python code here using the SCIRun API."));
 }
 
 void InterfaceWithPython::execute()
