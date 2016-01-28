@@ -29,15 +29,18 @@
 
 SET(Interface_Modules_Python_FORMS
   PythonObjectForwarder.ui
+  InterfaceWithPython.ui
 )
 
 SET(Interface_Modules_Python_HEADERS
   PythonObjectForwarderDialog.h
+  InterfaceWithPythonDialog.h
   share.h
 )
 
 SET(Interface_Modules_Python_SOURCES 
   PythonObjectForwarderDialog.cc
+  InterfaceWithPythonDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Python_FORMS_HEADERS ${Interface_Modules_Python_FORMS})

@@ -56,8 +56,7 @@ InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
 void InterfaceWithPython::setStateDefaults()
 {
   auto state = get_state();
-  //state->setValue(Parameters::PollingIntervalMilliseconds, 200);
-  //state->setValue(Parameters::NumberOfRetries, 50);
+  state->setValue(Parameters::PythonCode, std::string("1 + 1"));
 }
 
 void InterfaceWithPython::execute()
