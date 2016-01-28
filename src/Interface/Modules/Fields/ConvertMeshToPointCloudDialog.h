@@ -26,24 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H
-#define INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H 1
+#ifndef INTERFACE_MODULES_FIELDS_ConvertMeshToPointCloudDIALOG_H
+#define INTERFACE_MODULES_FIELDS_ConvertMeshToPointCloudDIALOG_H 1
 
-#include "Interface/Modules/Math/ui_ReportMatrixSliceMeasureDialog.h"
+#include "Interface/Modules/Fields/ui_ConvertMeshToPointCloudDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
   namespace Gui {
-    class SCISHARE ReportMatrixSliceMeasureDialog : public ModuleDialogGeneric,
-    public Ui::ReportMatrixSliceMeasureDialog
+    class SCISHARE ConvertMeshToPointCloudDialog : public ModuleDialogGeneric,
+    public Ui::ConvertMeshToPointCloudDialog
     {
       Q_OBJECT
       
     public:
-      ReportMatrixSliceMeasureDialog(const std::string& name,
-                                     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-                                     QWidget* parent = 0);
+      ConvertMeshToPointCloudDialog(const std::string& name,
+                                    SCIRun::Dataflow::Networks::ModuleStateHandle
+                                    state, QWidget* parent = 0);
+    private:
+      GuiStringTranslationMap streamlineMethod_;
     };
   }
 }

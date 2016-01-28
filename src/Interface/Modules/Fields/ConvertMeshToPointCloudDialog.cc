@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,53 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Include the algorithm
-#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Fields/ConvertMeshToPointCloud.h>
+#include <Interface/Modules/Fields/ConvertMeshToPointCloudDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <QtGui>
 
-/// @class ConvertMeshToPointCloud
-/// @brief Convert a structured field into an unstructured field for editing. 
-
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
-const ModuleLookupInfo ConvertMeshToPointCloud::staticInfo_("ConvertMeshToPointCloud", "ChangeMesh", "SCIRun");
-
-ConvertMeshToPointCloud::ConvertMeshToPointCloud(): Module(staticInfo_)
+ConvertMeshToPointCloudDialog::ConvertMeshToPointCloudDialog(const std::string& name, ModuleStateHandle state,
+	QWidget* parent/* = 0*/)
+	: ModuleDialogGeneric(state, parent)
 {
-  INITIALIZE_PORT(Mesh);
-  INITIALIZE_PORT(PointCloud);
-}
-
-void ConvertMeshToPointCloud::setStateDefaults()
-{
-  setStateStringFromAlgoOption(ConvertMeshToPointCloudMeshAlgo::Location);
-}
-
+	setupUi(this);
+	setWindowTitle(QString::fromStdString(name));
+	fixSize();
   
-void
-ConvertMeshToPointCloud::execute()
-{
-  auto imesh = getRequiredInput(Mesh);
+    streamlineMethod_.insert(StringPair("Extract Node Locations", "node"));
+    streamlineMethod_.insert(StringPair("Extract Data Locations", "data"));
 
-  AlgorithmInput input;
-  input[Variables::InputField] = imesh;
-  
-  if (needToExecute())
-  {
-    update_state(Executing);
-    
-    setAlgoOptionFromState(ConvertMeshToPointCloudMeshAlgo::Location);
-    
-    auto output = algo().run_generic(input);
-    
-    auto pointcloud = output.get<Field>(Variables::OutputField);
-    sendOutput(PointCloud,pointcloud);
-  }
+    addComboBoxManager(option_, Fields::ConvertMeshToPointCloudMeshAlgo::Location,streamlineMethod_);
 }
-
