@@ -75,7 +75,7 @@ namespace SCIRun
 
             if (valueOption)
             {
-              auto var = transient_value_cast<Variable>(valueOption);
+              auto var = Dataflow::Networks::transient_value_cast<Variable>(valueOption);
               if (var.name().name() == "string")
               {
                 auto valueStr = var.toString();
