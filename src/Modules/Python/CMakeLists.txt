@@ -28,10 +28,12 @@
 
 SET(Modules_Python_SRCS
   PythonObjectForwarder.cc
+  InterfaceWithPython.cc
 )
 
 SET(Modules_Python_HEADERS
   PythonObjectForwarder.h
+  InterfaceWithPython.h
   share.h
 )
 
@@ -44,6 +46,7 @@ TARGET_LINK_LIBRARIES(Modules_Python
   Dataflow_Network
   Core_Datatypes
   Algorithms_Base
+  Core_Python
 )
 
 IF(BUILD_SHARED_LIBS)
