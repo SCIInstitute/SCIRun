@@ -29,7 +29,6 @@
 
 #ifdef BUILD_WITH_PYTHON
 
-#include <boost/range/adaptor/transformed.hpp>
 #include <boost/python/to_python_converter.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ModuleInterface.h>
@@ -45,89 +44,28 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Matlab/matlabfile.h>
-#include <Core/Matlab/matlabarray.h>
-#include <Core/Matlab/matlabconverter.h>
+
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+#include <Core/Python/PythonDatatypeConverter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Python;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::MatlabIO;
+
 
 namespace
 {
-  template <class T>
-  boost::python::list toPythonList(const std::vector<T>& vec)
-  {
-    boost::python::list list;
-    for (const auto& v : vec)
-    {
-      list.append(v);
-    }
-    return list;
-  }
-
-  template <class T>
-  boost::python::list toPythonListOfLists(const std::vector<T>& vec, int dim1, int dim2)
-  {
-    boost::python::list list;
-    auto iter = vec.begin();
-    for (int i = 0; i < dim1; ++i)
-    {
-      boost::python::list row;
-      for (int j = 0; j < dim2; ++j)
-        row.append(*iter++);
-      list.append(row);
-    }
-    return list;
-  }
-
-  template <class T>
-  boost::python::list toPythonList(const DenseMatrixGeneric<T>& dense)
-  {
-    boost::python::list list;
-    for (int i = 0; i < dense.nrows(); ++i)
-    {
-      boost::python::list row;
-      for (int j = 0; j < dense.ncols(); ++j)
-        row.append(dense(i,j));
-      list.append(row);
-    }
-    return list;
-  }
-
-  template <class T>
-  boost::python::list toPythonList(const SparseRowMatrixGeneric<T>& sparse)
-  {
-    boost::python::list rows, columns, values;
-
-    for (int i = 0; i < sparse.nonZeros(); ++i)
-    {
-      values.append(sparse.valuePtr()[i]);
-    }
-    for (int i = 0; i < sparse.nonZeros(); ++i)
-    {
-      columns.append(sparse.innerIndexPtr()[i]);
-    }
-    for (int i = 0; i < sparse.outerSize(); ++i)
-    {
-      rows.append(sparse.outerIndexPtr()[i]);
-    }
-
-    boost::python::list list;
-    list.append(rows);
-    list.append(columns);
-    list.append(values);
-    return list;
-  }
-
   class PyDatatypeString : public PyDatatype
   {
   public:
-    explicit PyDatatypeString(StringHandle underlying) : underlying_(underlying)
+    explicit PyDatatypeString(StringHandle underlying) : underlying_(underlying), str_(convertStringToPython(underlying))
     {
     }
 
@@ -138,18 +76,18 @@ namespace
 
     virtual boost::python::object value() const override
     {
-      boost::python::object str(std::string(underlying_->value()));
-      return str;
+      return str_;
     }
 
   private:
     StringHandle underlying_;
+    boost::python::object str_;
   };
 
   class PyDatatypeDenseMatrix : public PyDatatype
   {
   public:
-    explicit PyDatatypeDenseMatrix(DenseMatrixHandle underlying) : underlying_(underlying)
+    explicit PyDatatypeDenseMatrix(DenseMatrixHandle underlying) : underlying_(underlying), pyMat_(convertMatrixToPython(underlying))
     {
     }
 
@@ -160,17 +98,18 @@ namespace
 
     virtual boost::python::object value() const override
     {
-      return toPythonList(*underlying_);
+      return pyMat_;
     }
 
   private:
     DenseMatrixHandle underlying_;
+    boost::python::list pyMat_;
   };
 
   class PyDatatypeSparseRowMatrix : public PyDatatype
   {
   public:
-    explicit PyDatatypeSparseRowMatrix(SparseRowMatrixHandle underlying) : underlying_(underlying)
+    explicit PyDatatypeSparseRowMatrix(SparseRowMatrixHandle underlying) : underlying_(underlying), pyMat_(convertMatrixToPython(underlying))
     {
     }
 
@@ -181,49 +120,19 @@ namespace
 
     virtual boost::python::object value() const override
     {
-      return toPythonList(*underlying_);
+      return pyMat_;
     }
 
   private:
     SparseRowMatrixHandle underlying_;
+    boost::python::list pyMat_;
   };
 
   class PyDatatypeField : public PyDatatype
   {
   public:
-    explicit PyDatatypeField(FieldHandle underlying) : underlying_(underlying)
+    explicit PyDatatypeField(FieldHandle underlying) : underlying_(underlying), matlabStructure_(convertFieldToPython(underlying))
     {
-      matlabarray ma;
-      matlabconverter mc(nullptr);
-      mc.converttostructmatrix();
-      mc.sciFieldTOmlArray(underlying_, ma);
-
-      for (const auto& fieldName : ma.getfieldnames())
-      {
-        auto subField = ma.getfield(0, fieldName);
-        switch (subField.gettype())
-        {
-          case matfilebase::miUINT8:
-          {
-            auto str = subField.getstring();
-            matlabStructure_[fieldName] = str;
-            break;
-          }
-          case matfilebase::miDOUBLE:
-          {
-            std::vector<double> v;
-            subField.getnumericarray(v);
-            if (1 != subField.getm() && 1 != subField.getn())
-              matlabStructure_[fieldName] = toPythonListOfLists(v, subField.getn(), subField.getm());
-            else
-              matlabStructure_[fieldName] = toPythonList(v);
-            break;
-          }
-          default:
-            std::cout << "some other array: " << std::endl;
-            break;
-        }
-      }
     }
 
     virtual std::string type() const override
@@ -320,6 +229,15 @@ namespace
         return PyDatatypeFactory::createWrapper(*dataOpt);
       }
       return nullptr;
+    }
+
+    virtual void setData(const boost::python::object& obj) override
+    {
+      auto input = boost::dynamic_pointer_cast<InputPortInterface>(port_);
+      if (input)
+      {
+
+      }
     }
 
     void reset()
@@ -442,46 +360,76 @@ namespace
       output_.reset();
     }
 
-    virtual boost::python::object getattr(const std::string& name) override
+    virtual boost::python::object getattr(const std::string& name, bool transient) override
     {
       if (module_)
       {
-        auto state = module_->get_state();
-        AlgorithmParameterName apn(name);
-        if (!state->containsKey(apn))
+        if (!transient)
         {
-          throw std::invalid_argument("Module state key " + name + " not defined.");
+          auto state = module_->get_state();
+          AlgorithmParameterName apn(name);
+          if (!state->containsKey(apn))
+          {
+            throw std::invalid_argument("Module state key " + name + " not defined.");
+          }
+
+          auto v = state->getValue(apn);
+        
+  //TODO: extract and use for state get/set
+          /// @todo: extract
+          if ( const int* p = boost::get<int>( &v.value() ) )
+            return boost::python::object(*p);
+          else if ( const std::string* p = boost::get<std::string>( &v.value() ) )
+            return boost::python::object(*p);
+          else if ( const double* p = boost::get<double>( &v.value() ) )
+            return boost::python::object(*p);
+          else if ( const bool* p = boost::get<bool>( &v.value() ) )
+            return boost::python::object(*p);
+
+          return boost::python::object();
         }
+        else
+        {
+          auto state = module_->get_state();
+          AlgorithmParameterName apn(name);
 
-        auto v = state->getValue(apn);
+          auto v = state->getTransientValue(apn);
 
-//TODO: extract and use for state get/set
-        /// @todo: extract
-        if ( const int* p = boost::get<int>( &v.value() ) )
-          return boost::python::object(*p);
-        else if ( const std::string* p = boost::get<std::string>( &v.value() ) )
-          return boost::python::object(*p);
-        else if ( const double* p = boost::get<double>( &v.value() ) )
-          return boost::python::object(*p);
-        else if ( const bool* p = boost::get<bool>( &v.value() ) )
-          return boost::python::object(*p);
-
-        return boost::python::object();
+          //TODO: extract and use for state get/set
+          /// @todo: extract
+          if (transient_value_check<int>(v))
+            return boost::python::object(transient_value_cast<int>(v));
+          if (transient_value_check<std::string>(v))
+            return boost::python::object(transient_value_cast<std::string>(v));
+          if (transient_value_check<double>(v))
+            return boost::python::object(transient_value_cast<double>(v));
+          if (transient_value_check<bool>(v))
+            return boost::python::object(transient_value_cast<bool>(v));
+          
+          return boost::python::object();
+        }
       }
       return boost::python::object();
     }
 
-    virtual void setattr(const std::string& name, boost::python::object object) override
+    virtual void setattr(const std::string& name, boost::python::object object, bool transient) override
     {
       if (module_)
       {
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
-        if (!state->containsKey(apn))
+        if (!transient)
         {
-          throw std::invalid_argument("Module state key " + name + " not defined.");
+          if (!state->containsKey(apn))
+          {
+            throw std::invalid_argument("Module state key " + name + " not defined.");
+          }
+          state->setValue(apn, convert(object).value());
         }
-        state->setValue(apn, convert(object));
+        else
+        {
+          state->setTransientValue(apn, convert(object), false);
+        }
       }
     }
 
@@ -528,44 +476,125 @@ namespace
     boost::shared_ptr<PyPortsImpl> input_, output_;
 
 //TODO: extract and use for state get/set
-    AlgorithmParameter::Value convert(boost::python::object object) const
+    Variable convert(const boost::python::object& object) const
     {
-      AlgorithmParameter::Value value;
-
       /// @todo: yucky
       {
         boost::python::extract<int> e(object);
         if (e.check())
         {
-          value = e();
-          return value;
+          return makeVariable("int", e());
         }
       }
       {
         boost::python::extract<double> e(object);
         if (e.check())
         {
-          value = e();
-          return value;
+          return makeVariable("double", e());
         }
       }
       {
         boost::python::extract<std::string> e(object);
         if (e.check())
         {
-          value = e();
-          return value;
+          return makeVariable("string", e());
         }
       }
       {
         boost::python::extract<bool> e(object);
         if (e.check())
         {
-          value = e();
-          return value;
+          return makeVariable("bool", e());
         }
       }
-      return value;
+      {
+        boost::python::extract<boost::python::list> e(object);
+        if (e.check())
+        {
+          std::cout << "hello i found a list, i am going to construct a matrix." << std::endl;
+          auto list = e();
+          auto length = len(list);
+          bool makeDense;
+          DenseMatrixHandle dense;
+          if (length > 0)
+          {
+            boost::python::extract<boost::python::list> firstRow(list[0]);
+            if (firstRow.check())
+            {
+              makeDense = true;
+              dense.reset(new DenseMatrix(length, len(firstRow)));
+            }
+            else
+            {
+              boost::python::extract<std::string> innerString(list[0]);
+              if (innerString.check())
+                makeDense = false;
+              else
+                throw std::invalid_argument("Ill-formed list.");
+            }
+          }
+          else
+          {
+            throw std::invalid_argument("Empty list.");
+          }
+          if (makeDense)
+          {
+            
+            for (int i = 0; i < length; ++i)
+            {
+              boost::python::extract<boost::python::list> rowList(list[i]);
+              if (rowList.check())
+              {
+                auto row = rowList();
+                if (len(row) != dense->ncols())
+                  throw std::invalid_argument("Attempted to convert into dense matrix but row lengths are not all equal.");
+                for (int j = 0; j < len(row); ++j)
+                {
+                  (*dense)(i,j) = boost::python::extract<double>(row[i]);
+                }
+              }
+            }
+          }
+          else //sparse
+          {
+            std::cout << "TODO: sparse matrix conversion" << std::endl;
+          }
+
+          //for (int i = 0; i < len(list); ++i)
+          //{
+          //  boost::python::extract<boost::python::list> inner(list[i]);
+          //  if (inner.check())
+          //  {
+          //    std::cout << "hello i found a list of lists, i am going to construct a dense matrix" << std::endl;
+          //  }
+          //  else
+          //  {
+          //    boost::python::extract<std::string> innerString(list[i]);
+          //    if (innerString.check())
+          //    {
+          //      std::cout << "hello i found a list of lists, i am going to construct a sparse matrix" << std::endl;
+          //    }
+          //    else
+          //    {
+          //      std::cout << "hello i cannot figure out how to convert this list, so i am erroring" << std::endl;
+          //      throw std::invalid_argument("Ill-formed list.");
+          //    }
+          //  }
+          //}
+
+          Variable x(Name("matrix"), dense, Variable::DATATYPE_VARIABLE);
+          return x;
+        }
+      }
+      //{
+      //  auto vec = to_std_vector<double>(object);
+      //  if (!vec.empty())
+      //  {
+      //    return vec;
+      //  }
+      //}
+      std::cerr << "No known conversion from python object to C++ object" << std::endl;
+      return Variable();
     }
   };
 }
@@ -585,6 +614,8 @@ namespace SCIRun {
 PythonImpl::PythonImpl(NetworkEditorController& nec, GlobalCommandFactoryHandle cmdFactory) : impl_(new PythonImplImpl), nec_(nec), cmdFactory_(cmdFactory)
 {
   nec_.connectNetworkExecutionFinished([this](int) { executionFromPythonFinish(0); });
+  nec_.connectModuleAdded([this](const std::string& id, ModuleHandle m, ModuleCounter mc) { pythonModuleAddedSlot(id, m, mc); });
+  nec_.connectModuleRemoved([this](const ModuleId& id) { pythonModuleRemovedSlot(id); });
 }
 
 void PythonImpl::setUnlockFunc(boost::function<void()> unlock)
@@ -601,9 +632,7 @@ void PythonImpl::executionFromPythonFinish(int)
 {
   if (unlock_)
   {
-    //std::cout << "executionMutex_->unlock attempt " << boost::this_thread::get_id() << std::endl;
     unlock_();
-    //std::cout << "executionMutex_->unlock done " << boost::this_thread::get_id() << std::endl;
   }
 }
 
@@ -614,7 +643,14 @@ boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
     std::cout << "Module added: " + m->get_id().id_ << std::endl;
   else
     std::cout << "Module add failed, no such module type" << std::endl;
-  return boost::make_shared<PyModuleImpl>(m, nec_);
+  
+  return modules_[m->get_id().id_];
+}
+
+void PythonImpl::pythonModuleAddedSlot(const std::string& modId, ModuleHandle m, ModuleCounter)
+{
+  auto pyM = boost::make_shared<PyModuleImpl>(m, nec_);
+  modules_[pyM->id()] = pyM;
 }
 
 std::string PythonImpl::removeModule(const std::string& id)
@@ -630,10 +666,28 @@ std::string PythonImpl::removeModule(const std::string& id)
   }
 }
 
+void PythonImpl::pythonModuleRemovedSlot(const ModuleId& mid)
+{
+  modules_.erase(mid);
+}
+
+std::vector<boost::shared_ptr<PyModule>> PythonImpl::moduleList() const
+{
+  std::vector<boost::shared_ptr<PyModule>> modules;
+  boost::copy(modules_ | boost::adaptors::map_values, std::back_inserter(modules));
+  return modules;
+}
+
+boost::shared_ptr<PyModule> PythonImpl::findModule(const std::string& id) const
+{
+  auto modIter = modules_.find(id);
+  return modIter != modules_.end() ? modIter->second : nullptr;
+}
+
 std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
 {
   nec_.executeAll(lookup);
-  return "Execution finished.";
+  return "Execution started.";
 }
 
 std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)

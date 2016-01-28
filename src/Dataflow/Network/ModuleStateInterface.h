@@ -106,6 +106,23 @@ namespace Networks {
     return x ? any_cast_or_default_<T>(*x) : T();
   }
 
+  template <class T>
+  bool transient_value_check(const ModuleStateInterface::TransientValueOption& x)
+  {
+    if (!x)
+      return false;
+
+    try
+    {
+      boost::any_cast<T>(*x);
+      return true;
+    }
+    catch (boost::bad_any_cast&)
+    {
+      return false;
+    }
+  }
+
   class SCISHARE StateChangeObserver
   {
   public:

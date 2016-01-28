@@ -54,12 +54,14 @@ namespace Algorithms {
       std::string,
       bool,
       AlgoOption,
+      std::vector<double>,
       List
     > Value;
 
     Variable() {}
     Variable(const Name& name, const Value& value);
-    Variable(const Name& name, const Datatypes::DatatypeHandle& data) : name_(name), data_(data) {}
+    enum DatatypeVariableDummyEnum { DATATYPE_VARIABLE };
+    Variable(const Name& name, const Datatypes::DatatypeHandle& data, DatatypeVariableDummyEnum) : name_(name), data_(data) {}
     virtual ~Variable() {}
 
     const Name& name() const { return name_; }
@@ -72,6 +74,7 @@ namespace Algorithms {
     std::string toString() const;
     boost::filesystem::path toFilename() const;
     bool toBool() const;
+    std::vector<double> toDoubleVector() const;
     List toVector() const;
     AlgoOption toOption() const;
 

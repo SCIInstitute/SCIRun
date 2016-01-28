@@ -69,6 +69,7 @@ IF(BUILD_WITH_PYTHON)
   TARGET_LINK_LIBRARIES(Engine_Network
     ${Engine_Network_NonPythonDependentLibs}
     SCIRunPythonAPI
+	Core_Python
   )
 
   INCLUDE_DIRECTORIES(

@@ -444,9 +444,9 @@ void SCIRunMainWindow::setupInputWidgets()
     actionDelete_,
     moduleSelectorTreeWidget_,
     actionRunScript_;
-#ifdef BUILD_WITH_PYTHON
-  widgets += pythonConsole_;
-#endif
+//#ifdef BUILD_WITH_PYTHON
+//  widgets += pythonConsole_;
+//#endif
 
   WidgetDisablingService::Instance().addWidgets(widgets.begin(), widgets.end());
   WidgetDisablingService::Instance().addWidgets(recentFileActions_.begin(), recentFileActions_.end());
@@ -1042,8 +1042,6 @@ void SCIRunMainWindow::showPythonWarning(bool visible)
   if (visible && firstTimePythonShown_)
   {
     firstTimePythonShown_ = false;
-    QMessageBox::warning(this, "Warning: Known Python interface issue",
-      "Attention Python interface user: this feature is not fully implemented. The main issue is that changes made to the current network from the GUI, such as adding/removing modules, are not reflected in the Python console's state. Thus strange bugs can be created by switching between Python-edit mode and standard-GUI-edit mode. Please use the Python console to test your commands, then compose a script that you can run separately without needing the GUI. This issue will be resolved in the next milestone. Thank you!");
   }
 }
 
