@@ -26,44 +26,21 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(SCIRunPythonAPI_SRCS
-  NetworkEditorPythonAPI.cc
+SET(Modules_Python_Tests_SRCS
+  PythonObjectForwarderTest.cc
 )
 
-SET(SCIRunPythonAPI_HEADERS
-  NetworkEditorPythonAPI.h
-  NetworkEditorPythonInterface.h
-  SCIRunPythonModule.h
-  share.h
+SCIRUN_ADD_UNIT_TEST(Modules_Python_Tests
+  ${Modules_Python_Tests_SRCS}
 )
 
-SCIRUN_ADD_LIBRARY(SCIRunPythonAPI 
-  ${SCIRunPythonAPI_HEADERS}
-  ${SCIRunPythonAPI_SRCS}
+TARGET_LINK_LIBRARIES(Modules_Python_Tests
+  Modules_Python
+  Modules_Factory
+  Core_Datatypes
+  Dataflow_Network
+  Dataflow_State
+  gtest_main
+  gtest
+  gmock
 )
-
-TARGET_LINK_LIBRARIES(SCIRunPythonAPI
-  Core_Thread
-  Core_Datatypes_Legacy_Base
-  Core_Persistent
-  ${SCI_PYTHON_LIBRARY}
-  ${SCI_BOOST_LIBRARY}
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_SCIRunPythonAPI)
-    
-IF(WIN32)
-  SET_TARGET_PROPERTIES(SCIRunPythonAPI
-    PROPERTIES
-    IMPORT_SUFFIX ".pyd"
-    IMPORT_PREFIX ""
-    PREFIX ""
-    SUFFIX ".pyd"
-  )
-ENDIF()
-    
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
-

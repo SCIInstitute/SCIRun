@@ -97,6 +97,13 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_String
 )
 
+
+IF(BUILD_WITH_PYTHON)
+  TARGET_LINK_LIBRARIES(Modules_Factory
+    Modules_Python
+  )
+ENDIF()
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Factory)
 ENDIF(BUILD_SHARED_LIBS)

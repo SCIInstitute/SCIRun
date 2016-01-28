@@ -56,8 +56,8 @@ namespace SCIRun
     virtual void reset() = 0;
 
     //state
-    virtual boost::python::object getattr(const std::string& name) = 0;
-    virtual void setattr(const std::string& name, boost::python::object object) = 0;
+    virtual boost::python::object getattr(const std::string& name, bool transient) = 0;
+    virtual void setattr(const std::string& name, boost::python::object object, bool transient) = 0;
     virtual std::vector<std::string> stateVars() const = 0;
     virtual std::string stateToString() const = 0;
 
@@ -84,6 +84,7 @@ namespace SCIRun
     virtual void connect(const PyPort& other) const = 0;
     virtual std::string dataTypeName() const = 0; //TODO: precursor to getting actual data off of port
     virtual boost::shared_ptr<PyDatatype> data() const = 0;
+    virtual void setData(const boost::python::object& obj) = 0;
   };
 
   class SCISHARE PyConnection
@@ -121,6 +122,8 @@ namespace SCIRun
     virtual ~NetworkEditorPythonInterface() {}
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name) = 0;
     virtual std::string removeModule(const std::string& id) = 0;
+    virtual std::vector<boost::shared_ptr<PyModule>> moduleList() const = 0;
+    virtual boost::shared_ptr<PyModule> findModule(const std::string& id) const = 0;
     virtual std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
     virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
     virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup* lookup) = 0;
@@ -130,7 +133,6 @@ namespace SCIRun
     virtual std::string quit(bool force) = 0;
     virtual void setUnlockFunc(boost::function<void()> unlock) = 0;
   };
-
 }
 
 #endif

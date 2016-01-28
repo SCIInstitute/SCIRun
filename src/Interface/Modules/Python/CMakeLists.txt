@@ -1,3 +1,4 @@
+
 #
 #  For more information, please see: http://software.sci.utah.edu
 # 
@@ -26,44 +27,38 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(SCIRunPythonAPI_SRCS
-  NetworkEditorPythonAPI.cc
+SET(Interface_Modules_Python_FORMS
+  PythonObjectForwarder.ui
 )
 
-SET(SCIRunPythonAPI_HEADERS
-  NetworkEditorPythonAPI.h
-  NetworkEditorPythonInterface.h
-  SCIRunPythonModule.h
+SET(Interface_Modules_Python_HEADERS
+  PythonObjectForwarderDialog.h
   share.h
 )
 
-SCIRUN_ADD_LIBRARY(SCIRunPythonAPI 
-  ${SCIRunPythonAPI_HEADERS}
-  ${SCIRunPythonAPI_SRCS}
+SET(Interface_Modules_Python_SOURCES 
+  PythonObjectForwarderDialog.cc
 )
 
-TARGET_LINK_LIBRARIES(SCIRunPythonAPI
-  Core_Thread
-  Core_Datatypes_Legacy_Base
-  Core_Persistent
-  ${SCI_PYTHON_LIBRARY}
+QT4_WRAP_UI(Interface_Modules_Python_FORMS_HEADERS ${Interface_Modules_Python_FORMS})
+QT4_WRAP_CPP(Interface_Modules_Python_HEADERS_MOC ${Interface_Modules_Python_HEADERS})
+
+SCIRUN_ADD_LIBRARY(Interface_Modules_Python
+  ${Interface_Modules_Python_HEADERS}
+  ${Interface_Modules_Python_FORMS_HEADERS}
+  ${Interface_Modules_Python_HEADERS_MOC}
+  ${Interface_Modules_Python_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_Python 
+  Modules_Python
+  Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
+  ${QT_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_SCIRunPythonAPI)
-    
-IF(WIN32)
-  SET_TARGET_PROPERTIES(SCIRunPythonAPI
-    PROPERTIES
-    IMPORT_SUFFIX ".pyd"
-    IMPORT_PREFIX ""
-    PREFIX ""
-    SUFFIX ".pyd"
-  )
-ENDIF()
-    
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Python)
 ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
-
+  
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

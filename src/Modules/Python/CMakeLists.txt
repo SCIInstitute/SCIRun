@@ -26,43 +26,28 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(SCIRunPythonAPI_SRCS
-  NetworkEditorPythonAPI.cc
+SET(Modules_Python_SRCS
+  PythonObjectForwarder.cc
 )
 
-SET(SCIRunPythonAPI_HEADERS
-  NetworkEditorPythonAPI.h
-  NetworkEditorPythonInterface.h
-  SCIRunPythonModule.h
+SET(Modules_Python_HEADERS
+  PythonObjectForwarder.h
   share.h
 )
 
-SCIRUN_ADD_LIBRARY(SCIRunPythonAPI 
-  ${SCIRunPythonAPI_HEADERS}
-  ${SCIRunPythonAPI_SRCS}
+SCIRUN_ADD_LIBRARY(Modules_Python 
+  ${Modules_Python_HEADERS}
+  ${Modules_Python_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(SCIRunPythonAPI
-  Core_Thread
-  Core_Datatypes_Legacy_Base
-  Core_Persistent
-  ${SCI_PYTHON_LIBRARY}
-  ${SCI_BOOST_LIBRARY}
+TARGET_LINK_LIBRARIES(Modules_Python
+  Dataflow_Network
+  Core_Datatypes
+  Algorithms_Base
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_SCIRunPythonAPI)
-    
-IF(WIN32)
-  SET_TARGET_PROPERTIES(SCIRunPythonAPI
-    PROPERTIES
-    IMPORT_SUFFIX ".pyd"
-    IMPORT_PREFIX ""
-    PREFIX ""
-    SUFFIX ".pyd"
-  )
-ENDIF()
-    
+  ADD_DEFINITIONS(-DBUILD_Modules_Python)
 ENDIF(BUILD_SHARED_LIBS)
 
 SCIRUN_ADD_TEST_DIR(Tests)
