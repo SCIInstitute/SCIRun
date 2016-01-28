@@ -118,7 +118,7 @@ SET(Modules_Legacy_Fields_SRCS
   ClipFieldByMesh.cc
   #ClipFieldToFieldOrWidget.cc
   #ClipLatVolByIndicesOrWidget.cc
-  #ConvertMatricesToMesh.cc
+  ConvertMatricesToMesh.cc
   #CollectPointClouds.cc
   #CoregisterPointClouds.cc
   #EditMeshBoundingBox.cc
