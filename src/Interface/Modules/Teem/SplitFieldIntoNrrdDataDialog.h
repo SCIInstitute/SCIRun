@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,41 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : ConvertToNrrd.h
-//    Author : Martin Cole
-//    Date   : Tue Jan  7 09:55:15 2003
+#ifndef INTERFACE_MODULES_SplitFieldIntoNrrdDataDialog_H
+#define INTERFACE_MODULES_SplitFieldIntoNrrdDataDialog_H
 
-#ifndef CORE_ALOGRITHMS_CONVERT_CONVERTTONRRD_H
-#define CORE_ALOGRITHMS_CONVERT_CONVERTTONRRD_H 1
-
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Converter/share.h>
+#include "Interface/Modules/Teem/ui_SplitFieldIntoNrrdData.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Teem/share.h>
 
 namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-				namespace Converters {
+namespace Gui {
 
-ALGORITHM_PARAMETER_DECL(BuildPoints);
-ALGORITHM_PARAMETER_DECL(BuildConnections);
-ALGORITHM_PARAMETER_DECL(BuildData);
-ALGORITHM_PARAMETER_DECL(DataLabel);
-
-class SCISHARE ConvertToNrrdAlgo : public AlgorithmBase
+class SCISHARE SplitFieldIntoNrrdDataDialog : public ModuleDialogGeneric,
+  public Ui::SplitFieldIntoNrrdData
 {
-  public:
-    ConvertToNrrdAlgo();
+	Q_OBJECT
 
-    bool runImpl(FieldHandle input, NrrdDataHandle& points,
-             NrrdDataHandle& connections,NrrdDataHandle& data) const;
-
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-    static const AlgorithmOutputName Data;
-    static const AlgorithmOutputName Points;
-    static const AlgorithmOutputName Connections;
+public:
+  SplitFieldIntoNrrdDataDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
 };
 
-}}}}
+}
+}
 
-#endif // ConvertToNrrd_h
+#endif

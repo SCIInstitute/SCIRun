@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SplitFieldIntoNrrdData",
+    "namespace": "Teem",
+    "status": "Ported module",
+    "description": "TODO",
+    "header": "Modules/Legacy/Teem/Converters/SplitFieldIntoNrrdData.h"
+  },
+  "algorithm": {
+    "name": "ConvertToNrrdAlgo",
+    "namespace": "Converters",
+    "header": "Core/Algorithms/Legacy/Converter/ConvertToNrrd.h"
+  },
+  "UI": {
+    "name": "SplitFieldIntoNrrdDataDialog",
+    "header": "Interface/Modules/Teem/SplitFieldIntoNrrdDataDialog.h"
+  }
+}

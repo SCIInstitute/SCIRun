@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,41 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : ConvertToNrrd.h
-//    Author : Martin Cole
-//    Date   : Tue Jan  7 09:55:15 2003
+#ifndef MODULES_TEEM_CONVERTERS_SplitFieldIntoNrrdData_H
+#define MODULES_TEEM_CONVERTERS_SplitFieldIntoNrrdData_H
 
-#ifndef CORE_ALOGRITHMS_CONVERT_CONVERTTONRRD_H
-#define CORE_ALOGRITHMS_CONVERT_CONVERTTONRRD_H 1
-
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Converter/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Teem/Converters/share.h>
 
 namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-				namespace Converters {
+namespace Modules {
+namespace Teem {
 
-ALGORITHM_PARAMETER_DECL(BuildPoints);
-ALGORITHM_PARAMETER_DECL(BuildConnections);
-ALGORITHM_PARAMETER_DECL(BuildData);
-ALGORITHM_PARAMETER_DECL(DataLabel);
-
-class SCISHARE ConvertToNrrdAlgo : public AlgorithmBase
-{
+  class SCISHARE SplitFieldIntoNrrdData : public Dataflow::Networks::Module,
+    public Has1InputPort<FieldPortTag>,
+    public Has3OutputPorts<NrrdPortTag, NrrdPortTag, NrrdPortTag>
+  {
   public:
-    ConvertToNrrdAlgo();
+    SplitFieldIntoNrrdData();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
 
-    bool runImpl(FieldHandle input, NrrdDataHandle& points,
-             NrrdDataHandle& connections,NrrdDataHandle& data) const;
+    INPUT_PORT(0, InputField, LegacyField);
+    OUTPUT_PORT(0, Data, NrrdDataType);
+    OUTPUT_PORT(1, Points, NrrdDataType);
+    OUTPUT_PORT(2, Connections, NrrdDataType);
 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-    static const AlgorithmOutputName Data;
-    static const AlgorithmOutputName Points;
-    static const AlgorithmOutputName Connections;
-};
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
 
-}}}}
+}}}
 
-#endif // ConvertToNrrd_h
+#endif
