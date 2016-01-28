@@ -45,19 +45,22 @@ namespace SCIRun {
       {
       public:
         InsertMatricesIntoBundle();
-        virtual void setStateDefaults();
-        virtual void execute();
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
+        virtual bool hasDynamicPorts() const override { return true; }
+        virtual void portAddedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
+        virtual void portRemovedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
 
         INPUT_PORT(0, InputBundle, Bundle);
-        INPUT_PORT_DYNAMIC(1, InputFields, Matrix);
+        INPUT_PORT_DYNAMIC(1, InputMatrices, Matrix);
         OUTPUT_PORT(0, OutputBundle, Bundle);
 
-        static Core::Algorithms::AlgorithmParameterName FieldNameList;
-        static const Core::Algorithms::AlgorithmParameterName FieldNames[];
+        static const Core::Algorithms::AlgorithmParameterName BundleName;
+        static const Core::Algorithms::AlgorithmParameterName NumMatrices;
+        static const Core::Algorithms::AlgorithmParameterName MatrixNames;
+        static const Core::Algorithms::AlgorithmParameterName MatrixReplace;
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      private:
-        static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }

@@ -71,6 +71,11 @@ OPTION(BUILD_TESTING "Build with tests." ON)
 OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 
 ###########################################
+# Configure python
+OPTION(WITH_TETGEN "Build Tetgen." ON)
+MARK_AS_ADVANCED(WITH_TETGEN)
+
+###########################################
 # Configure Windows executable to run with
 # or without the console
 
@@ -122,34 +127,35 @@ MARK_AS_ADVANCED(REGENERATE_MODULE_FACTORY_CODE)
 
 SET( SCIRun_DEPENDENCIES )
 
+MACRO(ADD_EXTERNAL cmake_file external)
+  INCLUDE( ${cmake_file} )
+  LIST(APPEND SCIRun_DEPENDENCIES ${external})
+ENDMACRO()
+
 SET(SUPERBUILD_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
 SET(SCIRUN_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src CACHE INTERNAL "" FORCE)
 SET(SCIRUN_BINARY_DIR ${CMAKE_BINARY_DIR}/SCIRun CACHE INTERNAL "" FORCE)
 
 IF(BUILD_TESTING)
-  INCLUDE( ${SUPERBUILD_DIR}/TestDataConfig.cmake )
-  LIST(APPEND SCIRun_DEPENDENCIES SCIRunTestData_external)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/TestDataConfig.cmake SCIRunTestData_external )
 ENDIF()
 
-INCLUDE( ${SUPERBUILD_DIR}/ZlibExternal.cmake )
-LIST(APPEND SCIRun_DEPENDENCIES Zlib_external)
-
-INCLUDE( ${SUPERBUILD_DIR}/SQLiteExternal.cmake )
-LIST(APPEND SCIRun_DEPENDENCIES SQLite_external)
-
-INCLUDE( ${SUPERBUILD_DIR}/LibPNGExternal.cmake )
-LIST(APPEND SCIRun_DEPENDENCIES LibPNG_external)
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/ZlibExternal.cmake Zlib_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/SQLiteExternal.cmake SQLite_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/LibPNGExternal.cmake LibPNG_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/TeemExternal.cmake Teem_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/FreetypeExternal.cmake Freetype_external )
 
 IF(BUILD_WITH_PYTHON)
-  INCLUDE( ${SUPERBUILD_DIR}/PythonExternal.cmake )
-  LIST(APPEND SCIRun_DEPENDENCIES Python_external)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
 ENDIF()
 
-INCLUDE( ${SUPERBUILD_DIR}/BoostExternal.cmake )
-LIST(APPEND SCIRun_DEPENDENCIES Boost_external)
+IF(WITH_TETGEN)
+  MESSAGE(STATUS "Configuring Tetgen library under GPL. The SCIRun InterfaceWithTetGen module can be disabled by setting the CMake build variable WITH_TETGEN to OFF.")
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
+ENDIF()
 
-INCLUDE( ${SUPERBUILD_DIR}/TeemExternal.cmake )
-LIST(APPEND SCIRun_DEPENDENCIES Teem_external)
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
 ###########################################
 # Download external data sources
@@ -171,6 +177,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
+    "-DWITH_TETGEN:BOOL=${WITH_TETGEN}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
     "-DZlib_DIR:PATH=${Zlib_DIR}"
@@ -178,12 +185,20 @@ SET(SCIRUN_CACHE_ARGS
     "-DSQLite_DIR:PATH=${SQLite_DIR}"
     "-DBoost_DIR:PATH=${Boost_DIR}"
     "-DTeem_DIR:PATH=${Teem_DIR}"
+    "-DTetgen_DIR:PATH=${Tetgen_DIR}"
+    "-DFreetype_DIR:PATH=${Freetype_DIR}"
 )
 
 IF(BUILD_WITH_PYTHON)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DPython_DIR:PATH=${Python_DIR}"
     "-DPYTHON_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}"
+  )
+ENDIF()
+
+IF(WITH_TETGEN)
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-DTetgen_DIR:PATH=${Tetgen_DIR}"
   )
 ENDIF()
 

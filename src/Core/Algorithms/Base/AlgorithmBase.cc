@@ -134,6 +134,12 @@ double AlgorithmParameter::toDouble() const
   return v ? *v : toInt();
 }
 
+std::vector<double> AlgorithmParameter::toDoubleVector() const
+{
+  const std::vector<double>* v = boost::get<std::vector<double>>(&value_);
+  return v ? *v : std::vector<double>();
+}
+
 std::string AlgorithmParameter::toString() const
 {
   const std::string* v = boost::get<std::string>(&value_);

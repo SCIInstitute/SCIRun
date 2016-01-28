@@ -51,7 +51,7 @@ class PythonControllerFunctionalTests : public ModuleTest
 public:
   PythonControllerFunctionalTests()
   {
-    PythonInterpreter::Instance().initialize(false);
+    PythonInterpreter::Instance().initialize(false, "", "");
     PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   }
 };

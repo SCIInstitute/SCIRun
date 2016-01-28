@@ -53,7 +53,7 @@ GetFieldsFromBundleDialog::GetFieldsFromBundleDialog(const std::string& name, Mo
 
 void GetFieldsFromBundleDialog::pullSpecial()
 {
-  auto names = optional_any_cast_or_default<std::vector<std::string>>(state_->getTransientValue(GetFieldsFromBundle::FieldNameList.name()));
+  auto names = transient_value_cast<std::vector<std::string>>(state_->getTransientValue(GetFieldsFromBundle::FieldNameList.name()));
   if (fieldNames_ != names)
   {
     fieldNames_ = names;

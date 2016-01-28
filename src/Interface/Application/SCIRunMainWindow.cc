@@ -64,6 +64,7 @@
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Command/CommandFactory.h>
+#include <Core/Utils/CurrentFileName.h>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Interface/Application/PythonConsoleWidget.h>
@@ -443,9 +444,9 @@ void SCIRunMainWindow::setupInputWidgets()
     actionDelete_,
     moduleSelectorTreeWidget_,
     actionRunScript_;
-#ifdef BUILD_WITH_PYTHON
-  widgets += pythonConsole_;
-#endif
+//#ifdef BUILD_WITH_PYTHON
+//  widgets += pythonConsole_;
+//#endif
 
   WidgetDisablingService::Instance().addWidgets(widgets.begin(), widgets.end());
   WidgetDisablingService::Instance().addWidgets(recentFileActions_.begin(), recentFileActions_.end());
@@ -581,7 +582,8 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename)
 {
   if (!filename.isEmpty())
   {
-    FileOpenCommand command(filename.toStdString(), networkEditor_);
+    FileOpenCommand command;
+    command.set(Variables::Filename, filename.toStdString());
     if (command.execute())
     {
       setCurrentFile(filename);
@@ -617,7 +619,8 @@ bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
 	bool success = false;
   if (!filename.isEmpty())
   {
-    FileImportCommand command(filename.toStdString(), networkEditor_);
+    FileImportCommand command;
+    command.set(Variables::Filename, filename.toStdString());
     if (command.execute())
     {
       statusBar()->showMessage(tr("File imported: ") + filename, 2000);
@@ -663,6 +666,7 @@ bool SCIRunMainWindow::newNetwork()
 void SCIRunMainWindow::setCurrentFile(const QString& fileName)
 {
   currentFile_ = fileName;
+  SCIRun::Core::setCurrentFileName(currentFile_.toStdString());
   setWindowModified(false);
   QString shownName = tr("Untitled");
   if (!currentFile_.isEmpty())
@@ -749,6 +753,7 @@ bool SCIRunMainWindow::okToContinue()
 }
 
 //TODO: hook up to modules' state_changed_sig_t via GlobalStateManager
+//TODO: pass a boolean here to avoid updating total modules when only connections are made--saves a lock
 void SCIRunMainWindow::networkModified()
 {
   setWindowModified(true);
@@ -1037,8 +1042,6 @@ void SCIRunMainWindow::showPythonWarning(bool visible)
   if (visible && firstTimePythonShown_)
   {
     firstTimePythonShown_ = false;
-    QMessageBox::warning(this, "Warning: Known Python interface issue",
-      "Attention Python interface user: this feature is not fully implemented. The main issue is that changes made to the current network from the GUI, such as adding/removing modules, are not reflected in the Python console's state. Thus strange bugs can be created by switching between Python-edit mode and standard-GUI-edit mode. Please use the Python console to test your commands, then compose a script that you can run separately without needing the GUI. This issue will be resolved in the next milestone. Thank you!");
   }
 }
 

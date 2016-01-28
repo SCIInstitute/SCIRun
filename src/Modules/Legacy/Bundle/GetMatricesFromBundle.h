@@ -45,8 +45,8 @@ namespace SCIRun {
       {
       public:
         GetMatricesFromBundle();
-        virtual void setStateDefaults();
-        virtual void execute();
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
 
         INPUT_PORT(0, InputBundle, Bundle);
         OUTPUT_PORT(0, OutputBundle, Bundle);
@@ -57,7 +57,13 @@ namespace SCIRun {
         OUTPUT_PORT(5, matrix5, Matrix);
         OUTPUT_PORT(6, matrix6, Matrix);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Core::Algorithms::AlgorithmParameterName MatrixNameList;
+        static const Core::Algorithms::AlgorithmParameterName MatrixNames[];
+        static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        std::string makeMatrixNameList(const Core::Datatypes::Bundle& bundle) const;
       };
 
     }

@@ -93,7 +93,7 @@ protected:
     Log::get().setVerbose(false);
     rescaleColorMap = makeModule("RescaleColorMap");
     rescaleColorMap->setStateDefaults();
-    colorMap.reset(new ColorMap());
+    colorMap = StandardColorMapFactory::create();
     stubPortNWithThisData(rescaleColorMap, 0, colorMap);
     auto size = 2;
     latVol = CreateEmptyLatVol(size, size, size);

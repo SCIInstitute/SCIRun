@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CalculateNodeLocationFrequency",
+    "namespace": "Fields",
+    "status": "New module",
+    "description": "Creates new field with data on the nodes, with value equal to number of nodes at each location",
+    "header": "Modules/Fields/CalculateNodeLocationFrequency.h"
+  },
+  "algorithm": {
+    "name": "CalculateNodeLocationFrequencyAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Field/CalculateNodeLocationFrequencyAlgorithm.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

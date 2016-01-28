@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_GETFIELDDATA_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_GETFIELDDATA_H 1
@@ -38,24 +38,32 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-class SCISHARE GetFieldDataAlgo : public AlgorithmBase
-{
-  public:
-    GetFieldDataAlgo();
-    
-    static AlgorithmOutputName OutputMatrix;
-    
-    Datatypes::DenseMatrixHandle GetScalarFieldDataV(FieldHandle& input) const;
-    Datatypes::DenseMatrixHandle GetVectorFieldDataV(FieldHandle& input) const;
-    Datatypes::DenseMatrixHandle GetTensorFieldDataV(FieldHandle& input) const;
-    Datatypes::DenseMatrixHandle run(FieldHandle input_field) const; 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
-    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    bool GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output) const;
-    bool GetVectorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output) const;
-    bool GetTensorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output) const;
-    #endif
-};
+        ALGORITHM_PARAMETER_DECL(CalcMatrix);
+        ALGORITHM_PARAMETER_DECL(CalcNrrd);
 
-}}}}
+        class SCISHARE GetFieldDataAlgo : public AlgorithmBase
+        {
+        public:
+          GetFieldDataAlgo();
+                
+          Datatypes::DenseMatrixHandle run(FieldHandle input) const;
+          NrrdDataHandle runNrrd(FieldHandle input) const;
+
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+
+        private:
+          template <class MatrixReturnType>
+          boost::shared_ptr<MatrixReturnType> runImpl(FieldHandle input) const;
+          template <class MatrixReturnType>
+          bool GetScalarFieldDataV(FieldHandle input, boost::shared_ptr<MatrixReturnType>& output) const;
+          template <class MatrixReturnType>
+          bool GetVectorFieldDataV(FieldHandle input, boost::shared_ptr<MatrixReturnType>& output) const;
+          template <class MatrixReturnType>
+          bool GetTensorFieldDataV(FieldHandle input, boost::shared_ptr<MatrixReturnType>& output) const;
+        };
+
+      }
+    }
+  }
+}
 #endif

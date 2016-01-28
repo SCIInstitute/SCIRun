@@ -424,14 +424,14 @@ public:
   virtual void get_center(Core::Geometry::Point &point, DElem::index_type i) const;
 
   /// Get the centers of a series of nodes
-  virtual void get_centers(Core::Geometry::Point* points, Node::array_type& array) const;
-  virtual void get_centers(Core::Geometry::Point* points, Elem::array_type& array) const;
+  virtual void get_centers(Core::Geometry::Point* points, const Node::array_type& array) const;
+  virtual void get_centers(Core::Geometry::Point* points, const Elem::array_type& array) const;
 
   /// Get the centers of a series of nodes, with points in an STL vector
   /// These just overload the function calls defined above.
-  inline void get_centers(points_type &points, Node::array_type& array) const
+  inline void get_centers(points_type &points, const Node::array_type& array) const
     { points.resize(array.size()); get_centers(&(points[0]),array); }
-  inline void get_centers(points_type &points, Elem::array_type& array) const
+  inline void get_centers(points_type &points, const Elem::array_type& array) const
     { points.resize(array.size()); get_centers(&(points[0]),array); }
 
 

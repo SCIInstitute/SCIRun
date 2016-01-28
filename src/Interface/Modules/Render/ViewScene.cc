@@ -46,12 +46,13 @@ using namespace SCIRun::Modules::Render;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
-	QWidget* parent /* = 0 */)
+  QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false), itemValueChanged_(true),
-  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false)
+  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false), shiftdown_(false), selected_(false)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
+  setFocusPolicy(Qt::StrongFocus);
 
   addToolBar();
 
@@ -84,17 +85,17 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
     auto spire = mSpire.lock();
-	  if (!spire)
-		  return;
-	  if (Core::Preferences::Instance().useNewViewSceneMouseControls)
-	  {
-		  spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
+    if (!spire)
+      return;
+    if (Core::Preferences::Instance().useNewViewSceneMouseControls)
+    {
+      spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
       spire->setZoomInverted(Core::Preferences::Instance().invertMouseZoom);
-	  }
-	  else
-	  {
-		  spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
-	  }
+    }
+    else
+    {
+      spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
+    }
   }
 
   {
@@ -103,8 +104,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     {
       ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
       bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-                        static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-                        static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+        static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+        static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
     }
     else
     {
@@ -114,18 +115,192 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     spire->setBackgroundColor(bgColor_);
   }
 
-	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
+  state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
+}
+
+void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
+{
+  if (shiftdown_)
+  {
+    selectObject(event->x(), event->y());
+    newGeometryValue();
+  }
+}
+
+void ViewSceneDialog::restoreObjColor()
+{
+  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+
+  Guard lock(Modules::Render::ViewScene::mutex_.get());
+
+  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+
+  auto spire = mSpire.lock();
+  if (!spire)
+    return;
+
+  std::string selName = spire->getSelection();
+  if (selName != "")
+  {
+    auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+    if (geomDataTransient && !geomDataTransient->empty())
+    {
+      auto geomData = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+      if (!geomData)
+      {
+        LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
+        return;
+      }
+      for (auto it = geomData->begin(); it != geomData->end(); ++it)
+      {
+        auto obj = *it;
+        auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
+        if (realObj->uniqueID() == selName)
+        {
+          selected_ = true;
+          for (auto& pass : realObj->mPasses)
+          {
+            pass.addUniform("uAmbientColor",
+              glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+            pass.addUniform("uDiffuseColor",
+              glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            pass.addUniform("uSpecularColor",
+              glm::vec4(0.1f, 1.0f, 1.0f, 1.0f));
+          }
+          break;
+        }
+      }
+    }
+  }
+}
+
+void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
+{
+  if (selected_)
+  {
+    restoreObjColor();
+    newGeometryValue();
+    selected_ = false;
+  }
+}
+
+void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
+{
+  switch (event->key())
+  {
+  case Qt::Key_Shift:
+    shiftdown_ = true;
+    break;
+  }
+}
+
+void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
+{
+  switch (event->key())
+  {
+  case Qt::Key_Shift:
+    shiftdown_ = false;
+    break;
+  }
+}
+
+void ViewSceneDialog::selectObject(const int x, const int y)
+{
+  //newGeometryValue
+  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+
+  Guard lock(Modules::Render::ViewScene::mutex_.get());
+
+  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+
+  auto spire = mSpire.lock();
+  if (!spire)
+    return;
+  spire->removeAllGeomObjects();
+
+  // Grab the geomData transient value.
+  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  if (geomDataTransient && !geomDataTransient->empty())
+  {
+    auto geomData = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+    if (!geomData)
+    {
+      LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
+      return;
+    }
+    if (!spire)
+    {
+      LOG_DEBUG("Logical error: Spire lock not acquired.");
+      return;
+    }
+
+    //getting geom list
+    std::list<Graphics::Datatypes::GeometryHandle> objList;
+
+    for (auto it = geomData->begin(); it != geomData->end(); ++it)
+    {
+      auto obj = *it;
+      auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
+      if (realObj)
+      {
+        //filter objs
+        bool isWidget = false;
+        for (auto& pass : realObj->mPasses)
+        {
+          if (pass.renderState.get(RenderState::IS_WIDGET))
+          {
+            isWidget = true;
+            break;
+          }
+        }
+        if (isWidget)
+          objList.push_back(realObj);
+      }
+    }
+
+    spire->select(glm::ivec2(x - mGLWidget->pos().x(),
+      y - mGLWidget->pos().y()), objList, 0);
+    std::string selName = spire->getSelection();
+    if (selName != "")
+    {
+      for (auto &obj : objList)
+      {
+        if (obj->uniqueID() == selName)
+        {
+          selected_ = true;
+          for (auto& pass : obj->mPasses)
+          {
+            pass.addUniform("uAmbientColor",
+              glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
+            pass.addUniform("uDiffuseColor",
+              glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            pass.addUniform("uSpecularColor",
+              glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
+          }
+          break;
+        }
+      }
+    }
+
+  }
+  else
+  {
+    if (!spire)
+      return;
+    spire->removeAllGeomObjects();
+  }
+
 }
 
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 {
-	// NOTE: At one point this was required because the renderer was
-	// multi-threaded. It is likely we will run into the same issue in the
-	// future. Kept for future reference.
-	//glLayout->removeWidget(mGLWidget);
+  // NOTE: At one point this was required because the renderer was
+  // multi-threaded. It is likely we will run into the same issue in the
+  // future. Kept for future reference.
+  //glLayout->removeWidget(mGLWidget);
   mGLWidget->close();
-	ModuleDialogGeneric::closeEvent(evt);
+  ModuleDialogGeneric::closeEvent(evt);
 }
 
 void ViewSceneDialog::newGeometryValue()
@@ -145,7 +320,7 @@ void ViewSceneDialog::newGeometryValue()
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
-    auto geomData = optional_any_cast_or_default<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+    auto geomData = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
     if (!geomData)
     {
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
@@ -163,7 +338,7 @@ void ViewSceneDialog::newGeometryValue()
     for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
     {
       auto obj = *it;
-			auto name = obj->uniqueID();
+      auto name = obj->uniqueID();
       auto displayName = QString::fromStdString(name).split('_').at(1);
       objectNames.push_back(displayName.toStdString());
       if (!isObjectUnselected(displayName.toStdString()))
@@ -173,9 +348,9 @@ void ViewSceneDialog::newGeometryValue()
         {
           spire->handleGeomObject(realObj, port);
           validObjects.push_back(name);
-				#ifdef BUILD_TESTING
-					sendScreenshotDownstreamForTesting();
-				#endif
+#ifdef BUILD_TESTING
+          sendScreenshotDownstreamForTesting();
+#endif
         }
       }
     }
@@ -225,19 +400,19 @@ void ViewSceneDialog::newGeometryValue()
 void ViewSceneDialog::menuMouseControlChanged(int index)
 {
   auto spire = mSpire.lock();
-	if (!spire)
-		return;
+  if (!spire)
+    return;
 
-	if (index == 0)
-	{
-		spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
-		Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
-	}
-	else
-	{
-		spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
-		Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
-	}
+  if (index == 0)
+  {
+    spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
+    Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
+  }
+  else
+  {
+    spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
+    Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
+  }
   mConfigurationDock->updateZoomOptionVisibility();
 }
 
@@ -245,178 +420,178 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 void ViewSceneDialog::autoViewClicked()
 {
   auto spireLock = mSpire.lock();
-	spireLock->doAutoView();
+  spireLock->doAutoView();
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::showOrientationChecked(bool value)
 {
   auto spire = mSpire.lock();
-	spire->showOrientation(value);
+  spire->showOrientation(value);
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewBarButtonClicked()
 {
-	hideViewBar_ = !hideViewBar_;
-	mViewBar->setHidden(hideViewBar_);
-	mDownViewBox->setCurrentIndex(0);
+  hideViewBar_ = !hideViewBar_;
+  mViewBar->setHidden(hideViewBar_);
+  mDownViewBox->setCurrentIndex(0);
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewAxisSelected(int index)
 {
-	mUpVectorBox->clear();
-	mUpVectorBox->addItem("------");
-	switch (index)
-	{
-	case 0: //default selection no value
-		break;
-	case 1: //Look down on +X Vector
-		mUpVectorBox->addItem("+Y");
-		mUpVectorBox->addItem("-Y");
-		mUpVectorBox->addItem("+Z");
-		mUpVectorBox->addItem("-Z");
-		break;
-	case 2: //Look down on +Y Vector
-		mUpVectorBox->addItem("+X");
-		mUpVectorBox->addItem("-X");
-		mUpVectorBox->addItem("+Z");
-		mUpVectorBox->addItem("-Z");
-		break;
-	case 3: //Look down on +Z Vector
-		mUpVectorBox->addItem("+X");
-		mUpVectorBox->addItem("-X");
-		mUpVectorBox->addItem("+Y");
-		mUpVectorBox->addItem("-Y");
-		break;
-	case 4: //Look down on -X Vector
-		mUpVectorBox->addItem("+Y");
-		mUpVectorBox->addItem("-Y");
-		mUpVectorBox->addItem("+Z");
-		mUpVectorBox->addItem("-Z");
-		break;
-	case 5: //Look down on -Y Vector
-		mUpVectorBox->addItem("+X");
-		mUpVectorBox->addItem("-X");
-		mUpVectorBox->addItem("+Z");
-		mUpVectorBox->addItem("-Z");
-		break;
-	case 6: //Look down on -Z Vector
-		mUpVectorBox->addItem("+X");
-		mUpVectorBox->addItem("-X");
-		mUpVectorBox->addItem("+Y");
-		mUpVectorBox->addItem("-Y");
-		break;
-	}
+  mUpVectorBox->clear();
+  mUpVectorBox->addItem("------");
+  switch (index)
+  {
+  case 0: //default selection no value
+    break;
+  case 1: //Look down on +X Vector
+    mUpVectorBox->addItem("+Y");
+    mUpVectorBox->addItem("-Y");
+    mUpVectorBox->addItem("+Z");
+    mUpVectorBox->addItem("-Z");
+    break;
+  case 2: //Look down on +Y Vector
+    mUpVectorBox->addItem("+X");
+    mUpVectorBox->addItem("-X");
+    mUpVectorBox->addItem("+Z");
+    mUpVectorBox->addItem("-Z");
+    break;
+  case 3: //Look down on +Z Vector
+    mUpVectorBox->addItem("+X");
+    mUpVectorBox->addItem("-X");
+    mUpVectorBox->addItem("+Y");
+    mUpVectorBox->addItem("-Y");
+    break;
+  case 4: //Look down on -X Vector
+    mUpVectorBox->addItem("+Y");
+    mUpVectorBox->addItem("-Y");
+    mUpVectorBox->addItem("+Z");
+    mUpVectorBox->addItem("-Z");
+    break;
+  case 5: //Look down on -Y Vector
+    mUpVectorBox->addItem("+X");
+    mUpVectorBox->addItem("-X");
+    mUpVectorBox->addItem("+Z");
+    mUpVectorBox->addItem("-Z");
+    break;
+  case 6: //Look down on -Z Vector
+    mUpVectorBox->addItem("+X");
+    mUpVectorBox->addItem("-X");
+    mUpVectorBox->addItem("+Y");
+    mUpVectorBox->addItem("-Y");
+    break;
+  }
 
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewVectorSelected(int index)
 {
-	int downIndex = mDownViewBox->currentIndex();
-	glm::vec3 up = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 view = glm::vec3(0.0f, 0.0f, 0.0f);
-	switch (downIndex)
-	{
-	case 0:
-		break;
-	case 1:	//+X axis view
-		view.x = 1.0f;
-		lookDownAxisX(index, up);
-		break;
-	case 2:	//+Y axis view
-		view.y = 1.0f;
-		lookDownAxisY(index, up);
-		break;
-	case 3:	//+Z axis view
-		view.z = 1.0f;
-		lookDownAxisZ(index, up);
-		break;
-	case 4:	//-X axis view
-		view.x = -1.0f;
-		lookDownAxisX(index, up);
-		break;
-	case 5:	//-Y axis view
-		view.y = 1.0f;
-		lookDownAxisY(index, up);
-		break;
-	case 6:	//-Z axis view
-		view.z = -1.0f;
-		lookDownAxisZ(index, up);
-		break;
-	}
-	if (index > 0)
-	{
-		std::shared_ptr<SRInterface> spire = mSpire.lock();
-		spire->setView(view, up);
-		viewBarButtonClicked();
-	}
+  int downIndex = mDownViewBox->currentIndex();
+  glm::vec3 up = glm::vec3(0.0f, 0.0f, 0.0f);
+  glm::vec3 view = glm::vec3(0.0f, 0.0f, 0.0f);
+  switch (downIndex)
+  {
+  case 0:
+    break;
+  case 1:	//+X axis view
+    view.x = 1.0f;
+    lookDownAxisX(index, up);
+    break;
+  case 2:	//+Y axis view
+    view.y = 1.0f;
+    lookDownAxisY(index, up);
+    break;
+  case 3:	//+Z axis view
+    view.z = 1.0f;
+    lookDownAxisZ(index, up);
+    break;
+  case 4:	//-X axis view
+    view.x = -1.0f;
+    lookDownAxisX(index, up);
+    break;
+  case 5:	//-Y axis view
+    view.y = 1.0f;
+    lookDownAxisY(index, up);
+    break;
+  case 6:	//-Z axis view
+    view.z = -1.0f;
+    lookDownAxisZ(index, up);
+    break;
+  }
+  if (index > 0)
+  {
+    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    spire->setView(view, up);
+    viewBarButtonClicked();
+  }
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::lookDownAxisX(int upIndex, glm::vec3& up)
 {
-	switch (upIndex)
-	{
-	case 0:
-		break;
-	case 1: //+Y axis
-		up.y = 1.0f;
-		break;
-	case 2: //-Y axis
-		up.y = -1.0f;
-		break;
-	case 3: //+Z axis
-		up.z = 1.0f;
-		break;
-	case 4: //-Z axis
-		up.z = -1.0f;
-		break;
-	}
+  switch (upIndex)
+  {
+  case 0:
+    break;
+  case 1: //+Y axis
+    up.y = 1.0f;
+    break;
+  case 2: //-Y axis
+    up.y = -1.0f;
+    break;
+  case 3: //+Z axis
+    up.z = 1.0f;
+    break;
+  case 4: //-Z axis
+    up.z = -1.0f;
+    break;
+  }
 }
 
 void ViewSceneDialog::lookDownAxisY(int upIndex, glm::vec3& up)
 {
-	switch (upIndex)
-	{
-	case 0:
-		break;
-	case 1: //+X axis
-		up.x = 1.0f;
-		break;
-	case 2: //-X axis
-		up.x = -1.0f;
-		break;
-	case 3: //+Z axis
-		up.z = 1.0f;
-		break;
-	case 4: //-Z axis
-		up.z = -1.0f;
-		break;
-	}
+  switch (upIndex)
+  {
+  case 0:
+    break;
+  case 1: //+X axis
+    up.x = 1.0f;
+    break;
+  case 2: //-X axis
+    up.x = -1.0f;
+    break;
+  case 3: //+Z axis
+    up.z = 1.0f;
+    break;
+  case 4: //-Z axis
+    up.z = -1.0f;
+    break;
+  }
 }
 
 void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 {
-	switch (upIndex)
-	{
-	case 0:
-		break;
-	case 1: //+X axis
-		up.x = 1.0f;
-		break;
-	case 2: //-X axis
-		up.x = -1.0f;
-		break;
-	case 3: //+Y axis
-		up.y = 1.0f;
-		break;
-	case 4: //-Y axis
-		up.y = -1.0f;
-		break;
-	}
+  switch (upIndex)
+  {
+  case 0:
+    break;
+  case 1: //+X axis
+    up.x = 1.0f;
+    break;
+  case 2: //-X axis
+    up.x = -1.0f;
+    break;
+  case 3: //+Y axis
+    up.y = 1.0f;
+    break;
+  case 4: //-Y axis
+    up.y = -1.0f;
+    break;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -528,28 +703,28 @@ bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 
 void ViewSceneDialog::addToolBar()
 {
-	mToolBar = new QToolBar(this);
-	mToolBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
+  mToolBar = new QToolBar(this);
+  mToolBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
 
   addConfigurationButton();
-	addAutoViewButton();
+  addAutoViewButton();
   addScreenshotButton();
-	//addObjectToggleMenu();
+  //addObjectToggleMenu();
 
-	glLayout->addWidget(mToolBar);
+  glLayout->addWidget(mToolBar);
 
   addViewBar();
 }
 
 void ViewSceneDialog::addAutoViewButton()
 {
-	QPushButton* autoViewBtn = new QPushButton(this);
-	autoViewBtn->setToolTip("Fit Object to Screen");
-	autoViewBtn->setText("Auto View");
-	autoViewBtn->setAutoDefault(false);
-	autoViewBtn->setDefault(false);
-	autoViewBtn->setShortcut(Qt::Key_0);
-	connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
+  QPushButton* autoViewBtn = new QPushButton(this);
+  autoViewBtn->setToolTip("Fit Object to Screen");
+  autoViewBtn->setText("Auto View");
+  autoViewBtn->setAutoDefault(false);
+  autoViewBtn->setDefault(false);
+  autoViewBtn->setShortcut(Qt::Key_0);
+  connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
   mToolBar->addWidget(autoViewBtn);
   mToolBar->addSeparator();
 }
@@ -570,73 +745,73 @@ void ViewSceneDialog::addScreenshotButton()
 
 void ViewSceneDialog::addViewBarButton()
 {
-	QPushButton* viewBarBtn = new QPushButton();
-	viewBarBtn->setToolTip("Show View Options");
-	viewBarBtn->setText("Views");
-	viewBarBtn->setAutoDefault(false);
+  QPushButton* viewBarBtn = new QPushButton();
+  viewBarBtn->setToolTip("Show View Options");
+  viewBarBtn->setText("Views");
+  viewBarBtn->setAutoDefault(false);
   viewBarBtn->setDefault(false);
-	connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-	mToolBar->addWidget(viewBarBtn);
-	mToolBar->addSeparator();
+  connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
+  mToolBar->addWidget(viewBarBtn);
+  mToolBar->addSeparator();
 }
 
 void ViewSceneDialog::addViewBar()
 {
-	mViewBar = new QToolBar(this);
+  mViewBar = new QToolBar(this);
 
-	addViewOptions();
-	hideViewBar_ = true;
+  addViewOptions();
+  hideViewBar_ = true;
 
-	mViewBar->setHidden(hideViewBar_);
+  mViewBar->setHidden(hideViewBar_);
 
-	glLayout->addWidget(mViewBar);
+  glLayout->addWidget(mViewBar);
 
-	addViewBarButton();
+  addViewBarButton();
 }
 
 void ViewSceneDialog::addViewOptions()
 {
-	QLabel* axisLabel = new QLabel();
-	axisLabel->setText("Look Down Axis: ");
-	mViewBar->addWidget(axisLabel);
+  QLabel* axisLabel = new QLabel();
+  axisLabel->setText("Look Down Axis: ");
+  mViewBar->addWidget(axisLabel);
 
-	mDownViewBox = new QComboBox();
-	mDownViewBox->setToolTip("Vector pointing out of the screen");
-	mDownViewBox->addItem("------");
-	mDownViewBox->addItem("+X");
-	mDownViewBox->addItem("+Y");
-	mDownViewBox->addItem("+Z");
-	mDownViewBox->addItem("-X");
-	mDownViewBox->addItem("-Y");
-	mDownViewBox->addItem("-Z");
-	WidgetStyleMixin::toolbarStyle(mViewBar);
-	connect(mDownViewBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewAxisSelected(int)));
-	mViewBar->addWidget(mDownViewBox);
-	mViewBar->addSeparator();
+  mDownViewBox = new QComboBox();
+  mDownViewBox->setToolTip("Vector pointing out of the screen");
+  mDownViewBox->addItem("------");
+  mDownViewBox->addItem("+X");
+  mDownViewBox->addItem("+Y");
+  mDownViewBox->addItem("+Z");
+  mDownViewBox->addItem("-X");
+  mDownViewBox->addItem("-Y");
+  mDownViewBox->addItem("-Z");
+  WidgetStyleMixin::toolbarStyle(mViewBar);
+  connect(mDownViewBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewAxisSelected(int)));
+  mViewBar->addWidget(mDownViewBox);
+  mViewBar->addSeparator();
 
-	QLabel* vectorLabel = new QLabel();
-	vectorLabel->setText("Up Vector: ");
-	mViewBar->addWidget(vectorLabel);
+  QLabel* vectorLabel = new QLabel();
+  vectorLabel->setText("Up Vector: ");
+  mViewBar->addWidget(vectorLabel);
 
-	mUpVectorBox = new QComboBox();
-	mUpVectorBox->setToolTip("Vector pointing up");
-	mUpVectorBox->addItem("------");
-	connect(mUpVectorBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewVectorSelected(int)));
-	mViewBar->addWidget(mUpVectorBox);
-	mViewBar->addSeparator();
+  mUpVectorBox = new QComboBox();
+  mUpVectorBox->setToolTip("Vector pointing up");
+  mUpVectorBox->addItem("------");
+  connect(mUpVectorBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewVectorSelected(int)));
+  mViewBar->addWidget(mUpVectorBox);
+  mViewBar->addSeparator();
 }
 
 void ViewSceneDialog::addConfigurationButton()
 {
-	QPushButton* configurationButton = new QPushButton();
-	configurationButton->setToolTip("Open/Close Configuration Menu");
-	configurationButton->setText("Configure");
-	configurationButton->setAutoDefault(false);
+  QPushButton* configurationButton = new QPushButton();
+  configurationButton->setToolTip("Open/Close Configuration Menu");
+  configurationButton->setText("Configure");
+  configurationButton->setAutoDefault(false);
   configurationButton->setDefault(false);
   configurationButton->setShortcut(Qt::Key_F5);
-	connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
-	mToolBar->addWidget(configurationButton);
-	mToolBar->addSeparator();
+  connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  mToolBar->addWidget(configurationButton);
+  mToolBar->addSeparator();
 }
 
 void ViewSceneDialog::addConfigurationDock(const QString& viewName)
@@ -646,36 +821,36 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
   mConfigurationDock->setHidden(true);
   mConfigurationDock->setVisible(false);
 
-	showConfiguration_ = false;
+  showConfiguration_ = false;
 }
 
 void ViewSceneDialog::hideConfigurationDock()
 {
-	if (mConfigurationDock)
-	{
-  	showConfiguration_ = mConfigurationDock->isVisible();
-  	if (showConfiguration_)
-  	{
-    	configurationButtonClicked();
-  	}
-	}
+  if (mConfigurationDock)
+  {
+    showConfiguration_ = mConfigurationDock->isVisible();
+    if (showConfiguration_)
+    {
+      configurationButtonClicked();
+    }
+  }
 }
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
-	if (!shown_)
-	{
-		autoViewClicked();
-		shown_ = true;
+  if (!shown_)
+  {
+    autoViewClicked();
+    shown_ = true;
   }
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-	ModuleDialogGeneric::showEvent(evt);
+  ModuleDialogGeneric::showEvent(evt);
 }
 
 void ViewSceneDialog::hideEvent(QHideEvent* evt)
 {
-	hideConfigurationDock();
-	ModuleDialogGeneric::hideEvent(evt);
+  hideConfigurationDock();
+  ModuleDialogGeneric::hideEvent(evt);
 }
 
 void ViewSceneDialog::saveNewGeometryChanged(int state)

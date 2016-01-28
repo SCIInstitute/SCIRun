@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReportStringInfo",
+    "namespace": "StringManip",
+    "status": "Converted",
+    "description": "Displays contents of a string",
+    "header": "Modules/Legacy/String/ReportStringInfo.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ReportStringInfoDialog",
+    "header": "Interface/Modules/String/ReportStringInfoDialog.h"
+  }
+}

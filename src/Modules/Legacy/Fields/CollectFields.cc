@@ -28,6 +28,18 @@
 
 #include <Modules/Legacy/Fields/CollectFields.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+
+const ModuleLookupInfo CollectFields::staticInfo_("CollectFields", "NewField", "SCIRun");
+
+CollectFields::CollectFields() : Module(staticInfo_)
+{
+  
+}
+
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Core/Datatypes/Field.h>
