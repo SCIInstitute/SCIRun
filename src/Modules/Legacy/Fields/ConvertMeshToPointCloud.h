@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,25 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H
-#define INTERFACE_MODULES_MATH_REPORTMATRIXSLICEMEASUREDIALOG_H 1
+#ifndef MODULES_LEGACY_FIELDS_ConvertMeshToPointCloud_H__
+#define MODULES_LEGACY_FIELDS_ConvertMeshToPointCloud_H__
 
-#include "Interface/Modules/Math/ui_ReportMatrixSliceMeasureDialog.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-  namespace Gui {
-    class SCISHARE ReportMatrixSliceMeasureDialog : public ModuleDialogGeneric,
-    public Ui::ReportMatrixSliceMeasureDialog
-    {
-      Q_OBJECT
-      
-    public:
-      ReportMatrixSliceMeasureDialog(const std::string& name,
-                                     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-                                     QWidget* parent = 0);
-    };
+  namespace Modules {
+    namespace Fields {
+
+	/// @class ConvertMeshToPointCloud
+	/// @brief Convert a Hexahedra- or a LatVol-Field into a TetVolField. 
+
+      class SCISHARE ConvertMeshToPointCloud : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        ConvertMeshToPointCloud();
+
+        virtual void execute();
+        virtual void setStateDefaults();
+
+        INPUT_PORT(0, Mesh, LegacyField);
+        OUTPUT_PORT(0, PointCloud, LegacyField);
+        
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        //static Core::Algorithms::AlgorithmParameterName ConvertMeshToPointCloud::Location;
+      };
+    }
   }
 }
 
