@@ -29,11 +29,14 @@
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Python/PythonInterpreter.h>
 #include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
@@ -42,6 +45,7 @@ using namespace SCIRun::Core::Algorithms::Python;
 ALGORITHM_PARAMETER_DEF(Python, PythonCode);
 
 const ModuleLookupInfo InterfaceWithPython::staticInfo_("InterfaceWithPython", "Python", "SCIRun");
+Mutex InterfaceWithPython::lock_("InterfaceWithPython");
 
 InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_) 
 {
@@ -61,48 +65,8 @@ void InterfaceWithPython::setStateDefaults()
 
 void InterfaceWithPython::execute()
 {
-/*
+  Guard g(lock_.get());
   auto state = get_state();
-  int tries = 0;
-  const int maxTries = state->getValue(Parameters::NumberOfRetries).toInt();
-  const int waitTime = state->getValue(Parameters::PollingIntervalMilliseconds).toInt();
-  auto valueOption = state->getTransientValue(Parameters::PythonObject);
-  
-  while (tries < maxTries && !valueOption)
-  {
-    std::ostringstream ostr;
-    ostr << "PythonObjectForwarder looking up value attempt #" << (tries+1) << "/" << maxTries;
-    remark(ostr.str());
-
-    valueOption = state->getTransientValue(Parameters::PythonObject);
-
-    tries++;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(waitTime));
-  }
-
-  if (valueOption)
-  {
-    auto var = transient_value_cast<Variable>(valueOption);
-    if (var.name().name() == "string")
-    {
-      auto valueStr = var.toString();
-      if (!valueStr.empty())
-        sendOutput(PythonString, boost::make_shared<String>(valueStr));
-      else
-        sendOutput(PythonString, boost::make_shared<String>("Empty string or non-string received"));
-    }
-    else if (var.name().name() == "dense matrix")
-    {
-      auto dense = boost::dynamic_pointer_cast<DenseMatrix>(var.getDatatype());
-      if (dense)
-        sendOutput(PythonMatrix, dense);
-    }
-    else if (var.name().name() == "sparse matrix")
-    {
-      auto sparse = boost::dynamic_pointer_cast<SparseRowMatrix>(var.getDatatype());
-      if (sparse)
-        sendOutput(PythonMatrix, sparse);
-    }
-  }
-  */
+  auto code = state->getValue(Parameters::PythonCode).toString();
+  PythonInterpreter::Instance().run_string(code);
 }

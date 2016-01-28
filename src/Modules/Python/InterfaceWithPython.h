@@ -30,6 +30,7 @@
 #define MODULES_PYTHON_INTERFACEWITHPYTHON_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Thread/Mutex.h>
 #include <Modules/Python/share.h>
 
 namespace SCIRun
@@ -68,6 +69,8 @@ namespace SCIRun
         OUTPUT_PORT(2, PythonString, String);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        static Core::Thread::Mutex lock_;
       };
 
     }

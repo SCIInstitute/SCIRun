@@ -47,6 +47,7 @@ TARGET_LINK_LIBRARIES(Modules_Python
   Core_Datatypes
   Algorithms_Base
   Core_Python
+  Core_Thread
 )
 
 IF(BUILD_SHARED_LIBS)
