@@ -30,6 +30,7 @@
 
 SET(Modules_Legacy_FiniteElements_HEADERS
   ApplyFEMCurrentSource.h
+  ApplyFEMVoltageSource.h
   BuildFEMatrix.h
   BuildTDCSMatrix.h
   BuildFEVolRHS.h
@@ -37,6 +38,7 @@ SET(Modules_Legacy_FiniteElements_HEADERS
 
 SET(Modules_Legacy_FiniteElements_SRCS
   ApplyFEMCurrentSource.cc
+  ApplyFEMVoltageSource.cc
   #DefinePeriodicBoundaries.cc
   #BuildFEGridMapping.cc
   #BuildFEGridMappingByDomain.cc

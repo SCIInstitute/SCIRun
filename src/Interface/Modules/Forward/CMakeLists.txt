@@ -30,20 +30,17 @@
 SET(Interface_Modules_Forward_FORMS
   BuildBEMatrix.ui
   InsertVoltageSource.ui
-  ApplyFEMVoltageSource.ui
 )
 
 SET(Interface_Modules_Forward_HEADERS
   BuildBEMatrixDialog.h
   InsertVoltageSourceDialog.h
-  ApplyFEMVoltageSourceDialog.h
   share.h
 )
 
 SET(Interface_Modules_Forward_SOURCES 
   BuildBEMatrixDialog.cc
   InsertVoltageSourceDialog.cc
-  ApplyFEMVoltageSourceDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Forward_FORMS_HEADERS ${Interface_Modules_Forward_FORMS})

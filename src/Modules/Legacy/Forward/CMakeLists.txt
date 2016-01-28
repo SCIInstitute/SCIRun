@@ -34,7 +34,6 @@ SET(Modules_Legacy_Forward_HEADERS
   CalcTMP.h
   CalcTMPAlgo.h
   InsertVoltageSource.h
-  ApplyFEMVoltageSource.h
 )
 
 SET(Modules_Legacy_Forward_SRCS
@@ -43,7 +42,6 @@ SET(Modules_Legacy_Forward_SRCS
   CalcTMP.cc
   CalcTMPAlgo.cc
   InsertVoltageSource.cc
-  ApplyFEMVoltageSource.cc
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Forward

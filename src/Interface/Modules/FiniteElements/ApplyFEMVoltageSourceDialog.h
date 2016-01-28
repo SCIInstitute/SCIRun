@@ -26,12 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_FORWARD_APPLYFEMVOLTAGESOURCEDIALOG_H
-#define INTERFACE_MODULES_FORWARD_APPLYFEMVOLTAGESOURCEDIALOG_H
+#ifndef INTERFACE_MODULES_ApplyFEMVoltageSourceDialog_H
+#define INTERFACE_MODULES_ApplyFEMVoltageSourceDialog_H
 
-#include "Interface/Modules/Forward/ui_ApplyFEMVoltageSource.h"
+#include "Interface/Modules/FiniteElements/ui_ApplyFEMVoltageSource.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Forward/share.h>
+#include <Interface/Modules/FiniteElements/share.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -45,10 +45,6 @@ public:
   ApplyFEMVoltageSourceDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-public Q_SLOTS:
-  virtual void updateFromPortChange(int numPorts, const std::string&) override;
-protected:
-  virtual void pullSpecial() override;
 };
 
 }

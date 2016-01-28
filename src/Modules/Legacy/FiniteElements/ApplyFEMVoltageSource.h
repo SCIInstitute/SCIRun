@@ -1,4 +1,3 @@
- 
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -27,18 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FORWARD_ApplyFEMVoltageSource_H__
-#define MODULES_LEGACY_FORWARD_ApplyFEMVoltageSource_H__
+#ifndef MODULES_LEGACY_FINITEELEMENTS_APPLYFEMVOLTAGESOURCE_H__
+#define MODULES_LEGACY_FINITEELEMENTS_APPLYFEMVOLTAGESOURCE_H__
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Forward/share.h>
+#include <Modules/Legacy/FiniteElements/share.h>
 
 namespace SCIRun {
   namespace Modules {
-    namespace Forward {
+    namespace FiniteElements {
 
       class SCISHARE ApplyFEMVoltageSource : public Dataflow::Networks::Module,
-        public Has4InputPorts<FieldPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+        public Has4InputPorts<FieldPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag>,
         public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
       {
       public:
@@ -47,11 +46,15 @@ namespace SCIRun {
         virtual void execute();
 
         INPUT_PORT(0, Mesh, LegacyField);
-        INPUT_PORT(1, StiffnessMatrix, Matrix);
-        INPUT_PORT(2, RHS, Matrix);
-        INPUT_PORT(3, Dirichlet, DenseMatrix);
-        OUTPUT_PORT(0, ForwardMatrix, Matrix);
-        OUTPUT_PORT(1, OutputRHS, Matrix);
+        INPUT_PORT(1, Sources, LegacyField);
+        INPUT_PORT(2, Mapping, Matrix);
+        INPUT_PORT(3, Input_RHS, Matrix);
+        OUTPUT_PORT(0, Output_RHS, Matrix);
+        OUTPUT_PORT(1, Output_Weights, Matrix);
+
+        //static const Core::Algorithms::AlgorithmParameterName SourceNode;
+        //static const Core::Algorithms::AlgorithmParameterName SinkNode;
+        //static const Core::Algorithms::AlgorithmParameterName ModelType;
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
