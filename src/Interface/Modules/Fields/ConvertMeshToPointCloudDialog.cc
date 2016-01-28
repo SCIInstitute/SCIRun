@@ -28,6 +28,8 @@
 
 #include <Interface/Modules/Fields/ConvertMeshToPointCloudDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 #include <QtGui>
 
 using namespace SCIRun::Gui;
@@ -41,6 +43,9 @@ ConvertMeshToPointCloudDialog::ConvertMeshToPointCloudDialog(const std::string& 
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
+  
+    streamlineMethod_.insert(StringPair("Extract Node Locations", "node"));
+    streamlineMethod_.insert(StringPair("Extract Data Locations", "data"));
 
-  addRadioButtonGroupManager({nodeButton_,dataButton_ }, Variables::Operator);
+    addComboBoxManager(option_, Fields::ConvertMeshToPointCloudMeshAlgo::Location,streamlineMethod_);
 }

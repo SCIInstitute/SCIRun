@@ -53,9 +53,8 @@ namespace SCIRun {
         OUTPUT_PORT(0, PointCloud, LegacyField);
         
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
+        //static Core::Algorithms::AlgorithmParameterName ConvertMeshToPointCloud::Location;
       };
-
     }
   }
 }

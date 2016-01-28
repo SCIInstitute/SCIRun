@@ -28,14 +28,18 @@
 
 // Include the algorithm
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/Fields/ConvertMeshToPointCloud.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 /// @class ConvertMeshToPointCloud
 /// @brief Convert a structured field into an unstructured field for editing. 
 
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 
 const ModuleLookupInfo ConvertMeshToPointCloud::staticInfo_("ConvertMeshToPointCloud", "ChangeMesh", "SCIRun");
 
@@ -47,38 +51,28 @@ ConvertMeshToPointCloud::ConvertMeshToPointCloud(): Module(staticInfo_)
 
 void ConvertMeshToPointCloud::setStateDefaults()
 {
+  setStateStringFromAlgoOption(ConvertMeshToPointCloudMeshAlgo::Location);
 }
 
   
 void
 ConvertMeshToPointCloud::execute()
 {
-  /*
-  // Define fieldhandles
-  FieldHandle ifield, ofield;
-  
-  // Get data from input port
-  get_input_handle("Field",ifield,true);
+  auto imesh = getRequiredInput(Mesh);
 
-  // We only execute if something changed
-  if (inputs_changed_ || datalocation_.changed() || !oport_cached("Field"))
+  AlgorithmInput input;
+  input[Variables::InputField] = imesh;
+  
+  if (needToExecute())
   {
     update_state(Executing);
     
-    if(datalocation_.get()) 
-    {
-      algo_.set_option("location","data");
-    }
-    else
-    {
-      algo_.set_option("location","node");
-    }
-    // Run the algorithm
-    if (!(algo_.run(ifield,ofield))) return;
-    // Send to output to the output port
-    send_output_handle("Field", ofield);
+    setAlgoOptionFromState(ConvertMeshToPointCloudMeshAlgo::Location);
+    
+    auto output = algo().run_generic(input);
+    
+    auto pointcloud = output.get<Field>(Variables::OutputField);
+    sendOutput(PointCloud,pointcloud);
   }
-   */
-  
 }
 
