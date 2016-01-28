@@ -27,10 +27,12 @@
 */
 
 #include <Modules/Python/InterfaceWithPython.h>
+#include <Modules/Python/PythonObjectForwarder.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <boost/thread.hpp>
+#include <boost/algorithm/string.hpp>
 
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
@@ -65,8 +67,19 @@ void InterfaceWithPython::setStateDefaults()
 
 void InterfaceWithPython::execute()
 {
-  Guard g(lock_.get());
   auto state = get_state();
-  auto code = state->getValue(Parameters::PythonCode).toString();
-  PythonInterpreter::Instance().run_string(code);
+  {
+    Guard g(lock_.get());
+    
+    auto code = state->getValue(Parameters::PythonCode).toString();
+    std::vector<std::string> lines;
+    boost::split(lines, code, boost::is_any_of("\n"));
+    for (const auto& line : lines)
+      PythonInterpreter::Instance().run_string(line);
+  }
+
+  //TODO: hook up GUI input as with POF module
+  //TODO: support multiple output objects
+  PythonObjectForwarderImpl<InterfaceWithPython> impl(*this, 100, 100);
+  impl.waitForOutputFromTransientState();
 }

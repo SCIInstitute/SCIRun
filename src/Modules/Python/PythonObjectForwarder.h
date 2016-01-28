@@ -30,6 +30,10 @@
 #define MODULES_PYTHON_PYTHONOBJECTFORWARDER_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <boost/thread.hpp>
 #include <Modules/Python/share.h>
 
 namespace SCIRun
@@ -43,6 +47,62 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(PollingIntervalMilliseconds);
         ALGORITHM_PARAMETER_DECL(NumberOfRetries);
         ALGORITHM_PARAMETER_DECL(PythonObject);
+
+
+        template <class PythonModule>
+        class PythonObjectForwarderImpl
+        {
+        public:
+          PythonObjectForwarderImpl(PythonModule& module, int maxTries, int waitTime) : module_(module), maxTries_(maxTries), waitTime_(waitTime) {}
+
+          void waitForOutputFromTransientState()
+          {
+            int tries = 0;
+            auto state = module_.get_state();
+            auto valueOption = state->getTransientValue(Parameters::PythonObject);
+
+            while (tries < maxTries_ && !valueOption)
+            {
+              std::ostringstream ostr;
+              ostr << "PythonObjectForwarder looking up value attempt #" << (tries + 1) << "/" << maxTries_;
+              module_.remark(ostr.str());
+
+              valueOption = state->getTransientValue(Parameters::PythonObject);
+
+              tries++;
+              boost::this_thread::sleep(boost::posix_time::milliseconds(waitTime_));
+            }
+
+            if (valueOption)
+            {
+              auto var = transient_value_cast<Variable>(valueOption);
+              if (var.name().name() == "string")
+              {
+                auto valueStr = var.toString();
+                if (!valueStr.empty())
+                  module_.sendOutput(module_.PythonString, boost::make_shared<Core::Datatypes::String>(valueStr));
+                else
+                  module_.sendOutput(module_.PythonString, boost::make_shared<Core::Datatypes::String>("Empty string or non-string received"));
+              }
+              else if (var.name().name() == "dense matrix")
+              {
+                auto dense = boost::dynamic_pointer_cast<Core::Datatypes::DenseMatrix>(var.getDatatype());
+                if (dense)
+                  module_.sendOutput(module_.PythonMatrix, dense);
+              }
+              else if (var.name().name() == "sparse matrix")
+              {
+                auto sparse = boost::dynamic_pointer_cast<Core::Datatypes::SparseRowMatrix>(var.getDatatype());
+                if (sparse)
+                  module_.sendOutput(module_.PythonMatrix, sparse);
+              }
+            }
+
+          }
+        private:
+          PythonModule& module_;
+          int maxTries_, waitTime_;
+        };
       }
     }
   }
