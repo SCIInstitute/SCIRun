@@ -85,6 +85,12 @@ class Darkhue : public ColorMapStrategy
 public:
   virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
 };
+
+class BPSeismic : public ColorMapStrategy
+{
+public:
+  virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+};
 }
 
 ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &res,
@@ -109,6 +115,9 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
     }
     else if (name == "Darkhue") {
       color.reset(new detail::Darkhue);
+    }
+    else if (name == "BP Seismic") {
+      color.reset(new detail::BPSeismic);
     }
     else
       THROW_INVALID_ARGUMENT("Color map name not implemented/recognized.");
@@ -288,6 +297,18 @@ ColorRGB detail::OrangeBlackLime::getColorMapVal(double f) const
     col = ColorRGB((0.5 - f) * 2., 0.5 - f, 0.);
   else
     col = ColorRGB(0., (f - 0.5) * 2., 0.);
+  return col;
+}
+
+// This color scheme sets a transition of color that goes
+// Blue -> White -> Red
+ColorRGB detail::BPSeismic::getColorMapVal(double f) const
+{
+  ColorRGB col;
+  if (f < 0.5)
+    col = ColorRGB(f*2, f*2, 1);
+  else
+    col = ColorRGB(1, (1-f)*2, (1-f)*2);
   return col;
 }
 
