@@ -30,7 +30,6 @@
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/GeometryPrimitives/Vector.h>
-//#include <Core/Application/Application.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 
 using namespace SCIRun;

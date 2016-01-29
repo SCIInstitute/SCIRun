@@ -74,6 +74,8 @@ namespace fs = CPM_ES_FS_NS;
 namespace SCIRun {
   namespace Render {
 
+    std::string SRInterface::mFSRoot;
+    std::string SRInterface::mFSSeparator;
     //------------------------------------------------------------------------------
     SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
       int frameInitLimit) :
@@ -532,6 +534,16 @@ namespace SCIRun {
     std::string &SRInterface::getSelection()
     {
       return mSelected;
+    }
+
+    std::string &SRInterface::getFSRoot()
+    {
+      return mFSRoot;
+    }
+
+    std::string &SRInterface::getFSSeparator()
+    {
+      return mFSSeparator;
     }
 
     //------------------------------------------------------------------------------

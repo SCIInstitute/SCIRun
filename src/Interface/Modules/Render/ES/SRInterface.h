@@ -150,11 +150,8 @@ namespace SCIRun {
       /// get name of the selection
       std::string &getSelection();
 
-      /// initialize free type lib
-      void initFreeType(const std::string& libName, size_t size);
-
-      /// reload free type
-      void reloadFreeType(const std::string& libName, size_t size);
+      static std::string& getFSRoot();
+      static std::string& getFSSeparator();
 
     private:
 
@@ -300,6 +297,8 @@ namespace SCIRun {
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
 
+      static std::string mFSRoot;/// file system root
+      static std::string mFSSeparator;/// file system seperator
     };
 
   } // namespace Render
