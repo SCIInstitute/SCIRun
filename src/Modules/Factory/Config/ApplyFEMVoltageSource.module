@@ -12,7 +12,7 @@
     "header": "N/A"
   },
   "UI": {
-    "name": "InsertVoltageSourceDialog",
+    "name": "ApplyFEMVoltageSourceDialog",
     "header": "Interface/Modules/FiniteElements/ApplyFEMVoltageSourceDialog.h"
   }
 }
