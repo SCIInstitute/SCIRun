@@ -243,6 +243,11 @@ PythonInterpreter::~PythonInterpreter()
 //#define PRINT_PY_INIT_DEBUG(n) std::cout << "ev_" << (n) << std::endl;
 #define PRINT_PY_INIT_DEBUG(n)
 
+bool isOSXSCIRunTestExecutable(const std::string& commandLine)
+{
+  const std::string TEST_EXECUTABLE_NAME = "SCIRun_test";
+  return 0 == boost::filesystem::path(commandLine).stem().string().compare(0, TEST_EXECUTABLE_NAME.size(), TEST_EXECUTABLE_NAME);
+}
 
 void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, const boost::filesystem::path& libPath)
 {
@@ -282,8 +287,7 @@ void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, 
   lib_path_list.push_back(lib_path.parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
   lib_path_list.push_back(lib_path / PYTHONPATH);
 
-  // for test executable
-  if ( boost::filesystem::path(commandLine).stem() == "SCIRun_test" )
+  if (isOSXSCIRunTestExecutable(commandLine))
   {
     boost::filesystem::path full_lib_path(PYTHONLIBDIR);
     full_lib_path /= PYTHONLIB;

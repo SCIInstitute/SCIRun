@@ -26,42 +26,55 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
-
+#include <Core/Python/PythonInterpreter.h>
+#include <boost/algorithm/string.hpp>
 
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
-ALGORITHM_PARAMETER_DEF(Python, PollingIntervalMilliseconds);
-ALGORITHM_PARAMETER_DEF(Python, NumberOfRetries);
-ALGORITHM_PARAMETER_DEF(Python, PythonObject);
+ALGORITHM_PARAMETER_DEF(Python, PythonCode);
 
-const ModuleLookupInfo PythonObjectForwarder::staticInfo_("PythonObjectForwarder", "Python", "SCIRun");
+const ModuleLookupInfo InterfaceWithPython::staticInfo_("InterfaceWithPython", "Python", "SCIRun");
+Mutex InterfaceWithPython::lock_("InterfaceWithPython");
 
-PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_) 
+InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_) 
 {
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(InputString);
   INITIALIZE_PORT(PythonMatrix);
   INITIALIZE_PORT(PythonField);
   INITIALIZE_PORT(PythonString);
 }
 
-void PythonObjectForwarder::setStateDefaults()
+void InterfaceWithPython::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Parameters::PollingIntervalMilliseconds, 200);
-  state->setValue(Parameters::NumberOfRetries, 50);
+  state->setValue(Parameters::PythonCode, std::string("# Insert Python code here using the SCIRun API."));
 }
 
-void PythonObjectForwarder::execute()
+void InterfaceWithPython::execute()
 {
   auto state = get_state();
-  const int maxTries = state->getValue(Parameters::NumberOfRetries).toInt();
-  const int waitTime = state->getValue(Parameters::PollingIntervalMilliseconds).toInt();
+  {
+    Guard g(lock_.get());
+    
+    auto code = state->getValue(Parameters::PythonCode).toString();
+    std::vector<std::string> lines;
+    boost::split(lines, code, boost::is_any_of("\n"));
+    for (const auto& line : lines)
+      PythonInterpreter::Instance().run_string(line);
+  }
 
-  PythonObjectForwarderImpl<PythonObjectForwarder> impl(*this, maxTries, waitTime);
+  //TODO: hook up GUI input as with POF module
+  //TODO: support multiple output objects
+  PythonObjectForwarderImpl<InterfaceWithPython> impl(*this, 100, 100);
   impl.waitForOutputFromTransientState();
 }
-
