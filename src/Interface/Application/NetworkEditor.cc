@@ -544,8 +544,15 @@ void NetworkEditor::paste()
   QString str = QApplication::clipboard()->text();
 
   std::istringstream istr(str.toStdString());
-  auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
-  appendToNetwork(xml);
+  try
+  {
+    auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
+    appendToNetwork(xml);
+  }
+  catch (...)
+  {
+    QMessageBox::critical(this, "Paste error", "Invalid clipboard contents: " + str);
+  }
 }
 
 void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)

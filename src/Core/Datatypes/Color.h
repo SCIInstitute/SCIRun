@@ -48,6 +48,8 @@ namespace Datatypes {
     explicit ColorRGB(const std::string& rgb);
     ColorRGB(double r, double g, double b);
     ColorRGB(double r, double g, double b, double a);
+    //adjust alpha while copying
+    ColorRGB(const ColorRGB& color, double a);
 
     // These equality operations should use floating point comparisons.
     inline bool operator==(const ColorRGB& c) const {

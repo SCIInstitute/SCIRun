@@ -88,7 +88,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   int32_t numVBOElements = 0;
   double resolution = 1. / static_cast<double>(cm->getColorMapResolution());
   //show colormap does not rescale colors, so reset them. we want to see the whole colormap on the scale.
-  ColorMap new_map(cm->getColorMapName(), cm->getColorMapResolution(),
+  ColorMap new_map(cm->getColorStrategy(), cm->getColorMapName(), cm->getColorMapResolution(),
     cm->getColorMapShift(), cm->getColorMapInvert(), 1., 0.);
   for (double i = 0.; std::abs(i - 1.) > 0.000001; i += resolution) {
     ColorRGB col = new_map.valueToColor(i);
@@ -180,7 +180,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   RenderState renState;
   renState.set(RenderState::IS_ON, true);
   renState.set(RenderState::HAS_DATA, true);
-  
+
   SpireSubPass pass(passName, vboName, iboName, shader,
     COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO, geomIBO);
 

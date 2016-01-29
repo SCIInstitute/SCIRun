@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_SCALEFIELDMESHANDDATADIALOG_H
 #define INTERFACE_MODULES_SCALEFIELDMESHANDDATADIALOG_H
 
-#include "Interface/Modules/Fields/ui_ScaleFieldMeshAndData.h"
+#include "Interface/Modules/Fields/ui_scalefieldmeshanddata.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/share.h>
 
