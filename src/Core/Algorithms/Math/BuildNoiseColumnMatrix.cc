@@ -57,9 +57,9 @@ MatrixHandle BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle input_matrix) con
   int nc = input_matrix->ncols();
   DenseMatrixHandle output(new DenseMatrix(nr, nc));
 	double curr;
-	
+
 	double snr = get(SignalToNoiseRatio()).toDouble();
-	
+
 	mean /= nr*nc;
 	for(r = 0; r < nr; r++) {
 		for(c = 0; c < nc; c++)
@@ -69,9 +69,9 @@ MatrixHandle BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle input_matrix) con
 		}
 	}
 	power /= nc*nr;
-	
+
 	sigma = sqrt(power)/(snr*sqrt(2*M_PI));
-	
+
 	for(r = 0; r < nr; r++)
 	{
 		for(c = 0; c < nc; c++)
@@ -87,18 +87,14 @@ MatrixHandle BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle input_matrix) con
 AlgorithmOutput BuildNoiseColumnMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
 	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
-	
+
   MatrixHandle output_matrix = run(input_matrix);
-	
+
 	AlgorithmOutput output;
 	output[Variables::ResultMatrix] = output_matrix;
-	
+
 	return output;
 }
 
-AlgorithmInputName BuildNoiseColumnMatrixAlgorithm::InputMatrix("InputMatrix");
 AlgorithmOutputName BuildNoiseColumnMatrixAlgorithm::ResultMatrix("ResultMatrix");
 AlgorithmParameterName BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio() {return AlgorithmParameterName("SignalToNoiseRatio"); }
-
-
-

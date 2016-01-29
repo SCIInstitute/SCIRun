@@ -45,7 +45,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
 
-#include <Core/Application/Application.h>
+//#include <Core/Application/Application.h>
 #include <Core/Utils/StringContainer.h>
 #include <Core/Utils/Lockable.h>
 #include <Core/Utils/Legacy/StringUtil.h>
@@ -243,8 +243,13 @@ PythonInterpreter::~PythonInterpreter()
 //#define PRINT_PY_INIT_DEBUG(n) std::cout << "ev_" << (n) << std::endl;
 #define PRINT_PY_INIT_DEBUG(n)
 
+bool isOSXSCIRunTestExecutable(const std::string& commandLine)
+{
+  const std::string TEST_EXECUTABLE_NAME = "SCIRun_test";
+  return 0 == boost::filesystem::path(commandLine).stem().string().compare(0, TEST_EXECUTABLE_NAME.size(), TEST_EXECUTABLE_NAME);
+}
 
-void PythonInterpreter::initialize_eventhandler()
+void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, const boost::filesystem::path& libPath)
 {
   PRINT_PY_INIT_DEBUG(1);
 	using namespace boost::python;
@@ -276,14 +281,13 @@ void PythonInterpreter::initialize_eventhandler()
 #endif
   PRINT_PY_INIT_DEBUG(5);
 #if defined( __APPLE__ )
-  boost::filesystem::path lib_path = Application::Instance().executablePath().parent_path();
+  boost::filesystem::path lib_path = libPath.parent_path();
   std::vector<boost::filesystem::path> lib_path_list;
   // relative paths
   lib_path_list.push_back(lib_path.parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
   lib_path_list.push_back(lib_path / PYTHONPATH);
 
-  // for test executable
-  if ( boost::filesystem::path(Application::Instance().parameters()->entireCommandLine()).stem() == "SCIRun_test" )
+  if (isOSXSCIRunTestExecutable(commandLine))
   {
     boost::filesystem::path full_lib_path(PYTHONLIBDIR);
     full_lib_path /= PYTHONLIB;
@@ -308,7 +312,7 @@ void PythonInterpreter::initialize_eventhandler()
 
   Py_SetPath( lib_paths.str().c_str() );
 #elif defined (_WIN32)
-  boost::filesystem::path lib_path = Application::Instance().executablePath();
+  boost::filesystem::path lib_path = libPath;// Application::Instance().executablePath();
   boost::filesystem::path top_lib_path = lib_path / PYTHONPATH / PYTHONNAME;
   //std::cout << "top_lib_path: " << top_lib_path.string() << std::endl;
   boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
@@ -322,7 +326,7 @@ void PythonInterpreter::initialize_eventhandler()
   PRINT_PY_INIT_DEBUG(6);
 #else
   // linux...
-  boost::filesystem::path lib_path = Application::Instance().executablePath();
+  boost::filesystem::path lib_path = libPath;
   boost::filesystem::path top_lib_path = lib_path / PYTHONPATH;
   boost::filesystem::path dynload_lib_path = top_lib_path / "lib-dynload";
   boost::filesystem::path site_lib_path = top_lib_path / "site-packages";
@@ -386,12 +390,12 @@ void PythonInterpreter::initialize_eventhandler()
   PRINT_PY_INIT_DEBUG(999);
 }
 
-void PythonInterpreter::initialize( bool needProgramName /*const wchar_t* program_name, const module_list_type& init_list*/ )
+void PythonInterpreter::initialize(bool needProgramName, const std::string& commandLine, const boost::filesystem::path& libPath)
 {
   if (needProgramName)
   {
     using namespace boost::algorithm;
-    std::string cmdline = Application::Instance().parameters()->entireCommandLine();
+    std::string cmdline = commandLine;// Application::Instance().parameters()->entireCommandLine();
     trim_all(cmdline);
     std::vector< std::string > argv;
     split(argv, cmdline, is_any_of(" "));
@@ -411,7 +415,7 @@ void PythonInterpreter::initialize( bool needProgramName /*const wchar_t* progra
 //  PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 //  this->start_eventhandler();
 
-  initialize_eventhandler();
+  initialize_eventhandler(commandLine, libPath);
 
   {
     auto out = [](const std::string& s) { std::cout << "[PYTHON] " << s << std::endl; };

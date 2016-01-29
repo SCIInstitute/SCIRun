@@ -93,7 +93,7 @@ namespace Networks {
     virtual ~OutputPortInterface();
     virtual void sendData(Core::Datatypes::DatatypeHandle data) = 0;
     virtual bool hasData() const = 0;
-    virtual OutputPortInterface* clone() const { return 0; } // TODO
+    virtual OutputPortInterface* clone() const { return nullptr; } // TODO
     virtual PortDataDescriber getPortDataDescriber() const = 0;
     virtual boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) = 0;
     virtual void sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info) = 0;

@@ -254,6 +254,7 @@ namespace Networks {
     void setAlgoBoolFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoIntFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoDoubleFromState(const Core::Algorithms::AlgorithmParameterName& name);
+    void setAlgoStringFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoOptionFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoListFromState(const Core::Algorithms::AlgorithmParameterName& name);
 
