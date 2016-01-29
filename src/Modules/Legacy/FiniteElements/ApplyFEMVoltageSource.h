@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace FiniteElements {
 
       class SCISHARE ApplyFEMVoltageSource : public Dataflow::Networks::Module,
-        public Has4InputPorts<FieldPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag>,
+        public Has4InputPorts<FieldPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
         public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
       {
       public:
@@ -46,15 +46,13 @@ namespace SCIRun {
         virtual void execute();
 
         INPUT_PORT(0, Mesh, LegacyField);
-        INPUT_PORT(1, Sources, LegacyField);
-        INPUT_PORT(2, Mapping, Matrix);
-        INPUT_PORT(3, Input_RHS, Matrix);
-        OUTPUT_PORT(0, Output_RHS, Matrix);
-        OUTPUT_PORT(1, Output_Weights, Matrix);
+        INPUT_PORT(1, StiffnessMatrix, Matrix);
+        INPUT_PORT(2, RHS, Matrix);
+        INPUT_PORT(3, Dirichlet, DenseMatrix);
+        OUTPUT_PORT(0, ForwardMatrix, Matrix);
+        OUTPUT_PORT(1, OutputRHS, Matrix);
 
-        //static const Core::Algorithms::AlgorithmParameterName SourceNode;
-        //static const Core::Algorithms::AlgorithmParameterName SinkNode;
-        //static const Core::Algorithms::AlgorithmParameterName ModelType;
+        static const Core::Algorithms::AlgorithmParameterName ApplyDirichlet;
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };

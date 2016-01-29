@@ -27,12 +27,16 @@
 */
 
 #include <Interface/Modules/FiniteElements/ApplyFEMVoltageSourceDialog.h>
+#include <Core/Algorithms/Legacy/FiniteElements/ApplyFEM/ApplyFEMVoltageSourceAlgo.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMVoltageSource.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
+
 
 ApplyFEMVoltageSourceDialog::ApplyFEMVoltageSourceDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,9 +45,7 @@ ApplyFEMVoltageSourceDialog::ApplyFEMVoltageSourceDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  /*
-  addSpinBoxManager(sinkElectrodeSpinBox_, SCIRun::Modules::FiniteElements::ApplyFEMCurrentSource::SinkNode);
-  addSpinBoxManager(sourceElectrodeSpinBox_, SCIRun::Modules::FiniteElements::ApplyFEMCurrentSource::SourceNode);
-  addComboBoxManager(modelComboBox_, SCIRun::Modules::FiniteElements::ApplyFEMCurrentSource::ModelType);
-  */
+
+  addRadioButtonGroupManager({ applyDirichletRadioButton_, groundNodeZeroRadioButton_ }, 
+    SCIRun::Modules::FiniteElements::ApplyFEMVoltageSource::ApplyDirichlet);
 }
