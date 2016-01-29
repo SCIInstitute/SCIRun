@@ -40,18 +40,15 @@ using namespace Core::Algorithms;
 using namespace Core::Geometry;
 using namespace Graphics::Datatypes;
 
+std::string ShowColorMapModule::mFSRoot;
+std::string ShowColorMapModule::mFSSeparator;
+
 ShowColorMapModule::ShowColorMapModule() : GeometryGeneratingModule(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
 {
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(GeometryOutput);
   ftInit_ = false;
   ftValid_ = false;
-  //std::string filesystemRoot = Core::Application::Instance().executablePath().string();
-  //std::string sep;
-  //sep += boost::filesystem::path::preferred_separator;
-  //std::string fontPath = filesystemRoot + sep + "Fonts" + sep + "FreeSans.ttf";
-  std::string fontPath = "E:\\SCIRun\\bin\\SCIRun\\Fonts\\FreeSans.ttf";
-  initFreeType(fontPath, 50);
 }
 
 void ShowColorMapModule::setStateDefaults()
@@ -205,6 +202,17 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   geom->mPasses.push_back(pass);
 
   //text
+  size_t text_size = 15;
+  if (!ftInit_)
+  {
+    std::string fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + "FreeSans.ttf";
+    initFreeType(fontPath, text_size);
+  }
+  else if (!ftValid_)
+  {
+    std::string fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + "FreeSans.ttf";
+    loadNewFace(fontPath, text_size);
+  }
   if (!ftInit_ || !ftValid_)
     return geom;
   char str2[128];
@@ -213,8 +221,8 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   std::vector<Vector> txt_coords;
   double increment = 1. / static_cast<double>(numlabel - 1);
   double textSize = 10. * static_cast<double>(txtsize + 3);
-  const double dash_size = 20.;
-  const double pipe_size = 40.;
+  double dash_size = 18.;
+  double pipe_size = 18.;
   size_t count = 0;
   for (double i = 0.; i <= 1.000000001; i += increment)
   {
@@ -223,7 +231,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
     sprintf(str2, sd.str().c_str(), i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift());
     ss << str2 << " " << st->getValue(Units).toString();
     Vector shift = Vector((displaySide == 0) ?
-      (xTrans > 50 ? -(textSize*strlen(ss.str().c_str())) : 4.*dash_size) : 0.,
+      (xTrans > 50 ? -(textSize*strlen(ss.str().c_str())) : dash_size) : 0.,
       (displaySide == 0) ?
       0. : (yTrans > 50 ? (-textSize - pipe_size / 2.) : pipe_size), i);
 
@@ -519,6 +527,12 @@ void ShowColorMapModule::setFaceSize(size_t size)
     return;
 
   FT_Set_Pixel_Sizes(ftFace_, 0, size);
+}
+
+void ShowColorMapModule::setFSStrings(std::string &root, std::string &separator)
+{
+  mFSRoot = root;
+  mFSSeparator = separator;
 }
 
 const AlgorithmParameterName ShowColorMapModule::DisplaySide("DisplaySide");

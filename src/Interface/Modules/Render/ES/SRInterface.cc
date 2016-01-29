@@ -35,6 +35,7 @@
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 #include <Core/Application/Application.h>
+#include <Modules/Visualization/ShowColorMapModule.h>
 
 // CPM modules.
 
@@ -141,6 +142,11 @@ namespace SCIRun {
         StaticSRInterface iface(this);
         mCore.addStaticComponent(iface);
       }
+
+      std::string filesystemRoot = Core::Application::Instance().executablePath().string();
+      std::string sep;
+      sep += boost::filesystem::path::preferred_separator;
+      Modules::Visualization::ShowColorMapModule::setFSStrings(filesystemRoot, sep);
     }
 
     //------------------------------------------------------------------------------

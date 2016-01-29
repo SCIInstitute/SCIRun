@@ -76,12 +76,16 @@ namespace SCIRun {
         void loadNewFace(const std::string &libName, size_t size);
         void setFaceSize(size_t size);
 
+        static void setFSStrings(std::string &root, std::string &separator);
+
       private:
         TextBuilder text_;
         FT_Library ftLib_;
         FT_Face ftFace_;
         bool ftInit_;
         bool ftValid_;
+        static std::string mFSRoot;
+        static std::string mFSSeparator;
       };
     }
   }
