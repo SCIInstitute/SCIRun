@@ -54,8 +54,8 @@ namespace Algorithms {
       std::string,
       bool,
       AlgoOption,
-      std::vector<double>,
       List
+      //,std::vector<double>
     > Value;
 
     Variable() {}
