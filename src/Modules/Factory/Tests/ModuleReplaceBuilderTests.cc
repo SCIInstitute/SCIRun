@@ -181,7 +181,7 @@ TEST(ReplacementFilterBuilderTests, CanBuild)
   ASSERT_TRUE(filter != nullptr);
 }
 
-TEST_F(ModuleReplaceTests, DISABLED_CurrentConnectionsFilterReplacements)
+TEST_F(ModuleReplaceTests, CurrentConnectionsFilterReplacements)
 {
   HardCodedModuleFactory factory;
   auto descMap = factory.getDirectModuleDescriptionLookupMap();

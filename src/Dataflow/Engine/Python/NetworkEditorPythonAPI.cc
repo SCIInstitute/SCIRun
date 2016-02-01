@@ -42,6 +42,7 @@ boost::shared_ptr<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
 ExecutableLookup* NetworkEditorPythonAPI::lookup_ = nullptr;
 Mutex NetworkEditorPythonAPI::pythonLock_("Python");
 std::atomic<bool> NetworkEditorPythonAPI::executeLockedFromPython_(false);
+std::atomic<bool> NetworkEditorPythonAPI::convertersRegistered_(false);
 
 template< class T >
 class StdVectorToListConverter : public boost::python::converter::wrap_pytype< &PyList_Type >
@@ -66,10 +67,14 @@ void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterf
     impl_ = impl;
     impl_->setUnlockFunc([]() { unlock(); });
 
-    boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >,
-      StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
-    boost::python::to_python_converter< std::vector< std::string >,
-      StdVectorToListConverter< std::string >, true >();
+    if (!convertersRegistered_)
+    {
+      boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >,
+        StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
+      boost::python::to_python_converter< std::vector< std::string >,
+        StdVectorToListConverter< std::string >, true >();
+      convertersRegistered_ = true;
+    }
   }
 }
 

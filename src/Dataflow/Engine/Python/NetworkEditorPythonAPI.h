@@ -91,6 +91,7 @@ namespace SCIRun {
     static void unlock();
     static Core::Thread::Mutex pythonLock_;
     static std::atomic<bool> executeLockedFromPython_;
+    static std::atomic<bool> convertersRegistered_;
   };
 
   class SCISHARE SimplePythonAPI
