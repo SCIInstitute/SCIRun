@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>290</width>
-    <height>417</height>
+    <width>370</width>
+    <height>435</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -63,13 +63,13 @@
      <item row="0" column="1">
       <widget class="QDoubleSpinBox" name="xLocationDoubleSpinBox_">
        <property name="decimals">
-        <number>4</number>
+        <number>15</number>
        </property>
        <property name="minimum">
-        <double>-1000000.000000000000000</double>
+        <double>-999999999.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>1000000.000000000000000</double>
+        <double>999999999.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -83,13 +83,13 @@
      <item row="1" column="1">
       <widget class="QDoubleSpinBox" name="yLocationDoubleSpinBox_">
        <property name="decimals">
-        <number>4</number>
+        <number>15</number>
        </property>
        <property name="minimum">
-        <double>-1000000.000000000000000</double>
+        <double>-999999999.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>1000000.000000000000000</double>
+        <double>999999999.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -103,13 +103,13 @@
      <item row="2" column="1">
       <widget class="QDoubleSpinBox" name="zLocationDoubleSpinBox_">
        <property name="decimals">
-        <number>4</number>
+        <number>15</number>
        </property>
        <property name="minimum">
-        <double>-1000000.000000000000000</double>
+        <double>-999999999.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>1000000.000000000000000</double>
+        <double>999999999.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -209,7 +209,7 @@
       <item row="0" column="2">
        <widget class="QDoubleSpinBox" name="sizeDoubleSpinBox_">
         <property name="decimals">
-         <number>4</number>
+         <number>8</number>
         </property>
         <property name="maximum">
          <double>100.000000000000000</double>
