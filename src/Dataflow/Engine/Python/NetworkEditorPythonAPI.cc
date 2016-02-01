@@ -73,6 +73,11 @@ void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterf
   }
 }
 
+void NetworkEditorPythonAPI::clearImpl()
+{
+  impl_.reset();
+}
+
 void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
 {
   lookup_ = lookup;

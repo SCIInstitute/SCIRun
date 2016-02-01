@@ -80,6 +80,7 @@ namespace SCIRun {
     static std::string quit(bool force);
 
     static void setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl);
+    static void clearImpl();
     /// @todo: smelly!
     static void setExecutionContext(Dataflow::Networks::ExecutableLookup* lookup);
     static Core::Thread::Mutex& getLock() { return pythonLock_; }
