@@ -125,10 +125,11 @@ void ApplyFEMVoltageSource::execute()
     SparseRowMatrixHandle mat(matrix_cast::as_sparse(stiffnessMatrix));
     DenseColumnMatrixHandle rhs(new DenseColumnMatrix(nsize));
     
-    DenseColumnMatrixHandle rhsIn(matrix_cast::as_column((*rhsMatrix)));
     if (rhsMatrix)
     {
       //rhsIn = rhsMatrix->column();
+      DenseColumnMatrixHandle rhsIn(matrix_cast::as_column((*rhsMatrix)));
+
       if (rhsIn && (rhsIn->nrows() == nsize))
       {
         for (unsigned int i = 0; i < nsize; i++)
