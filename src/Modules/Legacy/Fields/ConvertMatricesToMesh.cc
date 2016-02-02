@@ -34,6 +34,7 @@
 ///@date  February 2001
 ///
 
+#include <Modules/Legacy/Fields/ConvertMatricesToMesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Matrix.h>
@@ -41,28 +42,6 @@
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
-
-namespace SCIRun {
-
-/// @class ConvertMatricesToMesh
-/// @brief This module constructs a mesh from raw matrix data. 
- 
-class ConvertMatricesToMesh : public Module
-{
-private:
-  GuiString gui_fieldname_;
-  GuiString gui_meshname_;
-  GuiString gui_fieldbasetype_;
-  GuiString gui_datatype_;
-  void process_elements(VMesh* mesh, size_type positionRows, bool required);
-
-public:
-  ConvertMatricesToMesh(GuiContext* ctx);
-  virtual ~ConvertMatricesToMesh() {}
-
-  virtual void execute();
-};
 
 
 DECLARE_MAKER(ConvertMatricesToMesh)
@@ -76,8 +55,7 @@ ConvertMatricesToMesh::ConvertMatricesToMesh(GuiContext* ctx)
 }
 
 
-void
-ConvertMatricesToMesh::execute()
+void ConvertMatricesToMesh::execute()
 {
   MatrixHandle positionshandle;
   MatrixHandle normalshandle;
@@ -135,8 +113,7 @@ ConvertMatricesToMesh::execute()
   }
 }
 
-void 
-ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows, bool required)
+void ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows, bool required)
 {
   MatrixHandle elementshandle;
   if (get_input_handle("Mesh Elements", elementshandle, required))
@@ -156,7 +133,7 @@ ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows, boo
         {
           if (ecount < 10)
           {
-            error("Bad index found at " + to_string(i) + ", "+ to_string(j));
+            error("Bad index found at " + to_string(i) + ", " + to_string(j));
           }
           index = 0;
           ecount++;
@@ -167,10 +144,7 @@ ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows, boo
     }
     if (ecount >= 10)
     {
-      error("..." + to_string(ecount-9) + " additional bad indices found.");
+      error("..." + to_string(ecount - 9) + " additional bad indices found.");
     }
   }
 }
-
-} // End namespace SCIRun
-

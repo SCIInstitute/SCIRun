@@ -52,6 +52,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateSignedDistanceToField.h
   ClipFieldByFunction3.h
   ClipFieldByMesh.h
+  ConvertMatricesToMesh.h
   ConvertQuadSurfToTriSurf.h
   ConvertMeshToPointCloud.h
   AlignMeshBoundingBoxes.h
