@@ -93,6 +93,8 @@ void ApplyFEMVoltageSource::execute()
     if (!dirichlet)
     {
       warning("There are no dirichlet boundary conditions");
+      odirichletMatrix.reset(new DenseMatrix(1, 2));
+      (*odirichletMatrix) << 0, 0.0;
     }
     else
     {
