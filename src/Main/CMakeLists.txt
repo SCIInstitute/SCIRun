@@ -149,7 +149,10 @@ IF(APPLE AND BUILD_BUNDLE)
                     "Engine_Network"
                     "Interface_Modules_Factory"
                     "Interface_Modules_Render"
+                    "Interface_Modules_Python"
                     "Core_ConsoleApplication"
+                    "Modules_Factory"
+                    "Modules_Python"
     )
     FOREACH(lib ${SCIRUN_LIBS})
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
