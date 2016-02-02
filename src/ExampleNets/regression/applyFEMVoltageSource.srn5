@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>6</count>
+			<count>7</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ApplyFEMVoltageSource:0</first>
@@ -25,6 +25,34 @@
 								<second class_id="10" tracking_level="0" version="0">
 									<name>ApplyDirichlet</name>
 									<value class_id="11" tracking_level="0" version="0">
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ApplyFEMVoltageSource:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>FiniteElements</category_name_>
+						<module_name_>ApplyFEMVoltageSource</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ApplyDirichlet</name>
+								</first>
+								<second>
+									<name>ApplyDirichlet</name>
+									<value>
 										<which>0</which>
 										<value>0</value>
 									</value>
@@ -164,11 +192,35 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>ApplyFEMVoltageSource:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>ForwardMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ApplyFEMVoltageSource:1</moduleId2_>
+				<port2_>
+					<name>StiffnessMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ApplyFEMVoltageSource:0</moduleId1_>
+				<port1_>
+					<name>OutputRHS</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ApplyFEMVoltageSource:1</moduleId2_>
+				<port2_>
+					<name>RHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ApplyFEMVoltageSource:1</moduleId1_>
+				<port1_>
 					<name>ForwardMatrix</name>
 					<id>0</id>
 				</port1_>
@@ -179,7 +231,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ApplyFEMVoltageSource:0</moduleId1_>
+				<moduleId1_>ApplyFEMVoltageSource:1</moduleId1_>
 				<port1_>
 					<name>OutputRHS</name>
 					<id>0</id>
@@ -197,6 +249,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ApplyFEMVoltageSource:0</moduleId2_>
+				<port2_>
+					<name>Mesh</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadField:0</moduleId1_>
+				<port1_>
+					<name>Field</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ApplyFEMVoltageSource:1</moduleId2_>
 				<port2_>
 					<name>Mesh</name>
 					<id>0</id>
@@ -229,13 +293,20 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>6</count>
+		<count>7</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ApplyFEMVoltageSource:0</first>
 			<second class_id="17" tracking_level="0" version="0">
 				<first>-1.44400000000000000e+003</first>
 				<second>-7.60000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ApplyFEMVoltageSource:1</first>
+			<second>
+				<first>-1.52000000000000000e+003</first>
+				<second>-6.08000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
@@ -263,14 +334,14 @@
 			<first>ReportMatrixInfo:11</first>
 			<second>
 				<first>-1.36800000000000000e+003</first>
-				<second>-6.08000000000000000e+002</second>
+				<second>-4.56000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:12</first>
 			<second>
 				<first>-1.67200000000000000e+003</first>
-				<second>-6.08000000000000000e+002</second>
+				<second>-4.56000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -283,10 +354,14 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>6</count>
+		<count>7</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>ApplyFEMVoltageSource:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ApplyFEMVoltageSource:1</first>
 			<second>0</second>
 		</item>
 		<item>

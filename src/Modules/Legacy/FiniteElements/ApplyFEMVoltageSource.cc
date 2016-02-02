@@ -125,18 +125,16 @@ void ApplyFEMVoltageSource::execute()
     SparseRowMatrixHandle mat(matrix_cast::as_sparse(stiffnessMatrix));
     DenseColumnMatrixHandle rhs(new DenseColumnMatrix(nsize));
     
-    DenseColumnMatrix* rhsIn = 0;
+    DenseColumnMatrixHandle rhsIn(matrix_cast::as_column((*rhsMatrix)));
     if (rhsMatrix)
     {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-      rhsIn = rhsMatrix->column();
+      //rhsIn = rhsMatrix->column();
       if (rhsIn && (rhsIn->nrows() == nsize))
       {
         for (unsigned int i = 0; i < nsize; i++)
           (*rhs)[i] = (*rhsIn)[i];
       }
       else
-#endif
       {
         rhs->Zero(nsize);
       }
@@ -153,7 +151,6 @@ void ApplyFEMVoltageSource::execute()
     sendOutput(ForwardMatrix, forwardMatrix);
 
     MatrixHandle outputrhs(rhs);
-    sendOutput(OutputRHS, outputrhs);
-    
+    sendOutput(OutputRHS, outputrhs);    
   }
 }
