@@ -136,8 +136,9 @@ double AlgorithmParameter::toDouble() const
 
 std::vector<double> AlgorithmParameter::toDoubleVector() const
 {
-  const std::vector<double>* v = boost::get<std::vector<double>>(&value_);
-  return v ? *v : std::vector<double>();
+  return {};
+//  const std::vector<double>* v = boost::get<std::vector<double>>(&value_);
+//  return v ? *v : std::vector<double>();
 }
 
 std::string AlgorithmParameter::toString() const

@@ -53,6 +53,7 @@ SET(Modules_Legacy_Fields_HEADERS
   ClipFieldByFunction3.h
   ClipFieldByMesh.h
   ConvertQuadSurfToTriSurf.h
+  ConvertMeshToPointCloud.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
   SetFieldData.h
@@ -159,7 +160,7 @@ SET(Modules_Legacy_Fields_SRCS
   GeneratePointSamplesFromField.cc
   #SelectFieldROIWithBoxWidget.cc
   SetFieldOrMeshStringProperty.cc
-  #ConvertMeshToPointCloud.cc
+  ConvertMeshToPointCloud.cc
   #ConvertMeshToIrregularMesh.cc
   #ConvertMeshToUnstructuredMesh.cc
   CalculateFieldData5.cc

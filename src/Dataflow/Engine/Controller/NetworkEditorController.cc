@@ -90,6 +90,13 @@ NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::Net
 {
 }
 
+NetworkEditorController::~NetworkEditorController()
+{
+#ifdef BUILD_WITH_PYTHON
+  NetworkEditorPythonAPI::clearImpl();
+#endif
+}
+
 namespace
 {
   class SnippetHandler

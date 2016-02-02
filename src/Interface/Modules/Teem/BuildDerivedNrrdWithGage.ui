@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BuildDerivedNrrdWithGage</class>
+ <widget class="QDialog" name="BuildDerivedNrrdWithGage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>347</width>
+    <height>822</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>347</width>
+    <height>822</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>BuildDerivedNrrdWithGage</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_8">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Kind of Input Field:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="fieldKindComboBox_">
+     <item>
+      <property name="text">
+       <string>Scalar</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Vector</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string/>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="0" colspan="2">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Output Type:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Description:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QComboBox" name="outputTypeComboBox_">
+        <item>
+         <property name="text">
+          <string>double</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>float</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>default</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QComboBox" name="quantityComboBox_">
+        <item>
+         <property name="text">
+          <string>value</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>gradient vector</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>gradient magnitude</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>normalized gradient</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>tangent projector</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hessian</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Laplacian</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Frob(Hessian)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2nd DD along gradient</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>geometry tensor</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>kappa1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>kappa2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>total curvature</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>shape trace</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>shape index</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>mean curvature</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Gaussian curvature</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1st curvature direction</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2nd curvature direction</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>flowline curvature</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Hessian eigenvalues</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>median</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Quantity to Measure:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="quantityDescriptionLabel_">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Kernels</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="title">
+         <string>Reconstructing Values</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Kernel Type:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="valuesTypeComboBox_">
+           <item>
+            <property name="text">
+             <string>zero</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>box</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>tent</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>cubic</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>quartic</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>gaussian</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>hann</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>blackman</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QGroupBox" name="groupBox_4">
+           <property name="title">
+            <string>Numeric Parameters</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Scale</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="valuesNumParm1LineEdit_"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>B</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" rowspan="2">
+             <widget class="QLineEdit" name="valuesNumParm2LineEdit_"/>
+            </item>
+            <item row="2" column="0" rowspan="2">
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>C</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="valuesNumParm3LineEdit_"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="title">
+         <string>Measuring 1st Derivative</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>Kernel Type:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="dTypeComboBox_">
+           <item>
+            <property name="text">
+             <string>zero</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>box</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>forwdiff</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>centdiff</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>cubicd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>quarticd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>gaussiand</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>hannd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>blackmand</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QGroupBox" name="groupBox_6">
+           <property name="title">
+            <string>Numeric Parameters</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>Scale</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="dNumParm1LineEdit_"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>B</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" rowspan="2">
+             <widget class="QLineEdit" name="dNumParm2LineEdit_"/>
+            </item>
+            <item row="2" column="0" rowspan="2">
+             <widget class="QLabel" name="label_13">
+              <property name="text">
+               <string>C</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="dNumParm3LineEdit_"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_7">
+        <property name="title">
+         <string>Measuring 2nd Derivative</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Kernel Type:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="ddTypeComboBox_">
+           <item>
+            <property name="text">
+             <string>zero</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>box</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>cubicdd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>quarticdd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>gaussiandd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>hanndd</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>blackmandd</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QGroupBox" name="groupBox_8">
+           <property name="title">
+            <string>Numeric Parameters</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_7">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_15">
+              <property name="text">
+               <string>Scale</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="ddNumParm1LineEdit_"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_16">
+              <property name="text">
+               <string>B</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" rowspan="2">
+             <widget class="QLineEdit" name="ddNumParm2LineEdit_"/>
+            </item>
+            <item row="2" column="0" rowspan="2">
+             <widget class="QLabel" name="label_17">
+              <property name="text">
+               <string>C</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="ddNumParm3LineEdit_"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

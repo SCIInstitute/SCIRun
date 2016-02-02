@@ -374,7 +374,7 @@ namespace
           }
 
           auto v = state->getValue(apn);
-        
+
   //TODO: extract and use for state get/set
           /// @todo: extract
           if ( const int* p = boost::get<int>( &v.value() ) )
@@ -405,7 +405,7 @@ namespace
             return boost::python::object(transient_value_cast<double>(v));
           if (transient_value_check<bool>(v))
             return boost::python::object(transient_value_cast<bool>(v));
-          
+
           return boost::python::object();
         }
       }
@@ -511,7 +511,6 @@ namespace
         boost::python::extract<boost::python::list> e(object);
         if (e.check())
         {
-          std::cout << "hello i found a list, i am going to construct a matrix." << std::endl;
           auto list = e();
           auto length = len(list);
           bool makeDense;
@@ -539,7 +538,6 @@ namespace
           }
           if (makeDense)
           {
-            
             for (int i = 0; i < length; ++i)
             {
               boost::python::extract<boost::python::list> rowList(list[i]);
@@ -550,7 +548,7 @@ namespace
                   throw std::invalid_argument("Attempted to convert into dense matrix but row lengths are not all equal.");
                 for (int j = 0; j < len(row); ++j)
                 {
-                  (*dense)(i,j) = boost::python::extract<double>(row[i]);
+                  (*dense)(i,j) = boost::python::extract<double>(row[j]);
                 }
               }
             }
@@ -560,39 +558,10 @@ namespace
             std::cout << "TODO: sparse matrix conversion" << std::endl;
           }
 
-          //for (int i = 0; i < len(list); ++i)
-          //{
-          //  boost::python::extract<boost::python::list> inner(list[i]);
-          //  if (inner.check())
-          //  {
-          //    std::cout << "hello i found a list of lists, i am going to construct a dense matrix" << std::endl;
-          //  }
-          //  else
-          //  {
-          //    boost::python::extract<std::string> innerString(list[i]);
-          //    if (innerString.check())
-          //    {
-          //      std::cout << "hello i found a list of lists, i am going to construct a sparse matrix" << std::endl;
-          //    }
-          //    else
-          //    {
-          //      std::cout << "hello i cannot figure out how to convert this list, so i am erroring" << std::endl;
-          //      throw std::invalid_argument("Ill-formed list.");
-          //    }
-          //  }
-          //}
-
-          Variable x(Name("matrix"), dense, Variable::DATATYPE_VARIABLE);
+          Variable x(Name("dense matrix"), dense, Variable::DATATYPE_VARIABLE);
           return x;
         }
       }
-      //{
-      //  auto vec = to_std_vector<double>(object);
-      //  if (!vec.empty())
-      //  {
-      //    return vec;
-      //  }
-      //}
       std::cerr << "No known conversion from python object to C++ object" << std::endl;
       return Variable();
     }
@@ -643,7 +612,7 @@ boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
     std::cout << "Module added: " + m->get_id().id_ << std::endl;
   else
     std::cout << "Module add failed, no such module type" << std::endl;
-  
+
   return modules_[m->get_id().id_];
 }
 
