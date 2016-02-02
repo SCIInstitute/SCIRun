@@ -46,6 +46,6 @@ ApplyFEMVoltageSourceDialog::ApplyFEMVoltageSourceDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addRadioButtonGroupManager({ applyDirichletRadioButton_, groundNodeZeroRadioButton_ }, 
+  addRadioButtonGroupManager({ groundNodeZeroRadioButton_, applyDirichletRadioButton_ },
     SCIRun::Modules::FiniteElements::ApplyFEMVoltageSource::ApplyDirichlet);
 }

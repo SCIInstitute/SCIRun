@@ -68,106 +68,44 @@ ApplyFEMVoltageSourceAlgo::ApplyFEMVoltageSourceAlgo()
 }
 
 
-void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& hField, MatrixHandle& hMatIn)
-{/*
-  //! Obtaining handles to computation objects
-  //FieldHandle hField;
-  //get_input_handle("Mesh", hField, true);
-  
-  std::vector<std::pair<int, double> > dirBC;
-
-  if (bcFlag_.get() == "DirSub") 
-  {
-    if (!hField->get_property("dirichlet", dirBC))
-      //warning("The input field doesn't contain Dirichlet boundary conditions.");
-  }
-  
-  //MatrixHandle hMatIn;
-  //get_input_handle("Stiffness Matrix", hMatIn, true); 
-  
-  SparseRowMatrix *matIn;
-  if (!(matIn = dynamic_cast<SparseRowMatrix*>(hMatIn.get()))) 
-  {
-    //error("Input stiffness matrix wasn't sparse.");
-    return;
-  }
-  
-  if (matIn->nrows() != matIn->ncols()) 
-  {
-    //error("Input stiffness matrix wasn't square.");
-    return;
-  }
-  
-  SparseRowMatrix *mat = matIn->clone();
-  
-  unsigned int nsize=matIn->ncols();
-  DenseColumnMatrix* rhs = new DenseColumnMatrix(nsize);
-  
-  MatrixHandle  hRhsIn;
-  DenseColumnMatrix* rhsIn = 0;
-  
-  // -- if the user passed in a vector the right size, copy it into ours 
-  if (get_input_handle("RHS", hRhsIn, false) && 
-      hRhsIn.get())
-  {
-    rhsIn = hRhsIn->column();
-    if (rhsIn && (rhsIn->nrows() == nsize))
-    {
-      for (unsigned int i=0; i < nsize; i++) 
-        (*rhs)[i]=(*rhsIn)[i];
-    }
-    else
-    {
-      rhs->Zero();    
-    }
-  }
-  else
-  {
-    rhs->Zero();
-  }
-  
-  std::string bcFlag = bcFlag_.get();
-    
-  if (bcFlag=="GroundZero") dirBC.push_back(std::pair<int, double>(0,0.0));
-  else if (bcFlag == "DirSub") hField->vfield()->get_property("dirichlet", dirBC);
-
+void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(const DenseMatrixHandle& dirBC, DenseColumnMatrixHandle& rhs, SparseRowMatrixHandle& mat)
+{
   //! adjusting matrix for Dirichlet BC
   index_type *idcNz; 
   double *valNz;
   index_type idcNzsize;
-  index_type idcNzstride;
     
   std::vector<double> dbc;
   index_type idx;
-  size_type size = dirBC.size();
+  size_type size = dirBC->nrows();
   for(idx = 0; idx<size; ++idx)
   {
-    index_type ni = dirBC[idx].first;
-    double val = dirBC[idx].second;
+    index_type ni = (*dirBC)(idx, 1);
+    double val = (*dirBC)(idx, 2);
   
     // -- getting column indices of non-zero elements for the current row
-    mat->getRowNonzerosNoCopy(ni, idcNzsize, idcNzstride, idcNz, valNz);
+    mat->getRowNonzerosNoCopy(ni, idcNzsize, idcNz, valNz);
   
     // -- updating rhs
     for (index_type i=0; i<idcNzsize; ++i)
     {
-      index_type j = idcNz?idcNz[i*idcNzstride]:i;
-      (*rhs)[j] += - val * valNz[i*idcNzstride]; 
+      index_type j = idcNz ? idcNz[i] : i;
+      (*rhs)[j] += -val * valNz[i];
     }
   }
  
   //! zeroing matrix row and column corresponding to the dirichlet nodes
-  size = dirBC.size();
+  size = dirBC->nrows();
   for(idx = 0; idx<size; ++idx)
   {
-    index_type ni = dirBC[idx].first;
-    double val = dirBC[idx].second;
+    index_type ni = (*dirBC)(idx, 1);
+    double val = (*dirBC)(idx, 2);
   
-    mat->getRowNonzerosNoCopy(ni, idcNzsize, idcNzstride, idcNz, valNz);
+    mat->getRowNonzerosNoCopy(ni, idcNzsize, idcNz, valNz);
     
     for (index_type i=0; i<idcNzsize; ++i)
     {
-      index_type j = idcNz?idcNz[i*idcNzstride]:i;
+      index_type j = idcNz?idcNz[i]:i;
       mat->put(ni, j, 0.0);
       mat->put(j, ni, 0.0); 
     }
@@ -176,14 +114,5 @@ void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(FieldHandle& hField, MatrixHand
     mat->put(ni, ni, 1);
     (*rhs)[ni] = val;
   }
-
-  //! Sending result
-  MatrixHandle mat_tmp(mat);
-  //send_output_handle("Forward Matrix", mat_tmp);
-
-  MatrixHandle rhs_tmp(rhs);
-  //send_output_handle("RHS", rhs_tmp);
-  */
+  
 }
-
-//ALGORITHM_PARAMETER_DEF(FiniteElements, ApplyDirichlet);

@@ -41,20 +41,19 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Modules/Legacy/FiniteElements/ApplyFEMVoltageSource.h>
+#include <Core/Algorithms/Legacy/FiniteElements/ApplyFEM/ApplyFEMVoltageSourceAlgo.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::FiniteElements;
 
@@ -84,23 +83,75 @@ void ApplyFEMVoltageSource::execute()
   auto rhsMatrix = getOptionalInput(RHS);
   auto dirichlet = getOptionalInput(Dirichlet);
 
-  if (needToExecute())
-  {
-    auto state = get_state();
-    auto applyDirichlet = state->getValue(ApplyDirichlet).toBool();
-    std::cout << "applyDirichlet: " << applyDirichlet << std::endl;
-  }
-
-  /*
-  auto inputField =  getRequiredInput(InputFEMesh);
-  auto voltageSource = getRequiredInput(VoltageSource);
-
-  if (needToExecute())
-  {
   auto state = get_state();
-  //auto useLinear = state->getValue
-  sendOutput(OutputFEMesh, inputField);
+  auto applyDirichlet = state->getValue(ApplyDirichlet).toBool();
+  
+  DenseMatrixHandle odirichletMatrix;
 
+  if (applyDirichlet)
+  {
+    if (!dirichlet)
+    {
+      warning("There are no dirichlet boundary conditions");
+    }
+    else
+    {
+      odirichletMatrix.reset((*dirichlet)->clone());
+    }
   }
-  */
+  else
+  {
+    odirichletMatrix.reset(new DenseMatrix(1, 2));
+    (*odirichletMatrix) << 0, 0.0;
+  }
+
+  if (!matrix_is::sparse(stiffnessMatrix))
+  {
+    error("Input stiffness matrix wasn't sparse.");
+    return;
+  }
+
+  if (stiffnessMatrix->nrows() != stiffnessMatrix->ncols())
+  {
+    error("Input stiffness matrix wasn't square.");
+    return;
+  }
+
+  if (needToExecute())
+  {
+    unsigned int nsize = stiffnessMatrix->ncols();
+    SparseRowMatrixHandle mat(matrix_cast::as_sparse(stiffnessMatrix));
+    DenseColumnMatrixHandle rhs(new DenseColumnMatrix(nsize));
+    
+    DenseColumnMatrix* rhsIn = 0;
+    if (rhsMatrix)
+    {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+      rhsIn = rhsMatrix->column();
+      if (rhsIn && (rhsIn->nrows() == nsize))
+      {
+        for (unsigned int i = 0; i < nsize; i++)
+          (*rhs)[i] = (*rhsIn)[i];
+      }
+      else
+#endif
+      {
+        rhs->Zero(nsize);
+      }
+    }
+    else
+    {
+      rhs->Zero(nsize);
+    }
+
+    ApplyFEMVoltageSourceAlgo algo;
+    algo.ExecuteAlgorithm(odirichletMatrix, rhs, mat);
+
+    MatrixHandle forwardMatrix(mat);
+    sendOutput(ForwardMatrix, forwardMatrix);
+
+    MatrixHandle outputrhs(rhs);
+    sendOutput(OutputRHS, outputrhs);
+    
+  }
 }

@@ -42,7 +42,6 @@ DEALINGS IN THE SOFTWARE.
 #ifndef CORE_ALGORITHMS_LEGACY_FORWARD_APPLYFEMVOLTAGESOURCEALGO_H
 #define CORE_ALGORITHMS_LEGACY_FORWARD_APPLYFEMVOLTAGESOURCEALGO_H
 
-#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/FiniteElements/share.h>
@@ -51,16 +50,12 @@ namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace FiniteElements {
-
-        //ALGORITHM_PARAMETER_DECL(ApplyDirichlet);
-
+        
         class SCISHARE ApplyFEMVoltageSourceAlgo
         {
         public:
           ApplyFEMVoltageSourceAlgo();
-          void ExecuteAlgorithm(FieldHandle& hField, Datatypes::MatrixHandle& hMatIn);
-
-        private:
+          void ExecuteAlgorithm(const Datatypes::DenseMatrixHandle& dirBC, Datatypes::DenseColumnMatrixHandle& rhs, Datatypes::SparseRowMatrixHandle& mat);
         };
       }
     }
