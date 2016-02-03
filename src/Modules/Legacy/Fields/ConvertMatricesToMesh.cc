@@ -35,28 +35,31 @@
 ///
 
 #include <Modules/Legacy/Fields/ConvertMatricesToMesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
 
+ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeName)
+ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeTypeName)
+ALGORITHM_PARAMETER_DEF(Fields, OutputMeshDataType)
+ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDatatype)
 
-DECLARE_MAKER(ConvertMatricesToMesh)
-ConvertMatricesToMesh::ConvertMatricesToMesh(GuiContext* ctx)
-  : Module("ConvertMatricesToMesh", ctx, Filter, "NewField", "SCIRun"),
-    gui_fieldname_(get_ctx()->subVar("fieldname"), "Created Field"),
-    gui_meshname_(get_ctx()->subVar("meshname"), "Created Mesh"),
-    gui_fieldbasetype_(get_ctx()->subVar("fieldbasetype"), "TetVol"),
-    gui_datatype_(get_ctx()->subVar("datatype"), "double")
+ConvertMatricesToMesh::ConvertMatricesToMesh() 
+  : Module(ModuleLookupInfo("ConvertMatricesToMesh", "ChangeMesh", "SCIRun"), false)
 {
+  INITIALIZE_PORT(MeshElements);
+  INITIALIZE_PORT(MeshPositions);
+  INITIALIZE_PORT(MeshNormals);
+  INITIALIZE_PORT(OutputField);
 }
 
 
 void ConvertMatricesToMesh::execute()
-{
+{/*
   MatrixHandle positionshandle;
   MatrixHandle normalshandle;
   
@@ -111,10 +114,11 @@ void ConvertMatricesToMesh::execute()
     result_field->vfield()->resize_values();
     send_output_handle("Output Field", result_field);
   }
+  */
 }
 
 void ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows, bool required)
-{
+{/*
   MatrixHandle elementshandle;
   if (get_input_handle("Mesh Elements", elementshandle, required))
   {
@@ -146,5 +150,5 @@ void ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows
     {
       error("..." + to_string(ecount - 9) + " additional bad indices found.");
     }
-  }
+  } */
 }

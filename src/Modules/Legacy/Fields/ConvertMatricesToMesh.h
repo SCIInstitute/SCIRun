@@ -37,28 +37,37 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_CONVERTMATRICESTOMESH_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_CONVERTMATRICESTOMESH_H 1
 
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Fields {
-      class SCISHARE ConvertMatricesToMesh : public Module
+      class SCISHARE ConvertMatricesToMesh : public Dataflow::Networks::Module,
+        public Has3InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+        public Has1OutputPort<FieldPortTag>
       {
-      private:
-        GuiString gui_fieldname_;
-        GuiString gui_meshname_;
-        GuiString gui_fieldbasetype_;
-        GuiString gui_datatype_;
-        void process_elements(VMesh* mesh, size_type positionRows, bool required);
-
       public:
-        ConvertMatricesToMesh(GuiContext* ctx);
+        ConvertMatricesToMesh();
         virtual ~ConvertMatricesToMesh() {}
 
         virtual void execute();
+      
+      private:
+        void process_elements(SCIRun::VMesh* mesh, size_type positionRows, bool required);
+        
+        INPUT_PORT(0, MeshElements, Matrix);
+        INPUT_PORT(1, MeshPositions, Matrix);
+        INPUT_PORT(2, MeshNormals, Matrix);
+        OUTPUT_PORT(0, OutputField, LegacyField);
       };
     }
   }
 } // End namespace SCIRun
 
+#endif

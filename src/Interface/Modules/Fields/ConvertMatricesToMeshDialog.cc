@@ -42,7 +42,8 @@ ConvertMatricesToMeshDialog::ConvertMatricesToMeshDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addDynamicLabelManager(inputNameLabel_, Parameters::InputFieldName);
-  addDynamicLabelManager(typeNameLabel_, Parameters::InputType);
-  addComboBoxManager(outputFieldTypeComboBox_, Parameters::FieldDatatype);
+  addDynamicLabelManager(nameTextLabel_, Parameters::InputFieldTypeName);
+  addDynamicLabelManager(typeNameTextLabel_, Parameters::InputFieldTypeTypeName);
+  addComboBoxManager(meshTypeComboBox_, Parameters::OutputMeshDataType);
+  addComboBoxManager(fieldTypeComboBox_, Parameters::OutputFieldDatatype);
 }
