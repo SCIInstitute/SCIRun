@@ -156,7 +156,8 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquareFwdMatrixANDRandData2)
 }
 
 // ID square fwd matrix + RAND measured data  - different sizes
-TEST_F(TikhonovFunctionalTest, loadIDSquareFwdMatrixANDRandDataDiffSizes)
+//TODO: waiting on text fix from @jcollfont
+TEST_F(TikhonovFunctionalTest, DISABLED_loadIDSquareFwdMatrixANDRandDataDiffSizes)
 {
   // create inputs
   auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");

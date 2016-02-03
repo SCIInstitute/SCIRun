@@ -309,7 +309,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicPorts)
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfState)
+TEST(LegacyNetworkFileImporterTests, DISABLED_CanLoadNetworkFileWithLotsOfState)
 {
   FAIL() << "todo";
 }
