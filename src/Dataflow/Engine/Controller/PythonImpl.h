@@ -49,6 +49,7 @@ namespace Engine {
   {
   public:
     PythonImpl(NetworkEditorController& nec, Core::Commands::GlobalCommandFactoryHandle cmdFactory);
+    ~PythonImpl();
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name) override;
     virtual std::string removeModule(const std::string& id) override;
     virtual std::vector<boost::shared_ptr<PyModule>> moduleList() const override;
@@ -71,6 +72,7 @@ namespace Engine {
     NetworkEditorController& nec_;
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
     boost::function<void()> unlock_;
+    std::vector<boost::signals2::connection> connections_;
   };
 
 }}}
