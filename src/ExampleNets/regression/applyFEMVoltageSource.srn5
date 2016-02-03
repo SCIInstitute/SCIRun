@@ -134,7 +134,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Matrices/sparseSquare.mat</value>
+										<value>D:/SCIRunTestData/Matrices/bigSparse.mat</value>
 									</value>
 								</second>
 							</item>
