@@ -35,21 +35,17 @@
 ///
 
 #include <Modules/Legacy/Fields/ConvertMatricesToMesh.h>
+#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
-ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeName)
-ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeTypeName)
-ALGORITHM_PARAMETER_DEF(Fields, OutputMeshDataType)
-ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDatatype)
+const ModuleLookupInfo ConvertMatricesToMesh::staticInfo_("ConvertMatricesToMesh", "NewField", "SCIRun");
 
-ConvertMatricesToMesh::ConvertMatricesToMesh() 
-  : Module(ModuleLookupInfo("ConvertMatricesToMesh", "ChangeMesh", "SCIRun"), false)
+ConvertMatricesToMesh::ConvertMatricesToMesh() : Module(staticInfo_)
 {
   INITIALIZE_PORT(MeshElements);
   INITIALIZE_PORT(MeshPositions);

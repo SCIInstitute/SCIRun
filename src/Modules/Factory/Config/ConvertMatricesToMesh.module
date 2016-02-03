@@ -4,12 +4,12 @@
     "namespace": "Fields",
     "status": "Ported module",
     "description": "Store/retrieve values from an input matrix to/from the data of a field",
-    "header": "Modules/Legacy/Forward/ConvertMatricesToMesh.h"
+    "header": "Modules/Legacy/Fields/ConvertMatricesToMesh.h"
   },
   "algorithm": {
-    "name": "N/A",
-    "namespace": "N/A",
-    "header": "N/A"
+    "name": "ConvertMatricesToMeshAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/CreateMesh/ConvertMatricesToMeshAlgo.h"
   },
   "UI": {
     "name": "ConvertMatricesToMeshDialog",

@@ -98,6 +98,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   RegisterWithCorrespondences.h
   SampleField/GeneratePointSamplesFromField.h
   DistanceField/CalculateIsInsideField.h
+  CreateMesh/ConvertMatricesToMeshAlgo.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -119,6 +120,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CompareFields/CompareFields.cc
   #CompareFields/SimilarMeshes.cc
   #CreateMesh/CreateMeshFromNrrd.cc
+  CreateMesh/ConvertMatricesToMeshAlgo.h
 
   DistanceField/CalculateDistanceField.cc
   DistanceField/CalculateIsInsideField.cc

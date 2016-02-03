@@ -65,6 +65,8 @@ namespace SCIRun {
         INPUT_PORT(1, MeshPositions, Matrix);
         INPUT_PORT(2, MeshNormals, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
     }
   }

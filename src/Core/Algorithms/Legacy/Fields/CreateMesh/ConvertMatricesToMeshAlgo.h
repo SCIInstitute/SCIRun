@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,26 +24,40 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#include <Interface/Modules/Fields/ConvertMatricesToMeshDialog.h>
-#include <Modules/Legacy/Fields/ConvertMatricesToMesh.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
+#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_CONVERTMATRICESTOMESHALGO_H
+#define CORE_ALGORITHMS_FIELDS_FIELDDATA_CONVERTMATRICESTOMESHALGO_H
 
-ConvertMatricesToMeshDialog::ConvertMatricesToMeshDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-  addDynamicLabelManager(nameTextLabel_, Parameters::InputFieldTypeName);
-  addDynamicLabelManager(typeNameTextLabel_, Parameters::InputFieldTypeTypeName);
-  addComboBoxManager(meshTypeComboBox_, Parameters::OutputMeshDataType);
-  addComboBoxManager(fieldTypeComboBox_, Parameters::OutputFieldDatatype);
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+
+        ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeName);
+        ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeTypeName);
+        ALGORITHM_PARAMETER_DEF(Fields, OutputMeshDataType);
+        ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDatatype);
+
+				class SCISHARE	ConvertMatricesToMeshAlgo : public AlgorithmBase
+        {
+        public:
+					ConvertMatricesToMeshAlgo();
+
+          bool runImpl(FieldHandle input_field, Datatypes::DenseMatrixHandle input_matrix, FieldHandle& output_field)const;
+
+         // bool runImpl(FieldHandle input, Datatypes::MatrixHandle input_matrix, FieldHandle& output) const;
+
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
+      }
+    }
+  }
 }
+
+#endif
+
