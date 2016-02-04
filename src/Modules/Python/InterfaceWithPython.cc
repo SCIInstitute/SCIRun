@@ -40,6 +40,15 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
 ALGORITHM_PARAMETER_DEF(Python, PythonCode);
+ALGORITHM_PARAMETER_DEF(Python, PythonString1Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonString2Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonString3Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonMatrix1Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonMatrix2Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonMatrix3Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonField1Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonField2Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonField3Name);
 
 const ModuleLookupInfo InterfaceWithPython::staticInfo_("InterfaceWithPython", "Python", "SCIRun");
 Mutex InterfaceWithPython::lock_("InterfaceWithPython");
@@ -83,5 +92,23 @@ void InterfaceWithPython::execute()
 
   //TODO: support multiple output objects
   PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);
-  impl.waitForOutputFromTransientState(Parameters::PythonObject, PythonString1, PythonMatrix1, PythonField1);
+
+  if (oport_connected(PythonString1))
+    impl.waitForOutputFromTransientState(Parameters::PythonString1Name, PythonString1, PythonMatrix1, PythonField1);
+  if (oport_connected(PythonString2))
+    impl.waitForOutputFromTransientState(Parameters::PythonString2Name, PythonString2, PythonMatrix1, PythonField1);
+  if (oport_connected(PythonString3))
+    impl.waitForOutputFromTransientState(Parameters::PythonString3Name, PythonString3, PythonMatrix1, PythonField1);
+  if (oport_connected(PythonMatrix1))
+    impl.waitForOutputFromTransientState(Parameters::PythonMatrix1Name, PythonString1, PythonMatrix1, PythonField1);
+  if (oport_connected(PythonMatrix2))
+    impl.waitForOutputFromTransientState(Parameters::PythonMatrix2Name, PythonString1, PythonMatrix2, PythonField1);
+  if (oport_connected(PythonMatrix3))
+    impl.waitForOutputFromTransientState(Parameters::PythonMatrix3Name, PythonString1, PythonMatrix3, PythonField1);
+  if (oport_connected(PythonField1))
+    impl.waitForOutputFromTransientState(Parameters::PythonField1Name, PythonString1, PythonMatrix1, PythonField1);
+  if (oport_connected(PythonField2))
+    impl.waitForOutputFromTransientState(Parameters::PythonField2Name, PythonString1, PythonMatrix1, PythonField2);
+  if (oport_connected(PythonField3))
+    impl.waitForOutputFromTransientState(Parameters::PythonField3Name, PythonString1, PythonMatrix1, PythonField3);
 }
