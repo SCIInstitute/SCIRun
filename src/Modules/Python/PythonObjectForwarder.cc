@@ -58,6 +58,6 @@ void PythonObjectForwarder::setStateDefaults()
 void PythonObjectForwarder::execute()
 {
   PythonObjectForwarderImpl<PythonObjectForwarder> impl(*this);
-  impl.waitForOutputFromTransientState(Parameters::PythonObject, PythonString, PythonMatrix, PythonField);
+  impl.waitForOutputFromTransientState(Parameters::PythonObject.name(), PythonString, PythonMatrix, PythonField);
 }
 

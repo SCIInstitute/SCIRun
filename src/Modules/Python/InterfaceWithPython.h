@@ -84,6 +84,7 @@ namespace SCIRun
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
         static Core::Thread::Mutex lock_;
+        std::string convertInputOutputSyntax(const std::string& code) const;
       };
 
     }

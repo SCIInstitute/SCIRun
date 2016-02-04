@@ -61,7 +61,7 @@ namespace SCIRun
           }
 
           template <class StringPort, class MatrixPort, class FieldPort>
-          void waitForOutputFromTransientState(const Name& transientKey, const StringPort& stringPort, const MatrixPort& matrixPort, const FieldPort&)
+          void waitForOutputFromTransientState(const std::string& transientKey, const StringPort& stringPort, const MatrixPort& matrixPort, const FieldPort&)
           {
             int tries = 0;
             auto state = module_.get_state();
@@ -70,10 +70,10 @@ namespace SCIRun
             while (tries < maxTries_ && !valueOption)
             {
               std::ostringstream ostr;
-              ostr << module_.get_id() << " looking up value attempt #" << (tries + 1) << "/" << maxTries_;
+              ostr << module_.get_id() << " looking up value for " << transientKey << "; attempt #" << (tries + 1) << "/" << maxTries_;
               module_.remark(ostr.str());
 
-              valueOption = state->getTransientValue(Parameters::PythonObject);
+              valueOption = state->getTransientValue(transientKey);
 
               tries++;
               boost::this_thread::sleep(boost::posix_time::milliseconds(waitTime_));

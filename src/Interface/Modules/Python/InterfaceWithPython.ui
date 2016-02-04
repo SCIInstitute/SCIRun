@@ -20,13 +20,20 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="0" colspan="2">
+   <item row="3" column="0">
+    <widget class="QPushButton" name="inputVariableNamesPushButton_">
+     <property name="text">
+      <string>Input Variable Names</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="2">
     <widget class="QTextEdit" name="pythonCodeTextEdit_"/>
    </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QPushButton" name="clearObjectPushButton_">
+   <item row="3" column="1">
+    <widget class="QPushButton" name="outputNamesPushButton_">
      <property name="text">
-      <string>Clear Output Objects</string>
+      <string>Output Variable Names</string>
      </property>
     </widget>
    </item>
@@ -55,6 +62,13 @@
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Polling interval (ms)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QPushButton" name="clearObjectPushButton_">
+     <property name="text">
+      <string>Clear Output Objects</string>
      </property>
     </widget>
    </item>

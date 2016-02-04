@@ -75,6 +75,23 @@ void InterfaceWithPython::setStateDefaults()
   state->setValue(Parameters::PythonCode, std::string("# Insert Python code here using the SCIRun API."));
   state->setValue(Parameters::PollingIntervalMilliseconds, 200);
   state->setValue(Parameters::NumberOfRetries, 50);
+
+  state->setValue(Parameters::PythonField1Name, std::string("f1"));
+  state->setValue(Parameters::PythonField2Name, std::string("f2"));
+  state->setValue(Parameters::PythonField3Name, std::string("f3"));
+
+  state->setValue(Parameters::PythonString1Name, std::string("s1"));
+  state->setValue(Parameters::PythonString2Name, std::string("s2"));
+  state->setValue(Parameters::PythonString3Name, std::string("s3"));
+
+  state->setValue(Parameters::PythonMatrix1Name, std::string("m1"));
+  state->setValue(Parameters::PythonMatrix2Name, std::string("m2"));
+  state->setValue(Parameters::PythonMatrix3Name, std::string("m3"));
+}
+
+std::string InterfaceWithPython::convertInputOutputSyntax(const std::string& code) const
+{
+  return code;
 }
 
 void InterfaceWithPython::execute()
@@ -87,28 +104,32 @@ void InterfaceWithPython::execute()
     std::vector<std::string> lines;
     boost::split(lines, code, boost::is_any_of("\n"));
     for (const auto& line : lines)
-      PythonInterpreter::Instance().run_string(line);
+    {
+      auto converted = convertInputOutputSyntax(line);
+      PythonInterpreter::Instance().run_string(converted);
+    }
   }
 
   //TODO: support multiple output objects
   PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);
 
   if (oport_connected(PythonString1))
-    impl.waitForOutputFromTransientState(Parameters::PythonString1Name, PythonString1, PythonMatrix1, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonString1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
   if (oport_connected(PythonString2))
-    impl.waitForOutputFromTransientState(Parameters::PythonString2Name, PythonString2, PythonMatrix1, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonString2Name).toString(), PythonString2, PythonMatrix1, PythonField1);
   if (oport_connected(PythonString3))
-    impl.waitForOutputFromTransientState(Parameters::PythonString3Name, PythonString3, PythonMatrix1, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonString3Name).toString(), PythonString3, PythonMatrix1, PythonField1);
   if (oport_connected(PythonMatrix1))
-    impl.waitForOutputFromTransientState(Parameters::PythonMatrix1Name, PythonString1, PythonMatrix1, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonMatrix1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
   if (oport_connected(PythonMatrix2))
-    impl.waitForOutputFromTransientState(Parameters::PythonMatrix2Name, PythonString1, PythonMatrix2, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonMatrix2Name).toString(), PythonString1, PythonMatrix2, PythonField1);
   if (oport_connected(PythonMatrix3))
-    impl.waitForOutputFromTransientState(Parameters::PythonMatrix3Name, PythonString1, PythonMatrix3, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonMatrix3Name).toString(), PythonString1, PythonMatrix3, PythonField1);
   if (oport_connected(PythonField1))
-    impl.waitForOutputFromTransientState(Parameters::PythonField1Name, PythonString1, PythonMatrix1, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonField1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
   if (oport_connected(PythonField2))
-    impl.waitForOutputFromTransientState(Parameters::PythonField2Name, PythonString1, PythonMatrix1, PythonField2);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonField2Name).toString(), PythonString1, PythonMatrix1, PythonField2);
   if (oport_connected(PythonField3))
-    impl.waitForOutputFromTransientState(Parameters::PythonField3Name, PythonString1, PythonMatrix1, PythonField3);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonField3Name).toString(), PythonString1, PythonMatrix1, PythonField3);
 }
+
