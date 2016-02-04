@@ -37,7 +37,7 @@ class ConvertNrrdToFieldTests : public ModuleTest
 {
 };
 
-TEST_F(ConvertNrrdToFieldTests, CanCreate)
+TEST_F(ConvertNrrdToFieldTests, DISABLED_CanCreate)
 {
   auto rn = makeModule("ConvertNrrdToField");
 
