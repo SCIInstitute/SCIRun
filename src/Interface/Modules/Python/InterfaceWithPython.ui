@@ -28,7 +28,16 @@
     </widget>
    </item>
    <item row="7" column="0" colspan="2">
-    <widget class="QTextEdit" name="pythonCodeTextEdit_"/>
+    <widget class="QTextEdit" name="pythonCodeTextEdit_">
+     <property name="font">
+      <font>
+       <family>Courier</family>
+      </font>
+     </property>
+     <property name="tabStopWidth">
+      <number>30</number>
+     </property>
+    </widget>
    </item>
    <item row="3" column="1">
     <widget class="QPushButton" name="outputNamesPushButton_">
