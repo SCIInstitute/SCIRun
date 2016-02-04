@@ -47,10 +47,11 @@ InterfaceWithPythonDialog::InterfaceWithPythonDialog(const std::string& name, Mo
   addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
   addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
 
-  connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObject()));
+  connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObjects()));
 }
 
 void InterfaceWithPythonDialog::resetObjects()
 {
+  //TODO
   state_->setTransientValue(Parameters::PythonObject, boost::any());
 }

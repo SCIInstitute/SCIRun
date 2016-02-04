@@ -91,6 +91,28 @@ void InterfaceWithPython::setStateDefaults()
 
 std::string InterfaceWithPython::convertInputOutputSyntax(const std::string& code) const
 {
+  auto varsToCheck = { Parameters::PythonField1Name, Parameters::PythonField2Name, Parameters::PythonField3Name,
+    Parameters::PythonString1Name, Parameters::PythonString2Name, Parameters::PythonString3Name,
+    Parameters::PythonMatrix1Name, Parameters::PythonMatrix2Name, Parameters::PythonMatrix3Name };
+
+  for (const auto& var : varsToCheck)
+  {
+    auto varName = get_state()->getValue(var).toString();
+
+    boost::regex r("(\\h*)" + varName + " = (.+)");
+    boost::smatch what;
+    if (regex_match(code, what, r))
+    {
+      int rhsIndex = what.size() > 2 ? 2 : 1;
+      auto whitespace = what.size() > 2 ? boost::lexical_cast<std::string>(what[1]) : "";
+      auto rhs = boost::lexical_cast<std::string>(what[rhsIndex]);
+      std::cout << "FOUND MATCHING RHS for " << varName << ": " << rhs << std::endl;
+      auto post = whitespace + "scirun_set_module_transient_state(\"" + get_id().id_ + "\",\"" + varName + "\"," + rhs + ")";
+      std::cout << post << std::endl;
+      return post;
+    }
+  }
+
   return code;
 }
 

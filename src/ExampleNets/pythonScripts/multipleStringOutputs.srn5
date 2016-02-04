@@ -78,13 +78,10 @@
 									<name>PythonCode</name>
 									<value>
 										<which>2</which>
-										<value>s1 = scirun_get_module_input_value_by_index(&quot;InterfaceWithPython:1&quot;, 2)
-sOut1 = s1 + &quot; from python 1!&quot;
-sOut2 = s1 + &quot; from python 2!&quot;
-sOut3 = s1 + &quot; from python 3!&quot;
-scirun_set_module_transient_state(&quot;InterfaceWithPython:1&quot;, &quot;s1&quot;, sOut1)
-scirun_set_module_transient_state(&quot;InterfaceWithPython:1&quot;, &quot;s2&quot;, sOut2)
-scirun_set_module_transient_state(&quot;InterfaceWithPython:1&quot;, &quot;s3&quot;, sOut3)</value>
+										<value>sIn = scirun_get_module_input_value_by_index(&quot;InterfaceWithPython:1&quot;, 2)
+s1 = sIn + &quot; from python 1!&quot;
+s2 = sIn + &quot; from python 2!&quot;
+s3 = sIn + &quot; from python 3!&quot;</value>
 									</value>
 								</second>
 							</item>
