@@ -58,6 +58,8 @@ void InterfaceWithPython::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Parameters::PythonCode, std::string("# Insert Python code here using the SCIRun API."));
+  state->setValue(Parameters::PollingIntervalMilliseconds, 200);
+  state->setValue(Parameters::NumberOfRetries, 50);
 }
 
 void InterfaceWithPython::execute()
@@ -73,8 +75,7 @@ void InterfaceWithPython::execute()
       PythonInterpreter::Instance().run_string(line);
   }
 
-  //TODO: hook up GUI input as with POF module
   //TODO: support multiple output objects
-  PythonObjectForwarderImpl<InterfaceWithPython> impl(*this, 100, 100);
+  PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);
   impl.waitForOutputFromTransientState();
 }

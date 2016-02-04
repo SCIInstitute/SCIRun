@@ -45,6 +45,8 @@ public:
   InterfaceWithPythonDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
+private Q_SLOTS:
+  void resetObjects();
 };
 
 }

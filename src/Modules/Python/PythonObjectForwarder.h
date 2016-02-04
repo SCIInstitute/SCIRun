@@ -53,7 +53,12 @@ namespace SCIRun
         class PythonObjectForwarderImpl
         {
         public:
-          PythonObjectForwarderImpl(PythonModule& module, int maxTries, int waitTime) : module_(module), maxTries_(maxTries), waitTime_(waitTime) {}
+          explicit PythonObjectForwarderImpl(PythonModule& module) : module_(module)
+          {
+            auto state = module.get_state();
+            maxTries_ = state->getValue(Parameters::NumberOfRetries).toInt();
+            waitTime_ = state->getValue(Parameters::PollingIntervalMilliseconds).toInt();
+          }
 
           void waitForOutputFromTransientState()
           {
@@ -64,7 +69,7 @@ namespace SCIRun
             while (tries < maxTries_ && !valueOption)
             {
               std::ostringstream ostr;
-              ostr << "PythonObjectForwarder looking up value attempt #" << (tries + 1) << "/" << maxTries_;
+              ostr << module_.get_id() << " looking up value attempt #" << (tries + 1) << "/" << maxTries_;
               module_.remark(ostr.str());
 
               valueOption = state->getTransientValue(Parameters::PythonObject);

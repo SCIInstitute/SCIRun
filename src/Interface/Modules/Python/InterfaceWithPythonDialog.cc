@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Interface/Modules/Python/InterfaceWithPythonDialog.h>
 #include <Modules/Python/InterfaceWithPython.h>
+#include <Modules/Python/PythonObjectForwarder.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -42,4 +43,14 @@ InterfaceWithPythonDialog::InterfaceWithPythonDialog(const std::string& name, Mo
   fixSize();
 
   addTextEditManager(pythonCodeTextEdit_, Parameters::PythonCode);
+
+  addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
+  addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
+
+  connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObject()));
+}
+
+void InterfaceWithPythonDialog::resetObjects()
+{
+  state_->setTransientValue(Parameters::PythonObject, boost::any());
 }
