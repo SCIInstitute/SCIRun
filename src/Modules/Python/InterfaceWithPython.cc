@@ -49,9 +49,15 @@ InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(InputString);
-  INITIALIZE_PORT(PythonMatrix);
-  INITIALIZE_PORT(PythonField);
-  INITIALIZE_PORT(PythonString);
+  INITIALIZE_PORT(PythonMatrix1);
+  INITIALIZE_PORT(PythonField1);
+  INITIALIZE_PORT(PythonString1);
+  INITIALIZE_PORT(PythonMatrix2);
+  INITIALIZE_PORT(PythonField2);
+  INITIALIZE_PORT(PythonString2);
+  INITIALIZE_PORT(PythonMatrix3);
+  INITIALIZE_PORT(PythonField3);
+  INITIALIZE_PORT(PythonString3);
 }
 
 void InterfaceWithPython::setStateDefaults()
@@ -77,5 +83,5 @@ void InterfaceWithPython::execute()
 
   //TODO: support multiple output objects
   PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);
-  impl.waitForOutputFromTransientState();
+  impl.waitForOutputFromTransientState(Parameters::PythonObject, PythonString1, PythonMatrix1, PythonField1);
 }

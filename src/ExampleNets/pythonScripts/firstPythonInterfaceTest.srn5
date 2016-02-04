@@ -44,8 +44,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>NumberOfRetries</name>
+								</first>
+								<second>
+									<name>NumberOfRetries</name>
+									<value>
+										<which>0</which>
+										<value>50</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PollingIntervalMilliseconds</name>
+								</first>
+								<second>
+									<name>PollingIntervalMilliseconds</name>
+									<value>
+										<which>0</which>
+										<value>200</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>PythonCode</name>
@@ -99,7 +123,7 @@ scirun_set_module_transient_state(&quot;InterfaceWithPython:0&quot;, &quot;Pytho
 			<item>
 				<moduleId1_>InterfaceWithPython:0</moduleId1_>
 				<port1_>
-					<name>PythonString</name>
+					<name>PythonString1</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportStringInfo:0</moduleId2_>
