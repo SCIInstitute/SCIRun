@@ -272,6 +272,9 @@ namespace SCIRun {
       MouseMode                         mMouseMode;       ///< Current mouse mode.
 
       std::string                       mSelected;        ///< Current selection
+      glm::vec4                         mSelectedPos;     ///
+      glm::vec4                         mSelectedTrans;   ///
+
       size_t                            mScreenWidth;     ///< Screen width in pixels.
       size_t                            mScreenHeight;    ///< Screen height in pixels.
 

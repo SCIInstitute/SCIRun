@@ -218,6 +218,7 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseDown(const glm::ivec2& pos, MouseButton btn)
     {
+      mSelectedTrans = glm::vec4(0.0);
       if (selectWidget_ && widgetExists_)
       {
         if (btn == MouseButton::MOUSE_LEFT)
@@ -234,7 +235,11 @@ namespace SCIRun {
     {
       if (widgetSelected_)
       {
-
+        gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
+        glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
+          (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
+          mSelectedPos.z * 2 - 1, 1.0f);
+        mSelectedTrans = cam->data.projIV * (spos - mSelectedPos);
       }
       else
       {
@@ -262,6 +267,7 @@ namespace SCIRun {
       int port)
     {
       mSelected = "";
+      widgetSelected_ = false;
       // Ensure our rendering context is current on our thread.
       mContext->makeCurrent();
 
@@ -484,20 +490,28 @@ namespace SCIRun {
       mCore.execute(0, 50);
 
       GLuint value;
+      GLfloat depth;
       if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
-        (GLvoid*)&value))
+        (GLvoid*)&value, (GLvoid*)&depth))
       {
-        //std::cout << pos.x << "\t" << pos.y << "\n";
-        //selection in value
         auto it = selMap.find(value);
         if (it != selMap.end())
           mSelected = it->second;
-
-        //  std::cout << it->second << " is selected.\n"
-        //  << pos.x << "\t" << pos.y << "\n";
       }
       //release and restore fbo
       fboMan->unbindFBO();
+
+      //calculate position
+      if (mSelected != "")
+      {
+        widgetSelected_ = true;
+        glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
+          (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
+          depth * 2 - 1, 1.0f);
+        mSelectedPos = spos;
+        //selPos = cam->data.projIV * spos;
+        //std::cout << selPos.x << "\t" << selPos.y << "\t" << selPos.z << "\n";
+      }
 
       for (auto& it : entityList)
         mCore.removeEntity(it);
@@ -555,6 +569,7 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
     {
+      widgetSelected_ = false;
     }
 
     //------------------------------------------------------------------------------
@@ -894,6 +909,10 @@ namespace SCIRun {
                 trafo.transform[0].x = scale;
                 trafo.transform[1].y = scale;
                 trafo.transform[2].z = scale;
+              }
+              if (widgetSelected_ && objectName == mSelected)
+              {
+                trafo.setPosition(mSelectedTrans.xyz());
               }
               mCore.addComponent(entityID, trafo);
 

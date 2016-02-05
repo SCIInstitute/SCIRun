@@ -185,6 +185,12 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   }
 }
 
+void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
+{
+  if (selected_)
+    newGeometryValue();
+}
+
 void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
 {
   switch (event->key())
