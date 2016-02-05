@@ -102,14 +102,18 @@ std::string InterfaceWithPython::convertInputOutputSyntax(const std::string& cod
   {
     auto varName = get_state()->getValue(var).toString();
 
-    boost::regex outputRegex("(\\h*)" + varName + " = (.+)");
+    auto regexString = "(\\h*)" + varName + " = (.+)";
+    //std::cout << "REGEX STRING " << regexString << std::endl;
+    boost::regex outputRegex(regexString);
     boost::smatch what;
     if (regex_match(code, what, outputRegex))
     {
       int rhsIndex = what.size() > 2 ? 2 : 1;
       auto whitespace = what.size() > 2 ? boost::lexical_cast<std::string>(what[1]) : "";
       auto rhs = boost::lexical_cast<std::string>(what[rhsIndex]);
-      return whitespace + "scirun_set_module_transient_state(\"" + get_id().id_ + "\",\"" + varName + "\"," + rhs + ")";
+      auto converted = whitespace + "scirun_set_module_transient_state(\"" + get_id().id_ + "\",\"" + varName + "\"," + rhs + ")";
+      //std::cout << "CONVERTED TO " << converted << std::endl;
+      return converted;
     }
   }
 
@@ -123,18 +127,20 @@ void InterfaceWithPython::execute()
     Guard g(lock_.get());
     
     auto code = state->getValue(Parameters::PythonCode).toString();
-    //TODO: question--would calling Python.run_script on the entire string be better? Need to test.
-
+    
+    std::ostringstream convertedCode;
     std::vector<std::string> lines;
     boost::split(lines, code, boost::is_any_of("\n"));
     for (const auto& line : lines)
     {
-      auto converted = convertInputOutputSyntax(line);
-      PythonInterpreter::Instance().run_string(converted);
+      convertedCode << convertInputOutputSyntax(line) << "\n";
     }
+
+    //std::cout << "HERE IS CODE:\n\n" << convertedCode.str() << std::endl;
+
+    PythonInterpreter::Instance().run_script(convertedCode.str());
   }
 
-  //TODO: support multiple output objects
   PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);
 
   if (oport_connected(PythonString1))

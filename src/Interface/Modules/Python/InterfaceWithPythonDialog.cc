@@ -56,7 +56,10 @@ InterfaceWithPythonDialog::InterfaceWithPythonDialog(const std::string& name, Mo
 
   setOutputTableColumnsReadOnly();
 
-  connect(pythonDocPushButton_, SIGNAL(clicked()), this, SLOT(loadAPIDocumentation));
+  connect(pythonDocPushButton_, SIGNAL(clicked()), this, SLOT(loadAPIDocumentation()));
+
+  connect(outputVariableNamesTableWidget_, SIGNAL(cellChanged(int, int)), this, SLOT(updateOutputVariable(int, int)));
+
 }
 
 void InterfaceWithPythonDialog::resetObjects()
@@ -86,4 +89,9 @@ void InterfaceWithPythonDialog::loadAPIDocumentation()
 
   if (!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode)))
     Core::Logging::Log::get() << Core::Logging::ERROR_LOG << "Failed to open SCIRun Python API page.";
+}
+
+void InterfaceWithPythonDialog::updateOutputVariable(int row, int col)
+{
+  qDebug() << "output var changed: " << row << col << outputVariableNamesTableWidget_->item(row, col)->text();
 }

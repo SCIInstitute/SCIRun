@@ -87,10 +87,10 @@ s3 = sIn + &quot; from python 3!&quot;</value>
 							</item>
 							<item>
 								<first>
-									<name>PythonField1Name</name>
+									<name>PythonOutputField1Name</name>
 								</first>
 								<second>
-									<name>PythonField1Name</name>
+									<name>PythonOutputField1Name</name>
 									<value>
 										<which>2</which>
 										<value>f1</value>
@@ -99,10 +99,10 @@ s3 = sIn + &quot; from python 3!&quot;</value>
 							</item>
 							<item>
 								<first>
-									<name>PythonField2Name</name>
+									<name>PythonOutputField2Name</name>
 								</first>
 								<second>
-									<name>PythonField2Name</name>
+									<name>PythonOutputField2Name</name>
 									<value>
 										<which>2</which>
 										<value>f2</value>
@@ -111,10 +111,10 @@ s3 = sIn + &quot; from python 3!&quot;</value>
 							</item>
 							<item>
 								<first>
-									<name>PythonField3Name</name>
+									<name>PythonOutputField3Name</name>
 								</first>
 								<second>
-									<name>PythonField3Name</name>
+									<name>PythonOutputField3Name</name>
 									<value>
 										<which>2</which>
 										<value>f3</value>
@@ -123,10 +123,10 @@ s3 = sIn + &quot; from python 3!&quot;</value>
 							</item>
 							<item>
 								<first>
-									<name>PythonMatrix1Name</name>
+									<name>PythonOutputMatrix1Name</name>
 								</first>
 								<second>
-									<name>PythonMatrix1Name</name>
+									<name>PythonOutputMatrix1Name</name>
 									<value>
 										<which>2</which>
 										<value>m1</value>
@@ -135,10 +135,10 @@ s3 = sIn + &quot; from python 3!&quot;</value>
 							</item>
 							<item>
 								<first>
-									<name>PythonMatrix2Name</name>
+									<name>PythonOutputMatrix2Name</name>
 								</first>
 								<second>
-									<name>PythonMatrix2Name</name>
+									<name>PythonOutputMatrix2Name</name>
 									<value>
 										<which>2</which>
 										<value>m2</value>
@@ -147,10 +147,10 @@ s3 = sIn + &quot; from python 3!&quot;</value>
 							</item>
 							<item>
 								<first>
-									<name>PythonMatrix3Name</name>
+									<name>PythonOutputMatrix3Name</name>
 								</first>
 								<second>
-									<name>PythonMatrix3Name</name>
+									<name>PythonOutputMatrix3Name</name>
 									<value>
 										<which>2</which>
 										<value>m3</value>
@@ -159,10 +159,10 @@ s3 = sIn + &quot; from python 3!&quot;</value>
 							</item>
 							<item>
 								<first>
-									<name>PythonString1Name</name>
+									<name>PythonOutputString1Name</name>
 								</first>
 								<second>
-									<name>PythonString1Name</name>
+									<name>PythonOutputString1Name</name>
 									<value>
 										<which>2</which>
 										<value>s1</value>
@@ -171,10 +171,10 @@ s3 = sIn + &quot; from python 3!&quot;</value>
 							</item>
 							<item>
 								<first>
-									<name>PythonString2Name</name>
+									<name>PythonOutputString2Name</name>
 								</first>
 								<second>
-									<name>PythonString2Name</name>
+									<name>PythonOutputString2Name</name>
 									<value>
 										<which>2</which>
 										<value>s2</value>
@@ -183,10 +183,10 @@ s3 = sIn + &quot; from python 3!&quot;</value>
 							</item>
 							<item>
 								<first>
-									<name>PythonString3Name</name>
+									<name>PythonOutputString3Name</name>
 								</first>
 								<second>
-									<name>PythonString3Name</name>
+									<name>PythonOutputString3Name</name>
 									<value>
 										<which>2</which>
 										<value>s3</value>
@@ -333,8 +333,8 @@ s3 = sIn + &quot; from python 3!&quot;</value>
 		<item>
 			<first>ReportStringInfo:2</first>
 			<second>
-				<first>-3.51000000000000000e+002</first>
-				<second>-3.90000000000000000e+001</second>
+				<first>-3.80000000000000000e+002</first>
+				<second>-7.60000000000000000e+001</second>
 			</second>
 		</item>
 	</modulePositions>

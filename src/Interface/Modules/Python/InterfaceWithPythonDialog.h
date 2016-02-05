@@ -46,6 +46,7 @@ public:
 private Q_SLOTS:
   void resetObjects();
   void loadAPIDocumentation();
+  void updateOutputVariable(int row, int col);
 private:
   void setOutputTableColumnsReadOnly();
 };

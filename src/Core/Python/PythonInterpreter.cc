@@ -421,7 +421,11 @@ void PythonInterpreter::initialize(bool needProgramName, const std::string& comm
   initialize_eventhandler(commandLine, libPath);
 
   {
-    auto out = [](const std::string& s) { std::cout << "[PYTHON] " << s << std::endl; };
+    auto out = [](const std::string& s)
+    {
+      if (!std::all_of(s.begin(), s.end(), isspace))
+        std::cout << "[PYTHON] " << s << std::endl;
+    };
     auto error = [](const std::string& s) { std::cerr << "[PYTHON ERROR] " << s << std::endl; };
     output_signal_.connect(out);
     error_signal_.connect(error);
@@ -556,7 +560,7 @@ void PythonInterpreter::run_script( const std::string& script )
 	//}
 
 	// Output the script to the console
-	this->output_signal_( "Running script ...\n" );
+	//this->output_signal_( "Running script ...\n" );
 
 	// Clear any previous Python errors.
 	PyErr_Clear();

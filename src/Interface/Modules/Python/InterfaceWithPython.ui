@@ -282,7 +282,17 @@
      <item>
       <widget class="QPushButton" name="pythonDocPushButton_">
        <property name="text">
-        <string>Python API Documentation</string>
+        <string>Load Python API Documentation</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="enableConsoleOutputCheckBox_">
+       <property name="text">
+        <string>Enable Console Output</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
