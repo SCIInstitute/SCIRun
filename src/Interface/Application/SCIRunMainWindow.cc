@@ -366,7 +366,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
 
   connect(moduleSelectorDockWidget_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
 
-  statusBar()->addPermanentWidget(new QLabel("Version: " + QString::fromStdString(VersionInfo::GIT_VERSION_TAG)));
+  setupVersionButton();
 
 	WidgetStyleMixin::tabStyle(optionsTabWidget_);
 }
@@ -1641,6 +1641,23 @@ void SCIRunMainWindow::runNewModuleWizard()
 	qDebug() << "new module wizard coming soon";
 	ClassWizard* wizard = new ClassWizard(this);
 	wizard->show();
+}
+
+void SCIRunMainWindow::setupVersionButton()
+{
+  auto qVersion = QString::fromStdString(VersionInfo::GIT_VERSION_TAG);
+  versionButton_ = new QPushButton("Version: " + qVersion);
+  versionButton_->setFlat(true);
+  versionButton_->setToolTip("Click to copy version tag to clipboard");
+  versionButton_->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+  connect(versionButton_, SIGNAL(clicked()), this, SLOT(copyVersionToClipboard()));
+  statusBar()->addPermanentWidget(versionButton_);
+}
+
+void SCIRunMainWindow::copyVersionToClipboard()
+{
+  QApplication::clipboard()->setText(QString::fromStdString(VersionInfo::GIT_VERSION_TAG));
+  statusBar()->showMessage("Version string copied to clipboard.", 2000);
 }
 
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
