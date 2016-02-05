@@ -40,15 +40,18 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
 ALGORITHM_PARAMETER_DEF(Python, PythonCode);
-ALGORITHM_PARAMETER_DEF(Python, PythonString1Name);
-ALGORITHM_PARAMETER_DEF(Python, PythonString2Name);
-ALGORITHM_PARAMETER_DEF(Python, PythonString3Name);
-ALGORITHM_PARAMETER_DEF(Python, PythonMatrix1Name);
-ALGORITHM_PARAMETER_DEF(Python, PythonMatrix2Name);
-ALGORITHM_PARAMETER_DEF(Python, PythonMatrix3Name);
-ALGORITHM_PARAMETER_DEF(Python, PythonField1Name);
-ALGORITHM_PARAMETER_DEF(Python, PythonField2Name);
-ALGORITHM_PARAMETER_DEF(Python, PythonField3Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonInputStringNames);
+ALGORITHM_PARAMETER_DEF(Python, PythonInputMatrixNames);
+ALGORITHM_PARAMETER_DEF(Python, PythonInputFieldNames);
+ALGORITHM_PARAMETER_DEF(Python, PythonOutputString1Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonOutputString2Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonOutputString3Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonOutputMatrix1Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonOutputMatrix2Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonOutputMatrix3Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonOutputField1Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonOutputField2Name);
+ALGORITHM_PARAMETER_DEF(Python, PythonOutputField3Name);
 
 const ModuleLookupInfo InterfaceWithPython::staticInfo_("InterfaceWithPython", "Python", "SCIRun");
 Mutex InterfaceWithPython::lock_("InterfaceWithPython");
@@ -76,40 +79,37 @@ void InterfaceWithPython::setStateDefaults()
   state->setValue(Parameters::PollingIntervalMilliseconds, 200);
   state->setValue(Parameters::NumberOfRetries, 50);
 
-  state->setValue(Parameters::PythonField1Name, std::string("f1"));
-  state->setValue(Parameters::PythonField2Name, std::string("f2"));
-  state->setValue(Parameters::PythonField3Name, std::string("f3"));
-
-  state->setValue(Parameters::PythonString1Name, std::string("s1"));
-  state->setValue(Parameters::PythonString2Name, std::string("s2"));
-  state->setValue(Parameters::PythonString3Name, std::string("s3"));
-
-  state->setValue(Parameters::PythonMatrix1Name, std::string("m1"));
-  state->setValue(Parameters::PythonMatrix2Name, std::string("m2"));
-  state->setValue(Parameters::PythonMatrix3Name, std::string("m3"));
+  state->setValue(Parameters::PythonOutputField1Name, std::string("fieldOutput1"));
+  state->setValue(Parameters::PythonOutputField2Name, std::string("fieldOutput2"));
+  state->setValue(Parameters::PythonOutputField3Name, std::string("fieldOutput3"));
+                                    
+  state->setValue(Parameters::PythonOutputString1Name, std::string("stringOutput1"));
+  state->setValue(Parameters::PythonOutputString2Name, std::string("stringOutput2"));
+  state->setValue(Parameters::PythonOutputString3Name, std::string("stringOutput3"));
+                                    
+  state->setValue(Parameters::PythonOutputMatrix1Name, std::string("matrixOutput1"));
+  state->setValue(Parameters::PythonOutputMatrix2Name, std::string("matrixOutput2"));
+  state->setValue(Parameters::PythonOutputMatrix3Name, std::string("matrixOutput3"));
 }
 
 std::string InterfaceWithPython::convertInputOutputSyntax(const std::string& code) const
 {
-  auto varsToCheck = { Parameters::PythonField1Name, Parameters::PythonField2Name, Parameters::PythonField3Name,
-    Parameters::PythonString1Name, Parameters::PythonString2Name, Parameters::PythonString3Name,
-    Parameters::PythonMatrix1Name, Parameters::PythonMatrix2Name, Parameters::PythonMatrix3Name };
+  auto varsToCheck = { Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name, Parameters::PythonOutputField3Name,
+    Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name,
+    Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name, Parameters::PythonOutputMatrix3Name };
 
   for (const auto& var : varsToCheck)
   {
     auto varName = get_state()->getValue(var).toString();
 
-    boost::regex r("(\\h*)" + varName + " = (.+)");
+    boost::regex outputRegex("(\\h*)" + varName + " = (.+)");
     boost::smatch what;
-    if (regex_match(code, what, r))
+    if (regex_match(code, what, outputRegex))
     {
       int rhsIndex = what.size() > 2 ? 2 : 1;
       auto whitespace = what.size() > 2 ? boost::lexical_cast<std::string>(what[1]) : "";
       auto rhs = boost::lexical_cast<std::string>(what[rhsIndex]);
-      std::cout << "FOUND MATCHING RHS for " << varName << ": " << rhs << std::endl;
-      auto post = whitespace + "scirun_set_module_transient_state(\"" + get_id().id_ + "\",\"" + varName + "\"," + rhs + ")";
-      std::cout << post << std::endl;
-      return post;
+      return whitespace + "scirun_set_module_transient_state(\"" + get_id().id_ + "\",\"" + varName + "\"," + rhs + ")";
     }
   }
 
@@ -123,6 +123,8 @@ void InterfaceWithPython::execute()
     Guard g(lock_.get());
     
     auto code = state->getValue(Parameters::PythonCode).toString();
+    //TODO: question--would calling Python.run_script on the entire string be better? Need to test.
+
     std::vector<std::string> lines;
     boost::split(lines, code, boost::is_any_of("\n"));
     for (const auto& line : lines)
@@ -136,22 +138,22 @@ void InterfaceWithPython::execute()
   PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);
 
   if (oport_connected(PythonString1))
-    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonString1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
   if (oport_connected(PythonString2))
-    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonString2Name).toString(), PythonString2, PythonMatrix1, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString2Name).toString(), PythonString2, PythonMatrix1, PythonField1);
   if (oport_connected(PythonString3))
-    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonString3Name).toString(), PythonString3, PythonMatrix1, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputString3Name).toString(), PythonString3, PythonMatrix1, PythonField1);
   if (oport_connected(PythonMatrix1))
-    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonMatrix1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
   if (oport_connected(PythonMatrix2))
-    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonMatrix2Name).toString(), PythonString1, PythonMatrix2, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix2Name).toString(), PythonString1, PythonMatrix2, PythonField1);
   if (oport_connected(PythonMatrix3))
-    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonMatrix3Name).toString(), PythonString1, PythonMatrix3, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputMatrix3Name).toString(), PythonString1, PythonMatrix3, PythonField1);
   if (oport_connected(PythonField1))
-    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonField1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField1Name).toString(), PythonString1, PythonMatrix1, PythonField1);
   if (oport_connected(PythonField2))
-    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonField2Name).toString(), PythonString1, PythonMatrix1, PythonField2);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField2Name).toString(), PythonString1, PythonMatrix1, PythonField2);
   if (oport_connected(PythonField3))
-    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonField3Name).toString(), PythonString1, PythonMatrix1, PythonField3);
+    impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField3Name).toString(), PythonString1, PythonMatrix1, PythonField3);
 }
 

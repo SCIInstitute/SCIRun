@@ -42,15 +42,18 @@ namespace SCIRun
       namespace Python
       {
         ALGORITHM_PARAMETER_DECL(PythonCode);
-        ALGORITHM_PARAMETER_DECL(PythonString1Name);
-        ALGORITHM_PARAMETER_DECL(PythonString2Name);
-        ALGORITHM_PARAMETER_DECL(PythonString3Name);
-        ALGORITHM_PARAMETER_DECL(PythonMatrix1Name);
-        ALGORITHM_PARAMETER_DECL(PythonMatrix2Name);
-        ALGORITHM_PARAMETER_DECL(PythonMatrix3Name);
-        ALGORITHM_PARAMETER_DECL(PythonField1Name);
-        ALGORITHM_PARAMETER_DECL(PythonField2Name);
-        ALGORITHM_PARAMETER_DECL(PythonField3Name);
+        ALGORITHM_PARAMETER_DECL(PythonInputStringNames);
+        ALGORITHM_PARAMETER_DECL(PythonInputMatrixNames);
+        ALGORITHM_PARAMETER_DECL(PythonInputFieldNames);
+        ALGORITHM_PARAMETER_DECL(PythonOutputString1Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputString2Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputString3Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputMatrix1Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputMatrix2Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputMatrix3Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputField1Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputField2Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputField3Name);
       }
     }
   }

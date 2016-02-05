@@ -29,6 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Python/InterfaceWithPythonDialog.h>
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -48,10 +49,41 @@ InterfaceWithPythonDialog::InterfaceWithPythonDialog(const std::string& name, Mo
   addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);
 
   connect(clearObjectPushButton_, SIGNAL(clicked()), this, SLOT(resetObjects()));
+
+  WidgetStyleMixin::tabStyle(tabWidget);
+  WidgetStyleMixin::tableHeaderStyle(inputVariableNamesTableWidget_);
+  WidgetStyleMixin::tableHeaderStyle(outputVariableNamesTableWidget_);
+
+  setOutputTableColumnsReadOnly();
+
+  connect(pythonDocPushButton_, SIGNAL(clicked()), this, SLOT(loadAPIDocumentation));
 }
 
 void InterfaceWithPythonDialog::resetObjects()
 {
   //TODO
   state_->setTransientValue(Parameters::PythonObject, boost::any());
+}
+
+void InterfaceWithPythonDialog::setOutputTableColumnsReadOnly()
+{
+  for (int i = 0; i < outputVariableNamesTableWidget_->rowCount(); ++i)
+  {
+    for (int j = 0; j < outputVariableNamesTableWidget_->columnCount() - 1; ++j)
+    {
+      auto item = outputVariableNamesTableWidget_->item(i, j);
+      if (item)
+      {
+        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+      }
+    }
+  }
+}
+
+void InterfaceWithPythonDialog::loadAPIDocumentation()
+{
+  const QString url = "https://github.com/SCIInstitute/SCIRun/wiki/SCIRun-Python-API-0.2";
+
+  if (!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode)))
+    Core::Logging::Log::get() << Core::Logging::ERROR_LOG << "Failed to open SCIRun Python API page.";
 }

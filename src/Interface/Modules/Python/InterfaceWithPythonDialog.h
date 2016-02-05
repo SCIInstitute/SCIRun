@@ -42,11 +42,12 @@ namespace Gui {
 	Q_OBJECT
 
 public:
-  InterfaceWithPythonDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = nullptr);
+    InterfaceWithPythonDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
 private Q_SLOTS:
   void resetObjects();
+  void loadAPIDocumentation();
+private:
+  void setOutputTableColumnsReadOnly();
 };
 
 }
