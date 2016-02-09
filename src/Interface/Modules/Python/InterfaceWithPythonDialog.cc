@@ -60,6 +60,13 @@ InterfaceWithPythonDialog::InterfaceWithPythonDialog(const std::string& name, Mo
 
   connect(outputVariableNamesTableWidget_, SIGNAL(cellChanged(int, int)), this, SLOT(updateOutputVariable(int, int)));
 
+  auto outputs = SCIRun::Modules::Python::InterfaceWithPython::outputNameParameters();
+  for (int i = 0; i < outputVariableNamesTableWidget_->rowCount(); ++i)
+  {
+    auto lineEdit = new QLineEdit;
+    addLineEditManager(lineEdit, outputs[i]);
+    outputVariableNamesTableWidget_->setCellWidget(i, outputVariableNamesTableWidget_->columnCount() - 1, lineEdit);
+  }
 }
 
 void InterfaceWithPythonDialog::resetObjects()

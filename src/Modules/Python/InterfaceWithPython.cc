@@ -92,11 +92,16 @@ void InterfaceWithPython::setStateDefaults()
   state->setValue(Parameters::PythonOutputMatrix3Name, std::string("matrixOutput3"));
 }
 
+std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
+{
+  return { Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name, Parameters::PythonOutputMatrix3Name,
+    Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name, Parameters::PythonOutputField3Name,
+    Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name };
+}
+
 std::string InterfaceWithPython::convertInputOutputSyntax(const std::string& code) const
 {
-  auto varsToCheck = { Parameters::PythonOutputField1Name, Parameters::PythonOutputField2Name, Parameters::PythonOutputField3Name,
-    Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name,
-    Parameters::PythonOutputMatrix1Name, Parameters::PythonOutputMatrix2Name, Parameters::PythonOutputMatrix3Name };
+  auto varsToCheck = outputNameParameters();
 
   for (const auto& var : varsToCheck)
   {

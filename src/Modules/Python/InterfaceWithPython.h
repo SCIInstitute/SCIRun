@@ -85,6 +85,8 @@ namespace SCIRun
         OUTPUT_PORT(8, PythonString3, String);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static std::vector<Core::Algorithms::AlgorithmParameterName> inputNameParameters();
+        static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
       private:
         static Core::Thread::Mutex lock_;
         std::string convertInputOutputSyntax(const std::string& code) const;
