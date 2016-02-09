@@ -43,12 +43,15 @@ namespace Gui {
 
 public:
     InterfaceWithPythonDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
+public Q_SLOTS:
+  virtual void updateFromPortChange(int numPorts, const std::string&) override;
 private Q_SLOTS:
   void resetObjects();
   void loadAPIDocumentation();
-  void updateOutputVariable(int row, int col);
 private:
-  void setOutputTableColumnsReadOnly();
+  int numMatrixPorts_ = 1, numFieldPorts_ = 1, numStringPorts_ = 1;
+  int totalInputPorts() const { return numMatrixPorts_ + numFieldPorts_ + numStringPorts_; }
+  void setupOutputTableCells();
 };
 
 }
