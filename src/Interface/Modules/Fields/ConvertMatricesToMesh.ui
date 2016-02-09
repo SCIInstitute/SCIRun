@@ -71,7 +71,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QComboBox" name="meshTypeComboBox_">
+       <widget class="QComboBox" name="fieldBaseTypeComboBox_">
         <property name="currentIndex">
          <number>5</number>
         </property>
@@ -113,9 +113,6 @@
        </widget>
       </item>
      </layout>
-     <zorder>inputFieldTypeGroupBox_</zorder>
-     <zorder>label_5</zorder>
-     <zorder>meshTypeComboBox_</zorder>
     </widget>
    </item>
    <item>
@@ -132,7 +129,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QComboBox" name="fieldTypeComboBox_">
+       <widget class="QComboBox" name="dataTypeComboBox_">
         <property name="currentIndex">
          <number>7</number>
         </property>

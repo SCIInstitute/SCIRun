@@ -38,10 +38,10 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-        ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeName);
-        ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeTypeName);
-        ALGORITHM_PARAMETER_DEF(Fields, OutputMeshDataType);
-        ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDatatype);
+        //ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeName);
+        //ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeTypeName);
+        //ALGORITHM_PARAMETER_DEF(Fields, OutputMeshDataType);
+        //ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDatatype);
 
 				class SCISHARE	ConvertMatricesToMeshAlgo : public AlgorithmBase
         {

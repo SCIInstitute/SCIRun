@@ -36,6 +36,7 @@
 
 #include <Modules/Legacy/Fields/ConvertMatricesToMesh.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -53,20 +54,27 @@ ConvertMatricesToMesh::ConvertMatricesToMesh() : Module(staticInfo_)
   INITIALIZE_PORT(OutputField);
 }
 
+void ConvertMatricesToMesh::setStateDefaults()
+{
+ // auto state = get_state();
+  //state->setValue(ApplyDirichlet, 0);
+}
 
 void ConvertMatricesToMesh::execute()
 {/*
-  MatrixHandle positionshandle;
-  MatrixHandle normalshandle;
+  //MatrixHandle positionshandle;
+  //MatrixHandle normalshandle;
   
-  get_input_handle("Mesh Positions", positionshandle,true);
-  if (!get_input_handle("Mesh Normals", normalshandle, false))
+  auto positionshandle = getRequiredInput(MeshPositions);
+  auto normalshandle = getOptionalInput(MeshNormals);
+  //get_input_handle("Mesh Positions", positionshandle,true);
+
+  if (!normalshandle)
   {
     remark("No input normals connected, not used.");
   }
 
-  if (inputs_changed_ || gui_fieldbasetype_.changed() ||
-      gui_datatype_.changed() || !oport_cached("Output Field"))
+  if (needToExecute())
   {
     update_state(Executing);
     
@@ -146,5 +154,5 @@ void ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows
     {
       error("..." + to_string(ecount - 9) + " additional bad indices found.");
     }
-  } */
+  }*/
 }

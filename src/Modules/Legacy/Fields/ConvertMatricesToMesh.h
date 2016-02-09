@@ -55,18 +55,23 @@ namespace SCIRun {
       public:
         ConvertMatricesToMesh();
         virtual ~ConvertMatricesToMesh() {}
-
+        virtual void setStateDefaults();
         virtual void execute();
-      
-      private:
-        void process_elements(SCIRun::VMesh* mesh, size_type positionRows, bool required);
-        
+
         INPUT_PORT(0, MeshElements, Matrix);
         INPUT_PORT(1, MeshPositions, Matrix);
         INPUT_PORT(2, MeshNormals, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+        static const Core::Algorithms::AlgorithmParameterName InputFieldTypeName;
+        static const Core::Algorithms::AlgorithmParameterName InputFieldTypeTypeName;
+        static const Core::Algorithms::AlgorithmParameterName FieldBaseType;
+        static const Core::Algorithms::AlgorithmParameterName DataType;
+      
+      private:
+        void process_elements(SCIRun::VMesh* mesh, size_type positionRows, bool required);      
       };
     }
   }

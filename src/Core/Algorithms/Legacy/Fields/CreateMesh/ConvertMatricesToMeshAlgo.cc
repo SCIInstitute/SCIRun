@@ -46,15 +46,15 @@ using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeName)
-ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeTypeName)
-ALGORITHM_PARAMETER_DEF(Fields, OutputMeshDataType)
-ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDatatype)
+//ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeName)
+//ALGORITHM_PARAMETER_DEF(Fields, InputFieldTypeTypeName)
+//ALGORITHM_PARAMETER_DEF(Fields, OutputMeshDataType)
+//ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDatatype)
 
 ConvertMatricesToMeshAlgo::ConvertMatricesToMeshAlgo()
 {
-  add_option(Parameters::OutputMeshDataType, "TetVol", "Curve|HexVol|PointCloud|PrismVol|QuadSurf|TetVol|TriSurf");
-  add_option(Parameters::OutputFieldDataType, "double", "unsigned char|unsigned short|unsigned int|char|short|int|float|double|Vector|Tensor");
+  //add_option(Parameters::OutputMeshDataType, "TetVol", "Curve|HexVol|PointCloud|PrismVol|QuadSurf|TetVol|TriSurf");
+  //add_option(Parameters::OutputFieldDataType, "double", "unsigned char|unsigned short|unsigned int|char|short|int|float|double|Vector|Tensor");
 }
 
 bool
