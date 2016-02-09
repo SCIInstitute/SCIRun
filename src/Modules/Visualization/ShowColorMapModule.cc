@@ -49,6 +49,7 @@ ShowColorMapModule::ShowColorMapModule() : GeometryGeneratingModule(ModuleLookup
   INITIALIZE_PORT(GeometryOutput);
   ftInit_ = false;
   ftValid_ = false;
+  ftSize_ = 15;
 }
 
 void ShowColorMapModule::setStateDefaults()
@@ -202,7 +203,15 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   geom->mPasses.push_back(pass);
 
   //text
-  size_t text_size = 15;
+  char str2[128];
+  std::stringstream sd;
+  sd << "%." << sigdig << "f";
+  std::vector<Vector> txt_coords;
+  double increment = 1. / static_cast<double>(numlabel - 1);
+  double textSize = 5. * static_cast<double>(txtsize + 3);
+  double dash_size = 18.;
+  double pipe_size = 18.;
+  size_t text_size = size_t(textSize);
   if (!ftInit_)
   {
     std::string fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + "FreeSans.ttf";
@@ -215,15 +224,11 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   }
   if (!ftInit_ || !ftValid_)
     return geom;
-  char str2[128];
-  std::stringstream sd;
-  sd << "%." << sigdig << "f";
-  std::vector<Vector> txt_coords;
-  double increment = 1. / static_cast<double>(numlabel - 1);
-  double textSize = 10. * static_cast<double>(txtsize + 3);
-  double dash_size = 18.;
-  double pipe_size = 18.;
-  size_t count = 0;
+  if (ftSize_ != text_size)
+  {
+    ftSize_ = text_size;
+    setFaceSize(ftSize_);
+  }
   for (double i = 0.; i <= 1.000000001; i += increment)
   {
     std::stringstream ss;
@@ -239,7 +244,6 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
     const char *p;
     for (p = oneline.c_str(); *p; p++)
     {
-      count++;
       points.clear();
       indices.clear();
       txt_coords.clear();
@@ -305,14 +309,18 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       }
 
       //add the actual points and colors
-      uniqueNodeID = id + "colorMapLegendTextFont" + ss.str() +
-        static_cast<std::ostringstream*>(&(std::ostringstream() << count))->str();
+      uniqueNodeID = id + "colorMapLegendTextFont" +
+        static_cast<std::ostringstream*>(&(std::ostringstream()
+        << p[0] << x << y << z << w << h))->str();
       vboName = uniqueNodeID + "VBO" +
-        static_cast<std::ostringstream*>(&(std::ostringstream() << count))->str();
+        static_cast<std::ostringstream*>(&(std::ostringstream()
+        << p[0] << x << y << z << w << h))->str();
       iboName = uniqueNodeID + "IBO" +
-        static_cast<std::ostringstream*>(&(std::ostringstream() << count))->str();
+        static_cast<std::ostringstream*>(&(std::ostringstream()
+        << p[0] << x << y << z << w << h))->str();
       passName = uniqueNodeID + "Pass" +
-        static_cast<std::ostringstream*>(&(std::ostringstream() << count))->str();
+        static_cast<std::ostringstream*>(&(std::ostringstream()
+        << p[0] << x << y << z << w << h))->str();
 
       // NOTE: Attributes will depend on the color scheme. We will want to
       // normalize the colors if the color scheme is COLOR_IN_SITU.
@@ -354,118 +362,6 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
     }
   }
 
-/*  {
-    //########################################
-    // Now render the numbers for the scale bar
-
-    char str2[128];
-    std::stringstream sd;
-    sd << "%." << sigdig << "f";
-    points.clear();
-    indices.clear();
-    std::vector<Vector> txt_coords;
-    numVBOElements = 0;
-    uint32_t count = 0;
-    double increment = 1. / static_cast<double>(numlabel - 1);
-    double textSize = 10. * static_cast<double>(txtsize + 3);
-    const double dash_size = 20.;
-    const double pipe_size = 40.;
-
-    for (double i = 0.; i <= 1.000000001; i += increment) {
-      std::stringstream ss;
-      sprintf(str2, sd.str().c_str(), i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift());
-      ss << str2 << " " << st->getValue(Units).toString();
-      //flip the text to the side with more space depending on xTrans/yTrans > 50%
-      //text offsets vary depending on side of bar and left vs. bottom. Might need to vary per platform.
-      text_.reset(ss.str(), textSize, Vector((displaySide == 0) ?
-        (xTrans > 50 ? -(textSize*strlen(ss.str().c_str())) : 4.*dash_size) : 0.,
-        (displaySide == 0) ?
-        0. : (yTrans > 50 ? (-textSize - pipe_size / 2.) : pipe_size), i));
-      std::vector<Vector> tmp;
-      std::vector<Vector> coords;
-      text_.getStringVerts(tmp, coords);
-      if (displaySide != 0)
-        //pipe texture is 18 pixels too far right, move dash down a bit if closer to the top
-        text_.reset("|", pipe_size, Vector(-18., yTrans > 50 ? -15. : 0., i));
-      else
-        text_.reset("____", dash_size, Vector(xTrans > 50 ? -15. : 0., 0., i)); //move dashed over if bar on the right
-      text_.getStringVerts(tmp, coords);
-
-      for (auto a : tmp) {
-        points.push_back(a);
-        indices.push_back(count);
-        count++;
-      }
-      for (auto a : coords)
-        txt_coords.push_back(a);
-    }
-    numVBOElements = (uint32_t)points.size();
-
-    // IBO/VBOs and sizes
-    iboSize = sizeof(uint32_t) * (uint32_t)indices.size();
-    vboSize = sizeof(float) * 5 * (uint32_t)points.size();
-
-    std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr2(
-      new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-    std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr2(
-      new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
-
-    CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer2 = iboBufferSPtr2.get();
-    CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer2 = vboBufferSPtr2.get();
-
-    for (auto a : indices) iboBuffer2->write(a);
-    for (size_t i = 0; i < points.size(); i++) {
-      vboBuffer2->write(static_cast<float>(points[i].x()));
-      vboBuffer2->write(static_cast<float>(points[i].y()));
-      vboBuffer2->write(static_cast<float>(points[i].z()));
-      vboBuffer2->write(static_cast<float>(txt_coords[i].x()));
-      vboBuffer2->write(static_cast<float>(txt_coords[i].y()));
-    }
-
-    //add the actual points and colors
-
-    uniqueNodeID = id + "colorMapLegendTextFont" + ss.str();
-    vboName = uniqueNodeID + "VBO";
-    iboName = uniqueNodeID + "IBO";
-    passName = uniqueNodeID + "Pass2";
-
-    // NOTE: Attributes will depend on the color scheme. We will want to
-    // normalize the colors if the color scheme is COLOR_IN_SITU.
-
-    // Construct VBO.
-    shader = "Shaders/ColorMapLegendText";
-    attribs.clear();
-    attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-    attribs.push_back(SpireVBO::AttributeData("aTexCoord", 2 * sizeof(float)));
-    uniforms.clear();
-    uniforms.push_back(SpireSubPass::Uniform("uXTranslate", static_cast<float>(xTrans)));
-    uniforms.push_back(SpireSubPass::Uniform("uYTranslate", static_cast<float>(yTrans)));
-    uniforms.push_back(SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
-    uniforms.push_back(SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
-    uniforms.push_back(SpireSubPass::Uniform("uColor", glm::vec4(red, green, blue, 1.0f)));
-    SpireVBO geomVBO2 = SpireVBO(vboName, attribs, vboBufferSPtr2,
-      numVBOElements, BBox(), true);
-
-    geom->mVBOs.push_back(geomVBO2);
-
-    // Construct IBO.
-
-    SpireIBO geomIBO2(iboName, SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
-    geom->mIBOs.push_back(geomIBO2);
-    renState.set(RenderState::USE_COLORMAP, false);
-    renState.set(RenderState::USE_TRANSPARENCY, true);
-    SpireText text;
-
-    SpireSubPass pass2(passName, vboName, iboName, shader,
-      COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO2, geomIBO2, text);
-
-    // Add all uniforms generated above to the pass.
-    for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
-    //******************************************************************************************
-    // TODO we're not adding this geometry (font) until we debug for it to work on Windows.
-    geom->mPasses.push_back(pass2);
-    //******************************************************************************************
-  }*/
   return geom;
 }
 

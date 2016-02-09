@@ -82,6 +82,7 @@ namespace SCIRun {
         TextBuilder text_;
         FT_Library ftLib_;
         FT_Face ftFace_;
+        size_t ftSize_;
         bool ftInit_;
         bool ftValid_;
         static std::string mFSRoot;

@@ -1012,7 +1012,7 @@ namespace SCIRun {
         return;
 
       std::stringstream ss;
-      ss << "FontTexture:" << entityID;
+      ss << "FontTexture:" << entityID << text.name << text.width << text.height;
       std::string assetName = ss.str();
 
       ren::Texture texture;
