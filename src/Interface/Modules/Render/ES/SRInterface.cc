@@ -1077,8 +1077,8 @@ namespace SCIRun {
         mSelectedPos.z, 1.0f);
       gen::Transform trafo;
       trafo.setPosition((spos - mSelectedPos).xyz());
-      trafo.transform = glm::inverse(cam->data.worldToView) * 
-        glm::inverse(cam->data.projection) * trafo.transform * cam->data.projIV;
+      trafo.transform = glm::inverse(cam->data.projIV) *
+        trafo.transform * cam->data.projIV;
 
       CPM_ES_CEREAL_NS::CerealHeap<gen::Transform>* contTrans =
         mCore.getOrCreateComponentContainer<gen::Transform>();
