@@ -94,102 +94,72 @@ void InterfaceWithPythonDialog::setupOutputTableCells()
 
 void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::string& portId)
 {
-  qDebug() << "updateFromPortChange " << numPorts << QString::fromStdString(portId);
-  if (numPorts >= 3)
+  // qDebug() << "updateFromPortChange " << numPorts << QString::fromStdString(portId);
+  inputVariableNamesTableWidget_->blockSignals(true);
+
+  handleInputTableWidgetRowChange(numPorts, portId, "Matrix", numMatrixPorts_);
+  handleInputTableWidgetRowChange(numPorts, portId, "Field", numFieldPorts_);
+  handleInputTableWidgetRowChange(numPorts, portId, "String", numStringPorts_);
+
+  inputVariableNamesTableWidget_->resizeColumnsToContents();
+  inputVariableNamesTableWidget_->blockSignals(false);
+}
+
+void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, const std::string& portId, const std::string& type, int& portCount)
+{
+  if (portId.find(type) != std::string::npos)
   {
-    auto oldRowCount = inputVariableNamesTableWidget_->rowCount();
-    
+    //qDebug() << "adjust input table: " << type.c_str();
+
     inputVariableNamesTableWidget_->blockSignals(true);
-
-    if (portId.find("Matrix") != std::string::npos)
+    if (numPorts > totalInputPorts())
     {
-      qDebug() << "adjust matrix input table";
-      auto oldRowCount = inputVariableNamesTableWidget_->rowCount();
-
-      inputVariableNamesTableWidget_->blockSignals(true);
-      if (numPorts > totalInputPorts())
+      //qDebug() << "adding a new table line to " << type.c_str() << portCount;
+      portCount++;
+      auto newRowCount = portCount - 1;
+      if (newRowCount > 0)
       {
-        numMatrixPorts_++;
-        auto newRowCount = numMatrixPorts_ - 1;
-        if (newRowCount > 0)
-        {
-          qDebug() << "oldRowCount" << oldRowCount << "newRowCount" << newRowCount;
-          //matrixInputTableWidget_->setRowCount(newRowCount);
-          int index = newRowCount - 1;
-          //note: the incoming portId is the port that was just added, not connected to. we assume the connected port
-          // is one index less.
-          static boost::regex portIdRegex("InputMatrix\\:(.+)");
-          boost::smatch what;
-          regex_match(portId, what, portIdRegex);
-          const int connectedPortNumber = boost::lexical_cast<int>(what[1]) - 1;
-          const std::string connectedPortId = "InputMatrix:" + boost::lexical_cast<std::string>(connectedPortNumber);
+        //matrixInputTableWidget_->setRowCount(newRowCount);
+        //int index = newRowCount - 1;
+        //note: the incoming portId is the port that was just added, not connected to. we assume the connected port
+        // is one index less.
+       // std::cout << "REGEX: " << "Input" + type + "\\:(.+)" << std::endl;
+        boost::regex portIdRegex("Input" + type + "\\:(.+)");
+        boost::smatch what;
+        regex_match(portId, what, portIdRegex);
+        //std::cout << "REGEX OUTPUT: " << what[1] << std::endl;
+        const int connectedPortNumber = boost::lexical_cast<int>(what[1]) - 1;
+        //std::cout << "AFTER REGEX OUTPUT: " << connectedPortNumber << std::endl;
+        const std::string connectedPortId = "Input" + type + ":" + boost::lexical_cast<std::string>(connectedPortNumber);
 
-          inputVariableNamesTableWidget_->setRowCount(numPorts - 3);
-          inputVariableNamesTableWidget_->setItem(index, 0, new QTableWidgetItem(QString::fromStdString(connectedPortId)));
-          inputVariableNamesTableWidget_->setItem(index, 1, new QTableWidgetItem("Matrix"));
+        const int rowCount = numPorts - 3;
+        inputVariableNamesTableWidget_->setRowCount(rowCount);
+        inputVariableNamesTableWidget_->setItem(rowCount - 1, 0, new QTableWidgetItem(QString::fromStdString(connectedPortId)));
+        inputVariableNamesTableWidget_->setItem(rowCount - 1, 1, new QTableWidgetItem(QString::fromStdString(type)));
 
-          auto lineEdit = new QLineEdit;
-          lineEdit->setText("inputMatrix" + QString::number(connectedPortNumber));
-          addLineEditManager(lineEdit, Core::Algorithms::Name(connectedPortId));
-          inputVariableNamesTableWidget_->setCellWidget(index, 2, lineEdit);
-
-          //auto port = matrixInputTableWidget_->item(index, InputPortID);
-          //port->setFlags(port->flags() & ~Qt::ItemIsEditable);
-          //pushTableRow(index);
-          //pull();
-        }
+        auto lineEdit = new QLineEdit;
+        lineEdit->setText("input" + QString::fromStdString(type) + QString::number(connectedPortNumber));
+        addLineEditManager(lineEdit, Core::Algorithms::Name(connectedPortId));
+        inputVariableNamesTableWidget_->setCellWidget(rowCount - 1, 2, lineEdit);
+      }
+    }
+    else
+    {
+      portCount--;
+      //qDebug() << "trying to remove row with " << QString::fromStdString(portId);
+      auto items = inputVariableNamesTableWidget_->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
+      if (!items.empty())
+      {
+        auto item = items[0];
+        int row = inputVariableNamesTableWidget_->row(item);
+        inputVariableNamesTableWidget_->removeRow(row);
+        //qDebug() << "row removed" << QString::fromStdString(portId);
       }
       else
       {
-        numMatrixPorts_--;
-        qDebug() << "trying to remove row with " << QString::fromStdString(portId);
-        auto items = inputVariableNamesTableWidget_->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
-        if (!items.empty())
-        {
-          auto item = items[0];
-          int row = inputVariableNamesTableWidget_->row(item);
-          inputVariableNamesTableWidget_->removeRow(row);
-          qDebug() << "row removed" << QString::fromStdString(portId);
-        }
-        else
-        {
-          qDebug() << "list is empty";
-        }
+       // qDebug() << "list is empty";
       }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //for (int i = oldRowCount; i < inputVariableNamesTableWidget_->rowCount(); ++i)
-    //{
-    //  qDebug() << i;
-    //  //using namespace TableColumns;
-    //  inputVariableNamesTableWidget_->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(id)));
-    //  //tableWidget->setItem(i, FieldType, new QTableWidgetItem("[populated on execute]"));
-    //  //tableWidget->setCellWidget(i, BoundaryCondition, makeComboBoxItem(i));
-    //  //tableWidget->setCellWidget(i, InsideConductivity, makeDoubleEntryItem(i, InsideConductivity));
-    //  //tableWidget->setCellWidget(i, OutsideConductivity, makeDoubleEntryItem(i, OutsideConductivity));
-
-    //  //// type is readonly
-    //  auto item = inputVariableNamesTableWidget_->item(i, 0);
-    //  item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-    //  //pushTableRow(i);
-    //}
-    //pull();
-    inputVariableNamesTableWidget_->resizeColumnsToContents();
-    inputVariableNamesTableWidget_->blockSignals(false);
   }
 }
 
