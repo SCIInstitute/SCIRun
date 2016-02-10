@@ -85,7 +85,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   /////Set unused widgets to be not visible
   ////Clipping tab
-  tabWidget->removeTab(2);
+  //tabWidget->removeTab(2);
   //ClippingTab->setVisible(false);
   //ClippingTab->setEnabled(false);
   //groupBox_3->setVisible(false);

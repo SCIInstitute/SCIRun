@@ -261,6 +261,9 @@ namespace SCIRun {
       // search for a widget at mouse position
       bool foundWidget(const glm::ivec2& pos);
 
+      // update selected widget
+      void updateWidget(const glm::ivec2& pos);
+
 
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
@@ -268,12 +271,12 @@ namespace SCIRun {
       bool                              widgetSelected_;  ///< Whether or not a widget is currently selected.
       bool                              widgetExists_;    ///< Geometry contains a widget to find.
 
+      uint64_t                          mSelectedID;
       int                               mZoomSpeed;
       MouseMode                         mMouseMode;       ///< Current mouse mode.
 
       std::string                       mSelected;        ///< Current selection
       glm::vec4                         mSelectedPos;     ///
-      glm::vec4                         mSelectedTrans;   ///
 
       size_t                            mScreenWidth;     ///< Screen width in pixels.
       size_t                            mScreenHeight;    ///< Screen height in pixels.

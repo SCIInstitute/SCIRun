@@ -80,6 +80,7 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
       int frameInitLimit) :
+      mSelectedID(0),
       mZoomSpeed(65),
       mMouseMode(MOUSE_OLDSCIRUN),
       mScreenWidth(640),
@@ -218,7 +219,6 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseDown(const glm::ivec2& pos, MouseButton btn)
     {
-      mSelectedTrans = glm::vec4(0.0);
       if (selectWidget_ && widgetExists_)
       {
         if (btn == MouseButton::MOUSE_LEFT)
@@ -235,11 +235,7 @@ namespace SCIRun {
     {
       if (widgetSelected_)
       {
-        gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
-        glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
-          (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
-          mSelectedPos.z * 2 - 1, 1.0f);
-        mSelectedTrans = cam->data.projIV * (spos - mSelectedPos);
+        updateWidget(pos);
       }
       else
       {
@@ -912,7 +908,7 @@ namespace SCIRun {
               }
               if (widgetSelected_ && objectName == mSelected)
               {
-                trafo.setPosition(mSelectedTrans.xyz());
+                mSelectedID = entityID;
               }
               mCore.addComponent(entityID, trafo);
 
@@ -1070,6 +1066,27 @@ namespace SCIRun {
         }
       }
       return true;
+    }
+
+    //
+    void SRInterface::updateWidget(const glm::ivec2& pos)
+    {
+      gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
+      glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
+        (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
+        mSelectedPos.z, 1.0f);
+      gen::Transform trafo;
+      trafo.setPosition((spos - mSelectedPos).xyz());
+      trafo.transform = glm::inverse(cam->data.worldToView) * 
+        glm::inverse(cam->data.projection) * trafo.transform * cam->data.projIV;
+
+      CPM_ES_CEREAL_NS::CerealHeap<gen::Transform>* contTrans =
+        mCore.getOrCreateComponentContainer<gen::Transform>();
+      std::pair<const gen::Transform*, size_t> component =
+        contTrans->getComponent(mSelectedID);
+
+      if (component.first != nullptr)
+        contTrans->modifyIndex(trafo, component.second, 0);
     }
 
     //------------------------------------------------------------------------------
