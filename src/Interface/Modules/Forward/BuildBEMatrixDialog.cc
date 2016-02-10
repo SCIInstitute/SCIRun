@@ -62,7 +62,6 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
 
 void BuildBEMatrixDialog::updateFromPortChange(int numPorts, const std::string&)
 {
-  //std::cout << "updateFromPortChange " << numPorts << std::endl;
   auto oldRowCount = tableWidget->rowCount();
   tableWidget->setRowCount(numPorts - 1);
   tableWidget->blockSignals(true);

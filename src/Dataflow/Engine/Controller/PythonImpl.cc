@@ -190,6 +190,11 @@ namespace
       return port_ ? port_->get_portname() : "<Null>";
     }
 
+    virtual std::string id() const override
+    {
+      return port_ ? port_->id().toString() : "<Null>";
+    }
+
     virtual std::string type() const override
     {
       return port_ ? port_->get_typename() : "<Null>";
@@ -284,6 +289,10 @@ namespace
     virtual boost::shared_ptr<PyPort> getattr(const std::string& name) override
     {
       auto port = std::find_if(ports_.begin(), ports_.end(), [&](boost::shared_ptr<PyPortImpl> p) { return name == p->name(); });
+      if (port != ports_.end())
+        return *port;
+
+      port = std::find_if(ports_.begin(), ports_.end(), [&](boost::shared_ptr<PyPortImpl> p) { return name == p->id(); });
       if (port != ports_.end())
         return *port;
 

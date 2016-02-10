@@ -57,11 +57,7 @@ void PythonObjectForwarder::setStateDefaults()
 
 void PythonObjectForwarder::execute()
 {
-  auto state = get_state();
-  const int maxTries = state->getValue(Parameters::NumberOfRetries).toInt();
-  const int waitTime = state->getValue(Parameters::PollingIntervalMilliseconds).toInt();
-
-  PythonObjectForwarderImpl<PythonObjectForwarder> impl(*this, maxTries, waitTime);
-  impl.waitForOutputFromTransientState();
+  PythonObjectForwarderImpl<PythonObjectForwarder> impl(*this);
+  impl.waitForOutputFromTransientState(Parameters::PythonObject.name(), PythonString, PythonMatrix, PythonField);
 }
 
