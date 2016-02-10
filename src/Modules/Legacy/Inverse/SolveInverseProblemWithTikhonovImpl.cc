@@ -189,7 +189,125 @@ namespace LinearAlgebra
 
   class LapackError : public std::exception {};
 }
+    
 
+////// CHECK IF INPUT MATRICES HAVE THE CORRECT SIZE
+void TikhonovAlgorithmImpl::checkInputMatrixSizes(int M, int N)
+{
+    // check that rows of fwd matrix equal number of measurements
+    if ( M != measuredData_->nrows() )
+    {
+        const std::string errorMessage("Input matrix dimensions must agree.");
+        if (pr_)
+        {
+            pr_->error(errorMessage);
+        }
+        else
+        {
+            std::cerr << errorMessage << std::endl;
+        }
+        BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+    }
+    
+    // check that number of time samples is 1. @JCOLLFONT to change for a more general case later (should add a for loop)
+    if (1 != measuredData_->ncols())
+    {
+        const std::string errorMessage("Measured data must be a vector");
+        if (pr_)
+        {
+            pr_->error(errorMessage);
+        }
+        else
+        {
+            std::cerr << errorMessage << std::endl;
+        }
+        BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+    }
+    
+    // check source regularization matrix sizes
+    if (sourceWeighting_)
+    {
+        if( regularizationSolutionSubcase_==solution_constrained )
+        {
+            // check that the matrix is of appropriate size (equal number of rows as columns in fwd matrix)
+            if ( N != sourceWeighting_->ncols() )
+            {
+                const std::string errorMessage("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !");
+                if (pr_)
+                {
+                    pr_->error(errorMessage);
+                }
+                else
+                {
+                    std::cerr << errorMessage << std::endl;
+                }
+                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+            }
+        }
+        // otherwise, if the source regularization is provided as the squared version (RR^T)
+        else if ( regularizationSolutionSubcase_==solution_constrained_squared )
+        {
+            // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
+            if ( ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() ) )
+            {
+                const std::string errorMessage("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !");
+                if (pr_)
+                {
+                    pr_->error(errorMessage);
+                }
+                else
+                {
+                    std::cerr << errorMessage << std::endl;
+                }
+                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+            }
+        }
+    }
+    
+    // check measurement regularization matrix sizes
+    if (sensorWeighting_)
+    {
+        if (regularizationResidualSubcase_ == residual_constrained)
+        {
+            // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
+            if(M != sensorWeighting_->ncols())
+            {
+                const std::string errorMessage("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !");
+                if (pr_)
+                {
+                    pr_->error(errorMessage);
+                }
+                else
+                {
+                    std::cerr << errorMessage << std::endl;
+                }
+                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+            }
+        }
+        // otherwise if the source covariance matrix is provided in squared form
+        else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
+        {
+            // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
+            if( (M != sensorWeighting_->nrows()) || (M != sensorWeighting_->ncols()) )
+            {
+                const std::string errorMessage("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !");
+                if (pr_)
+                {
+                    pr_->error(errorMessage);
+                }
+                else
+                {
+                    std::cerr << errorMessage << std::endl;
+                }
+                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+            }
+        
+        }
+    }
+    
+        
+   
+}
     
     
 /////////////////////////
@@ -199,44 +317,13 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     
   // TODO: use DimensionMismatch exception where appropriate
   // DIMENSION CHECK!!
-  const int M = forwardMatrix_->nrows();
-  const int N = forwardMatrix_->ncols();
+    const int M = forwardMatrix_->nrows();
+    const int N = forwardMatrix_->ncols();
 
-// check that rows of fwd matrix equal number of measurements
-  if ( M != measuredData_->nrows() )
-  {
-      const std::string errorMessage("Input matrix dimensions must agree.");
-      if (pr_)
-      {
-          pr_->error(errorMessage);
-      }
-      else
-      {
-          std::cerr << errorMessage << std::endl;
-      }
-      BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
-  }
-
-// check that number of time samples is 1. @JCOLLFONT to change for a more general case later (should add a for loop)
-  if (1 != measuredData_->ncols())
-  {
-      const std::string errorMessage("Measured data must be a vector");
-      if (pr_)
-      {
-          pr_->error(errorMessage);
-      }
-      else
-      {
-          std::cerr << errorMessage << std::endl;
-      }
-      BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
-  }
-  
-    
+    checkInputMatrixSizes(M,N);    
     
 // PREALOCATE VARIABLES and MATRICES
     DenseMatrix M1, M2, M3, M4;
- //   DenseMatrix inverseG(M,N);
     DenseColumnMatrix y;
     DenseMatrix forward_transpose = forwardMatrix_->transpose();
     DenseColumnMatrix solution(M);
@@ -276,43 +363,12 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         // if provided the non-squared version of R
         if( regularizationSolutionSubcase_==solution_constrained )
         {
-            // check that the matrix is of appropriate size (equal number of rows as columns in fwd matrix)
-            if ( N != sourceWeighting_->ncols() )
-            {
-                const std::string errorMessage("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !");
-                if (pr_)
-                {
-                    pr_->error(errorMessage);
-                }
-                else
-                {
-                    std::cerr << errorMessage << std::endl;
-                }
-                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
-            }
-            RRtr = sourceWeighting_->transpose() * *sourceWeighting_;
-            
-                            
+            RRtr = sourceWeighting_->transpose() * *sourceWeighting_;                            
         }
         // otherwise, if the source regularization is provided as the squared version (RR^T)
         else if ( regularizationSolutionSubcase_==solution_constrained_squared )
         {
-            // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
-            if ( ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() ) )
-            {
-                const std::string errorMessage("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !");
-                if (pr_)
-                {
-                    pr_->error(errorMessage);
-                }
-                else
-                {
-                    std::cerr << errorMessage << std::endl;
-                }
-                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
-            }
-            RRtr = *sourceWeighting_;            
-            
+            RRtr = *sourceWeighting_;
         }
           
         // check if squared regularization matrix is invertible
@@ -353,44 +409,18 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
               // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
               if(M != sensorWeighting_->ncols())
               {
-                  const std::string errorMessage("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !");
-                  if (pr_)
-                  {
-                      pr_->error(errorMessage);
-                  }
-                  else
-                  {
-                      std::cerr << errorMessage << std::endl;
-                  }
-                  BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+                  CCtr = sensorWeighting_->transpose() * *sensorWeighting_;
               }
-              CCtr = sensorWeighting_->transpose() * *sensorWeighting_;
-                        }
+          }
           // otherwise if the source covariance matrix is provided in squared form
           else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
           {
-              // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
-              if( (M != sensorWeighting_->nrows()) && (M != sensorWeighting_->ncols()) )
-              {
-                  const std::string errorMessage("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !");
-                  if (pr_)
-                  {
-                      pr_->error(errorMessage);
-                  }
-                  else
-                  {
-                      std::cerr << errorMessage << std::endl;
-                  }
-                  BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
-              }
-              
               CCtr = *sensorWeighting_;
           }
           
           // check if squared regularization matrix is invertible
           if ( !CCtr.fullPivLu().isInvertible() )
           {
-              
               const std::string errorMessage("Residual covariance matrix is not invertible.");
               if (pr_)
               {
@@ -462,42 +492,12 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
             // if provided the non-squared version of R
             if( regularizationSolutionSubcase_==solution_constrained )
             {
-                
-                // check that the matrix is of appropriate size (equal number of rows as columns in fwd matrix)
-                if ( N != sourceWeighting_->ncols() )
-                {
-                    const std::string errorMessage("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !");
-                    if (pr_)
-                    {
-                        pr_->error(errorMessage);
-                    }
-                    else
-                    {
-                        std::cerr << errorMessage << std::endl;
-                    }
-                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
-                }
                 RtrR = sourceWeighting_->transpose() * *sourceWeighting_;
             }
             // otherwise, if the source regularization is provided as the squared version (RR^T)
             else if (  regularizationSolutionSubcase_==solution_constrained_squared  )
             {
-                // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
-                if ( ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() ) )
-                {
-                    const std::string errorMessage("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !");
-                    if (pr_)
-                    {
-                        pr_->error(errorMessage);
-                    }
-                    else
-                    {
-                        std::cerr << errorMessage << std::endl;
-                    }
-                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
-                }
                 RtrR = *sourceWeighting_;
-                    
             }
         }
         
@@ -513,42 +513,12 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
             // if measurement covariance matrix provided in non-squared form
             if (regularizationResidualSubcase_ == residual_constrained)
             {
-                // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
-                if(M != sensorWeighting_->ncols())
-                {
-                    const std::string errorMessage("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !");
-                    if (pr_)
-                    {
-                        pr_->error(errorMessage);
-                    }
-                    else
-                    {
-                        std::cerr << errorMessage << std::endl;
-                    }
-                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
-                }
                 CtrC = sensorWeighting_->transpose() * *sensorWeighting_;
-                
             }
             // otherwise if the source covariance matrix is provided in squared form
-            else// if  ( regularizationResidualSubcase_ == residual_constrained_squared )
+            else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
             {
-                // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
-                if ( (M != sensorWeighting_->nrows()) && (M != sensorWeighting_->ncols()) )
-                {
-                    const std::string errorMessage("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !");
-                    if (pr_)
-                    {
-                        pr_->error(errorMessage);
-                    }
-                    else
-                    {
-                        std::cerr << errorMessage << std::endl;
-                    }
-                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
-                }
                 CtrC = *sensorWeighting_;
-                
             }
             
         }
