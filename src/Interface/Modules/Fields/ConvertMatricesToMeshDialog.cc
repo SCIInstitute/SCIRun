@@ -33,6 +33,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Modules::Fields;
 
 ConvertMatricesToMeshDialog::ConvertMatricesToMeshDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,8 +43,8 @@ ConvertMatricesToMeshDialog::ConvertMatricesToMeshDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addDynamicLabelManager(nameTextLabel_, ConvertMatricesToMesh::InputFieldTypeName);
-  addDynamicLabelManager(typeNameTextLabel_, ConvertMatricesToMesh::InputFieldTypeTypeName);
-  addComboBoxManager(fieldBaseTypeComboBox_, ConvertMatricesToMesh::FieldBaseType);
-  addComboBoxManager(dataTypeComboBox_, ConvertMatricesToMesh::DataType);
+  addDynamicLabelManager(nameTextLabel_, Modules::Fields::ConvertMatricesToMesh::InputFieldTypeName);
+  addDynamicLabelManager(typeNameTextLabel_, Modules::Fields::ConvertMatricesToMesh::InputFieldTypeTypeName);
+  addComboBoxManager(fieldBaseTypeComboBox_, Modules::Fields::ConvertMatricesToMesh::FieldBaseType);
+  addComboBoxManager(dataTypeComboBox_, Modules::Fields::ConvertMatricesToMesh::DataType);
 }
