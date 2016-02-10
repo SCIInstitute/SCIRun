@@ -135,10 +135,17 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, co
         inputVariableNamesTableWidget_->setItem(rowCount - 1, 1, new QTableWidgetItem(QString::fromStdString(type)));
 
         auto lineEdit = new QLineEdit;
-        lineEdit->setText(QString::fromStdString(type) + "Input" + QString::number(connectedPortNumber + 1));
         Core::Algorithms::Name name(connectedPortId);
+        
+        if (state_->containsKey(name))
+          lineEdit->setText(QString::fromStdString(state_->getValue(name).toString()));
+        else
+        {
+          lineEdit->setText(QString::fromStdString(type) + "Input" + QString::number(connectedPortNumber + 1));
+          state_->setValue(name, lineEdit->text().toStdString());
+        }
+        
         addLineEditManager(lineEdit, name);
-        state_->setValue(name, lineEdit->text().toStdString());
         inputVariableNamesTableWidget_->setCellWidget(rowCount - 1, 2, lineEdit);
       }
     }
