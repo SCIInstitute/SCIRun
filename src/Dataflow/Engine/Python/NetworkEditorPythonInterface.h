@@ -79,6 +79,7 @@ namespace SCIRun
   public:
     virtual ~PyPort() {}
     virtual std::string name() const = 0;
+    virtual std::string id() const = 0;
     virtual std::string type() const = 0;
     virtual bool isInput() const = 0;
     virtual void connect(const PyPort& other) const = 0;

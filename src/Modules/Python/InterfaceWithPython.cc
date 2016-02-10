@@ -99,7 +99,7 @@ std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
     Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name };
 }
 
-std::string InterfaceWithPython::convertInputOutputSyntax(const std::string& code) const
+std::string InterfaceWithPython::convertOutputSyntax(const std::string& code) const
 {
   auto outputVarsToCheck = outputNameParameters();
 
@@ -125,6 +125,19 @@ std::string InterfaceWithPython::convertInputOutputSyntax(const std::string& cod
   return code;
 }
 
+std::string InterfaceWithPython::convertInputSyntax(const std::string& code) const
+{
+  for (const auto& port : inputPorts())
+  {
+    if (port->nconnections() > 0)
+    {
+      auto inputName = get_state()->getValue(Name(port->id().toString())).toString();
+      std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << port->id().toString() << std::endl;
+    }
+  }
+  return code;
+}
+
 void InterfaceWithPython::execute()
 {
   auto state = get_state();
@@ -138,7 +151,7 @@ void InterfaceWithPython::execute()
     boost::split(lines, code, boost::is_any_of("\n"));
     for (const auto& line : lines)
     {
-      convertedCode << convertInputOutputSyntax(line) << "\n";
+      convertedCode << convertInputSyntax(convertOutputSyntax(line)) << "\n";
     }
 
     //std::cout << "HERE IS CODE:\n\n" << convertedCode.str() << std::endl;

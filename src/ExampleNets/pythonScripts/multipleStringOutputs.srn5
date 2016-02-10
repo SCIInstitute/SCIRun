@@ -44,8 +44,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>12</count>
+							<count>13</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputString:0</name>
+								</first>
+								<second>
+									<name>InputString:0</name>
+									<value>
+										<which>2</which>
+										<value>StringInput1</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>NumberOfRetries</name>
@@ -78,7 +90,7 @@
 									<name>PythonCode</name>
 									<value>
 										<which>2</which>
-										<value>sIn = scirun_get_module_input_value_by_index(&quot;InterfaceWithPython:1&quot;, 2)
+										<value>sIn = scirun_get_module_input_value(&quot;InterfaceWithPython:1&quot;, &quot;InputString:0&quot;)
 s1 = sIn + &quot; from python 1!&quot;
 s2 = sIn + &quot; from python 2!&quot;
 s3 = sIn + &quot; from python 3!&quot;</value>

@@ -89,7 +89,8 @@ namespace SCIRun
         static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
       private:
         static Core::Thread::Mutex lock_;
-        std::string convertInputOutputSyntax(const std::string& code) const;
+        std::string convertInputSyntax(const std::string& code) const;
+        std::string convertOutputSyntax(const std::string& code) const;
       };
 
     }
