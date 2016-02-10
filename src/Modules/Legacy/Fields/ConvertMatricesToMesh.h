@@ -71,7 +71,8 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName DataType;
       
       private:
-        void process_elements(VMesh* mesh, size_type positionRows, bool required);      
+        //void process_elements(VMesh* mesh, size_type positionRows, bool required);
+        void process_elements(VMesh* mesh, size_type positionRows);
       };
     }
   }

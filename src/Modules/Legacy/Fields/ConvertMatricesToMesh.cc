@@ -46,6 +46,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
@@ -68,12 +69,8 @@ void ConvertMatricesToMesh::setStateDefaults()
 
 void ConvertMatricesToMesh::execute()
 {
-  //MatrixHandle positionshandle;
-  //MatrixHandle normalshandle;
-  
   auto positionshandle = getRequiredInput(MeshPositions);
   auto normalshandle = getOptionalInput(MeshNormals);
-  //get_input_handle("Mesh Positions", positionshandle,true);
 
   if (!normalshandle)
   {
@@ -82,8 +79,6 @@ void ConvertMatricesToMesh::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-    
     if (positionshandle->ncols() < 3)
     {
       error("Mesh Positions must contain at least 3 columns for position data.");
@@ -97,8 +92,6 @@ void ConvertMatricesToMesh::execute()
     auto state = get_state();
     std::string basename = state->getValue(FieldBaseType).toString();
     std::string datatype = state->getValue(DataType).toString();
-    //std::string basename = gui_fieldbasetype_.get();
-    //std::string datatype = gui_datatype_.get();
 
     FieldInformation fi("CurveMesh",1,datatype);
     if (basename == "Curve") fi.make_curvemesh();
@@ -121,50 +114,49 @@ void ConvertMatricesToMesh::execute()
         positionshandle->get(i, 2));
       mesh->add_point(p);
     }
-    
-    process_elements(mesh, pnrows, basename != "PointCloud");
-    
-    result_field->vfield()->resize_values();
 
+    bool meshElementsRequired = basename != "PointCloud";
+    if (meshElementsRequired)
+    {
+      process_elements(mesh, pnrows);
+    }
+
+    result_field->vfield()->resize_values();
     sendOutput(OutputField, result_field);
-    //send_output_handle("Output Field", result_field);
-  }
-  
+  }  
 }
 
-void ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows, bool required)
+void ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows)
 {
   auto elementshandle = getRequiredInput(MeshElements);
-  //if (get_input_handle("Mesh Elements", elementshandle, required))
-  {
-    index_type ecount = 0;
-    const size_type enrows = elementshandle->nrows();
-    const size_type encols = elementshandle->ncols();
-    VMesh::Node::array_type nodes;
 
-    for (index_type i = 0; i < enrows; i++)
+  index_type ecount = 0;
+  const size_type enrows = elementshandle->nrows();
+  const size_type encols = elementshandle->ncols();
+  VMesh::Node::array_type nodes;
+
+  for (index_type i = 0; i < enrows; i++)
+  {
+    nodes.clear();
+    for (index_type j = 0; j < encols; j++)
     {
-      nodes.clear();
-      for (index_type j = 0; j < encols; j++)
+      VMesh::Node::index_type index = static_cast<index_type>(elementshandle->get(i, j));
+      if (index < 0 || index >= positionRows)
       {
-        VMesh::Node::index_type index = static_cast<index_type>(elementshandle->get(i, j));
-        if (index < 0 || index >= positionRows)
+        if (ecount < 10)
         {
-          if (ecount < 10)
-          {
-            error("Bad index found at " + std::to_string(i) + ", " + std::to_string(j));
-          }
-          index = 0;
-          ecount++;
+          error("Bad index found at " + std::to_string(i) + ", " + std::to_string(j));
         }
-        nodes.push_back(index);
+        index = 0;
+        ecount++;
       }
-      mesh->add_elem(nodes);
+      nodes.push_back(index);
     }
-    if (ecount >= 10)
-    {
-      error("..." + std::to_string(ecount - 9) + " additional bad indices found.");
-    }
+    mesh->add_elem(nodes);
+  }
+  if (ecount >= 10)
+  {
+    error("..." + std::to_string(ecount - 9) + " additional bad indices found.");
   }
 }
 
