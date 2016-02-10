@@ -732,7 +732,7 @@ void ModuleWidget::createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfo
     ports_->addPort(w);
     ++i;
     if (dialog_)
-      dialog_->updateFromPortChange(i, port->id().name);
+      dialog_->updateFromPortChange(i, port->id().toString());
   }
 }
 
@@ -1151,10 +1151,10 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
   }
 }
 
-void ModuleWidget::updateDialogWithPortCount(const std::string& portName)
+void ModuleWidget::updateDialogWithPortCount(const std::string& portId)
 {
   if (dialog_)
-    dialog_->updateFromPortChange(numInputPorts(), portName);
+    dialog_->updateFromPortChange(numInputPorts(), portId);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const

@@ -94,7 +94,7 @@ void InterfaceWithPythonDialog::setupOutputTableCells()
 
 void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::string& portId)
 {
-  // qDebug() << "updateFromPortChange " << numPorts << QString::fromStdString(portId);
+  //qDebug() << "updateFromPortChange " << numPorts << QString::fromStdString(portId);
   inputVariableNamesTableWidget_->blockSignals(true);
 
   handleInputTableWidgetRowChange(numPorts, portId, "Matrix", numMatrixPorts_);
@@ -119,17 +119,14 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, co
       auto newRowCount = portCount - 1;
       if (newRowCount > 0)
       {
-        //matrixInputTableWidget_->setRowCount(newRowCount);
-        //int index = newRowCount - 1;
         //note: the incoming portId is the port that was just added, not connected to. we assume the connected port
         // is one index less.
-       // std::cout << "REGEX: " << "Input" + type + "\\:(.+)" << std::endl;
+        //std::cout << "REGEX: " << "Input" + type + "\\:(.+)" << std::endl;
         boost::regex portIdRegex("Input" + type + "\\:(.+)");
         boost::smatch what;
+        //std::cout << "MATCHING WITH: " << portId << std::endl;
         regex_match(portId, what, portIdRegex);
-        //std::cout << "REGEX OUTPUT: " << what[1] << std::endl;
         const int connectedPortNumber = boost::lexical_cast<int>(what[1]) - 1;
-        //std::cout << "AFTER REGEX OUTPUT: " << connectedPortNumber << std::endl;
         const std::string connectedPortId = "Input" + type + ":" + boost::lexical_cast<std::string>(connectedPortNumber);
 
         const int rowCount = numPorts - 3;
@@ -138,8 +135,10 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, co
         inputVariableNamesTableWidget_->setItem(rowCount - 1, 1, new QTableWidgetItem(QString::fromStdString(type)));
 
         auto lineEdit = new QLineEdit;
-        lineEdit->setText("input" + QString::fromStdString(type) + QString::number(connectedPortNumber));
-        addLineEditManager(lineEdit, Core::Algorithms::Name(connectedPortId));
+        lineEdit->setText(QString::fromStdString(type) + "Input" + QString::number(connectedPortNumber + 1));
+        Core::Algorithms::Name name(connectedPortId);
+        addLineEditManager(lineEdit, name);
+        state_->setValue(name, lineEdit->text().toStdString());
         inputVariableNamesTableWidget_->setCellWidget(rowCount - 1, 2, lineEdit);
       }
     }

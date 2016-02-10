@@ -101,9 +101,9 @@ std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
 
 std::string InterfaceWithPython::convertInputOutputSyntax(const std::string& code) const
 {
-  auto varsToCheck = outputNameParameters();
+  auto outputVarsToCheck = outputNameParameters();
 
-  for (const auto& var : varsToCheck)
+  for (const auto& var : outputVarsToCheck)
   {
     auto varName = get_state()->getValue(var).toString();
 

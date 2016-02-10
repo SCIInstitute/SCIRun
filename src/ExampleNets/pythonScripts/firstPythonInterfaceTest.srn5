@@ -44,8 +44,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>12</count>
+							<count>14</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputString:0</name>
+								</first>
+								<second>
+									<name>InputString:0</name>
+									<value>
+										<which>2</which>
+										<value>StringInput1</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>NumberOfRetries</name>
@@ -80,9 +92,8 @@
 										<which>2</which>
 										<value>s = scirun_get_module_input_value_by_index(&quot;InterfaceWithPython:1&quot;, 2)
 str2 = s + &quot; from python!&quot;
-scirun_set_module_state(&quot;InterfaceWithPython:1&quot;, &quot;PythonString1Name&quot;, &quot;s1&quot;)
 s1 = str2
-#scirun_set_module_transient_state(&quot;InterfaceWithPython:1&quot;, &quot;s1&quot;, str2)</value>
+</value>
 									</value>
 								</second>
 							</item>
@@ -155,6 +166,18 @@ s1 = str2
 									<value>
 										<which>2</which>
 										<value>m3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString1Name</name>
+									<value>
+										<which>2</which>
+										<value>s1</value>
 									</value>
 								</second>
 							</item>
