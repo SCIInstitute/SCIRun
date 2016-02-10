@@ -132,7 +132,14 @@ std::string InterfaceWithPython::convertInputSyntax(const std::string& code) con
     if (port->nconnections() > 0)
     {
       auto inputName = get_state()->getValue(Name(port->id().toString())).toString();
-      std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << port->id().toString() << std::endl;
+      //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << port->id().toString() << std::endl;
+      //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << get_id() << "\", \"" << port->id().toString() << "\")" << std::endl;
+      auto index = code.find(inputName);
+      if (index != std::string::npos)
+      {
+        auto codeCopy = code;
+        return codeCopy.replace(index, inputName.length(), "scirun_get_module_input_value(\"" + get_id().id_ + "\", \"" + port->id().toString() + "\")");
+      }
     }
   }
   return code;
