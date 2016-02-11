@@ -73,10 +73,20 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(deselectAllPushButton_, SIGNAL(clicked()), parent, SLOT(deselectAllClicked()));
   connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
   connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
+  //-----------Clipping Tab-----------------//
+  connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
+  connect(planeVisibleCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneVisible(bool)));
+  connect(showPlaneFrameCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneFrameOn(bool)));
+  connect(reversePlaneNormalCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(reverseClippingPlaneNormal(bool)));
+  connect(xValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneX(int)));
+  connect(yValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
+  connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
+  connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
 
   connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotChanged(QListWidgetItem*)));
   connect(this, SIGNAL(itemUnselected(const QString&)), parent, SLOT(handleUnselectedItem(const QString&)));
   connect(this, SIGNAL(itemSelected(const QString&)), parent, SLOT(handleSelectedItem(const QString&)));
+
 
   setSampleColor(Qt::black);
 
@@ -86,11 +96,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   /////Set unused widgets to be not visible
   ////Clipping tab
   //tabWidget->removeTab(2);
-  //ClippingTab->setVisible(false);
-  //ClippingTab->setEnabled(false);
-  //groupBox_3->setVisible(false);
-  //groupBox_4->setVisible(false);
-  //groupBox_5->setVisible(false);
 
   ///Object Tab
   tabWidget->setCurrentIndex(0);
@@ -123,6 +128,26 @@ void ViewSceneControlsDock::updateZoomOptionVisibility()
     zoomBox_->setVisible(false);
     invertZoomCheckBox_->setVisible(false);
   }
+}
+
+void ViewSceneControlsDock::updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal)
+{
+  planeVisibleCheckBox_->setChecked(visible);
+  showPlaneFrameCheckBox_->setChecked(showPlane);
+  reversePlaneNormalCheckBox_->setChecked(reverseNormal);
+}
+
+void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double z, double d)
+{
+  xSliderValueLabel_->setText(QString::number(x));
+  ySliderValueLabel_->setText(QString::number(y));
+  zSliderValueLabel_->setText(QString::number(z));
+  dSliderValueLabel_->setText(QString::number(d));
+
+  xValueHorizontalSlider_->setSliderPosition(x * 100);
+  yValueHorizontalSlider_->setSliderPosition(y * 100);
+  zValueHorizontalSlider_->setSliderPosition(z * 100);
+  dValueHorizontalSlider_->setSliderPosition(d * 100);
 }
 
 void ViewSceneControlsDock::addItem(const QString& name, bool checked)

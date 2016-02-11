@@ -41,6 +41,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms::Render;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Render;
 using namespace SCIRun::Modules::Render;
 
@@ -48,13 +49,15 @@ using namespace SCIRun::Modules::Render;
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false), itemValueChanged_(true),
-  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false), shiftdown_(false), selected_(false)
+  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false), shiftdown_(false), selected_(false),
+  clippingPlaneIndex_(0)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   setFocusPolicy(Qt::StrongFocus);
 
   addToolBar();
+  setupClippingPlanes();
 
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
@@ -66,7 +69,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
-  connect(mGLWidget, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int)), this, SLOT(sendGeometryFeedbackToState(int, int)));
+  connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int)), this, SLOT(sendGeometryFeedbackToState(int, int)));
 
   if (mGLWidget->isValid())
   {
@@ -179,6 +182,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
   if (selected_)
   {
+    Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y());
     restoreObjColor();
     newGeometryValue();
     selected_ = false;
@@ -702,6 +706,67 @@ void ViewSceneDialog::invertZoomClicked(bool value)
 }
 
 //------------------------------------------------------------------------------
+//--------------Clipping Plane Tools--------------------------------------------
+void ViewSceneDialog::setClippingPlaneIndex(int index)
+{
+  int indexOffset = 7;
+  clippingPlaneIndex_ = index + indexOffset;
+  mConfigurationDock->updatePlaneSettingsDisplay(
+    clippingPlanes_[clippingPlaneIndex_].visible,
+    clippingPlanes_[clippingPlaneIndex_].showFrame,
+    clippingPlanes_[clippingPlaneIndex_].reverseNormal);
+  updatClippingPlaneDisplay();
+}
+
+void ViewSceneDialog::setClippingPlaneVisible(bool value)
+{
+  clippingPlanes_[clippingPlaneIndex_].visible = value;
+}
+
+void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
+{
+  clippingPlanes_[clippingPlaneIndex_].showFrame = value;
+}
+
+void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
+{
+  clippingPlanes_[clippingPlaneIndex_].reverseNormal = value;
+}
+
+void ViewSceneDialog::setClippingPlaneX(int index)
+{
+  clippingPlanes_[clippingPlaneIndex_].x = index / 100.0;
+  updatClippingPlaneDisplay();
+}
+
+void ViewSceneDialog::setClippingPlaneY(int index)
+{
+  clippingPlanes_[clippingPlaneIndex_].y = index / 100.0;
+  updatClippingPlaneDisplay();
+}
+
+void ViewSceneDialog::setClippingPlaneZ(int index)
+{
+  clippingPlanes_[clippingPlaneIndex_].z = index / 100.0;
+  updatClippingPlaneDisplay();
+}
+
+void ViewSceneDialog::setClippingPlaneD(int index)
+{
+  clippingPlanes_[clippingPlaneIndex_].d = index / 100.0;
+  updatClippingPlaneDisplay();
+}
+
+void ViewSceneDialog::updatClippingPlaneDisplay()
+{
+  mConfigurationDock->updatePlaneControlDisplay(
+    clippingPlanes_[clippingPlaneIndex_].x,
+    clippingPlanes_[clippingPlaneIndex_].y,
+    clippingPlanes_[clippingPlaneIndex_].z,
+    clippingPlanes_[clippingPlaneIndex_].d);
+}
+
+//------------------------------------------------------------------------------
 bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 {
   return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
@@ -830,6 +895,24 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
   showConfiguration_ = false;
 }
 
+void ViewSceneDialog::setupClippingPlanes()
+{
+
+  const int numClippingPlanes = 6;
+  for (int i = 0; i < 6; ++i)
+  {
+    ClippingPlane plane;
+    plane.visible = false;
+    plane.showFrame = false;
+    plane.reverseNormal - false;
+    plane.x = 0.0;
+    plane.y = 0.0;
+    plane.z = 0.0;
+    plane.d = 0.0;
+    clippingPlanes_.push_back(plane);
+  }
+}
+
 void ViewSceneDialog::hideConfigurationDock()
 {
   if (mConfigurationDock)
@@ -870,7 +953,9 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   Variable::List coords;
   coords.push_back(makeVariable("x", x));
   coords.push_back(makeVariable("y", y));
-  state_->setValue(Parameters::GeometryFeedbackInfo, coords);
+  //DenseMatrixHandle matrixHandle;
+  //coords.push_back(Variable(Name("transform"), matrixHandle, DATATYPE_VARIABLE));
+  state_->setTransientValue(Parameters::GeometryFeedbackInfo, coords);
 }
 
 void ViewSceneDialog::takeScreenshot()
