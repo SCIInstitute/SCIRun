@@ -79,9 +79,9 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(showPlaneFrameCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneFrameOn(bool)));
   connect(reversePlaneNormalCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(reverseClippingPlaneNormal(bool)));
   connect(xValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneX(int)));
-  connect(xValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
-  connect(xValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
-  connect(xValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
+  connect(yValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
+  connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
+  connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
 
   connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotChanged(QListWidgetItem*)));
   connect(this, SIGNAL(itemUnselected(const QString&)), parent, SLOT(handleUnselectedItem(const QString&)));
@@ -143,6 +143,11 @@ void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double
   ySliderValueLabel_->setText(QString::number(y));
   zSliderValueLabel_->setText(QString::number(z));
   dSliderValueLabel_->setText(QString::number(d));
+
+  xValueHorizontalSlider_->setSliderPosition(x * 100);
+  yValueHorizontalSlider_->setSliderPosition(y * 100);
+  zValueHorizontalSlider_->setSliderPosition(z * 100);
+  dValueHorizontalSlider_->setSliderPosition(d * 100);
 }
 
 void ViewSceneControlsDock::addItem(const QString& name, bool checked)

@@ -116,19 +116,14 @@ namespace SCIRun {
       virtual void hideEvent(QHideEvent* evt) override;
       virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
-      class ClippingPlane {
-      public:
+      struct ClippingPlane {
         bool visible, showFrame, reverseNormal;
         double x, y, z, d;
-
-        ClippingPlane() :
-          visible(false), showFrame(false), reverseNormal(false),
-          x(0.0), y(0.0), z(0.0), d(0.0)
-        {}
       };
 
       void selectObject(const int x, const int y);
       void restoreObjColor();
+      void updatClippingPlaneDisplay();
       bool isObjectUnselected(const std::string& name);
       void addToolBar();
       void addAutoViewButton();
@@ -138,6 +133,7 @@ namespace SCIRun {
       void addViewOptions();
       void addConfigurationButton();
       void addConfigurationDock(const QString& viewName);
+      void setupClippingPlanes();
       void hideConfigurationDock();
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();

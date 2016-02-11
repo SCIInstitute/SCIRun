@@ -57,6 +57,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setFocusPolicy(Qt::StrongFocus);
 
   addToolBar();
+  setupClippingPlanes();
 
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
@@ -704,42 +705,59 @@ void ViewSceneDialog::setClippingPlaneIndex(int index)
 {
   int indexOffset = 7;
   clippingPlaneIndex_ = index + indexOffset;
+  mConfigurationDock->updatePlaneSettingsDisplay(
+    clippingPlanes_[clippingPlaneIndex_].visible,
+    clippingPlanes_[clippingPlaneIndex_].showFrame,
+    clippingPlanes_[clippingPlaneIndex_].reverseNormal);
+  updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneVisible(bool value)
 {
+  clippingPlanes_[clippingPlaneIndex_].visible = value;
 }
 
 void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
 {
+  clippingPlanes_[clippingPlaneIndex_].showFrame = value;
 }
 
 void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
 {
+  clippingPlanes_[clippingPlaneIndex_].reverseNormal = value;
 }
 
 void ViewSceneDialog::setClippingPlaneX(int index)
 {
-  double value = index / 100;
-  mConfigurationDock->updatePlaneControlDisplay(value, value, value, value);
+  clippingPlanes_[clippingPlaneIndex_].x = index / 100.0;
+  updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneY(int index)
 {
-  double value = index / 100;
-  mConfigurationDock->updatePlaneControlDisplay(value, value, value, value);
+  clippingPlanes_[clippingPlaneIndex_].y = index / 100.0;
+  updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneZ(int index)
 {
-  double value = index / 100;
-  mConfigurationDock->updatePlaneControlDisplay(value, value, value, value);
+  clippingPlanes_[clippingPlaneIndex_].z = index / 100.0;
+  updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneD(int index)
 {
-  double value = index / 100;
-  mConfigurationDock->updatePlaneControlDisplay(value, value, value, value);
+  clippingPlanes_[clippingPlaneIndex_].d = index / 100.0;
+  updatClippingPlaneDisplay();
+}
+
+void ViewSceneDialog::updatClippingPlaneDisplay()
+{
+  mConfigurationDock->updatePlaneControlDisplay(
+    clippingPlanes_[clippingPlaneIndex_].x,
+    clippingPlanes_[clippingPlaneIndex_].y,
+    clippingPlanes_[clippingPlaneIndex_].z,
+    clippingPlanes_[clippingPlaneIndex_].d);
 }
 
 //------------------------------------------------------------------------------
@@ -869,6 +887,24 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
   mConfigurationDock->setVisible(false);
 
   showConfiguration_ = false;
+}
+
+void ViewSceneDialog::setupClippingPlanes()
+{
+
+  const int numClippingPlanes = 6;
+  for (int i = 0; i < 6; ++i)
+  {
+    ClippingPlane plane;
+    plane.visible = false;
+    plane.showFrame = false;
+    plane.reverseNormal - false;
+    plane.x = 0.0;
+    plane.y = 0.0;
+    plane.z = 0.0;
+    plane.d = 0.0;
+    clippingPlanes_.push_back(plane);
+  }
 }
 
 void ViewSceneDialog::hideConfigurationDock()
