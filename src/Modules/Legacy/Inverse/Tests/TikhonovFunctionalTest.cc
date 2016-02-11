@@ -68,7 +68,7 @@ protected:
 };
 
 namespace  {
-    const double abs_error = 0.000001;
+    const double abs_error = 1e-6;
 }
 
 /// -------- INPUTS TESTS ------------ ///
@@ -537,7 +537,7 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredMeasurementReguWithSquareOptionWr
     EXPECT_THROW(tikAlgImp->execute(), SCIRun::Core::DimensionMismatch);
 }
 
-/*
+/*  TODO: implement functionality tests
 /// -------- BASIC FUNCTIONS TESTS ------------ ///
 
 // ID square forward matrix with ZERO regularization, RAND input
@@ -545,10 +545,9 @@ TEST_F(TikhonovFunctionalTest, functionTestIDFwdMatrixANDRandData)
 {
     // create inputs
     auto tikAlgImp = makeModule("SolveInverseProblemWithTikhonov");
-    MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(3, 3)));    // forward matrix (IDentityt)
-    MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(3, 1)));   // measurement data (rand)
-    DenseColumnMatrixHandle inverseSolution_;
-    DenseMatrix residual;
+    DenseMatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(3, 3)));    // forward matrix (IDentityt)
+    DenseMatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(3, 1)));   // measurement data (rand)
+    DenseMatrixHandle inverseSolution_;
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -566,13 +565,10 @@ TEST_F(TikhonovFunctionalTest, functionTestIDFwdMatrixANDRandData)
     inverseSolution_ = getDataOnThisOutputPort(tikAlgImp,0);
     
     // check result
-    EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*inverseSolution_->get_rep(), measuredData);
+    EXPECT_MATRIX_EQ(inverseSolution_->transpose(), measuredData->transpose());
     
-//    residual = *inverseSolution - measuredData;
-//    
-//    // check result
-//    ASSERT_NEAR( residual.norm(), 0,  abs_error );
 }
+*/
 /*
 // ID square forward matrix with dafault options
 TEST_F(TikhonovFunctionalTest, functionTestIDFwdMatrixANDRandDataWithDefaultOptions)
