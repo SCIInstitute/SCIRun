@@ -45,6 +45,7 @@
 
 using namespace SCIRun;
 using namespace Core;
+using namespace Core::Algorithms;
 using namespace Datatypes;
 using namespace Dataflow::Networks;
 using namespace Modules::Fields;
@@ -104,6 +105,11 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
   INITIALIZE_PORT(ElementIndex);
 }
 
+void GenerateSinglePointProbeFromField::processWidgetFeedback(VariableHandle var)
+{
+  std::cout << "EditMeshBoundingBox::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << var->value() << std::endl;
+}
+
 void GenerateSinglePointProbeFromField::setStateDefaults()
 {
   auto state = get_state();
@@ -121,6 +127,8 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeSize, 1.0);
   state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
+
+  getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](VariableHandle var) { processWidgetFeedback(var); });
 }
 
 #if 0
