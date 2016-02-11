@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,12 +38,19 @@
 ///@date  January 2002
 ///
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Math/SetSubmatrix.h>
+#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Core/Util/StringUtil.h>
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Algorithms;
+//using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
+#if 0
 namespace SCIRun {
 
 class SetSubmatrix : public Module
@@ -137,7 +144,7 @@ SetSubmatrix::execute()
     }
   }
 
-  if (startrow_.get() + srow_.get() > nrow_.get() || 
+  if (startrow_.get() + srow_.get() > nrow_.get() ||
       startcol_.get() + scol_.get() > ncol_.get() )
   {
     error("Start plus submatrix range must be less than or equal to max range.");
@@ -169,3 +176,4 @@ SetSubmatrix::execute()
 
 
 } // End namespace SCIRun
+#endif
