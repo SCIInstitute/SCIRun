@@ -41,6 +41,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms::Render;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Render;
 using namespace SCIRun::Modules::Render;
 
@@ -67,7 +68,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
-  connect(mGLWidget, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int)), this, SLOT(sendGeometryFeedbackToState(int, int)));
+  connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int)), this, SLOT(sendGeometryFeedbackToState(int, int)));
 
   if (mGLWidget->isValid())
   {
@@ -180,6 +181,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
   if (selected_)
   {
+    Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y());
     restoreObjColor();
     newGeometryValue();
     selected_ = false;
@@ -909,7 +911,9 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   Variable::List coords;
   coords.push_back(makeVariable("x", x));
   coords.push_back(makeVariable("y", y));
-  state_->setValue(Parameters::GeometryFeedbackInfo, coords);
+  //DenseMatrixHandle matrixHandle;
+  //coords.push_back(Variable(Name("transform"), matrixHandle, DATATYPE_VARIABLE));
+  state_->setTransientValue(Parameters::GeometryFeedbackInfo, coords);
 }
 
 void ViewSceneDialog::takeScreenshot()

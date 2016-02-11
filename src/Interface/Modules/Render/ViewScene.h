@@ -72,6 +72,7 @@ namespace SCIRun {
 
     Q_SIGNALS:
       void newGeometryValueForwarder();
+      void mousePressSignalForTestingGeometryObjectFeedback(int x, int y);
 
       protected Q_SLOTS:
       void menuMouseControlChanged(int index);
@@ -115,6 +116,17 @@ namespace SCIRun {
       virtual void hideEvent(QHideEvent* evt) override;
       virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
+      class ClippingPlane {
+      public:
+        bool visible, showFrame, reverseNormal;
+        double x, y, z, d;
+
+        ClippingPlane() :
+          visible(false), showFrame(false), reverseNormal(false),
+          x(0.0), y(0.0), z(0.0), d(0.0)
+        {}
+      };
+
       void selectObject(const int x, const int y);
       void restoreObjColor();
       bool isObjectUnselected(const std::string& name);
@@ -151,6 +163,7 @@ namespace SCIRun {
       bool selected_;
       int clippingPlaneIndex_;
       QColor bgColor_;
+      std::vector<ClippingPlane> clippingPlanes_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;
       class Screenshot* screenshotTaker_;

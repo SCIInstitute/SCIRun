@@ -118,7 +118,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y());
+ 
   SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
   event->ignore();
