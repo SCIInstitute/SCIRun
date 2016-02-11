@@ -48,7 +48,8 @@ using namespace SCIRun::Modules::Render;
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false), itemValueChanged_(true),
-  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false), shiftdown_(false), selected_(false)
+  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false), shiftdown_(false), selected_(false),
+  clippingPlaneIndex_(0)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -693,6 +694,50 @@ void ViewSceneDialog::invertZoomClicked(bool value)
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   spire->setZoomInverted(value);
   Core::Preferences::Instance().invertMouseZoom.setValue(value);
+}
+
+//------------------------------------------------------------------------------
+//--------------Clipping Plane Tools--------------------------------------------
+void ViewSceneDialog::setClippingPlaneIndex(int index)
+{
+  int indexOffset = 7;
+  clippingPlaneIndex_ = index + indexOffset;
+}
+
+void ViewSceneDialog::setClippingPlaneVisible(bool value)
+{
+}
+
+void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
+{
+}
+
+void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
+{
+}
+
+void ViewSceneDialog::setClippingPlaneX(int index)
+{
+  double value = index / 100;
+  mConfigurationDock->updatePlaneControlDisplay(value, value, value, value);
+}
+
+void ViewSceneDialog::setClippingPlaneY(int index)
+{
+  double value = index / 100;
+  mConfigurationDock->updatePlaneControlDisplay(value, value, value, value);
+}
+
+void ViewSceneDialog::setClippingPlaneZ(int index)
+{
+  double value = index / 100;
+  mConfigurationDock->updatePlaneControlDisplay(value, value, value, value);
+}
+
+void ViewSceneDialog::setClippingPlaneD(int index)
+{
+  double value = index / 100;
+  mConfigurationDock->updatePlaneControlDisplay(value, value, value, value);
 }
 
 //------------------------------------------------------------------------------

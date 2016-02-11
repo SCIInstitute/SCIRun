@@ -53,6 +53,8 @@ namespace SCIRun {
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
       void setSampleColor(const QColor& color);
       void updateZoomOptionVisibility();
+      void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
+      void updatePlaneControlDisplay(double x, double y, double z, double d);
 
     public Q_SLOTS:
       void addItem(const QString& name, bool checked); 
@@ -65,6 +67,17 @@ namespace SCIRun {
       void slotChanged(QListWidgetItem* item);
 
     private:
+      class ClippingPlane {
+      public:
+        bool visible, showFrame, reverseNormal;
+        double x, y, z, d;
+
+        ClippingPlane() :
+          visible(false), showFrame(false), reverseNormal(false),
+          x(0.0), y(0.0), z(0.0), d(0.0)
+        {}
+      };
+
       std::vector<QListWidgetItem*> items_;
       void setupObjectListWidget();
     };

@@ -95,6 +95,15 @@ namespace SCIRun {
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
       void sendGeometryFeedbackToState(int x, int y);
+      //Clipping Plane 
+      void setClippingPlaneIndex(int index);
+      void setClippingPlaneVisible(bool value);
+      void setClippingPlaneFrameOn(bool value);
+      void reverseClippingPlaneNormal(bool value);
+      void setClippingPlaneX(int index);
+      void setClippingPlaneY(int index);
+      void setClippingPlaneZ(int index);
+      void setClippingPlaneD(int index);
 
     protected:
       virtual void mousePressEvent(QMouseEvent* event);
@@ -140,6 +149,7 @@ namespace SCIRun {
       bool invertZoom_;
       bool shiftdown_;
       bool selected_;
+      int clippingPlaneIndex_;
       QColor bgColor_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;
