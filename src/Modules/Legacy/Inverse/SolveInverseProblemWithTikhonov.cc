@@ -109,6 +109,7 @@ void SolveInverseProblemWithTikhonov::execute()
       state->getValue(LambdaMax).toDouble(),
       update);
 
+
     algo.run(input);
 
     if (computeRegularizedInverse)
