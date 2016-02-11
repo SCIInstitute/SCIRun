@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -953,8 +954,18 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   Variable::List coords;
   coords.push_back(makeVariable("x", x));
   coords.push_back(makeVariable("y", y));
-  //DenseMatrixHandle matrixHandle;
-  //coords.push_back(Variable(Name("transform"), matrixHandle, DATATYPE_VARIABLE));
+  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
+  glm::mat4 trans = spire->getWidgetTransform().transform;
+  (*matrixHandle) << trans[0][0] , trans[1][0] , trans[2][0] , trans[3][0]
+                   , trans[0][1] , trans[1][1] , trans[2][1] , trans[3][1]
+                   , trans[0][2] , trans[1][2] , trans[2][2] , trans[3][2]
+                   , trans[0][3] , trans[1][3] , trans[2][3] , trans[3][3];
+
+  /*std::cout << "in VS: " << std::endl;
+  std::cout<<(*matrixHandle) << std::endl;*/
+
+  coords.push_back(Variable(Name("transform"), matrixHandle, Variable::DATATYPE_VARIABLE));
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, coords);
 }
 

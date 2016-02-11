@@ -43,7 +43,6 @@
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/StaticOrthoCamera.hpp>
 #include <es-general/comp/StaticObjRefID.hpp>
-#include <es-general/comp/Transform.hpp>
 #include <es-render/comp/StaticIBOMan.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticShaderMan.hpp>
@@ -550,6 +549,11 @@ namespace SCIRun {
     std::string &SRInterface::getSelection()
     {
       return mSelected;
+    }
+
+    gen::Transform &SRInterface::getWidgetTransform()
+    {
+      return mWidgetTransform;
     }
 
     std::string &SRInterface::getFSRoot()
@@ -1075,10 +1079,11 @@ namespace SCIRun {
       glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
         (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
         mSelectedPos.z, 1.0f);
-      gen::Transform trafo;
-      trafo.setPosition((spos - mSelectedPos).xyz());
-      trafo.transform = glm::inverse(cam->data.projIV) *
-        trafo.transform * cam->data.projIV;
+      //gen::Transform trafo;
+      mWidgetTransform = gen::Transform();
+      mWidgetTransform.setPosition((spos - mSelectedPos).xyz());
+      mWidgetTransform.transform = glm::inverse(cam->data.projIV) *
+        mWidgetTransform.transform * cam->data.projIV;
 
       CPM_ES_CEREAL_NS::CerealHeap<gen::Transform>* contTrans =
         mCore.getOrCreateComponentContainer<gen::Transform>();
@@ -1086,7 +1091,7 @@ namespace SCIRun {
         contTrans->getComponent(mSelectedID);
 
       if (component.first != nullptr)
-        contTrans->modifyIndex(trafo, component.second, 0);
+        contTrans->modifyIndex(mWidgetTransform, component.second, 0);
     }
 
     //------------------------------------------------------------------------------

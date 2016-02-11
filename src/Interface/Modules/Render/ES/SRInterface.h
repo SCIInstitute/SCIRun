@@ -33,6 +33,7 @@
 #include <memory>
 #include <Interface/Modules/Render/GLContext.h>
 #include "Core.h"
+#include <es-general/comp/Transform.hpp>
 
 //freetype
 #include <ft2build.h>
@@ -149,6 +150,8 @@ namespace SCIRun {
 
       /// get name of the selection
       std::string &getSelection();
+
+      gen::Transform &getWidgetTransform();
 
       static std::string& getFSRoot();
       static std::string& getFSSeparator();
@@ -277,6 +280,7 @@ namespace SCIRun {
 
       std::string                       mSelected;        ///< Current selection
       glm::vec4                         mSelectedPos;     ///
+      gen::Transform                    mWidgetTransform;
 
       size_t                            mScreenWidth;     ///< Screen width in pixels.
       size_t                            mScreenHeight;    ///< Screen height in pixels.

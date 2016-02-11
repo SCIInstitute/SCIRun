@@ -37,6 +37,7 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 //
 //#include <Core/Thread/CrowdMonitor.h>
@@ -107,7 +108,7 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 
 void GenerateSinglePointProbeFromField::processWidgetFeedback(VariableHandle var)
 {
-  std::cout << "EditMeshBoundingBox::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << var->value() << std::endl;
+  std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << var->value() << std::endl;
 }
 
 void GenerateSinglePointProbeFromField::setStateDefaults()
