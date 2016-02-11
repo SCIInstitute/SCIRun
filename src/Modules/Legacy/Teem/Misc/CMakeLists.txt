@@ -29,7 +29,7 @@
 # CMakeLists.txt for Packages/Teem/Dataflow/Modules/Misc
 
 SET(Modules_Legacy_Teem_Misc_SRCS
-  #BuildDerivedNrrdWithGage.cc
+  BuildDerivedNrrdWithGage.cc
   #BuildNrrdGradient.cc
   #BuildNrrdGradientAndMagnitude.cc
   #ClassifyHeadTissuesFromMultiMRI.cc
@@ -41,6 +41,7 @@ SET(Modules_Legacy_Teem_Misc_SRCS
 
 SET(Modules_Legacy_Teem_Misc_HEADERS
   ReportNrrdInfo.h
+  BuildDerivedNrrdWithGage.h
   share.h
 )
 

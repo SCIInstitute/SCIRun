@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertMeshToPointCloud",
+    "namespace": "Fields",
+    "status": "Ported module",
+    "description": "Converts a mesh to a point cloud.",
+    "header": "Modules/Legacy/Fields/ConvertMeshToPointCloud.h"
+  },
+  "algorithm": {
+    "name": "ConvertMeshToPointCloudMeshAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h"
+  },
+  "UI": {
+    "name": "ConvertMeshToPointCloudDialog",
+    "header": "Interface/Modules/Fields/ConvertMeshToPointCloudDialog.h"
+  }
+}

@@ -90,6 +90,11 @@
           <string>Orange,Black,Lime</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>BP Seismic</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>

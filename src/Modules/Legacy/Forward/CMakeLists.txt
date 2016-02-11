@@ -33,6 +33,7 @@ SET(Modules_Legacy_Forward_HEADERS
   BuildBEMatrixImpl.h
   CalcTMP.h
   CalcTMPAlgo.h
+  InsertVoltageSource.h
 )
 
 SET(Modules_Legacy_Forward_SRCS
@@ -40,6 +41,7 @@ SET(Modules_Legacy_Forward_SRCS
   BuildBEMatrixImpl.cc
   CalcTMP.cc
   CalcTMPAlgo.cc
+  InsertVoltageSource.cc
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Forward

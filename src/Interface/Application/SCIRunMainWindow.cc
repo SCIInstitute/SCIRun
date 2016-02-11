@@ -366,7 +366,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
 
   connect(moduleSelectorDockWidget_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
 
-  statusBar()->addPermanentWidget(new QLabel("Version: " + QString::fromStdString(VersionInfo::GIT_VERSION_TAG)));
+  setupVersionButton();
 
 	WidgetStyleMixin::tabStyle(optionsTabWidget_);
 }
@@ -444,9 +444,9 @@ void SCIRunMainWindow::setupInputWidgets()
     actionDelete_,
     moduleSelectorTreeWidget_,
     actionRunScript_;
-#ifdef BUILD_WITH_PYTHON
-  widgets += pythonConsole_;
-#endif
+//#ifdef BUILD_WITH_PYTHON
+//  widgets += pythonConsole_;
+//#endif
 
   WidgetDisablingService::Instance().addWidgets(widgets.begin(), widgets.end());
   WidgetDisablingService::Instance().addWidgets(recentFileActions_.begin(), recentFileActions_.end());
@@ -753,6 +753,7 @@ bool SCIRunMainWindow::okToContinue()
 }
 
 //TODO: hook up to modules' state_changed_sig_t via GlobalStateManager
+//TODO: pass a boolean here to avoid updating total modules when only connections are made--saves a lock
 void SCIRunMainWindow::networkModified()
 {
   setWindowModified(true);
@@ -1041,8 +1042,6 @@ void SCIRunMainWindow::showPythonWarning(bool visible)
   if (visible && firstTimePythonShown_)
   {
     firstTimePythonShown_ = false;
-    QMessageBox::warning(this, "Warning: Known Python interface issue",
-      "Attention Python interface user: this feature is not fully implemented. The main issue is that changes made to the current network from the GUI, such as adding/removing modules, are not reflected in the Python console's state. Thus strange bugs can be created by switching between Python-edit mode and standard-GUI-edit mode. Please use the Python console to test your commands, then compose a script that you can run separately without needing the GUI. This issue will be resolved in the next milestone. Thank you!");
   }
 }
 
@@ -1642,6 +1641,23 @@ void SCIRunMainWindow::runNewModuleWizard()
 	qDebug() << "new module wizard coming soon";
 	ClassWizard* wizard = new ClassWizard(this);
 	wizard->show();
+}
+
+void SCIRunMainWindow::setupVersionButton()
+{
+  auto qVersion = QString::fromStdString(VersionInfo::GIT_VERSION_TAG);
+  versionButton_ = new QPushButton("Version: " + qVersion);
+  versionButton_->setFlat(true);
+  versionButton_->setToolTip("Click to copy version tag to clipboard");
+  versionButton_->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+  connect(versionButton_, SIGNAL(clicked()), this, SLOT(copyVersionToClipboard()));
+  statusBar()->addPermanentWidget(versionButton_);
+}
+
+void SCIRunMainWindow::copyVersionToClipboard()
+{
+  QApplication::clipboard()->setText(QString::fromStdString(VersionInfo::GIT_VERSION_TAG));
+  statusBar()->showMessage("Version string copied to clipboard.", 2000);
 }
 
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)

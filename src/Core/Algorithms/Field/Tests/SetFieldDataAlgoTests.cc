@@ -270,7 +270,8 @@ TEST(SetFieldDataTest, TriSurfOnNodeScalarMatrixTooSmall)
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
-TEST(SetFieldDataTest, TriSurfOnNodeScalarMatrixTooLarge)
+//TODO: issue made, requirements need refining to see if this one is actually a problem.
+TEST(SetFieldDataTest, DISABLED_TriSurfOnNodeScalarMatrixTooLarge)
 {
   SetFieldDataAlgo algo;
 

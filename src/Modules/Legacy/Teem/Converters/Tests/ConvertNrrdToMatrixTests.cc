@@ -37,7 +37,7 @@ class ConvertNrrdToMatrixTests : public ModuleTest
 {
 };
 
-TEST_F(ConvertNrrdToMatrixTests, CanCreate)
+TEST_F(ConvertNrrdToMatrixTests, DISABLED_CanCreate)
 {
   auto rn = makeModule("ConvertNrrdToMatrix");
 

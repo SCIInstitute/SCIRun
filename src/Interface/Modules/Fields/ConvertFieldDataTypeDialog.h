@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_CONVERT_FIELD_DATATYPE_DIALOG_H
 #define INTERFACE_MODULES_CONVERT_FIELD_DATATYPE_DIALOG_H
 
-#include "Interface/Modules/Fields/ui_ConvertFieldDataType.h"
+#include "Interface/Modules/Fields/ui_convertfielddatatype.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/share.h>
 

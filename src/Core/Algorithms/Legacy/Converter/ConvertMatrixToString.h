@@ -38,11 +38,10 @@ namespace SCIRun {
 	namespace Core {
 		namespace Algorithms {
 				namespace Converters {
-			
+
 		class SCISHARE ConvertMatrixToStringAlgo : public AlgorithmBase
 		{
 			public:
-				static AlgorithmInputName InputMatrix;
 				static AlgorithmOutputName ResultString;
 				ConvertMatrixToStringAlgo() {}
 				bool run(Datatypes::MatrixHandle input, Datatypes::StringHandle& output) const;

@@ -112,6 +112,7 @@ private:
   QStringList favoriteModuleNames_;
   QToolButton* executeButton_;
   QByteArray windowState_;
+  QPushButton* versionButton_;
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
@@ -130,6 +131,7 @@ private:
   void setupPythonConsole();
   void fillModuleSelector();
   void setupInputWidgets();
+  void setupVersionButton();
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
   void showStatusMessage(const QString& str);
@@ -195,6 +197,7 @@ private Q_SLOTS:
   void resetWindowLayout();
   void zoomNetwork();
   void networkTimedOut();
+  void copyVersionToClipboard();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
