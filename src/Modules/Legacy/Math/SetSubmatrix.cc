@@ -70,30 +70,35 @@ public:
 
   virtual void execute();
 };
+#endif
 
+const ModuleLookupInfo SetSubmatrix::staticInfo_("SetSubmatrix", "Math", "SCIRun");
 
-DECLARE_MAKER(SetSubmatrix)
-
-SetSubmatrix::SetSubmatrix(GuiContext* ctx)
-  : Module("SetSubmatrix", ctx, Filter,"Math", "SCIRun"),
-    startcol_(get_ctx()->subVar("startcol"), 0),
-    startrow_(get_ctx()->subVar("startrow"), 0),
-    nrow_(get_ctx()->subVar("nrow"), 0),
-    ncol_(get_ctx()->subVar("ncol"), 0),
-    srow_(get_ctx()->subVar("srow"), 0),
-    scol_(get_ctx()->subVar("scol"), 0)
+SetSubmatrix::SetSubmatrix()
+  : Module(staticInfo_)
+  // ,
+  //   startcol_(get_ctx()->subVar("startcol"), 0),
+  //   startrow_(get_ctx()->subVar("startrow"), 0),
+  //   nrow_(get_ctx()->subVar("nrow"), 0),
+  //   ncol_(get_ctx()->subVar("ncol"), 0),
+  //   srow_(get_ctx()->subVar("srow"), 0),
+  //   scol_(get_ctx()->subVar("scol"), 0)
 {
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(Input_Submatrix);
+  INITIALIZE_PORT(Optional_Start_Bounds);
+  INITIALIZE_PORT(OutputMatrix);
 }
 
-
-SetSubmatrix::~SetSubmatrix()
+void SetSubmatrix::setStateDefaults()
 {
+  //TODO
 }
-
 
 void
 SetSubmatrix::execute()
 {
+  #if 0
   MatrixHandle imatrix;
   if (!get_input_handle("Input Matrix", imatrix))
     return;
@@ -172,8 +177,5 @@ SetSubmatrix::execute()
 
     send_output_handle("Output Matrix", omatrix);
   }
+  #endif
 }
-
-
-} // End namespace SCIRun
-#endif
