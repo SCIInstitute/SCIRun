@@ -309,18 +309,11 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       }
 
       //add the actual points and colors
-      uniqueNodeID = id + "colorMapLegendTextFont" +
-        static_cast<std::ostringstream*>(&(std::ostringstream()
-        << p[0] << x << y << z << w << h))->str();
-      vboName = uniqueNodeID + "VBO" +
-        static_cast<std::ostringstream*>(&(std::ostringstream()
-        << p[0] << x << y << z << w << h))->str();
-      iboName = uniqueNodeID + "IBO" +
-        static_cast<std::ostringstream*>(&(std::ostringstream()
-        << p[0] << x << y << z << w << h))->str();
-      passName = uniqueNodeID + "Pass" +
-        static_cast<std::ostringstream*>(&(std::ostringstream()
-        << p[0] << x << y << z << w << h))->str();
+      std::string uniqueFontStr = getUniqueFontString(p, x, y, z, w, h);
+      uniqueNodeID = id + "colorMapLegendTextFont" + uniqueFontStr;
+      vboName = uniqueNodeID + "VBO";
+      iboName = uniqueNodeID + "IBO";
+      passName = uniqueNodeID + "Pass";
 
       // NOTE: Attributes will depend on the color scheme. We will want to
       // normalize the colors if the color scheme is COLOR_IN_SITU.
@@ -429,6 +422,14 @@ void ShowColorMapModule::setFSStrings(std::string &root, std::string &separator)
 {
   mFSRoot = root;
   mFSSeparator = separator;
+}
+
+std::string ShowColorMapModule::getUniqueFontString(const char *p, double x,
+  double y, double z, double w, double h)
+{
+  std::stringstream ss;
+  ss << p[0] << x << y << z << w << h;
+  return ss.str();
 }
 
 const AlgorithmParameterName ShowColorMapModule::DisplaySide("DisplaySide");

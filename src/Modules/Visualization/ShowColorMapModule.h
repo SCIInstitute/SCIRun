@@ -78,6 +78,9 @@ namespace SCIRun {
 
         static void setFSStrings(std::string &root, std::string &separator);
 
+        std::string getUniqueFontString(const char *p, double x,
+          double y, double z, double w, double h);
+
       private:
         TextBuilder text_;
         FT_Library ftLib_;
