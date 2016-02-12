@@ -81,13 +81,6 @@ const ModuleLookupInfo SetSubmatrix::staticInfo_("SetSubmatrix", "Math", "SCIRun
 
 SetSubmatrix::SetSubmatrix()
   : Module(staticInfo_)
-  // ,
-  //   startcol_(get_ctx()->subVar("startcol"), 0),
-  //   startrow_(get_ctx()->subVar("startrow"), 0),
-  //   nrow_(get_ctx()->subVar("nrow"), 0),
-  //   ncol_(get_ctx()->subVar("ncol"), 0),
-  //   srow_(get_ctx()->subVar("srow"), 0),
-  //   scol_(get_ctx()->subVar("scol"), 0)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(Input_Submatrix);
@@ -107,49 +100,29 @@ void SetSubmatrix::setStateDefaults()
 void
 SetSubmatrix::execute()
 {
-  #if 0
-  MatrixHandle imatrix;
-  if (!get_input_handle("Input Matrix", imatrix))
-    return;
+  auto imatrix = getRequiredInput(InputMatrix);
+  auto smatrix = getRequiredInput(Input_Submatrix);
 
-  MatrixHandle smatrix;
-  if (!get_input_handle("Input Submatrix", smatrix))
-    return;
-
-  if( inputs_changed_ )
+  if (needToExecute())
   {
-    nrow_.set(imatrix->nrows());
-    ncol_.set(imatrix->ncols());
+    auto state = get_state();
+    state->setValue(Parameters::MatrixDims, boost::lexical_cast<std::string>(imatrix->nrows()) + "x" + boost::lexical_cast<std::string>(imatrix->ncols()));
+    state->setValue(Parameters::SubmatrixDims, boost::lexical_cast<std::string>(smatrix->nrows()) + "x" + boost::lexical_cast<std::string>(smatrix->ncols()));
 
-    srow_.set(smatrix->nrows());
-    scol_.set(smatrix->ncols());
+  auto cmatrixOpt = getOptionalInput(Optional_Start_Bounds);
 
-    nrow_.reset();
-    ncol_.reset();
-
-    srow_.reset();
-    scol_.reset();
-  }
-
-  MatrixHandle cmatrix;
-
-  if (get_input_handle("Optional Start Bounds", cmatrix, false))
+  if (cmatrixOpt && *cmatrixOpt)
   {
+    auto cmatrix = *cmatrixOpt;
     if( cmatrix->nrows() == 2 && cmatrix->ncols() == 1 )
     {
-      startrow_.set( (int) (size_type)cmatrix->get(0, 0) );
-      startcol_.set( (int) (size_type)cmatrix->get(1, 0) );
-
-      startrow_.reset();
-      startcol_.reset();
+      state->setValue(Parameters::StartRow, (int) (size_type)cmatrix->get(0, 0));
+      state->setValue(Parameters::StartColumn, (int) (size_type)cmatrix->get(1, 0));
     }
     else if( cmatrix->nrows() == 1 && cmatrix->ncols() == 2 )
     {
-      startrow_.set( (int) (size_type)cmatrix->get(0, 0) );
-      startcol_.set( (int) (size_type)cmatrix->get(0, 1) );
-
-      startrow_.reset();
-      startcol_.reset();
+      state->setValue(Parameters::StartRow, (int) (size_type)cmatrix->get(0, 0));
+      state->setValue(Parameters::StartColumn, (int) (size_type)cmatrix->get(0, 1));
     }
     else
     {
@@ -158,33 +131,26 @@ SetSubmatrix::execute()
     }
   }
 
-  if (startrow_.get() + srow_.get() > nrow_.get() ||
-      startcol_.get() + scol_.get() > ncol_.get() )
+  const auto startRow = state->getValue(Parameters::StartRow).toInt();
+  const auto startCol = state->getValue(Parameters::StartColumn).toInt();
+
+  if (startRow + smatrix->nrows() > imatrix->nrows() ||
+      startCol + smatrix->ncols() > imatrix->ncols() )
   {
     error("Start plus submatrix range must be less than or equal to max range.");
     return;
   }
 
-  if( inputs_changed_ ||
+    MatrixHandle omatrix(imatrix->clone());
 
-      !oport_cached("Output Matrix") ||
-
-      startrow_.changed( true ) ||
-      startcol_.changed( true ) )
-  {
-
-    MatrixHandle omatrix = imatrix->clone();
-
-    for( int row=0; row<smatrix->nrows(); ++row)
+    for( int row = 0; row < smatrix->nrows(); ++row)
     {
-      for( int col=0; col<smatrix->ncols(); ++col)
+      for( int col = 0; col < smatrix->ncols(); ++col)
       {
-	omatrix->put( startrow_.get()+row, startcol_.get()+col,
-		      smatrix->get(row, col) );
+	      omatrix->put( startRow+row, startCol+col, smatrix->get(row, col) );
       }
     }
 
-    send_output_handle("Output Matrix", omatrix);
+    sendOutput(OutputMatrix, omatrix);
   }
-  #endif
 }
