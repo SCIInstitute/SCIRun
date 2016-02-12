@@ -43,7 +43,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 #include <Dataflow/Network/Module.h>
@@ -63,22 +62,7 @@ InsertVoltageSourceAlgo::InsertVoltageSourceAlgo(bool groundFirst, bool outside)
 
 
 void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, FieldHandle& omeshH, DenseMatrixHandle& odirichletMatrix)
-{
-  FieldInformation fi(omeshH);
-  if (fi.is_pointcloudmesh())
-  {
-    //error("FEMesh is a point cloud mesh, the FE mesh needs to have elements");
-    return;
-  }
-
-  FieldInformation fis(isourceH);
-
-  if (fis.is_nodata())
-  {
-    //error("VoltageSource needs to contain data");
-    return;
-  }
-
+{ 
   std::vector<Point> sources;
   std::vector<double> vals;
 
