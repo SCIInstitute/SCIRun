@@ -65,17 +65,10 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
 { 
   std::vector<Point> sources;
   std::vector<double> vals;
-
-  VMesh*  mesh = isourceH->vmesh();
-
+  
   if (groundfirst_)
   {
     Point pnt;
-    if (isourceH->vmesh()->num_nodes() == 0)
-    {
-      //error("VoltageSource field does not have any nodes");
-      return;
-    }
     isourceH->vmesh()->get_center(pnt,VMesh::Node::index_type(0));
 
     sources.push_back(pnt);
@@ -85,6 +78,7 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
   {
 
     VField* field = isourceH->vfield();
+    VMesh*  mesh = isourceH->vmesh();
     VField::size_type num_values = field->num_values();
 
     Point pnt;

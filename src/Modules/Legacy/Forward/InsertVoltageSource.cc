@@ -41,7 +41,6 @@
 #include <Modules/Legacy/Forward/InsertVoltageSource.h>
 #include <Core/Algorithms/Legacy/Forward/InsertVoltageSourceAlgo.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-//#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -64,6 +63,9 @@ InsertVoltageSource::InsertVoltageSource() : Module(staticInfo_)
 
 void InsertVoltageSource::setStateDefaults()
 {
+  auto state = get_state();
+  state->setValue(Parameters::InterpolateOutside, true);
+  state->setValue(Parameters::GroundFirst, false);
 }
 
 void InsertVoltageSource::execute()
@@ -105,6 +107,7 @@ void InsertVoltageSource::execute()
     DenseMatrixHandle dirichletMatrix;
     InsertVoltageSourceAlgo algo(groundFirst, outside);
     algo.ExecuteAlgorithm(voltageSource, outputField, dirichletMatrix);
+    std::cout << "Dirichlet: " << (*dirichletMatrix) << std::endl;
 
     sendOutput(OutputFEMesh, outputField);
     sendOutput(OutputDirichletMatrix, dirichletMatrix);
