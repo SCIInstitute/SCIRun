@@ -28,13 +28,12 @@
 
 #include <Interface/Modules/Math/SetSubmatrixDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-//#include <Core/Algorithms/Math/ConvertMatrixType.h>
-
+#include <Modules/Legacy/Math/SetSubmatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::Math;
 
 SetSubmatrixDialog::SetSubmatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -44,5 +43,8 @@ SetSubmatrixDialog::SetSubmatrixDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  //addComboBoxManager(matrixTypeComboBox_, Parameters::OutputMatrixType, map_);
+  addDynamicLabelManager(inputMatrixDimsLabel_, Parameters::MatrixDims);
+  addDynamicLabelManager(inputSubmatrixDimsLabel_, Parameters::SubmatrixDims);
+  addSpinBoxManager(startRowSpinBox_, Parameters::StartRow);
+  addSpinBoxManager(startColumnSpinBox_, Parameters::StartColumn);
 }

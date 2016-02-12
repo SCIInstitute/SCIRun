@@ -45,7 +45,7 @@
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
@@ -72,6 +72,11 @@ public:
 };
 #endif
 
+ALGORITHM_PARAMETER_DEF(Math, StartColumn);
+ALGORITHM_PARAMETER_DEF(Math, StartRow);
+ALGORITHM_PARAMETER_DEF(Math, MatrixDims);
+ALGORITHM_PARAMETER_DEF(Math, SubmatrixDims);
+
 const ModuleLookupInfo SetSubmatrix::staticInfo_("SetSubmatrix", "Math", "SCIRun");
 
 SetSubmatrix::SetSubmatrix()
@@ -92,7 +97,11 @@ SetSubmatrix::SetSubmatrix()
 
 void SetSubmatrix::setStateDefaults()
 {
-  //TODO
+  auto state = get_state();
+  state->setValue(Parameters::MatrixDims, std::string("MxN"));
+  state->setValue(Parameters::SubmatrixDims, std::string("MxN"));
+  state->setValue(Parameters::StartColumn, 0);
+  state->setValue(Parameters::StartRow, 0);
 }
 
 void

@@ -101,6 +101,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Math
 TARGET_LINK_LIBRARIES(Interface_Modules_Math
   Algorithms_Math
   Modules_Math
+  Modules_Legacy_Math
   Interface_Modules_Base
 
   ${SCI_BOOST_LIBRARY}

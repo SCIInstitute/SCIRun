@@ -33,6 +33,20 @@
 #include <Modules/Legacy/Math/share.h>
 
 namespace SCIRun {
+	namespace Core
+	{
+		namespace Algorithms
+		{
+			namespace Math
+			{
+				ALGORITHM_PARAMETER_DECL(StartColumn);
+				ALGORITHM_PARAMETER_DECL(StartRow);
+				ALGORITHM_PARAMETER_DECL(MatrixDims);
+				ALGORITHM_PARAMETER_DECL(SubmatrixDims);
+			}
+		}
+	}
+
 	namespace Modules {
 		namespace Math {
 
