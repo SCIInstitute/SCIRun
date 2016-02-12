@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,40 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Math/ComputeSVD.h>
-#include <Core/Algorithms/Math/ComputeSVD.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Interface/Modules/Math/SetSubmatrixDialog.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Modules/Legacy/Math/SetSubmatrix.h>
 
-using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
 
-
-ComputeSVD::ComputeSVD() : Module(ModuleLookupInfo("ComputeSVD", "Math", "SCIRun"),false)
+SetSubmatrixDialog::SetSubmatrixDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-	INITIALIZE_PORT(InputMatrix);
-	INITIALIZE_PORT(LeftSingularMatrix);
-	INITIALIZE_PORT(SingularValues);
-	INITIALIZE_PORT(RightSingularMatrix);
-}
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-void ComputeSVD::execute()
-{
-	auto input_matrix = getRequiredInput(InputMatrix);
-
-	if(needToExecute())
-	{
-		update_state(Executing);
-
-		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
-
-		sendOutputFromAlgorithm(LeftSingularMatrix, output);
-		sendOutputFromAlgorithm(SingularValues, output);
-		sendOutputFromAlgorithm(RightSingularMatrix, output);
-
-	}
+  addDynamicLabelManager(inputMatrixDimsLabel_, Parameters::MatrixDims);
+  addDynamicLabelManager(inputSubmatrixDimsLabel_, Parameters::SubmatrixDims);
+  addSpinBoxManager(startRowSpinBox_, Parameters::StartRow);
+  addSpinBoxManager(startColumnSpinBox_, Parameters::StartColumn);
 }

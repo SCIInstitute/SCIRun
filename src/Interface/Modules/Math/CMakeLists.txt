@@ -42,6 +42,7 @@ SET(Interface_Modules_Math_FORMS
   ReportColumnMatrixMisfit.ui
   CollectMatrices.ui
   ReportMatrixSliceMeasureDialog.ui
+  SetSubmatrix.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -60,6 +61,7 @@ SET(Interface_Modules_Math_HEADERS
   ReportColumnMatrixMisfitDialog.h
   CollectMatricesDialog.h
   ReportMatrixSliceMeasureDialog.h
+  SetSubmatrixDialog.h
 )
 
 IF(WITH_QWT_WIDGETS)
@@ -83,6 +85,7 @@ SET(Interface_Modules_Math_SOURCES
   ReportColumnMatrixMisfitDialog.cc
   CollectMatricesDialog.cc
   ReportMatrixSliceMeasureDialog.cc
+  SetSubmatrixDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})
@@ -98,6 +101,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Math
 TARGET_LINK_LIBRARIES(Interface_Modules_Math
   Algorithms_Math
   Modules_Math
+  Modules_Legacy_Math
   Interface_Modules_Base
 
   ${SCI_BOOST_LIBRARY}
