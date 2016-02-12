@@ -107,7 +107,7 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 
 void GenerateSinglePointProbeFromField::processWidgetFeedback(VariableHandle var)
 {
-  std::cout << "EditMeshBoundingBox::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << var->value() << std::endl;
+  std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << var->value() << std::endl;
 }
 
 void GenerateSinglePointProbeFromField::setStateDefaults()
