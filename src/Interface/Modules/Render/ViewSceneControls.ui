@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
+    <width>311</width>
     <height>415</height>
    </rect>
   </property>
@@ -39,7 +39,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="ObjectTab">
        <attribute name="title">
@@ -216,12 +216,15 @@
       </widget>
       <widget class="QWidget" name="ClippingTab">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <attribute name="title">
         <string>Clipping</string>
        </attribute>
        <widget class="QGroupBox" name="groupBox_3">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="geometry">
          <rect>
           <x>8</x>
@@ -239,72 +242,10 @@
         <property name="title">
          <string>Plane</string>
         </property>
-        <widget class="QRadioButton" name="Plane1RadioButton_">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>23</y>
-           <width>91</width>
-           <height>17</height>
-          </rect>
+        <widget class="QRadioButton" name="plane6RadioButton_">
+         <property name="enabled">
+          <bool>true</bool>
          </property>
-         <property name="text">
-          <string>Plane 1</string>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="Plane2RadioButton_">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>43</y>
-           <width>91</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Plane 2</string>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="Plane3RadioButton_">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>63</y>
-           <width>91</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Plane 3</string>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="Plane4RadioButton_">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>23</y>
-           <width>91</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Plane 4</string>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="Plane5RadioButton_">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>43</y>
-           <width>91</width>
-           <height>17</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Plane 5</string>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="Plane6RadioButton_">
          <property name="geometry">
           <rect>
            <x>140</x>
@@ -316,6 +257,95 @@
          <property name="text">
           <string>Plane 6</string>
          </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">planeButtonGroup_</string>
+         </attribute>
+        </widget>
+        <widget class="QRadioButton" name="plane5RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>43</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 5</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">planeButtonGroup_</string>
+         </attribute>
+        </widget>
+        <widget class="QRadioButton" name="plane4RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>23</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 4</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">planeButtonGroup_</string>
+         </attribute>
+        </widget>
+        <widget class="QRadioButton" name="plane3RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>63</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 3</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">planeButtonGroup_</string>
+         </attribute>
+        </widget>
+        <widget class="QRadioButton" name="plane2RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>43</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 2</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">planeButtonGroup_</string>
+         </attribute>
+        </widget>
+        <widget class="QRadioButton" name="plane1RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>23</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 1</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">planeButtonGroup_</string>
+         </attribute>
         </widget>
        </widget>
        <widget class="QGroupBox" name="groupBox_4">
@@ -385,15 +415,21 @@
           <height>151</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="title">
-         <string>GroupBox</string>
+         <string>Plane Controls</string>
         </property>
         <widget class="QLabel" name="label_4">
          <property name="geometry">
           <rect>
            <x>11</x>
            <y>120</y>
-           <width>31</width>
+           <width>16</width>
            <height>16</height>
           </rect>
          </property>
@@ -450,7 +486,7 @@
           <rect>
            <x>11</x>
            <y>90</y>
-           <width>31</width>
+           <width>16</width>
            <height>16</height>
           </rect>
          </property>
@@ -545,7 +581,7 @@
           <rect>
            <x>11</x>
            <y>30</y>
-           <width>31</width>
+           <width>16</width>
            <height>16</height>
           </rect>
          </property>
@@ -602,7 +638,7 @@
           <rect>
            <x>11</x>
            <y>60</y>
-           <width>31</width>
+           <width>16</width>
            <height>16</height>
           </rect>
          </property>
@@ -924,4 +960,7 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="planeButtonGroup_"/>
+ </buttongroups>
 </ui>
