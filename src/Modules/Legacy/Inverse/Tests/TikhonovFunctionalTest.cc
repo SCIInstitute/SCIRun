@@ -52,6 +52,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun::Modules::Inverse;
+using namespace SCIRun::Core::Algorithms::Inverse;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -209,7 +210,7 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredSourceReguWithNonSquareOption)
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -230,7 +231,7 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredSourceReguWithNonSquareOption)
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -251,7 +252,7 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredSourceReguWithSquareOption)
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained_squared);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained_squared);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -273,7 +274,7 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredSourceReguWithSquareOption)
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovSolutionSubcase, 1);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, 1);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -294,7 +295,7 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredSourceReguWithNonSquareOptionWrongSi
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -315,7 +316,7 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredSourceReguWithNonSquareOptionWron
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -336,7 +337,7 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredSourceReguWithSquareOptionWrongSize)
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained_squared);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained_squared);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -357,7 +358,7 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredSourceReguWithSquareOptionWrongSi
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained_squared);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained_squared);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -381,7 +382,7 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredMeasurementReguWithNonSquareOption)
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -402,7 +403,7 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredMeasurementReguWithNonSquareOptio
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -423,7 +424,7 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredMeasurementReguWithSquareOption)
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -444,7 +445,7 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredMeasurementReguWithSquareOption)
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -465,7 +466,7 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredMeasurementReguWithNonSquareOptionWr
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -486,7 +487,7 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredMeasurementReguWithNonSquareOptio
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -507,7 +508,7 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredMeasurementReguWithSquareOptionWrong
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
@@ -528,7 +529,7 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredMeasurementReguWithSquareOptionWr
     
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
-    tikAlgImp->get_state()->setValue(SolveInverseProblemWithTikhonov::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
+    tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
     
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
