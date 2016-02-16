@@ -107,7 +107,6 @@ void InsertVoltageSource::execute()
     DenseMatrixHandle dirichletMatrix;
     InsertVoltageSourceAlgo algo(groundFirst, outside);
     algo.ExecuteAlgorithm(voltageSource, outputField, dirichletMatrix);
-    std::cout << "Dirichlet: " << (*dirichletMatrix) << std::endl;
 
     sendOutput(OutputFEMesh, outputField);
     sendOutput(OutputDirichletMatrix, dirichletMatrix);
