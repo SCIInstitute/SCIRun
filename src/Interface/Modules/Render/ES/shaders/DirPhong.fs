@@ -41,6 +41,22 @@ uniform vec4    uSpecularColor;     // Specular color
 uniform float   uSpecularPower;     // Specular power
 uniform vec3    uLightDirWorld;     // Directional light (world space).
 uniform float   uTransparency;
+uniform mat4    uProjIVObject;      // Projection transform * Inverse View
+
+//clipping planes
+uniform vec4    uClippingPlane0;    // clipping plane 0
+uniform vec4    uClippingPlane1;    // clipping plane 1
+uniform vec4    uClippingPlane2;    // clipping plane 2
+uniform vec4    uClippingPlane3;    // clipping plane 3
+uniform vec4    uClippingPlane4;    // clipping plane 4
+uniform vec4    uClippingPlane5;    // clipping plane 5
+//clipping plane controls
+uniform vec4    uClippingPlaneCtrl0;// clipping plane 0 control (visible, showFrame, reverseNormal, 0)
+uniform vec4    uClippingPlaneCtrl1;// clipping plane 1 control (visible, showFrame, reverseNormal, 0)
+uniform vec4    uClippingPlaneCtrl2;// clipping plane 2 control (visible, showFrame, reverseNormal, 0)
+uniform vec4    uClippingPlaneCtrl3;// clipping plane 3 control (visible, showFrame, reverseNormal, 0)
+uniform vec4    uClippingPlaneCtrl4;// clipping plane 4 control (visible, showFrame, reverseNormal, 0)
+uniform vec4    uClippingPlaneCtrl5;// clipping plane 5 control (visible, showFrame, reverseNormal, 0)
 
 // Lighting in world space. Generally, it's better to light in eye space if you
 // are dealing with point lights. Since we are only dealing with directional
@@ -49,6 +65,50 @@ varying vec3  vNormal;
 
 void main()
 {
+  float fPlaneValue;
+  if (uClippingPlaneCtrl0.x > 0.5)
+  {
+    fPlaneValue = dot(gl_Position, uClippingPlane0);
+    fPlaneValue = uClippingPlaneCtrl0.z > 0.5 ? -fPlaneValue : fPlaneValue;
+    if (fPaneValue < 0.0)
+      return;
+  }
+  if (uClippingPlaneCtrl1.x > 0.5)
+  {
+    fPlaneValue = dot(gl_Position, uClippingPlane1);
+    fPlaneValue = uClippingPlaneCtrl1.z > 0.5 ? -fPlaneValue : fPlaneValue;
+    if (fPaneValue < 0.0)
+      return;
+  }
+  if (uClippingPlaneCtrl2.x > 0.5)
+  {
+    fPlaneValue = dot(gl_Position, uClippingPlane2);
+    fPlaneValue = uClippingPlaneCtrl2.z > 0.5 ? -fPlaneValue : fPlaneValue;
+    if (fPaneValue < 0.0)
+      return;
+  }
+  if (uClippingPlaneCtrl3.x > 0.5)
+  {
+    fPlaneValue = dot(gl_Position, uClippingPlane3);
+    fPlaneValue = uClippingPlaneCtrl3.z > 0.5 ? -fPlaneValue : fPlaneValue;
+    if (fPaneValue < 0.0)
+      return;
+  }
+  if (uClippingPlaneCtrl4.x > 0.5)
+  {
+    fPlaneValue = dot(gl_Position, uClippingPlane4);
+    fPlaneValue = uClippingPlaneCtrl4.z > 0.5 ? -fPlaneValue : fPlaneValue;
+    if (fPaneValue < 0.0)
+      return;
+  }
+  if (uClippingPlaneCtrl5.x > 0.5)
+  {
+    fPlaneValue = dot(gl_Position, uClippingPlane5);
+    fPlaneValue = uClippingPlaneCtrl5.z > 0.5 ? -fPlaneValue : fPlaneValue;
+    if (fPaneValue < 0.0)
+      return;
+  }
+
   // Remember to always negate the light direction for these lighting
   // calculations. The dot product takes on its greatest values when the angle
   // between the two vectors diminishes.

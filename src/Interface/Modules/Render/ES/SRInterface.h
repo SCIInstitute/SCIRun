@@ -156,6 +156,16 @@ namespace SCIRun {
       static std::string& getFSRoot();
       static std::string& getFSSeparator();
 
+      //Clipping Plane 
+      void setClippingPlaneIndex(int index);
+      void setClippingPlaneVisible(bool value);
+      void setClippingPlaneFrameOn(bool value);
+      void reverseClippingPlaneNormal(bool value);
+      void setClippingPlaneX(int index);
+      void setClippingPlaneY(int index);
+      void setClippingPlaneZ(int index);
+      void setClippingPlaneD(int index);
+
     private:
 
       class DepthIndex {
@@ -222,6 +232,12 @@ namespace SCIRun {
 
         int										          mPort;
       };
+
+      struct ClippingPlane {
+        bool visible, showFrame, reverseNormal;
+        double x, y, z, d;
+      };
+
       // Sets up ESCore.
       void setupCore();
 
@@ -230,6 +246,9 @@ namespace SCIRun {
 
       // Updates the world light.
       void updateWorldLight();
+
+      //update the clipping planes
+      void updateClippingPlanes();
 
       // Renders coordinate axes on the screen.
       void renderCoordinateAxes();
@@ -267,6 +286,8 @@ namespace SCIRun {
       // update selected widget
       void updateWidget(const glm::ivec2& pos);
 
+      // make sure clipping plane number matches
+      void checkClippingPlanes(int n);
 
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
@@ -300,6 +321,8 @@ namespace SCIRun {
       std::string                       mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
       std::string                       mArrowObjectName; ///< Object name for profile arrow.
 
+      std::vector<ClippingPlane>        clippingPlanes_;
+      int                               clippingPlaneIndex_;
 
       ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
       ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.

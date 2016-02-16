@@ -1,0 +1,113 @@
+#include <gl-shaders/GLShader.hpp>
+
+#include <es-general/util/Math.hpp>
+
+#include "ClippingPlaneUniforms.h"
+#include <sstream>
+#include <glm/gtc/matrix_inverse.hpp>
+
+namespace shaders = CPM_GL_SHADERS_NS;
+
+namespace SCIRun {
+  namespace Render {
+
+    ClippingPlaneUniforms::ClippingPlaneUniforms()
+    {
+      for (auto i : hasClippingPlaneUniforms)
+        i = false;
+      for (auto i : locClippingPlaneUniforms)
+        i = 0;
+      int c = 0;
+      std::ostringstream oss;
+      for (auto i : strClippingPlaneCodes)
+      {
+        oss.clear();
+        oss << "uClippingPlane" << c++;
+        i = oss.str();
+      }
+      for (auto i : hasClippingPlaneCtrlUniforms)
+        i = false;
+      for (auto i : locClippingPlaneCtrlUniforms)
+        i = 0;
+      c = 0;
+      for (auto i : strClippingPlaneCtrlCodes)
+      {
+        oss.clear();
+        oss << "uClippingPlaneCtrl" << c++;
+        i = oss.str();
+      }
+    }
+
+    void ClippingPlaneUniforms::checkUniformArray(GLuint shaderID)
+    {
+      // Obtain uniforms from shader and decide which of the uniforms we can
+      // provide automatically.
+      std::vector<shaders::ShaderUniform> shaderUniforms = shaders::getProgramUniforms(shaderID);
+      for (const shaders::ShaderUniform& uniform : shaderUniforms)
+      {
+        bool found = false;
+        int c = 0;
+        for (auto i : strClippingPlaneCodes)
+        {
+          if (uniform.nameInCode == i)
+          {
+            hasClippingPlaneUniforms[c] = true;
+            locClippingPlaneUniforms[c] = uniform.uniformLoc;
+            found = true;
+            break;
+          }
+          c++;
+        }
+        if (found) continue;
+        c = 0;
+        for (auto i : strClippingPlaneCtrlCodes)
+        {
+          if (uniform.nameInCode == i)
+          {
+            hasClippingPlaneCtrlUniforms[c] = true;
+            locClippingPlaneCtrlUniforms[c] = uniform.uniformLoc;
+            found = true;
+            break;
+          }
+          c++;
+        }
+      }
+    }
+
+    void ClippingPlaneUniforms::applyUniforms(const glm::mat4 &transform,
+      const std::vector<glm::vec4> &clippingPlanes,
+      const std::vector<glm::vec4> &clippingPlaneCtrls) const
+    {
+      int c = 0;
+      for (auto i : hasClippingPlaneUniforms)
+      {
+        if (i)
+        {
+          glm::vec4 o = clippingPlanes[c] * clippingPlanes[c].w;
+          o.w = 1;
+          glm::vec4 n = clippingPlanes[c];
+          n.w = 0;
+          o = transform * o;
+          n = glm::inverseTranspose(transform) * n;
+          o.w = 0;
+          n.w = 0;
+          n.w = glm::dot(o, n);
+          GL(glUniform4f(locClippingPlaneUniforms[c], n.x, n.y, n.z, n.w));
+        }
+        c++;
+      }
+      c = 0;
+      for (auto i : hasClippingPlaneCtrlUniforms)
+      {
+        if (i)
+          GL(glUniform4f(locClippingPlaneCtrlUniforms[c],
+          clippingPlaneCtrls[c].x, clippingPlaneCtrls[c].y,
+          clippingPlaneCtrls[c].z, clippingPlaneCtrls[c].w));
+        c++;
+      }
+    }
+
+  } // namespace Render
+} // namespace SCIRun
+
+

@@ -61,7 +61,9 @@
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
 #include "comp/StaticWorldLight.h"
+#include "comp/StaticClippingPlanes.h"
 #include "comp/LightingUniforms.h"
+#include "comp/ClippingPlaneUniforms.h"
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
@@ -87,7 +89,8 @@ namespace SCIRun {
       axesFailCount_(0),
       mContext(context),
       frameInitLimit_(frameInitLimit),
-      mCamera(new SRCamera(*this))  // Should come after all vars have been initialized.
+      mCamera(new SRCamera(*this)),  // Should come after all vars have been initialized.
+      clippingPlaneIndex_(0)
     {
       // Create default colormaps.
       //generateTextures();
@@ -567,6 +570,77 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
+    //--------------Clipping Plane Tools--------------------------------------------
+    void SRInterface::checkClippingPlanes(int n)
+    {
+      while (n >= clippingPlanes_.size())
+      {
+        ClippingPlane plane;
+        plane.visible = false;
+        plane.showFrame = false;
+        plane.reverseNormal - false;
+        plane.x = 0.0;
+        plane.y = 0.0;
+        plane.z = 0.0;
+        plane.d = 0.0;
+        clippingPlanes_.push_back(plane);
+      }
+    }
+
+    void SRInterface::setClippingPlaneIndex(int index)
+    {
+      clippingPlaneIndex_ = index;
+    }
+
+    void SRInterface::setClippingPlaneVisible(bool value)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].visible = value;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::setClippingPlaneFrameOn(bool value)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].showFrame = value;
+    }
+
+    void SRInterface::reverseClippingPlaneNormal(bool value)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].reverseNormal = value;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::setClippingPlaneX(int index)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].x = index / 100.0;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::setClippingPlaneY(int index)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].y = index / 100.0;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::setClippingPlaneZ(int index)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].z = index / 100.0;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::setClippingPlaneD(int index)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].d = index / 100.0;
+      updateClippingPlanes();
+    }
+
+    //------------------------------------------------------------------------------
     void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
     {
       widgetSelected_ = false;
@@ -919,6 +993,9 @@ namespace SCIRun {
               // Add lighting uniform checks
               LightingUniforms lightUniforms;
               mCore.addComponent(entityID, lightUniforms);
+              //plane uniforms
+              ClippingPlaneUniforms clipplingPlaneUniforms;
+              mCore.addComponent(entityID, clipplingPlaneUniforms);
 
               // Add SCIRun render state.
               SRRenderState state;
@@ -926,16 +1003,6 @@ namespace SCIRun {
               mCore.addComponent(entityID, state);
               RenderBasicGeom geom;
               mCore.addComponent(entityID, geom);
-              /*if (pass.passName.find("TextFont") != std::string::npos)
-              { //this is a font texture
-                // Construct texture component and add it to our entity for rendering.
-                ren::Texture component;
-                component.textureUnit = 0;
-                component.setUniformName("uTX0");
-                component.textureType = GL_TEXTURE_2D;
-                component.glid = mFontTexture;
-                mCore.addComponent(entityID, component);
-              }*/
               // Ensure common uniforms are covered.
               ren::CommonUniforms commonUniforms;
               mCore.addComponent(entityID, commonUniforms);
@@ -944,6 +1011,7 @@ namespace SCIRun {
               {
                 applyUniform(entityID, uniform);
               }
+
 
               // Add components associated with entity. We just need a base class which
               // we can pass in an entity ID, then a derived class which bundles
@@ -1196,6 +1264,22 @@ namespace SCIRun {
         glm::vec3 viewDir = viewToWorld[2].xyz();
         viewDir = -viewDir; // Cameras look down -Z.
         light->lightDir = viewDir;
+      }
+    }
+
+    //
+    void SRInterface::updateClippingPlanes()
+    {
+      StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
+      if (clippingPlanes)
+      {
+        clippingPlanes->clippingPlanes.clear();
+        clippingPlanes->clippingPlaneCtrls.clear();
+        for (auto i : clippingPlanes_)
+        {
+          clippingPlanes->clippingPlanes.push_back(glm::vec4(i.x, i.y, i.z, i.d));
+          clippingPlanes->clippingPlaneCtrls.push_back(glm::vec4(i.visible, i.showFrame, i.reverseNormal, 0));
+        }
       }
     }
 

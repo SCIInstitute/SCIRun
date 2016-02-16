@@ -54,7 +54,9 @@
 #include "../comp/SRRenderState.h"
 #include "../comp/RenderList.h"
 #include "../comp/StaticWorldLight.h"
+#include "../comp/StaticClippingPlanes.h"
 #include "../comp/LightingUniforms.h"
+#include "../comp/ClippingPlaneUniforms.h"
 
 namespace es = CPM_ES_NS;
 namespace shaders = CPM_GL_SHADERS_NS;
@@ -71,6 +73,7 @@ class RenderBasicSys :
                              SRRenderState,
                              RenderList,
                              LightingUniforms,
+                             ClippingPlaneUniforms,
                              gen::Transform,
                              gen::StaticGlobalTime,
                              ren::VBO,
@@ -82,6 +85,7 @@ class RenderBasicSys :
                              ren::Shader,
                              ren::GLState,
                              StaticWorldLight,
+                             StaticClippingPlanes,
                              gen::StaticCamera,
                              ren::StaticGLState,
                              ren::StaticVBOMan,
@@ -98,6 +102,7 @@ public:
                                   ren::StaticGLState,
                                   ren::CommonUniforms,
                                   LightingUniforms,
+                                  ClippingPlaneUniforms,
                                   ren::VecUniform,
                                   ren::MatUniform,
                                   ren::Texture,
@@ -110,6 +115,7 @@ public:
       const es::ComponentGroup<SRRenderState>& srstate,
       const es::ComponentGroup<RenderList>& rlist,
       const es::ComponentGroup<LightingUniforms>& lightUniforms,
+      const es::ComponentGroup<ClippingPlaneUniforms>& clippingPlaneUniforms,
       const es::ComponentGroup<gen::Transform>& trafo,
       const es::ComponentGroup<gen::StaticGlobalTime>& time,
       const es::ComponentGroup<ren::VBO>& vbo,
@@ -121,6 +127,7 @@ public:
       const es::ComponentGroup<ren::Shader>& shader,
       const es::ComponentGroup<ren::GLState>& state,
       const es::ComponentGroup<StaticWorldLight>& worldLight,
+      const es::ComponentGroup<StaticClippingPlanes>& clippingPlanes,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
       const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
@@ -179,6 +186,9 @@ public:
 
       if (lightUniforms.size() > 0)
         const_cast<LightingUniforms&>(lightUniforms.front()).checkUniformArray(shader.front().glid);
+
+      if (clippingPlaneUniforms.size() > 0)
+        const_cast<ClippingPlaneUniforms&>(clippingPlaneUniforms.front()).checkUniformArray(shader.front().glid);
     }
 
     // Check to see if we have GLState. If so, apply it relative to the
@@ -218,6 +228,12 @@ public:
     for (const ren::VecUniform& unif : vecUniforms) {unif.applyUniform();}
     if (lightUniforms.size() > 0)
       lightUniforms.front().applyUniform(worldLight.front().lightDir);
+    if (clippingPlaneUniforms.size() > 0)
+    {
+      glm::mat4 transform = camera.front().data.projIV * trafo.front().transform;
+      clippingPlaneUniforms.front().applyUniforms(transform, clippingPlanes.front().clippingPlanes,
+      clippingPlanes.front().clippingPlaneCtrls);
+    }
 
     // Apply matrix uniforms (if any).
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}

@@ -192,8 +192,6 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 
 void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 {
-  //if (selected_)
-  //  newGeometryValue();
 }
 
 void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
@@ -712,6 +710,9 @@ void ViewSceneDialog::setClippingPlaneIndex(int index)
 {
   int indexOffset = 7;
   clippingPlaneIndex_ = index + indexOffset;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneIndex(clippingPlaneIndex_);
   mConfigurationDock->updatePlaneSettingsDisplay(
     clippingPlanes_[clippingPlaneIndex_].visible,
     clippingPlanes_[clippingPlaneIndex_].showFrame,
@@ -722,39 +723,60 @@ void ViewSceneDialog::setClippingPlaneIndex(int index)
 void ViewSceneDialog::setClippingPlaneVisible(bool value)
 {
   clippingPlanes_[clippingPlaneIndex_].visible = value;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneVisible(clippingPlanes_[clippingPlaneIndex_].visible);
 }
 
 void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
 {
   clippingPlanes_[clippingPlaneIndex_].showFrame = value;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneFrameOn(clippingPlanes_[clippingPlaneIndex_].showFrame);
 }
 
 void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
 {
   clippingPlanes_[clippingPlaneIndex_].reverseNormal = value;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->reverseClippingPlaneNormal(clippingPlanes_[clippingPlaneIndex_].reverseNormal);
 }
 
 void ViewSceneDialog::setClippingPlaneX(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].x = index / 100.0;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneX(clippingPlanes_[clippingPlaneIndex_].x);
   updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneY(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].y = index / 100.0;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneY(clippingPlanes_[clippingPlaneIndex_].y);
   updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneZ(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].z = index / 100.0;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneZ(clippingPlanes_[clippingPlaneIndex_].z);
   updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneD(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].d = index / 100.0;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneZ(clippingPlanes_[clippingPlaneIndex_].d);
   updatClippingPlaneDisplay();
 }
 
