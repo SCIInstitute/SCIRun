@@ -107,8 +107,10 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 
 void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var)
 {
-  auto xyTr = transient_value_cast<Variable>(var);
-  std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << xyTr.value() << std::endl;
+  auto xyTr = any_cast_or_default_<Variable>(var);
+  std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, name received from ViewSceneDialog is:\n\t" << xyTr.name() << std::endl;
+  for (const auto& subVar : xyTr.toVector())
+    std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << subVar << std::endl;
 }
 
 void GenerateSinglePointProbeFromField::setStateDefaults()
