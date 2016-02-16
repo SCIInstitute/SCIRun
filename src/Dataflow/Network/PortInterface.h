@@ -85,7 +85,7 @@ namespace Networks {
     virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) = 0;
   };
 
-  typedef boost::signals2::signal<void(SCIRun::Core::Algorithms::VariableHandle)> ConnectionFeedbackSignalType;
+  typedef boost::signals2::signal<void(ModuleFeedback)> ConnectionFeedbackSignalType;
 
   class SCISHARE OutputPortInterface : virtual public PortInterface
   {
@@ -96,7 +96,7 @@ namespace Networks {
     virtual OutputPortInterface* clone() const { return nullptr; } // TODO
     virtual PortDataDescriber getPortDataDescriber() const = 0;
     virtual boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) = 0;
-    virtual void sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info) = 0;
+    virtual void sendConnectionFeedback(ModuleFeedback info) = 0;
   };
 
   class SCISHARE PortConnectionDeterminer

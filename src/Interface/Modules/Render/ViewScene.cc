@@ -49,8 +49,8 @@ using namespace SCIRun::Modules::Render;
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false), itemValueChanged_(true),
-  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false), shiftdown_(false), selected_(false),
-  clippingPlaneIndex_(0)
+  shiftdown_(false), selected_(false),
+  clippingPlaneIndex_(0),screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -891,14 +891,13 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 
 void ViewSceneDialog::setupClippingPlanes()
 {
-
   const int numClippingPlanes = 6;
-  for (int i = 0; i < 6; ++i)
+  for (int i = 0; i < numClippingPlanes; ++i)
   {
     ClippingPlane plane;
     plane.visible = false;
     plane.showFrame = false;
-    plane.reverseNormal - false;
+    plane.reverseNormal = false;
     plane.x = 0.0;
     plane.y = 0.0;
     plane.z = 0.0;
@@ -943,13 +942,16 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
 
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
 {
+  //qDebug() << "sendGeometryFeedbackToState" << x << y;
   using namespace Core::Algorithms;
-  Variable::List coords;
-  coords.push_back(makeVariable("x", x));
-  coords.push_back(makeVariable("y", y));
+  Variable::List geomInfo;
+  geomInfo.push_back(makeVariable("xClick", x));
+  geomInfo.push_back(makeVariable("yClick", y));
   //DenseMatrixHandle matrixHandle;
-  //coords.push_back(Variable(Name("transform"), matrixHandle, DATATYPE_VARIABLE));
-  state_->setTransientValue(Parameters::GeometryFeedbackInfo, coords);
+  //TODO:
+  geomInfo.push_back(Variable(Name("transform"), nullptr, Variable::DATATYPE_VARIABLE));
+  auto var = makeVariable("geomInfo", geomInfo);
+  state_->setTransientValue(Parameters::GeometryFeedbackInfo, var);
 }
 
 void ViewSceneDialog::takeScreenshot()

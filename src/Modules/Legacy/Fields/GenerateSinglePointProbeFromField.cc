@@ -105,9 +105,12 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
   INITIALIZE_PORT(ElementIndex);
 }
 
-void GenerateSinglePointProbeFromField::processWidgetFeedback(VariableHandle var)
+void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var)
 {
-  std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << var->value() << std::endl;
+  auto xyTr = any_cast_or_default_<Variable>(var);
+  std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, name received from ViewSceneDialog is:\n\t" << xyTr.name() << std::endl;
+  for (const auto& subVar : xyTr.toVector())
+    std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << subVar << std::endl;
 }
 
 void GenerateSinglePointProbeFromField::setStateDefaults()
@@ -128,7 +131,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
 
-  getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](VariableHandle var) { processWidgetFeedback(var); });
+  getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](ModuleFeedback var) { processWidgetFeedback(var); });
 }
 
 #if 0
