@@ -38,11 +38,10 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Forward;
 
 const ModuleLookupInfo CalculateCurrentDensity::staticInfo_("CalculateCurrentDensity", "Forward", "SCIRun");
 
-CalculateCurrentDensity::CalculateCurrentDensity() : Module(staticInfo_)
+CalculateCurrentDensity::CalculateCurrentDensity() : Module(staticInfo_,false)
 {
   INITIALIZE_PORT(TetMesh_EField);
   INITIALIZE_PORT(TetMesh_Sigmas);

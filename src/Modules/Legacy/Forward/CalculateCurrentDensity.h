@@ -42,7 +42,6 @@ namespace SCIRun {
         public Has1OutputPort<FieldPortTag>
       {
       public:
-      public:
         CalculateCurrentDensity();
         virtual void setStateDefaults() {}
         virtual void execute();
