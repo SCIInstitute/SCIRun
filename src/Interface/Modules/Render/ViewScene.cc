@@ -943,6 +943,7 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
 
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
 {
+  qDebug() << "sendGeometryFeedbackToState" << x << y;
   using namespace Core::Algorithms;
   Variable::List geomInfo;
   geomInfo.push_back(makeVariable("xClick", x));
