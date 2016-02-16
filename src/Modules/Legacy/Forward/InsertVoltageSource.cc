@@ -40,7 +40,9 @@
 
 #include <Modules/Legacy/Forward/InsertVoltageSource.h>
 #include <Core/Algorithms/Legacy/Forward/InsertVoltageSourceAlgo.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
@@ -61,6 +63,9 @@ InsertVoltageSource::InsertVoltageSource() : Module(staticInfo_)
 
 void InsertVoltageSource::setStateDefaults()
 {
+  auto state = get_state();
+  state->setValue(Parameters::InterpolateOutside, true);
+  state->setValue(Parameters::GroundFirst, false);
 }
 
 void InsertVoltageSource::execute()
@@ -68,11 +73,36 @@ void InsertVoltageSource::execute()
   auto inputField =  getRequiredInput(InputFEMesh);
   auto voltageSource = getRequiredInput(VoltageSource);
 
+  FieldInformation fi(inputField);
+  if (fi.is_pointcloudmesh())
+  {
+    error("FEMesh is a point cloud mesh, the FE mesh needs to have elements");
+    return;
+  }
+
+  FieldInformation fis(voltageSource);
+
+  if (fis.is_nodata())
+  {
+    error("VoltageSource needs to contain data");
+    return;
+  }
+
+  auto state = get_state();
+  auto groundFirst = state->getValue(Parameters::GroundFirst).toBool();
+  auto outside = state->getValue(Parameters::InterpolateOutside).toBool();
+
+  if (groundFirst)
+  {
+    if (voltageSource->vmesh()->num_nodes() == 0)
+    {
+      error("VoltageSource field does not have any nodes");
+      return;
+    }
+  }
+
   if (needToExecute())
   {
-    auto state = get_state();
-    auto groundFirst = state->getValue(Parameters::GroundFirst).toBool();
-    auto outside = state->getValue(Parameters::InterpolateOutside).toBool();
     FieldHandle outputField(inputField->clone());
     DenseMatrixHandle dirichletMatrix;
     InsertVoltageSourceAlgo algo(groundFirst, outside);
