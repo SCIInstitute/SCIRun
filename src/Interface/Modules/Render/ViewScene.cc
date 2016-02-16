@@ -891,14 +891,13 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 
 void ViewSceneDialog::setupClippingPlanes()
 {
-
   const int numClippingPlanes = 6;
-  for (int i = 0; i < 6; ++i)
+  for (int i = 0; i < numClippingPlanes; ++i)
   {
     ClippingPlane plane;
     plane.visible = false;
     plane.showFrame = false;
-    plane.reverseNormal - false;
+    plane.reverseNormal = false;
     plane.x = 0.0;
     plane.y = 0.0;
     plane.z = 0.0;
