@@ -944,12 +944,14 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
 {
   using namespace Core::Algorithms;
-  Variable::List coords;
-  coords.push_back(makeVariable("x", x));
-  coords.push_back(makeVariable("y", y));
+  Variable::List geomInfo;
+  geomInfo.push_back(makeVariable("xClick", x));
+  geomInfo.push_back(makeVariable("yClick", y));
   //DenseMatrixHandle matrixHandle;
-  //coords.push_back(Variable(Name("transform"), matrixHandle, DATATYPE_VARIABLE));
-  state_->setTransientValue(Parameters::GeometryFeedbackInfo, coords);
+  //TODO:
+  geomInfo.push_back(Variable(Name("transform"), nullptr, Variable::DATATYPE_VARIABLE));
+
+  state_->setTransientValue(Parameters::GeometryFeedbackInfo, makeVariable("geomInfo", geomInfo));
 }
 
 void ViewSceneDialog::takeScreenshot()

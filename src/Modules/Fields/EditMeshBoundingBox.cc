@@ -164,9 +164,10 @@ EditMeshBoundingBox::EditMeshBoundingBox()
   INITIALIZE_PORT(Transformation_Matrix);
 }
 
-void EditMeshBoundingBox::processWidgetFeedback(VariableHandle var)
+void EditMeshBoundingBox::processWidgetFeedback(ModuleFeedback var)
 {
-  std::cout << "EditMeshBoundingBox::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << var->value() << std::endl;
+  auto xyTr = transient_value_cast<Variable>(var);
+  std::cout << "EditMeshBoundingBox::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << xyTr.value() << std::endl;
 }
 
 void EditMeshBoundingBox::createBoxWidget()
@@ -200,7 +201,7 @@ void EditMeshBoundingBox::setStateDefaults()
   createBoxWidget();
   setBoxRestrictions();
 
-  getOutputPort(Transformation_Widget)->connectConnectionFeedbackListener([this](VariableHandle var) { processWidgetFeedback(var); });
+  getOutputPort(Transformation_Widget)->connectConnectionFeedbackListener([this](ModuleFeedback var) { processWidgetFeedback(var); });
 }
 
 void EditMeshBoundingBox::execute()
