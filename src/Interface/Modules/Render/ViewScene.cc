@@ -49,8 +49,8 @@ using namespace SCIRun::Modules::Render;
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false), itemValueChanged_(true),
-  screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false), shiftdown_(false), selected_(false),
-  clippingPlaneIndex_(0)
+  shiftdown_(false), selected_(false),
+  clippingPlaneIndex_(0),screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -942,7 +942,7 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
 
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
 {
-  qDebug() << "sendGeometryFeedbackToState" << x << y;
+  //qDebug() << "sendGeometryFeedbackToState" << x << y;
   using namespace Core::Algorithms;
   Variable::List geomInfo;
   geomInfo.push_back(makeVariable("xClick", x));
