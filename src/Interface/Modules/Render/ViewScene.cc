@@ -950,8 +950,8 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   //DenseMatrixHandle matrixHandle;
   //TODO:
   geomInfo.push_back(Variable(Name("transform"), nullptr, Variable::DATATYPE_VARIABLE));
-
-  state_->setTransientValue(Parameters::GeometryFeedbackInfo, makeVariable("geomInfo", geomInfo));
+  auto var = makeVariable("geomInfo", geomInfo);
+  state_->setTransientValue(Parameters::GeometryFeedbackInfo, var);
 }
 
 void ViewSceneDialog::takeScreenshot()

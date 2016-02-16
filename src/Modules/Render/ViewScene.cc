@@ -162,17 +162,12 @@ void ViewScene::execute()
 void ViewScene::processViewSceneObjectFeedback()
 {
   //TODO: match ID of touched geom object with port id, and send that info back too.
-  //std::cout << "slot for state change in VS module" << std::endl;
   auto state = get_state();
   auto newInfo = state->getTransientValue(Parameters::GeometryFeedbackInfo);
-  //std::cout << "feedback info: " << newInfo << std::endl;
   //TODO: lost equality test here due to change to boost::any. Would be nice to form a data class with equality to avoid repetitive signalling.
-  //if (feedbackInfo_ != newInfo)
+  if (newInfo)
   {
-    //std::cout << "new feedback info: " << newInfo << std::endl;
-    //feedbackInfo_ = newInfo;
-
-    sendFeedbackUpstreamAlongIncomingConnections(newInfo);
+    sendFeedbackUpstreamAlongIncomingConnections(*newInfo);
   }
 }
 
