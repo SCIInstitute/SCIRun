@@ -57,6 +57,7 @@ ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
   INITIALIZE_PORT(GeneralGeom);
 #ifdef BUILD_TESTING
   INITIALIZE_PORT(ScreenshotData);
+  get_state()->setTransientValue(Parameters::ScreenshotData, nullptr, false);
 #endif
 }
 
@@ -142,18 +143,18 @@ void ViewScene::execute()
 {
   if (inputPorts().size() > 1) // only send screenshot if input is present
   {
-    DenseMatrixHandle screenshotData;
+    ModuleStateInterface::TransientValueOption screenshotDataOption;
     auto state = get_state();
     do
     {
-      auto transient = state->getTransientValue(Parameters::ScreenshotData);
-      screenshotData = transient_value_cast<DenseMatrixHandle>(transient);
+      screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
+      auto screenshotData = transient_value_cast<DenseMatrixHandle>(screenshotDataOption);
       if (screenshotData)
       {
         sendOutput(ScreenshotData, screenshotData);
       }
     }
-    while (!screenshotData);
+    while (!screenshotDataOption);
   }
 }
 #endif
