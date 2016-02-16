@@ -180,17 +180,7 @@ TikhonovAlgorithmImpl::LambdaLookup(const TikhonovAlgorithm::LCurveInput& input,
   return -1;
 }
 
-namespace LinearAlgebra
-{
-  void solve_lapack(const DenseMatrix& A, const DenseColumnMatrix& b, DenseColumnMatrix& x)
-  {
-    x = A.lu().solve(b).eval();
-  }
-
-  class LapackError : public std::exception {};
-}
     
-
 ////// CHECK IF INPUT MATRICES HAVE THE CORRECT SIZE
 void TikhonovAlgorithmImpl::checkInputMatrixSizes(int M, int N)
 {
@@ -718,36 +708,7 @@ DenseColumnMatrix TikhonovAlgorithmImpl::computeInverseSolution( DenseMatrix& M1
     
     G = M1 + lambda_sq * M2;
     
-    try
-    {
-        LinearAlgebra::solve_lapack(G,  y, b);
-    }
-    catch (LinearAlgebra::LapackError&)
-    {
-        const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda Range ''From'' value for the L-Curve calculation.");
-        if (pr_)
-        {
-            pr_->error(errorMessage);
-        }
-        else
-        {
-            std::cerr << errorMessage << std::endl;
-        }
-        throw;
-    }
-    catch(DimensionMismatch&)
-    {
-        const std::string errorMessage("Invalid matrix sizes are being used in the Tikhonov linear system.");
-        if (pr_)
-        {
-            pr_->error(errorMessage);
-        }
-        else
-        {
-            std::cerr << errorMessage << std::endl;
-        }
-        throw;
-    }
+    b = G.lu().solve(y).eval();
     
     solution = M3 * b;
     
@@ -777,31 +738,6 @@ void TikhonovAlgorithmImpl::update_graph(const TikhonovAlgorithmImpl::Input& inp
   }
 }
     
-
-
-#if 0
-
-void SolveInverseProblemWithTikhonov::tcl_command(GuiArgs& args, void* userdata)
-{
-  if (args[1] == "updategraph" && args.count() == 4)
-  {
-    double lambda = boost::lexical_cast<double>(args[2]);
-    int lambda_index = boost::lexical_cast<double>(args[3]);
-
-    if (input_handle_.get() != 0 && algo_handle_.get() != 0)
-    {
-      algo_handle_->update_graph(*input_handle_, lambda, lambda_index, lambda_resolution_.get());
-    }
-  }
-  else
-  {
-    // Relay data to the Module class
-    Module::tcl_command(args, userdata);
-  }
-}
-
-
-#endif
 
 TikhonovAlgorithm::LCurveInput::LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, int nLambda)
 : rho_(rho), eta_(eta), lambdaArray_(lambdaArray), nLambda_(nLambda)
