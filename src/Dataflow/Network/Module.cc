@@ -935,14 +935,14 @@ bool Module::isStoppable() const
   return dynamic_cast<const Core::Thread::Interruptible*>(this) != nullptr;
 }
 
-void Module::sendFeedbackUpstreamAlongIncomingConnections(const Variable::Value& info)
+void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback)
 {
   for (auto& inputPort : inputPorts())
   {
     if (inputPort->nconnections() > 0)
     {
       auto connection = inputPort->connection(0); // only one incoming connection for input ports
-      VariableHandle feedback(new Variable(Name(inputPort->id().toString()), info));
+      //VariableHandle feedback(new Variable(Name(inputPort->id().toString()), info));
       //TODO: extract port method
       connection->oport_->sendConnectionFeedback(feedback);
     }

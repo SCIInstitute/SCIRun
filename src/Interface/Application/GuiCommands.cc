@@ -66,7 +66,7 @@ bool LoadFileCommandGui::execute()
   if (!inputFilesFromCommandLine.empty())
     inputFile = inputFilesFromCommandLine[index_];
   else
-    inputFile = get(Variables::Filename).toString();
+    inputFile = get(Variables::Filename).toFilename().string();
 
   return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile));
 }
@@ -161,7 +161,7 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 
 bool NetworkFileProcessCommand::execute()
 {
-  auto filename = get(Variables::Filename).toString();
+  auto filename = get(Variables::Filename).toFilename().string();
   GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename));
 
   try
@@ -262,8 +262,8 @@ NetworkSaveCommand::NetworkSaveCommand()
 
 bool NetworkSaveCommand::execute()
 {
-  auto filename = get(Variables::Filename).toString();
-  std::string fileNameWithExtension = filename;
+  auto filename = get(Variables::Filename).toFilename().string();
+  auto fileNameWithExtension = filename;
   if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
     fileNameWithExtension += ".srn5";
 

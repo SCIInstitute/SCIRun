@@ -102,7 +102,7 @@ namespace SCIRun {
         void createBoxWidget();
         void setBoxRestrictions();
         Core::Datatypes::GeometryBaseHandle buildGeometryObject();
-        void processWidgetFeedback(SCIRun::Core::Algorithms::VariableHandle var);
+        void processWidgetFeedback(Dataflow::Networks::ModuleFeedback var);
         SCIRun::Core::Geometry::BBox bbox_;
 
         BoxWidgetPtr box_;

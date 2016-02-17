@@ -29,11 +29,13 @@
 
 #include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/ColorMap.h>
+#include <Core/Logging/Log.h>
 #include <iostream>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 
 ColorMap::ColorMap(ColorMapStrategyHandle color, const std::string& name, const size_t resolution, const double shift,
   const bool invert, const double rescale_scale, const double rescale_shift)
@@ -120,7 +122,10 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
       color.reset(new detail::BPSeismic);
     }
     else
-      THROW_INVALID_ARGUMENT("Color map name not implemented/recognized.");
+    {
+      Log::get() << ERROR_LOG << "Color map name not implemented/recognized. Returning Rainbow." << std::endl;
+      color.reset(new detail::Rainbow);
+    }
 
 
   return boost::make_shared<ColorMap>(color, name, res, shift, invert, rescale_scale, rescale_shift);
