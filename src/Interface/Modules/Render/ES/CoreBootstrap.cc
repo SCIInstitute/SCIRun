@@ -27,6 +27,7 @@
 
 #include "comp/RenderBasicGeom.h"
 #include "comp/StaticWorldLight.h"
+#include "comp/StaticClippingPlanes.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderTransBasicSys.h"
 #include "CoreBootstrap.h"
@@ -157,6 +158,16 @@ public:
     worldLight.lightDir = glm::vec3(1.0f, 0.0f, 0.0f);
     core.addStaticComponent(worldLight);
     core.addExemptComponent<StaticWorldLight>();
+
+    // Add static clipping planes.
+    StaticClippingPlanes clippingPlanes;
+    for (int i = 0; i < 6; ++i)
+    {
+      clippingPlanes.clippingPlanes.push_back(glm::vec4());
+      clippingPlanes.clippingPlaneCtrls.push_back(glm::vec4());
+    }
+    core.addStaticComponent(clippingPlanes);
+    core.addExemptComponent<StaticClippingPlanes>();
 
     // Setup default ortho camera projection
     gen::StaticOrthoCamera orthoCam;

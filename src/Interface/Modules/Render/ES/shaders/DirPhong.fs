@@ -41,7 +41,6 @@ uniform vec4    uSpecularColor;     // Specular color
 uniform float   uSpecularPower;     // Specular power
 uniform vec3    uLightDirWorld;     // Directional light (world space).
 uniform float   uTransparency;
-uniform mat4    uProjIVObject;      // Projection transform * Inverse View
 
 //clipping planes
 uniform vec4    uClippingPlane0;    // clipping plane 0
@@ -62,50 +61,53 @@ uniform vec4    uClippingPlaneCtrl5;// clipping plane 5 control (visible, showFr
 // are dealing with point lights. Since we are only dealing with directional
 // lights we light in world space.
 varying vec3  vNormal;
+varying vec4    vPos;
 
 void main()
 {
+  if (vPos.x < uClippingPlane0.w*100)
+    return;
   float fPlaneValue;
   if (uClippingPlaneCtrl0.x > 0.5)
   {
-    fPlaneValue = dot(gl_Position, uClippingPlane0);
+    fPlaneValue = dot(vPos, uClippingPlane0);
     fPlaneValue = uClippingPlaneCtrl0.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPaneValue < 0.0)
+    if (fPlaneValue < 0.0)
       return;
   }
   if (uClippingPlaneCtrl1.x > 0.5)
   {
-    fPlaneValue = dot(gl_Position, uClippingPlane1);
+    fPlaneValue = dot(vPos, uClippingPlane1);
     fPlaneValue = uClippingPlaneCtrl1.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPaneValue < 0.0)
+    if (fPlaneValue < 0.0)
       return;
   }
   if (uClippingPlaneCtrl2.x > 0.5)
   {
-    fPlaneValue = dot(gl_Position, uClippingPlane2);
+    fPlaneValue = dot(vPos, uClippingPlane2);
     fPlaneValue = uClippingPlaneCtrl2.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPaneValue < 0.0)
+    if (fPlaneValue < 0.0)
       return;
   }
   if (uClippingPlaneCtrl3.x > 0.5)
   {
-    fPlaneValue = dot(gl_Position, uClippingPlane3);
+    fPlaneValue = dot(vPos, uClippingPlane3);
     fPlaneValue = uClippingPlaneCtrl3.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPaneValue < 0.0)
+    if (fPlaneValue < 0.0)
       return;
   }
   if (uClippingPlaneCtrl4.x > 0.5)
   {
-    fPlaneValue = dot(gl_Position, uClippingPlane4);
+    fPlaneValue = dot(vPos, uClippingPlane4);
     fPlaneValue = uClippingPlaneCtrl4.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPaneValue < 0.0)
+    if (fPlaneValue < 0.0)
       return;
   }
   if (uClippingPlaneCtrl5.x > 0.5)
   {
-    fPlaneValue = dot(gl_Position, uClippingPlane5);
+    fPlaneValue = dot(vPos, uClippingPlane5);
     fPlaneValue = uClippingPlaneCtrl5.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPaneValue < 0.0)
+    if (fPlaneValue < 0.0)
       return;
   }
 

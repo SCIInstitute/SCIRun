@@ -161,10 +161,10 @@ namespace SCIRun {
       void setClippingPlaneVisible(bool value);
       void setClippingPlaneFrameOn(bool value);
       void reverseClippingPlaneNormal(bool value);
-      void setClippingPlaneX(int index);
-      void setClippingPlaneY(int index);
-      void setClippingPlaneZ(int index);
-      void setClippingPlaneD(int index);
+      void setClippingPlaneX(double value);
+      void setClippingPlaneY(double value);
+      void setClippingPlaneZ(double value);
+      void setClippingPlaneD(double value);
 
     private:
 

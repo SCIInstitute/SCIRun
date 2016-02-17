@@ -776,7 +776,7 @@ void ViewSceneDialog::setClippingPlaneD(int index)
   clippingPlanes_[clippingPlaneIndex_].d = index / 100.0;
   auto spire = mSpire.lock();
   if (spire)
-    spire->setClippingPlaneZ(clippingPlanes_[clippingPlaneIndex_].d);
+    spire->setClippingPlaneD(clippingPlanes_[clippingPlaneIndex_].d);
   updatClippingPlaneDisplay();
 }
 

@@ -13,28 +13,21 @@ namespace SCIRun {
 
     ClippingPlaneUniforms::ClippingPlaneUniforms()
     {
-      for (auto i : hasClippingPlaneUniforms)
-        i = false;
-      for (auto i : locClippingPlaneUniforms)
-        i = 0;
-      int c = 0;
       std::ostringstream oss;
-      for (auto i : strClippingPlaneCodes)
+      for (int i = 0; i < 6; ++i)
       {
+        hasClippingPlaneUniforms.push_back(false);
+        locClippingPlaneUniforms.push_back(0);
+        oss.str("");
         oss.clear();
-        oss << "uClippingPlane" << c++;
-        i = oss.str();
-      }
-      for (auto i : hasClippingPlaneCtrlUniforms)
-        i = false;
-      for (auto i : locClippingPlaneCtrlUniforms)
-        i = 0;
-      c = 0;
-      for (auto i : strClippingPlaneCtrlCodes)
-      {
+        oss << "uClippingPlane" << i;
+        strClippingPlaneCodes.push_back(oss.str());
+        hasClippingPlaneCtrlUniforms.push_back(false);
+        locClippingPlaneCtrlUniforms.push_back(0);
+        oss.str("");
         oss.clear();
-        oss << "uClippingPlaneCtrl" << c++;
-        i = oss.str();
+        oss << "uClippingPlaneCtrl" << i;
+        strClippingPlaneCtrlCodes.push_back(oss.str());
       }
     }
 
@@ -81,9 +74,9 @@ namespace SCIRun {
       int c = 0;
       for (auto i : hasClippingPlaneUniforms)
       {
-        if (i)
+        if (i && c < clippingPlanes.size())
         {
-          glm::vec4 o = clippingPlanes[c] * clippingPlanes[c].w;
+          /*glm::vec4 o = clippingPlanes[c] * clippingPlanes[c].w;
           o.w = 1;
           glm::vec4 n = clippingPlanes[c];
           n.w = 0;
@@ -92,14 +85,18 @@ namespace SCIRun {
           o.w = 0;
           n.w = 0;
           n.w = glm::dot(o, n);
-          GL(glUniform4f(locClippingPlaneUniforms[c], n.x, n.y, n.z, n.w));
+          GL(glUniform4f(locClippingPlaneUniforms[c], n.x, n.y, n.z, n.w));*/
+          glm::vec3 n(clippingPlanes[c].x, clippingPlanes[c].y, clippingPlanes[c].z);
+          n = glm::normalize(n);
+          GL(glUniform4f(locClippingPlaneCtrlUniforms[c],
+            n.x, n.y, n.z, clippingPlanes[c].w));
         }
         c++;
       }
       c = 0;
       for (auto i : hasClippingPlaneCtrlUniforms)
       {
-        if (i)
+        if (i && c < clippingPlaneCtrls.size())
           GL(glUniform4f(locClippingPlaneCtrlUniforms[c],
           clippingPlaneCtrls[c].x, clippingPlaneCtrls[c].y,
           clippingPlaneCtrls[c].z, clippingPlaneCtrls[c].w));

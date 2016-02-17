@@ -612,31 +612,31 @@ namespace SCIRun {
       updateClippingPlanes();
     }
 
-    void SRInterface::setClippingPlaneX(int index)
+    void SRInterface::setClippingPlaneX(double value)
     {
       checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].x = index / 100.0;
+      clippingPlanes_[clippingPlaneIndex_].x = value;
       updateClippingPlanes();
     }
 
-    void SRInterface::setClippingPlaneY(int index)
+    void SRInterface::setClippingPlaneY(double value)
     {
       checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].y = index / 100.0;
+      clippingPlanes_[clippingPlaneIndex_].y = value;
       updateClippingPlanes();
     }
 
-    void SRInterface::setClippingPlaneZ(int index)
+    void SRInterface::setClippingPlaneZ(double value)
     {
       checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].z = index / 100.0;
+      clippingPlanes_[clippingPlaneIndex_].z = value;
       updateClippingPlanes();
     }
 
-    void SRInterface::setClippingPlaneD(int index)
+    void SRInterface::setClippingPlaneD(double value)
     {
       checkClippingPlanes(clippingPlaneIndex_);
-      clippingPlanes_[clippingPlaneIndex_].d = index / 100.0;
+      clippingPlanes_[clippingPlaneIndex_].d = value;
       updateClippingPlanes();
     }
 
@@ -1278,7 +1278,8 @@ namespace SCIRun {
         for (auto i : clippingPlanes_)
         {
           clippingPlanes->clippingPlanes.push_back(glm::vec4(i.x, i.y, i.z, i.d));
-          clippingPlanes->clippingPlaneCtrls.push_back(glm::vec4(i.visible, i.showFrame, i.reverseNormal, 0));
+          clippingPlanes->clippingPlaneCtrls.push_back(
+            glm::vec4(i.visible?1.0:0.0, i.showFrame?1.0:0.0, i.reverseNormal?1.0:0.0, 0.0));
         }
       }
     }
