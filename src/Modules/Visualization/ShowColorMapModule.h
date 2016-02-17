@@ -29,6 +29,10 @@
 #ifndef MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
 #define MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
 
+//freetype
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Modules/Visualization/TextBuilder.h>
@@ -67,8 +71,25 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
         INPUT_PORT(0, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, GeometryOutput, GeometryObject);
+
+        void initFreeType(const std::string &libName, size_t size);
+        void loadNewFace(const std::string &libName, size_t size);
+        void setFaceSize(size_t size);
+
+        static void setFSStrings(std::string &root, std::string &separator);
+
+        std::string getUniqueFontString(const char *p, double x,
+          double y, double z, double w, double h);
+
       private:
         TextBuilder text_;
+        FT_Library ftLib_;
+        FT_Face ftFace_;
+        size_t ftSize_;
+        bool ftInit_;
+        bool ftValid_;
+        static std::string mFSRoot;
+        static std::string mFSSeparator;
       };
     }
   }

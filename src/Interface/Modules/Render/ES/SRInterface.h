@@ -33,6 +33,11 @@
 #include <memory>
 #include <Interface/Modules/Render/GLContext.h>
 #include "Core.h"
+#include <es-general/comp/Transform.hpp>
+
+//freetype
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 // CPM Modules
 #include <es-render/util/Shader.hpp>
@@ -146,6 +151,11 @@ namespace SCIRun {
       /// get name of the selection
       std::string &getSelection();
 
+      gen::Transform &getWidgetTransform();
+
+      static std::string& getFSRoot();
+      static std::string& getFSSeparator();
+
     private:
 
       class DepthIndex {
@@ -241,6 +251,9 @@ namespace SCIRun {
       // Adds an IBO to the given entityID.
       void addIBOToEntity(uint64_t entityID, const std::string& iboName);
 
+      //add a texture to the given entityID.
+      void addTextToEntity(uint64_t entityID, const Graphics::Datatypes::SpireText& text);
+
       // Adds a shader to the given entityID. Represents different materials
       // associated with different passes.
       void addShaderToEntity(uint64_t entityID, const std::string& shaderName);
@@ -251,6 +264,9 @@ namespace SCIRun {
       // search for a widget at mouse position
       bool foundWidget(const glm::ivec2& pos);
 
+      // update selected widget
+      void updateWidget(const glm::ivec2& pos);
+
 
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
@@ -258,10 +274,14 @@ namespace SCIRun {
       bool                              widgetSelected_;  ///< Whether or not a widget is currently selected.
       bool                              widgetExists_;    ///< Geometry contains a widget to find.
 
+      uint64_t                          mSelectedID;
       int                               mZoomSpeed;
       MouseMode                         mMouseMode;       ///< Current mouse mode.
 
       std::string                       mSelected;        ///< Current selection
+      glm::vec4                         mSelectedPos;     ///
+      gen::Transform                    mWidgetTransform;
+
       size_t                            mScreenWidth;     ///< Screen width in pixels.
       size_t                            mScreenHeight;    ///< Screen height in pixels.
 
@@ -286,6 +306,9 @@ namespace SCIRun {
       RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
+
+      static std::string mFSRoot;/// file system root
+      static std::string mFSSeparator;/// file system seperator
     };
 
   } // namespace Render

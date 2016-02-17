@@ -35,6 +35,7 @@
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 #include <Core/Application/Application.h>
+#include <Modules/Visualization/ShowColorMapModule.h>
 
 // CPM modules.
 
@@ -42,7 +43,6 @@
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/StaticOrthoCamera.hpp>
 #include <es-general/comp/StaticObjRefID.hpp>
-#include <es-general/comp/Transform.hpp>
 #include <es-render/comp/StaticIBOMan.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticShaderMan.hpp>
@@ -74,9 +74,12 @@ namespace fs = CPM_ES_FS_NS;
 namespace SCIRun {
   namespace Render {
 
+    std::string SRInterface::mFSRoot;
+    std::string SRInterface::mFSSeparator;
     //------------------------------------------------------------------------------
     SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
       int frameInitLimit) :
+      mSelectedID(0),
       mZoomSpeed(65),
       mMouseMode(MOUSE_OLDSCIRUN),
       mScreenWidth(640),
@@ -87,7 +90,7 @@ namespace SCIRun {
       mCamera(new SRCamera(*this))  // Should come after all vars have been initialized.
     {
       // Create default colormaps.
-      generateTextures();
+      //generateTextures();
 
       showOrientation_ = true;
       autoRotate_ = false;
@@ -139,6 +142,11 @@ namespace SCIRun {
         StaticSRInterface iface(this);
         mCore.addStaticComponent(iface);
       }
+
+      std::string filesystemRoot = Core::Application::Instance().executablePath().string();
+      std::string sep;
+      sep += boost::filesystem::path::preferred_separator;
+      Modules::Visualization::ShowColorMapModule::setFSStrings(filesystemRoot, sep);
     }
 
     //------------------------------------------------------------------------------
@@ -226,7 +234,7 @@ namespace SCIRun {
     {
       if (widgetSelected_)
       {
-
+        updateWidget(pos);
       }
       else
       {
@@ -254,6 +262,7 @@ namespace SCIRun {
       int port)
     {
       mSelected = "";
+      widgetSelected_ = false;
       // Ensure our rendering context is current on our thread.
       mContext->makeCurrent();
 
@@ -442,10 +451,6 @@ namespace SCIRun {
             gen::Transform trafo;
             mCore.addComponent(entityID, trafo);
 
-            // Add lighting uniform checks
-            LightingUniforms lightUniforms;
-            mCore.addComponent(entityID, lightUniforms);
-
             // Add SCIRun render state.
             SRRenderState state;
             state.state = pass.renderState;
@@ -455,10 +460,6 @@ namespace SCIRun {
             ren::CommonUniforms commonUniforms;
             mCore.addComponent(entityID, commonUniforms);
 
-            for (const auto& uniform : pass.mUniforms)
-            {
-              applyUniform(entityID, uniform);
-            }
             SpireSubPass::Uniform uniform(
               "uColor", selCol);
             applyUniform(entityID, uniform);
@@ -484,20 +485,28 @@ namespace SCIRun {
       mCore.execute(0, 50);
 
       GLuint value;
+      GLfloat depth;
       if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
-        (GLvoid*)&value))
+        (GLvoid*)&value, (GLvoid*)&depth))
       {
-        //std::cout << pos.x << "\t" << pos.y << "\n";
-        //selection in value
         auto it = selMap.find(value);
         if (it != selMap.end())
           mSelected = it->second;
-
-        //  std::cout << it->second << " is selected.\n"
-        //  << pos.x << "\t" << pos.y << "\n";
       }
       //release and restore fbo
       fboMan->unbindFBO();
+
+      //calculate position
+      if (mSelected != "")
+      {
+        widgetSelected_ = true;
+        glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
+          (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
+          depth * 2 - 1, 1.0f);
+        mSelectedPos = spos;
+        //selPos = cam->data.projIV * spos;
+        //std::cout << selPos.x << "\t" << selPos.y << "\t" << selPos.z << "\n";
+      }
 
       for (auto& it : entityList)
         mCore.removeEntity(it);
@@ -542,9 +551,25 @@ namespace SCIRun {
       return mSelected;
     }
 
+    gen::Transform &SRInterface::getWidgetTransform()
+    {
+      return mWidgetTransform;
+    }
+
+    std::string &SRInterface::getFSRoot()
+    {
+      return mFSRoot;
+    }
+
+    std::string &SRInterface::getFSSeparator()
+    {
+      return mFSSeparator;
+    }
+
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
     {
+      widgetSelected_ = false;
     }
 
     //------------------------------------------------------------------------------
@@ -827,6 +852,8 @@ namespace SCIRun {
                 {
                   addIBOToEntity(entityID, pass.iboName);
                 }
+                //add texture
+                addTextToEntity(entityID, pass.text);
               }
               else
               {
@@ -883,6 +910,10 @@ namespace SCIRun {
                 trafo.transform[1].y = scale;
                 trafo.transform[2].z = scale;
               }
+              if (widgetSelected_ && objectName == mSelected)
+              {
+                mSelectedID = entityID;
+              }
               mCore.addComponent(entityID, trafo);
 
               // Add lighting uniform checks
@@ -895,7 +926,7 @@ namespace SCIRun {
               mCore.addComponent(entityID, state);
               RenderBasicGeom geom;
               mCore.addComponent(entityID, geom);
-              if (pass.passName.find("TextFont") != std::string::npos)
+              /*if (pass.passName.find("TextFont") != std::string::npos)
               { //this is a font texture
                 // Construct texture component and add it to our entity for rendering.
                 ren::Texture component;
@@ -904,7 +935,7 @@ namespace SCIRun {
                 component.textureType = GL_TEXTURE_2D;
                 component.glid = mFontTexture;
                 mCore.addComponent(entityID, component);
-              }
+              }*/
               // Ensure common uniforms are covered.
               ren::CommonUniforms commonUniforms;
               mCore.addComponent(entityID, commonUniforms);
@@ -969,6 +1000,38 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
+    void SRInterface::addTextToEntity(uint64_t entityID, const Graphics::Datatypes::SpireText& text)
+    {
+      if (text.name == "")
+        return;
+
+       //texture man
+      std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
+      std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
+      if (!textureMan)
+        return;
+
+      std::stringstream ss;
+      ss << "FontTexture:" << entityID << text.name << text.width << text.height;
+      std::string assetName = ss.str();
+
+      ren::Texture texture;
+
+      CPM_ES_CEREAL_NS::CerealHeap<ren::Texture>* contTex =
+        mCore.getOrCreateComponentContainer<ren::Texture>();
+      std::pair<const ren::Texture*, size_t> component =
+        contTex->getComponent(entityID);
+      if (component.first == nullptr)
+        texture = textureMan->createTexture(assetName, text.width, text.height, text.bitmap);
+      else
+        texture = *component.first;
+
+      texture.textureUnit = 0;
+      texture.setUniformName("uTX0");
+      mCore.addComponent(entityID, texture);
+    }
+
+    //------------------------------------------------------------------------------
     void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shaderName)
     {
       std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
@@ -1007,6 +1070,28 @@ namespace SCIRun {
         }
       }
       return true;
+    }
+
+    //
+    void SRInterface::updateWidget(const glm::ivec2& pos)
+    {
+      gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
+      glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
+        (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
+        mSelectedPos.z, 1.0f);
+      //gen::Transform trafo;
+      mWidgetTransform = gen::Transform();
+      mWidgetTransform.setPosition((spos - mSelectedPos).xyz());
+      mWidgetTransform.transform = glm::inverse(cam->data.projIV) *
+        mWidgetTransform.transform * cam->data.projIV;
+
+      CPM_ES_CEREAL_NS::CerealHeap<gen::Transform>* contTrans =
+        mCore.getOrCreateComponentContainer<gen::Transform>();
+      std::pair<const gen::Transform*, size_t> component =
+        contTrans->getComponent(mSelectedID);
+
+      if (component.first != nullptr)
+        contTrans->modifyIndex(mWidgetTransform, component.second, 0);
     }
 
     //------------------------------------------------------------------------------
@@ -1362,7 +1447,7 @@ namespace SCIRun {
       //read in the font data
       bool success = true;
       auto fontPath = SCIRun::Core::Application::Instance().executablePath() / "Assets" / "times_new_roman.font";
-      std::ifstream in(fontPath.string());
+      std::ifstream in(fontPath.string(), std::ifstream::binary);
       if (in.fail())
       {
         //try the MAC App location if the UNIX/Windows location didn't work.
@@ -1378,33 +1463,45 @@ namespace SCIRun {
       {
         size_t w, h;
         in >> w >> h;
+        char temp;
+        in.read(reinterpret_cast<char*>(&temp), sizeof(char));
         uint16_t *font_data = new uint16_t[w*h];
         in.read(reinterpret_cast<char*>(font_data), sizeof(uint16_t)*w*h);
         in.close();
-        std::vector<uint8_t> font;
-        font.reserve(w * h * 4);
+        //std::vector<uint8_t> font;
+        //font.reserve(w * h * 4);
+        char* font = new char[w * h * 4];
         for (size_t i = 0; i < w*h; i++)
         {
           uint16_t pixel = font_data[i];
+/*          font.push_back(static_cast<uint8_t>(pixel >> 8));
           font.push_back(static_cast<uint8_t>(pixel >> 8));
           font.push_back(static_cast<uint8_t>(pixel >> 8));
-          font.push_back(static_cast<uint8_t>(pixel >> 8));
-          font.push_back(static_cast<uint8_t>(pixel & 0x00ff));
+          font.push_back(static_cast<uint8_t>(pixel & 0x00ff));*/
+          font[i * 4] = (pixel & 0x00ff);
+          font[i * 4 + 1] = (pixel & 0x00ff);
+          font[i * 4 + 2] = (pixel & 0x00ff);
+          font[i * 4 + 3] = (pixel >> 8);
         }
 
         // Build font texture
+        GL(glActiveTexture(GL_TEXTURE0));
         GL(glGenTextures(1, &mFontTexture));
         GL(glBindTexture(GL_TEXTURE_2D, mFontTexture));
+        GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
         GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        GL(glPixelStorei(GL_UNPACK_ROW_LENGTH, w));
         GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-        GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
+        //GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
         GL(glTexImage2D(GL_TEXTURE_2D, 0,
-          GL_RGBA8,
-          static_cast<GLsizei>(w), static_cast<GLsizei>(h), 0,
           GL_RGBA,
-          GL_UNSIGNED_BYTE, reinterpret_cast<char*>(&font[0])));
+          GLsizei(w), GLsizei(h), 0,
+          GL_RGBA,
+          GL_UNSIGNED_BYTE, (GLvoid*)font));
         delete font_data;
+        delete font;
       }
     }
   } // namespace Render
