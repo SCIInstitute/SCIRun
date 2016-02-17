@@ -578,7 +578,7 @@ namespace SCIRun {
         ClippingPlane plane;
         plane.visible = false;
         plane.showFrame = false;
-        plane.reverseNormal - false;
+        plane.reverseNormal = false;
         plane.x = 0.0;
         plane.y = 0.0;
         plane.z = 0.0;
@@ -1305,7 +1305,7 @@ namespace SCIRun {
           {
             GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
             GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
-            GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhong");
+            GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhongNoClipping");
 
             // Bail if assets have not been loaded yet (asynchronous loading may take a
             // few frames).
