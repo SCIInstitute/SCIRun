@@ -26,40 +26,48 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Math/ComputeSVD.h>
-#include <Core/Algorithms/Math/ComputeSVD.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#ifndef MODULES_LEGACY_MATH_SETSUBMATRIX_H_
+#define MODULES_LEGACY_MATH_SETSUBMATRIX_H_ 1
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Math/share.h>
 
-
-ComputeSVD::ComputeSVD() : Module(ModuleLookupInfo("ComputeSVD", "Math", "SCIRun"),false)
-{
-	INITIALIZE_PORT(InputMatrix);
-	INITIALIZE_PORT(LeftSingularMatrix);
-	INITIALIZE_PORT(SingularValues);
-	INITIALIZE_PORT(RightSingularMatrix);
-}
-
-void ComputeSVD::execute()
-{
-	auto input_matrix = getRequiredInput(InputMatrix);
-
-	if(needToExecute())
+namespace SCIRun {
+	namespace Core
 	{
-		update_state(Executing);
-
-		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
-
-		sendOutputFromAlgorithm(LeftSingularMatrix, output);
-		sendOutputFromAlgorithm(SingularValues, output);
-		sendOutputFromAlgorithm(RightSingularMatrix, output);
-
+		namespace Algorithms
+		{
+			namespace Math
+			{
+				ALGORITHM_PARAMETER_DECL(StartColumn);
+				ALGORITHM_PARAMETER_DECL(StartRow);
+				ALGORITHM_PARAMETER_DECL(MatrixDims);
+				ALGORITHM_PARAMETER_DECL(SubmatrixDims);
+			}
+		}
 	}
-}
+
+	namespace Modules {
+		namespace Math {
+
+		class SCISHARE SetSubmatrix : public Dataflow::Networks::Module,
+			public Has3InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+			public Has1OutputPort<MatrixPortTag>
+			{
+				public:
+					SetSubmatrix();
+					virtual void setStateDefaults() override;
+					virtual void execute() override;
+
+					INPUT_PORT(0, InputMatrix, Matrix);
+					INPUT_PORT(1, Input_Submatrix, Matrix);
+					INPUT_PORT(2, Optional_Start_Bounds, Matrix);
+					OUTPUT_PORT(0, OutputMatrix, Matrix);
+
+          static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+			};
+
+}}};
+
+#endif

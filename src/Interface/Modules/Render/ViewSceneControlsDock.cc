@@ -95,7 +95,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   /////Set unused widgets to be not visible
   ////Clipping tab
-  //tabWidget->removeTab(2);
+  tabWidget->removeTab(2);
 
   ///Object Tab
   tabWidget->setCurrentIndex(0);

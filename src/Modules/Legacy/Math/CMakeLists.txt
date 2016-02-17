@@ -51,7 +51,7 @@ SET(Modules_Legacy_Math_SRCS
   SolveMinNormLeastSqSystem.cc
   #SolveLinearSystem.cc
   #GetSubmatrix.cc
-  #SetSubmatrix.cc
+  SetSubmatrix.cc
   #ConvertMaskVectorToMappingMatrix.cc
   #ConvertMappingMatrixToMaskVector.cc
   #CreateMatrix.cc
@@ -87,7 +87,7 @@ SET(Modules_Legacy_Math_HEADERS
   SolveMinNormLeastSqSystem.h
   #SolveLinearSystem.h
   #GetSubmatrix.h
-  #SetSubmatrix.h
+  SetSubmatrix.h
   #ConvertMaskVectorToMappingMatrix.h
   #ConvertMappingMatrixToMaskVector.h
   #CreateMatrix.h

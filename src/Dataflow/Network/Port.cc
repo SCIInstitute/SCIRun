@@ -205,7 +205,7 @@ boost::signals2::connection OutputPort::connectConnectionFeedbackListener(const 
   return cxnFeedback_.connect(subscriber);
 }
 
-void OutputPort::sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info)
+void OutputPort::sendConnectionFeedback(ModuleFeedback info)
 {
   cxnFeedback_(info);
 }
