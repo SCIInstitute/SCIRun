@@ -80,8 +80,8 @@ namespace SCIRun {
           o.w = 1;
           glm::vec4 n = clippingPlanes[c];
           n.w = 0;
-          o = transform * o;
-          n = glm::inverseTranspose(transform) * n;
+          o = glm::inverse(transform) * o;
+          n = glm::transpose(transform) * n;
           o.w = 0;
           n.w = 0;
           n.w = glm::dot(o, n);

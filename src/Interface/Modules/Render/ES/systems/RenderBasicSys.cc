@@ -230,7 +230,7 @@ public:
       lightUniforms.front().applyUniform(worldLight.front().lightDir);
     if (clippingPlaneUniforms.size() > 0)
     {
-      glm::mat4 transform = camera.front().data.projIV * trafo.front().transform;
+      glm::mat4 transform = trafo.front().transform;
       clippingPlaneUniforms.front().applyUniforms(transform, clippingPlanes.front().clippingPlanes,
       clippingPlanes.front().clippingPlaneCtrls);
     }
