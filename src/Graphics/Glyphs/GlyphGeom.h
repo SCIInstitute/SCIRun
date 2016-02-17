@@ -63,6 +63,8 @@ namespace SCIRun {
       void addCone(const Core::Geometry::Point p1, const Core::Geometry::Point& p2, double radius, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
 
+      void addLine(const Core::Geometry::Point p1, const Core::Geometry::Point& p2,
+        const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addNeedle(const Core::Geometry::Point p1, const Core::Geometry::Point& p2, 
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addPoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color);
