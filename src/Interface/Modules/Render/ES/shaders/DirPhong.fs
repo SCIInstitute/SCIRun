@@ -65,50 +65,48 @@ varying vec4    vPos;
 
 void main()
 {
-//  if (vPos.x < uClippingPlane0.w)
-//    return;
   float fPlaneValue;
   if (uClippingPlaneCtrl0.x > 0.5)
   {
     fPlaneValue = dot(vPos, uClippingPlane0);
     fPlaneValue = uClippingPlaneCtrl0.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
-      return;
+      discard;
   }
   if (uClippingPlaneCtrl1.x > 0.5)
   {
     fPlaneValue = dot(vPos, uClippingPlane1);
     fPlaneValue = uClippingPlaneCtrl1.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
-      return;
+      discard;
   }
   if (uClippingPlaneCtrl2.x > 0.5)
   {
     fPlaneValue = dot(vPos, uClippingPlane2);
     fPlaneValue = uClippingPlaneCtrl2.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
-      return;
+      discard;
   }
   if (uClippingPlaneCtrl3.x > 0.5)
   {
     fPlaneValue = dot(vPos, uClippingPlane3);
     fPlaneValue = uClippingPlaneCtrl3.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
-      return;
+      discard;
   }
   if (uClippingPlaneCtrl4.x > 0.5)
   {
     fPlaneValue = dot(vPos, uClippingPlane4);
     fPlaneValue = uClippingPlaneCtrl4.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
-      return;
+      discard;
   }
   if (uClippingPlaneCtrl5.x > 0.5)
   {
     fPlaneValue = dot(vPos, uClippingPlane5);
     fPlaneValue = uClippingPlaneCtrl5.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
-      return;
+      discard;
   }
 
   // Remember to always negate the light direction for these lighting
