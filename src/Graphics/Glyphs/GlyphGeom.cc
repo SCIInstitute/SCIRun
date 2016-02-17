@@ -235,6 +235,11 @@ void GlyphGeom::addCone(const Point p1, const Point& p2, double radius, double r
   generateCylinder(p1, p2, radius, 0.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
 }
 
+void GlyphGeom::addLine(Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
+{
+  generateLine(p1, p2, color1, color2, numVBOElements_, points_, indices_, colors_);
+}
+
 void GlyphGeom::addNeedle(Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {
   Point mid(0.5 * (p1.x() + p2.x()), 0.5 * (p1.y() + p2.y()), 0.5 * (p1.z() + p2.z()));
