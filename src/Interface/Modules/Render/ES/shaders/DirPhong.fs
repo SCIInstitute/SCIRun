@@ -65,8 +65,8 @@ varying vec4    vPos;
 
 void main()
 {
-  if (vPos.x < uClippingPlane0.w*100)
-    return;
+//  if (vPos.x < uClippingPlane0.w)
+//    return;
   float fPlaneValue;
   if (uClippingPlaneCtrl0.x > 0.5)
   {

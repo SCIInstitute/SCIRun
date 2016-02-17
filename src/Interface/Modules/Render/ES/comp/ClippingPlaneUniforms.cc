@@ -88,7 +88,7 @@ namespace SCIRun {
           GL(glUniform4f(locClippingPlaneUniforms[c], n.x, n.y, n.z, n.w));*/
           glm::vec3 n(clippingPlanes[c].x, clippingPlanes[c].y, clippingPlanes[c].z);
           n = glm::normalize(n);
-          GL(glUniform4f(locClippingPlaneCtrlUniforms[c],
+          GL(glUniform4f(locClippingPlaneUniforms[c],
             n.x, n.y, n.z, clippingPlanes[c].w));
         }
         c++;
