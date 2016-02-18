@@ -85,8 +85,7 @@ namespace SCIRun {
         void adjustPositionFromTransform(const Core::Datatypes::DenseMatrixHandle& transformMatrix);
         
         FieldHandle GenerateOutputField();
-        index_type GenerateIndex();
-        
+        index_type GenerateIndex();        
       };
 
       class SCISHARE PointWidgetStub

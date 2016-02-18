@@ -129,7 +129,6 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var
 void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseMatrixHandle& transformMatrix)
 {
   DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
-  Point oldLocation = currentLocation();
   (*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
   DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
 
@@ -144,13 +143,8 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseM
   state->setValue(ZLocation, newLocation.z());
   std::string oldMoveMethod = state->getValue(MoveMethod).toString();
   state->setValue(MoveMethod, std::string("Location"));    
-  if (oldLocation != newLocation)
-  {
-    std::cout << "Locations do not match" << std::endl;
-    //execute();
-  }
 
-  //state->setValue(MoveMethod, std::string(oldMoveMethod));
+  state->setValue(MoveMethod, std::string(oldMoveMethod));
  
 }
 
