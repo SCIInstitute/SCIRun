@@ -184,10 +184,10 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
   if (selected_)
   {
+    selected_ = false;
     Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y());
     restoreObjColor();
     newGeometryValue();
-    selected_ = false;
   }
 }
 

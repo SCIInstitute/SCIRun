@@ -129,21 +129,29 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var
 void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseMatrixHandle& transformMatrix)
 {
   DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
+  Point oldLocation = currentLocation();
   (*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
   DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
-  std::cout << (*centerHandle) << std::endl;
-  std::cout << newTransform << std::endl;
 
-  Point newCenter(newTransform.get(0, 0) / newTransform.get(3, 0),
-    newTransform.get(1, 0) / newTransform.get(3, 0),
-    newTransform.get(2, 0) / newTransform.get(3, 0));
-  std::cout << newCenter << std::endl;
+  Point newLocation(newTransform.get(0, 0) / newTransform.get(3, 0),
+                    newTransform.get(1, 0) / newTransform.get(3, 0),
+                    newTransform.get(2, 0) / newTransform.get(3, 0));
 
   auto state = get_state();
   using namespace Parameters;
-  state->setValue(XLocation, newCenter.x());
-  state->setValue(YLocation, newCenter.y());
-  state->setValue(ZLocation, newCenter.z());
+  state->setValue(XLocation, newLocation.x());
+  state->setValue(YLocation, newLocation.y());
+  state->setValue(ZLocation, newLocation.z());
+  std::string oldMoveMethod = state->getValue(MoveMethod).toString();
+  state->setValue(MoveMethod, std::string("Location"));    
+  if (oldLocation != newLocation)
+  {
+    std::cout << "Locations do not match" << std::endl;
+    //execute();
+  }
+
+  //state->setValue(MoveMethod, std::string(oldMoveMethod));
+ 
 }
 
 void GenerateSinglePointProbeFromField::setStateDefaults()
@@ -220,6 +228,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
   using namespace Parameters;
 
   //std::cout << "Size: " << state->getValue(ProbeSize).toInt() << std::endl;
+  std::cout << "executing" << std::endl;
 
   // Maybe update the widget.
   BBox bbox;
