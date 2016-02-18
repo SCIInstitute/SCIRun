@@ -109,9 +109,41 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var)
 {
   auto xyTr = any_cast_or_default_<Variable>(var);
-  std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, name received from ViewSceneDialog is:\n\t" << xyTr.name() << std::endl;
+  DenseMatrixHandle transformHandle(new DenseMatrix(4, 4));
+  int row = 0; 
+  int col = 0;
   for (const auto& subVar : xyTr.toVector())
-    std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << subVar << std::endl;
+  {
+    if (col > 3)
+    {
+      col = 0;
+      ++row;
+    }
+    (*transformHandle)(row, col) = subVar.toDouble();
+    ++col;
+  }
+  adjustPositionFromTransform(transformHandle);
+}
+
+
+void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseMatrixHandle& transformMatrix)
+{
+  DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
+  (*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
+  DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
+  std::cout << (*centerHandle) << std::endl;
+  std::cout << newTransform << std::endl;
+
+  Point newCenter(newTransform.get(0, 0) / newTransform.get(3, 0),
+    newTransform.get(1, 0) / newTransform.get(3, 0),
+    newTransform.get(2, 0) / newTransform.get(3, 0));
+  std::cout << newCenter << std::endl;
+
+  auto state = get_state();
+  using namespace Parameters;
+  state->setValue(XLocation, newCenter.x());
+  state->setValue(YLocation, newCenter.y());
+  state->setValue(ZLocation, newCenter.z());
 }
 
 void GenerateSinglePointProbeFromField::setStateDefaults()

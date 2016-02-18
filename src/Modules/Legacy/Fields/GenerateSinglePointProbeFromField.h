@@ -82,6 +82,7 @@ namespace SCIRun {
         boost::shared_ptr<class GenerateSinglePointProbeFromFieldImpl> impl_;
         Core::Geometry::Point currentLocation() const;
         void processWidgetFeedback(Dataflow::Networks::ModuleFeedback var);
+        void adjustPositionFromTransform(const Core::Datatypes::DenseMatrixHandle& transformMatrix);
         
         FieldHandle GenerateOutputField();
         index_type GenerateIndex();
