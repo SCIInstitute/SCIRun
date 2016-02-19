@@ -40,12 +40,14 @@
 #include <es-render/comp/IBO.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
 #include <es-render/comp/Shader.hpp>
+#include <es-render/comp/Texture.hpp>
 #include <es-render/comp/GLState.hpp>
 #include <es-render/comp/VecUniform.hpp>
 #include <es-render/comp/MatUniform.hpp>
 #include <es-render/comp/StaticGLState.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticIBOMan.hpp>
+#include <es-render/comp/StaticTextureMan.hpp>
 
 #include <bserialize/BSerialize.hpp>
 
@@ -53,7 +55,9 @@
 #include "../comp/SRRenderState.h"
 #include "../comp/RenderList.h"
 #include "../comp/StaticWorldLight.h"
+#include "../comp/StaticClippingPlanes.h"
 #include "../comp/LightingUniforms.h"
+#include "../comp/ClippingPlaneUniforms.h"
 
 namespace es = CPM_ES_NS;
 namespace shaders = CPM_GL_SHADERS_NS;
@@ -71,21 +75,25 @@ class RenderBasicSysTrans :
                              SRRenderState,
                              RenderList,
                              LightingUniforms,
+                             ClippingPlaneUniforms,
                              gen::Transform,
                              gen::StaticGlobalTime,
                              ren::VBO,
                              ren::IBO,
+                             ren::Texture,
                              ren::CommonUniforms,
                              ren::VecUniform,
                              ren::MatUniform,
                              ren::Shader,
-														 ren::GLState,
+                             ren::GLState,
                              SpireSubPass,
                              StaticWorldLight,
+                             StaticClippingPlanes,
                              gen::StaticCamera,
                              ren::StaticGLState,
                              ren::StaticVBOMan,
-														 ren::StaticIBOMan>
+                             ren::StaticIBOMan,
+                             ren::StaticTextureMan>
 {
 public:
 
@@ -97,8 +105,12 @@ public:
                                   ren::GLState,
                                   ren::StaticGLState,
                                   ren::CommonUniforms,
+                                  LightingUniforms,
+                                  ClippingPlaneUniforms,
                                   ren::VecUniform,
-                                  ren::MatUniform>(type);
+                                  ren::MatUniform,
+                                  ren::Texture,
+                                  ren::StaticTextureMan>(type);
   }
 
 private:
@@ -206,21 +218,25 @@ private:
       const es::ComponentGroup<SRRenderState>& srstate,
       const es::ComponentGroup<RenderList>& rlist,
       const es::ComponentGroup<LightingUniforms>& lightUniforms,
+      const es::ComponentGroup<ClippingPlaneUniforms>& clippingPlaneUniforms,
       const es::ComponentGroup<gen::Transform>& trafo,
       const es::ComponentGroup<gen::StaticGlobalTime>& time,
       const es::ComponentGroup<ren::VBO>& vbo,
       const es::ComponentGroup<ren::IBO>& ibo,
+      const es::ComponentGroup<ren::Texture>& textures,
       const es::ComponentGroup<ren::CommonUniforms>& commonUniforms,
       const es::ComponentGroup<ren::VecUniform>& vecUniforms,
       const es::ComponentGroup<ren::MatUniform>& matUniforms,
       const es::ComponentGroup<ren::Shader>& shader,
-			const es::ComponentGroup<ren::GLState>& state,
-			const es::ComponentGroup<SpireSubPass>& pass,
+      const es::ComponentGroup<ren::GLState>& state,
+      const es::ComponentGroup<SpireSubPass>& pass,
       const es::ComponentGroup<StaticWorldLight>& worldLight,
+      const es::ComponentGroup<StaticClippingPlanes>& clippingPlanes,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
       const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
-			const es::ComponentGroup<ren::StaticIBOMan>& iboMan) override
+      const es::ComponentGroup<ren::StaticIBOMan>& iboMan,
+      const es::ComponentGroup<ren::StaticTextureMan>& texMan) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -369,7 +385,11 @@ private:
         }
       }
 
-      const_cast<LightingUniforms&>(lightUniforms.front()).checkUniformArray(shader.front().glid);
+      if (lightUniforms.size() > 0)
+        const_cast<LightingUniforms&>(lightUniforms.front()).checkUniformArray(shader.front().glid);
+
+      if (clippingPlaneUniforms.size() > 0)
+        const_cast<ClippingPlaneUniforms&>(clippingPlaneUniforms.front()).checkUniformArray(shader.front().glid);
     }
 
     // Check to see if we have GLState. If so, apply it relative to the
@@ -399,10 +419,24 @@ private:
 
     // Apply vector uniforms (if any).
     for (const ren::VecUniform& unif : vecUniforms) {unif.applyUniform();}
-    lightUniforms.front().applyUniform(worldLight.front().lightDir);
+    if (lightUniforms.size() > 0)
+      lightUniforms.front().applyUniform(worldLight.front().lightDir);
+    if (clippingPlaneUniforms.size() > 0)
+    {
+      glm::mat4 transform = trafo.front().transform;
+      clippingPlaneUniforms.front().applyUniforms(transform, clippingPlanes.front().clippingPlanes,
+        clippingPlanes.front().clippingPlaneCtrls);
+    }
 
     // Apply matrix uniforms (if any).
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}
+
+    // bind textures
+    for (const ren::Texture& tex : textures)
+    {
+      GL(glActiveTexture(GL_TEXTURE0 + tex.textureUnit));
+      GL(glBindTexture(tex.textureType, tex.glid));
+    }
 
     geom.front().attribs.bind();
 
@@ -551,6 +585,13 @@ private:
     if (!blend)
     {
       GL(glDisable(GL_BLEND));
+    }
+
+    // unbind textures
+    for (const ren::Texture& tex : textures)
+    {
+      GL(glActiveTexture(GL_TEXTURE0 + tex.textureUnit));
+      GL(glBindTexture(tex.textureType, 0));
     }
 
     geom.front().attribs.unbind();

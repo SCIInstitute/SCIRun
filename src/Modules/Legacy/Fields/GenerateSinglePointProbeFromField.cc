@@ -37,6 +37,7 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 //
 //#include <Core/Thread/CrowdMonitor.h>

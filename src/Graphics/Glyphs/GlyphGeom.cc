@@ -190,8 +190,10 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string& uniqueNodeID
   state.set(RenderState::IS_ON, true);
   state.set(RenderState::HAS_DATA, true);
 
+  SpireText text;
+
   // Construct Pass.
-  SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO);
+  SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }

@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <gl-platform/GLPlatform.hpp>
 
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/GLWidget.h>
@@ -35,6 +36,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -187,6 +189,10 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     newGeometryValue();
     selected_ = false;
   }
+}
+
+void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
+{
 }
 
 void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
@@ -705,6 +711,9 @@ void ViewSceneDialog::setClippingPlaneIndex(int index)
 {
   int indexOffset = 7;
   clippingPlaneIndex_ = index + indexOffset;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneIndex(clippingPlaneIndex_);
   mConfigurationDock->updatePlaneSettingsDisplay(
     clippingPlanes_[clippingPlaneIndex_].visible,
     clippingPlanes_[clippingPlaneIndex_].showFrame,
@@ -715,39 +724,60 @@ void ViewSceneDialog::setClippingPlaneIndex(int index)
 void ViewSceneDialog::setClippingPlaneVisible(bool value)
 {
   clippingPlanes_[clippingPlaneIndex_].visible = value;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneVisible(clippingPlanes_[clippingPlaneIndex_].visible);
 }
 
 void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
 {
   clippingPlanes_[clippingPlaneIndex_].showFrame = value;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneFrameOn(clippingPlanes_[clippingPlaneIndex_].showFrame);
 }
 
 void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
 {
   clippingPlanes_[clippingPlaneIndex_].reverseNormal = value;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->reverseClippingPlaneNormal(clippingPlanes_[clippingPlaneIndex_].reverseNormal);
 }
 
 void ViewSceneDialog::setClippingPlaneX(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].x = index / 100.0;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneX(clippingPlanes_[clippingPlaneIndex_].x);
   updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneY(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].y = index / 100.0;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneY(clippingPlanes_[clippingPlaneIndex_].y);
   updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneZ(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].z = index / 100.0;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneZ(clippingPlanes_[clippingPlaneIndex_].z);
   updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneD(int index)
 {
   clippingPlanes_[clippingPlaneIndex_].d = index / 100.0;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setClippingPlaneD(clippingPlanes_[clippingPlaneIndex_].d);
   updatClippingPlaneDisplay();
 }
 
@@ -947,9 +977,14 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   Variable::List geomInfo;
   geomInfo.push_back(makeVariable("xClick", x));
   geomInfo.push_back(makeVariable("yClick", y));
-  //DenseMatrixHandle matrixHandle;
-  //TODO:
-  geomInfo.push_back(Variable(Name("transform"), nullptr, Variable::DATATYPE_VARIABLE));
+  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
+  glm::mat4 trans = spire->getWidgetTransform().transform;
+  (*matrixHandle) << trans[0][0], trans[1][0], trans[2][0], trans[3][0]
+    , trans[0][1], trans[1][1], trans[2][1], trans[3][1]
+    , trans[0][2], trans[1][2], trans[2][2], trans[3][2]
+    , trans[0][3], trans[1][3], trans[2][3], trans[3][3];
+  geomInfo.push_back(Variable(Name("transform"), matrixHandle, Variable::DATATYPE_VARIABLE));
   auto var = makeVariable("geomInfo", geomInfo);
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, var);
 }

@@ -50,7 +50,9 @@ SET(Interface_Modules_Render_HEADERS
   ES/comp/RenderBasicGeom.h
   ES/comp/StaticSRInterface.h
   ES/comp/StaticWorldLight.h
+  ES/comp/StaticClippingPlanes.h
   ES/comp/LightingUniforms.h
+  ES/comp/ClippingPlaneUniforms.h
   ES/systems/RenderBasicSys.h
   ES/systems/RenderTransBasicSys.h
 )
@@ -70,6 +72,7 @@ SET(Interface_Modules_Render_SOURCES
   ES/Registration.cc
   ES/AssetBootstrap.cc
   ES/comp/LightingUniforms.cc
+  ES/comp/ClippingPlaneUniforms.cc
   ES/systems/RenderBasicSys.cc
   ES/systems/RenderTransBasicSys.cc
 )
@@ -93,6 +96,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   ${CPM_LIBRARIES}
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
+  ${SCI_FREETYPE_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
