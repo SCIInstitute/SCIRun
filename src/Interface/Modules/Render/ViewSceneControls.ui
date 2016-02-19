@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>340</width>
-    <height>450</height>
+    <width>380</width>
+    <height>477</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>340</width>
-    <height>450</height>
+    <width>380</width>
+    <height>477</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="ObjectTab">
        <attribute name="title">
