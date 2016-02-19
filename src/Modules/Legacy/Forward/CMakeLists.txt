@@ -33,6 +33,7 @@ SET(Modules_Legacy_Forward_HEADERS
   BuildBEMatrixImpl.h
   CalcTMP.h
   CalcTMPAlgo.h
+  CalculateCurrentDensity.h
   InsertVoltageSource.h
 )
 
@@ -41,6 +42,7 @@ SET(Modules_Legacy_Forward_SRCS
   BuildBEMatrixImpl.cc
   CalcTMP.cc
   CalcTMPAlgo.cc
+  CalculateCurrentDensity.cc
   InsertVoltageSource.cc
 )
 

@@ -28,7 +28,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include <gl-platform/GLPlatform.hpp>
 
-//#include <Core/Datatypes/DenseMatrix.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/GLWidget.h>
@@ -36,7 +35,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
-#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -127,7 +125,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
-  //std::cout << "ViewSceneDialog::shiftdown_:" << shiftdown_ << std::endl;
   if (shiftdown_)
   {
     selectObject(event->x(), event->y());
@@ -986,9 +983,6 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   //DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
   glm::mat4 trans = spire->getWidgetTransform().transform;
 
-  geomInfo.push_back(makeVariable("x00", trans[0][0]));
-  geomInfo.push_back(makeVariable("x10", trans[1][0]));
-  geomInfo.push_back(makeVariable("x20", trans[2][0]));
   geomInfo.push_back(makeVariable("x30", trans[3][0]));
   geomInfo.push_back(makeVariable("x01", trans[0][1]));
   geomInfo.push_back(makeVariable("x11", trans[1][1]));
@@ -1002,13 +996,16 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   geomInfo.push_back(makeVariable("x13", trans[1][3]));
   geomInfo.push_back(makeVariable("x23", trans[2][3]));
   geomInfo.push_back(makeVariable("x33", trans[3][3]));
-  /*(*matrixHandle) << trans[0][0], trans[1][0], trans[2][0], trans[3][0]
-    , trans[0][1], trans[1][1], trans[2][1], trans[3][1]
-    , trans[0][2], trans[1][2], trans[2][2], trans[3][2]
-    , trans[0][3], trans[1][3], trans[2][3], trans[3][3];*/
-  //geomInfo.push_back(Variable(Name("transform"), matrixHandle, Variable::DATATYPE_VARIABLE));
-  auto var = makeVariable("geomInfo", geomInfo);
-  state_->setTransientValue(Parameters::GeometryFeedbackInfo, var);
+
+    //std::cout <<"in view scene: "<< (*matrixHandle) << std::endl;
+    /*(*matrixHandle) << trans[0][0], trans[1][0], trans[2][0], trans[3][0]
+      , trans[0][1], trans[1][1], trans[2][1], trans[3][1]
+      , trans[0][2], trans[1][2], trans[2][2], trans[3][2]
+      , trans[0][3], trans[1][3], trans[2][3], trans[3][3];*/
+    //geomInfo.push_back(Variable(Name("transform"), matrixHandle, Variable::DATATYPE_VARIABLE));
+    auto var = makeVariable("geomInfo", geomInfo);
+    state_->setTransientValue(Parameters::GeometryFeedbackInfo, var);
+  }
 }
 
 void ViewSceneDialog::takeScreenshot()

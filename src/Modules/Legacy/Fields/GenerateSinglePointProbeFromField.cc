@@ -137,7 +137,23 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var
     }
     ++i;
   }
+
+  //std::cout << "in probe: " << (*transformHandle) << std::endl;
   adjustPositionFromTransform(transformHandle);
+
+/*
+ const int numRows = 4;
+  const int numCols = 4;
+  DenseMatrixHandle transformHandle(new DenseMatrix(numRows, numCols));
+  
+  for (int row = 0, index = 0; row < numRows; ++row)
+
+  {
+    for (int col = 0; col < numCols; ++col, ++index)
+    {
+      (*transformHandle)(row, col) = xyTr.toVector()[index].toDouble();
+    }
+  } */
 }
 
 
@@ -145,7 +161,8 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseM
 {
   //std::cout << "GenerateSinglePointProbeFromField::adjustPositionFromTransform\n";
   DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
-  (*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
+  //(*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
+  (*centerHandle) << 0, 0, 0, 1;
   DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
 
   Point newLocation(newTransform.get(0, 0) / newTransform.get(3, 0),
