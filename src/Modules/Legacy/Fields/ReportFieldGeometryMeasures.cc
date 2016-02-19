@@ -34,16 +34,26 @@
 ///   University of Utah
 ///@date  March 2001
 
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Modules/Legacy/Fields/ReportFieldGeometryMeasures.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+//#include <Core/Datatypes/MatrixTypeConverter.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Fields;
+
+const ModuleLookupInfo ReportFieldGeometryMeasures::staticInfo_("ReportFieldGeometryMeasures", "MiscField", "SCIRun");
+
+#if 0
 namespace SCIRun {
 
 /// @class ReportFieldGeometryMeasures
@@ -255,3 +265,4 @@ ReportFieldGeometryMeasures::execute()
 } // End namespace SCIRun
 
 
+#endif

@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_REGISTERWITHCORRESPONDENCES_H__
-#define MODULES_LEGACY_FIELDS_REGISTERWITHCORRESPONDENCES_H__
+#ifndef MODULES_LEGACY_FIELDS_REPORTFIELDGEOMETRYMEASURES_H__
+#define MODULES_LEGACY_FIELDS_REPORTFIELDGEOMETRYMEASURES_H__
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>
@@ -36,20 +36,18 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE RegisterWithCorrespondences : public Dataflow::Networks::Module,
-        public Has3InputPorts<FieldPortTag, FieldPortTag, FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
+      class SCISHARE ReportFieldGeometryMeasures : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<MatrixPortTag>
       {
       public:
-        RegisterWithCorrespondences();
+        ReportFieldGeometryMeasures();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, LegacyField);
-        INPUT_PORT(1, Correspondences1, LegacyField);
-        INPUT_PORT(2, Correspondences2, LegacyField);
-        OUTPUT_PORT(0, OutputField, LegacyField);
+        OUTPUT_PORT(0, Output_Measures, Matrix);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
