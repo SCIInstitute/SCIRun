@@ -64,7 +64,7 @@ void CreateStandardColorMap::execute()
     //just in case there is a problem with the QT values...
     res = std::min(std::max(res,2),256);
     shift = std::min(std::max(shift,-1.),1.);
-    sendOutput(ColorMapObject, StandardColorMapFactory::create(name,res, shift,inv));
+    sendOutput(ColorMapObject, StandardColorMapFactory::create(name, res, shift, inv));
   }
 }
 

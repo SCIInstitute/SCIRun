@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "PythonObjectForwarder",
+    "namespace": "Python",
+    "status": "In progress",
+    "description": "This module polls the state layer for a python object, then passes it out as output",
+    "header": "Modules/Python/PythonObjectForwarder.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "PythonObjectForwarderDialog",
+    "header": "Interface/Modules/Python/PythonObjectForwarderDialog.h"
+  }
+}

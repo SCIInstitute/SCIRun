@@ -36,6 +36,8 @@ SCIRUN_ADD_UNIT_TEST(Core_IEPlugin_Tests
 
 TARGET_LINK_LIBRARIES(Core_IEPlugin_Tests
   Core_IEPlugin
+  Core_Algorithms_Legacy_Fields
+  Core_Datatypes_Legacy_Field
   gtest_main
   gtest
   gmock

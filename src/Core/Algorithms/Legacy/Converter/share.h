@@ -37,8 +37,3 @@
 #else
 #define SCISHARE
 #endif
-
-#if defined(min)
-#undef min
-#undef max
-#endif

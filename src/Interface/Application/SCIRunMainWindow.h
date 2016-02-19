@@ -79,6 +79,9 @@ public:
   void addToDataDirectory(const QString& dir);
   void setCurrentFile(const QString& fileName);
 
+  //TODO: extract another interface for command objects
+  NetworkEditor* networkEditor() { return networkEditor_; }
+
   bool newInterface() const;
   bool isInFavorites(const QString& module) const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
@@ -109,6 +112,7 @@ private:
   QStringList favoriteModuleNames_;
   QToolButton* executeButton_;
   QByteArray windowState_;
+  QPushButton* versionButton_;
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
@@ -127,6 +131,7 @@ private:
   void setupPythonConsole();
   void fillModuleSelector();
   void setupInputWidgets();
+  void setupVersionButton();
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
   void showStatusMessage(const QString& str);
@@ -192,6 +197,7 @@ private Q_SLOTS:
   void resetWindowLayout();
   void zoomNetwork();
   void networkTimedOut();
+  void copyVersionToClipboard();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();

@@ -70,7 +70,6 @@ public:
 
 Q_SIGNALS:
   void fatalError(const QString& message);
-  void mousePressSignalForTestingGeometryObjectFeedback(int x, int y);
 protected:
   virtual void mousePressEvent(QMouseEvent* event);
   virtual void mouseMoveEvent(QMouseEvent* event);

@@ -41,5 +41,5 @@ SetFieldDataDialog::SetFieldDataDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addCheckBoxManager(keepTypeCheckBox_, SetFieldDataAlgo::keepTypeCheckBox);
+  addCheckBoxManager(keepTypeCheckBox_, Parameters::keepTypeCheckBox);
 }

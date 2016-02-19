@@ -375,7 +375,7 @@ void GlyphBuilder::renderVectors(
       switch (renState.mGlyphType)
       {
       case RenderState::GlyphType::LINE_GLYPH:
-        glyphs.addNeedle(p1, p2, node_color, node_color);
+        glyphs.addLine(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::NEEDLE_GLYPH:
         glyphs.addNeedle(p1, p2, node_color, node_color);
@@ -401,7 +401,7 @@ void GlyphBuilder::renderVectors(
         break;
       default:
         if (useLines)
-          glyphs.addNeedle(p1, p2, node_color, node_color);
+          glyphs.addLine(p1, p2, node_color, node_color);
         else
           glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
         break;
@@ -453,7 +453,7 @@ void GlyphBuilder::renderVectors(
       {
       case RenderState::GlyphType::LINE_GLYPH:
         //std::cout << "LINE_GLYPH" << std::endl;
-        glyphs.addNeedle(p1, p2, node_color, node_color);
+        glyphs.addLine(p1, p2, node_color, node_color);
         break;
       case RenderState::GlyphType::NEEDLE_GLYPH:
         //std::cout << "NEEDLE_GLYPH" << std::endl;
@@ -487,7 +487,7 @@ void GlyphBuilder::renderVectors(
       default:
         //std::cout << "default" << std::endl;
         if (useLines)
-          glyphs.addNeedle(p1, p2, node_color, node_color);
+          glyphs.addLine(p1, p2, node_color, node_color);
         else
           glyphs.addArrow(p1, p2, radius, resolution, node_color, node_color);
         break;

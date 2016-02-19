@@ -29,11 +29,13 @@
 SET(Algorithms_Field_SRCS
   ReportFieldInfoAlgorithm.cc
   InterfaceWithCleaverAlgorithm.cc
+  CalculateNodeLocationFrequencyAlgorithm.cc
 )
 
 SET(Algorithms_Field_HEADERS
   ReportFieldInfoAlgorithm.h
   InterfaceWithCleaverAlgorithm.h
+  CalculateNodeLocationFrequencyAlgorithm.h
   share.h
 )
 

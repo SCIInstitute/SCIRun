@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "JoinStrings",
+    "namespace": "StringManip",
+    "status": "Converted",
+    "description": "Merges multiple strings into one string",
+    "header": "Modules/Legacy/String/JoinStrings.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

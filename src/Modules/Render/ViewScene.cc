@@ -57,6 +57,7 @@ ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
   INITIALIZE_PORT(GeneralGeom);
 #ifdef BUILD_TESTING
   INITIALIZE_PORT(ScreenshotData);
+  get_state()->setTransientValue(Parameters::ScreenshotData, nullptr, false);
 #endif
 }
 
@@ -89,7 +90,7 @@ void ViewScene::updateTransientList()
 {
   auto transient = get_state()->getTransientValue(Parameters::GeomData);
 
-  auto geoms = optional_any_cast_or_default<GeomListPtr>(transient);
+  auto geoms = transient_value_cast<GeomListPtr>(transient);
   if (!geoms)
   {
     geoms.reset(new GeomList());
@@ -142,18 +143,18 @@ void ViewScene::execute()
 {
   if (inputPorts().size() > 1) // only send screenshot if input is present
   {
-    DenseMatrixHandle screenshotData;
+    ModuleStateInterface::TransientValueOption screenshotDataOption;
     auto state = get_state();
     do
     {
-      auto transient = state->getTransientValue(Parameters::ScreenshotData);
-      screenshotData = optional_any_cast_or_default<DenseMatrixHandle>(transient);
+      screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
+      auto screenshotData = transient_value_cast<DenseMatrixHandle>(screenshotDataOption);
       if (screenshotData)
       {
         sendOutput(ScreenshotData, screenshotData);
       }
     }
-    while (!screenshotData);
+    while (!screenshotDataOption);
   }
 }
 #endif
@@ -161,16 +162,12 @@ void ViewScene::execute()
 void ViewScene::processViewSceneObjectFeedback()
 {
   //TODO: match ID of touched geom object with port id, and send that info back too.
-  //std::cout << "slot for state change in VS module" << std::endl;
   auto state = get_state();
-  auto newInfo = state->getValue(Parameters::GeometryFeedbackInfo).toVector();
-  //std::cout << "feedback info: " << newInfo << std::endl;
-  if (feedbackInfo_ != newInfo)
+  auto newInfo = state->getTransientValue(Parameters::GeometryFeedbackInfo);
+  //TODO: lost equality test here due to change to boost::any. Would be nice to form a data class with equality to avoid repetitive signalling.
+  if (newInfo)
   {
-    //std::cout << "new feedback info: " << newInfo << std::endl;
-    feedbackInfo_ = newInfo;
-
-    sendFeedbackUpstreamAlongIncomingConnections(feedbackInfo_);
+    sendFeedbackUpstreamAlongIncomingConnections(*newInfo);
   }
 }
 

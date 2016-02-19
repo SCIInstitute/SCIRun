@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "InsertVoltageSource",
+    "namespace": "Forward",
+    "status": "Ported module.",
+    "description": "Insert a Voltage Source",
+    "header": "Modules/Legacy/Forward/InsertVoltageSource.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "InsertVoltageSourceDialog",
+    "header": "Interface/Modules/Forward/InsertVoltageSourceDialog.h"
+  }
+}

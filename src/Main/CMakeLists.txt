@@ -116,6 +116,7 @@ IF(APPLE AND BUILD_BUNDLE)
   ELSE()
     SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib)
   ENDIF()
+
   # otool can be used to check list of dependent dylibs
   ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
     POST_BUILD
@@ -124,6 +125,7 @@ IF(APPLE AND BUILD_BUNDLE)
     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCIRUN_LIB_DIR} ${APP_PATH}/Frameworks
     WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
   )
+
   IF(BUILD_WITH_PYTHON)
     SET(VERSION_PATH Versions/${SCI_PYTHON_VERSION_SHORT})
     SET(FRAMEWORK_PATH Frameworks/Python.framework)
@@ -138,10 +140,8 @@ IF(APPLE AND BUILD_BUNDLE)
       COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
         @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
         ${APP_PATH}/MacOS/${APPLICATION_NAME}
-      COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
-        @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-        ${APP_PATH}/MacOS/${APPLICATION_NAME}
         WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+
     SET(SCIRUN_LIBS "Core_Application"
                     "Core_Python"
                     "SCIRunPythonAPI"
@@ -149,7 +149,10 @@ IF(APPLE AND BUILD_BUNDLE)
                     "Engine_Network"
                     "Interface_Modules_Factory"
                     "Interface_Modules_Render"
+                    "Interface_Modules_Python"
                     "Core_ConsoleApplication"
+                    "Modules_Factory"
+                    "Modules_Python"
     )
     FOREACH(lib ${SCIRUN_LIBS})
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
@@ -202,6 +205,12 @@ ELSE()
       ${QT_BINARY_DIR}/${QTOPENGLNAME}.dll
       ${QT_BINARY_DIR}/${QTNETWORKNAME}.dll
       DESTINATION bin)
+    IF(BUILD_WITH_PYTHON)
+      INSTALL(PROGRAMS
+        ${SCI_PYTHON_DLL_PATH}
+        DESTINATION bin)
+      INSTALL(DIRECTORY "${SCI_PYTHON_MODULE_LIBRARY_PATH}/" DESTINATION bin/${PYTHON_MODULE_SEARCH_PATH})
+    ENDIF()
 
     INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Shaders" DESTINATION bin USE_SOURCE_PERMISSIONS)
     INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)

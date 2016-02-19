@@ -72,8 +72,9 @@ namespace SCIRun {
 
     Q_SIGNALS:
       void newGeometryValueForwarder();
+      void mousePressSignalForTestingGeometryObjectFeedback(int x, int y);
 
-    protected Q_SLOTS:
+      protected Q_SLOTS:
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
@@ -95,13 +96,34 @@ namespace SCIRun {
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
       void sendGeometryFeedbackToState(int x, int y);
+      //Clipping Plane 
+      void setClippingPlaneIndex(int index);
+      void setClippingPlaneVisible(bool value);
+      void setClippingPlaneFrameOn(bool value);
+      void reverseClippingPlaneNormal(bool value);
+      void setClippingPlaneX(int index);
+      void setClippingPlaneY(int index);
+      void setClippingPlaneZ(int index);
+      void setClippingPlaneD(int index);
 
     protected:
+      virtual void mousePressEvent(QMouseEvent* event);
+      virtual void mouseReleaseEvent(QMouseEvent* event);
+      virtual void keyPressEvent(QKeyEvent* event);
+      virtual void keyReleaseEvent(QKeyEvent*event);
       virtual void closeEvent(QCloseEvent* evt) override;
       virtual void showEvent(QShowEvent* evt) override;
       virtual void hideEvent(QHideEvent* evt) override;
       virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
+      struct ClippingPlane {
+        bool visible, showFrame, reverseNormal;
+        double x, y, z, d;
+      };
+
+      void selectObject(const int x, const int y);
+      void restoreObjColor();
+      void updatClippingPlaneDisplay();
       bool isObjectUnselected(const std::string& name);
       void addToolBar();
       void addAutoViewButton();
@@ -111,6 +133,7 @@ namespace SCIRun {
       void addViewOptions();
       void addConfigurationButton();
       void addConfigurationDock(const QString& viewName);
+      void setupClippingPlanes();
       void hideConfigurationDock();
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
@@ -132,15 +155,19 @@ namespace SCIRun {
       bool showConfiguration_;
       bool itemValueChanged_;
       bool invertZoom_;
+      bool shiftdown_;
+      bool selected_;
+      int clippingPlaneIndex_;
       QColor bgColor_;
+      std::vector<ClippingPlane> clippingPlanes_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;
       class Screenshot* screenshotTaker_;
       bool saveScreenshotOnNewGeometry_;
 
       friend class ViewSceneControlsDock;
-		};
-	}
+    };
+  }
 }
 
 #endif

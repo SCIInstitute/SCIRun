@@ -45,6 +45,7 @@
 
 using namespace SCIRun;
 using namespace Core;
+using namespace Core::Algorithms;
 using namespace Datatypes;
 using namespace Dataflow::Networks;
 using namespace Modules::Fields;
@@ -104,6 +105,14 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
   INITIALIZE_PORT(ElementIndex);
 }
 
+void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var)
+{
+  auto xyTr = any_cast_or_default_<Variable>(var);
+  std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, name received from ViewSceneDialog is:\n\t" << xyTr.name() << std::endl;
+  for (const auto& subVar : xyTr.toVector())
+    std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << subVar << std::endl;
+}
+
 void GenerateSinglePointProbeFromField::setStateDefaults()
 {
   auto state = get_state();
@@ -121,6 +130,8 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeSize, 1.0);
   state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
+
+  getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](ModuleFeedback var) { processWidgetFeedback(var); });
 }
 
 #if 0

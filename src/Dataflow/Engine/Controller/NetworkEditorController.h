@@ -91,8 +91,9 @@ namespace Engine {
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       Networks::ReexecuteStrategyFactoryHandle reexFactory,
       Core::Commands::GlobalCommandFactoryHandle cmdFactory,
-      Networks::NetworkEditorSerializationManager* nesm = 0);
-    NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = 0);
+      Networks::NetworkEditorSerializationManager* nesm = nullptr);
+    NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = nullptr);
+    ~NetworkEditorController();
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////Start: To be Pythonized/////////////////////////////

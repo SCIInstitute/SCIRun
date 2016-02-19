@@ -52,7 +52,9 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateSignedDistanceToField.h
   ClipFieldByFunction3.h
   ClipFieldByMesh.h
+  ConvertMatricesToMesh.h
   ConvertQuadSurfToTriSurf.h
+  ConvertMeshToPointCloud.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
   SetFieldData.h
@@ -118,7 +120,7 @@ SET(Modules_Legacy_Fields_SRCS
   ClipFieldByMesh.cc
   #ClipFieldToFieldOrWidget.cc
   #ClipLatVolByIndicesOrWidget.cc
-  #ConvertMatricesToMesh.cc
+  ConvertMatricesToMesh.cc
   #CollectPointClouds.cc
   #CoregisterPointClouds.cc
   #EditMeshBoundingBox.cc
@@ -159,7 +161,7 @@ SET(Modules_Legacy_Fields_SRCS
   GeneratePointSamplesFromField.cc
   #SelectFieldROIWithBoxWidget.cc
   SetFieldOrMeshStringProperty.cc
-  #ConvertMeshToPointCloud.cc
+  ConvertMeshToPointCloud.cc
   #ConvertMeshToIrregularMesh.cc
   #ConvertMeshToUnstructuredMesh.cc
   CalculateFieldData5.cc
@@ -197,13 +199,13 @@ SET(Modules_Legacy_Fields_SRCS
 IF(WITH_TETGEN)
   SET(Modules_Legacy_Fields_SRCS ${Modules_Legacy_Fields_SRCS}
     InterfaceWithTetGen.cc
-	InterfaceWithTetGenImpl.cc
-	)
+    InterfaceWithTetGenImpl.cc
+  )
   SET(Modules_Legacy_Fields_HEADERS ${Modules_Legacy_Fields_HEADERS}
-	InterfaceWithTetGen.h
+    InterfaceWithTetGen.h
     InterfaceWithTetGenImpl.h
-	)
-ENDIF(WITH_TETGEN)
+  )
+ENDIF()
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields
   ${Modules_Legacy_Fields_HEADERS}
@@ -227,10 +229,9 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
 )
 
 IF(WITH_TETGEN)
-  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
-    ${SCI_TETGEN_LIBRARY})
-ENDIF(WITH_TETGEN)
+  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields ${TETGEN_LIBRARY})
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Fields)
-ENDIF(BUILD_SHARED_LIBS)
+ENDIF()

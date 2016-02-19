@@ -206,60 +206,42 @@ IF(BUILD_TESTING)
 ENDIF()
 
 #########################################################################
-## Python
-#
-#OPTION(BUILD_WITH_PYTHON "Build with python support." OFF)
-#
-#IF(BUILD_WITH_PYTHON)
-#  MESSAGE(STATUS "Configuring Python")
-#  SET(PythonLibs_FIND_VERSION "3.2")
-#  FIND_PACKAGE(PythonLibs REQUIRED)
-#  IF(NOT PYTHONLIBS_FOUND)
-#    MESSAGE(FATAL_ERROR "Python 3.3 or 3.2 not found. Set PYTHON_INCLUDE_DIR and PYT#HON_LIBRARY to the correct Python installation.")
-#  ENDIF()
-#
-#  ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
-#  ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
-#ENDIF(BUILD_WITH_PYTHON)
+# External projects
 
+MACRO(CONFIG_STANDARD_EXTERNAL name config_file directory)
+  FIND_PACKAGE(${name} CONFIGS ${config_file} HINTS ${directory} NO_SYSTEM_ENVIRONMENT_PATH)
+  IF(NOT ${name}_FOUND)
+    MESSAGE(FATAL_ERROR "${name} library not found in ${directory}")
+  ENDIF()
+ENDMACRO()
 
-FIND_PACKAGE(Zlib CONFIGS ZlibConfig.cmake HINTS ${Zlib_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
-IF(NOT Zlib_FOUND)
-  MESSAGE(FATAL_ERROR "Zlib library not found in ${Zlib_DIR}")
-ENDIF()
+CONFIG_STANDARD_EXTERNAL( Zlib ZlibConfig.cmake ${Zlib_DIR} )
 INCLUDE(${ZLIB_USE_FILE})
 
-FIND_PACKAGE(LibPNG CONFIGS LibPNGConfig.cmake HINTS ${LibPNG_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
-IF(NOT LibPNG_FOUND)
-  MESSAGE(FATAL_ERROR "Png library not found in ${LibPNG_DIR}")
-ENDIF()
+CONFIG_STANDARD_EXTERNAL( LibPNG LibPNGConfig.cmake ${LibPNG_DIR} )
 INCLUDE(${PNG_USE_FILE})
 
-FIND_PACKAGE(SQLite CONFIGS SQLiteConfig.cmake HINTS ${SQLite_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
-IF(NOT SQLite_FOUND)
-  MESSAGE(FATAL_ERROR "SQLite library not found in ${SQLite_DIR}")
-ENDIF()
+CONFIG_STANDARD_EXTERNAL( SQLite SQLiteConfig.cmake ${SQLite_DIR} )
 INCLUDE(${SQLITE_USE_FILE})
 
-FIND_PACKAGE(Teem CONFIGS TeemConfig.cmake HINTS ${Teem_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
-IF(NOT Teem_FOUND)
-  MESSAGE(FATAL_ERROR "Teem library not found in ${Teem_DIR}")
-ENDIF()
+CONFIG_STANDARD_EXTERNAL( Teem TeemConfig.cmake ${Teem_DIR} )
 INCLUDE(${Teem_USE_FILE})
 
+CONFIG_STANDARD_EXTERNAL( Freetype FreetypeConfig.cmake ${Freetype_DIR} )
+INCLUDE(${FREETYPE_USE_FILE})
+
 IF(BUILD_WITH_PYTHON)
-  FIND_PACKAGE(Python CONFIGS PythonConfig.cmake HINTS ${Python_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
-  IF(NOT Python_FOUND)
-    MESSAGE(FATAL_ERROR "Python library not found in ${Python_DIR}")
-  ENDIF()
+  CONFIG_STANDARD_EXTERNAL( Python PythonConfig.cmake ${Python_DIR} )
   INCLUDE(${SCI_PYTHON_USE_FILE})
 ENDIF()
 
-FIND_PACKAGE(Boost CONFIGS BoostConfig.cmake HINTS ${Boost_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
-IF(NOT Boost_FOUND)
-  MESSAGE(FATAL_ERROR "Boost library not found in ${Boost_DIR}")
-ENDIF()
+CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${Boost_DIR} )
 INCLUDE(${SCI_BOOST_USE_FILE})
+
+IF(WITH_TETGEN)
+  CONFIG_STANDARD_EXTERNAL( Tetgen TetgenConfig.cmake ${Tetgen_DIR} )
+  INCLUDE(${TETGEN_USE_FILE})
+ENDIF()
 
 ########################################################################
 # Custom compiler flags and definitions
@@ -356,45 +338,11 @@ ENDIF()
 # ENDIF()
 
 ########################################################################
-# Download external data sources
+# Configure tetgen module build
 
-#OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
-#MARK_AS_ADVANCED(DOWNLOAD_TOOLKITS)
-#IF(DOWNLOAD_TOOLKITS)
-#  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ToolkitsConfig.cmake)
-#  EXTERNAL_TOOLKIT(BrainStimulator)
-#  EXTERNAL_TOOLKIT(FwdInvToolkit)
-#ENDIF()
-#
-#########################################################################
-## Configure zlib external project
-#
-#INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ZlibConfig.cmake)
-#EXTERNAL_ZLIB_LIBRARY(GIT)
-#
-#
-##########################################################################
-## Configure Boost external project
-#
-#INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/BoostConfig.cmake)
-#EXTERNAL_BOOST_LIBRARY(GIT)
-#
-#
-#########################################################################
-## Configure teem external project
-#
-#INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TeemConfig.cmake)
-#EXTERNAL_TEEM_LIBRARY(GIT)
-
-
-########################################################################
-# Configure tetgen external project
-
-OPTION(WITH_TETGEN "Build Tetgen." ON)
-MARK_AS_ADVANCED(WITH_TETGEN)
 IF(WITH_TETGEN)
   ADD_DEFINITIONS(-DWITH_TETGEN)
-ENDIF(WITH_TETGEN)
+ENDIF()
 
 ########################################################################
 # Configure CPM and Spire - http://github.com/iauns/cpm
@@ -476,7 +424,7 @@ CPM_AddModule("es_general"
 # ++ MODULE: Entity System Rendering.
 CPM_AddModule("es_render"
   GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-render"
-  GIT_TAG "origin/SCIRun"
+  GIT_TAG "origin/AddFBO"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: Acorn
@@ -610,7 +558,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/log4cpp/include
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
-  ${SCI_TETGEN_INCLUDE}
+  #${SCI_TETGEN_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
@@ -830,6 +778,7 @@ SET_PROPERTY(TARGET Modules_Legacy_FiniteElements   PROPERTY FOLDER "Modules/Fin
 SET_PROPERTY(TARGET Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
 SET_PROPERTY(TARGET Modules_Legacy_Converters PROPERTY FOLDER "Modules/Basic")
 SET_PROPERTY(TARGET Modules_Legacy_Forward PROPERTY FOLDER "Modules/Forward")
+SET_PROPERTY(TARGET Modules_Legacy_String PROPERTY FOLDER "Modules/String")
 SET_PROPERTY(TARGET Modules_Legacy_Inverse PROPERTY FOLDER "Modules/Inverse")
 SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO PROPERTY FOLDER "Modules/DataIO")
 SET_PROPERTY(TARGET Modules_Legacy_MatlabInterface PROPERTY FOLDER "Modules/Matlab")
@@ -908,26 +857,20 @@ IF(BUILD_TESTING)
   IF(BUILD_WITH_PYTHON)
     SET_PROPERTY(TARGET Core_Python_Tests     PROPERTY FOLDER "Core/Tests")
     SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
+	SET_PROPERTY(TARGET Modules_Python_Tests   PROPERTY FOLDER "Modules/Python")
   ENDIF()
 ENDIF()
 
-#SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${CPM_LIBRARIES} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
-#SET_PROPERTY(TARGET sqlite PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
-#SET_PROPERTY(TARGET Zlib_external   PROPERTY FOLDER "Externals")
-#SET_PROPERTY(TARGET Teem_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
   SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
-ENDIF()
-
-IF(WITH_TETGEN)
-  SET_PROPERTY(TARGET tetgen         PROPERTY FOLDER "Externals")
-  SET_PROPERTY(TARGET tetlib         PROPERTY FOLDER "Externals")
+  SET_PROPERTY(TARGET Modules_Python   PROPERTY FOLDER "Modules/Python")
+  SET_PROPERTY(TARGET Interface_Modules_Python   PROPERTY FOLDER "Interface/Modules")
 ENDIF()
 
 ########################################################################
