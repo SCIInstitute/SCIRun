@@ -109,19 +109,19 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var)
 {
   auto xyTr = any_cast_or_default_<Variable>(var);
-  DenseMatrixHandle transformHandle(new DenseMatrix(4, 4));
-  int row = 0; 
-  int col = 0;
-  for (const auto& subVar : xyTr.toVector())
+  const int numRows = 4;
+  const int numCols = 4;
+  DenseMatrixHandle transformHandle(new DenseMatrix(numRows, numCols));
+  
+  for (int row = 0, index = 0; row < numRows; ++row)
   {
-    if (col > 3)
+    for (int col = 0; col < numCols; ++col, ++index)
     {
-      col = 0;
-      ++row;
+      (*transformHandle)(row, col) = xyTr.toVector()[index].toDouble();
     }
-    (*transformHandle)(row, col) = subVar.toDouble();
-    ++col;
   }
+
+  //std::cout << "in probe: " << (*transformHandle) << std::endl;
   adjustPositionFromTransform(transformHandle);
 }
 
@@ -129,7 +129,8 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var
 void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseMatrixHandle& transformMatrix)
 {
   DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
-  (*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
+  //(*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
+  (*centerHandle) << 0, 0, 0, 1;
   DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
 
   Point newLocation(newTransform.get(0, 0) / newTransform.get(3, 0),
@@ -143,7 +144,7 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseM
   state->setValue(ZLocation, newLocation.z());
   std::string oldMoveMethod = state->getValue(MoveMethod).toString();
   state->setValue(MoveMethod, std::string("Location"));    
-
+  //execute();
   state->setValue(MoveMethod, std::string(oldMoveMethod));
  
 }
