@@ -100,6 +100,7 @@ namespace SCIRun
 GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
   : GeometryGeneratingModule(staticInfo_), impl_(new GenerateSinglePointProbeFromFieldImpl)
 {
+  counter_ = -1;
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeneratedWidget);
   INITIALIZE_PORT(GeneratedPoint);
@@ -109,9 +110,58 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var)
 {
   auto xyTr = any_cast_or_default_<Variable>(var);
-  std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, name received from ViewSceneDialog is:\n\t" << xyTr.name() << std::endl;
+  DenseMatrixHandle transformHandle(new DenseMatrix(4, 4));
+  int row = 0; 
+  int col = 0;
+  int i = 0;
+  int counter;
   for (const auto& subVar : xyTr.toVector())
-    std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << subVar << std::endl;
+  {
+    if (i == 0)
+    {
+      counter = subVar.toInt();
+      if (counter_ != counter)
+        counter_ = counter;
+      else
+        return;
+    }
+    else
+    {
+      if (col > 3)
+      {
+        col = 0;
+        ++row;
+      }
+      (*transformHandle)(row, col) = subVar.toDouble();
+      ++col;
+    }
+    ++i;
+  }
+  adjustPositionFromTransform(transformHandle);
+}
+
+
+void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseMatrixHandle& transformMatrix)
+{
+  //std::cout << "GenerateSinglePointProbeFromField::adjustPositionFromTransform\n";
+  DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
+  (*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
+  DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
+
+  Point newLocation(newTransform.get(0, 0) / newTransform.get(3, 0),
+                    newTransform.get(1, 0) / newTransform.get(3, 0),
+                    newTransform.get(2, 0) / newTransform.get(3, 0));
+
+  auto state = get_state();
+  using namespace Parameters;
+  state->setValue(XLocation, newLocation.x());
+  state->setValue(YLocation, newLocation.y());
+  state->setValue(ZLocation, newLocation.z());
+  std::string oldMoveMethod = state->getValue(MoveMethod).toString();
+  state->setValue(MoveMethod, std::string("Location"));    
+  execute();
+  state->setValue(MoveMethod, std::string(oldMoveMethod));
+ 
 }
 
 void GenerateSinglePointProbeFromField::setStateDefaults()
@@ -188,6 +238,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
   using namespace Parameters;
 
   //std::cout << "Size: " << state->getValue(ProbeSize).toInt() << std::endl;
+  //std::cout << "executing" << std::endl;
 
   // Maybe update the widget.
   BBox bbox;

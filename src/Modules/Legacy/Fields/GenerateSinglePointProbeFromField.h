@@ -79,13 +79,14 @@ namespace SCIRun {
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
+        int counter_;
         boost::shared_ptr<class GenerateSinglePointProbeFromFieldImpl> impl_;
         Core::Geometry::Point currentLocation() const;
         void processWidgetFeedback(Dataflow::Networks::ModuleFeedback var);
+        void adjustPositionFromTransform(const Core::Datatypes::DenseMatrixHandle& transformMatrix);
         
         FieldHandle GenerateOutputField();
-        index_type GenerateIndex();
-        
+        index_type GenerateIndex();        
       };
 
       class SCISHARE PointWidgetStub

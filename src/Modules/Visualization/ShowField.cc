@@ -1359,7 +1359,7 @@ void GeometryBuilder::renderEdges(
     }
     else
     {
-      glyphs.addNeedle(p0, p1, edge_colors[0], edge_colors[1]);
+      glyphs.addLine(p0, p1, edge_colors[0], edge_colors[1]);
     }
 
     ++eiter;

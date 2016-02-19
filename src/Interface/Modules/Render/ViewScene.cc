@@ -28,7 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <gl-platform/GLPlatform.hpp>
 
-#include <Core/Datatypes/DenseMatrix.h>
+//#include <Core/Datatypes/DenseMatrix.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/GLWidget.h>
@@ -54,6 +54,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   shiftdown_(false), selected_(false),
   clippingPlaneIndex_(0),screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false)
 {
+  counter_ = 1;
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   setFocusPolicy(Qt::StrongFocus);
@@ -126,6 +127,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
+  //std::cout << "ViewSceneDialog::shiftdown_:" << shiftdown_ << std::endl;
   if (shiftdown_)
   {
     selectObject(event->x(), event->y());
@@ -163,7 +165,7 @@ void ViewSceneDialog::restoreObjColor()
         auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
         if (realObj->uniqueID() == selName)
         {
-          selected_ = true;
+          //selected_ = true;
           for (auto& pass : realObj->mPasses)
           {
             pass.addUniform("uAmbientColor",
@@ -184,10 +186,11 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
   if (selected_)
   {
-    Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y());
+    selected_ = false;
     restoreObjColor();
     newGeometryValue();
-    selected_ = false;
+    //std::cout << "mousePressSignalForTestingGeometryObjectFeedback\n";
+    Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y());
   }
 }
 
@@ -975,16 +978,35 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   //qDebug() << "sendGeometryFeedbackToState" << x << y;
   using namespace Core::Algorithms;
   Variable::List geomInfo;
-  geomInfo.push_back(makeVariable("xClick", x));
-  geomInfo.push_back(makeVariable("yClick", y));
+  //geomInfo.push_back(makeVariable("xClick", x));
+  //geomInfo.push_back(makeVariable("yClick", y));
+  geomInfo.push_back(makeVariable("counter", counter_));
+  counter_ = counter_ < 0 ? 1 : counter_ + 1;
   std::shared_ptr<SRInterface> spire = mSpire.lock();
-  DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
+  //DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
   glm::mat4 trans = spire->getWidgetTransform().transform;
-  (*matrixHandle) << trans[0][0], trans[1][0], trans[2][0], trans[3][0]
+
+  geomInfo.push_back(makeVariable("x00", trans[0][0]));
+  geomInfo.push_back(makeVariable("x10", trans[1][0]));
+  geomInfo.push_back(makeVariable("x20", trans[2][0]));
+  geomInfo.push_back(makeVariable("x30", trans[3][0]));
+  geomInfo.push_back(makeVariable("x01", trans[0][1]));
+  geomInfo.push_back(makeVariable("x11", trans[1][1]));
+  geomInfo.push_back(makeVariable("x21", trans[2][1]));
+  geomInfo.push_back(makeVariable("x31", trans[3][1]));
+  geomInfo.push_back(makeVariable("x02", trans[0][2]));
+  geomInfo.push_back(makeVariable("x12", trans[1][2]));
+  geomInfo.push_back(makeVariable("x22", trans[2][2]));
+  geomInfo.push_back(makeVariable("x32", trans[3][2]));
+  geomInfo.push_back(makeVariable("x03", trans[0][3]));
+  geomInfo.push_back(makeVariable("x13", trans[1][3]));
+  geomInfo.push_back(makeVariable("x23", trans[2][3]));
+  geomInfo.push_back(makeVariable("x33", trans[3][3]));
+  /*(*matrixHandle) << trans[0][0], trans[1][0], trans[2][0], trans[3][0]
     , trans[0][1], trans[1][1], trans[2][1], trans[3][1]
     , trans[0][2], trans[1][2], trans[2][2], trans[3][2]
-    , trans[0][3], trans[1][3], trans[2][3], trans[3][3];
-  geomInfo.push_back(Variable(Name("transform"), matrixHandle, Variable::DATATYPE_VARIABLE));
+    , trans[0][3], trans[1][3], trans[2][3], trans[3][3];*/
+  //geomInfo.push_back(Variable(Name("transform"), matrixHandle, Variable::DATATYPE_VARIABLE));
   auto var = makeVariable("geomInfo", geomInfo);
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, var);
 }
