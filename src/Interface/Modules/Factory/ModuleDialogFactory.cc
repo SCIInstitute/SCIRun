@@ -61,7 +61,6 @@
 #include <Interface/Modules/Fields/SplitFieldByConnectedRegionDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataDialog.h>
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
-#include <Interface/Modules/Fields/RefineCleaverMeshDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
 #include <Interface/Modules/Fields/GetSliceFromStructuredFieldByIndicesDialog.h>
@@ -208,7 +207,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
     ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
     ADD_MODULE_DIALOG(ClipVolumeByIsovalue, ClipVolumeByIsovalueDialog)
-    ADD_MODULE_DIALOG(RefineCleaverMesh, RefineCleaverMeshDialog)
   ;
 }
 

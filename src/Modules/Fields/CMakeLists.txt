@@ -31,7 +31,6 @@ SET(Modules_Fields_SRCS
   ReportFieldInfo.cc
   InterfaceWithCleaver.cc
   EditMeshBoundingBox.cc
-  RefineCleaverMesh.cc
 )
 
 SET(Modules_Fields_HEADERS
@@ -40,7 +39,6 @@ SET(Modules_Fields_HEADERS
   ReportFieldInfo.h
   EditMeshBoundingBox.h
   BoxWidgetTypes.h
-  RefineCleaverMesh.h
   share.h
 )
 

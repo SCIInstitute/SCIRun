@@ -29,13 +29,11 @@
 SET(Algorithms_Field_SRCS
   ReportFieldInfoAlgorithm.cc
   InterfaceWithCleaverAlgorithm.cc
-  RefineCleaverMeshAlgorithm.cc
 )
 
 SET(Algorithms_Field_HEADERS
   ReportFieldInfoAlgorithm.h
   InterfaceWithCleaverAlgorithm.h
-  RefineCleaverMeshAlgorithm.h
   share.h
 )
 

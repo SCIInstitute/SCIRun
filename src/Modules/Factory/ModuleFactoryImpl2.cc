@@ -37,7 +37,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
-#include <Modules/Fields/RefineCleaverMesh.h>
 #include <Modules/Legacy/Math/SelectSubMatrix.h>
 #include <Modules/Legacy/Math/ConvertMatrixType.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
@@ -100,5 +99,4 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ComputePCA>("ComputePCA","Math","SCIRun","...","...");
   //addModuleDesc<EvaluateLinearAlgebraGeneral>("Real ported module", "BUGGY--DO NOT USE");
   addModuleDesc<ClipVolumeByIsovalueModule>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
-  addModuleDesc<RefineCleaverMesh>("RefineCleaverMesh","ChangeMesh", "SCIRun", "...", "...");
 }
