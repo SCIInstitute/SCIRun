@@ -151,6 +151,7 @@ namespace SCIRun {
       QComboBox*                            mUpVectorBox;         ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock;   ///< Dock holding configuration functions
 
+      int counter_;
       bool shown_;
       bool hideViewBar_;
       bool showConfiguration_;

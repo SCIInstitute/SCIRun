@@ -54,6 +54,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   shiftdown_(false), selected_(false),
   clippingPlaneIndex_(0),screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false)
 {
+  counter_ = 1;
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   setFocusPolicy(Qt::StrongFocus);
@@ -126,6 +127,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
+  //std::cout << "ViewSceneDialog::shiftdown_:" << shiftdown_ << std::endl;
   if (shiftdown_)
   {
     selectObject(event->x(), event->y());
@@ -163,7 +165,7 @@ void ViewSceneDialog::restoreObjColor()
         auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
         if (realObj->uniqueID() == selName)
         {
-          selected_ = true;
+          //selected_ = true;
           for (auto& pass : realObj->mPasses)
           {
             pass.addUniform("uAmbientColor",
@@ -187,6 +189,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     selected_ = false;
     restoreObjColor();
     newGeometryValue();
+    //std::cout << "mousePressSignalForTestingGeometryObjectFeedback\n";
     Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y());
   }
 }
@@ -955,6 +958,8 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   Variable::List geomInfo;
   //geomInfo.push_back(makeVariable("xClick", x));
   //geomInfo.push_back(makeVariable("yClick", y));
+  geomInfo.push_back(makeVariable("counter", counter_));
+  counter_ = counter_ < 0 ? 1 : counter_ + 1;
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   //DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
   glm::mat4 trans = spire->getWidgetTransform().transform;

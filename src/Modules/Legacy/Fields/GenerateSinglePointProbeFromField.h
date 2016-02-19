@@ -79,6 +79,7 @@ namespace SCIRun {
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
+        int counter_;
         boost::shared_ptr<class GenerateSinglePointProbeFromFieldImpl> impl_;
         Core::Geometry::Point currentLocation() const;
         void processWidgetFeedback(Dataflow::Networks::ModuleFeedback var);

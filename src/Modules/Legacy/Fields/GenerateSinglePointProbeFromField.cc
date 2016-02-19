@@ -100,6 +100,7 @@ namespace SCIRun
 GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
   : GeometryGeneratingModule(staticInfo_), impl_(new GenerateSinglePointProbeFromFieldImpl)
 {
+  counter_ = -1;
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeneratedWidget);
   INITIALIZE_PORT(GeneratedPoint);
@@ -112,15 +113,29 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var
   DenseMatrixHandle transformHandle(new DenseMatrix(4, 4));
   int row = 0; 
   int col = 0;
+  int i = 0;
+  int counter;
   for (const auto& subVar : xyTr.toVector())
   {
-    if (col > 3)
+    if (i == 0)
     {
-      col = 0;
-      ++row;
+      counter = subVar.toInt();
+      if (counter_ != counter)
+        counter_ = counter;
+      else
+        return;
     }
-    (*transformHandle)(row, col) = subVar.toDouble();
-    ++col;
+    else
+    {
+      if (col > 3)
+      {
+        col = 0;
+        ++row;
+      }
+      (*transformHandle)(row, col) = subVar.toDouble();
+      ++col;
+    }
+    ++i;
   }
   adjustPositionFromTransform(transformHandle);
 }
@@ -128,6 +143,7 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var
 
 void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseMatrixHandle& transformMatrix)
 {
+  //std::cout << "GenerateSinglePointProbeFromField::adjustPositionFromTransform\n";
   DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
   (*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
   DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
@@ -143,7 +159,7 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseM
   state->setValue(ZLocation, newLocation.z());
   std::string oldMoveMethod = state->getValue(MoveMethod).toString();
   state->setValue(MoveMethod, std::string("Location"));    
-
+  execute();
   state->setValue(MoveMethod, std::string(oldMoveMethod));
  
 }
@@ -222,7 +238,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
   using namespace Parameters;
 
   //std::cout << "Size: " << state->getValue(ProbeSize).toInt() << std::endl;
-  std::cout << "executing" << std::endl;
+  //std::cout << "executing" << std::endl;
 
   // Maybe update the widget.
   BBox bbox;
