@@ -168,6 +168,7 @@ void ViewScene::processViewSceneObjectFeedback()
   if (newInfo)
   {
     sendFeedbackUpstreamAlongIncomingConnections(*newInfo);
+    (*newInfo).clear();
   }
 }
 

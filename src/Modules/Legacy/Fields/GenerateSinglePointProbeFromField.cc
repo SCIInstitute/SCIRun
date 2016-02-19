@@ -109,9 +109,44 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var)
 {
   auto xyTr = any_cast_or_default_<Variable>(var);
-  std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, name received from ViewSceneDialog is:\n\t" << xyTr.name() << std::endl;
-  for (const auto& subVar : xyTr.toVector())
-    std::cout << "GenerateSinglePointProbeFromField::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << subVar << std::endl;
+  const int numRows = 4;
+  const int numCols = 4;
+  DenseMatrixHandle transformHandle(new DenseMatrix(numRows, numCols));
+  
+  for (int row = 0, index = 0; row < numRows; ++row)
+  {
+    for (int col = 0; col < numCols; ++col, ++index)
+    {
+      (*transformHandle)(row, col) = xyTr.toVector()[index].toDouble();
+    }
+  }
+
+  //std::cout << "in probe: " << (*transformHandle) << std::endl;
+  adjustPositionFromTransform(transformHandle);
+}
+
+
+void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseMatrixHandle& transformMatrix)
+{
+  DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
+  //(*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
+  (*centerHandle) << 0, 0, 0, 1;
+  DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
+
+  Point newLocation(newTransform.get(0, 0) / newTransform.get(3, 0),
+                    newTransform.get(1, 0) / newTransform.get(3, 0),
+                    newTransform.get(2, 0) / newTransform.get(3, 0));
+
+  auto state = get_state();
+  using namespace Parameters;
+  state->setValue(XLocation, newLocation.x());
+  state->setValue(YLocation, newLocation.y());
+  state->setValue(ZLocation, newLocation.z());
+  std::string oldMoveMethod = state->getValue(MoveMethod).toString();
+  state->setValue(MoveMethod, std::string("Location"));    
+  //execute();
+  state->setValue(MoveMethod, std::string(oldMoveMethod));
+ 
 }
 
 void GenerateSinglePointProbeFromField::setStateDefaults()
@@ -188,6 +223,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
   using namespace Parameters;
 
   //std::cout << "Size: " << state->getValue(ProbeSize).toInt() << std::endl;
+  std::cout << "executing" << std::endl;
 
   // Maybe update the widget.
   BBox bbox;
