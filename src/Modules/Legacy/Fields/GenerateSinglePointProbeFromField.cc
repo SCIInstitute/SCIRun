@@ -68,6 +68,7 @@ ALGORITHM_PARAMETER_DEF(Fields, FieldElem);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
+ALGORITHM_PARAMETER_DEF(Fields, WidgetMoved);
 
 namespace SCIRun
 {
@@ -137,23 +138,9 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var
     }
     ++i;
   }
-
+  
   //std::cout << "in probe: " << (*transformHandle) << std::endl;
   adjustPositionFromTransform(transformHandle);
-
-/*
- const int numRows = 4;
-  const int numCols = 4;
-  DenseMatrixHandle transformHandle(new DenseMatrix(numRows, numCols));
-  
-  for (int row = 0, index = 0; row < numRows; ++row)
-
-  {
-    for (int col = 0; col < numCols; ++col, ++index)
-    {
-      (*transformHandle)(row, col) = xyTr.toVector()[index].toDouble();
-    }
-  } */
 }
 
 
@@ -161,8 +148,8 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseM
 {
   //std::cout << "GenerateSinglePointProbeFromField::adjustPositionFromTransform\n";
   DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
-  //(*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
-  (*centerHandle) << 0, 0, 0, 1;
+  (*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
+  //(*centerHandle) << 0, 0, 0, 1;
   DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
 
   Point newLocation(newTransform.get(0, 0) / newTransform.get(3, 0),
@@ -175,8 +162,9 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseM
   state->setValue(YLocation, newLocation.y());
   state->setValue(ZLocation, newLocation.z());
   std::string oldMoveMethod = state->getValue(MoveMethod).toString();
-  state->setValue(MoveMethod, std::string("Location"));    
-  execute();
+  state->setValue(MoveMethod, std::string("Location"));
+  //TODO: Communicate with dialog to Q_EMIT executeActionTriggered();
+  state->setValue(WidgetMoved, true);
   state->setValue(MoveMethod, std::string(oldMoveMethod));
  
 }
@@ -198,6 +186,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeSize, 1.0);
   state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
+  state->setValue(WidgetMoved, false);
 
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](ModuleFeedback var) { processWidgetFeedback(var); });
 }

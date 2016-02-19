@@ -153,8 +153,6 @@ namespace SCIRun {
 
       gen::Transform &getWidgetTransform();
 
-      Core::Datatypes::DenseMatrixHandle getWidgetTransformMatrix();
-
       static std::string& getFSRoot();
       static std::string& getFSSeparator();
 

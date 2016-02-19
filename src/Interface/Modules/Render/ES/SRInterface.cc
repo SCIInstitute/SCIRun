@@ -35,12 +35,9 @@
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 #include <Core/Application/Application.h>
-#include <Core/Datatypes/DenseMatrix.h>
 #include <Modules/Visualization/ShowColorMapModule.h>
 
-
 // CPM modules.
-
 #include <es-general/comp/StaticScreenDims.hpp>
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/StaticOrthoCamera.hpp>
@@ -561,18 +558,6 @@ namespace SCIRun {
       return mWidgetTransform;
     }
     
-    DenseMatrixHandle SRInterface::getWidgetTransformMatrix()
-    {
-      glm::mat4 trans = mWidgetTransform.transform;
-      DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
-      (*matrixHandle) << trans[0][0], trans[1][0], trans[2][0], trans[3][0]
-                       , trans[0][1], trans[1][1], trans[2][1], trans[3][1]
-                       , trans[0][2], trans[1][2], trans[2][2], trans[3][2]
-                       , trans[0][3], trans[1][3], trans[2][3], trans[3][3];
-
-      return matrixHandle;
-    }
-
     std::string &SRInterface::getFSRoot()
     {
       return mFSRoot;
