@@ -125,12 +125,17 @@ void ReportFieldGeometryMeasures::execute()
     warning("This mesh type does not contain normals, skipping.");
     nnormals = false;
   }
+  else if (fnormals && !mesh->has_normals())
+  {
+    warning("This mesh type does not contain normals, skipping.");
+    fnormals = false;
+  }
   else if (normalsFlag && !(nnormals || fnormals))
   {
     warning("Cannot compute normals at that simplex location, skipping.");
   }
   
-  if (nnormals)
+  if (nnormals || fnormals)
   {
     mesh->synchronize(Mesh::NORMALS_E);
   }
