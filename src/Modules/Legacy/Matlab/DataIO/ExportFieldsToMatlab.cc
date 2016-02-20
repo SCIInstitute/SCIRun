@@ -39,6 +39,34 @@
 #include <Core/Matlab/matlabconverter.h>
 
 //#include <Core/Util/FullFileName.h>
+using namespace SCIRun::Modules::Matlab;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
+
+const ModuleLookupInfo ExportFieldsToMatlab::staticInfo_("ExportFieldsToMatlab", "Matlab", "SCIRun");
+
+ExportFieldsToMatlab::ExportFieldsToMatlab() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(Field1);
+  INITIALIZE_PORT(Field2);
+  INITIALIZE_PORT(Field3);
+  INITIALIZE_PORT(Field4);
+  INITIALIZE_PORT(Field5);
+  INITIALIZE_PORT(Field6);
+  INITIALIZE_PORT(Filename);
+}
+
+void ExportFieldsToMatlab::setStateDefaults()
+{
+  //TODO
+}
+
+void ExportFieldsToMatlab::execute()
+{
+  //TODO
+}
 
 #if 0
 namespace MatlabIO {

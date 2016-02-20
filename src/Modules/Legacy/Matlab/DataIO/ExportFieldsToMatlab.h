@@ -34,7 +34,7 @@
 
 namespace SCIRun {
 namespace Modules {
-namespace Fields {
+namespace Matlab {
 
   class SCISHARE ExportFieldsToMatlab : public SCIRun::Dataflow::Networks::Module,
     public Has7InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, StringPortTag>,
