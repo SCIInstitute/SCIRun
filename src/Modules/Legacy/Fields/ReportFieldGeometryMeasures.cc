@@ -40,34 +40,35 @@
 //#include <Core/Datatypes/MatrixTypeConverter.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/GeometryPrimitives/Vector.h>
 
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Fields;
 
-const ModuleLookupInfo ReportFieldGeometryMeasures::staticInfo_("ReportFieldGeometryMeasures", "MiscField", "SCIRun");
-
-#if 0
-namespace SCIRun {
-
 /// @class ReportFieldGeometryMeasures
 /// @brief Build a densematrix, where each row is a particular measure of the
 /// input Field (e.g. the x-values, or the element size). 
 
-class ReportFieldGeometryMeasures : public Module
-{
-  public:
-    ReportFieldGeometryMeasures(GuiContext* ctx);
-    virtual ~ReportFieldGeometryMeasures() {}
+const ModuleLookupInfo ReportFieldGeometryMeasures::staticInfo_("ReportFieldGeometryMeasures", "MiscField", "SCIRun");
 
-    virtual void execute();
-  private:
+ALGORITHM_PARAMETER_DEF(Fields, MeasureLocation);
+ALGORITHM_PARAMETER_DEF(Fields, XPositionFlag);
+ALGORITHM_PARAMETER_DEF(Fields, YPositionFlag);
+ALGORITHM_PARAMETER_DEF(Fields, ZPositionFlag);
+ALGORITHM_PARAMETER_DEF(Fields, IndexFlag);
+ALGORITHM_PARAMETER_DEF(Fields, SizeFlag);
+ALGORITHM_PARAMETER_DEF(Fields, NormalsFlag);
+
+#if 0
     GuiString simplexString_;
     GuiInt xFlag_;
     GuiInt yFlag_;
@@ -75,32 +76,40 @@ class ReportFieldGeometryMeasures : public Module
     GuiInt idxFlag_;
     GuiInt sizeFlag_;
     GuiInt normalsFlag_;
-};
+#endif
 
-
-DECLARE_MAKER(ReportFieldGeometryMeasures)
-
-ReportFieldGeometryMeasures::ReportFieldGeometryMeasures(GuiContext* ctx)
-  : Module("ReportFieldGeometryMeasures", ctx, Filter, "MiscField", "SCIRun"),
+ReportFieldGeometryMeasures::ReportFieldGeometryMeasures() : Module(staticInfo_)
+  /*
     simplexString_(get_ctx()->subVar("simplexString"), "Node"),
     xFlag_(get_ctx()->subVar("xFlag"), 1), 
     yFlag_(get_ctx()->subVar("yFlag"), 1),
     zFlag_(get_ctx()->subVar("zFlag"), 1), 
     idxFlag_(get_ctx()->subVar("idxFlag"), 0),
     sizeFlag_(get_ctx()->subVar("sizeFlag"), 0),
-    normalsFlag_(get_ctx()->subVar("normalsFlag"), 0)
+    normalsFlag_(get_ctx()->subVar("normalsFlag"), 0)*/
 {
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Output_Measures);
 }
 
-
-void
-ReportFieldGeometryMeasures::execute()
+void ReportFieldGeometryMeasures::setStateDefaults()
 {
-  FieldHandle fieldhandle;
-  get_input_handle("Input Field", fieldhandle, true);
+  auto state = get_state();
+  state->setValue(Parameters::MeasureLocation, std::string("Nodes"));
+  state->setValue(Parameters::XPositionFlag, true);
+  state->setValue(Parameters::YPositionFlag, true);
+  state->setValue(Parameters::ZPositionFlag, true);
+  state->setValue(Parameters::IndexFlag, false);
+  state->setValue(Parameters::SizeFlag, false);
+  state->setValue(Parameters::NormalsFlag, false);
+}
+
+void ReportFieldGeometryMeasures::execute()
+{
+  auto fieldhandle = getRequiredInput(InputField);
 
   VMesh* mesh = fieldhandle->vmesh();
-
+#if 0
   /// This is a hack for now, it is definitely not an optimal way
   int syncflag = 0;
   std::string simplex =simplexString_.get();
@@ -260,9 +269,5 @@ ReportFieldGeometryMeasures::execute()
   }
 
   send_output_handle("Output Measures Matrix", output, true);
-}
-
-} // End namespace SCIRun
-
-
 #endif
+}

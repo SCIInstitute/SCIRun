@@ -33,6 +33,22 @@
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Fields
+      {
+        ALGORITHM_PARAMETER_DECL(MeasureLocation);
+        ALGORITHM_PARAMETER_DECL(XPositionFlag);
+        ALGORITHM_PARAMETER_DECL(YPositionFlag);
+        ALGORITHM_PARAMETER_DECL(ZPositionFlag);
+        ALGORITHM_PARAMETER_DECL(IndexFlag);
+        ALGORITHM_PARAMETER_DECL(SizeFlag);
+        ALGORITHM_PARAMETER_DECL(NormalsFlag);
+      }
+    }
+  }
   namespace Modules {
     namespace Fields {
 
