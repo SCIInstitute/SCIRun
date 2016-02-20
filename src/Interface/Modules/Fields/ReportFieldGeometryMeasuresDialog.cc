@@ -41,11 +41,11 @@ ReportFieldGeometryMeasuresDialog::ReportFieldGeometryMeasuresDialog(const std::
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  //addCheckBoxManager(truncateDistanceCheckBox_, Parameters::Truncate);
-  //addCheckBoxManager(truncateDistanceCheckBox_, Parameters::Truncate);
-  //addCheckBoxManager(truncateDistanceCheckBox_, Parameters::Truncate);
-  //addCheckBoxManager(truncateDistanceCheckBox_, Parameters::Truncate);
-  //addCheckBoxManager(truncateDistanceCheckBox_, Parameters::Truncate);
-  //addCheckBoxManager(truncateDistanceCheckBox_, Parameters::Truncate);
-  //addComboBoxManager(dataTypeComboBox_, Parameters::OutputFieldDatatype);
+  addCheckBoxManager(xPositionCheckBox_, Parameters::XPositionFlag);
+  addCheckBoxManager(yPositionCheckBox_, Parameters::YPositionFlag);
+  addCheckBoxManager(zPositionCheckBox_, Parameters::ZPositionFlag);
+  addCheckBoxManager(indexCheckBox_, Parameters::IndexFlag);
+  addCheckBoxManager(sizeCheckBox_, Parameters::SizeFlag);
+  addCheckBoxManager(normalsCheckBox_, Parameters::NormalsFlag);
+  addComboBoxManager(simplexComboBox_, Parameters::MeasureLocation);
 }
