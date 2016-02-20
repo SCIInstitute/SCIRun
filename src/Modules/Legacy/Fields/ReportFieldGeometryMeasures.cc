@@ -68,25 +68,7 @@ ALGORITHM_PARAMETER_DEF(Fields, IndexFlag);
 ALGORITHM_PARAMETER_DEF(Fields, SizeFlag);
 ALGORITHM_PARAMETER_DEF(Fields, NormalsFlag);
 
-#if 0
-    GuiString simplexString_;
-    GuiInt xFlag_;
-    GuiInt yFlag_;
-    GuiInt zFlag_;
-    GuiInt idxFlag_;
-    GuiInt sizeFlag_;
-    GuiInt normalsFlag_;
-#endif
-
 ReportFieldGeometryMeasures::ReportFieldGeometryMeasures() : Module(staticInfo_)
-  /*
-    simplexString_(get_ctx()->subVar("simplexString"), "Node"),
-    xFlag_(get_ctx()->subVar("xFlag"), 1), 
-    yFlag_(get_ctx()->subVar("yFlag"), 1),
-    zFlag_(get_ctx()->subVar("zFlag"), 1), 
-    idxFlag_(get_ctx()->subVar("idxFlag"), 0),
-    sizeFlag_(get_ctx()->subVar("sizeFlag"), 0),
-    normalsFlag_(get_ctx()->subVar("normalsFlag"), 0)*/
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(Output_Measures);
@@ -108,13 +90,14 @@ void ReportFieldGeometryMeasures::execute()
 {
   auto fieldhandle = getRequiredInput(InputField);
 
+  auto state = get_state();
   VMesh* mesh = fieldhandle->vmesh();
-#if 0
+  
   /// This is a hack for now, it is definitely not an optimal way
   int syncflag = 0;
-  std::string simplex =simplexString_.get();
+  std::string simplex = state->getValue(Parameters::MeasureLocation).toString();
   
-  if (simplex == "Elem")
+  if (simplex == "Elements")
   {
     if (mesh->dimensionality() == 0) simplex = "Node";
     else if (mesh->dimensionality() == 1) simplex = "Edge";
@@ -122,26 +105,27 @@ void ReportFieldGeometryMeasures::execute()
     else if (mesh->dimensionality() == 3) simplex = "Cell";
   }
 
-  if (simplex == "Node")
+  if (simplex == "Nodes")
     syncflag = Mesh::NODES_E | Mesh::NODE_NEIGHBORS_E;
-  else if (simplex == "Edge")
+  else if (simplex == "Edges")
     syncflag = Mesh::EDGES_E | Mesh::ELEM_NEIGHBORS_E;
-  else if (simplex == "Face")
+  else if (simplex == "Faces")
     syncflag = Mesh::FACES_E | Mesh::ELEM_NEIGHBORS_E;
-  else if (simplex == "Cell")
+  else if (simplex == "Cells")
     syncflag = Mesh::CELLS_E;
 
   mesh->synchronize(syncflag);
 
-  bool nnormals = normalsFlag_.get() && (simplexString_.get() == "Node");
-  bool fnormals = normalsFlag_.get() && (simplexString_.get() == "Face");
+  const bool normalsFlag = state->getValue(Parameters::NormalsFlag).toBool();
+  bool nnormals = normalsFlag && (state->getValue(Parameters::MeasureLocation).toString() == "Nodes");
+  bool fnormals = normalsFlag && (state->getValue(Parameters::MeasureLocation).toString() == "Faces");
 
   if (nnormals && !mesh->has_normals())
   {
     warning("This mesh type does not contain normals, skipping.");
     nnormals = false;
   }
-  else if (normalsFlag_.get() && !(nnormals || fnormals))
+  else if (normalsFlag && !(nnormals || fnormals))
   {
     warning("Cannot compute normals at that simplex location, skipping.");
   }
@@ -151,11 +135,11 @@ void ReportFieldGeometryMeasures::execute()
     mesh->synchronize(Mesh::NORMALS_E);
   }
 
-  bool x = xFlag_.get();
-  bool y = yFlag_.get();
-  bool z = zFlag_.get();
-  bool eidx = idxFlag_.get();
-  bool size = sizeFlag_.get();
+  const bool x = state->getValue(Parameters::XPositionFlag).toBool();
+  const bool y = state->getValue(Parameters::YPositionFlag).toBool();
+  const bool z = state->getValue(Parameters::ZPositionFlag).toBool();
+  const bool eidx = state->getValue(Parameters::IndexFlag).toBool();
+  const bool size = state->getValue(Parameters::SizeFlag).toBool();
 
   size_type ncols=0;
   if (x)     ncols++;
@@ -172,16 +156,16 @@ void ReportFieldGeometryMeasures::execute()
     return;
   }
 
-  MatrixHandle output;
+  DenseMatrixHandle output;
 
   update_state(Executing);
 
-  if (simplexString_.get() == "Node")
+  if (state->getValue(Parameters::MeasureLocation).toString() == "Nodes")
   {
     VMesh::Node::size_type nrows;
     mesh->size(nrows);
-    output = new DenseMatrix(nrows,ncols);
-    double* dataptr = output->get_data_pointer();
+    output.reset(new DenseMatrix(nrows,ncols));
+    double* dataptr = output->data();
   
     Point p; double vol; 
     for(VMesh::Node::index_type idx=0; idx<nrows; idx++)
@@ -201,12 +185,12 @@ void ReportFieldGeometryMeasures::execute()
       }
     }
   }
-  else if (simplexString_.get() == "Edge")
+  else if (state->getValue(Parameters::MeasureLocation).toString() == "Edges")
   {
     VMesh::Edge::size_type nrows;
     mesh->size(nrows);
-    output = new DenseMatrix(nrows,ncols);
-    double* dataptr = output->get_data_pointer();
+    output.reset(new DenseMatrix(nrows, ncols));
+    double* dataptr = output->data();
   
     Point p; double vol; 
     for(VMesh::Edge::index_type idx=0; idx<nrows; idx++)
@@ -220,12 +204,12 @@ void ReportFieldGeometryMeasures::execute()
       if (size) { *dataptr = vol; dataptr++; }
     }
   }  
-  else if (simplexString_.get() == "Face")
+  else if (state->getValue(Parameters::MeasureLocation).toString() == "Faces")
   {
     VMesh::Face::size_type nrows;
     mesh->size(nrows);
-    output = new DenseMatrix(nrows,ncols);
-    double* dataptr = output->get_data_pointer();
+    output.reset(new DenseMatrix(nrows, ncols));
+    double* dataptr = output->data();
   
     Point p; double vol; 
     VMesh::coords_type center;
@@ -248,12 +232,12 @@ void ReportFieldGeometryMeasures::execute()
       }
     }
   }
-  else if (simplexString_.get() == "Cell")
+  else if (state->getValue(Parameters::MeasureLocation).toString() == "Cells")
   {
     VMesh::Cell::size_type nrows;
     mesh->size(nrows);
-    output = new DenseMatrix(nrows,ncols);
-    double* dataptr = output->get_data_pointer();
+    output.reset(new DenseMatrix(nrows, ncols));
+    double* dataptr = output->data();
   
     Point p; double vol; 
     for(VMesh::Cell::index_type idx=0; idx<nrows; idx++)
@@ -268,6 +252,5 @@ void ReportFieldGeometryMeasures::execute()
     }
   }
 
-  send_output_handle("Output Measures Matrix", output, true);
-#endif
+  sendOutput(Output_Measures, output);
 }
