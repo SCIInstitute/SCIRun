@@ -87,7 +87,7 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
 	/*********************************************************************************
 	//TODO Disabling text-related widgets until font fixed for Windows
 	***********************************************************************************/
-	unitsText_->setEnabled(false);
+/*	unitsText_->setEnabled(false);
 	TRadioButton_->setEnabled(false);
 	SRadioButton_->setEnabled(false);
 	MRadioButton_->setEnabled(false);
@@ -96,7 +96,7 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
 	sigDigitsSpinner_->setEnabled(false);
 	ticksSpinner_->setEnabled(false);
 	scaleSpinner_->setEnabled(false);
-	textColorPushButton_->setEnabled(false);
+	textColorPushButton_->setEnabled(false);*/
 	/*********************************************************************************
 	//TODO End Disabling
 	***********************************************************************************/

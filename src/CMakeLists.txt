@@ -424,7 +424,7 @@ CPM_AddModule("es_general"
 # ++ MODULE: Entity System Rendering.
 CPM_AddModule("es_render"
   GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-render"
-  GIT_TAG "origin/AddFBO"
+  GIT_TAG "origin/FontTextures"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: Acorn
@@ -453,11 +453,22 @@ MESSAGE(STATUS "Done configuring CPMs")
 # Copy Spire-SCIRun specific assets and shaders
 
 set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
+set(OUTPUT_FONT_DIR ${CMAKE_CURRENT_BINARY_DIR}/Fonts)
 set(OUTPUT_ASSET_DIR ${CMAKE_CURRENT_BINARY_DIR}/Assets)
 
 function (CopyShaders src_shader_dir dest_shader_dir)
   if (NOT dest_shader_dir STREQUAL "")
     file(COPY ${src_shader_dir}/ DESTINATION ${dest_shader_dir}
+      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+      DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                            GROUP_READ GROUP_EXECUTE
+                            WORLD_READ WORLD_EXECUTE)
+  endif()
+endfunction()
+
+function (CopyFonts src_font_dir dest_font_dir)
+  if (NOT dest_font_dir STREQUAL "")
+    file(COPY ${src_font_dir}/ DESTINATION ${dest_font_dir}
       FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                             GROUP_READ GROUP_EXECUTE
@@ -479,6 +490,12 @@ if (DEFINED OUTPUT_SHADER_DIR)
   CopyShaders(${CMAKE_CURRENT_SOURCE_DIR}/Interface/Modules/Render/ES/shaders ${OUTPUT_SHADER_DIR})
 else()
   message(WARNING "Not copying shader files. OUTPUT_SHADER_DIR variable not found.")
+endif()
+
+if (DEFINED OUTPUT_FONT_DIR)
+  CopyFonts(${CMAKE_CURRENT_SOURCE_DIR}/Interface/Modules/Render/ES/fonts ${OUTPUT_FONT_DIR})
+else()
+  message(WARNING "Not copying font files. OUTPUT_FONT_DIR variable not found.")
 endif()
 
 if (DEFINED OUTPUT_ASSET_DIR)

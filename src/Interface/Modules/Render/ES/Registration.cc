@@ -36,7 +36,9 @@
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
 #include "comp/StaticWorldLight.h"
+#include "comp/StaticClippingPlanes.h"
 #include "comp/LightingUniforms.h"
+#include "comp/ClippingPlaneUniforms.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderTransBasicSys.h"
 
@@ -54,8 +56,10 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
   // Register components
   core.registerComponent<StaticSRInterface>();
   core.registerComponent<StaticWorldLight>();
+  core.registerComponent<StaticClippingPlanes>();
   core.registerComponent<LightingUniforms>();
-	core.registerComponent<RenderBasicGeom>();
+  core.registerComponent<ClippingPlaneUniforms>();
+  core.registerComponent<RenderBasicGeom>();
   core.registerComponent<SRRenderState>();
   core.registerComponent<RenderList>();
   core.registerComponent<Graphics::Datatypes::SpireSubPass>();
