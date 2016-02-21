@@ -95,7 +95,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   /////Set unused widgets to be not visible
   ////Clipping tab
-  tabWidget->removeTab(2);
+  //tabWidget->removeTab(2);
 
   ///Object Tab
   tabWidget->setCurrentIndex(0);
@@ -139,10 +139,10 @@ void ViewSceneControlsDock::updatePlaneSettingsDisplay(bool visible, bool showPl
 
 void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double z, double d)
 {
-  xSliderValueLabel_->setText(QString::number(x));
-  ySliderValueLabel_->setText(QString::number(y));
-  zSliderValueLabel_->setText(QString::number(z));
-  dSliderValueLabel_->setText(QString::number(d));
+  xSliderValueLabel_->setText(QString::number(x, 'f', 2));
+  ySliderValueLabel_->setText(QString::number(y, 'f', 2));
+  zSliderValueLabel_->setText(QString::number(z, 'f', 2));
+  dSliderValueLabel_->setText(QString::number(d, 'f', 2));
 
   xValueHorizontalSlider_->setSliderPosition(x * 100);
   yValueHorizontalSlider_->setSliderPosition(y * 100);

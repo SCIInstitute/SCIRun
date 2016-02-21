@@ -33,6 +33,11 @@
 #include <memory>
 #include <Interface/Modules/Render/GLContext.h>
 #include "Core.h"
+#include <es-general/comp/Transform.hpp>
+
+//freetype
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 // CPM Modules
 #include <es-render/util/Shader.hpp>
@@ -146,6 +151,21 @@ namespace SCIRun {
       /// get name of the selection
       std::string &getSelection();
 
+      gen::Transform &getWidgetTransform();
+
+      static std::string& getFSRoot();
+      static std::string& getFSSeparator();
+
+      //Clipping Plane 
+      void setClippingPlaneIndex(int index);
+      void setClippingPlaneVisible(bool value);
+      void setClippingPlaneFrameOn(bool value);
+      void reverseClippingPlaneNormal(bool value);
+      void setClippingPlaneX(double value);
+      void setClippingPlaneY(double value);
+      void setClippingPlaneZ(double value);
+      void setClippingPlaneD(double value);
+
     private:
 
       class DepthIndex {
@@ -212,6 +232,12 @@ namespace SCIRun {
 
         int										          mPort;
       };
+
+      struct ClippingPlane {
+        bool visible, showFrame, reverseNormal;
+        double x, y, z, d;
+      };
+
       // Sets up ESCore.
       void setupCore();
 
@@ -220,6 +246,9 @@ namespace SCIRun {
 
       // Updates the world light.
       void updateWorldLight();
+
+      //update the clipping planes
+      void updateClippingPlanes();
 
       // Renders coordinate axes on the screen.
       void renderCoordinateAxes();
@@ -241,6 +270,9 @@ namespace SCIRun {
       // Adds an IBO to the given entityID.
       void addIBOToEntity(uint64_t entityID, const std::string& iboName);
 
+      //add a texture to the given entityID.
+      void addTextToEntity(uint64_t entityID, const Graphics::Datatypes::SpireText& text);
+
       // Adds a shader to the given entityID. Represents different materials
       // associated with different passes.
       void addShaderToEntity(uint64_t entityID, const std::string& shaderName);
@@ -251,6 +283,11 @@ namespace SCIRun {
       // search for a widget at mouse position
       bool foundWidget(const glm::ivec2& pos);
 
+      // update selected widget
+      void updateWidget(const glm::ivec2& pos);
+
+      // make sure clipping plane number matches
+      void checkClippingPlanes(int n);
 
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
@@ -258,10 +295,14 @@ namespace SCIRun {
       bool                              widgetSelected_;  ///< Whether or not a widget is currently selected.
       bool                              widgetExists_;    ///< Geometry contains a widget to find.
 
+      uint64_t                          mSelectedID;
       int                               mZoomSpeed;
       MouseMode                         mMouseMode;       ///< Current mouse mode.
 
       std::string                       mSelected;        ///< Current selection
+      glm::vec4                         mSelectedPos;     ///
+      gen::Transform                    mWidgetTransform;
+
       size_t                            mScreenWidth;     ///< Screen width in pixels.
       size_t                            mScreenHeight;    ///< Screen height in pixels.
 
@@ -280,12 +321,17 @@ namespace SCIRun {
       std::string                       mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
       std::string                       mArrowObjectName; ///< Object name for profile arrow.
 
+      std::vector<ClippingPlane>        clippingPlanes_;
+      int                               clippingPlaneIndex_;
 
       ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
       ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
       RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
+
+      static std::string mFSRoot;/// file system root
+      static std::string mFSSeparator;/// file system seperator
     };
 
   } // namespace Render
