@@ -34,7 +34,7 @@
 
 namespace SCIRun {
 namespace Modules {
-namespace Fields {
+namespace Matlab {
 
   class SCISHARE ImportFieldsFromMatlab : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<StringPortTag>,
@@ -52,6 +52,8 @@ namespace Fields {
     OUTPUT_PORT(4, Field5, LegacyField);
     OUTPUT_PORT(5, Field6, LegacyField);
     OUTPUT_PORT(6, FilenameOut, String);
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 }}}
 

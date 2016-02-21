@@ -36,20 +36,46 @@
 #include <string>
 #include <vector>
 
-#include <Core/Util/FullFileName.h>
-
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/String.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
 
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
 
-#include <Dataflow/GuiInterface/GuiVar.h>
+//#include <Core/Util/FullFileName.h>
+
+using namespace SCIRun::Modules::Matlab;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
+
+const ModuleLookupInfo ImportFieldsFromMatlab::staticInfo_("ImportFieldsFromMatlab", "Matlab", "SCIRun");
+
+ImportFieldsFromMatlab::ImportFieldsFromMatlab() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(Field1);
+  INITIALIZE_PORT(Field2);
+  INITIALIZE_PORT(Field3);
+  INITIALIZE_PORT(Field4);
+  INITIALIZE_PORT(Field5);
+  INITIALIZE_PORT(Field6);
+  INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(FilenameOut);
+}
+
+void ImportFieldsFromMatlab::setStateDefaults()
+{
+  //TODO
+}
+
+void ImportFieldsFromMatlab::execute()
+{
+  //TODO
+}
+
+#if 0
 
 namespace MatlabIO {
 
@@ -474,3 +500,4 @@ void ImportFieldsFromMatlab::displayerror(std::string str)
 
 
 } // End namespace MatlabIO
+#endif
