@@ -31,7 +31,7 @@
 #define MODULES_FIELDS_REPORTFIELDINFO_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Modules/Legacy/Matlab/DataIO/share.h>
 
 namespace SCIRun {
 namespace Modules {

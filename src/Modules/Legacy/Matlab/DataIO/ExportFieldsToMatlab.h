@@ -30,7 +30,7 @@
 #define MODULES_LEGACY_MATLAB_DATAIO_EXPORTFIELDSTOMATLAB_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Modules/Legacy/Matlab/DataIO/share.h>
 
 namespace SCIRun {
 namespace Modules {
