@@ -30,7 +30,7 @@
 
 SET(Modules_Legacy_Matlab_DataIO_SRCS
   ImportDatatypesFromMatlab.cc
-  #ImportFieldsFromMatlab.cc
+  ImportFieldsFromMatlab.cc
   ExportFieldsToMatlab.cc
   #ExportDatatypesToMatlab.cc
 )
