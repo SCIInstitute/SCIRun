@@ -1275,9 +1275,23 @@ namespace SCIRun {
       {
         clippingPlanes->clippingPlanes.clear();
         clippingPlanes->clippingPlaneCtrls.clear();
+        //boundbox transformation
+        glm::mat4 trans_bb;
+        glm::vec3 scale_bb(mSceneBBox.x_length() / 2.0, mSceneBBox.y_length() / 2.0, mSceneBBox.z_length() / 2.0);
+        glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
+        trans_bb = glm::scale(trans_bb, scale_bb);
+        trans_bb = glm::translate(trans_bb, center_bb);
         for (auto i : clippingPlanes_)
         {
-          clippingPlanes->clippingPlanes.push_back(glm::vec4(i.x, i.y, i.z, i.d));
+          glm::vec4 o = glm::vec4(i.x, i.y, i.z, 1) * (-i.d);
+          o.w = 1;
+          glm::vec4 n(i.x, i.y, i.z, 0);
+          o = trans_bb * o;
+          n = glm::inverseTranspose(trans_bb) * n;
+          o.w = 0;
+          n.w = 0;
+          n.w = -glm::dot(o, n);
+          clippingPlanes->clippingPlanes.push_back(glm::vec4(n.x, n.y, n.z, n.w));
           clippingPlanes->clippingPlaneCtrls.push_back(
             glm::vec4(i.visible?1.0:0.0, i.showFrame?1.0:0.0, i.reverseNormal?1.0:0.0, 0.0));
         }
