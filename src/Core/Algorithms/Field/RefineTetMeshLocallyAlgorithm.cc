@@ -381,21 +381,28 @@ std::vector<int> RefineTetMeshLocallyAlgorithm::SelectMeshElements(FieldHandle i
  {
    double value=get(RefineTetMeshLocallyIsoValue).toDouble();
    
-   if (ModuleInput)
+   if(ModuleInput && value!=code_to_split && choose_refinement_option==0)  
+   {                                 
+    /// if some tets are preselected in module input (have field data value "1") but 'Iso Value' is chosen NOT "1" (with active radiobutton on "Iso Value"), this module will not 
+    /// preselection works as a logical AND in order to be able to be more specific what to refine
+   }
+   else   
+   {
+    if (ModuleInput)
       value=code_to_split;
       
-   for (VMesh::Elem::index_type idx=0; idx<input_vmesh->num_elems(); idx++)
-   {
-    double tmp;
-    input_vfld->get_value(tmp,idx);
-    if (tmp==value)
+    for (VMesh::Elem::index_type idx=0; idx<input_vmesh->num_elems(); idx++)
     {
-     result[(long)idx]=code_to_split; 
-     count++;
-     
-    } else
-    {
+     double tmp;
+     input_vfld->get_value(tmp,idx);
+     if (tmp==value)
+     {
+      result[(long)idx]=code_to_split; 
+      count++;
+     } else
+     {
      result[(long)idx]=code_not_to_split; 
+     }
     }
    }
  }
@@ -470,14 +477,27 @@ std::vector<int> RefineTetMeshLocallyAlgorithm::SelectMeshElements(FieldHandle i
        remark(" The volume of at least one mesh element is zero or even negative. If its negative you can use 'counterclockwise tet ordering'. If its zero the tet might be flat ");
        //return result; 
       }
-      if (tet_volume>volume_bound)
+            
+      bool condition=tet_volume>volume_bound;
+      bool ext_condition=result[(long)idx] && ModuleInput;
+      if (condition && !ModuleInput) /// typical case
       {
-	result[(long)idx]=code_to_split;  
-	count++;
+       result[(long)idx]=code_to_split; 
+       count++;    
+      } else 
+      if (!condition && ext_condition)
+      {
+       result[(long)idx]=code_not_to_split; 
+       count--;
+      } else 
+      if (condition && ext_condition)
+      { 
+        ///its already selected no need to do that again
       } else
-      {
-	result[(long)idx]=code_not_to_split;  
-      }
+      {	
+	result[(long)idx]=code_not_to_split;
+      } 
+
      }
      break;
     }
@@ -536,14 +556,26 @@ std::vector<int> RefineTetMeshLocallyAlgorithm::SelectMeshElements(FieldHandle i
        }
       }
       
-       if (min>=min_bound && max<=max_bound)
-       {
-        result[(long)idx]=code_to_split; 
-	count++;
-       } else
-       {
+      bool condition=min>=min_bound && max<=max_bound;
+      bool ext_condition=result[(long)idx] && ModuleInput;
+      if (condition && !ModuleInput) /// typical case
+      {
+       result[(long)idx]=code_to_split; 
+       count++;    
+      } else 
+      if (!condition && ext_condition)
+      {
+       result[(long)idx]=code_not_to_split; 
+       count--;
+      } else 
+      if (condition && ext_condition)
+      { 
+        ///its already selected no need to do that again
+      } else
+      {	
 	result[(long)idx]=code_not_to_split;
-       }
+      } 
+ 
      }
      break;
     }
@@ -927,7 +959,7 @@ bool RefineTetMeshLocallyAlgorithm::runImpl(FieldHandle input, FieldHandle& outp
   bool invert_tet_ordering = get(RefineTetMeshLocallyCounterClockWiseOrdering).toBool();
   std::vector<int> selection_vector;
   
-  int count=0;
+  int count=0, total_iterations=0;
   
   bool MeshDoNoSplitSurfaceTets = get(RefineTetMeshLocallyDoNoSplitSurfaceTets).toBool();
   GetFieldBoundaryAlgo getfieldbound_algo; 
@@ -954,8 +986,10 @@ bool RefineTetMeshLocallyAlgorithm::runImpl(FieldHandle input, FieldHandle& outp
     std::ostringstream ostr;
     ostr << " No (more) tetrahedral elements need to be split. " << std::endl;
     remark(ostr.str());
-    return true; 
-   }
+    break; 
+   } 
+      
+   total_iterations++;   
   
    if(output->vmesh()->num_elems() != selection_vector.size())
    {
@@ -993,7 +1027,14 @@ bool RefineTetMeshLocallyAlgorithm::runImpl(FieldHandle input, FieldHandle& outp
    output=RefineMesh(output, cut_edges);
   
   }
- }   
+ } 
+ 
+  if(total_iterations>0)
+  {
+    std::ostringstream ostr;
+    ostr << total_iterations << " Iterations until selection criteria was reached ! " << std::endl;
+    remark(ostr.str());  
+  }
    
   return (true);
 }

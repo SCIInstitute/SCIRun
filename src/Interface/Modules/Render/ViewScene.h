@@ -109,6 +109,7 @@ namespace SCIRun {
     protected:
       virtual void mousePressEvent(QMouseEvent* event);
       virtual void mouseReleaseEvent(QMouseEvent* event);
+      virtual void mouseMoveEvent(QMouseEvent* event);
       virtual void keyPressEvent(QKeyEvent* event);
       virtual void keyReleaseEvent(QKeyEvent*event);
       virtual void closeEvent(QCloseEvent* evt) override;
@@ -150,6 +151,7 @@ namespace SCIRun {
       QComboBox*                            mUpVectorBox;         ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock;   ///< Dock holding configuration functions
 
+      int counter_;
       bool shown_;
       bool hideViewBar_;
       bool showConfiguration_;

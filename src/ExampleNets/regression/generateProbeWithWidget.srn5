@@ -238,7 +238,7 @@
 									<name>MoveMethod</name>
 									<value>
 										<which>2</which>
-										<value>Center</value>
+										<value>Location</value>
 									</value>
 								</second>
 							</item>

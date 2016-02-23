@@ -39,6 +39,8 @@
 #include <boost/function.hpp>
 
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Logging/LoggerFwd.h>
 
 #include <Modules/Legacy/Inverse/share.h>
@@ -110,7 +112,7 @@ namespace BioPSE
 
     void run(const Input& input);
     void update_graph(const TikhonovAlgorithmImpl::Input& input, double lambda, int lambda_index, const double epsilon);
-
+    
     static double FindCorner(const TikhonovAlgorithm::LCurveInput& input, int& lambda_index);
     static double LambdaLookup(const TikhonovAlgorithm::LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
 
@@ -123,6 +125,12 @@ namespace BioPSE
     SCIRun::Core::Datatypes::DenseMatrixHandle inverseSolution_;
     SCIRun::Core::Datatypes::DenseMatrixHandle inverseMatrix_;
     SCIRun::Core::Datatypes::DenseColumnMatrixHandle regularizationParameter_;
+    
+//      SCIRun::Core::Datatypes::DenseMatrix M1;
+//      SCIRun::Core::Datatypes::DenseMatrix M2;
+//      SCIRun::Core::Datatypes::DenseMatrix M3;
+//      SCIRun::Core::Datatypes::DenseMatrix M4;
+//      SCIRun::Core::Datatypes::DenseColumnMatrix y;
 
     AlgorithmChoice regularizationChoice_;
     AlgorithmSolutionSubcase regularizationSolutionSubcase_;
@@ -132,6 +140,15 @@ namespace BioPSE
     bool computeRegularizedInverse_;
     boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput_handle_;
     SCIRun::Core::Logging::LegacyLoggerInterface* pr_;
+      
+      
+    SCIRun::Core::Datatypes::DenseColumnMatrix computeInverseSolution( SCIRun::Core::Datatypes::DenseMatrix& M1, SCIRun::Core::Datatypes::DenseMatrix& M2, SCIRun::Core::Datatypes::DenseMatrix& M3, SCIRun::Core::Datatypes::DenseMatrix& M4, SCIRun::Core::Datatypes::DenseColumnMatrix& y, double lambda_sq, bool inverseCalculation);
+      
+    double computeLcurve( const TikhonovAlgorithmImpl::Input& input, SCIRun::Core::Datatypes::DenseMatrix& M1, SCIRun::Core::Datatypes::DenseMatrix& M2, SCIRun::Core::Datatypes::DenseMatrix& M3, SCIRun::Core::Datatypes::DenseMatrix& M4, SCIRun::Core::Datatypes::DenseColumnMatrix& y );
+    
+    void checkInputMatrixSizes(int M, int N);
+
+
   };
 }
 

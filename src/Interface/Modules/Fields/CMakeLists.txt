@@ -69,6 +69,7 @@ SET(Interface_Modules_Fields_FORMS
   convertfielddatatype.ui
   scalefieldmeshanddata.ui #TODO: fix case
   ConvertMatricesToMesh.ui
+  ReportFieldGeometryMeasures.ui
   RefineTetMeshLocally.ui
 )
 
@@ -114,6 +115,7 @@ SET(Interface_Modules_Fields_HEADERS
   ScaleFieldMeshAndDataDialog.h
   ConvertFieldDataTypeDialog.h
   ConvertMatricesToMeshDialog.h
+  ReportFieldGeometryMeasuresDialog.h
   RefineTetMeshLocallyDialog.h
 )
 
@@ -158,6 +160,7 @@ SET(Interface_Modules_Fields_SOURCES
   ScaleFieldMeshAndDataDialog.cc
   ConvertFieldDataTypeDialog.cc
   ConvertMatricesToMeshDialog.cc
+  ReportFieldGeometryMeasuresDialog.cc
   RefineTetMeshLocallyDialog.cc
 )
 
