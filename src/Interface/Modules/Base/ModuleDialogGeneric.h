@@ -126,6 +126,7 @@ namespace Gui {
     void addDynamicLabelManager(QLabel* label, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addSliderManager(QSlider* slider, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void removeManager(const Core::Algorithms::AlgorithmParameterName& stateKey);
 
     void createExecuteInteractivelyToggleAction();
   private Q_SLOTS:

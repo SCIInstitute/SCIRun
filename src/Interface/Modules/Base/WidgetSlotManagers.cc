@@ -33,7 +33,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Algorithms;
 
 WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog, QWidget* widget, const AlgorithmParameterName& name)
-  : state_(state), dialog_(dialog)
+  : state_(state), dialog_(dialog), name_(name)
 {
   if (widget)
   {
@@ -42,7 +42,7 @@ WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHand
   }
 }
 
-WidgetSlotManager::~WidgetSlotManager() 
+WidgetSlotManager::~WidgetSlotManager()
 {
 }
 

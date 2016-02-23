@@ -36,7 +36,7 @@
 
 namespace SCIRun {
 namespace Gui {
-  
+
   class ModuleDialogGeneric;
 
   class SCISHARE WidgetSlotManager : public QObject
@@ -46,12 +46,14 @@ namespace Gui {
     WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog, QWidget* widget, const Core::Algorithms::AlgorithmParameterName& name);
     virtual ~WidgetSlotManager();
     virtual void pushImpl() = 0;
+    const Core::Algorithms::AlgorithmParameterName& name() const { return name_; }
   public Q_SLOTS:
     void push();
     virtual void pull() = 0;
   protected:
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
     ModuleDialogGeneric& dialog_;
+    Core::Algorithms::AlgorithmParameterName name_;
   };
 
   typedef boost::shared_ptr<WidgetSlotManager> WidgetSlotManagerPtr;

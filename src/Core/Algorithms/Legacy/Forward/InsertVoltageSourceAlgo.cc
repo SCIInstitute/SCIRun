@@ -194,7 +194,8 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
     for (int j=0; j<nsrcs; j++)
       val+=closest[bc_nodes[i]][j].second/nsrcs;
     //dirichlet.push_back(std::pair<int, double>((int)bc_nodes[i], val));
-    (*odirichletMatrix) << (int)bc_nodes[i], val;
+    (*odirichletMatrix)(i, 0) = static_cast<int>(bc_nodes[i]);
+    (*odirichletMatrix)(i, 1) = val;
   }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

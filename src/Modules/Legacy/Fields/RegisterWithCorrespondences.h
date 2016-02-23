@@ -51,7 +51,7 @@ namespace SCIRun {
         INPUT_PORT(2, Correspondences2, LegacyField);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
     }
   }

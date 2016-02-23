@@ -136,7 +136,7 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, co
 
         auto lineEdit = new QLineEdit;
         Core::Algorithms::Name name(connectedPortId);
-        
+
         if (state_->containsKey(name))
           lineEdit->setText(QString::fromStdString(state_->getValue(name).toString()));
         else
@@ -144,7 +144,7 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, co
           lineEdit->setText(QString::fromStdString(type) + "Input" + QString::number(connectedPortNumber + 1));
           state_->setValue(name, lineEdit->text().toStdString());
         }
-        
+
         addLineEditManager(lineEdit, name);
         inputVariableNamesTableWidget_->setCellWidget(rowCount - 1, 2, lineEdit);
       }
@@ -160,6 +160,7 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, co
         int row = inputVariableNamesTableWidget_->row(item);
         inputVariableNamesTableWidget_->removeRow(row);
         //qDebug() << "row removed" << QString::fromStdString(portId);
+        removeManager(Core::Algorithms::Name(portId));
       }
       else
       {

@@ -35,9 +35,11 @@ attribute vec4  aColor;
 
 // Outputs to the fragment shader.
 varying vec4    fColor;
+varying vec4    vPos;//for clipping plane calc
 
 void main( void )
 {
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
   fColor  = aColor;
+  vPos = vec4(aPos, 1.0);
 }
