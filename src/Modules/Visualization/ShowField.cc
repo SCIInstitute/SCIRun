@@ -807,8 +807,10 @@ void GeometryBuilder::renderFacesLinear(
 
   geom->mIBOs.push_back(geomIBO);
 
+  SpireText text;
+
   SpireSubPass pass(passName, vboName, iboName, shader,
-    colorScheme, state, RENDER_VBO_IBO, geomVBO, geomIBO);
+    colorScheme, state, RENDER_VBO_IBO, geomVBO, geomIBO, text);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -1357,7 +1359,7 @@ void GeometryBuilder::renderEdges(
     }
     else
     {
-      glyphs.addNeedle(p0, p1, edge_colors[0], edge_colors[1]);
+      glyphs.addLine(p0, p1, edge_colors[0], edge_colors[1]);
     }
 
     ++eiter;

@@ -80,8 +80,8 @@ void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(const DenseMatrixHandle& dirBC,
   size_type size = dirBC->nrows();
   for(idx = 0; idx<size; ++idx)
   {
-    index_type ni = (*dirBC)(idx, 1);
-    double val = (*dirBC)(idx, 2);
+    index_type ni = (*dirBC)(idx, 0);
+    double val = (*dirBC)(idx, 1);
   
     // -- getting column indices of non-zero elements for the current row
     mat->getRowNonzerosNoCopy(ni, idcNzsize, idcNz, valNz);
@@ -98,8 +98,8 @@ void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(const DenseMatrixHandle& dirBC,
   size = dirBC->nrows();
   for(idx = 0; idx<size; ++idx)
   {
-    index_type ni = (*dirBC)(idx, 1);
-    double val = (*dirBC)(idx, 2);
+    index_type ni = (*dirBC)(idx, 0);
+    double val = (*dirBC)(idx, 1);
   
     mat->getRowNonzerosNoCopy(ni, idcNzsize, idcNz, valNz);
     
@@ -114,5 +114,4 @@ void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(const DenseMatrixHandle& dirBC,
     mat->put(ni, ni, 1);
     (*rhs)[ni] = val;
   }
-  
 }

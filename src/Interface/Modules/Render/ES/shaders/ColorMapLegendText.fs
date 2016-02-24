@@ -32,6 +32,6 @@ varying vec2 fTexCoord;
 
 void main()
 {
-   vec4 rgba = texture2D( uTX0, fTexCoord );
+   vec4 rgba = vec4(texture2D( uTX0, fTexCoord ).x);
    gl_FragColor = uColor * rgba;
 }

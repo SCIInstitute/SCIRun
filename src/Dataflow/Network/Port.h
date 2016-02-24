@@ -101,13 +101,13 @@ public:
   virtual ~InputPort();
   virtual void attach(Connection* conn) override;
   virtual void detach(Connection* conn) override;
-  virtual DatatypeSinkInterfaceHandle sink() const;
-  virtual Core::Datatypes::DatatypeHandleOption getData() const;
-  virtual bool isInput() const { return true; } //boo
-  virtual bool isDynamic() const { return isDynamic_; }
-  virtual InputPortInterface* clone() const;
-  virtual bool hasChanged() const;
-  virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber);
+  virtual DatatypeSinkInterfaceHandle sink() const override;
+  virtual Core::Datatypes::DatatypeHandleOption getData() const override;
+  virtual bool isInput() const override { return true; } //boo
+  virtual bool isDynamic() const override { return isDynamic_; }
+  virtual InputPortInterface* clone() const override;
+  virtual bool hasChanged() const override;
+  virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) override;
 private:
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;
@@ -119,14 +119,14 @@ class SCISHARE OutputPort : public Port, public OutputPortInterface
 public:
   OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source);
   virtual ~OutputPort();
-  virtual void sendData(Core::Datatypes::DatatypeHandle data);
-  virtual bool isInput() const { return false; } //boo
-  virtual bool isDynamic() const { return false; } /// @todo: design dynamic output ports
+  virtual void sendData(Core::Datatypes::DatatypeHandle data) override;
+  virtual bool isInput() const override { return false; } //boo
+  virtual bool isDynamic() const override { return false; } /// @todo: design dynamic output ports
   virtual bool hasData() const override;
   virtual void attach(Connection* conn) override;
   virtual PortDataDescriber getPortDataDescriber() const override;
   virtual boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) override;
-  virtual void sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info) override;
+  virtual void sendConnectionFeedback(ModuleFeedback info) override;
 private:
   DatatypeSourceInterfaceHandle source_;
   ConnectionFeedbackSignalType cxnFeedback_;

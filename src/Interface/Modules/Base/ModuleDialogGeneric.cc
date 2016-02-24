@@ -208,6 +208,11 @@ void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr)
   slotManagers_.push_back(ptr);
 }
 
+void ModuleDialogGeneric::removeManager(const Core::Algorithms::AlgorithmParameterName& stateKey)
+{
+  slotManagers_.erase(std::remove_if(slotManagers_.begin(), slotManagers_.end(), [&](WidgetSlotManagerPtr wsm) { return wsm->name() == stateKey; } ));
+}
+
 void ModuleDialogGeneric::pullManagedWidgets()
 {
   Pulling p(this);
@@ -609,7 +614,7 @@ public:
     auto newValue = state_->getValue(stateKey_).toString();
     if (newValue != label_->text().toStdString())
     {
-      LOG_DEBUG("In new version of pull code for checkable QAbstractButton: " << newValue);
+      LOG_DEBUG("In new version of pull code for dynamic label: " << newValue);
       label_->setText(QString::fromStdString(newValue));
     }
   }

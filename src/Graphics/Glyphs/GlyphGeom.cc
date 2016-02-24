@@ -190,8 +190,10 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string& uniqueNodeID
   state.set(RenderState::IS_ON, true);
   state.set(RenderState::HAS_DATA, true);
 
+  SpireText text;
+
   // Construct Pass.
-  SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO);
+  SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -233,6 +235,11 @@ void GlyphGeom::addCone(const Point p1, const Point& p2, double radius, double r
 {
   //std::cout << "p1: " << p1 << " p2 " << p2 << " radius: " << radius << " resolution: " << resolution << " color1: " << color1 << " color2: " << color2 << std::endl;
   generateCylinder(p1, p2, radius, 0.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
+}
+
+void GlyphGeom::addLine(Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
+{
+  generateLine(p1, p2, color1, color2, numVBOElements_, points_, indices_, colors_);
 }
 
 void GlyphGeom::addNeedle(Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
