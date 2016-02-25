@@ -208,7 +208,7 @@ void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr)
   slotManagers_.push_back(ptr);
 }
 
-void ModuleDialogGeneric::removeManager(const Core::Algorithms::AlgorithmParameterName& stateKey)
+void ModuleDialogGeneric::removeManager(const SCIRun::Core::Algorithms::AlgorithmParameterName& stateKey)
 {
   slotManagers_.erase(std::remove_if(slotManagers_.begin(), slotManagers_.end(), [&](WidgetSlotManagerPtr wsm) { return wsm->name() == stateKey; } ));
 }
