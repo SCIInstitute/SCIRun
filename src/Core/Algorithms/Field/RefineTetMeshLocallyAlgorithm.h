@@ -35,12 +35,13 @@
 // Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
-// for Windows support
-#include <Core/Algorithms/Field/share.h>
-
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
+
+// for Windows support
+#include <Core/Algorithms/Field/share.h>
+
 namespace SCIRun{
 		namespace Core{
 				namespace Algorithms{
