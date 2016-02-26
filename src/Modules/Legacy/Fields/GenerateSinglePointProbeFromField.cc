@@ -222,19 +222,22 @@ Point GenerateSinglePointProbeFromField::currentLocation() const
 
 void GenerateSinglePointProbeFromField::execute()
 {
-  FieldHandle field = GenerateOutputField();
-  sendOutput(GeneratedPoint, field);
+  auto ifieldOption = getOptionalInput(InputField);
+  if (needToExecute())
+  {
+    FieldHandle field = GenerateOutputField(ifieldOption);
+    sendOutput(GeneratedPoint, field);
 
-  index_type index = GenerateIndex();
-  sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
+    index_type index = GenerateIndex();
+    sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
 
-  auto geom = impl_->buildWidgetObject(field, get_state(), *this);
-  sendOutput(GeneratedWidget, geom);
+    auto geom = impl_->buildWidgetObject(field, get_state(), *this);
+    sendOutput(GeneratedWidget, geom);
+  }
 }
 
-FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
+FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::optional<FieldHandle> ifieldOption)
 {
-  auto ifieldOption = getOptionalInput(InputField);
   FieldHandle ifield;
 
   update_state(Executing);
