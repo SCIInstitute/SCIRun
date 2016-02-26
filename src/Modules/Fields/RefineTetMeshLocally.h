@@ -31,7 +31,7 @@
 
 //#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+#include <Modules/Fields/share.h>
 
 namespace SCIRun {
   namespace Modules {
