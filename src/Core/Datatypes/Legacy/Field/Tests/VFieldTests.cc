@@ -30,7 +30,7 @@
 
 #include <Core/Datatypes/Legacy/Field/Field.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
-
+#include <Core/GeometryPrimitives/Point.h>
 #include <Testing/Utils/SCIRunFieldSamples.h>
 
 #include <vector>
@@ -136,7 +136,7 @@ TEST(VFieldTest, TetVolMeshAddValuesLinearBasis)
   ASSERT_EQ(vfield->num_values(), 4);
 }
 
-TEST(VFieldTest, TetVolMeshSetFieldValueTest_2)
+TEST(VFieldTest, TetVolMeshSetFieldValueTest1)
 {
   FieldInformation fieldinfo("TetVolMesh", 0, "double");
   FieldHandle field = CreateField(fieldinfo);
@@ -145,33 +145,56 @@ TEST(VFieldTest, TetVolMeshSetFieldValueTest_2)
   
   VMesh *vmesh = field->vmesh();
   VField *vfield = field->vfield();
+  VMesh::Node::array_type onodes(4);
+  onodes[0]=0;
+  onodes[1]=1;
+  onodes[2]=2;
+  onodes[3]=3;
+  vmesh->add_elem(onodes);
+  
+  for(int i=0; i<4; i++)
+  {
+   vmesh->add_point(SCIRun::Core::Geometry::Point(1,2,3));
+  }
+  
   vfield->resize_values();
-  std::cout << "An error will appear in the next line. Why is that? 2/2" << std::endl;
-  vfield->set_value(0, 1.0);
-  vfield->set_value(1, 2.0);
-  vfield->set_value(2, 3.0);
-  vfield->set_value(3, 4.0);    
-  ASSERT_EQ(vfield->num_values(), 4);
+  vfield->set_value(1.234, 0);  
+  ASSERT_EQ(vfield->num_values(), 1);
 
 }
 
-TEST(VFieldTest, TetVolMeshSetFieldValueTest_1)
+TEST(VFieldTest, TetVolMeshSetFieldValueTest2)
 {
-  FieldInformation fieldinfo("TetVolMesh", 0, "double");
+  FieldInformation fieldinfo("TetVolMesh", 1, "double");
   FieldHandle field = CreateField(fieldinfo);
   
   ASSERT_TRUE(field.get() != nullptr);
   
   VMesh *vmesh = field->vmesh();
   VField *vfield = field->vfield();
-  vfield->resize_fdata();
-  std::cout << "An error will appear in the next line. Why is that? 1/2" << std::endl;
-  vfield->set_value(0, 1.0);
-  vfield->set_value(1, 2.0);
-  vfield->set_value(2, 3.0);
-  vfield->set_value(3, 4.0);    
+  VMesh::Node::array_type onodes(4);
+  onodes[0]=0;
+  onodes[1]=1;
+  onodes[2]=2;
+  onodes[3]=3;
+  vmesh->add_elem(onodes);
+  
+  for(int i=0; i<4; i++)
+  {
+   vmesh->add_point(SCIRun::Core::Geometry::Point(1,2,3));
+   vfield->resize_values();
+   vfield->set_value(1.234+i, i);
+  }
+  
   ASSERT_EQ(vfield->num_values(), 4);
-
+  
+  for(int i=0;i<4;i++)
+  {
+   double tmp;
+   vfield->get_value(tmp,i);
+   ASSERT_EQ(tmp, 1.234+i);
+  } 
+ 
 }
 
 
