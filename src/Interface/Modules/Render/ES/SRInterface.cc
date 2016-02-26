@@ -36,6 +36,7 @@
 
 #include <Core/Application/Application.h>
 #include <Modules/Visualization/ShowColorMapModule.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 
 // CPM modules.
 
@@ -1281,6 +1282,7 @@ namespace SCIRun {
         glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
         trans_bb = glm::scale(trans_bb, scale_bb);
         trans_bb = glm::translate(trans_bb, center_bb);
+        int index = 0;
         for (auto i : clippingPlanes_)
         {
           glm::vec4 o = glm::vec4(i.x, i.y, i.z, 1) * (-i.d);
@@ -1294,8 +1296,56 @@ namespace SCIRun {
           clippingPlanes->clippingPlanes.push_back(glm::vec4(n.x, n.y, n.z, n.w));
           clippingPlanes->clippingPlaneCtrls.push_back(
             glm::vec4(i.visible?1.0:0.0, i.showFrame?1.0:0.0, i.reverseNormal?1.0:0.0, 0.0));
+          if (i.showFrame)
+            updateGeometryClippingPlane(index, n);
+          index++;
         }
       }
+    }
+
+    //
+    void SRInterface::updateGeometryClippingPlane(int index, glm::vec4 plane)
+    {
+      Core::Geometry::Vector diag(mSceneBBox.diagonal());
+      Core::Geometry::Point c(mSceneBBox.center());
+      Core::Geometry::Vector n(plane.x, plane.y, plane.z);
+      n.normalize();
+      Core::Geometry::Point p(c + (n * diag.length() / 2.0) * plane.w);
+      if (clippingPlanes_[index].reverseNormal)
+        n = -n;
+      double w, h; w = h = diag.length() / 2.0;
+      Core::Geometry::Vector axis1, axis2;
+      Point intersect;
+      n.find_orthogonal(axis1, axis2);
+      if (mSceneBBox.intersect(c, axis1, intersect))
+        w = std::max(w, 2.1 * (intersect - c).length());
+      if (mSceneBBox.intersect(c, axis2, intersect))
+        h = std::max(h, 2.1 * (intersect - c).length());
+      p = Core::Geometry::Point(-n * plane.w);
+      Core::Geometry::Point p1 = p - axis1 * w / 2.0 - axis2 * h / 2.0;
+      Core::Geometry::Point p2 = p + axis1 * w / 2.0 - axis2 * h / 2.0;
+      Core::Geometry::Point p3 = p + axis1 * w / 2.0 + axis2 * h / 2.0;
+      Core::Geometry::Point p4 = p - axis1 * w / 2.0 + axis2 * h / 2.0;
+      Graphics::GlyphGeom glyphs;
+      glyphs.addClippingPlane(p1, p2, p3, p4, 0.02 * std::min(w, h),
+        50, ColorRGB(), ColorRGB());
+
+      std::stringstream ss;
+      ss << "clipping_plane" << index;
+      std::string uniqueNodeID = ss.str();
+      ColorScheme colorScheme(COLOR_UNIFORM);
+      RenderState renState;
+      renState.set(RenderState::IS_ON, true);
+      renState.set(RenderState::USE_TRANSPARENCY, false);
+      renState.defaultColor = ColorRGB(1, 1, 1);
+      renState.set(RenderState::USE_DEFAULT_COLOR, true);
+      renState.set(RenderState::USE_NORMALS, true);
+      renState.set(RenderState::IS_WIDGET, true);
+      GeometryHandle geom(new GeometryObjectSpire(ss.str()));
+
+      glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+        colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
+      handleGeomObject(geom, 0);
     }
 
     //------------------------------------------------------------------------------

@@ -258,6 +258,7 @@ namespace SCIRun {
       {
       public:
         GeometryObjectSpire(const Core::GeometryIDGenerator& idGenerator, const std::string& tag);
+        GeometryObjectSpire(const std::string& tag);
 
         std::list<SpireVBO> mVBOs;  ///< Array of vertex buffer objects.
         std::list<SpireIBO> mIBOs;  ///< Array of index buffer objects.
@@ -272,6 +273,7 @@ namespace SCIRun {
         double mHighestValue;   ///< Highest value a field takes on.
 
         bool isVisible;
+        bool isClippable;
       };
 
       typedef boost::shared_ptr<GeometryObjectSpire> GeometryHandle;

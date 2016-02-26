@@ -62,6 +62,12 @@ namespace SCIRun {
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addCone(const Core::Geometry::Point p1, const Core::Geometry::Point& p2, double radius, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
+      void addClippingPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
+        const Core::Geometry::Point& p3, const Core::Geometry::Point& p4, double radius, double resolution,
+        const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
+      void addPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
+        const Core::Geometry::Point& p3, const Core::Geometry::Point& p4,
+        const Core::Datatypes::ColorRGB& color1);
 
       void addLine(const Core::Geometry::Point p1, const Core::Geometry::Point& p2,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
@@ -94,6 +100,9 @@ namespace SCIRun {
         int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
       void generatePoint(const Core::Geometry::Point p, const Core::Datatypes::ColorRGB& color,
         int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
+      void generatePlane(const Core::Geometry::Point p1, const Core::Geometry::Point p2, 
+        const Core::Geometry::Point p3, const Core::Geometry::Point p4, const Core::Datatypes::ColorRGB& color,
+        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
 
       //From SCIRun4
       void generateBox(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double x_side, double y_side, double z_side, std::vector<QuadStrip>& quadstrips);

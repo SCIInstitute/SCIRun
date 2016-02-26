@@ -289,6 +289,9 @@ namespace SCIRun {
       // make sure clipping plane number matches
       void checkClippingPlanes(int n);
 
+      // update clipping plane geometries
+      void updateGeometryClippingPlane(int index, glm::vec4 plane);
+
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
       bool                              selectWidget_;    ///< Whether mouse click will select a widget.
