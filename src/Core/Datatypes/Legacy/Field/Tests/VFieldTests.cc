@@ -117,7 +117,6 @@ TEST(VFieldTest, TetVolMeshAddValuesConstantBasis)
   ASSERT_EQ(vfield->num_values(), 1);
 }
 
-
 TEST(VFieldTest, TetVolMeshAddValuesLinearBasis)
 {
   FieldHandle field = TetrahedronTetVolLinearBasis(DOUBLE_E);
@@ -136,3 +135,43 @@ TEST(VFieldTest, TetVolMeshAddValuesLinearBasis)
   
   ASSERT_EQ(vfield->num_values(), 4);
 }
+
+TEST(VFieldTest, TetVolMeshSetFieldValueTest_2)
+{
+  FieldInformation fieldinfo("TetVolMesh", 0, "double");
+  FieldHandle field = CreateField(fieldinfo);
+  
+  ASSERT_TRUE(field.get() != nullptr);
+  
+  VMesh *vmesh = field->vmesh();
+  VField *vfield = field->vfield();
+  vfield->resize_values();
+  std::cout << "An error will appear in the next line. Why is that? 2/2" << std::endl;
+  vfield->set_value(0, 1.0);
+  vfield->set_value(1, 2.0);
+  vfield->set_value(2, 3.0);
+  vfield->set_value(3, 4.0);    
+  ASSERT_EQ(vfield->num_values(), 4);
+
+}
+
+TEST(VFieldTest, TetVolMeshSetFieldValueTest_1)
+{
+  FieldInformation fieldinfo("TetVolMesh", 0, "double");
+  FieldHandle field = CreateField(fieldinfo);
+  
+  ASSERT_TRUE(field.get() != nullptr);
+  
+  VMesh *vmesh = field->vmesh();
+  VField *vfield = field->vfield();
+  vfield->resize_fdata();
+  std::cout << "An error will appear in the next line. Why is that? 1/2" << std::endl;
+  vfield->set_value(0, 1.0);
+  vfield->set_value(1, 2.0);
+  vfield->set_value(2, 3.0);
+  vfield->set_value(3, 4.0);    
+  ASSERT_EQ(vfield->num_values(), 4);
+
+}
+
+
