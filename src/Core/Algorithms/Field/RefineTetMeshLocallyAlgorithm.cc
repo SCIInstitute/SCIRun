@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
    
    Author            : Moritz Dannhauer
-   Last modification : February 23 2016
+   Last modification : February 26 2016
    TODO              : implement in parallel execution (Dan White), transient GUI variables
    Related Literature: Ruprecht and Mueller, 'A Scheme for Edge-based Adaptive Tetrahedron Subdivision', 1994
                        The implementation contains a modified version published in Thomson and Pebay 'Embarrassingly parallel mesh refinement by edge subdivision', 2006
@@ -782,7 +782,6 @@ FieldHandle RefineTetMeshLocallyAlgorithm::RefineMesh(FieldHandle input,  Sparse
  input_vmesh->synchronize(Mesh::NODES_E);
  long number_elem=input_vmesh->num_elems(),node_count=input_vmesh->num_nodes();
  VMesh::Node::array_type onodes(4), onodes2(4);
- std::vector<double> tet_field_values;
 
  if (cut_edges->nrows()!=node_count)
  {
@@ -803,7 +802,6 @@ FieldHandle RefineTetMeshLocallyAlgorithm::RefineMesh(FieldHandle input,  Sparse
   
  ///count how many tets and nodes are needed now 
  long tet_count=0; 
- tet_field_values.resize(max_number_new_tets*number_elem); /// TODO: there is no need to preallocate this, set_value() never works ... :(
  
  Point p1,p2,p3,p4; 
  
@@ -907,17 +905,16 @@ FieldHandle RefineTetMeshLocallyAlgorithm::RefineMesh(FieldHandle input,  Sparse
 	}
        }
        result_vmesh->add_elem(onodes2);
-       tet_field_values[tet_count++]=fld_val;
+       result_vfld->resize_values();
+       result_vfld->set_value(fld_val, tet_count++);
       }
    } else
    { /// current tet is not selected to be cut -> just add it as it is to the output mesh
     result_vmesh->add_elem(onodes);
-    tet_field_values[tet_count++]=fld_val;
+    result_vfld->resize_values();
+    result_vfld->set_value(fld_val, tet_count++);
    }  
   } 
-  result_vfld->resize_values();
-  tet_field_values.resize(tet_count);
-  result_vfld->set_values(tet_field_values);
   
   JoinFieldsAlgo joinfields_algo; /// use joinfields to get rid of extra nodes and duplicated elements
  
@@ -1024,6 +1021,9 @@ bool RefineTetMeshLocallyAlgorithm::runImpl(FieldHandle input, FieldHandle& outp
    }
    
    auto cut_edges = ChoseEdgesToCut(output, elems_to_split, field_boundry_vmesh);  
+   if (cut_edges->nonZeros()==0)
+    break;
+
    output=RefineMesh(output, cut_edges);
   
   }
