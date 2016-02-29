@@ -56,7 +56,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/CalculateFieldData5.h>
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
-#include <Modules/Legacy/Fields/FairMesh.h>
 #ifdef WITH_TETGEN
 #include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
 #endif
@@ -86,7 +85,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Math/ReportColumnMatrixMisfit.h>
 #include <Modules/Legacy/Math/CollectMatrices.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
-#include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
@@ -160,9 +158,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", "In progress: main path through code works", "Generates stiffness matrix ");
   addModuleDesc<BuildBEMatrix>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
-  addModuleDesc<FairMesh>("Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
-  addModuleDesc<ApplyFEMCurrentSource>("Real ported module", "...");
   #ifdef WITH_TETGEN
   addModuleDesc<InterfaceWithTetGen>("Real ported module", "...");
   #endif
