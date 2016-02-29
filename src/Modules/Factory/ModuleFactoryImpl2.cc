@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/InterfaceWithCleaver.h>
+#include <Modules/Fields/RefineTetMeshLocally.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
@@ -99,4 +100,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ComputePCA>("ComputePCA","Math","SCIRun","...","...");
   //addModuleDesc<EvaluateLinearAlgebraGeneral>("Real ported module", "BUGGY--DO NOT USE");
   addModuleDesc<ClipVolumeByIsovalueModule>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
+  addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");
 }

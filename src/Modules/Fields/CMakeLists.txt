@@ -32,6 +32,7 @@ SET(Modules_Fields_SRCS
   InterfaceWithCleaver.cc
   EditMeshBoundingBox.cc
   CalculateNodeLocationFrequency.cc
+  RefineTetMeshLocally.cc
 )
 
 SET(Modules_Fields_HEADERS
@@ -41,6 +42,7 @@ SET(Modules_Fields_HEADERS
   EditMeshBoundingBox.h
   BoxWidgetTypes.h
   CalculateNodeLocationFrequency.h
+  RefineTetMeshLocally.h
   share.h
 )
 
