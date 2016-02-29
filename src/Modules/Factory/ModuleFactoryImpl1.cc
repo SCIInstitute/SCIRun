@@ -33,7 +33,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/DynamicPortTester.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Basic/PrintDatatype.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
@@ -77,7 +76,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
-#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
@@ -91,7 +89,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/WriteField.h>
-#include <Modules/DataIO/ReadBundle.h>
 #include <Modules/String/CreateString.h>
 #include <Modules/String/NetworkNotes.h>
 #include <Modules/Visualization/ShowField.h>
@@ -192,14 +189,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
 
   addModuleDesc<CollectMatrices>("Real ported module", "...");
-}
-
-void ModuleDescriptionLookup::addBundleModules()
-{
-  addModuleDesc<ReadBundleModule>("Ported module", "...");
-  addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
-  addModuleDesc<ReportBundleInfo>("Real ported module", "...");
-  addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addTestingModules()
