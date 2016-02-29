@@ -62,7 +62,6 @@ DEALINGS IN THE SOFTWARE.
 #endif
 #include <Modules/Legacy/Fields/BuildMappingMatrix.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
-#include <Modules/Legacy/Fields/ClipFieldByMesh.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
 #include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
@@ -101,7 +100,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/ShowFieldGlyphs.h>
 #include <Modules/Visualization/CreateStandardColorMap.h>
 #include <Modules/Visualization/ShowColorMapModule.h>
-#include <Modules/Visualization/RescaleColorMap.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Modules/Basic/AsyncPortTestModule.h>
@@ -190,7 +188,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
   addModuleDesc<TransformMeshWithTransform>("...", "...");
   addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
-  addModuleDesc<RescaleColorMap>("Real ported module", "...");
   addModuleDesc<ConvertMatrixToString>("ConvertMatrixToString","Converters","SCIRun","...","...");
   addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences","ChangeFieldData","SCIRun","...","In progress--Computation is incorrect");
 
@@ -198,7 +195,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
 
-  addModuleDesc<ClipFieldByMesh>("Real ported module", "...");
   addModuleDesc<CollectMatrices>("Real ported module", "...");
 }
 
