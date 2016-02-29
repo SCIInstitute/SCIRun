@@ -53,7 +53,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
-#include <Modules/Legacy/Fields/CreateFieldData.h>
 #include <Modules/Legacy/Fields/CalculateFieldData5.h>
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
@@ -158,7 +157,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CreateStandardColorMap>("In progress: four color maps available", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
-  addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
 	addModuleDesc<SwapFieldDataWithMatrixEntries>("SwapFieldDataWithMatrixEntires","...");
   addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", "In progress: main path through code works", "Generates stiffness matrix ");

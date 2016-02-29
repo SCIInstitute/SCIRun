@@ -49,7 +49,8 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
 
   auto descMap = factory.getDirectModuleDescriptionLookupMap();
 
-  EXPECT_GE(descMap.size(), 141);
+  std::cout << "descMap size: " << descMap.size() << std::endl;
+  EXPECT_GE(descMap.size(), 142);
 }
 
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
