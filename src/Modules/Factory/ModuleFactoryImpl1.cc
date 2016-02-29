@@ -33,9 +33,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/DynamicPortTester.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
-#include <Modules/Legacy/Bundle/InsertFieldsIntoBundle.h>
-#include <Modules/Legacy/Bundle/InsertMatricesIntoBundle.h>
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Basic/PrintDatatype.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
@@ -47,7 +44,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Fields/EditMeshBoundingBox.h>
-#include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
 #include <Modules/Legacy/Fields/CalculateGradients.h>
@@ -55,15 +51,10 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
-#include <Modules/Legacy/Fields/GetDomainBoundary.h>
 #include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
-#include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Legacy/Fields/CreateFieldData.h>
 #include <Modules/Legacy/Fields/CalculateFieldData5.h>
-#include <Modules/Legacy/Fields/SplitFieldByDomain.h>
-#include <Modules/Legacy/Fields/GetFieldData.h>
-#include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/TransformMeshWithTransform.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 #include <Modules/Legacy/Fields/FairMesh.h>
@@ -71,8 +62,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
 #endif
 #include <Modules/Legacy/Fields/BuildMappingMatrix.h>
-#include <Modules/Legacy/Fields/ConvertFieldBasis.h>
-#include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
 #include <Modules/Legacy/Fields/ClipFieldByMesh.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
@@ -91,7 +80,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
-#include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
 #include <Modules/Legacy/Bundle/ReportBundleInfo.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
@@ -103,7 +91,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
-#include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/DataIO/ReadField.h>
@@ -111,20 +98,17 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/DataIO/ReadBundle.h>
 #include <Modules/String/CreateString.h>
 #include <Modules/String/NetworkNotes.h>
-#include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/ShowFieldGlyphs.h>
 #include <Modules/Visualization/CreateStandardColorMap.h>
 #include <Modules/Visualization/ShowColorMapModule.h>
 #include <Modules/Visualization/RescaleColorMap.h>
-#include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Modules/Basic/AsyncPortTestModule.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
 #include <Modules/Legacy/Matlab/Interface/InterfaceWithMatlab.h>
 #include <Modules/Legacy/Converters/ConvertMatrixToString.h>
-//#include <Modules/Fields/@ModuleName@.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
@@ -145,7 +129,6 @@ using namespace SCIRun::Modules::Converters;
 
 void ModuleDescriptionLookup::addEssentialModules()
 {
-  //addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
   addModuleDesc<ReadMatrix>("ReadMatrix", "DataIO", "SCIRun", "Redo of ReadMatrix", "...");
   addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
   addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
@@ -160,10 +143,8 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
   addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
 	addModuleDesc<NetworkNotesModule>("NetworkNotes", "String", "SCIRun", "Functional, needs GUI work.", "...");
-  //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
   addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
   addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
-  //addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
   addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
@@ -173,10 +154,8 @@ void ModuleDescriptionLookup::addEssentialModules()
 	addModuleDesc<AlignMeshBoundingBoxes>("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<GetFieldNodes>("GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
-  //addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<CreateStandardColorMap>("In progress: four color maps available", "...");
-  //addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<GetSliceFromStructuredFieldByIndices>("Real ported module", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
@@ -186,9 +165,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<BuildBEMatrix>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<FairMesh>("Real ported module", "...");
-  //TODO: incomplete impl
-  //addModuleDesc<ConvertFieldBasis>("NOT WORKING YET--Real ported module", "...");
-  //addModuleDesc<ScaleFieldMeshAndData>("NOT WORKING YET--Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
   addModuleDesc<ApplyFEMCurrentSource>("Real ported module", "...");
   #ifdef WITH_TETGEN
@@ -207,12 +183,9 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<AddLinkedNodesToLinearSystem>("Real ported module", "...");
   addModuleDesc<ReportColumnMatrixMisfit>("Real ported module: GUI incomplete, untested", "...");
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
-  //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
   addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
   addModuleDesc<ComputeSVD>("ComputeSVD","Math","SCIRun","...","...");
-
-  //addModuleDesc<InterfaceWithMatlab>("In progress", "...");
 
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
@@ -226,23 +199,16 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GeneratePointSamplesFromField>("Real ported module", "in progress");
   addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
-  //addModuleDesc<ShowAndEditDipoles>("Real ported module", "in progress");
 
   addModuleDesc<ClipFieldByMesh>("Real ported module", "...");
   addModuleDesc<CollectMatrices>("Real ported module", "...");
-
-  // insert module desc here
 }
 
 void ModuleDescriptionLookup::addBundleModules()
 {
   addModuleDesc<ReadBundleModule>("Ported module", "...");
-  //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
-  //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
-  //TODO: incomplete impl
   addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
   addModuleDesc<ReportBundleInfo>("Real ported module", "...");
-  //addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
   addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
 }
 
