@@ -1352,13 +1352,15 @@ namespace SCIRun {
       Core::Geometry::Point p2 = p + axis1 * w / 2.0 - axis2 * h / 2.0;
       Core::Geometry::Point p3 = p + axis1 * w / 2.0 + axis2 * h / 2.0;
       Core::Geometry::Point p4 = p - axis1 * w / 2.0 + axis2 * h / 2.0;
+
+      std::stringstream ss;
+      std::string uniqueNodeID;
+
       Graphics::GlyphGeom glyphs;
       glyphs.addClippingPlane(p1, p2, p3, p4, 0.01 * std::min(w, h),
         50, ColorRGB(), ColorRGB());
-
-      std::stringstream ss;
       ss << "clipping_plane" << index;
-      std::string uniqueNodeID = ss.str();
+      uniqueNodeID = ss.str();
       ColorScheme colorScheme(COLOR_UNIFORM);
       RenderState renState;
       renState.set(RenderState::IS_ON, true);
@@ -1368,10 +1370,21 @@ namespace SCIRun {
       renState.set(RenderState::USE_NORMALS, true);
       renState.set(RenderState::IS_WIDGET, true);
       GeometryHandle geom(new GeometryObjectSpire(ss.str()));
-
       glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
         colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
       handleGeomObject(geom, 0);
+
+      Graphics::GlyphGeom glyphs2;
+      glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
+      ss.str("");
+      ss << "clipping_plane_trans" << index;
+      uniqueNodeID = ss.str();
+      renState.set(RenderState::USE_TRANSPARENCY, true);
+      renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
+      GeometryHandle geom2(new GeometryObjectSpire(ss.str()));
+      glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
+        colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
+      handleGeomObject(geom2, 0);
     }
 
     //------------------------------------------------------------------------------

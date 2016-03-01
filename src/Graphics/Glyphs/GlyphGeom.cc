@@ -244,6 +244,10 @@ void GlyphGeom::addClippingPlane(const Core::Geometry::Point& p1, const Core::Ge
   const Core::Geometry::Point& p3, const Core::Geometry::Point& p4, double radius, double resolution,
   const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2)
 {
+  addSphere(p1, radius, resolution, color1);
+  addSphere(p2, radius, resolution, color1);
+  addSphere(p3, radius, resolution, color1);
+  addSphere(p4, radius, resolution, color1);
   addCylinder(p1, p2, radius, resolution, color1, color2);
   addCylinder(p2, p3, radius, resolution, color1, color2);
   addCylinder(p3, p4, radius, resolution, color1, color2);
@@ -478,8 +482,8 @@ void GlyphGeom::generatePlane(const Core::Geometry::Point p1, const Core::Geomet
   indices.push_back(1 + numVBOElements);
   indices.push_back(2 + numVBOElements);
   indices.push_back(2 + numVBOElements);
-  indices.push_back(1 + numVBOElements);
   indices.push_back(3 + numVBOElements);
+  indices.push_back(0 + numVBOElements);
   numVBOElements += 4;
 }
 
