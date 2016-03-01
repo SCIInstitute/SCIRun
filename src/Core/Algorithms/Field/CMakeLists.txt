@@ -30,12 +30,14 @@ SET(Algorithms_Field_SRCS
   ReportFieldInfoAlgorithm.cc
   InterfaceWithCleaverAlgorithm.cc
   CalculateNodeLocationFrequencyAlgorithm.cc
+  RefineTetMeshLocallyAlgorithm.cc
 )
 
 SET(Algorithms_Field_HEADERS
   ReportFieldInfoAlgorithm.h
   InterfaceWithCleaverAlgorithm.h
   CalculateNodeLocationFrequencyAlgorithm.h
+  RefineTetMeshLocallyAlgorithm.h
   share.h
 )
 
