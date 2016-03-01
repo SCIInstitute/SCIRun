@@ -248,6 +248,7 @@ namespace SCIRun {
       void updateWorldLight();
 
       //update the clipping planes
+      double getMaxProjLength(const glm::vec3 &n);
       void updateClippingPlanes();
 
       // Renders coordinate axes on the screen.

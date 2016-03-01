@@ -604,6 +604,7 @@ namespace SCIRun {
     {
       checkClippingPlanes(clippingPlaneIndex_);
       clippingPlanes_[clippingPlaneIndex_].showFrame = value;
+      updateClippingPlanes();
     }
 
     void SRInterface::reverseClippingPlaneNormal(bool value)
@@ -1269,6 +1270,20 @@ namespace SCIRun {
     }
 
     //
+    double SRInterface::getMaxProjLength(const glm::vec3 &n)
+    {
+      glm::vec3 a1(-1.0, 1.0, -1.0);
+      glm::vec3 a2(-1.0, 1.0, 1.0);
+      glm::vec3 a3(1.0, 1.0, -1.0);
+      glm::vec3 a4(1.0, 1.0, 1.0);
+      return std::max(
+        std::max(
+        std::abs(glm::dot(n, a1)),
+        std::abs(glm::dot(n, a2))),
+        std::max(
+        std::abs(glm::dot(n, a3)),
+        std::abs(glm::dot(n, a4))));
+    }
     void SRInterface::updateClippingPlanes()
     {
       StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
@@ -1285,14 +1300,22 @@ namespace SCIRun {
         int index = 0;
         for (auto i : clippingPlanes_)
         {
-          glm::vec4 o = glm::vec4(i.x, i.y, i.z, 1) * (-i.d);
+          glm::vec3 n3(i.x, i.y, i.z);
+          double d = i.d;
+          glm::vec4 n(0.0);
+          if (glm::length(n3) > 0.0)
+          {
+            n3 = glm::normalize(n3);
+            n = glm::vec4(n3, 0.0);
+            d *= getMaxProjLength(n3);
+          }
+          glm::vec4 o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
           o.w = 1;
-          glm::vec4 n(i.x, i.y, i.z, 0);
           o = trans_bb * o;
           n = glm::inverseTranspose(trans_bb) * n;
           o.w = 0;
           n.w = 0;
-          n.w = -glm::dot(o, n);
+          n.w = glm::dot(o, n);
           clippingPlanes->clippingPlanes.push_back(glm::vec4(n.x, n.y, n.z, n.w));
           clippingPlanes->clippingPlaneCtrls.push_back(
             glm::vec4(i.visible?1.0:0.0, i.showFrame?1.0:0.0, i.reverseNormal?1.0:0.0, 0.0));
@@ -1321,13 +1344,16 @@ namespace SCIRun {
         w = std::max(w, 2.1 * (intersect - c).length());
       if (mSceneBBox.intersect(c, axis2, intersect))
         h = std::max(h, 2.1 * (intersect - c).length());
-      p = Core::Geometry::Point(-n * plane.w);
+      if (clippingPlanes_[index].reverseNormal)
+        p = Core::Geometry::Point(n * plane.w);
+      else
+        p = Core::Geometry::Point(-n * plane.w);
       Core::Geometry::Point p1 = p - axis1 * w / 2.0 - axis2 * h / 2.0;
       Core::Geometry::Point p2 = p + axis1 * w / 2.0 - axis2 * h / 2.0;
       Core::Geometry::Point p3 = p + axis1 * w / 2.0 + axis2 * h / 2.0;
       Core::Geometry::Point p4 = p - axis1 * w / 2.0 + axis2 * h / 2.0;
       Graphics::GlyphGeom glyphs;
-      glyphs.addClippingPlane(p1, p2, p3, p4, 0.02 * std::min(w, h),
+      glyphs.addClippingPlane(p1, p2, p3, p4, 0.01 * std::min(w, h),
         50, ColorRGB(), ColorRGB());
 
       std::stringstream ss;
@@ -1337,7 +1363,7 @@ namespace SCIRun {
       RenderState renState;
       renState.set(RenderState::IS_ON, true);
       renState.set(RenderState::USE_TRANSPARENCY, false);
-      renState.defaultColor = ColorRGB(1, 1, 1);
+      renState.defaultColor = ColorRGB(0.4, 0.4, 1);
       renState.set(RenderState::USE_DEFAULT_COLOR, true);
       renState.set(RenderState::USE_NORMALS, true);
       renState.set(RenderState::IS_WIDGET, true);

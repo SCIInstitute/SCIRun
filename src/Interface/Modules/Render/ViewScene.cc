@@ -734,6 +734,7 @@ void ViewSceneDialog::setClippingPlaneVisible(bool value)
 
 void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
 {
+  newGeometryValue();
   clippingPlanes_[clippingPlaneIndex_].showFrame = value;
   auto spire = mSpire.lock();
   if (spire)
