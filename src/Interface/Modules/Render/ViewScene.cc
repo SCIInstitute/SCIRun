@@ -58,7 +58,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setFocusPolicy(Qt::StrongFocus);
 
   addToolBar();
-  setupClippingPlanes();
+  setupClippingPlanes(); 
+  setupScaleBar();
 
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
@@ -611,6 +612,8 @@ void ViewSceneDialog::configurationButtonClicked()
   {
     addConfigurationDock(windowTitle());
     mConfigurationDock->setSampleColor(bgColor_);
+    mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
+      scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
     newGeometryValue();
   }
 
@@ -791,6 +794,56 @@ void ViewSceneDialog::updatClippingPlaneDisplay()
 }
 
 //------------------------------------------------------------------------------
+//-------------------Scale Bar Tools--------------------------------------------
+void ViewSceneDialog::setScaleBarVisible(bool value)
+{
+  scaleBar_.visible = value;
+  state_->setValue(Modules::Render::ViewScene::ShowScaleBar, value);
+}
+
+void ViewSceneDialog::setScaleBarFontSize(int value)
+{
+  scaleBar_.fontSize = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarFontSize, value);
+}
+
+void ViewSceneDialog::setScaleBarUnitValue(const QString& text)
+{
+  scaleBar_.unit = text.toStdString();
+  state_->setValue(Modules::Render::ViewScene::ScaleBarUnitValue, text.toStdString());
+}
+
+void ViewSceneDialog::setScaleBarLength(double value)
+{
+  scaleBar_.length = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarLength, value);
+}
+
+void ViewSceneDialog::setScaleBarHeight(double value)
+{
+  scaleBar_.height = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarHeight, value);
+}
+
+void ViewSceneDialog::setScaleBarMultiplier(double value)
+{
+  scaleBar_.multiplier = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarMultiplier, value);
+}
+
+void ViewSceneDialog::setScaleBarNumTicks(int value)
+{
+  scaleBar_.numTicks = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarNumTicks, value);
+}
+
+void ViewSceneDialog::setScaleBarLineWidth(double value)
+{
+  scaleBar_.lineWidth = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarLineWidth, value);
+}
+
+//------------------------------------------------------------------------------
 bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 {
   return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
@@ -933,6 +986,32 @@ void ViewSceneDialog::setupClippingPlanes()
     plane.z = 0.0;
     plane.d = 0.0;
     clippingPlanes_.push_back(plane);
+  }
+}
+
+void ViewSceneDialog::setupScaleBar()
+{
+  if (state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString() != "")
+  {
+    scaleBar_.visible = state_->getValue(Modules::Render::ViewScene::ShowScaleBar).toBool();
+    scaleBar_.unit = state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString();
+    scaleBar_.length = state_->getValue(Modules::Render::ViewScene::ScaleBarLength).toDouble();
+    scaleBar_.height = state_->getValue(Modules::Render::ViewScene::ScaleBarHeight).toDouble();
+    scaleBar_.multiplier = state_->getValue(Modules::Render::ViewScene::ScaleBarMultiplier).toDouble();
+    scaleBar_.numTicks = state_->getValue(Modules::Render::ViewScene::ScaleBarNumTicks).toInt();
+    scaleBar_.lineWidth = state_->getValue(Modules::Render::ViewScene::ScaleBarLineWidth).toDouble();
+    scaleBar_.fontSize = state_->getValue(Modules::Render::ViewScene::ScaleBarFontSize).toInt();
+  }
+  else
+  {
+    scaleBar_.visible = false;
+    scaleBar_.unit = "mm";
+    scaleBar_.length = 1.0;
+    scaleBar_.height = 1.0;
+    scaleBar_.multiplier = 1.0;
+    scaleBar_.numTicks = 11;
+    scaleBar_.lineWidth = 1.0;
+    scaleBar_.fontSize = 8;
   }
 }
 

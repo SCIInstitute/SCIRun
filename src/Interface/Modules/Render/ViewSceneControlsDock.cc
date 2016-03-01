@@ -116,6 +116,12 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }
 
+void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
+  double numTicks, double lineWidth, const QString& unit)
+{
+  //showScaleBarTextGroupBox_->set
+}
+
 void ViewSceneControlsDock::updateZoomOptionVisibility()
 {
   if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
