@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -358,9 +359,6 @@ void ViewSceneDialog::newGeometryValue()
         {
           spire->handleGeomObject(realObj, port);
           validObjects.push_back(name);
-#ifdef BUILD_TESTING
-          sendScreenshotDownstreamForTesting();
-#endif
         }
       }
     }
@@ -396,6 +394,10 @@ void ViewSceneDialog::newGeometryValue()
       return;
     spire->removeAllGeomObjects();
   }
+
+#ifdef BUILD_TESTING
+  sendScreenshotDownstreamForTesting();
+#endif
 
   if (saveScreenshotOnNewGeometry_)
   {
@@ -1027,5 +1029,6 @@ void ViewSceneDialog::screenshotClicked()
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
   takeScreenshot();
-  state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
+  auto matrix = screenshotTaker_->toMatrix();
+  state_->setTransientValue(Parameters::ScreenshotData, matrix, false);
 }

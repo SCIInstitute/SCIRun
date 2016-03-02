@@ -94,7 +94,6 @@ namespace Render {
     void processViewSceneObjectFeedback();
     void updateTransientList();
     ActiveGeometryMap activeGeoms_;
-    //Core::Algorithms::VariableList feedbackInfo_;
   };
 }}}
 

@@ -57,7 +57,6 @@ ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
   INITIALIZE_PORT(GeneralGeom);
 #ifdef BUILD_TESTING
   INITIALIZE_PORT(ScreenshotData);
-  get_state()->setTransientValue(Parameters::ScreenshotData, nullptr, false);
 #endif
 }
 
@@ -121,7 +120,6 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   {
     LOG_DEBUG("ViewScene::asyncExecute before locking");
     Guard lock(mutex_.get());
-    get_state()->setTransientValue(Parameters::ScreenshotData, nullptr, false);
 
     LOG_DEBUG("ViewScene::asyncExecute after locking");
 
