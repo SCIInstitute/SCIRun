@@ -84,6 +84,14 @@ namespace SCIRun {
     /// @todo: smelly!
     static void setExecutionContext(Dataflow::Networks::ExecutableLookup* lookup);
     static Core::Thread::Mutex& getLock() { return pythonLock_; }
+
+    class SCISHARE PythonModuleContextApiDisabler
+    {
+    public:
+      PythonModuleContextApiDisabler();
+      ~PythonModuleContextApiDisabler();
+    };
+
   private:
     NetworkEditorPythonAPI() = delete;
     static boost::shared_ptr<NetworkEditorPythonInterface> impl_;

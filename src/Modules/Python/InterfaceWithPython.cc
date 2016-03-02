@@ -32,6 +32,7 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <boost/algorithm/string.hpp>
+#include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
@@ -168,6 +169,7 @@ void InterfaceWithPython::execute()
         convertedCode << convertInputSyntax(convertOutputSyntax(line)) << "\n";
       }
 
+      NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
       PythonInterpreter::Instance().run_script(convertedCode.str());
     }
 
