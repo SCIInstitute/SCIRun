@@ -51,9 +51,11 @@ namespace SCIRun {
 		private Q_SLOTS:
 			void push();
 			void pushColor();
-			void assignDefaultMeshColor();
+      void assignDefaultMeshColor();
+      void assignDefaultTextColor();
 		private:
 			QColor defaultMeshColor_;
+      QColor defaultTextColor_;
 		};
 
 	}

@@ -68,7 +68,7 @@
          <string notr="true"/>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="nodesTab_">
          <attribute name="title">
@@ -703,13 +703,22 @@
              </item>
              <item row="1" column="0" colspan="2">
               <widget class="QRadioButton" name="textColoringRadioButton_">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="text">
                 <string>Text</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
              <item row="2" column="0" colspan="2">
               <widget class="QRadioButton" name="colormapLookupTextRadioButton_">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="text">
                 <string>Colormap Lookup</string>
                </property>
@@ -717,6 +726,9 @@
              </item>
              <item row="3" column="0" colspan="2">
               <widget class="QRadioButton" name="conversionRGBTextRadioButton_">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="text">
                 <string>Conversion to RGB</string>
                </property>
