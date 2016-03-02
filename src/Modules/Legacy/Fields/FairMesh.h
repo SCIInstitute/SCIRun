@@ -43,13 +43,13 @@ namespace SCIRun {
       public:
         FairMesh();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         INPUT_PORT(0, Input_Mesh, LegacyField);
         OUTPUT_PORT(0, Faired_Mesh, LegacyField);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }

@@ -86,7 +86,7 @@ namespace SCIRun {
         void processWidgetFeedback(Dataflow::Networks::ModuleFeedback var);
         void adjustPositionFromTransform(const Core::Datatypes::DenseMatrixHandle& transformMatrix);
         
-        FieldHandle GenerateOutputField();
+        FieldHandle GenerateOutputField(boost::optional<FieldHandle> ifieldOption);
         index_type GenerateIndex();        
       };
 

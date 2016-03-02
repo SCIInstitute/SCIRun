@@ -33,7 +33,6 @@
 
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
-#include <sstream>
 #include <Modules/Factory/share.h>
 
 namespace SCIRun {
