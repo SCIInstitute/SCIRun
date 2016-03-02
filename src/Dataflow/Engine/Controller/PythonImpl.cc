@@ -235,16 +235,7 @@ namespace
       }
       return nullptr;
     }
-
-    virtual void setData(const boost::python::object& obj) override
-    {
-      auto input = boost::dynamic_pointer_cast<InputPortInterface>(port_);
-      if (input)
-      {
-
-      }
-    }
-
+    
     void reset()
     {
       port_.reset();

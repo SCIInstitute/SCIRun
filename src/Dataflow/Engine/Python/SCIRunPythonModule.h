@@ -69,13 +69,6 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .add_property("value", &PyDatatype::value)
   ;
 
-  //boost::python::def("addModule", &NetworkEditorPythonAPI::addModule);
-  //boost::python::def("removeModule", &NetworkEditorPythonAPI::removeModule);
-  //boost::python::def("modules", &NetworkEditorPythonAPI::modules); //TODO: buggy
-  //boost::python::def("executeAll", &NetworkEditorPythonAPI::executeAll);
-  //boost::python::def("saveNetwork", &NetworkEditorPythonAPI::saveNetwork);
-  //boost::python::def("loadNetwork", &NetworkEditorPythonAPI::loadNetwork);
-
   //////////////////////////////////////////////////////////////////////////////////////
   // Simple API version--all string based. Hopefully temporary for Mac compatibility
   //////////////////////////////////////////////////////////////////////////////////////

@@ -236,7 +236,7 @@ std::string NetworkEditorPythonAPI::quit(bool force)
 
   if (impl_ && impl_->isModuleContext())
     return "In module context--function not available";
-  
+
   if (impl_)
     return impl_->quit(force);
   else
@@ -404,28 +404,6 @@ boost::python::object SimplePythonAPI::scirun_module_ids()
   std::vector<std::string> ids;
   std::transform(mods.begin(), mods.end(), std::back_inserter(ids), [](const PyModulePtr& pm) { return pm->id(); });
   return Core::Python::toPythonList(ids);
-}
-
-std::string NetworkEditorPythonAPI::scirun_set_module_input_value_by_index(const std::string& moduleId, int portIndex, const boost::python::object& value)
-{
-  Guard g(pythonLock_.get());
-
-  auto module = impl_->findModule(moduleId);
-  if (module)
-  {
-    auto port = module->input()->getitem(portIndex);
-    if (port)
-    {
-      port->setData(value);
-      return "Value set";
-    }
-  }
-  return "Module/Port not found";
-}
-
-std::string NetworkEditorPythonAPI::scirun_set_module_input_value(const std::string& moduleId, const std::string& portName, const boost::python::object& value)
-{
-  return "TODO";
 }
 
 NetworkEditorPythonAPI::PythonModuleContextApiDisabler::PythonModuleContextApiDisabler()

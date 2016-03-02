@@ -35,7 +35,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
-#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -984,7 +983,7 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   //DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
   glm::mat4 trans = spire->getWidgetTransform().transform;
-  
+
   geomInfo.push_back(makeVariable("x00", trans[0][0]));
   geomInfo.push_back(makeVariable("x10", trans[1][0]));
   geomInfo.push_back(makeVariable("x20", trans[2][0]));
@@ -1029,6 +1028,5 @@ void ViewSceneDialog::screenshotClicked()
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
   takeScreenshot();
-  auto matrix = screenshotTaker_->toMatrix();
-  state_->setTransientValue(Parameters::ScreenshotData, matrix, false);
+  state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }
