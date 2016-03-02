@@ -42,7 +42,6 @@ namespace DataIO {
     typedef GenericReader<Core::Datatypes::BundleHandle, BundlePortTag> my_base;
     ReadBundleModule();
     virtual void execute() override;
-    virtual void setStateDefaults() override {}
     virtual bool useCustomImporter(const std::string& filename) const override { return false; }
 
     OUTPUT_PORT(0, Bundle, Bundle);
@@ -50,6 +49,8 @@ namespace DataIO {
     static std::string fileTypeList();
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  protected:
+    virtual std::string defaultFileTypeName() const override;
   };
 
 }}}

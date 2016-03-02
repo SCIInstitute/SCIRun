@@ -50,6 +50,7 @@ ReadMatrixClassicDialog::ReadMatrixClassicDialog(const std::string& name, Module
   //addLineEditManager() TODO: investigate these other signals with lineedit.
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+  WidgetStyleMixin::setStateVarTooltipWithStyle(fileNameLineEdit_, Variables::Filename.name());
 }
 
 void ReadMatrixClassicDialog::pullSpecial()

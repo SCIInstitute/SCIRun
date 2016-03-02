@@ -669,7 +669,7 @@ public:
     for (auto button : radioButtons_)
     {
       connect(button, SIGNAL(clicked()), this, SLOT(push()));
-      button->setToolTip(QString::fromStdString(stateKey.name_));
+      WidgetStyleMixin::setStateVarTooltipWithStyle(button, stateKey.name_);
     }
   }
   virtual void pull() override
@@ -720,4 +720,10 @@ void WidgetStyleMixin::toolbarStyle(QToolBar* toolbar)
 {
   toolbar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
     "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+}
+
+void WidgetStyleMixin::setStateVarTooltipWithStyle(QWidget* widget, const std::string& stateVarName)
+{
+  widget->setToolTip("State key: " + QString::fromStdString(stateVarName));
+  widget->setStyleSheet(widget->styleSheet() + " QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
 }
