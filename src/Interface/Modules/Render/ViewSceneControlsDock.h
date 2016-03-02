@@ -52,6 +52,8 @@ namespace SCIRun {
     public:
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
       void setSampleColor(const QColor& color);
+      void setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
+        double numTicks, double lineWidth, const QString& unit);
       void updateZoomOptionVisibility();
       void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
       void updatePlaneControlDisplay(double x, double y, double z, double d);
