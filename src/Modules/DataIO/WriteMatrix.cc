@@ -113,3 +113,9 @@ bool WriteMatrixModule::useCustomExporter(const std::string& filename) const
     ft == "SCIRun Matrix Binary" ||
     ft == "SCIRun Matrix ASCII");
 }
+
+std::string WriteMatrixModule::defaultFileTypeName() const
+{
+  MatrixIEPluginManager mgr;
+  return defaultImportTypeForFile(&mgr);
+}
