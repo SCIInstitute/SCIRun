@@ -75,6 +75,14 @@ namespace Render {
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
     static Core::Algorithms::AlgorithmParameterName BackgroundColor;
+    static Core::Algorithms::AlgorithmParameterName ShowScaleBar;
+    static Core::Algorithms::AlgorithmParameterName ScaleBarUnitValue;
+    static Core::Algorithms::AlgorithmParameterName ScaleBarLength;
+    static Core::Algorithms::AlgorithmParameterName ScaleBarHeight;
+    static Core::Algorithms::AlgorithmParameterName ScaleBarMultiplier;
+    static Core::Algorithms::AlgorithmParameterName ScaleBarNumTicks;
+    static Core::Algorithms::AlgorithmParameterName ScaleBarLineWidth;
+    static Core::Algorithms::AlgorithmParameterName ScaleBarFontSize;
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
 #ifdef BUILD_TESTING
