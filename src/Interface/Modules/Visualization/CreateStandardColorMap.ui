@@ -60,41 +60,6 @@
           <height>30</height>
          </size>
         </property>
-        <item>
-         <property name="text">
-          <string>Rainbow</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Old Rainbow</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Darkhue</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Blackbody</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Grayscale</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Orange,Black,Lime</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>BP Seismic</string>
-         </property>
-        </item>
        </widget>
       </item>
       <item>

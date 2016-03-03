@@ -60,8 +60,8 @@ namespace SCIRun
       {
       public:
         CreateStandardColorMap();
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         OUTPUT_PORT(0, ColorMapObject, ColorMap);
 
