@@ -45,7 +45,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
+const ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
 Mutex ViewScene::mutex_("ViewScene");
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
@@ -56,7 +56,9 @@ ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
   INITIALIZE_PORT(GeneralGeom);
 #ifdef BUILD_TESTING
-  INITIALIZE_PORT(ScreenshotData);
+  INITIALIZE_PORT(ScreenshotDataRed);
+  INITIALIZE_PORT(ScreenshotDataGreen);
+  INITIALIZE_PORT(ScreenshotDataBlue);
 #endif
 }
 
@@ -154,10 +156,18 @@ void ViewScene::execute()
     do
     {
       screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
-      auto screenshotData = transient_value_cast<DenseMatrixHandle>(screenshotDataOption);
-      if (screenshotData)
+      auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
+      if (screenshotData.red)
       {
-        sendOutput(ScreenshotData, screenshotData);
+        sendOutput(ScreenshotDataRed, screenshotData.red);
+      }
+      if (screenshotData.green)
+      {
+        sendOutput(ScreenshotDataGreen, screenshotData.green);
+      }
+      if (screenshotData.blue)
+      {
+        sendOutput(ScreenshotDataBlue, screenshotData.blue);
       }
     }
     while (!screenshotDataOption);
@@ -178,12 +188,12 @@ void ViewScene::processViewSceneObjectFeedback()
   }
 }
 
-AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
-AlgorithmParameterName ViewScene::ShowScaleBar("ShowScaleBar");
-AlgorithmParameterName ViewScene::ScaleBarUnitValue("ScaleBarUnitValue");
-AlgorithmParameterName ViewScene::ScaleBarLength("ScaleBarLength");
-AlgorithmParameterName ViewScene::ScaleBarHeight("ScaleBarHeight");
-AlgorithmParameterName ViewScene::ScaleBarMultiplier("ScaleBarMultiplier");
-AlgorithmParameterName ViewScene::ScaleBarNumTicks("ScaleBarNumTicks");
-AlgorithmParameterName ViewScene::ScaleBarLineWidth("ScaleBarLineWidth");
-AlgorithmParameterName ViewScene::ScaleBarFontSize("ScaleBarFontSize");
+const AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+const AlgorithmParameterName ViewScene::ShowScaleBar("ShowScaleBar");
+const AlgorithmParameterName ViewScene::ScaleBarUnitValue("ScaleBarUnitValue");
+const AlgorithmParameterName ViewScene::ScaleBarLength("ScaleBarLength");
+const AlgorithmParameterName ViewScene::ScaleBarHeight("ScaleBarHeight");
+const AlgorithmParameterName ViewScene::ScaleBarMultiplier("ScaleBarMultiplier");
+const AlgorithmParameterName ViewScene::ScaleBarNumTicks("ScaleBarNumTicks");
+const AlgorithmParameterName ViewScene::ScaleBarLineWidth("ScaleBarLineWidth");
+const AlgorithmParameterName ViewScene::ScaleBarFontSize("ScaleBarFontSize");
