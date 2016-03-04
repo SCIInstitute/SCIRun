@@ -130,6 +130,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   {
     LOG_DEBUG("ViewScene::asyncExecute before locking");
     Guard lock(mutex_.get());
+    get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
     LOG_DEBUG("ViewScene::asyncExecute after locking");
 
@@ -160,7 +161,6 @@ void ViewScene::execute()
       //wait until all asyncExecutes are done.
     }
 
-    //Guard lock(mutex_.get());
     ModuleStateInterface::TransientValueOption screenshotDataOption;
     auto state = get_state();
     do
