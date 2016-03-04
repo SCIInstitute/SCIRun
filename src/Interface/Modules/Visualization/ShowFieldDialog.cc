@@ -177,8 +177,11 @@ void ShowFieldDialog::assignDefaultTextColor()
 void ShowFieldDialog::pushColor()
 {
   state_->setValue(ShowFieldModule::DefaultTextColor, ColorRGB(defaultTextColor_.redF(), defaultTextColor_.greenF(), defaultTextColor_.blueF()).toString());
+  state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(defaultTextColor_.red()) + "," +
     QString::number(defaultTextColor_.green()) + "," + QString::number(defaultTextColor_.blue()) + "); }";
   textColorLabel_->setStyleSheet(styleSheet);
+
   Q_EMIT executeActionTriggered();
 }
