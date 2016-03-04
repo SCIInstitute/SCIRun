@@ -77,6 +77,7 @@ namespace Render {
   {
   public:
     ViewScene();
+    ViewScene(const ViewScene&) = delete;
     virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     virtual void setStateDefaults() override;
 
