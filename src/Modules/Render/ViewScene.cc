@@ -144,34 +144,54 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     updateTransientList();
   }
   get_state()->fireTransientStateChangeSignal();
+  asyncUpdates_.fetch_add(1);
+  //std::cout << "asyncExecute " << asyncUpdates_ << std::endl;
 }
 
 #ifdef BUILD_TESTING
 void ViewScene::execute()
 {
+  //std::cout << "1execute " << asyncUpdates_ << std::endl;
   if (inputPorts().size() > 1) // only send screenshot if input is present
   {
+    while (asyncUpdates_ < inputPorts().size() - 1)
+    {
+      //std::cout << "2execute " << asyncUpdates_ << std::endl;
+      //wait until all asyncExecutes are done.
+    }
+
+    //Guard lock(mutex_.get());
     ModuleStateInterface::TransientValueOption screenshotDataOption;
     auto state = get_state();
     do
     {
+      //std::cout << "3execute " << asyncUpdates_ << std::endl;
       screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
-      auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
-      if (screenshotData.red)
+      if (screenshotDataOption)
       {
-        sendOutput(ScreenshotDataRed, screenshotData.red);
-      }
-      if (screenshotData.green)
-      {
-        sendOutput(ScreenshotDataGreen, screenshotData.green);
-      }
-      if (screenshotData.blue)
-      {
-        sendOutput(ScreenshotDataBlue, screenshotData.blue);
+        //std::cout << "4execute found a non-empty" << asyncUpdates_ << std::endl;
+        auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
+        if (screenshotData.red)
+        {
+          sendOutput(ScreenshotDataRed, screenshotData.red);
+        }
+        if (screenshotData.green)
+        {
+          sendOutput(ScreenshotDataGreen, screenshotData.green);
+        }
+        if (screenshotData.blue)
+        {
+          sendOutput(ScreenshotDataBlue, screenshotData.blue);
+        }
       }
     }
     while (!screenshotDataOption);
   }
+  asyncUpdates_ = 0;
+  
+  //std::cout << "999execute " << asyncUpdates_ << std::endl;
+  //std::cout << "execute setting none " << asyncUpdates_ << std::endl;
+  get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 }
 #endif
 

@@ -111,6 +111,7 @@ namespace Render {
     void processViewSceneObjectFeedback();
     void updateTransientList();
     ActiveGeometryMap activeGeoms_;
+    std::atomic<int> asyncUpdates_ = 0;
   };
 }}}
 

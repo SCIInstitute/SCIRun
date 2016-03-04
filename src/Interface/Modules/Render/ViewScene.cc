@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -105,9 +106,10 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
     //Set background Color
-    if (state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString() != "")
+    auto colorStr = state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString();
+    if (!colorStr.empty())
     {
-      ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
+      ColorRGB color(colorStr);
       bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
         static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
         static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
@@ -1106,6 +1108,9 @@ void ViewSceneDialog::screenshotClicked()
 
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
+  //wait for a couple frames to go by.
+//  boost::this_thread::sleep(boost::posix_time::milliseconds(150));
+  //std::cout << "sendScreenshotDownstreamForTesting " << std::endl;
   takeScreenshot();
   state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }
