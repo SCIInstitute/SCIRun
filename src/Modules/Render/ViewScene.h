@@ -77,7 +77,6 @@ namespace Render {
   {
   public:
     ViewScene();
-    ViewScene(const ViewScene&) = delete;
     virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     virtual void setStateDefaults() override;
 
@@ -112,7 +111,7 @@ namespace Render {
     void processViewSceneObjectFeedback();
     void updateTransientList();
     ActiveGeometryMap activeGeoms_;
-    std::atomic<int> asyncUpdates_ = 0;
+    std::atomic<int> asyncUpdates_;
   };
 }}}
 

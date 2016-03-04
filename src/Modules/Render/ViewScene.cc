@@ -52,7 +52,7 @@ ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
 
-ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
+ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
 {
   INITIALIZE_PORT(GeneralGeom);
 #ifdef BUILD_TESTING
