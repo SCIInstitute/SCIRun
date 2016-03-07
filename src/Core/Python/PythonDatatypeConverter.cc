@@ -151,110 +151,89 @@ boost::python::object SCIRun::Core::Python::convertStringToPython(StringHandle s
   return {};
 }
 
-namespace detail
+bool DenseMatrixExtractor::check() const 
 {
-  class DatatypeExtractor
+  boost::python::extract<boost::python::list> e(object_);
+  if (!e.check())
+    return false;
+
+  auto list = e();
+  auto length = len(list);
+  if (length > 0)
   {
-  public:
-    virtual ~DatatypeExtractor() {}
-    virtual bool check() const = 0;
-    virtual DatatypeHandle operator()() const = 0;
-    virtual std::string label() const = 0;
-  };
+    boost::python::extract<boost::python::list> firstRow(list[0]);
+    return firstRow.check();
+  }
+  return false;
+}
 
-  class DenseMatrixExtractor : public DatatypeExtractor
+DatatypeHandle DenseMatrixExtractor::operator()() const
+{
+  DenseMatrixHandle dense;
+  boost::python::extract<boost::python::list> e(object_);
+  if (e.check())
   {
-  public:
-    explicit DenseMatrixExtractor(const boost::python::object& object) : object_(object) {}
-
-    virtual bool check() const override
-    {
-      boost::python::extract<boost::python::list> e(object_);
-      if (!e.check())
-        return false;
-
-      auto list = e();
-      auto length = len(list);
-      if (length > 0)
-      {
-        boost::python::extract<boost::python::list> firstRow(list[0]);
-        return firstRow.check();
-      }
-      return false;
-    }
-
-    virtual DatatypeHandle operator()() const override
-    {
-      DenseMatrixHandle dense;
-      boost::python::extract<boost::python::list> e(object_);
-      if (e.check())
-      {
-        auto list = e();
-        auto length = len(list);
-        bool copyValues = false;
+    auto list = e();
+    auto length = len(list);
+    bool copyValues = false;
         
-        if (length > 0)
+    if (length > 0)
+    {
+      boost::python::extract<boost::python::list> firstRow(list[0]);
+      if (firstRow.check())
+      {
+        copyValues = true;
+        dense.reset(new DenseMatrix(length, len(firstRow)));
+      }
+    }
+    else
+    {
+      dense.reset(new DenseMatrix(0, 0));
+    }
+    if (copyValues)
+    {
+      for (int i = 0; i < length; ++i)
+      {
+        boost::python::extract<boost::python::list> rowList(list[i]);
+        if (rowList.check())
         {
-          boost::python::extract<boost::python::list> firstRow(list[0]);
-          if (firstRow.check())
+          auto row = rowList();
+          if (len(row) != dense->ncols())
+            throw std::invalid_argument("Attempted to convert into dense matrix but row lengths are not all equal.");
+          for (int j = 0; j < len(row); ++j)
           {
-            copyValues = true;
-            dense.reset(new DenseMatrix(length, len(firstRow)));
-          }
-        }
-        else
-        {
-          dense.reset(new DenseMatrix(0, 0));
-        }
-        if (copyValues)
-        {
-          for (int i = 0; i < length; ++i)
-          {
-            boost::python::extract<boost::python::list> rowList(list[i]);
-            if (rowList.check())
-            {
-              auto row = rowList();
-              if (len(row) != dense->ncols())
-                throw std::invalid_argument("Attempted to convert into dense matrix but row lengths are not all equal.");
-              for (int j = 0; j < len(row); ++j)
-              {
-                (*dense)(i, j) = boost::python::extract<double>(row[j]);
-              }
-            }
+            (*dense)(i, j) = boost::python::extract<double>(row[j]);
           }
         }
       }
-      return dense;
     }
+  }
+  return dense;
+}
 
-    virtual std::string label() const override { return "dense matrix"; }
-  private:
-    const boost::python::object& object_;
-  };
+bool SparseRowMatrixExtractor::check() const
+{
+  return false;
+}
 
-  class SparseRowMatrixExtractor : public DatatypeExtractor
-  {
-  public:
-    explicit SparseRowMatrixExtractor(const boost::python::object& object) : object_(object) {}
-    bool check() const;
-    DatatypeHandle operator()() const;
-    std::string label() const;
-  private:
-    const boost::python::object& object_;
-  };
+DatatypeHandle SparseRowMatrixExtractor::operator()() const
+{
+  return nullptr;
+}
 
-  class FieldExtractor : public DatatypeExtractor
-  {
-  public:
-    explicit FieldExtractor(const boost::python::object& object) : object_(object) {}
-    bool check() const;
-    DatatypeHandle operator()() const;
-    std::string label() const { return "field"; }
-  private:
-    const boost::python::object& object_;
-  };
+bool FieldExtractor::check() const
+{
+  return false;
+}
 
-  Variable makeDatatypeVariable(const DatatypeExtractor& extractor)
+DatatypeHandle FieldExtractor::operator()() const
+{
+  return nullptr;
+}
+
+namespace 
+{
+  Variable makeDatatypeVariable(const DatatypePythonExtractor& extractor)
   {
     return Variable(Name(extractor.label()), extractor(), Variable::DATATYPE_VARIABLE);
   }
@@ -292,7 +271,7 @@ Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python
     }
   }
   {
-    detail::DenseMatrixExtractor e(object);
+    DenseMatrixExtractor e(object);
     if (e.check())
     {
       return makeDatatypeVariable(e);

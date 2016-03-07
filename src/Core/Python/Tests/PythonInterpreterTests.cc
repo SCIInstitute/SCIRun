@@ -27,19 +27,31 @@
 */
 
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Core/Python/PythonDatatypeConverter.h>
 
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
-
-/// @todo 
+using namespace SCIRun;
+using namespace Core::Python;
+using namespace Testing;
 
 TEST(FieldConversionTests, RoundTripLatVol)
 {
-  
+  try
+  {
+    auto expected = CreateEmptyLatVol();
+    auto pyField = convertFieldToPython(expected);
 
+    //FieldExtractor converter(pyField);
 
-  FAIL() << "TODO";
+    //ASSERT_TRUE(converter.check());
+
+    //auto actual = converter();
+
+    //FAIL() << "TODO";
+  }
+  catch (...)
+  {
+    std::cerr << "Exception in test" << std::endl;
+    FAIL() << "TODO";
+  }
 }
