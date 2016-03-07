@@ -1374,7 +1374,7 @@ namespace SCIRun {
         colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
       handleGeomObject(geom, 0);
 
-      Graphics::GlyphGeom glyphs2;
+/*      Graphics::GlyphGeom glyphs2;
       glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
       ss.str("");
       ss << "clipping_plane_trans" << index;
@@ -1384,7 +1384,7 @@ namespace SCIRun {
       GeometryHandle geom2(new GeometryObjectSpire(ss.str()));
       glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
         colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
-      handleGeomObject(geom2, 0);
+      handleGeomObject(geom2, 0);*/
     }
 
     //------------------------------------------------------------------------------

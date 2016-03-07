@@ -40,6 +40,7 @@ attribute vec4  aColorSecondary;
 // Outputs to the fragment shader.
 varying vec3    vNormal;
 varying vec4    vColor;
+varying vec4    vPos;//for clipping plane calc
 
 void main( void )
 {
@@ -49,4 +50,5 @@ void main( void )
 
   vec4 colorData = uFDToggle * aColor + (1.0 - uFDToggle) * aColorSecondary;
   vColor = colorData;
+  vPos = vec4(aPos, 1.0);
 }
