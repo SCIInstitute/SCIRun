@@ -116,6 +116,12 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }
 
+void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
+  double numTicks, double lineWidth, const QString& unit)
+{
+  //showScaleBarTextGroupBox_->set
+}
+
 void ViewSceneControlsDock::updateZoomOptionVisibility()
 {
   if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
@@ -139,10 +145,10 @@ void ViewSceneControlsDock::updatePlaneSettingsDisplay(bool visible, bool showPl
 
 void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double z, double d)
 {
-  xSliderValueLabel_->setText(QString::number(x));
-  ySliderValueLabel_->setText(QString::number(y));
-  zSliderValueLabel_->setText(QString::number(z));
-  dSliderValueLabel_->setText(QString::number(d));
+  xSliderValueLabel_->setText(QString::number(x, 'f', 2));
+  ySliderValueLabel_->setText(QString::number(y, 'f', 2));
+  zSliderValueLabel_->setText(QString::number(z, 'f', 2));
+  dSliderValueLabel_->setText(QString::number(d, 'f', 2));
 
   xValueHorizontalSlider_->setSliderPosition(x * 100);
   yValueHorizontalSlider_->setSliderPosition(y * 100);

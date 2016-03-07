@@ -25,10 +25,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Fields/ReportFieldInfo.h
 
-#ifndef MODULES_FIELDS_REPORTFIELDINFO_H
-#define MODULES_FIELDS_REPORTFIELDINFO_H
+#ifndef MODULES_LEGACY_MATLAB_DATAIO_EXPORTFIELDSTOMATLAB_H
+#define MODULES_LEGACY_MATLAB_DATAIO_EXPORTFIELDSTOMATLAB_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Matlab/DataIO/share.h>
@@ -37,21 +36,23 @@ namespace SCIRun {
 namespace Modules {
 namespace Matlab {
 
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has6OutputPorts<StringPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag>
+  class SCISHARE ExportFieldsToMatlab : public SCIRun::Dataflow::Networks::Module,
+    public Has7InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, StringPortTag>,
+    public HasNoOutputPorts
   {
   public:
-    ReportFieldInfoModule();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    INPUT_PORT(0, InputField, LegacyField);
-    OUTPUT_PORT(0, FieldType, String);
-    OUTPUT_PORT(1, NumNodes, Int32);
-    OUTPUT_PORT(2, NumElements, Int32);
-    OUTPUT_PORT(3, NumData, Int32);
-    OUTPUT_PORT(4, DataMin, Double);
-    OUTPUT_PORT(5, DataMax, Double);
+    ExportFieldsToMatlab();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+    INPUT_PORT(0, Field1, LegacyField);
+    INPUT_PORT(1, Field2, LegacyField);
+    INPUT_PORT(2, Field3, LegacyField);
+    INPUT_PORT(3, Field4, LegacyField);
+    INPUT_PORT(4, Field5, LegacyField);
+    INPUT_PORT(5, Field6, LegacyField);
+    INPUT_PORT(6, Filename, String);
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 }}}
 

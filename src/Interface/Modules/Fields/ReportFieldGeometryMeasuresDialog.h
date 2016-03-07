@@ -25,34 +25,29 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Fields/ReportFieldInfo.h
 
-#ifndef MODULES_FIELDS_REPORTFIELDINFO_H
-#define MODULES_FIELDS_REPORTFIELDINFO_H
+#ifndef INTERFACE_MODULES_FIELD_ReportFieldGeometryMeasures_H
+#define INTERFACE_MODULES_FIELD_ReportFieldGeometryMeasures_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Matlab/DataIO/share.h>
+#include "Interface/Modules/Fields/ui_ReportFieldGeometryMeasures.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Matlab {
+namespace Gui {
 
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has6OutputPorts<StringPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag>
-  {
-  public:
-    ReportFieldInfoModule();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    INPUT_PORT(0, InputField, LegacyField);
-    OUTPUT_PORT(0, FieldType, String);
-    OUTPUT_PORT(1, NumNodes, Int32);
-    OUTPUT_PORT(2, NumElements, Int32);
-    OUTPUT_PORT(3, NumData, Int32);
-    OUTPUT_PORT(4, DataMin, Double);
-    OUTPUT_PORT(5, DataMax, Double);
-  };
-}}}
+class SCISHARE ReportFieldGeometryMeasuresDialog : public ModuleDialogGeneric,
+  public Ui::ReportFieldGeometryMeasures
+{
+	Q_OBJECT
+
+public:
+  ReportFieldGeometryMeasuresDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+};
+
+}
+}
 
 #endif

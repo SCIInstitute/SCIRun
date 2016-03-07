@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,34 +25,38 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Fields/ReportFieldInfo.h
 
-#ifndef MODULES_FIELDS_REPORTFIELDINFO_H
-#define MODULES_FIELDS_REPORTFIELDINFO_H
+#ifndef MODULES_FIELDS_RefineTetMeshLocally_H__
+#define MODULES_FIELDS_RefineTetMeshLocally_H__
 
+//#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Matlab/DataIO/share.h>
+#include <Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Matlab {
+  namespace Modules {
+				namespace Fields {
 
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has6OutputPorts<StringPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag>
-  {
-  public:
-    ReportFieldInfoModule();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    INPUT_PORT(0, InputField, LegacyField);
-    OUTPUT_PORT(0, FieldType, String);
-    OUTPUT_PORT(1, NumNodes, Int32);
-    OUTPUT_PORT(2, NumElements, Int32);
-    OUTPUT_PORT(3, NumData, Int32);
-    OUTPUT_PORT(4, DataMin, Double);
-    OUTPUT_PORT(5, DataMax, Double);
-  };
-}}}
+	/// @class RefineTetMeshLocally
+	/// @brief Module to refine parts of Cleaver meshes 
+
+      class SCISHARE RefineTetMeshLocally : public Dataflow::Networks::Module,
+	public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        RefineTetMeshLocally();
+
+        virtual void execute();
+        virtual void setStateDefaults(); 
+
+        INPUT_PORT(0, InputField, LegacyField);
+	OUTPUT_PORT(0, OutputField, LegacyField);
+	static const Dataflow::Networks::ModuleLookupInfo staticInfo_; 
+      };
+
+    }
+  }
+}
 
 #endif

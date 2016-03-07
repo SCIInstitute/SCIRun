@@ -65,6 +65,14 @@ void ViewScene::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(ShowScaleBar, false);
+  state->setValue(ScaleBarUnitValue, "mm");
+  state->setValue(ScaleBarLength, 1.0);
+  state->setValue(ScaleBarHeight, 1.0);
+  state->setValue(ScaleBarMultiplier, 1.0);
+  state->setValue(ScaleBarNumTicks, 11);
+  state->setValue(ScaleBarLineWidth, 1.0);
+  state->setValue(ScaleBarFontSize, 8);
   postStateChangeInternalSignalHookup();
 }
 
@@ -168,7 +176,16 @@ void ViewScene::processViewSceneObjectFeedback()
   if (newInfo)
   {
     sendFeedbackUpstreamAlongIncomingConnections(*newInfo);
+    (*newInfo).clear();
   }
 }
 
 AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+AlgorithmParameterName ViewScene::ShowScaleBar("ShowScaleBar");
+AlgorithmParameterName ViewScene::ScaleBarUnitValue("ScaleBarUnitValue");
+AlgorithmParameterName ViewScene::ScaleBarLength("ScaleBarLength");
+AlgorithmParameterName ViewScene::ScaleBarHeight("ScaleBarHeight");
+AlgorithmParameterName ViewScene::ScaleBarMultiplier("ScaleBarMultiplier");
+AlgorithmParameterName ViewScene::ScaleBarNumTicks("ScaleBarNumTicks");
+AlgorithmParameterName ViewScene::ScaleBarLineWidth("ScaleBarLineWidth");
+AlgorithmParameterName ViewScene::ScaleBarFontSize("ScaleBarFontSize");

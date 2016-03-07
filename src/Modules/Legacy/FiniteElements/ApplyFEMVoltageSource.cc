@@ -137,12 +137,12 @@ void ApplyFEMVoltageSource::execute()
       }
       else
       {
-        rhs->Zero(nsize);
+        rhs->setZero(nsize);
       }
     }
     else
     {
-      rhs->Zero(nsize);
+      rhs->setZero(nsize);
     }
 
     ApplyFEMVoltageSourceAlgo algo;

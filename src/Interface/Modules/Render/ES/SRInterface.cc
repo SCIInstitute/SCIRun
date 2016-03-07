@@ -39,7 +39,6 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 
 // CPM modules.
-
 #include <es-general/comp/StaticScreenDims.hpp>
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/StaticOrthoCamera.hpp>
@@ -559,7 +558,7 @@ namespace SCIRun {
     {
       return mWidgetTransform;
     }
-
+    
     std::string &SRInterface::getFSRoot()
     {
       return mFSRoot;

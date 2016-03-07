@@ -42,6 +42,17 @@ namespace BioPSE
 }
 
 namespace SCIRun {
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Inverse
+      {
+        ALGORITHM_PARAMETER_DECL(TikhonovSolutionSubcase);
+        ALGORITHM_PARAMETER_DECL(TikhonovResidualSubcase);
+      }
+    }
+  }
   namespace Modules {
     namespace Inverse {
 
@@ -71,8 +82,6 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName LambdaNum;
         static const Core::Algorithms::AlgorithmParameterName LambdaResolution;
         static const Core::Algorithms::AlgorithmParameterName TikhonovCase;
-        static const Core::Algorithms::AlgorithmParameterName TikhonovSolutionSubcase;
-        static const Core::Algorithms::AlgorithmParameterName TikhonovResidualSubcase;
         static const Core::Algorithms::AlgorithmParameterName LambdaSliderValue;
         static const Core::Algorithms::AlgorithmParameterName LambdaCorner;
         static const Core::Algorithms::AlgorithmParameterName LCurveText;

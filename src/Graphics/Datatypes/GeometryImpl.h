@@ -165,9 +165,9 @@ namespace SCIRun {
           renderType(renType),
           vbo(vbo),
           ibo(ibo),
+          text(text),
           scalar(1.0),
-          mColorScheme(scheme),
-          text(text)
+          mColorScheme(scheme)
         {}
 
         static const char* getName() { return "SpireSubPass"; }

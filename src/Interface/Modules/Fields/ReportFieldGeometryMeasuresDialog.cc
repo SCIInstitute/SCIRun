@@ -25,34 +25,27 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Fields/ReportFieldInfo.h
 
-#ifndef MODULES_FIELDS_REPORTFIELDINFO_H
-#define MODULES_FIELDS_REPORTFIELDINFO_H
+#include <Interface/Modules/Fields/ReportFieldGeometryMeasuresDialog.h>
+#include <Modules/Legacy/Fields/ReportFieldGeometryMeasures.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Matlab/DataIO/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-namespace Modules {
-namespace Matlab {
+ReportFieldGeometryMeasuresDialog::ReportFieldGeometryMeasuresDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has6OutputPorts<StringPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag>
-  {
-  public:
-    ReportFieldInfoModule();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    INPUT_PORT(0, InputField, LegacyField);
-    OUTPUT_PORT(0, FieldType, String);
-    OUTPUT_PORT(1, NumNodes, Int32);
-    OUTPUT_PORT(2, NumElements, Int32);
-    OUTPUT_PORT(3, NumData, Int32);
-    OUTPUT_PORT(4, DataMin, Double);
-    OUTPUT_PORT(5, DataMax, Double);
-  };
-}}}
-
-#endif
+  addCheckBoxManager(xPositionCheckBox_, Parameters::XPositionFlag);
+  addCheckBoxManager(yPositionCheckBox_, Parameters::YPositionFlag);
+  addCheckBoxManager(zPositionCheckBox_, Parameters::ZPositionFlag);
+  addCheckBoxManager(indexCheckBox_, Parameters::IndexFlag);
+  addCheckBoxManager(sizeCheckBox_, Parameters::SizeFlag);
+  addCheckBoxManager(normalsCheckBox_, Parameters::NormalsFlag);
+  addComboBoxManager(simplexComboBox_, Parameters::MeasureLocation);
+}

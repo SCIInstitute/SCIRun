@@ -28,7 +28,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include <gl-platform/GLPlatform.hpp>
 
-//#include <Core/Datatypes/DenseMatrix.h>
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/GLWidget.h>
@@ -36,7 +35,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
-#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -60,7 +58,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setFocusPolicy(Qt::StrongFocus);
 
   addToolBar();
-  setupClippingPlanes();
+  setupClippingPlanes(); 
+  setupScaleBar();
 
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
@@ -127,7 +126,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
-  //std::cout << "ViewSceneDialog::shiftdown_:" << shiftdown_ << std::endl;
   if (shiftdown_)
   {
     selectObject(event->x(), event->y());
@@ -614,6 +612,8 @@ void ViewSceneDialog::configurationButtonClicked()
   {
     addConfigurationDock(windowTitle());
     mConfigurationDock->setSampleColor(bgColor_);
+    mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
+      scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
     newGeometryValue();
   }
 
@@ -795,6 +795,56 @@ void ViewSceneDialog::updatClippingPlaneDisplay()
 }
 
 //------------------------------------------------------------------------------
+//-------------------Scale Bar Tools--------------------------------------------
+void ViewSceneDialog::setScaleBarVisible(bool value)
+{
+  scaleBar_.visible = value;
+  state_->setValue(Modules::Render::ViewScene::ShowScaleBar, value);
+}
+
+void ViewSceneDialog::setScaleBarFontSize(int value)
+{
+  scaleBar_.fontSize = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarFontSize, value);
+}
+
+void ViewSceneDialog::setScaleBarUnitValue(const QString& text)
+{
+  scaleBar_.unit = text.toStdString();
+  state_->setValue(Modules::Render::ViewScene::ScaleBarUnitValue, text.toStdString());
+}
+
+void ViewSceneDialog::setScaleBarLength(double value)
+{
+  scaleBar_.length = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarLength, value);
+}
+
+void ViewSceneDialog::setScaleBarHeight(double value)
+{
+  scaleBar_.height = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarHeight, value);
+}
+
+void ViewSceneDialog::setScaleBarMultiplier(double value)
+{
+  scaleBar_.multiplier = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarMultiplier, value);
+}
+
+void ViewSceneDialog::setScaleBarNumTicks(int value)
+{
+  scaleBar_.numTicks = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarNumTicks, value);
+}
+
+void ViewSceneDialog::setScaleBarLineWidth(double value)
+{
+  scaleBar_.lineWidth = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarLineWidth, value);
+}
+
+//------------------------------------------------------------------------------
 bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 {
   return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
@@ -940,6 +990,32 @@ void ViewSceneDialog::setupClippingPlanes()
   }
 }
 
+void ViewSceneDialog::setupScaleBar()
+{
+  if (state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString() != "")
+  {
+    scaleBar_.visible = state_->getValue(Modules::Render::ViewScene::ShowScaleBar).toBool();
+    scaleBar_.unit = state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString();
+    scaleBar_.length = state_->getValue(Modules::Render::ViewScene::ScaleBarLength).toDouble();
+    scaleBar_.height = state_->getValue(Modules::Render::ViewScene::ScaleBarHeight).toDouble();
+    scaleBar_.multiplier = state_->getValue(Modules::Render::ViewScene::ScaleBarMultiplier).toDouble();
+    scaleBar_.numTicks = state_->getValue(Modules::Render::ViewScene::ScaleBarNumTicks).toInt();
+    scaleBar_.lineWidth = state_->getValue(Modules::Render::ViewScene::ScaleBarLineWidth).toDouble();
+    scaleBar_.fontSize = state_->getValue(Modules::Render::ViewScene::ScaleBarFontSize).toInt();
+  }
+  else
+  {
+    scaleBar_.visible = false;
+    scaleBar_.unit = "mm";
+    scaleBar_.length = 1.0;
+    scaleBar_.height = 1.0;
+    scaleBar_.multiplier = 1.0;
+    scaleBar_.numTicks = 11;
+    scaleBar_.lineWidth = 1.0;
+    scaleBar_.fontSize = 8;
+  }
+}
+
 void ViewSceneDialog::hideConfigurationDock()
 {
   if (mConfigurationDock)
@@ -986,7 +1062,7 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   //DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
   glm::mat4 trans = spire->getWidgetTransform().transform;
-
+  
   geomInfo.push_back(makeVariable("x00", trans[0][0]));
   geomInfo.push_back(makeVariable("x10", trans[1][0]));
   geomInfo.push_back(makeVariable("x20", trans[2][0]));
@@ -1003,10 +1079,12 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   geomInfo.push_back(makeVariable("x13", trans[1][3]));
   geomInfo.push_back(makeVariable("x23", trans[2][3]));
   geomInfo.push_back(makeVariable("x33", trans[3][3]));
-  /*(*matrixHandle) << trans[0][0], trans[1][0], trans[2][0], trans[3][0]
-    , trans[0][1], trans[1][1], trans[2][1], trans[3][1]
-    , trans[0][2], trans[1][2], trans[2][2], trans[3][2]
-    , trans[0][3], trans[1][3], trans[2][3], trans[3][3];*/
+  /*
+  (*matrixHandle) << trans[0][0], trans[1][0], trans[2][0], trans[3][0]
+                   , trans[0][1], trans[1][1], trans[2][1], trans[3][1]
+                   , trans[0][2], trans[1][2], trans[2][2], trans[3][2]
+                   , trans[0][3], trans[1][3], trans[2][3], trans[3][3];
+  std::cout << "in view scene: " << (*matrixHandle) << std::endl;*/
   //geomInfo.push_back(Variable(Name("transform"), matrixHandle, Variable::DATATYPE_VARIABLE));
   auto var = makeVariable("geomInfo", geomInfo);
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, var);

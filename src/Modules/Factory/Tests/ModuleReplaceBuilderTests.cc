@@ -49,7 +49,7 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
 
   auto descMap = factory.getDirectModuleDescriptionLookupMap();
 
-  EXPECT_GE(descMap.size(), 105);
+  EXPECT_GE(descMap.size(), 141);
 }
 
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)

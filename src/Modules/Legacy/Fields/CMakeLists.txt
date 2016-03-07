@@ -73,6 +73,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
   MapFieldDataFromSourceToDestination.h
+  ReportFieldGeometryMeasures.h
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
   ConvertIndicesToFieldData.h
@@ -132,7 +133,7 @@ SET(Modules_Legacy_Fields_SRCS
   FairMesh.cc
   #GetAllSegmentationBoundaries.cc
   GetFieldBoundary.cc
-  #ReportFieldGeometryMeasures.cc
+  ReportFieldGeometryMeasures.cc
   #SetFieldProperty.cc
   GetSliceFromStructuredFieldByIndices.cc
   #SubsampleStructuredFieldByIndices.cc
