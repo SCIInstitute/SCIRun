@@ -72,6 +72,7 @@ namespace SCIRun {
           Graphics::Datatypes::GeometryHandle geom);
 
       private:
+        std::string libName_;
         FT_Library ftLib_;
         FT_Face ftFace_;
         size_t ftSize_;

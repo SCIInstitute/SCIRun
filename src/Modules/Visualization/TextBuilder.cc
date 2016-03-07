@@ -61,6 +61,7 @@ void TextBuilder::initFreeType(const std::string &libName, size_t size)
 
   if (!ftInit_) return;
 
+  libName_ = libName;
   std::string fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + libName;
 
   err = FT_New_Face(ftLib_, fontPath.c_str(), 0, &ftFace_);
@@ -92,6 +93,7 @@ void TextBuilder::loadNewFace(const std::string &libName, size_t size)
     ftValid_ = false;
   }
 
+  libName_ = libName;
   std::string fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + libName;
 
   err = FT_New_Face(ftLib_, fontPath.c_str(), 0, &ftFace_);
@@ -124,7 +126,7 @@ std::string TextBuilder::getUniqueFontString(const char *p, double x,
   double y, double z, double w, double h)
 {
   std::stringstream ss;
-  ss << p[0] << x << y << z << w << h;
+  ss << libName_ << p[0] << x << y << z << w << h;
   return ss.str();
 }
 
