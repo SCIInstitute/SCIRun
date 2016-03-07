@@ -36,6 +36,7 @@
 
 #include <Core/Application/Application.h>
 #include <Modules/Visualization/ShowColorMapModule.h>
+#include <Modules/Visualization/TextBuilder.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 
 // CPM modules.
@@ -149,7 +150,7 @@ namespace SCIRun {
       std::string filesystemRoot = Core::Application::Instance().executablePath().string();
       std::string sep;
       sep += boost::filesystem::path::preferred_separator;
-      Modules::Visualization::ShowColorMapModule::setFSStrings(filesystemRoot, sep);
+      Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
     }
 
     //------------------------------------------------------------------------------
