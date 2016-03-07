@@ -141,7 +141,7 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, co
           lineEdit->setText(QString::fromStdString(state_->getValue(name).toString()));
         else
         {
-          lineEdit->setText(QString::fromStdString(type) + "Input" + QString::number(connectedPortNumber + 1));
+          lineEdit->setText(QString::fromStdString(type).toLower() + "Input" + QString::number(connectedPortNumber + 1));
           state_->setValue(name, lineEdit->text().toStdString());
         }
 
