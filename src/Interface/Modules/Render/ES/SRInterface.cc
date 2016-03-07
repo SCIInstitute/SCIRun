@@ -1316,9 +1316,11 @@ namespace SCIRun {
           o.w = 0;
           n.w = 0;
           n.w = glm::dot(o, n);
-          clippingPlanes->clippingPlanes.push_back(glm::vec4(n.x, n.y, n.z, n.w));
-          clippingPlanes->clippingPlaneCtrls.push_back(
-            glm::vec4(i.visible?1.0:0.0, i.showFrame?1.0:0.0, i.reverseNormal?1.0:0.0, 0.0));
+          clippingPlanes->clippingPlanes.push_back(n);
+          glm::vec4 control(i.visible ? 1.0 : 0.0,
+            i.showFrame ? 1.0 : 0.0,
+            i.reverseNormal ? 1.0 : 0.0, 0.0);
+          clippingPlanes->clippingPlaneCtrls.push_back(control);
           if (i.showFrame)
             updateGeometryClippingPlane(index, n);
           index++;
