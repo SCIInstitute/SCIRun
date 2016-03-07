@@ -32,9 +32,9 @@
 
 #include <boost/python.hpp>
 #include <boost/python/stl_iterator.hpp>
-#include <boost/shared_ptr.hpp>
 #include <vector>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/Variable.h>
 
 
 #include <Core/Python/share.h>
@@ -83,6 +83,13 @@ namespace SCIRun
       SCISHARE boost::python::object convertMatrixToPython(Datatypes::DenseMatrixHandle matrix);
       SCISHARE boost::python::object convertMatrixToPython(Datatypes::SparseRowMatrixHandle matrix);
       SCISHARE boost::python::object convertStringToPython(Datatypes::StringHandle str);
+
+      SCISHARE FieldHandle convertFieldFromPython(const boost::python::object& obj);
+      SCISHARE Datatypes::DenseMatrixHandle convertDenseMatrixFromPython(const boost::python::object& obj);
+      SCISHARE Datatypes::SparseRowMatrixHandle convertSparseMatrixFromPython(const boost::python::object& obj);
+      SCISHARE Datatypes::StringHandle convertStringFromPython(const boost::python::object& obj);
+
+      SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object);
     }
   }
 }
