@@ -222,9 +222,7 @@ namespace detail
               }
             }
           }
-
         }
-        
       }
       return dense;
     }
@@ -251,7 +249,7 @@ namespace detail
     explicit FieldExtractor(const boost::python::object& object) : object_(object) {}
     bool check() const;
     DatatypeHandle operator()() const;
-    std::string label() const;
+    std::string label() const { return "field"; }
   private:
     const boost::python::object& object_;
   };
@@ -308,80 +306,21 @@ Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python
   //  }
   //}
   //{
+  //  detail::DenseColumnMatrixExtractor e(object);
+  //  if (e.check())
+  //  {
+  //    return makeDatatypeVariable(e);
+  //  }
+  //}
+  //{
   //  detail::FieldExtractor e(object);
   //  if (e.check())
   //  {
   //    return makeDatatypeVariable(e);
   //  }
   //}
-#if 0
-  {
-    boost::python::extract<boost::python::list> e(object);
-    if (e.check())
-    {
-      auto list = e();
-      auto length = len(list);
-      bool makeDense;
-      DenseMatrixHandle dense;
-      if (length > 0)
-      {
-        boost::python::extract<boost::python::list> firstRow(list[0]);
-        if (firstRow.check())
-        {
-          makeDense = true;
-          dense.reset(new DenseMatrix(length, len(firstRow)));
-        }
-        else
-        {
-          boost::python::extract<std::string> innerString(list[0]);
-          if (innerString.check())
-            makeDense = false;
-          else
-            throw std::invalid_argument("Ill-formed list.");
-        }
-      }
-      else
-      {
-        throw std::invalid_argument("Empty list.");
-      }
-      if (makeDense)
-      {
-        for (int i = 0; i < length; ++i)
-        {
-          boost::python::extract<boost::python::list> rowList(list[i]);
-          if (rowList.check())
-          {
-            auto row = rowList();
-            if (len(row) != dense->ncols())
-              throw std::invalid_argument("Attempted to convert into dense matrix but row lengths are not all equal.");
-            for (int j = 0; j < len(row); ++j)
-            {
-              (*dense)(i, j) = boost::python::extract<double>(row[j]);
-            }
-          }
-        }
-        Variable x(Name("dense matrix"), dense, Variable::DATATYPE_VARIABLE);
-        return x;
-      }
-      else //sparse
-      {
-        std::cout << "TODO: sparse matrix conversion" << std::endl;
-        return {};
-      }
-      //TODO: dense column
-    }
-  }
-#endif
   std::cerr << "No known conversion from python object to C++ object" << std::endl;
   return Variable();
-}
-
-
-DenseMatrixHandle SCIRun::Core::Python::extractDenseMatrixFromPython(const boost::python::object& obj)
-{
-  
-  return nullptr;
-
 }
 
 #endif

@@ -74,7 +74,7 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
   public:
     MatlabToFieldAlgo();
 
-    virtual bool execute(SCIRun::FieldHandle& fieldhandle);
+    bool execute(SCIRun::FieldHandle& fieldhandle);
 
     //////// ANALYZE INPUT FUNCTIONS //////////////////////
 

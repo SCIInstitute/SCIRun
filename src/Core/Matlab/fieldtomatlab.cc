@@ -85,11 +85,6 @@ void FieldToMatlabAlgo::warning(const std::string& warning)
   if(pr_) pr_->warning(warning);
 }
 
-
-FieldToMatlabAlgo::~FieldToMatlabAlgo()
-{
-}
-
 bool 
 FieldToMatlabAlgo::execute(FieldHandle fieldH, matlabarray &mlarray)
 {
