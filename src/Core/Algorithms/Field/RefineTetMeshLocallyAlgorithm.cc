@@ -675,7 +675,7 @@ std::vector<int> RefineTetMeshLocallyAlgorithm::getEdgeCoding(int pos) const
   return edgecoding;
 }
 
-std::vector<int> RefineTetMeshLocallyAlgorithm::maxi(std::vector<double> input_vec) const
+std::vector<int> RefineTetMeshLocallyAlgorithm::maxi(const std::vector<double>& input_vec) const
 {
   std::vector<int> result(6);
   double maximum = std::numeric_limits<double>::min();
@@ -709,10 +709,10 @@ std::vector<int> RefineTetMeshLocallyAlgorithm::maxi(std::vector<double> input_v
 }
 
 /// TODO (DAN): this function should run in parallel
-SparseRowMatrixHandle RefineTetMeshLocallyAlgorithm::ChoseEdgesToCut(FieldHandle input, std::vector<long> elems_to_split, VMesh* field_boundary) const
+SparseRowMatrixHandle RefineTetMeshLocallyAlgorithm::ChoseEdgesToCut(FieldHandle input, const std::vector<long>& elems_to_split, VMesh* field_boundary) const
 {
   VMesh* input_vmesh = input->vmesh();
-  long number = elems_to_split.size();
+  size_t number = elems_to_split.size();
   SparseRowMatrixHandle cut_edges;
   std::vector<double> edge_lengths;
   SparseRowMatrixFromMap::Values cut_edges_val; /// all tet element counting starts from 1 (0 denotes blank)
@@ -724,7 +724,7 @@ SparseRowMatrixHandle RefineTetMeshLocallyAlgorithm::ChoseEdgesToCut(FieldHandle
   bool split_it = true;
   bool MeshDoNoSplitSurfaceTets = get(Parameters::RefineTetMeshLocallyDoNoSplitSurfaceTets).toBool();
 
-  for (long idx = 0; idx < number; idx++) // this for loop can be parallized
+  for (long idx = 0; idx < number; idx++) // this for loop can be parallelized
   {
     input_vmesh->get_nodes(onodes, static_cast<VMesh::Elem::index_type>(elems_to_split[idx]));
     input_vmesh->get_center(p1, static_cast<VMesh::Node::index_type>(onodes[0]));
