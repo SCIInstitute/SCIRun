@@ -37,7 +37,17 @@ using namespace SCIRun;
 using namespace Core::Python;
 using namespace Testing;
 
-TEST(FieldConversionTests, RoundTripLatVol)
+class FieldConversionTests : public testing::Test
+{
+public:
+  FieldConversionTests()
+  {
+    Py_Initialize();
+  }
+};
+
+
+TEST_F(FieldConversionTests, RoundTripLatVol)
 {
   auto expected = CreateEmptyLatVol();
   auto pyField = convertFieldToPython(expected);
@@ -52,19 +62,15 @@ TEST(FieldConversionTests, RoundTripLatVol)
   FAIL() << "TODO";
 }
 
-TEST(FieldConversionTests, RejectsEmptyDictionary)
+TEST_F(FieldConversionTests, RejectsEmptyDictionary)
 {
   boost::python::dict emptyDict;
   FieldExtractor converter(emptyDict);
 
   ASSERT_FALSE(converter.check());
-
-  //auto actual = converter();
-
-  //FAIL() << "TODO";
 }
 
-TEST(FieldConversionTests, RejectsIncompatibleDictionary)
+TEST_F(FieldConversionTests, RejectsIncompatibleDictionary)
 {
   boost::python::dict dict;
   dict.setdefault(2, 5);
@@ -72,14 +78,4 @@ TEST(FieldConversionTests, RejectsIncompatibleDictionary)
   FieldExtractor converter(dict);
 
   ASSERT_FALSE(converter.check());
-
-  //auto actual = converter();
-
-  //FAIL() << "TODO";
-}
-
-TEST(FieldConversionTests, DoesDictionaryCreationCrash)
-{
-  boost::python::dict dict;
-  //FAIL() << "TODO";
 }
