@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-ModuleLookupInfo SplitFieldByDomain::staticInfo_("SplitFieldByDomain", "NewField", "SCIRun");
+const ModuleLookupInfo SplitFieldByDomain::staticInfo_("SplitFieldByDomain", "NewField", "SCIRun");
 
 SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_)
 {
@@ -67,13 +67,6 @@ void SplitFieldByDomain::execute()
 {
   auto input = getRequiredInput(InputField);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (inputs_changed_ || !oport_cached("All Fields") || !oport_cached("Field1")
-    || !oport_cached("Field2") || !oport_cached("Field3") || !oport_cached("Field4")
-    || !oport_cached("Field5") || !oport_cached("Field6") || !oport_cached("Field7") 
-    || !oport_cached("Field8")  ||gui_sort_by_size_.changed()
-    || gui_sort_ascending_.changed())
-#endif
   if (needToExecute())
   {
     update_state(Executing);

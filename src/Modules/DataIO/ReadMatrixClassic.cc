@@ -86,3 +86,9 @@ bool ReadMatrix::useCustomImporter(const std::string& filename) const
   auto filetypename = get_state()->getValue(Variables::FileTypeName).toString();
   return !(filetypename.empty() || filetypename == "SCIRun Matrix File");
 }
+
+std::string ReadMatrix::defaultFileTypeName() const
+{
+  MatrixIEPluginManager mgr;
+  return defaultImportTypeForFile(&mgr);
+}

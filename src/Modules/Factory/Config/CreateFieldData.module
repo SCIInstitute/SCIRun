@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CreateFieldData",
+    "namespace": "Fields",
+    "status": "Converted",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/CreateFieldData.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "CreateFieldDataDialog",
+    "header": "Interface/Modules/Fields/CreateFieldDataDialog.h"
+  }
+}

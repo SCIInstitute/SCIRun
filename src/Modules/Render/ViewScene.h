@@ -52,6 +52,13 @@ namespace SCIRun
 namespace Modules {
 namespace Render {
 
+  struct SCISHARE RGBMatrices
+  {
+    Core::Datatypes::DenseMatrixHandle red;
+    Core::Datatypes::DenseMatrixHandle green;
+    Core::Datatypes::DenseMatrixHandle blue;
+  };
+
 /// @class ViewScene
 /// @brief The ViewScene displays interactive graphical output to the computer screen.
 ///
@@ -63,7 +70,7 @@ namespace Render {
   class SCISHARE ViewScene : public Dataflow::Networks::ModuleWithAsyncDynamicPorts,
     public Has1InputPort<AsyncDynamicPortTag<GeometryPortTag>>,
 #ifdef BUILD_TESTING
-    public Has1OutputPort<MatrixPortTag>
+    public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
 #else
     public HasNoOutputPorts
 #endif
@@ -73,12 +80,22 @@ namespace Render {
     virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     virtual void setStateDefaults() override;
 
-    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-    static Core::Algorithms::AlgorithmParameterName BackgroundColor;
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    static const Core::Algorithms::AlgorithmParameterName BackgroundColor;
+    static const Core::Algorithms::AlgorithmParameterName ShowScaleBar;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarUnitValue;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarLength;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarHeight;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarMultiplier;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarNumTicks;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarLineWidth;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarFontSize;
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
 #ifdef BUILD_TESTING
-    OUTPUT_PORT(0, ScreenshotData, DenseMatrix);
+    OUTPUT_PORT(0, ScreenshotDataRed, DenseMatrix);
+    OUTPUT_PORT(1, ScreenshotDataGreen, DenseMatrix);
+    OUTPUT_PORT(2, ScreenshotDataBlue, DenseMatrix);
     virtual void execute() override;
 #endif
 
@@ -94,7 +111,7 @@ namespace Render {
     void processViewSceneObjectFeedback();
     void updateTransientList();
     ActiveGeometryMap activeGeoms_;
-    //Core::Algorithms::VariableList feedbackInfo_;
+    std::atomic<int> asyncUpdates_;
   };
 }}}
 

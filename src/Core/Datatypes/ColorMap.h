@@ -53,7 +53,7 @@ namespace Datatypes {
                         const double shift = 0.0, const bool invert = false,
                         const double rescale_scale = .5, const double rescale_shift = 1.);
                         //TODO: pass in alpha vector
-    virtual ColorMap* clone() const;
+    virtual ColorMap* clone() const override;
 
     ColorMapStrategyHandle getColorStrategy() const { return color_; }
     std::string getColorMapName() const;
@@ -63,9 +63,9 @@ namespace Datatypes {
     double getColorMapRescaleScale() const;
     double getColorMapRescaleShift() const;
 
-    Core::Datatypes::ColorRGB valueToColor(double scalar) const;
-    Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Tensor &tensor) const;
-    Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
+    ColorRGB valueToColor(double scalar) const;
+    ColorRGB valueToColor(const Core::Geometry::Tensor &tensor) const;
+    ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
 
     virtual std::string dynamic_type_name() const override { return "ColorMap"; }
 
@@ -95,7 +95,7 @@ namespace Datatypes {
   {
   public:
     virtual ~ColorMapStrategy() {}
-    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const = 0;
+    virtual ColorRGB getColorMapVal(double v) const = 0;
   };
 
   //TODO: not sure this needs to be abstract
@@ -113,8 +113,10 @@ namespace Datatypes {
     static ColorMapHandle create(const std::string& name = "Rainbow", const size_t &resolution = 256,
                                     const double &shift = 0.0, const bool &invert = false,
                                     const double &rescale_scale = .5, const double &rescale_shift = 1.);
+    typedef std::vector<std::string> NameList;
+    static NameList getList();
   private:
-    StandardColorMapFactory();
+    StandardColorMapFactory() = delete;
   };
 
 }}}

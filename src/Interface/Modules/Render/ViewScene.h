@@ -105,6 +105,15 @@ namespace SCIRun {
       void setClippingPlaneY(int index);
       void setClippingPlaneZ(int index);
       void setClippingPlaneD(int index);
+      //Scale Bar
+      void setScaleBarVisible(bool value);
+      void setScaleBarFontSize(int value);
+      void setScaleBarUnitValue(const QString& text);
+      void setScaleBarLength(double value);
+      void setScaleBarHeight(double value);
+      void setScaleBarMultiplier(double value);
+      void setScaleBarNumTicks(int value);
+      void setScaleBarLineWidth(double value);
 
     protected:
       virtual void mousePressEvent(QMouseEvent* event);
@@ -122,6 +131,13 @@ namespace SCIRun {
         double x, y, z, d;
       };
 
+      struct ScaleBar {
+        bool visible;
+        int fontSize;
+        double length, height, multiplier, numTicks, lineWidth;
+        std::string unit;
+      };
+
       void selectObject(const int x, const int y);
       void restoreObjColor();
       void updatClippingPlaneDisplay();
@@ -135,6 +151,7 @@ namespace SCIRun {
       void addConfigurationButton();
       void addConfigurationDock(const QString& viewName);
       void setupClippingPlanes();
+      void setupScaleBar();
       void hideConfigurationDock();
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
@@ -161,6 +178,7 @@ namespace SCIRun {
       bool selected_;
       int clippingPlaneIndex_;
       QColor bgColor_;
+      ScaleBar scaleBar_;
       std::vector<ClippingPlane> clippingPlanes_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;

@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -58,7 +59,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setFocusPolicy(Qt::StrongFocus);
 
   addToolBar();
-  setupClippingPlanes();
+  setupClippingPlanes(); 
+  setupScaleBar();
 
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
@@ -104,9 +106,10 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
     //Set background Color
-    if (state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString() != "")
+    auto colorStr = state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString();
+    if (!colorStr.empty())
     {
-      ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
+      ColorRGB color(colorStr);
       bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
         static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
         static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
@@ -358,9 +361,6 @@ void ViewSceneDialog::newGeometryValue()
         {
           spire->handleGeomObject(realObj, port);
           validObjects.push_back(name);
-#ifdef BUILD_TESTING
-          sendScreenshotDownstreamForTesting();
-#endif
         }
       }
     }
@@ -396,6 +396,10 @@ void ViewSceneDialog::newGeometryValue()
       return;
     spire->removeAllGeomObjects();
   }
+
+#ifdef BUILD_TESTING
+  sendScreenshotDownstreamForTesting();
+#endif
 
   if (saveScreenshotOnNewGeometry_)
   {
@@ -611,6 +615,8 @@ void ViewSceneDialog::configurationButtonClicked()
   {
     addConfigurationDock(windowTitle());
     mConfigurationDock->setSampleColor(bgColor_);
+    mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
+      scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
     newGeometryValue();
   }
 
@@ -791,6 +797,56 @@ void ViewSceneDialog::updatClippingPlaneDisplay()
 }
 
 //------------------------------------------------------------------------------
+//-------------------Scale Bar Tools--------------------------------------------
+void ViewSceneDialog::setScaleBarVisible(bool value)
+{
+  scaleBar_.visible = value;
+  state_->setValue(Modules::Render::ViewScene::ShowScaleBar, value);
+}
+
+void ViewSceneDialog::setScaleBarFontSize(int value)
+{
+  scaleBar_.fontSize = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarFontSize, value);
+}
+
+void ViewSceneDialog::setScaleBarUnitValue(const QString& text)
+{
+  scaleBar_.unit = text.toStdString();
+  state_->setValue(Modules::Render::ViewScene::ScaleBarUnitValue, text.toStdString());
+}
+
+void ViewSceneDialog::setScaleBarLength(double value)
+{
+  scaleBar_.length = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarLength, value);
+}
+
+void ViewSceneDialog::setScaleBarHeight(double value)
+{
+  scaleBar_.height = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarHeight, value);
+}
+
+void ViewSceneDialog::setScaleBarMultiplier(double value)
+{
+  scaleBar_.multiplier = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarMultiplier, value);
+}
+
+void ViewSceneDialog::setScaleBarNumTicks(int value)
+{
+  scaleBar_.numTicks = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarNumTicks, value);
+}
+
+void ViewSceneDialog::setScaleBarLineWidth(double value)
+{
+  scaleBar_.lineWidth = value;
+  state_->setValue(Modules::Render::ViewScene::ScaleBarLineWidth, value);
+}
+
+//------------------------------------------------------------------------------
 bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 {
   return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
@@ -936,6 +992,32 @@ void ViewSceneDialog::setupClippingPlanes()
   }
 }
 
+void ViewSceneDialog::setupScaleBar()
+{
+  if (state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString() != "")
+  {
+    scaleBar_.visible = state_->getValue(Modules::Render::ViewScene::ShowScaleBar).toBool();
+    scaleBar_.unit = state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString();
+    scaleBar_.length = state_->getValue(Modules::Render::ViewScene::ScaleBarLength).toDouble();
+    scaleBar_.height = state_->getValue(Modules::Render::ViewScene::ScaleBarHeight).toDouble();
+    scaleBar_.multiplier = state_->getValue(Modules::Render::ViewScene::ScaleBarMultiplier).toDouble();
+    scaleBar_.numTicks = state_->getValue(Modules::Render::ViewScene::ScaleBarNumTicks).toInt();
+    scaleBar_.lineWidth = state_->getValue(Modules::Render::ViewScene::ScaleBarLineWidth).toDouble();
+    scaleBar_.fontSize = state_->getValue(Modules::Render::ViewScene::ScaleBarFontSize).toInt();
+  }
+  else
+  {
+    scaleBar_.visible = false;
+    scaleBar_.unit = "mm";
+    scaleBar_.length = 1.0;
+    scaleBar_.height = 1.0;
+    scaleBar_.multiplier = 1.0;
+    scaleBar_.numTicks = 11;
+    scaleBar_.lineWidth = 1.0;
+    scaleBar_.fontSize = 8;
+  }
+}
+
 void ViewSceneDialog::hideConfigurationDock()
 {
   if (mConfigurationDock)
@@ -982,7 +1064,7 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   //DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
   glm::mat4 trans = spire->getWidgetTransform().transform;
-  
+
   geomInfo.push_back(makeVariable("x00", trans[0][0]));
   geomInfo.push_back(makeVariable("x10", trans[1][0]));
   geomInfo.push_back(makeVariable("x20", trans[2][0]));
@@ -1026,6 +1108,9 @@ void ViewSceneDialog::screenshotClicked()
 
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
+  //wait for a couple frames to go by.
+//  boost::this_thread::sleep(boost::posix_time::milliseconds(150));
+  //std::cout << "sendScreenshotDownstreamForTesting " << std::endl;
   takeScreenshot();
   state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }

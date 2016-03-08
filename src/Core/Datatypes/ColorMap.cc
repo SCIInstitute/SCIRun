@@ -31,6 +31,10 @@
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Logging/Log.h>
 #include <iostream>
+#include <boost/functional/factory.hpp>
+#include <boost/function.hpp>
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -52,84 +56,86 @@ ColorMap* ColorMap::clone() const
 
 namespace detail
 {
-class Rainbow : public ColorMapStrategy
-{
-public:
-  virtual ColorRGB getColorMapVal(double v) const override;
-};
+  class Rainbow : public ColorMapStrategy
+  {
+  public:
+    virtual ColorRGB getColorMapVal(double v) const override;
+  };
 
-class OldRainbow : public ColorMapStrategy
-{
-public:
-  virtual ColorRGB getColorMapVal(double v) const override;
-};
+  class OldRainbow : public ColorMapStrategy
+  {
+  public:
+    virtual ColorRGB getColorMapVal(double v) const override;
+  };
 
-class Blackbody : public ColorMapStrategy
-{
-public:
-  virtual ColorRGB getColorMapVal(double v) const override;
-};
+  class Blackbody : public ColorMapStrategy
+  {
+  public:
+    virtual ColorRGB getColorMapVal(double v) const override;
+  };
 
-class Grayscale : public ColorMapStrategy
-{
-public:
-  virtual ColorRGB getColorMapVal(double v) const override;
-};
+  class Grayscale : public ColorMapStrategy
+  {
+  public:
+    virtual ColorRGB getColorMapVal(double v) const override;
+  };
 
-class OrangeBlackLime : public ColorMapStrategy
-{
-public:
-  virtual ColorRGB getColorMapVal(double v) const override;
-};
+  class OrangeBlackLime : public ColorMapStrategy
+  {
+  public:
+    virtual ColorRGB getColorMapVal(double v) const override;
+  };
 
-class Darkhue : public ColorMapStrategy
-{
-public:
-  virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-};
+  class Darkhue : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
 
-class BPSeismic : public ColorMapStrategy
-{
-public:
-  virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
-};
+  class BPSeismic : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
+
+  typedef boost::function<ColorMapStrategy*()> ColorMapMaker;
+  static std::map<std::string, ColorMapMaker> colorMapFactoryMap =
+  {
+    { "Rainbow", boost::factory<Rainbow*>() },
+    { "Old Rainbow", boost::factory<OldRainbow*>() },
+    { "Blackbody", boost::factory<Blackbody*>() },
+    { "Grayscale", boost::factory<Grayscale*>() },
+    { "Orange,Black,Lime", boost::factory<OrangeBlackLime*>() },
+    { "Darkhue", boost::factory<Darkhue*>() },
+    { "BP Seismic", boost::factory<BPSeismic*>() }
+  };
 }
 
 ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &res,
   const double &shift, const bool &invert,
   const double &rescale_scale, const double &rescale_shift)
 {
-    ColorMapStrategyHandle color;
-    if (name == "Rainbow") {
-      color.reset(new detail::Rainbow);
-    }
-    else if (name == "Old Rainbow") {
-      color.reset(new detail::OldRainbow);
-    }
-    else if (name == "Blackbody") {
-      color.reset(new detail::Blackbody);
-    }
-    else if (name == "Grayscale") {
-      color.reset(new detail::Grayscale);
-    }
-    else if (name == "Orange,Black,Lime") {
-      color.reset(new detail::OrangeBlackLime);
-    }
-    else if (name == "Darkhue") {
-      color.reset(new detail::Darkhue);
-    }
-    else if (name == "BP Seismic") {
-      color.reset(new detail::BPSeismic);
-    }
-    else
-    {
-      Log::get() << ERROR_LOG << "Color map name not implemented/recognized. Returning Rainbow." << std::endl;
-      color.reset(new detail::Rainbow);
-    }
-
+  using namespace detail;
+  ColorMapStrategyHandle color;
+  auto maker = colorMapFactoryMap.find(name);
+  if (maker != colorMapFactoryMap.end())
+    color.reset(maker->second());
+  else
+  {
+    Log::get() << ERROR_LOG << "Color map name not implemented/recognized. Returning Rainbow." << std::endl;
+    color.reset(new Rainbow);
+  }
 
   return boost::make_shared<ColorMap>(color, name, res, shift, invert, rescale_scale, rescale_shift);
 }
+
+StandardColorMapFactory::NameList StandardColorMapFactory::getList()
+{
+  std::vector<std::string> names;
+  boost::copy(detail::colorMapFactoryMap | boost::adaptors::map_keys, std::back_inserter(names));
+  return names;
+}
+
 /**
  * @name getTransformedColor
  * @brief This method transforms the raw data into ColorMap space.

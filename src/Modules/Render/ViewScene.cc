@@ -45,19 +45,20 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
+const ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
 Mutex ViewScene::mutex_("ViewScene");
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
 
-ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
+ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
 {
   INITIALIZE_PORT(GeneralGeom);
 #ifdef BUILD_TESTING
-  INITIALIZE_PORT(ScreenshotData);
-  get_state()->setTransientValue(Parameters::ScreenshotData, nullptr, false);
+  INITIALIZE_PORT(ScreenshotDataRed);
+  INITIALIZE_PORT(ScreenshotDataGreen);
+  INITIALIZE_PORT(ScreenshotDataBlue);
 #endif
 }
 
@@ -65,6 +66,14 @@ void ViewScene::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(ShowScaleBar, false);
+  state->setValue(ScaleBarUnitValue, "mm");
+  state->setValue(ScaleBarLength, 1.0);
+  state->setValue(ScaleBarHeight, 1.0);
+  state->setValue(ScaleBarMultiplier, 1.0);
+  state->setValue(ScaleBarNumTicks, 11);
+  state->setValue(ScaleBarLineWidth, 1.0);
+  state->setValue(ScaleBarFontSize, 8);
   postStateChangeInternalSignalHookup();
 }
 
@@ -121,7 +130,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   {
     LOG_DEBUG("ViewScene::asyncExecute before locking");
     Guard lock(mutex_.get());
-    get_state()->setTransientValue(Parameters::ScreenshotData, nullptr, false);
+    get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
     LOG_DEBUG("ViewScene::asyncExecute after locking");
 
@@ -136,25 +145,54 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     updateTransientList();
   }
   get_state()->fireTransientStateChangeSignal();
+  asyncUpdates_.fetch_add(1);
+  //std::cout << "asyncExecute " << asyncUpdates_ << std::endl;
 }
 
 #ifdef BUILD_TESTING
 void ViewScene::execute()
 {
-  if (inputPorts().size() > 1) // only send screenshot if input is present
+  if (needToExecute())
   {
-    ModuleStateInterface::TransientValueOption screenshotDataOption;
-    auto state = get_state();
-    do
+    //std::cout << "1execute " << asyncUpdates_ << std::endl;
+    if (inputPorts().size() > 1) // only send screenshot if input is present
     {
-      screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
-      auto screenshotData = transient_value_cast<DenseMatrixHandle>(screenshotDataOption);
-      if (screenshotData)
+      while (asyncUpdates_ < inputPorts().size() - 1)
       {
-        sendOutput(ScreenshotData, screenshotData);
+        //std::cout << "2execute " << asyncUpdates_ << std::endl;
+        //wait until all asyncExecutes are done.
       }
+
+      ModuleStateInterface::TransientValueOption screenshotDataOption;
+      auto state = get_state();
+      do
+      {
+        //std::cout << "3execute " << asyncUpdates_ << std::endl;
+        screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
+        if (screenshotDataOption)
+        {
+          //std::cout << "4execute found a non-empty" << asyncUpdates_ << std::endl;
+          auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
+          if (screenshotData.red)
+          {
+            sendOutput(ScreenshotDataRed, screenshotData.red);
+          }
+          if (screenshotData.green)
+          {
+            sendOutput(ScreenshotDataGreen, screenshotData.green);
+          }
+          if (screenshotData.blue)
+          {
+            sendOutput(ScreenshotDataBlue, screenshotData.blue);
+          }
+        }
+      } while (!screenshotDataOption);
     }
-    while (!screenshotDataOption);
+    asyncUpdates_ = 0;
+
+    //std::cout << "999execute " << asyncUpdates_ << std::endl;
+    //std::cout << "execute setting none " << asyncUpdates_ << std::endl;
+    get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
   }
 }
 #endif
@@ -172,4 +210,12 @@ void ViewScene::processViewSceneObjectFeedback()
   }
 }
 
-AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+const AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+const AlgorithmParameterName ViewScene::ShowScaleBar("ShowScaleBar");
+const AlgorithmParameterName ViewScene::ScaleBarUnitValue("ScaleBarUnitValue");
+const AlgorithmParameterName ViewScene::ScaleBarLength("ScaleBarLength");
+const AlgorithmParameterName ViewScene::ScaleBarHeight("ScaleBarHeight");
+const AlgorithmParameterName ViewScene::ScaleBarMultiplier("ScaleBarMultiplier");
+const AlgorithmParameterName ViewScene::ScaleBarNumTicks("ScaleBarNumTicks");
+const AlgorithmParameterName ViewScene::ScaleBarLineWidth("ScaleBarLineWidth");
+const AlgorithmParameterName ViewScene::ScaleBarFontSize("ScaleBarFontSize");

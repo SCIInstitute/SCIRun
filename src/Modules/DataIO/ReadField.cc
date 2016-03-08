@@ -70,6 +70,12 @@ std::string ReadFieldModule::fileTypeList()
   return makeGuiTypesListForImport(mgr);
 }
 
+std::string ReadFieldModule::defaultFileTypeName() const
+{
+  FieldIEPluginManager mgr;
+  return defaultImportTypeForFile(&mgr);
+}
+
 bool ReadFieldModule::call_importer(const std::string& filename, FieldHandle& fHandle)
 {
   ///@todo: how will this work via python? need more code to set the filetype based on the extension...

@@ -62,6 +62,8 @@ namespace Engine {
     virtual std::string importNetwork(const std::string& filename) override;
     virtual std::string quit(bool force) override;
     virtual void setUnlockFunc(boost::function<void()> unlock) override;
+    virtual void setModuleContext(bool inModule) override { inModule_ = inModule; }
+    virtual bool isModuleContext() const override { return inModule_; }
   private:
     void pythonModuleAddedSlot(const std::string&, Networks::ModuleHandle, ModuleCounter);
     void pythonModuleRemovedSlot(const Networks::ModuleId&);
@@ -73,6 +75,7 @@ namespace Engine {
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
     boost::function<void()> unlock_;
     std::vector<boost::signals2::connection> connections_;
+    bool inModule_ = false;
   };
 
 }}}

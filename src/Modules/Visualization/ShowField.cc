@@ -175,6 +175,20 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(CylinderRadius, 0.1);
   state->setValue(CylinderResolution, 5);
 
+  state->setValue(DefaultTextColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(ShowText, false);
+  state->setValue(ShowDataValues, true);
+  state->setValue(ShowNodeIndices, false);
+  state->setValue(ShowEdgeIndices, false);
+  state->setValue(ShowFaceIndices, false);
+  state->setValue(ShowCellIndices, false);
+  state->setValue(CullBackfacingText, false);
+  state->setValue(TextAlwaysVisible, false);
+  state->setValue(RenderAsLocation, false);
+  state->setValue(TextSize, 8);
+  state->setValue(TextPrecision, 3);
+  state->setValue(TextColoring, 0);
+
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
   // is more up in the air.
@@ -1423,3 +1437,16 @@ const AlgorithmParameterName ShowFieldModule::SphereScaleValue("SphereScaleValue
 const AlgorithmParameterName ShowFieldModule::CylinderRadius("CylinderRadius");
 const AlgorithmParameterName ShowFieldModule::CylinderResolution("CylinderResolution");
 const AlgorithmParameterName ShowFieldModule::SphereResolution("SphereResolution");
+const AlgorithmParameterName ShowFieldModule::DefaultTextColor("DefaultTextColor");
+const AlgorithmParameterName ShowFieldModule::ShowText("ShowText");
+const AlgorithmParameterName ShowFieldModule::ShowDataValues("ShowDataValues");
+const AlgorithmParameterName ShowFieldModule::ShowNodeIndices("ShowNodeIndices");
+const AlgorithmParameterName ShowFieldModule::ShowEdgeIndices("ShowEdgeIndices");
+const AlgorithmParameterName ShowFieldModule::ShowFaceIndices("ShowFaceIndices");
+const AlgorithmParameterName ShowFieldModule::ShowCellIndices("ShowCellIndices");
+const AlgorithmParameterName ShowFieldModule::CullBackfacingText("CullBackfacingText");
+const AlgorithmParameterName ShowFieldModule::TextAlwaysVisible("TextAlwaysVisible");
+const AlgorithmParameterName ShowFieldModule::RenderAsLocation("RenderAsLocation");
+const AlgorithmParameterName ShowFieldModule::TextSize("TextSize");
+const AlgorithmParameterName ShowFieldModule::TextPrecision("TextPrecision");
+const AlgorithmParameterName ShowFieldModule::TextColoring("TextColoring");
