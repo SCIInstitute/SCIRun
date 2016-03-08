@@ -82,6 +82,26 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(yValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
   connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
   connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
+  //-----------Materials Tab-----------------//
+  connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
+  connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
+  connect(specularDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setSpecularValue(double)));
+  connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
+  connect(emissionDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setEmissionValue(double)));
+  connect(fogStartDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogStartValue(double)));
+  connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
+  connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
+  connect(fogOnVisibleObjectsCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOnVisibleObjects(bool)));
+  connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
+  connect(fogColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignFogColor()));
+  //-----------Scale Bar Tools-----------------//
+  connect(showScaleBarTextGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setScaleBarVisible(bool)));
+  connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
+  connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
+  connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
+  connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
+  connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
+  connect(scaleBarLineWidthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLineWidth(double)));
 
   connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotChanged(QListWidgetItem*)));
   connect(this, SIGNAL(itemUnselected(const QString&)), parent, SLOT(handleUnselectedItem(const QString&)));
@@ -116,10 +136,40 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }
 
+void ViewSceneControlsDock::setFogColorLabel(const QColor& color)
+{
+  QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
+    QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
+
+  fogColorLabel_->setStyleSheet(styleSheet);
+}
+
+void ViewSceneControlsDock::setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
+  bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd)
+{
+  ambientDoubleSpinBox_->setValue(ambient);
+  diffuseDoubleSpinBox_->setValue(diffuse);
+  specularDoubleSpinBox_->setValue(specular);
+  shininessDoubleSpinBox_->setValue(shine);
+  emissionDoubleSpinBox_->setValue(emission);
+  fogGroupBox_->setChecked(fogVisible);
+  fogOnVisibleObjectsCheckBox_->setChecked(objectsOnly);
+  fogUseBGColorCheckBox_->setChecked(useBGColor);
+  fogStartDoubleSpinBox_->setValue(fogStart);
+  fogEndDoubleSpinBox_->setValue(fogEnd);
+}
+
 void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
   double numTicks, double lineWidth, const QString& unit)
 {
-  //showScaleBarTextGroupBox_->set
+  showScaleBarTextGroupBox_->setChecked(visible);
+  fontSizeSpinBox_->setValue(fontSize);
+  scaleBarLengthDoubleSpinBox_->setValue(length);
+  scaleBarHeightDoubleSpinBox_->setValue(height);
+  scaleBarMultiplierDoubleSpinBox_->setValue(multiplier);
+  numTicksSpinBox_->setValue(numTicks);
+  scaleBarLineWidthDoubleSpinBox_->setValue(lineWidth);
+  scaleBarUnitLineEdit_->setText(unit);
 }
 
 void ViewSceneControlsDock::updateZoomOptionVisibility()

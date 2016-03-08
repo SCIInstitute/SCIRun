@@ -66,6 +66,17 @@ void ViewScene::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Ambient, 0.2);
+  state->setValue(Diffuse, 1.0);
+  state->setValue(Specular, 0.4);
+  state->setValue(Shine, 1.0);
+  state->setValue(Emission, 1.0);
+  state->setValue(FogOn, true);
+  state->setValue(ObjectsOnly, true);
+  state->setValue(UseBGColor, true);
+  state->setValue(FogStart, 0.0);
+  state->setValue(FogEnd, 0.71);
+  state->setValue(FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
   state->setValue(ShowScaleBar, false);
   state->setValue(ScaleBarUnitValue, "mm");
   state->setValue(ScaleBarLength, 1.0);
@@ -211,6 +222,17 @@ void ViewScene::processViewSceneObjectFeedback()
 }
 
 const AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+const AlgorithmParameterName ViewScene::Ambient("Ambient");
+const AlgorithmParameterName ViewScene::Diffuse("Diffuse");
+const AlgorithmParameterName ViewScene::Specular("Specular");
+const AlgorithmParameterName ViewScene::Shine("Shine");
+const AlgorithmParameterName ViewScene::Emission("Emission");
+const AlgorithmParameterName ViewScene::FogOn("FogOn");
+const AlgorithmParameterName ViewScene::ObjectsOnly("ObjectsOnly");
+const AlgorithmParameterName ViewScene::UseBGColor("UseBGColor");
+const AlgorithmParameterName ViewScene::FogStart("FogStart");
+const AlgorithmParameterName ViewScene::FogEnd("FogEnd");
+const AlgorithmParameterName ViewScene::FogColor("FogColor");
 const AlgorithmParameterName ViewScene::ShowScaleBar("ShowScaleBar");
 const AlgorithmParameterName ViewScene::ScaleBarUnitValue("ScaleBarUnitValue");
 const AlgorithmParameterName ViewScene::ScaleBarLength("ScaleBarLength");

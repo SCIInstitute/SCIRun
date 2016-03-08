@@ -82,6 +82,17 @@ namespace Render {
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
     static const Core::Algorithms::AlgorithmParameterName BackgroundColor;
+    static const Core::Algorithms::AlgorithmParameterName Ambient;
+    static const Core::Algorithms::AlgorithmParameterName Diffuse;
+    static const Core::Algorithms::AlgorithmParameterName Specular;
+    static const Core::Algorithms::AlgorithmParameterName Shine;
+    static const Core::Algorithms::AlgorithmParameterName Emission;
+    static const Core::Algorithms::AlgorithmParameterName FogOn;
+    static const Core::Algorithms::AlgorithmParameterName ObjectsOnly;
+    static const Core::Algorithms::AlgorithmParameterName UseBGColor;
+    static const Core::Algorithms::AlgorithmParameterName FogStart;
+    static const Core::Algorithms::AlgorithmParameterName FogEnd;
+    static const Core::Algorithms::AlgorithmParameterName FogColor;
     static const Core::Algorithms::AlgorithmParameterName ShowScaleBar;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarUnitValue;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarLength;
