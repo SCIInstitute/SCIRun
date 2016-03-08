@@ -32,6 +32,7 @@
 #include <gtest/gtest.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Python/PythonDatatypeConverter.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun;
 using namespace Core::Python;
@@ -57,7 +58,19 @@ TEST_F(FieldConversionTests, RoundTripLatVol)
 
   ASSERT_TRUE(converter.check());
 
-  //auto actual = converter();
+  auto actual = converter();
+  ASSERT_TRUE(actual != nullptr);
+  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  ASSERT_TRUE(actualField != nullptr);
+
+  FieldInformation info(actualField);
+  EXPECT_TRUE(info.is_latvolmesh());
+  EXPECT_TRUE(info.is_double());
+  EXPECT_TRUE(info.is_scalar());
+  EXPECT_TRUE(info.is_linear());
+  EXPECT_EQ("LatVolMesh<HexTrilinearLgn<Point>>", info.get_mesh_type_id());
+  EXPECT_EQ("LatVolMesh", info.get_mesh_type());
+  EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point>>,HexTrilinearLgn<double>,FData3d<double,LatVolMesh<HexTrilinearLgn<Point>>>>", info.get_field_type_id());
 
   FAIL() << "TODO";
 }

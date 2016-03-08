@@ -250,9 +250,53 @@ bool FieldExtractor::check() const
   return true;
 }
 
+namespace
+{
+  matlabarray getPythonFieldDictionaryValue(const boost::python::extract<std::string>& strExtract, const boost::python::extract<boost::python::list>& listExtract)
+  {
+    matlabarray value;
+    if (strExtract.check())
+    {
+      value.createstringarray();
+      value.setstring(strExtract());
+    }
+    else if (listExtract.check())
+    {
+      value.createintscalar(0);
+      std::cout << "TODO: convert inner lists" << std::endl;
+    }
+    return value;
+  }
+}
+
 DatatypeHandle FieldExtractor::operator()() const
 {
-  return nullptr;
+  matlabarray ma;
+  matlabconverter mc(nullptr);
+  mc.converttostructmatrix();
+
+  boost::python::extract<boost::python::dict> e(object_);
+  auto pyMatlabDict = e();
+
+  auto length = len(pyMatlabDict);
+
+  auto keys = pyMatlabDict.keys();
+  auto values = pyMatlabDict.values();
+  ma.createstructarray();
+
+  for (int i = 0; i < length; ++i)
+  {
+    boost::python::extract<std::string> key_i(keys[i]);
+  
+    boost::python::extract<std::string> value_i_string(values[i]);
+    boost::python::extract<boost::python::list> value_i_list(values[i]);
+    auto fieldName = key_i();
+    ma.setfield(0, fieldName, getPythonFieldDictionaryValue(value_i_string, value_i_list));
+  }
+
+  FieldHandle field;
+  mc.mlArrayTOsciField(ma, field);
+  return field;
 }
 
 namespace 
