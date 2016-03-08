@@ -79,8 +79,8 @@ namespace SCIRun
       }
 
 
-      SCISHARE boost::python::object convertFieldToPython(FieldHandle field);
-      SCISHARE boost::python::object convertMatrixToPython(Datatypes::DenseMatrixHandle matrix);
+      SCISHARE boost::python::dict convertFieldToPython(FieldHandle field);
+      SCISHARE boost::python::list convertMatrixToPython(Datatypes::DenseMatrixHandle matrix);
       SCISHARE boost::python::object convertMatrixToPython(Datatypes::SparseRowMatrixHandle matrix);
       SCISHARE boost::python::object convertStringToPython(Datatypes::StringHandle str);
 

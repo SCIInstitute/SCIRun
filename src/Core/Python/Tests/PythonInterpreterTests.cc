@@ -24,7 +24,10 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
+
+#include <Python.h>
+#include <boost/python.hpp>
 
 #include <gtest/gtest.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
@@ -36,22 +39,47 @@ using namespace Testing;
 
 TEST(FieldConversionTests, RoundTripLatVol)
 {
-  try
-  {
-    auto expected = CreateEmptyLatVol();
-    auto pyField = convertFieldToPython(expected);
+  auto expected = CreateEmptyLatVol();
+  auto pyField = convertFieldToPython(expected);
+  EXPECT_EQ(9, len(pyField.items()));
 
-    //FieldExtractor converter(pyField);
+  FieldExtractor converter(pyField);
 
-    //ASSERT_TRUE(converter.check());
+  ASSERT_TRUE(converter.check());
 
-    //auto actual = converter();
+  //auto actual = converter();
 
-    //FAIL() << "TODO";
-  }
-  catch (...)
-  {
-    std::cerr << "Exception in test" << std::endl;
-    FAIL() << "TODO";
-  }
+  FAIL() << "TODO";
+}
+
+TEST(FieldConversionTests, RejectsEmptyDictionary)
+{
+  boost::python::dict emptyDict;
+  FieldExtractor converter(emptyDict);
+
+  ASSERT_FALSE(converter.check());
+
+  //auto actual = converter();
+
+  //FAIL() << "TODO";
+}
+
+TEST(FieldConversionTests, RejectsIncompatibleDictionary)
+{
+  boost::python::dict dict;
+  dict.setdefault(2, 5);
+  ASSERT_EQ(1, len(dict));
+  FieldExtractor converter(dict);
+
+  ASSERT_FALSE(converter.check());
+
+  //auto actual = converter();
+
+  //FAIL() << "TODO";
+}
+
+TEST(FieldConversionTests, DoesDictionaryCreationCrash)
+{
+  boost::python::dict dict;
+  //FAIL() << "TODO";
 }

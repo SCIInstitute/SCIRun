@@ -90,7 +90,7 @@ namespace
   }
 }
 
-boost::python::object SCIRun::Core::Python::convertFieldToPython(FieldHandle field)
+boost::python::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field)
 {
   matlabarray ma;
   matlabconverter mc(nullptr);
@@ -127,7 +127,7 @@ boost::python::object SCIRun::Core::Python::convertFieldToPython(FieldHandle fie
   return matlabStructure;
 }
 
-boost::python::object SCIRun::Core::Python::convertMatrixToPython(DenseMatrixHandle matrix)
+boost::python::list SCIRun::Core::Python::convertMatrixToPython(DenseMatrixHandle matrix)
 {
   if (matrix)
     return ::toPythonList(*matrix);
@@ -223,7 +223,31 @@ DatatypeHandle SparseRowMatrixExtractor::operator()() const
 
 bool FieldExtractor::check() const
 {
-  return false;
+  boost::python::extract<boost::python::dict> e(object_);
+  if (!e.check())
+    return false;
+
+  auto dict = e();
+  auto length = len(dict);
+  if (0 == length)
+    return false;
+  
+  auto keys = dict.keys();
+  auto values = dict.values();
+
+  for (int i = 0; i < length; ++i)
+  {
+    boost::python::extract<std::string> key_i(keys[i]);
+    if (!key_i.check())
+      return false;
+
+    boost::python::extract<std::string> value_i_string(values[i]);
+    boost::python::extract<boost::python::list> value_i_list(values[i]);
+    if (!value_i_string.check() && !value_i_list.check())
+      return false;
+  }
+
+  return true;
 }
 
 DatatypeHandle FieldExtractor::operator()() const
