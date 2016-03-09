@@ -36,7 +36,6 @@
 
 #include <Core/Application/Application.h>
 #include <Modules/Visualization/ShowColorMapModule.h>
-#include <Modules/Visualization/TextBuilder.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 
 // CPM modules.
@@ -77,8 +76,6 @@ namespace fs = CPM_ES_FS_NS;
 namespace SCIRun {
   namespace Render {
 
-    std::string SRInterface::mFSRoot;
-    std::string SRInterface::mFSSeparator;
     //------------------------------------------------------------------------------
     SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
       int frameInitLimit) :
@@ -560,16 +557,6 @@ namespace SCIRun {
       return mWidgetTransform;
     }
     
-    std::string &SRInterface::getFSRoot()
-    {
-      return mFSRoot;
-    }
-
-    std::string &SRInterface::getFSSeparator()
-    {
-      return mFSSeparator;
-    }
-
     //------------------------------------------------------------------------------
     //--------------Clipping Plane Tools--------------------------------------------
     void SRInterface::checkClippingPlanes(int n)
@@ -640,6 +627,14 @@ namespace SCIRun {
       checkClippingPlanes(clippingPlaneIndex_);
       clippingPlanes_[clippingPlaneIndex_].d = value;
       updateClippingPlanes();
+    }
+
+    //------------------------------------------------------------------------------
+    void SRInterface::setScaleBar(void *scaleBarData)
+    {
+      std::memcpy(&scaleBar_, scaleBarData, sizeof(ScaleBar));
+      if (scaleBar_.visible)
+        updateGeometryScaleBar();
     }
 
     //------------------------------------------------------------------------------
@@ -1371,7 +1366,7 @@ namespace SCIRun {
       renState.set(RenderState::USE_DEFAULT_COLOR, true);
       renState.set(RenderState::USE_NORMALS, true);
       renState.set(RenderState::IS_WIDGET, true);
-      GeometryHandle geom(new GeometryObjectSpire(ss.str()));
+      GeometryHandle geom(new GeometryObjectSpire(uniqueNodeID));
       glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
         colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
       handleGeomObject(geom, 0);
@@ -1387,6 +1382,37 @@ namespace SCIRun {
       glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
         colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
       handleGeomObject(geom2, 0);*/
+    }
+
+    // update scale bar geometries
+    void SRInterface::updateGeometryScaleBar()
+    {
+      const int    numTicks = scaleBar_.numTicks;
+      const double mult = scaleBar_.multiplier;
+      double length = scaleBar_.length;
+      const double height = scaleBar_.height;
+      std::stringstream ss;
+      std::string uniqueNodeID;
+      ss << "scale_bar";
+      uniqueNodeID = ss.str();
+      Graphics::GlyphGeom glyphs;
+      Core::Geometry::Point p1(18, 18, 0);
+      Core::Geometry::Point p2 = Core::Geometry::Vector(p1)
+        + Core::Geometry::Point(length, 0, 0);
+      glyphs.addLine(p1, p2, ColorRGB(), ColorRGB());
+
+      ColorScheme colorScheme(COLOR_UNIFORM);
+      RenderState renState;
+      renState.set(RenderState::IS_ON, true);
+      renState.set(RenderState::USE_TRANSPARENCY, false);
+      renState.defaultColor = ColorRGB(0.4, 0.4, 1);
+      renState.set(RenderState::USE_DEFAULT_COLOR, true);
+      renState.set(RenderState::USE_NORMALS, true);
+      renState.set(RenderState::IS_WIDGET, true);
+      GeometryHandle geom(new GeometryObjectSpire(uniqueNodeID));
+      glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+        colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
+      handleGeomObject(geom, 0);
     }
 
     //------------------------------------------------------------------------------

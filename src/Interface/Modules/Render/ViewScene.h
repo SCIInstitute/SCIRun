@@ -114,6 +114,7 @@ namespace SCIRun {
       void setScaleBarMultiplier(double value);
       void setScaleBarNumTicks(int value);
       void setScaleBarLineWidth(double value);
+      void setSpireScaleBar();
 
     protected:
       virtual void mousePressEvent(QMouseEvent* event);

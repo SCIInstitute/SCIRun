@@ -800,48 +800,63 @@ void ViewSceneDialog::setScaleBarVisible(bool value)
 {
   scaleBar_.visible = value;
   state_->setValue(Modules::Render::ViewScene::ShowScaleBar, value);
+  setSpireScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarFontSize(int value)
 {
   scaleBar_.fontSize = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarFontSize, value);
+  setSpireScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarUnitValue(const QString& text)
 {
   scaleBar_.unit = text.toStdString();
   state_->setValue(Modules::Render::ViewScene::ScaleBarUnitValue, text.toStdString());
+  setSpireScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarLength(double value)
 {
   scaleBar_.length = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarLength, value);
+  setSpireScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarHeight(double value)
 {
   scaleBar_.height = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarHeight, value);
+  setSpireScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarMultiplier(double value)
 {
   scaleBar_.multiplier = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarMultiplier, value);
+  setSpireScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarNumTicks(int value)
 {
   scaleBar_.numTicks = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarNumTicks, value);
+  setSpireScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarLineWidth(double value)
 {
   scaleBar_.lineWidth = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarLineWidth, value);
+  setSpireScaleBar();
+}
+
+void ViewSceneDialog::setSpireScaleBar()
+{
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setScaleBar((void*)(&scaleBar_));
 }
 
 //------------------------------------------------------------------------------

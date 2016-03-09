@@ -45,6 +45,7 @@
 
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
+#include <Modules/Visualization/TextBuilder.h>
 
 namespace SCIRun {
   namespace Render {
@@ -166,6 +167,9 @@ namespace SCIRun {
       void setClippingPlaneZ(double value);
       void setClippingPlaneD(double value);
 
+      //scale bar
+      void setScaleBar(void *scaleBarData);
+
     private:
 
       class DepthIndex {
@@ -238,6 +242,13 @@ namespace SCIRun {
         double x, y, z, d;
       };
 
+      struct ScaleBar {
+        bool visible;
+        int fontSize;
+        double length, height, multiplier, numTicks, lineWidth;
+        std::string unit;
+      };
+
       // Sets up ESCore.
       void setupCore();
 
@@ -293,6 +304,9 @@ namespace SCIRun {
       // update clipping plane geometries
       void updateGeometryClippingPlane(int index, glm::vec4 plane);
 
+      // update scale bar geometries
+      void updateGeometryScaleBar();
+
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
       bool                              selectWidget_;    ///< Whether mouse click will select a widget.
@@ -320,7 +334,7 @@ namespace SCIRun {
 
       ESCore                            mCore;            ///< Entity system core.
 
-
+      Modules::Visualization::TextBuilder mTextBuilder;   /// text builder
       std::string                       mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
       std::string                       mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
       std::string                       mArrowObjectName; ///< Object name for profile arrow.
@@ -328,14 +342,14 @@ namespace SCIRun {
       std::vector<ClippingPlane>        clippingPlanes_;
       int                               clippingPlaneIndex_;
 
+      ScaleBar                          scaleBar_;
+
       ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
       ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
       RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
 
-      static std::string mFSRoot;/// file system root
-      static std::string mFSSeparator;/// file system seperator
     };
 
   } // namespace Render
