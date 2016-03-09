@@ -31,6 +31,8 @@
 #include <Eigen/Dense>
 
 typedef Eigen::MatrixXd DenseMatrix;
+typedef std::complex<double> Complex;
+typedef Eigen::Matrix2cd ComplexDenseMatrix;
 
 namespace
 {
@@ -156,4 +158,20 @@ TEST(EigenDenseMatrixBinaryOperationTests, CanSubtract)
   PRINT_MATRIX(m);
   PRINT_MATRIX(m - m);
   EXPECT_EQ(m - m, Zero);
+}
+
+TEST(EigenDenseComplexMatrixTests, ComplexDenseMatrixTests)
+{
+  ComplexDenseMatrix A, B, C_expect, C_actual;
+
+  A << Complex(1, 1), Complex(2, 3),
+         Complex(3, 2), Complex(4, 4);
+  B << Complex(4, 4), Complex(3, 2),
+         Complex(2, 3), Complex(1, 1);
+  C_expect << Complex(-5, 20), Complex(0, 10),
+                Complex(0, 40), Complex(5, 20);
+
+  C_actual = A * B;
+
+  ASSERT_TRUE(C_actual.isApprox(C_expect, 1e-6));
 }
