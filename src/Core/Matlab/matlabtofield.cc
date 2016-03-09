@@ -617,7 +617,6 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
 
   mlfieldedge = findfield(mlarray,"fieldedge;edge;line;");
   mlfieldface = findfield(mlarray,"fieldface;face;quad;fac;tri;");
-  mlfieldcell = findfield(mlarray,"fieldcell;cell;prism;hex;tet;");
 
   mlfieldderivatives  = findfield(mlarray,"fieldderivatives;derivatives;");
   mlfieldscalefactors = findfield(mlarray,"fieldscalefactors;scalefactors;");
@@ -1684,7 +1683,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     }
 
     if ((mlmeshderivatives.isdense())||(mlfieldderivatives.isdense())||
-      (mlfieldedge.isdense())||(mlfieldface.isdense())||(mlfieldcell.isdense()))
+      (mlfieldedge.isdense())||(mlfieldface.isdense()))
     {
       remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (element is a point, hence no linear/higher order interpolation is supported)", postremark);
     }
@@ -1716,7 +1715,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     // established meshtype //
 
     if ((mlface.isdense())||(mlcell.isdense())||
-        (mlfieldface.isdense())||(mlfieldcell.isdense()))
+        (mlfieldface.isdense()))
     {   // a matrix with multiple connectivities is not yet allowed
       remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (multiple connectivity matrices defined)", postremark);
     }
@@ -1941,7 +1940,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     // established meshtype //
 
     if ((mledge.isdense())||(mlcell.isdense())||
-        (mlfieldedge.isdense())||(mlfieldcell.isdense()))
+        (mlfieldedge.isdense()))
     {   // a matrix with multiple connectivities is not yet allowed
       remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (multiple connectivity matrices defined)", postremark);
     }
@@ -2148,7 +2147,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
         {
           if (!(((m==6)&&(n==numelements))||((m==numelements)&&(n==6))))
           {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldedge needs to be of size 6)", postremark);
+            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldface needs to be of size 6)", postremark);
           }
           if (m!=6) mlfieldface.transpose();
         }
@@ -2156,7 +2155,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
         {
           if (!(((m==3)&&(n==numelements))||((m==numelements)&&(n==3))))
           {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldedge needs to be of size 3)", postremark);
+            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldface needs to be of size 3)", postremark);
           }
           if (m!=3) mlfieldface.transpose();
         }
@@ -2237,9 +2236,6 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
       }
     }
 
-    m = mlcell.getm();
-    n = mlcell.getn();
-
     if ((meshtype != "TetVolMesh")&&(meshtype != "PrismVolMesh")&&(meshtype != "HexVolMesh"))
     {   // explicitly stated type
       remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (cell connectivity does not match meshtype)", postremark);
@@ -2254,7 +2250,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     }
 
     // Connectivity should be 2D
-    if ((mlcell.getnumdims() > 2)||(mlfieldcell.getnumdims() > 2))
+    if ((mlcell.getnumdims() > 2))
     {
       remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (cell connectivity matrix should be 2D)", postremark);
     }
@@ -2488,83 +2484,11 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     {
       if (((meshbasistype == "linear")||(meshbasistype == "cubic"))&&(mlfieldface.isempty()))
       {
-        remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (no fieldedge connectivity matrix)", postremark);
+        remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (no fieldface connectivity matrix)", postremark);
       }
       if (meshtype == "TetVolMesh") fieldbasis = "TetQuadraticLgn";
       else if (meshtype == "PrismVolMesh") fieldbasis = "PrismQuadraticLgn";
       else fieldbasis = "HexTriquadraticLgn";
-    }
-
-    // established fieldbasis //
-
-    if (meshtype == "TetVolMesh")
-    {
-      if (mlfieldcell.isdense())
-      {
-        m = mlfieldcell.getm(); n = mlfieldcell.getn();
-        if (fieldbasistype == "quadratic")
-        {
-          if (!(((m==10)&&(n==numelements))||((m==numelements)&&(n==10))))
-          {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldedge needs to be of size 10)", postremark);
-          }
-          if (m!=10) mlfieldcell.transpose();
-        }
-        else
-        {
-          if (!(((m==4)&&(n==numelements))||((m==numelements)&&(n==4))))
-          {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldedge needs to be of size 4)", postremark);
-          }
-          if (m!=4) mlfieldcell.transpose();
-        }
-      }
-    }
-    else if (meshtype == "PrismVolMesh")
-    {
-      if (mlfieldcell.isdense())
-      {
-        m = mlfieldcell.getm(); n = mlfieldcell.getn();
-        if (fieldbasistype == "quadratic")
-        {
-          if (!(((m==15)&&(n==numelements))||((m==numelements)&&(n==15))))
-          {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldface needs to be of size 15)", postremark);
-          }
-          if (m!=15) mlfieldcell.transpose();
-        }
-        else
-        {
-          if (!(((m==6)&&(n==numelements))||((m==numelements)&&(n==6))))
-          {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldface needs to be of size 6)", postremark);
-          }
-          if (m!=6) mlfieldcell.transpose();
-        }
-      }
-    }
-    else
-    {
-      if (mlfieldcell.isdense())
-      {
-        m = mlfieldcell.getm(); n = mlfieldcell.getn();
-        if (fieldbasistype == "quadratic")
-        {
-          if (!(((m==20)&&(n==numelements))||((m==numelements)&&(n==20))))
-          {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldface needs to be of size 20)", postremark);
-          }
-          if (m!=20) mlfieldcell.transpose();
-        }
-        else
-        {
-          if (!(((m==8)&&(n==numelements))||((m==numelements)&&(n==8))))
-          {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldface needs to be of size 8)", postremark);
-          }
-          if (m!=8) mlfieldcell.transpose();
-        }
-      }
     }
 
     if ((mlfieldderivatives.isdense())&&(fieldbasistype == "cubic"))
@@ -2613,7 +2537,7 @@ bool MatlabToFieldAlgo::addtransform(VMesh* vmesh)
     double trans[16];
     mltransform.getnumericarray(trans,16);
     T.set_trans(trans);
-    vmesh->transform(T);
+    vmesh->set_transform(T);
   }
   return(true);
 }
@@ -2670,15 +2594,13 @@ bool MatlabToFieldAlgo::addedges(VMesh* vmesh)
 	// based numbering right ??
 	// If not we assume one based numbering
 
-	int p,q;
-
 	bool zerobased = false;
 	int size = static_cast<int>(mldata.size());
-	for (p = 0; p < size; p++) { if (mldata[p] == 0) {zerobased = true; break;} }
+	for (int p = 0; p < size; p++) { if (mldata[p] == 0) {zerobased = true; break;} }
 
-	if (zerobased == false)
+	if (!zerobased)
 	{   // renumber to go from Matlab indexing to C++ indexing
-		for (p = 0; p < size; p++) { mldata[p]--;}
+		for (int p = 0; p < size; p++) { mldata[p]--;}
 	}
 
   int m,n;
@@ -2692,7 +2614,7 @@ bool MatlabToFieldAlgo::addedges(VMesh* vmesh)
   int r;
   r = 0;
 
-	for (p = 0, q = 0; p < n; p++)
+  for (int p = 0; p < n; p++)
 	{
      for (int q = 0 ; q < m; q++)
      {
@@ -2730,7 +2652,7 @@ bool MatlabToFieldAlgo::addfaces(VMesh* vmesh)
   int size = static_cast<int>(mldata.size());
   for (int p = 0; p < size; p++) { if (mldata[p] == 0) {zerobased = true; break;} }
 
-  if (zerobased == false)
+  if (!zerobased)
   {   // renumber to go from Matlab indexing to C++ indexing
     for (int p = 0; p < size; p++) { mldata[p]--;}
   }
@@ -2783,7 +2705,7 @@ bool MatlabToFieldAlgo::addcells(VMesh* vmesh)
   int size = static_cast<int>(mldata.size());
   for (int p = 0; p < size; p++) { if (mldata[p] == 0) {zerobased = true; break;} }
 
-  if (zerobased == false)
+  if (!zerobased)
   {   // renumber to go from Matlab indexing to C++ indexing
     for (int p = 0; p < size; p++) { mldata[p]--;}
   }
