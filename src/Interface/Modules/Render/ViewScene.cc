@@ -438,11 +438,21 @@ void ViewSceneDialog::autoViewClicked()
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::autoViewOnLoadChecked(bool value){}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::useOrthoViewChecked(bool value){}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::showOrientationChecked(bool value)
 {
   auto spire = mSpire.lock();
   spire->showOrientation(value);
 }
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::showAxisChecked(bool value){}
+
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewBarButtonClicked()
@@ -910,6 +920,19 @@ void ViewSceneDialog::setScaleBarLineWidth(double value)
   scaleBar_.lineWidth = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarLineWidth, value);
 }
+
+//------------------------------------------------------------------------------
+//-------------------Render Settings--------------------------------------------
+void ViewSceneDialog::lightingChecked(bool value){}
+void ViewSceneDialog::showBBoxChecked(bool value){}
+void ViewSceneDialog::useClipChecked(bool value){}
+void ViewSceneDialog::stereoChecked(bool value){}
+void ViewSceneDialog::useBackCullChecked(bool value){}
+void ViewSceneDialog::displayListChecked(bool value){}
+void ViewSceneDialog::setStereoFusion(int value){}
+void ViewSceneDialog::setPolygonOffset(int value){}
+void ViewSceneDialog::setTextOffset(int value){}
+void ViewSceneDialog::setFieldOfView(int value){}
 
 //------------------------------------------------------------------------------
 bool ViewSceneDialog::isObjectUnselected(const std::string& name)

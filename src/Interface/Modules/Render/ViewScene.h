@@ -78,7 +78,10 @@ namespace SCIRun {
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
+      void autoViewOnLoadChecked(bool value);
+      void useOrthoViewChecked(bool value);
       void showOrientationChecked(bool value);
+      void showAxisChecked(bool value);
       void viewBarButtonClicked();
       void viewAxisSelected(int index);
       void viewVectorSelected(int index);
@@ -126,6 +129,17 @@ namespace SCIRun {
       void setScaleBarMultiplier(double value);
       void setScaleBarNumTicks(int value);
       void setScaleBarLineWidth(double value);
+      //Render Settings
+      void lightingChecked(bool value);
+      void showBBoxChecked(bool value);
+      void useClipChecked(bool value);
+      void stereoChecked(bool value);
+      void useBackCullChecked(bool value);
+      void displayListChecked(bool value);
+      void setStereoFusion(int value);
+      void setPolygonOffset(int value);
+      void setTextOffset(int value);
+      void setFieldOfView(int value);
 
     protected:
       virtual void mousePressEvent(QMouseEvent* event);
