@@ -70,11 +70,6 @@ void FieldToMatlabAlgo::option_nofieldconnectivity(bool value)
   option_nofieldconnectivity_ = value;
 }
 
-void FieldToMatlabAlgo::option_indexbase(int indexbase) 
-{
-  option_indexbase_ = indexbase;
-}
-
 void FieldToMatlabAlgo::error(const std::string& error)
 {
   if(pr_) pr_->error(error);

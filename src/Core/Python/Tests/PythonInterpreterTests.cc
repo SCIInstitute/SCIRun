@@ -50,7 +50,7 @@ public:
 
 TEST_F(FieldConversionTests, RoundTripLatVolUsingJustMatlabConversion)
 {
-  auto expected = CreateEmptyLatVol();
+  auto expected = CreateEmptyLatVol(2,2,2);
   MatlabIO::matlabarray ma;
   {
     MatlabIO::matlabconverter mc(nullptr);

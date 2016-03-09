@@ -76,8 +76,6 @@ namespace SCIRun
 
       //////// OPTIONS FOR CONVERTER ////////////////////////
 
-      // Set the index base for the Matlab code, normally this one is 1
-      void option_indexbase(int indexbase);
       // When isoparametric the connectivity matrix of mesh and field should
       // be the same hence one can specify to remove it if not wanted
       void option_nofieldconnectivity(bool value);
