@@ -76,10 +76,11 @@ void GenerateSinglePointProbeFromFieldDialog::pullSpecial()
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
 
-  if (state_->getValue(Parameters::WidgetMoved).toBool())
+  bool reexecute = state_->getValue(Parameters::WidgetMoved).toBool();
+  state_->setValue(Parameters::WidgetMoved, false);
+  if (reexecute)
   {
     Q_EMIT executeActionTriggered();
-    state_->setValue(Parameters::WidgetMoved, false);
   }
 }
 

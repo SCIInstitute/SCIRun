@@ -50,9 +50,14 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   addDoubleSpinBoxManager(shiftSpin_, Parameters::ColorMapShift);
   addCheckBoxManager(invertCheck_, Parameters::ColorMapInvert);
 
+  for (const auto& colorMapName : StandardColorMapFactory::getList())
+  {
+    colorMapNameComboBox_->addItem(QString::fromStdString(colorMapName));
+  }
+
   //TODO: hook up mapping between alpha graph and vector of doubles stored in state.
 
-  connect(colorMapNameComboBox_, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(updateColorMapPreview(const QString&)));
+  
   connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(setShiftSlider(double)));
   connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(setResolutionSlider(int)));
   connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(updateColorMapPreview()));
@@ -63,6 +68,15 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
 
   auto defaultMap = StandardColorMapFactory::create();
+  auto rainboxIndex = colorMapNameComboBox_->findText("Rainbow", Qt::MatchExactly);
+  if (rainboxIndex >= 0)
+  {
+    colorMapNameComboBox_->setCurrentIndex(rainboxIndex);
+  }
+  else
+    qDebug() << "NO RAINBOW!";
+
+  connect(colorMapNameComboBox_, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(updateColorMapPreview(const QString&)));
 
   scene_ = new QGraphicsScene(this);
   previewColorMap_ = new ColormapPreview(scene_, this);

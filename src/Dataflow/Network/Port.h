@@ -119,6 +119,7 @@ class SCISHARE OutputPort : public Port, public OutputPortInterface
 public:
   OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source);
   virtual ~OutputPort();
+  virtual DatatypeSourceInterfaceHandle source() const override { return source_; }
   virtual void sendData(Core::Datatypes::DatatypeHandle data) override;
   virtual bool isInput() const override { return false; } //boo
   virtual bool isDynamic() const override { return false; } /// @todo: design dynamic output ports

@@ -69,14 +69,11 @@ namespace SCIRun {
     static boost::python::object scirun_get_module_input_value_index(const std::string& moduleId, int portIndex);
     static boost::python::object scirun_get_module_input_value(const std::string& moduleId, const std::string& portName);
 
-    static std::string scirun_set_module_input_value_by_index(const std::string& moduleId, int portIndex, const boost::python::object& value);
-    static std::string scirun_set_module_input_value(const std::string& moduleId, const std::string& portName, const boost::python::object& value);
-
     static std::string executeAll();
     static std::string saveNetwork(const std::string& filename);
     static std::string loadNetwork(const std::string& filename);
     static std::string importNetwork(const std::string& filename);
-    
+
     static std::string quit(bool force);
 
     static void setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl);
@@ -84,6 +81,14 @@ namespace SCIRun {
     /// @todo: smelly!
     static void setExecutionContext(Dataflow::Networks::ExecutableLookup* lookup);
     static Core::Thread::Mutex& getLock() { return pythonLock_; }
+
+    class SCISHARE PythonModuleContextApiDisabler
+    {
+    public:
+      PythonModuleContextApiDisabler();
+      ~PythonModuleContextApiDisabler();
+    };
+
   private:
     NetworkEditorPythonAPI() = delete;
     static boost::shared_ptr<NetworkEditorPythonInterface> impl_;

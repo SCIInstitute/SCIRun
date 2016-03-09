@@ -52,6 +52,9 @@ namespace SCIRun {
     public:
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
       void setSampleColor(const QColor& color);
+      void setFogColorLabel(const QColor& color);
+      void setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
+        bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
       void setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
         double numTicks, double lineWidth, const QString& unit);
       void updateZoomOptionVisibility();

@@ -95,7 +95,7 @@ namespace SCIRun
         virtual std::string describeData() const override;
 
         static void clearAllSources();
-      private:
+      protected:
         SCIRun::Core::Datatypes::DatatypeHandle data_;
         static std::set<SimpleSource*> instances_;
       };

@@ -68,7 +68,6 @@
 #include <Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h>
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldDialog.h>
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldOrWidgetDialog.h>
-#include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/FairMeshDialog.h>
@@ -159,7 +158,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
     ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
     ADD_MODULE_DIALOG(SplitFieldByDomain, SplitFieldByDomainDialog)
-    ADD_MODULE_DIALOG(CreateFieldData, CreateFieldDataDialog)
     ADD_MODULE_DIALOG(CalculateFieldData, CalculateFieldDataDialog)
     ADD_MODULE_DIALOG(SetFieldData, SetFieldDataDialog)
     ADD_MODULE_DIALOG(InterfaceWithCleaver, InterfaceWithCleaverDialog)

@@ -105,6 +105,18 @@ namespace SCIRun {
       void setClippingPlaneY(int index);
       void setClippingPlaneZ(int index);
       void setClippingPlaneD(int index);
+      //Materials Controls
+      void setAmbientValue(double value);
+      void setDiffuseValue(double value);
+      void setSpecularValue(double value);
+      void setShininessValue(double value);
+      void setEmissionValue(double value);
+      void setFogOn(bool value);
+      void setFogOnVisibleObjects(bool value);
+      void setFogUseBGColor(bool value);
+      void setFogStartValue(double value);
+      void setFogEndValue(double value);
+      void assignFogColor();
       //Scale Bar
       void setScaleBarVisible(bool value);
       void setScaleBarFontSize(int value);
@@ -152,6 +164,7 @@ namespace SCIRun {
       void addConfigurationButton();
       void addConfigurationDock(const QString& viewName);
       void setupClippingPlanes();
+      void setupMaterials();
       void setupScaleBar();
       void hideConfigurationDock();
       void takeScreenshot();
@@ -179,6 +192,7 @@ namespace SCIRun {
       bool selected_;
       int clippingPlaneIndex_;
       QColor bgColor_;
+      QColor fogColor_;
       ScaleBar scaleBar_;
       std::vector<ClippingPlane> clippingPlanes_;
       std::vector<std::string> unselectedObjectNames_;

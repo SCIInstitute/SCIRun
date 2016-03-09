@@ -306,7 +306,8 @@ FEMBuilder::create_numerical_integration(std::vector<VMesh::coords_type> &p,
     mesh_->get_derivate_weights(p[j],d[j],1);
     size_t pad_size = ( 3 - p[ j ].size() ) * d[ j ].size();
     
-    d[j].assign(pad_size, 0.0);
+    if (pad_size > 0)
+      d[j].resize(pad_size + d[j].size(), 0.0);
   }
 }
 

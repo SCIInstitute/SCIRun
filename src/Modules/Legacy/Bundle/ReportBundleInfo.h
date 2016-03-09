@@ -42,8 +42,8 @@ namespace Bundles {
   {
   public:
     ReportBundleInfo();
-    virtual void execute();
-    virtual void setStateDefaults() {}
+    virtual void execute() override;
+    virtual void setStateDefaults() override {}
     INPUT_PORT(0, InputBundle, Bundle);
 
     const static Dataflow::Networks::ModuleLookupInfo staticInfo_;

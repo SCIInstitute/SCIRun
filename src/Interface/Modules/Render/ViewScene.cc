@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -105,9 +106,10 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
     //Set background Color
-    if (state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString() != "")
+    auto colorStr = state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString();
+    if (!colorStr.empty())
     {
-      ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
+      ColorRGB color(colorStr);
       bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
         static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
         static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
@@ -359,9 +361,6 @@ void ViewSceneDialog::newGeometryValue()
         {
           spire->handleGeomObject(realObj, port);
           validObjects.push_back(name);
-#ifdef BUILD_TESTING
-          sendScreenshotDownstreamForTesting();
-#endif
         }
       }
     }
@@ -397,6 +396,10 @@ void ViewSceneDialog::newGeometryValue()
       return;
     spire->removeAllGeomObjects();
   }
+
+#ifdef BUILD_TESTING
+  sendScreenshotDownstreamForTesting();
+#endif
 
   if (saveScreenshotOnNewGeometry_)
   {
@@ -614,6 +617,7 @@ void ViewSceneDialog::configurationButtonClicked()
     mConfigurationDock->setSampleColor(bgColor_);
     mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
       scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
+    setupMaterials();
     newGeometryValue();
   }
 
@@ -792,6 +796,70 @@ void ViewSceneDialog::updatClippingPlaneDisplay()
     clippingPlanes_[clippingPlaneIndex_].y,
     clippingPlanes_[clippingPlaneIndex_].z,
     clippingPlanes_[clippingPlaneIndex_].d);
+}
+
+//------------------------------------------------------------------------------
+//-------------------Materials Bar Tools----------------------------------------
+void ViewSceneDialog::setAmbientValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::Ambient, value);
+}
+
+void ViewSceneDialog::setDiffuseValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::Diffuse, value);
+}
+
+void ViewSceneDialog::setSpecularValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::Specular, value);
+}
+
+void ViewSceneDialog::setShininessValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::Shine, value);
+}
+
+void ViewSceneDialog::setEmissionValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::Emission, value);
+}
+
+void ViewSceneDialog::setFogOn(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::FogOn, value);
+}
+
+void ViewSceneDialog::setFogOnVisibleObjects(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::ObjectsOnly, value);
+}
+
+void ViewSceneDialog::setFogUseBGColor(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::UseBGColor, value);
+}
+
+void ViewSceneDialog::setFogStartValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::FogStart, value);
+}
+
+void ViewSceneDialog::setFogEndValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::FogEnd, value);
+}
+
+void ViewSceneDialog::assignFogColor()
+{
+  QString title = windowTitle() + " Choose fog color";
+  auto newColor = QColorDialog::getColor(fogColor_, this, title);
+  if (newColor.isValid())
+  {
+    fogColor_ = newColor;
+    mConfigurationDock->setFogColorLabel(fogColor_);
+    state_->setValue(Modules::Render::ViewScene::FogColor, ColorRGB(fogColor_.red(), fogColor_.green(), fogColor_.blue()).toString());
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -1005,6 +1073,36 @@ void ViewSceneDialog::setupClippingPlanes()
   }
 }
 
+void ViewSceneDialog::setupMaterials()
+{
+  auto colorStr = state_->getValue(Modules::Render::ViewScene::FogColor).toString();
+  if (!colorStr.empty())
+  {
+    ColorRGB color(colorStr);
+    fogColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+
+    mConfigurationDock->setMaterialTabValues(
+      state_->getValue(Modules::Render::ViewScene::Ambient).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::Diffuse).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::Specular).toDouble(), 
+      state_->getValue(Modules::Render::ViewScene::Shine).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::Emission).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::FogOn).toBool(),
+      state_->getValue(Modules::Render::ViewScene::ObjectsOnly).toBool(),
+      state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool(),
+      state_->getValue(Modules::Render::ViewScene::FogStart).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::FogEnd).toDouble());
+  }
+  else
+  {
+    fogColor_ = Qt::blue;
+    mConfigurationDock->setMaterialTabValues(0.2, 1.0, 0.4, 1.0, 1.0, true, true, true, 0.0, 0.71);
+  }
+  mConfigurationDock->setFogColorLabel(fogColor_);
+}
+
 void ViewSceneDialog::setupScaleBar()
 {
   if (state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString() != "")
@@ -1077,7 +1175,7 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   //DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
   glm::mat4 trans = spire->getWidgetTransform().transform;
-  
+
   geomInfo.push_back(makeVariable("x00", trans[0][0]));
   geomInfo.push_back(makeVariable("x10", trans[1][0]));
   geomInfo.push_back(makeVariable("x20", trans[2][0]));
@@ -1121,6 +1219,9 @@ void ViewSceneDialog::screenshotClicked()
 
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
+  //wait for a couple frames to go by.
+//  boost::this_thread::sleep(boost::posix_time::milliseconds(150));
+  //std::cout << "sendScreenshotDownstreamForTesting " << std::endl;
   takeScreenshot();
   state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }
