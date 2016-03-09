@@ -258,12 +258,36 @@ namespace
     if (strExtract.check())
     {
       value.createstringarray();
-      value.setstring(strExtract());
+      auto strData = strExtract();
+      std::cout << "\tsetting string field: " << strData << std::endl;
+      value.setstring(strData);
     }
     else if (listExtract.check())
     {
-      value.createintscalar(0);
-      std::cout << "TODO: convert inner lists" << std::endl;
+      auto list = listExtract();
+      std::cout << "\tTODO: convert inner lists: " << len(list) << std::endl;
+      if (1 == len(list))
+      {
+        boost::python::extract<double> e(list[0]);
+        if (e.check())
+          value.createdoublescalar(e());
+        else
+          std::cerr << "scalar value not readable as double" << std::endl;
+      }
+      else if (len(list) > 1)
+      {
+        boost::python::extract<boost::python::list> twoDlistExtract(list[0]);
+        if (twoDlistExtract.check())
+        {
+          std::vector<int> dims = { static_cast<int>(len(list)), static_cast<int>(len(list[0])) };
+          std::vector<double> flattenedValues(dims[0] * dims[1]);  //TODO: fill from py list-of-lists
+          value.createdoublematrix(flattenedValues, dims);
+        }
+        else // 1-D list
+        {
+          value.createdoublevector(to_std_vector<double>(list));
+        }
+      }
     }
     return value;
   }
@@ -291,6 +315,7 @@ DatatypeHandle FieldExtractor::operator()() const
     boost::python::extract<std::string> value_i_string(values[i]);
     boost::python::extract<boost::python::list> value_i_list(values[i]);
     auto fieldName = key_i();
+    std::cout << "setting field " << fieldName << std::endl;
     ma.setfield(0, fieldName, getPythonFieldDictionaryValue(value_i_string, value_i_list));
   }
 
