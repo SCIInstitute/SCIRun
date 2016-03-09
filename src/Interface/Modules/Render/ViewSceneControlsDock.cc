@@ -124,7 +124,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   //groupBox->setVisible(false);
 
   ////Render Tab
-  //groupBox_6->setVisible(false);
+  groupBox_6->setVisible(false);
 
 }
 

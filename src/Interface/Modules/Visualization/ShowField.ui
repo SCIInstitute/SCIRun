@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>385</width>
-    <height>646</height>
+    <height>653</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -563,6 +563,13 @@
               </widget>
              </item>
              <item>
+              <widget class="QCheckBox" name="showNodeIndicesCheckBox_">
+               <property name="text">
+                <string>Show node indices</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QCheckBox" name="showEdgeIndicesCheckBox_">
                <property name="text">
                 <string>Show edge indices</string>
@@ -584,13 +591,6 @@
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="showNodeIndicesCheckBox_">
-               <property name="text">
-                <string>Show node indices</string>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QCheckBox" name="cullTextCheckBox_">
                <property name="text">
                 <string>Cull backfacing text if possible</string>
@@ -600,7 +600,7 @@
              <item>
               <widget class="QCheckBox" name="textAlwaysVisibleCheckBox_">
                <property name="text">
-                <string>Text always visible (not hidden by faces)</string>
+                <string>Text always visible</string>
                </property>
               </widget>
              </item>
@@ -736,19 +736,6 @@
              </item>
             </layout>
            </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>1</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </widget>
