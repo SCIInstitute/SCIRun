@@ -259,13 +259,13 @@ namespace
     {
       value.createstringarray();
       auto strData = strExtract();
-      std::cout << "\tsetting string field: " << strData << std::endl;
+      //std::cout << "\tsetting string field: " << strData << std::endl;
       value.setstring(strData);
     }
     else if (listExtract.check())
     {
       auto list = listExtract();
-      std::cout << "\tTODO: convert inner lists: " << len(list) << std::endl;
+      //std::cout << "\tTODO: convert inner lists: " << len(list) << std::endl;
       if (1 == len(list))
       {
         boost::python::extract<double> e(list[0]);
@@ -315,7 +315,7 @@ DatatypeHandle FieldExtractor::operator()() const
     boost::python::extract<std::string> value_i_string(values[i]);
     boost::python::extract<boost::python::list> value_i_list(values[i]);
     auto fieldName = key_i();
-    std::cout << "setting field " << fieldName << std::endl;
+    //std::cout << "setting field " << fieldName << std::endl;
     ma.setfield(0, fieldName, getPythonFieldDictionaryValue(value_i_string, value_i_list));
   }
 

@@ -1028,9 +1028,10 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
         datasize = fdims[0];
       }
 
-      if ((!((size == 1)&&(size == fdims.size())&&(fdims[0] == numnodesvec[0]))) &&
-          (!((size == 2)&&(size == fdims.size())&&(fdims[0] == numnodesvec[0])&&(fdims[1] == numnodesvec[1]))) &&
-          (!((size == 3)&&(size == fdims.size())&&(fdims[0] == numnodesvec[0])&&(fdims[1] == numnodesvec[1])&&(fdims[2] == numnodesvec[2]))))
+      if ((!((size == 1) && (size == fdims.size()) && (fdims[0] == numnodesvec[0]))) &&
+        (!((size == 2) && (size == fdims.size()) && (fdims[0] == numnodesvec[0]) && (fdims[1] == numnodesvec[1]))) &&
+        (!((meshtype == "LatVolMesh") && (size == 3) && (2 == fdims.size()) && (fdims[0] * fdims[1] == numnodesvec[0] * numnodesvec[1] * numnodesvec[2]))) &&
+        (!((size == 3) && (size == fdims.size()) && (fdims[0] == numnodesvec[0]) && (fdims[1] == numnodesvec[1]) && (fdims[2] == numnodesvec[2]))))
       {
         remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (dimensions of field do not match dimensions of mesh", postremark);
       }

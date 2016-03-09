@@ -101,8 +101,6 @@ TEST_F(FieldConversionTests, RoundTripLatVol)
   EXPECT_EQ("LatVolMesh<HexTrilinearLgn<Point>>", info.get_mesh_type_id());
   EXPECT_EQ("LatVolMesh", info.get_mesh_type());
   EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point>>,HexTrilinearLgn<double>,FData3d<double,LatVolMesh<HexTrilinearLgn<Point>>>>", info.get_field_type_id());
-
-  FAIL() << "TODO";
 }
 
 TEST_F(FieldConversionTests, RejectsEmptyDictionary)
