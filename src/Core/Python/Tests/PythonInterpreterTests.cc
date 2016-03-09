@@ -34,6 +34,7 @@
 #include <Core/Python/PythonDatatypeConverter.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Matlab/matlabconverter.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 using namespace SCIRun;
 using namespace Core::Python;
@@ -51,6 +52,7 @@ public:
 TEST_F(FieldConversionTests, RoundTripLatVolUsingJustMatlabConversion)
 {
   auto expected = CreateEmptyLatVol(2,2,2);
+  FieldInformation expectedInfo(expected);
   MatlabIO::matlabarray ma;
   {
     MatlabIO::matlabconverter mc(nullptr);
@@ -69,6 +71,7 @@ TEST_F(FieldConversionTests, RoundTripLatVolUsingJustMatlabConversion)
   ASSERT_TRUE(actualField != nullptr);
 
   FieldInformation info(actualField);
+  ASSERT_EQ(expectedInfo, info);
   EXPECT_TRUE(info.is_latvolmesh());
   EXPECT_TRUE(info.is_double());
   EXPECT_TRUE(info.is_scalar());
@@ -76,6 +79,9 @@ TEST_F(FieldConversionTests, RoundTripLatVolUsingJustMatlabConversion)
   EXPECT_EQ("LatVolMesh<HexTrilinearLgn<Point>>", info.get_mesh_type_id());
   EXPECT_EQ("LatVolMesh", info.get_mesh_type());
   EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point>>,HexTrilinearLgn<double>,FData3d<double,LatVolMesh<HexTrilinearLgn<Point>>>>", info.get_field_type_id());
+  auto expectedTransform = expected->vmesh()->get_transform();
+  auto actualTransform = actualField->vmesh()->get_transform();
+  ASSERT_EQ(expectedTransform, actualTransform);
 }
 
 TEST_F(FieldConversionTests, RoundTripLatVol)
