@@ -33,10 +33,6 @@ uniform vec4     uTrans        ;
 
 // Attributes
 attribute vec3  aPos;
-attribute vec2  aTexCoord;
-
-//Outputs
-varying vec2 fTexCoord;
 
 void main( void )
 {
@@ -45,5 +41,4 @@ void main( void )
   gl_Position = vec4(aPos.x * x_scale + uTrans.x - 1.0, 
                      aPos.y * y_scale + uTrans.y - 1.0,
                      0.0, 1.0);
-  fTexCoord = aTexCoord;
 }

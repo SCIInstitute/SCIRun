@@ -24,26 +24,10 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+ */
+uniform vec4 uColor;
 
-// Uniforms
-uniform float    uAspectRatio  ;      
-uniform float    uWindowWidth  ;
-uniform vec4     uTrans        ;
-
-// Attributes
-attribute vec3  aPos;
-attribute vec2  aTexCoord;
-
-//Outputs
-varying vec2 fTexCoord;
-
-void main( void )
+void main()
 {
-  float x_scale = 2. / uWindowWidth;
-  float y_scale = 2. / (uWindowWidth / uAspectRatio);
-  gl_Position = vec4(aPos.x * x_scale + uTrans.x - 1.0, 
-                     aPos.y * y_scale + uTrans.y - 1.0,
-                     0.0, 1.0);
-  fTexCoord = aTexCoord;
+   gl_FragColor = uColor;
 }

@@ -167,8 +167,16 @@ namespace SCIRun {
       void setClippingPlaneZ(double value);
       void setClippingPlaneD(double value);
 
+      struct ScaleBar {
+        bool visible;
+        int fontSize;
+        double length, height, multiplier, numTicks, lineWidth;
+        std::string unit;
+        double projLength;
+      };
+
       //scale bar
-      void setScaleBar(void *scaleBarData);
+      void setScaleBar(const ScaleBar &scaleBarData);
 
     private:
 
@@ -242,13 +250,6 @@ namespace SCIRun {
         double x, y, z, d;
       };
 
-      struct ScaleBar {
-        bool visible;
-        int fontSize;
-        double length, height, multiplier, numTicks, lineWidth;
-        std::string unit;
-      };
-
       // Sets up ESCore.
       void setupCore();
 
@@ -306,6 +307,7 @@ namespace SCIRun {
 
       // update scale bar geometries
       void updateGeometryScaleBar();
+      void updateScaleBarLength();
 
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.

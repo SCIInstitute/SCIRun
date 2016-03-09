@@ -924,7 +924,18 @@ void ViewSceneDialog::setSpireScaleBar()
 {
   auto spire = mSpire.lock();
   if (spire)
-    spire->setScaleBar((void*)(&scaleBar_));
+  {
+    Render::SRInterface::ScaleBar scaleBarData;
+    scaleBarData.visible = scaleBar_.visible;
+    scaleBarData.fontSize = scaleBar_.fontSize;
+    scaleBarData.length = scaleBar_.length;
+    scaleBarData.height = scaleBar_.height;
+    scaleBarData.multiplier = scaleBar_.multiplier;
+    scaleBarData.numTicks = scaleBar_.numTicks;
+    scaleBarData.lineWidth = scaleBar_.lineWidth;
+    scaleBarData.unit = scaleBar_.unit;
+    spire->setScaleBar(scaleBarData);
+  }
 }
 
 //------------------------------------------------------------------------------

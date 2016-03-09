@@ -630,11 +630,21 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
-    void SRInterface::setScaleBar(void *scaleBarData)
+    void SRInterface::setScaleBar(const ScaleBar &scaleBarData)
     {
-      std::memcpy(&scaleBar_, scaleBarData, sizeof(ScaleBar));
+      scaleBar_.visible = scaleBarData.visible;
+      scaleBar_.fontSize = scaleBarData.fontSize;
+      scaleBar_.length = scaleBarData.length;
+      scaleBar_.height = scaleBarData.height;
+      scaleBar_.multiplier = scaleBarData.multiplier;
+      scaleBar_.numTicks = scaleBarData.numTicks;
+      scaleBar_.lineWidth = scaleBarData.lineWidth;
+      scaleBar_.unit = scaleBarData.unit;
       if (scaleBar_.visible)
+      {
+        updateScaleBarLength();
         updateGeometryScaleBar();
+      }
     }
 
     //------------------------------------------------------------------------------
@@ -1389,30 +1399,98 @@ namespace SCIRun {
     {
       const int    numTicks = scaleBar_.numTicks;
       const double mult = scaleBar_.multiplier;
-      double length = scaleBar_.length;
+      double length = scaleBar_.projLength;
       const double height = scaleBar_.height;
-      std::stringstream ss;
-      std::string uniqueNodeID;
-      ss << "scale_bar";
-      uniqueNodeID = ss.str();
-      Graphics::GlyphGeom glyphs;
-      Core::Geometry::Point p1(18, 18, 0);
-      Core::Geometry::Point p2 = Core::Geometry::Vector(p1)
-        + Core::Geometry::Point(length, 0, 0);
-      glyphs.addLine(p1, p2, ColorRGB(), ColorRGB());
+      glm::vec4 color(1.0);
+      glm::vec4 shift(1.9, 0.1, 0.0, 0.0);
 
-      ColorScheme colorScheme(COLOR_UNIFORM);
+      std::vector<Vector> points;
+      std::vector<uint32_t> indices;
+      int32_t numVBOElements = 0;
+      //base line
+      points.push_back(Vector(-length, 0.0, 0.0));
+      points.push_back(Vector(0.0, 0.0, 0.0));
+      numVBOElements += 2;
+      indices.push_back(0);
+      indices.push_back(1);
+
+      // IBO/VBOs and sizes
+      uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
+      uint32_t vboSize = sizeof(float) * 3 * static_cast<uint32_t>(points.size());
+
+      std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
+        new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
+      std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
+        new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+
+      CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
+      CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+
+      for (auto a : indices) iboBuffer->write(a);
+
+      for (size_t i = 0; i < points.size(); i++) {
+        vboBuffer->write(static_cast<float>(points[i].x()));
+        vboBuffer->write(static_cast<float>(points[i].y()));
+        vboBuffer->write(static_cast<float>(points[i].z()));
+      }
+
+      std::stringstream ss;
+      ss << "scale_bar";
+      std::string uniqueNodeID = ss.str();
+      std::string vboName = uniqueNodeID + "VBO";
+      std::string iboName = uniqueNodeID + "IBO";
+      std::string passName = uniqueNodeID + "Pass";
+
+      // Construct VBO.
+      std::string shader = "Shaders/HudUniform";
+      std::vector<SpireVBO::AttributeData> attribs;
+      attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+      std::vector<SpireSubPass::Uniform> uniforms;
+      uniforms.push_back(SpireSubPass::Uniform("uTrans", shift));
+      uniforms.push_back(SpireSubPass::Uniform("uColor", color));
+      SpireVBO geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr,
+        numVBOElements, BBox(), true);
+
+      // Construct IBO.
+
+      SpireIBO geomIBO(iboName, SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr);
+
       RenderState renState;
       renState.set(RenderState::IS_ON, true);
+      renState.set(RenderState::HAS_DATA, true);
+      renState.set(RenderState::USE_COLORMAP, false);
       renState.set(RenderState::USE_TRANSPARENCY, false);
-      renState.defaultColor = ColorRGB(0.4, 0.4, 1);
-      renState.set(RenderState::USE_DEFAULT_COLOR, true);
-      renState.set(RenderState::USE_NORMALS, true);
-      renState.set(RenderState::IS_WIDGET, true);
+
+      SpireText text;
+
+      SpireSubPass pass(passName, vboName, iboName, shader,
+        COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO, geomIBO, text);
+
+      // Add all uniforms generated above to the pass.
+      for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
+
       GeometryHandle geom(new GeometryObjectSpire(uniqueNodeID));
-      glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-        colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
+
+      geom->mIBOs.push_back(geomIBO);
+      geom->mVBOs.push_back(geomVBO);
+      geom->mPasses.push_back(pass);
+
       handleGeomObject(geom, 0);
+    }
+
+    void SRInterface::updateScaleBarLength()
+    {
+      glm::vec4 p1(-scaleBar_.length / 2.0, 0.0, 0.0, 1.0);
+      glm::vec4 p2(scaleBar_.length / 2.0, 0.0, 0.0, 1.0);
+      p1 = mCamera->getWorldToProjection() * p1;
+      p2 = mCamera->getWorldToProjection() * p2;
+      glm::vec2 p(p1.x/p1.w-p2.x/p2.w, p1.y/p1.w-p2.y/p2.w);
+      glm::vec2 pp(p.x*mScreenWidth / 2.0,
+        p.y*mScreenHeight / 2.0);
+      scaleBar_.projLength = glm::length(pp);
+      //std::cout << "p1:\t" << p1.x << "\t" << p1.y << "\t" << p1.z << "\t" << p1.w << "\n";
+      //std::cout << "p2:\t" << p2.x << "\t" << p2.y << "\t" << p2.z << "\t" << p2.w << "\n";
+      //std::cout << "pp:\t" << pp.x << "\t" << pp.y << "\n";
     }
 
     //------------------------------------------------------------------------------
