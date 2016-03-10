@@ -129,6 +129,8 @@ namespace Gui {
     void addSliderManager(QSlider* slider, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void removeManager(const Core::Algorithms::AlgorithmParameterName& stateKey);
 
+    void syncTableRowsWithDynamicPort(int numPorts, const std::string& portId, const std::string& type, int& portCount, QTableWidget* table, int totalInputPorts);
+
     void createExecuteInteractivelyToggleAction();
   private Q_SLOTS:
     void executeInteractivelyToggled(bool toggle);
@@ -151,6 +153,15 @@ namespace Gui {
     std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;
     static ExecutionDisablingServiceFunction disablerRemove_;
+  };
+
+  class SCISHARE ScopedWidgetSignalBlocker
+  {
+  public:
+    explicit ScopedWidgetSignalBlocker(QWidget* widget);
+    ~ScopedWidgetSignalBlocker();
+  private:
+    QWidget* widget_;
   };
 
 }

@@ -94,7 +94,6 @@ void InterfaceWithPythonDialog::setupOutputTableCells()
 
 void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::string& portId)
 {
-  //qDebug() << "updateFromPortChange " << numPorts << QString::fromStdString(portId);
   inputVariableNamesTableWidget_->blockSignals(true);
 
   handleInputTableWidgetRowChange(numPorts, portId, "Matrix", numMatrixPorts_);
@@ -111,7 +110,6 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, co
   {
     //qDebug() << "adjust input table: " << type.c_str();
 
-    inputVariableNamesTableWidget_->blockSignals(true);
     if (numPorts > totalInputPorts())
     {
       //qDebug() << "adding a new table line to " << type.c_str() << portCount;

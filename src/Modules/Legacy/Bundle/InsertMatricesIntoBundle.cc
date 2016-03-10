@@ -80,14 +80,6 @@ void InsertMatricesIntoBundle::execute()
   auto bundleOption = getOptionalInput(InputBundle);
   auto matrices = getRequiredDynamicInputs(InputMatrices);
 
-  //if (inputs_changed_ || guiMatrice1name_.changed() || 
-  //  guiMatrice2name_.changed() || guiMatrice3name_.changed() ||
-  //  guiMatrice4name_.changed() || guiMatrice5name_.changed() ||
-  //  guiMatrice6name_.changed() || 
-  //  guireplace1_.changed() || guireplace2_.changed() ||
-  //  guireplace3_.changed() || guireplace4_.changed() ||
-  //  guireplace5_.changed() || guireplace6_.changed() ||
-  //  guibundlename_.changed() || !oport_cached("bundle"))
   if (needToExecute())
   {
     update_state(Executing);

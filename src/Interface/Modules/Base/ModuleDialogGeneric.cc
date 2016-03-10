@@ -30,6 +30,8 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -726,4 +728,81 @@ void WidgetStyleMixin::setStateVarTooltipWithStyle(QWidget* widget, const std::s
 {
   widget->setToolTip("State key: " + QString::fromStdString(stateVarName));
   widget->setStyleSheet(widget->styleSheet() + " QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+}
+
+void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, const std::string& portId, const std::string& type, int& portCount, QTableWidget* table, int totalInputPorts)
+{
+  ScopedWidgetSignalBlocker swsb(table);
+  if (portId.find(type) != std::string::npos)
+  {
+    //qDebug() << "adjust input table: " << type.c_str();
+
+    if (numPorts > totalInputPorts)
+    {
+      //qDebug() << "adding a new table line to " << type.c_str() << portCount;
+      portCount++;
+      auto newRowCount = portCount - 1;
+      if (newRowCount > 0)
+      {
+        //note: the incoming portId is the port that was just added, not connected to. we assume the connected port
+        // is one index less.
+        //std::cout << "REGEX: " << "Input" + type + "\\:(.+)" << std::endl;
+        boost::regex portIdRegex("Input" + type + "\\:(.+)");
+        boost::smatch what;
+        //std::cout << "MATCHING WITH: " << portId << std::endl;
+        regex_match(portId, what, portIdRegex);
+        const int connectedPortNumber = boost::lexical_cast<int>(what[1]) - 1;
+        const std::string connectedPortId = "Input" + type + ":" + boost::lexical_cast<std::string>(connectedPortNumber);
+
+        const int rowCount = numPorts - 3;
+        table->setRowCount(rowCount);
+        table->setItem(rowCount - 1, 0, new QTableWidgetItem(QString::fromStdString(connectedPortId)));
+        table->setItem(rowCount - 1, 1, new QTableWidgetItem(QString::fromStdString(type)));
+
+        auto lineEdit = new QLineEdit;
+        SCIRun::Core::Algorithms::Name name(connectedPortId);
+
+        if (state_->containsKey(name))
+          lineEdit->setText(QString::fromStdString(state_->getValue(name).toString()));
+        else
+        {
+          lineEdit->setText(QString::fromStdString(type).toLower() + "Input" + QString::number(connectedPortNumber + 1));
+          state_->setValue(name, lineEdit->text().toStdString());
+        }
+
+        addLineEditManager(lineEdit, name);
+        table->setCellWidget(rowCount - 1, 2, lineEdit);
+      }
+    }
+    else
+    {
+      portCount--;
+      //qDebug() << "trying to remove row with " << QString::fromStdString(portId);
+      auto items = table->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
+      if (!items.empty())
+      {
+        auto item = items[0];
+        int row = table->row(item);
+        table->removeRow(row);
+        //qDebug() << "row removed" << QString::fromStdString(portId);
+        removeManager(SCIRun::Core::Algorithms::Name(portId));
+      }
+      else
+      {
+        // qDebug() << "list is empty";
+      }
+    }
+  }
+}
+
+ScopedWidgetSignalBlocker::ScopedWidgetSignalBlocker(QWidget* widget) : widget_(widget)
+{
+  if (widget_)
+    widget_->blockSignals(true);
+}
+
+ScopedWidgetSignalBlocker::~ScopedWidgetSignalBlocker()
+{
+  if (widget_)
+    widget_->blockSignals(false);
 }
