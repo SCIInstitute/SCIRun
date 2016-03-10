@@ -130,8 +130,8 @@ namespace Gui {
     void removeManager(const Core::Algorithms::AlgorithmParameterName& stateKey);
 
     typedef std::vector<std::function<QTableWidgetItem*()>> TableItemMakerList;
-    void syncTableRowsWithDynamicPort(int numPorts, const std::string& portId, const std::string& type, int& portCount, 
-      QTableWidget* table, int totalInputPorts, int lineEditIndex, const TableItemMakerList& tableItemMakers);
+    void syncTableRowsWithDynamicPort(int numPorts, int numFixedPorts, const std::string& portId, const std::string& type,
+      QTableWidget* table, int lineEditIndex, const TableItemMakerList& tableItemMakers);
     static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type);
 
     void createExecuteInteractivelyToggleAction();

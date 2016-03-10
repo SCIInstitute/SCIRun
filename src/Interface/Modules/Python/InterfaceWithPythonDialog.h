@@ -49,9 +49,9 @@ private Q_SLOTS:
   void resetObjects();
   void loadAPIDocumentation();
 private:
-  int numMatrixPorts_ = 0, numFieldPorts_ = 0, numStringPorts_ = 0;
-  int totalInputPorts() const { return numMatrixPorts_ + numFieldPorts_ + numStringPorts_; }
-  void handleInputTableWidgetRowChange(int numPorts, const std::string& portId, const std::string& type, int& portCount);
+  //int numMatrixPorts_ = 0, numFieldPorts_ = 0, numStringPorts_ = 0;
+  //int totalInputPorts() const { return numMatrixPorts_ + numFieldPorts_ + numStringPorts_; }
+  void handleInputTableWidgetRowChange(int numPorts, const std::string& portId, const std::string& type);
   void setupOutputTableCells();
 };
 

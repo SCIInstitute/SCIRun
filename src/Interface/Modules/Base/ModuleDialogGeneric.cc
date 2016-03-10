@@ -41,14 +41,14 @@ using namespace SCIRun::Core::Logging;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
 
-ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
+ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
   pulling_(false),
-  executeAction_(0),
-  shrinkAction_(0),
-  executeInteractivelyToggleAction_(0),
+  executeAction_(nullptr),
+  shrinkAction_(nullptr),
+  executeInteractivelyToggleAction_(nullptr),
   collapsed_(false),
-  dock_(0)
+  dock_(nullptr)
 {
   setModal(false);
   setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
@@ -210,7 +210,7 @@ void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr)
   slotManagers_.push_back(ptr);
 }
 
-void ModuleDialogGeneric::removeManager(const SCIRun::Core::Algorithms::AlgorithmParameterName& stateKey)
+void ModuleDialogGeneric::removeManager(const AlgorithmParameterName& stateKey)
 {
   slotManagers_.erase(std::remove_if(slotManagers_.begin(), slotManagers_.end(), [&](WidgetSlotManagerPtr wsm) { return wsm->name() == stateKey; } ));
 }
@@ -743,8 +743,8 @@ std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(cons
   return std::make_tuple("Input" + type + ":" + boost::lexical_cast<std::string>(connectedPortNumber), connectedPortNumber);
 }
 
-void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, const std::string& portId, const std::string& type, 
-  int& portCount, QTableWidget* table, int totalInputPorts, int lineEditIndex,
+void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, int numFixedPorts, const std::string& portId, const std::string& type, 
+  QTableWidget* table, int lineEditIndex,
   const TableItemMakerList& tableItemMakers)
 {
   ScopedWidgetSignalBlocker swsb(table);
@@ -752,22 +752,31 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, const std::
   {
     //qDebug() << "adjust input table: " << type.c_str();
 
-    if (numPorts > totalInputPorts)
+    auto items = table->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
+    if (!items.empty())
+    {
+      //qDebug() << "trying to remove row with " << QString::fromStdString(portId);
+      
+        auto item = items[0];
+        int row = table->row(item);
+        table->removeRow(row);
+        //qDebug() << "row removed" << QString::fromStdString(portId);
+        removeManager(Name(portId));
+      
+    }
+    else
     {
       //qDebug() << "adding a new table line to " << type.c_str() << portCount;
-      portCount++;
-      auto newRowCount = portCount - 1;
-      if (newRowCount > 0)
       {
         int connectedPortNumber;
         std::string connectedPortId;
         std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type);
 
-        const int rowCount = numPorts - 3;
+        const int rowCount = numPorts - numFixedPorts;
         table->setRowCount(rowCount);
 
         auto lineEdit = new QLineEdit;
-        SCIRun::Core::Algorithms::Name name(connectedPortId);
+        Name name(connectedPortId);
 
         if (state_->containsKey(name))
           lineEdit->setText(QString::fromStdString(state_->getValue(name).toString()));
@@ -792,24 +801,6 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, const std::
             }
           }
         }
-      }
-    }
-    else
-    {
-      portCount--;
-      //qDebug() << "trying to remove row with " << QString::fromStdString(portId);
-      auto items = table->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
-      if (!items.empty())
-      {
-        auto item = items[0];
-        int row = table->row(item);
-        table->removeRow(row);
-        //qDebug() << "row removed" << QString::fromStdString(portId);
-        removeManager(SCIRun::Core::Algorithms::Name(portId));
-      }
-      else
-      {
-        // qDebug() << "list is empty";
       }
     }
     table->resizeColumnsToContents();
