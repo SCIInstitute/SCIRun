@@ -744,18 +744,35 @@ std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(cons
 }
 
 void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, int numFixedPorts, const std::string& portId, const std::string& type, 
-  QTableWidget* table, int lineEditIndex,
+  QTableWidget* table, int lineEditIndex, bool usePortIdForRemoval,
   const TableItemMakerList& tableItemMakers)
 {
   ScopedWidgetSignalBlocker swsb(table);
   if (portId.find(type) != std::string::npos)
   {
-    //qDebug() << "adjust input table: " << type.c_str();
+    
+    int connectedPortNumber;
+    std::string connectedPortId;
+    std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type);
 
-    auto items = table->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
+    Name name(connectedPortId);
+    QString lineEditText;
+
+    if (state_->containsKey(name))
+      lineEditText = QString::fromStdString(state_->getValue(name).toString());
+    else
+    {
+      lineEditText = QString::fromStdString(type).toLower() + "Input" + QString::number(connectedPortNumber + 1);
+    }
+
+    qDebug() << "adjust input table: " << portId.c_str() << connectedPortId.c_str() << lineEditText;
+    if (numPorts < numFixedPorts)
+      return;
+
+    auto items = table->findItems(usePortIdForRemoval ? QString::fromStdString(portId) : lineEditText, Qt::MatchFixedString);
     if (!items.empty())
     {
-      //qDebug() << "trying to remove row with " << QString::fromStdString(portId);
+      qDebug() << "trying to remove row with " << lineEditText;
       
         auto item = items[0];
         int row = table->row(item);
@@ -766,38 +783,34 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, int numFixe
     }
     else
     {
-      //qDebug() << "adding a new table line to " << type.c_str() << portCount;
+      qDebug() << "trying to add row with " << lineEditText;
       {
-        int connectedPortNumber;
-        std::string connectedPortId;
-        std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type);
-
         const int rowCount = numPorts - numFixedPorts;
         table->setRowCount(rowCount);
-
-        auto lineEdit = new QLineEdit;
-        Name name(connectedPortId);
-
-        if (state_->containsKey(name))
-          lineEdit->setText(QString::fromStdString(state_->getValue(name).toString()));
-        else
+        if (0 != rowCount)
         {
-          lineEdit->setText(QString::fromStdString(type).toLower() + "Input" + QString::number(connectedPortNumber + 1));
-          state_->setValue(name, lineEdit->text().toStdString());
-        }
+          auto lineEdit = new QLineEdit;
 
-        addLineEditManager(lineEdit, name);
-        table->setCellWidget(rowCount - 1, lineEditIndex, lineEdit);
-
-        auto tableItemIter = tableItemMakers.begin();
-        for (int i = 0; i < table->columnCount(); ++i)
-        {
-          if (i != lineEditIndex)
+          lineEdit->setText(lineEditText);
+          if (!state_->containsKey(name))
           {
-            if (tableItemIter != tableItemMakers.end())
+            state_->setValue(name, lineEditText.toStdString());
+          }
+
+          addLineEditManager(lineEdit, name);
+          table->setCellWidget(rowCount - 1, lineEditIndex, lineEdit);
+          qDebug() << "row added with " << lineEditText;
+
+          auto tableItemIter = tableItemMakers.begin();
+          for (int i = 0; i < table->columnCount(); ++i)
+          {
+            if (i != lineEditIndex)
             {
-              table->setItem(rowCount - 1, i, (*tableItemIter)());
-              ++tableItemIter;
+              if (tableItemIter != tableItemMakers.end())
+              {
+                table->setItem(rowCount - 1, i, (*tableItemIter)());
+                ++tableItemIter;
+              }
             }
           }
         }

@@ -131,7 +131,7 @@ namespace Gui {
 
     typedef std::vector<std::function<QTableWidgetItem*()>> TableItemMakerList;
     void syncTableRowsWithDynamicPort(int numPorts, int numFixedPorts, const std::string& portId, const std::string& type,
-      QTableWidget* table, int lineEditIndex, const TableItemMakerList& tableItemMakers);
+      QTableWidget* table, int lineEditIndex, bool usePortIdForRemoval, const TableItemMakerList& tableItemMakers);
     static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type);
 
     void createExecuteInteractivelyToggleAction();

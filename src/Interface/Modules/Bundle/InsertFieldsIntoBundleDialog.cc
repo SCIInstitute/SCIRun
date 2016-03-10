@@ -70,7 +70,7 @@ void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std:
   static const std::string type = "Fields";
   const int lineEditColumn = 0;
   const int numFixedPorts = 2;
-  syncTableRowsWithDynamicPort(numPorts, numFixedPorts, portId, type, tableWidget, lineEditColumn,
+  syncTableRowsWithDynamicPort(numPorts, numFixedPorts, portId, type, tableWidget, lineEditColumn, false,
   {
     [&]()
     {
