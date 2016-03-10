@@ -106,7 +106,11 @@ void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::st
 
 void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, const std::string& portId, const std::string& type, int& portCount)
 {
-  syncTableRowsWithDynamicPort(numPorts, portId, type, portCount, inputVariableNamesTableWidget_, totalInputPorts());
+  syncTableRowsWithDynamicPort(numPorts, portId, type, portCount, inputVariableNamesTableWidget_, totalInputPorts(), 2, 
+    {
+      [&](){ return new QTableWidgetItem(QString::fromStdString(std::get<0>(getConnectedDynamicPortId(portId, type)))); },
+      [&](){ return new QTableWidgetItem(QString::fromStdString(type)); }
+  });
 }
 
 void InterfaceWithPythonDialog::loadAPIDocumentation()

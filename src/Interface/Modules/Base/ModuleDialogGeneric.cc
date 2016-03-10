@@ -730,7 +730,22 @@ void WidgetStyleMixin::setStateVarTooltipWithStyle(QWidget* widget, const std::s
   widget->setStyleSheet(widget->styleSheet() + " QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
 }
 
-void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, const std::string& portId, const std::string& type, int& portCount, QTableWidget* table, int totalInputPorts)
+std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(const std::string& portId, const std::string& type)
+{
+  //note: the incoming portId is the port that was just added, not connected to. we assume the connected port
+  // is one index less.
+  //std::cout << "REGEX: " << "Input" + type + "\\:(.+)" << std::endl;
+  boost::regex portIdRegex("Input" + type + "\\:(.+)");
+  boost::smatch what;
+  //std::cout << "MATCHING WITH: " << portId << std::endl;
+  regex_match(portId, what, portIdRegex);
+  const int connectedPortNumber = boost::lexical_cast<int>(what[1]) - 1;
+  return std::make_tuple("Input" + type + ":" + boost::lexical_cast<std::string>(connectedPortNumber), connectedPortNumber);
+}
+
+void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, const std::string& portId, const std::string& type, 
+  int& portCount, QTableWidget* table, int totalInputPorts, int lineEditIndex,
+  const TableItemMakerList& tableItemMakers)
 {
   ScopedWidgetSignalBlocker swsb(table);
   if (portId.find(type) != std::string::npos)
@@ -744,20 +759,12 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, const std::
       auto newRowCount = portCount - 1;
       if (newRowCount > 0)
       {
-        //note: the incoming portId is the port that was just added, not connected to. we assume the connected port
-        // is one index less.
-        //std::cout << "REGEX: " << "Input" + type + "\\:(.+)" << std::endl;
-        boost::regex portIdRegex("Input" + type + "\\:(.+)");
-        boost::smatch what;
-        //std::cout << "MATCHING WITH: " << portId << std::endl;
-        regex_match(portId, what, portIdRegex);
-        const int connectedPortNumber = boost::lexical_cast<int>(what[1]) - 1;
-        const std::string connectedPortId = "Input" + type + ":" + boost::lexical_cast<std::string>(connectedPortNumber);
+        int connectedPortNumber;
+        std::string connectedPortId;
+        std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type);
 
         const int rowCount = numPorts - 3;
         table->setRowCount(rowCount);
-        table->setItem(rowCount - 1, 0, new QTableWidgetItem(QString::fromStdString(connectedPortId)));
-        table->setItem(rowCount - 1, 1, new QTableWidgetItem(QString::fromStdString(type)));
 
         auto lineEdit = new QLineEdit;
         SCIRun::Core::Algorithms::Name name(connectedPortId);
@@ -771,7 +778,20 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, const std::
         }
 
         addLineEditManager(lineEdit, name);
-        table->setCellWidget(rowCount - 1, 2, lineEdit);
+        table->setCellWidget(rowCount - 1, lineEditIndex, lineEdit);
+
+        auto tableItemIter = tableItemMakers.begin();
+        for (int i = 0; i < table->columnCount(); ++i)
+        {
+          if (i != lineEditIndex)
+          {
+            if (tableItemIter != tableItemMakers.end())
+            {
+              table->setItem(rowCount - 1, i, (*tableItemIter)());
+              ++tableItemIter;
+            }
+          }
+        }
       }
     }
     else

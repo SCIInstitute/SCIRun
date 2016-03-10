@@ -129,7 +129,10 @@ namespace Gui {
     void addSliderManager(QSlider* slider, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void removeManager(const Core::Algorithms::AlgorithmParameterName& stateKey);
 
-    void syncTableRowsWithDynamicPort(int numPorts, const std::string& portId, const std::string& type, int& portCount, QTableWidget* table, int totalInputPorts);
+    typedef std::vector<std::function<QTableWidgetItem*()>> TableItemMakerList;
+    void syncTableRowsWithDynamicPort(int numPorts, const std::string& portId, const std::string& type, int& portCount, 
+      QTableWidget* table, int totalInputPorts, int lineEditIndex, const TableItemMakerList& tableItemMakers);
+    static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type);
 
     void createExecuteInteractivelyToggleAction();
   private Q_SLOTS:
