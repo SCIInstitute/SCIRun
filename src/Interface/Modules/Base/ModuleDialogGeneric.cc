@@ -792,6 +792,7 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, const std::
         // qDebug() << "list is empty";
       }
     }
+    table->resizeColumnsToContents();
   }
 }
 
