@@ -51,6 +51,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <string>
+#include <Core/Exceptions/Exception.h>
 #include <Core/Matlab/share.h>
 
 namespace SCIRun
@@ -71,7 +72,7 @@ namespace SCIRun
       {
       public:
         explicit matfileerror(const std::string& msg = "") : msg_(msg) {}
-        virtual const char* what() const _NOEXCEPT override 
+        virtual const char* what() const NOEXCEPT override 
         { return msg_.c_str(); }
       private:
         std::string msg_;
