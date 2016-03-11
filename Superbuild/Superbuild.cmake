@@ -71,9 +71,8 @@ OPTION(BUILD_TESTING "Build with tests." ON)
 OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 
 ###########################################
-# Configure python
-OPTION(WITH_TETGEN "Build Tetgen." ON)
-MARK_AS_ADVANCED(WITH_TETGEN)
+# Configure tetgen
+OPTION(WITH_TETGEN "Build Tetgen." OFF)
 
 ###########################################
 # Configure Windows executable to run with
