@@ -492,9 +492,9 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   currentDisplay_ = isMini_ ? miniWidgetDisplay_.get() : fullWidgetDisplay_.get();
   setCurrentIndex(isMini_ ? miniIndex_ : fullIndex_);
 
+  makeOptionsDialog();
   createPorts(*theModule_);
   addPorts(currentIndex());
-  makeOptionsDialog();
 
   resize(currentWidget()->size());
 
@@ -719,7 +719,7 @@ void ModuleWidget::createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfo
   for (const auto& port : moduleInfoProvider.inputPorts())
   {
     auto type = port->get_typename();
-    //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
+    std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
       portAlpha()), type,
       moduleId, port->id(),
@@ -892,6 +892,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_)
   {
+    std::cout << "ADDING NEW DYNAMIC PORT: " << pid << std::endl;
     InputPortHandle port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 

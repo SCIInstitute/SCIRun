@@ -805,11 +805,16 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
     {
       qDebug() << "trying to remove row with " << portId.c_str();
       auto items = table->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
-      auto item = items[0];
-      int row = table->row(item);
-      table->removeRow(row);
-      //qDebug() << "row removed" << QString::fromStdString(portId);
-      removeManager(Name(portId)); 
+      if (!items.empty())
+      {
+        auto item = items[0];
+        int row = table->row(item);
+        table->removeRow(row);
+        //qDebug() << "row removed" << QString::fromStdString(portId);
+        removeManager(Name(portId));
+      }
+      else
+        qDebug() << "Inconsistent rows versus dynamic ports!";
     }
     table->resizeColumnsToContents();
   }

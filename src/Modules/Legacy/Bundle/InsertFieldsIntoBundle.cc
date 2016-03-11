@@ -88,15 +88,22 @@ void InsertFieldsIntoBundle::execute()
     }
 
     //TODO: instead grab a vector of tuple<string,bool>. need to modify Variable::Value again
-    auto fieldNames = get_state()->getValue(FieldNames).toVector();
-    auto replace = get_state()->getValue(FieldReplace).toVector();
+    //auto fieldNames = get_state()->getValue(FieldNames).toVector();
+    auto iPorts = inputPorts();
+    if (fields.size() != iPorts.size() - 2)
+      warning("Problem in state of dynamic ports");
+    auto fieldPortNameIterator = iPorts.begin() + 1; // bundle port is first
+    auto state = get_state();
+    auto replace = state->getValue(FieldReplace).toVector();
 
     for (int i = 0; i < fields.size(); ++i)
     {
       auto field = fields[i];
+      auto stateName = state->getValue(Name((*fieldPortNameIterator++)->id().toString())).toString();
       if (field)
       {
-        auto name = i < fieldNames.size() ? fieldNames[i].toString() : ("field" + boost::lexical_cast<std::string>(i));
+        
+        auto name = !stateName.empty() ? stateName : ("field" + boost::lexical_cast<std::string>(i));
         auto replaceField = i < replace.size() ? replace[i].toBool() : true;
         if (replaceField || !bundle->isField(name))
         {

@@ -96,6 +96,10 @@ size_t Port::getIndex() const
 InputPort::InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink)
   : Port(module, params), sink_(sink), isDynamic_(params.isDynamic_)
 {
+  if (isDynamic_)
+  {
+    std::cout << "dynamic" << std::endl;
+  }
 }
 
 InputPort::~InputPort()
