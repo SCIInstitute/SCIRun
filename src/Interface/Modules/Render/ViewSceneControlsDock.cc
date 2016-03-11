@@ -188,6 +188,22 @@ void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double
   scaleBarUnitLineEdit_->setText(unit);
 }
 
+void ViewSceneControlsDock::setRenderTabValues(bool lighting, bool bbox, bool useClip, bool backCull, bool displayList,
+  bool stereo, double stereoFusion, double polygonOffset, double textOffset, int fov)
+{
+  lightingCheckBox_->setChecked(lighting);
+  bboxCheckBox_->setChecked(bbox);
+  useClipCheckBox_->setChecked(useClip);
+  backCullCheckBox_->setChecked(backCull);
+  displayListCheckBox_->setChecked(displayList);
+  stereoCheckBox_->setChecked(stereo);
+  stereoFusionHorizontalSlider_->setSliderPosition(stereoFusion * 100);
+  polygonOffsetHorizontalSlider_->setSliderPosition(polygonOffset * 100);
+  textOffsetHorizontalSlider_->setSliderPosition(textOffset * 100);
+  fieldOfViewHorizontalSlider_->setSliderPosition(fov);
+}
+
+
 void ViewSceneControlsDock::updateZoomOptionVisibility()
 {
   if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)

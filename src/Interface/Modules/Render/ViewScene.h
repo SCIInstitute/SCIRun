@@ -179,6 +179,7 @@ namespace SCIRun {
       void setupClippingPlanes();
       void setupMaterials();
       void setupScaleBar();
+      void setupRenderTabValues();
       void hideConfigurationDock();
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();

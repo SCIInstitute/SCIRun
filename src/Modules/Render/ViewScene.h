@@ -101,6 +101,16 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName ScaleBarNumTicks;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarLineWidth;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarFontSize;
+    static const Core::Algorithms::AlgorithmParameterName Lighting;
+    static const Core::Algorithms::AlgorithmParameterName ShowBBox;
+    static const Core::Algorithms::AlgorithmParameterName UseClip;
+    static const Core::Algorithms::AlgorithmParameterName Stereo;
+    static const Core::Algorithms::AlgorithmParameterName BackCull;
+    static const Core::Algorithms::AlgorithmParameterName DisplayList;
+    static const Core::Algorithms::AlgorithmParameterName StereoFusion;
+    static const Core::Algorithms::AlgorithmParameterName PolygonOffset;
+    static const Core::Algorithms::AlgorithmParameterName TextOffset;
+    static const Core::Algorithms::AlgorithmParameterName FieldOfView;
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
 #ifdef BUILD_TESTING

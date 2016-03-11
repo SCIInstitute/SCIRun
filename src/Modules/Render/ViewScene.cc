@@ -85,6 +85,16 @@ void ViewScene::setStateDefaults()
   state->setValue(ScaleBarNumTicks, 11);
   state->setValue(ScaleBarLineWidth, 1.0);
   state->setValue(ScaleBarFontSize, 8);
+  state->setValue(Lighting, true);
+  state->setValue(ShowBBox, false);
+  state->setValue(UseClip, true);
+  state->setValue(BackCull, false);
+  state->setValue(DisplayList, false);
+  state->setValue(Stereo, false);
+  state->setValue(StereoFusion, 0.4);
+  state->setValue(PolygonOffset, 0.0);
+  state->setValue(TextOffset, 0.0);
+  state->setValue(FieldOfView, 20);
   postStateChangeInternalSignalHookup();
 }
 
@@ -241,3 +251,13 @@ const AlgorithmParameterName ViewScene::ScaleBarMultiplier("ScaleBarMultiplier")
 const AlgorithmParameterName ViewScene::ScaleBarNumTicks("ScaleBarNumTicks");
 const AlgorithmParameterName ViewScene::ScaleBarLineWidth("ScaleBarLineWidth");
 const AlgorithmParameterName ViewScene::ScaleBarFontSize("ScaleBarFontSize");
+const AlgorithmParameterName ViewScene::Lighting("Lighting");
+const AlgorithmParameterName ViewScene::ShowBBox("ShowBBox");
+const AlgorithmParameterName ViewScene::UseClip("UseClip");
+const AlgorithmParameterName ViewScene::Stereo("Stereo");
+const AlgorithmParameterName ViewScene::BackCull("BackCull");
+const AlgorithmParameterName ViewScene::DisplayList("DisplayList");
+const AlgorithmParameterName ViewScene::StereoFusion("StereoFusion");
+const AlgorithmParameterName ViewScene::PolygonOffset("PolygonOffset");
+const AlgorithmParameterName ViewScene::TextOffset("TextOffset");
+const AlgorithmParameterName ViewScene::FieldOfView("FieldOfView");
