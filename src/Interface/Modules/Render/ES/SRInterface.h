@@ -44,8 +44,8 @@
 #include <es-render/comp/CommonUniforms.hpp>
 
 #include <Graphics/Datatypes/GeometryImpl.h>
-#include <Interface/Modules/Render/share.h>
 #include <Modules/Visualization/TextBuilder.h>
+#include <Interface/Modules/Render/share.h>
 
 namespace SCIRun {
   namespace Render {

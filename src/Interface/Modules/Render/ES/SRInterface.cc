@@ -1482,8 +1482,13 @@ namespace SCIRun {
     {
       glm::vec4 p1(-scaleBar_.length / 2.0, 0.0, 0.0, 1.0);
       glm::vec4 p2(scaleBar_.length / 2.0, 0.0, 0.0, 1.0);
-      p1 = mCamera->getWorldToProjection() * p1;
-      p2 = mCamera->getWorldToProjection() * p2;
+      glm::mat4 matIV = mCamera->getWorldToView();
+      matIV[0][0] = 1.0; matIV[0][1] = 0.0; matIV[0][2] = 0.0;
+      matIV[1][0] = 0.0; matIV[1][1] = 1.0; matIV[1][2] = 0.0;
+      matIV[2][0] = 0.0; matIV[2][1] = 0.0; matIV[2][2] = 1.0;
+      glm::mat4 matProj = mCamera->getViewToProjection();
+      p1 = matProj * matIV * p1;
+      p2 = matProj * matIV * p2;
       glm::vec2 p(p1.x/p1.w-p2.x/p2.w, p1.y/p1.w-p2.y/p2.w);
       glm::vec2 pp(p.x*mScreenWidth / 2.0,
         p.y*mScreenHeight / 2.0);
