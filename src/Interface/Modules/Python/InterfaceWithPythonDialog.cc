@@ -112,11 +112,10 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, co
 {
   const int lineEditColumn = 2;
   const int numFixedPorts = 3;
-  syncTableRowsWithDynamicPort(numPorts, numFixedPorts, portId, type, inputVariableNamesTableWidget_, lineEditColumn, true, addingPort,
-    {
-      [&](){ return new QTableWidgetItem(QString::fromStdString(std::get<0>(getConnectedDynamicPortId(portId, type)))); },
-      [&](){ return new QTableWidgetItem(QString::fromStdString(type)); }
-  });
+  syncTableRowsWithDynamicPort(portId, type, inputVariableNamesTableWidget_, lineEditColumn, addingPort, {
+                                 [&](){ return new QTableWidgetItem(QString::fromStdString(std::get<0>(getConnectedDynamicPortId(portId, type)))); },
+                                 [&](){ return new QTableWidgetItem(QString::fromStdString(type)); }
+                               });
 }
 
 void InterfaceWithPythonDialog::loadAPIDocumentation()

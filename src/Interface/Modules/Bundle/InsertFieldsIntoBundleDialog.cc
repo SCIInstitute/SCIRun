@@ -44,26 +44,6 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
   fixSize();
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
-//
-//void InsertFieldsIntoBundleDialog::pullSpecial()
-//{
-//  auto numFields = transient_value_cast<int>(state_->getTransientValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields.name()));
-//  tableWidget->setRowCount(numFields);
-//  for (int i = 0; i < numFields; ++i)
-//  {
-//    auto name = new QTableWidgetItem(tr("Field %1").arg(i+1));
-//    tableWidget->setItem(i, 0, name);
-//    auto check = new QTableWidgetItem();
-//    check->setCheckState(Qt::Checked);
-//    check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
-//    tableWidget->setItem(i, 1, check);
-//    auto info = new QTableWidgetItem("[unknown, populated upon execute]");
-//    //info->setFlags(Qt::NoItemFlags);
-//    tableWidget->setItem(i, 2, info);
-//  }
-//  tableWidget->resizeColumnsToContents();
-//}
-
 
 void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
 {
@@ -71,17 +51,16 @@ void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std:
     return;
 
   static const std::string typeName = "Fields";
-  const int lineEditColumn = 0;
+  const int lineEditColumn = 1;
   const int numFixedPorts = 2;
-  syncTableRowsWithDynamicPort(numPorts, numFixedPorts, portId, typeName, tableWidget, lineEditColumn, false, type == USER_ADDED_PORT,
-  {
-    [&]()
-    {
-      auto check = new QTableWidgetItem();
-      check->setCheckState(Qt::Checked);
-      check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
-      return check;
-    },
-    [&](){ return new QTableWidgetItem("[unknown, populated upon execute]"); }
-  });
+  syncTableRowsWithDynamicPort(portId, typeName, tableWidget, lineEditColumn, type == USER_ADDED_PORT, {
+                                 [&]()
+                                 {
+                                   auto check = new QTableWidgetItem();
+                                   check->setCheckState(Qt::Checked);
+                                   check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
+                                   return check;
+                                 },
+                                 [&](){ return new QTableWidgetItem("[unknown, populated upon execute]"); }
+                               });
 }

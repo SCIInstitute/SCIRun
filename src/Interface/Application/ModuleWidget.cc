@@ -492,9 +492,9 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   currentDisplay_ = isMini_ ? miniWidgetDisplay_.get() : fullWidgetDisplay_.get();
   setCurrentIndex(isMini_ ? miniIndex_ : fullIndex_);
 
-  makeOptionsDialog();
   createPorts(*theModule_);
   addPorts(currentIndex());
+  makeOptionsDialog();
 
   resize(currentWidget()->size());
 

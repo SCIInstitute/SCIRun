@@ -743,78 +743,73 @@ std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(cons
   return std::make_tuple("Input" + type + ":" + boost::lexical_cast<std::string>(connectedPortNumber), connectedPortNumber);
 }
 
-void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, int numFixedPorts, const std::string& portId, const std::string& type, 
-  QTableWidget* table, int lineEditIndex, bool usePortIdForRemoval, bool addingPort,
-  const TableItemMakerList& tableItemMakers)
+void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId, const std::string& type,
+                                                       QTableWidget* table, int lineEditIndex, bool addingPort, const TableItemMakerList& tableItemMakers)
 {
   ScopedWidgetSignalBlocker swsb(table);
   if (portId.find(type) != std::string::npos)
   {
+    qDebug() << "adjust input table: " << portId.c_str() << addingPort;
     
-    int connectedPortNumber;
-    std::string connectedPortId;
-    std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type);
-
-    Name name(connectedPortId);
-    QString lineEditText;
-
-    if (state_->containsKey(name))
-      lineEditText = QString::fromStdString(state_->getValue(name).toString());
-    else
+    if (addingPort)
     {
-      lineEditText = QString::fromStdString(type).toLower() + "Input" + QString::number(connectedPortNumber + (addingPort ? 1 : 0));
-    }
+      qDebug() << "trying to add row via port added, id: " << portId.c_str();
 
-    qDebug() << "adjust input table: " << portId.c_str() << connectedPortId.c_str() << lineEditText;
-    if (numPorts < numFixedPorts)
-      return;
+      int connectedPortNumber;
+      std::string connectedPortId;
+      std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type);
 
-    auto items = table->findItems(usePortIdForRemoval ? QString::fromStdString(portId) : lineEditText, Qt::MatchFixedString);
-    if (!addingPort)
-    {
-      qDebug() << "trying to remove row with " << lineEditText;
-      
-        auto item = items[0];
-        int row = table->row(item);
-        table->removeRow(row);
-        //qDebug() << "row removed" << QString::fromStdString(portId);
-        removeManager(Name(portId));
-      
-    }
-    else
-    {
-      qDebug() << "trying to add row with " << lineEditText;
+      Name name(connectedPortId);
+      QString lineEditText;
+
+      if (state_->containsKey(name))
+        lineEditText = QString::fromStdString(state_->getValue(name).toString());
+      else
       {
-        const int rowCount = numPorts - numFixedPorts;
-        table->setRowCount(rowCount);
-        if (0 != rowCount)
+        lineEditText = QString::fromStdString(type).toLower() + "Input" + QString::number(connectedPortNumber + 1);
+      }
+
+      {
+        table->insertRow(table->rowCount());
+        auto newRowIndex = table->rowCount() - 1;
+
+        table->setItem(newRowIndex, 0, new QTableWidgetItem(QString::fromStdString(connectedPortId)));
+
+        auto lineEdit = new QLineEdit;
+
+        lineEdit->setText(lineEditText);
+        if (!state_->containsKey(name))
         {
-          auto lineEdit = new QLineEdit;
+          state_->setValue(name, lineEditText.toStdString());
+        }
 
-          lineEdit->setText(lineEditText);
-          if (!state_->containsKey(name))
+        addLineEditManager(lineEdit, name);
+        table->setCellWidget(newRowIndex, lineEditIndex, lineEdit);
+        qDebug() << "row added with " << lineEditText;
+
+        auto tableItemIter = tableItemMakers.begin();
+        for (int i = 1; i < table->columnCount(); ++i)
+        {
+          if (i != lineEditIndex)
           {
-            state_->setValue(name, lineEditText.toStdString());
-          }
-
-          addLineEditManager(lineEdit, name);
-          table->setCellWidget(rowCount - 1, lineEditIndex, lineEdit);
-          qDebug() << "row added with " << lineEditText;
-
-          auto tableItemIter = tableItemMakers.begin();
-          for (int i = 0; i < table->columnCount(); ++i)
-          {
-            if (i != lineEditIndex)
+            if (tableItemIter != tableItemMakers.end())
             {
-              if (tableItemIter != tableItemMakers.end())
-              {
-                table->setItem(rowCount - 1, i, (*tableItemIter)());
-                ++tableItemIter;
-              }
+              table->setItem(newRowIndex, i, (*tableItemIter)());
+              ++tableItemIter;
             }
           }
         }
       }
+    }
+    else
+    {
+      qDebug() << "trying to remove row with " << portId.c_str();
+      auto items = table->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
+      auto item = items[0];
+      int row = table->row(item);
+      table->removeRow(row);
+      //qDebug() << "row removed" << QString::fromStdString(portId);
+      removeManager(Name(portId)); 
     }
     table->resizeColumnsToContents();
   }
