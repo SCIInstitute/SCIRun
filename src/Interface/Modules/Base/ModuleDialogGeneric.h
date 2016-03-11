@@ -48,6 +48,13 @@ namespace Gui {
   typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
   typedef GuiStringTranslationMap::value_type StringPair;
 
+  enum DynamicPortChange
+  {
+    INITIAL_PORT_CONSTRUCTION,
+    USER_ADDED_PORT,
+    USER_REMOVED_PORT
+  };
+
   //TODO: pull into separate header; figure out how to automatically style child widgets of these types
   class SCISHARE WidgetStyleMixin
   {
@@ -81,7 +88,7 @@ namespace Gui {
     virtual void pull() final;
     void moduleSelected(bool selected);
     void toggleCollapse();
-    virtual void updateFromPortChange(int numPorts, const std::string& portName) {}
+    virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) {}
   Q_SIGNALS:
     void pullSignal();
     void executionTimeChanged(int time);
@@ -131,7 +138,7 @@ namespace Gui {
 
     typedef std::vector<std::function<QTableWidgetItem*()>> TableItemMakerList;
     void syncTableRowsWithDynamicPort(int numPorts, int numFixedPorts, const std::string& portId, const std::string& type,
-      QTableWidget* table, int lineEditIndex, bool usePortIdForRemoval, const TableItemMakerList& tableItemMakers);
+      QTableWidget* table, int lineEditIndex, bool usePortIdForRemoval, bool addingPort, const TableItemMakerList& tableItemMakers);
     static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type);
 
     void createExecuteInteractivelyToggleAction();

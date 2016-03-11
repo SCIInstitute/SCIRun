@@ -744,7 +744,7 @@ std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(cons
 }
 
 void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, int numFixedPorts, const std::string& portId, const std::string& type, 
-  QTableWidget* table, int lineEditIndex, bool usePortIdForRemoval,
+  QTableWidget* table, int lineEditIndex, bool usePortIdForRemoval, bool addingPort,
   const TableItemMakerList& tableItemMakers)
 {
   ScopedWidgetSignalBlocker swsb(table);
@@ -762,7 +762,7 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, int numFixe
       lineEditText = QString::fromStdString(state_->getValue(name).toString());
     else
     {
-      lineEditText = QString::fromStdString(type).toLower() + "Input" + QString::number(connectedPortNumber + 1);
+      lineEditText = QString::fromStdString(type).toLower() + "Input" + QString::number(connectedPortNumber + (addingPort ? 1 : 0));
     }
 
     qDebug() << "adjust input table: " << portId.c_str() << connectedPortId.c_str() << lineEditText;
@@ -770,7 +770,7 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(int numPorts, int numFixe
       return;
 
     auto items = table->findItems(usePortIdForRemoval ? QString::fromStdString(portId) : lineEditText, Qt::MatchFixedString);
-    if (!items.empty())
+    if (!addingPort)
     {
       qDebug() << "trying to remove row with " << lineEditText;
       

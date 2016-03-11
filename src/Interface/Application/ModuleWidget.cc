@@ -732,7 +732,7 @@ void ModuleWidget::createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfo
     ports_->addPort(w);
     ++i;
     if (dialog_)
-      dialog_->updateFromPortChange(i, port->id().toString());
+      dialog_->updateFromPortChange(i, port->id().toString(), INITIAL_PORT_CONSTRUCTION);
   }
 }
 
@@ -902,7 +902,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     ports_->reindexInputs();
     inputPortLayout_->addWidget(w);
 
-    Q_EMIT dynamicPortChanged(pid.toString());
+    Q_EMIT dynamicPortChanged(pid.toString(), true);
   }
 }
 
@@ -912,7 +912,7 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
   {
     if (ports_->removeDynamicPort(pid, inputPortLayout_))
     {
-      Q_EMIT dynamicPortChanged(pid.toString());
+      Q_EMIT dynamicPortChanged(pid.toString(), false);
     }
   }
 }
@@ -1112,7 +1112,7 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
-      connect(this, SIGNAL(dynamicPortChanged(const std::string&)), this, SLOT(updateDialogWithPortCount(const std::string&)));
+      connect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
       connect(dialog_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
       connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
       connect(dialog_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
@@ -1151,10 +1151,10 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
   }
 }
 
-void ModuleWidget::updateDialogWithPortCount(const std::string& portId)
+void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
   if (dialog_)
-    dialog_->updateFromPortChange(numInputPorts(), portId);
+    dialog_->updateFromPortChange(numInputPorts(), portId, adding ? USER_ADDED_PORT : USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const

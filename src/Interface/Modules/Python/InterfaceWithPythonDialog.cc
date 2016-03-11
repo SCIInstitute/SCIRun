@@ -92,23 +92,27 @@ void InterfaceWithPythonDialog::setupOutputTableCells()
   }
 }
 
-void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::string& portId)
+void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
 {
+  if (type == INITIAL_PORT_CONSTRUCTION)
+    return;
+
   inputVariableNamesTableWidget_->blockSignals(true);
 
-  handleInputTableWidgetRowChange(numPorts, portId, "Matrix");
-  handleInputTableWidgetRowChange(numPorts, portId, "Field");
-  handleInputTableWidgetRowChange(numPorts, portId, "String");
+  bool addingPort = type == USER_ADDED_PORT;
+  handleInputTableWidgetRowChange(numPorts, portId, "Matrix", addingPort);
+  handleInputTableWidgetRowChange(numPorts, portId, "Field", addingPort);
+  handleInputTableWidgetRowChange(numPorts, portId, "String", addingPort);
 
   inputVariableNamesTableWidget_->resizeColumnsToContents();
   inputVariableNamesTableWidget_->blockSignals(false);
 }
 
-void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, const std::string& portId, const std::string& type)
+void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, const std::string& portId, const std::string& type, bool addingPort)
 {
   const int lineEditColumn = 2;
   const int numFixedPorts = 3;
-  syncTableRowsWithDynamicPort(numPorts, numFixedPorts, portId, type, inputVariableNamesTableWidget_, lineEditColumn, true,
+  syncTableRowsWithDynamicPort(numPorts, numFixedPorts, portId, type, inputVariableNamesTableWidget_, lineEditColumn, true, addingPort,
     {
       [&](){ return new QTableWidgetItem(QString::fromStdString(std::get<0>(getConnectedDynamicPortId(portId, type)))); },
       [&](){ return new QTableWidgetItem(QString::fromStdString(type)); }

@@ -65,12 +65,15 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
 //}
 
 
-void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId)
+void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
 {
-  static const std::string type = "Fields";
+  if (type == INITIAL_PORT_CONSTRUCTION)
+    return;
+
+  static const std::string typeName = "Fields";
   const int lineEditColumn = 0;
   const int numFixedPorts = 2;
-  syncTableRowsWithDynamicPort(numPorts, numFixedPorts, portId, type, tableWidget, lineEditColumn, false,
+  syncTableRowsWithDynamicPort(numPorts, numFixedPorts, portId, typeName, tableWidget, lineEditColumn, false, type == USER_ADDED_PORT,
   {
     [&]()
     {
