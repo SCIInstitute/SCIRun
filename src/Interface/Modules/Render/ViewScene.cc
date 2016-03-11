@@ -438,11 +438,30 @@ void ViewSceneDialog::autoViewClicked()
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::autoViewOnLoadChecked(bool value)
+{
+  //TODO: Add to SRInterface
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::useOrthoViewChecked(bool value)
+{
+  //TODO: Add to SRInterface
+}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::showOrientationChecked(bool value)
 {
   auto spire = mSpire.lock();
   spire->showOrientation(value);
 }
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::showAxisChecked(bool value)
+{
+  //TODO: Add to SRInterface
+}
+
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewBarButtonClicked()
@@ -939,6 +958,61 @@ void ViewSceneDialog::setSpireScaleBar()
 }
 
 //------------------------------------------------------------------------------
+//-------------------Render Settings--------------------------------------------
+void ViewSceneDialog::lightingChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::Lighting, value);
+}
+
+void ViewSceneDialog::showBBoxChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::ShowBBox, value);
+}
+
+void ViewSceneDialog::useClipChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::UseClip, value);
+}
+
+void ViewSceneDialog::stereoChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::Stereo, value);
+}
+
+void ViewSceneDialog::useBackCullChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::BackCull, value);
+}
+
+void ViewSceneDialog::displayListChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::DisplayList, value);
+}
+
+void ViewSceneDialog::setStereoFusion(int value)
+{
+  double fusion = value / 100;
+  state_->setValue(Modules::Render::ViewScene::StereoFusion, fusion);
+}
+
+void ViewSceneDialog::setPolygonOffset(int value)
+{
+  double offset = value / 100;
+  state_->setValue(Modules::Render::ViewScene::PolygonOffset, offset);
+}
+
+void ViewSceneDialog::setTextOffset(int value)
+{
+  double offset = value / 100;
+  state_->setValue(Modules::Render::ViewScene::TextOffset, offset);
+}
+
+void ViewSceneDialog::setFieldOfView(int value)
+{
+  state_->setValue(Modules::Render::ViewScene::FieldOfView, value);
+}
+
+//------------------------------------------------------------------------------
 bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 {
   return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
@@ -1137,6 +1211,29 @@ void ViewSceneDialog::setupScaleBar()
     scaleBar_.numTicks = 11;
     scaleBar_.lineWidth = 1.0;
     scaleBar_.fontSize = 8;
+  }
+}
+
+void ViewSceneDialog::setupRenderTabValues()
+{
+  auto valueSet = state_->getValue(Modules::Render::ViewScene::Lighting).toString();
+  if (!valueSet.empty())
+  {
+    mConfigurationDock->setRenderTabValues(
+      state_->getValue(Modules::Render::ViewScene::Lighting).toBool(),
+      state_->getValue(Modules::Render::ViewScene::ShowBBox).toBool(),
+      state_->getValue(Modules::Render::ViewScene::UseClip).toBool(),
+      state_->getValue(Modules::Render::ViewScene::BackCull).toBool(),
+      state_->getValue(Modules::Render::ViewScene::DisplayList).toBool(),
+      state_->getValue(Modules::Render::ViewScene::Stereo).toBool(),
+      state_->getValue(Modules::Render::ViewScene::StereoFusion).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::PolygonOffset).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::TextOffset).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::FieldOfView).toInt());
+  }
+  else
+  {
+    mConfigurationDock->setRenderTabValues(true, false, true, false, false, false, 0.4, 0.0, 0.0, 20);
   }
 }
 
