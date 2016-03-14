@@ -49,6 +49,11 @@
 #include <map>
 #include <list>
 
+#ifdef _WIN32
+#  define MAXPATHLEN 256
+#  include <windows.h>
+#endif
+
 using namespace SCIRun;
 namespace bfs=boost::filesystem;
 typedef bfs::path::string_type boost_string_type;
@@ -131,7 +136,6 @@ SCIRun::get_sci_environment()
 #ifdef _WIN32
 void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, bfs::path& thirdparty, std::string& packages)
 {
-#if 0 //DAN TODO
   // on an installed version of SCIRun, query these values from the registry, overwriting the compiled version
   // if not an installed version, return the compiled values unchanged
   HKEY software, company, version, scirun, pack, volatileEnvironment;
@@ -146,7 +150,7 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
     {
       if (RegOpenKeyEx(company, "SCIRun", 0, KEY_READ, &scirun) == ERROR_SUCCESS)
       {
-        if (RegOpenKeyEx(scirun, SCIRUN_VERSION, 0, KEY_READ, &version) == ERROR_SUCCESS)
+        if (RegOpenKeyEx(scirun, "5.0", 0, KEY_READ, &version) == ERROR_SUCCESS)
         {
           TCHAR data[VALUE_NAME_SIZE];
           data[VALUE_NAME_SIZE-1] = '\0';
@@ -275,7 +279,6 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
 
     LocalFree(lpMsgBuf);
   }
-#endif
 }
 
 #endif
@@ -448,7 +451,7 @@ public:
   {
     if (env) {
       char **environment = env;
-      while (*environment) {
+      while (environment && *environment) {
         const std::string str(*environment);
         const size_t pos = str.find("=");
         scirun_env[str.substr(0,pos)] = str.substr(pos+1, str.length());

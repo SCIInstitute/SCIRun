@@ -128,7 +128,10 @@ GenericReader<HType, PortTag>::execute()
       state->setValue(SCIRun::Core::Algorithms::Variables::Filename, envfilename);
     }
     else
-      warning("No filename found under environment variable " + environmentVariable);
+    {
+      warning("No filename found under environment variable " + environmentVariable + ", resetting current filename.");
+      state->setValue(SCIRun::Core::Algorithms::Variables::Filename, std::string());
+    }
   }
   else
   {
