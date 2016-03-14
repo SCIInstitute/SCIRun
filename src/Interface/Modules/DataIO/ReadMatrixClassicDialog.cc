@@ -53,6 +53,8 @@ ReadMatrixClassicDialog::ReadMatrixClassicDialog(const std::string& name, Module
   WidgetStyleMixin::setStateVarTooltipWithStyle(fileNameLineEdit_, Variables::Filename.name());
   WidgetStyleMixin::setStateVarTooltipWithStyle(this, Variables::FileTypeName.name());
   WidgetStyleMixin::setStateVarTooltipWithStyle(openFileButton_, Variables::FileTypeName.name());
+  WidgetStyleMixin::tabStyle(tabWidget);
+  addLineEditManager(scriptInputLineEdit_, Variables::ScriptEnvironmentVariable);
 }
 
 void ReadMatrixClassicDialog::pullSpecial()
