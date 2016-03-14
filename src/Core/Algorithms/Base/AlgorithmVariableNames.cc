@@ -49,6 +49,7 @@ PARAMETER(FileTypeName)
 PARAMETER(FormatString)
 PARAMETER(FunctionString)
 PARAMETER(ObjectInfo)
+PARAMETER(ScriptEnvironmentVariable)
 
 INPUT(InputMatrix)
 INPUT(FirstMatrix)
