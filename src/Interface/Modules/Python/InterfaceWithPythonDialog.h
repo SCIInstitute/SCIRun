@@ -49,7 +49,7 @@ private Q_SLOTS:
   void resetObjects();
   void loadAPIDocumentation();
 private:
-  void handleInputTableWidgetRowChange(int numPorts, const std::string& portId, const std::string& type, bool addingPort);
+  void handleInputTableWidgetRowChange(const std::string& portId, const std::string& type, DynamicPortChange portChangeType);
   void setupOutputTableCells();
 };
 

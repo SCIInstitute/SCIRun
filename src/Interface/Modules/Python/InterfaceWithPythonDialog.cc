@@ -94,28 +94,26 @@ void InterfaceWithPythonDialog::setupOutputTableCells()
 
 void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
 {
+  //qDebug() << "InterfaceWithPythonDialog::updateFromPortChange" << numPorts << portId.c_str() << type;
   if (type == INITIAL_PORT_CONSTRUCTION)
     return;
 
   inputVariableNamesTableWidget_->blockSignals(true);
 
-  bool addingPort = type == USER_ADDED_PORT;
-  handleInputTableWidgetRowChange(numPorts, portId, "Matrix", addingPort);
-  handleInputTableWidgetRowChange(numPorts, portId, "Field", addingPort);
-  handleInputTableWidgetRowChange(numPorts, portId, "String", addingPort);
+  handleInputTableWidgetRowChange(portId, "Matrix", type);
+  handleInputTableWidgetRowChange(portId, "Field", type);
+  handleInputTableWidgetRowChange(portId, "String", type);
 
   inputVariableNamesTableWidget_->resizeColumnsToContents();
   inputVariableNamesTableWidget_->blockSignals(false);
 }
 
-void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(int numPorts, const std::string& portId, const std::string& type, bool addingPort)
+void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(const std::string& portId, const std::string& type, DynamicPortChange portChangeType)
 {
   const int lineEditColumn = 2;
-  const int numFixedPorts = 3;
-  syncTableRowsWithDynamicPort(portId, type, inputVariableNamesTableWidget_, lineEditColumn, addingPort, {
-                                 [&](){ return new QTableWidgetItem(QString::fromStdString(std::get<0>(getConnectedDynamicPortId(portId, type)))); },
-                                 [&](){ return new QTableWidgetItem(QString::fromStdString(type)); }
-                               });
+  syncTableRowsWithDynamicPort(portId, type, inputVariableNamesTableWidget_, lineEditColumn, portChangeType, 
+    { [&](){ return new QTableWidgetItem(QString::fromStdString(std::get<0>(getConnectedDynamicPortId(portId, type, portChangeType == USER_ADDED_PORT_DURING_FILE_LOAD)))); },
+      [&](){ return new QTableWidgetItem(QString::fromStdString(type)); }});
 }
 
 void InterfaceWithPythonDialog::loadAPIDocumentation()

@@ -104,7 +104,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -115,6 +115,18 @@
 									<value>
 										<which>2</which>
 										<value>foo1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputFields:1</name>
+								</first>
+								<second>
+									<name>InputFields:1</name>
+									<value>
+										<which>2</which>
+										<value>bar1</value>
 									</value>
 								</second>
 							</item>
@@ -140,7 +152,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>2</count>
+			<count>3</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
@@ -152,6 +164,18 @@
 				<port2_>
 					<name>InputFields</name>
 					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InsertFieldsIntoBundle:0</moduleId2_>
+				<port2_>
+					<name>InputFields</name>
+					<id>1</id>
 				</port2_>
 			</item>
 			<item>

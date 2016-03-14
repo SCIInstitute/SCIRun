@@ -730,34 +730,35 @@ void WidgetStyleMixin::setStateVarTooltipWithStyle(QWidget* widget, const std::s
   widget->setStyleSheet(widget->styleSheet() + " QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
 }
 
-std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(const std::string& portId, const std::string& type)
+std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile)
 {
   //note: the incoming portId is the port that was just added, not connected to. we assume the connected port
   // is one index less.
+  // UNLESS we are loading a file, in which case this function is called when the connected port is the same as portId.
   //std::cout << "REGEX: " << "Input" + type + "\\:(.+)" << std::endl;
   boost::regex portIdRegex("Input" + type + "\\:(.+)");
   boost::smatch what;
   //std::cout << "MATCHING WITH: " << portId << std::endl;
   regex_match(portId, what, portIdRegex);
-  const int connectedPortNumber = boost::lexical_cast<int>(what[1]) - 1;
+  const int connectedPortNumber = boost::lexical_cast<int>(what[1]) - (isLoadingFile ? 0 : 1);
   return std::make_tuple("Input" + type + ":" + boost::lexical_cast<std::string>(connectedPortNumber), connectedPortNumber);
 }
 
 void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId, const std::string& type,
-                                                       QTableWidget* table, int lineEditIndex, bool addingPort, const TableItemMakerList& tableItemMakers)
+  QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerList& tableItemMakers)
 {
   ScopedWidgetSignalBlocker swsb(table);
   if (portId.find(type) != std::string::npos)
   {
-    qDebug() << "adjust input table: " << portId.c_str() << addingPort;
+    //qDebug() << "adjust input table: " << portId.c_str() << portChangeType;
     
-    if (addingPort)
+    if (portChangeType == USER_ADDED_PORT || portChangeType == USER_ADDED_PORT_DURING_FILE_LOAD)
     {
-      qDebug() << "trying to add row via port added, id: " << portId.c_str();
+      //qDebug() << "trying to add row via port added, id: " << portId.c_str();
 
       int connectedPortNumber;
       std::string connectedPortId;
-      std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type);
+      std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type, portChangeType == USER_ADDED_PORT_DURING_FILE_LOAD);
 
       Name name(connectedPortId);
       QString lineEditText;
@@ -785,7 +786,7 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
 
         addLineEditManager(lineEdit, name);
         table->setCellWidget(newRowIndex, lineEditIndex, lineEdit);
-        qDebug() << "row added with " << lineEditText;
+        //qDebug() << "row added with " << lineEditText;
 
         auto tableItemIter = tableItemMakers.begin();
         for (int i = 1; i < table->columnCount(); ++i)
@@ -803,7 +804,7 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
     }
     else
     {
-      qDebug() << "trying to remove row with " << portId.c_str();
+      //qDebug() << "trying to remove row with " << portId.c_str();
       auto items = table->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
       if (!items.empty())
       {

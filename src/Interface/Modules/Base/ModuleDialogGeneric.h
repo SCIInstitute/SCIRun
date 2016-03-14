@@ -51,6 +51,7 @@ namespace Gui {
   enum DynamicPortChange
   {
     INITIAL_PORT_CONSTRUCTION,
+    USER_ADDED_PORT_DURING_FILE_LOAD,
     USER_ADDED_PORT,
     USER_REMOVED_PORT
   };
@@ -138,8 +139,8 @@ namespace Gui {
 
     typedef std::vector<std::function<QTableWidgetItem*()>> TableItemMakerList;
     void syncTableRowsWithDynamicPort(const std::string& portId, const std::string& type,
-                                      QTableWidget* table, int lineEditIndex, bool addingPort, const TableItemMakerList& tableItemMakers);
-    static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type);
+      QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerList& tableItemMakers);
+    static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile);
 
     void createExecuteInteractivelyToggleAction();
   private Q_SLOTS:
