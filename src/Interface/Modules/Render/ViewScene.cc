@@ -1156,7 +1156,7 @@ void ViewSceneDialog::setupMaterials()
   else
   {
     fogColor_ = Qt::blue;
-    mConfigurationDock->setMaterialTabValues(0.2, 1.0, 0.4, 1.0, 1.0, true, true, true, 0.0, 0.71);
+    mConfigurationDock->setMaterialTabValues(0.2, 1.0, 0.4, 1.0, 1.0, false, true, true, 0.0, 0.71);
   }
   mConfigurationDock->setFogColorLabel(fogColor_);
 }
