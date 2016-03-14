@@ -28,8 +28,6 @@
 
 #include <Modules/Legacy/Bundle/InsertFieldsIntoBundle.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
