@@ -421,7 +421,7 @@ AlgorithmParameterName SelectSubMatrixAlgorithm::columnStartSpinBox() { return A
 AlgorithmParameterName SelectSubMatrixAlgorithm::columnEndSpinBox() { return AlgorithmParameterName("columnEndSpinBox"); }
 AlgorithmParameterName SelectSubMatrixAlgorithm::rowEndSpinBox() { return AlgorithmParameterName("rowEndSpinBox"); }
     
-AlgorithmOutput SelectSubMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SelectSubMatrixAlgorithm::run(const AlgorithmInput& input) const
 {
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
   auto rowindicies = input.get<DenseMatrix>(RowIndicies);

@@ -1239,7 +1239,7 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
 AlgorithmInputName BuildFEMatrixAlgo::Conductivity_Table("Conductivity_Table");
 AlgorithmOutputName BuildFEMatrixAlgo::Stiffness_Matrix("Stiffness_Matrix");
 
-AlgorithmOutput BuildFEMatrixAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput BuildFEMatrixAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
   auto ctable = input.get<DenseMatrix>(Conductivity_Table);

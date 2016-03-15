@@ -71,7 +71,7 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
              Datatypes::DenseMatrixHandle ctable,
              Datatypes::SparseRowMatrixHandle& output) const;
   
-    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
+    virtual AlgorithmOutput run(const AlgorithmInput &) const;
 private:
   mutable int generation_;
   mutable std::vector<std::vector<double> > basis_values_;

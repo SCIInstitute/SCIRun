@@ -223,7 +223,7 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandl
 	return (false);
 }
 
-AlgorithmOutput ConvertIndicesToFieldDataAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertIndicesToFieldDataAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
   auto inputmatrix = input.get<DenseMatrix>(Variables::InputMatrix);

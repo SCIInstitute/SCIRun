@@ -117,7 +117,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input, MatrixHandle inpu
   return runImpl(input, input_matrix, output, dummy);
 }
 
-AlgorithmOutput SwapFieldDataWithMatrixEntriesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SwapFieldDataWithMatrixEntriesAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
   auto inputmatrix = input.get<Matrix>(Variables::InputMatrix);

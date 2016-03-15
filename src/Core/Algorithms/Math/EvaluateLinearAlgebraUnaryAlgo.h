@@ -95,7 +95,7 @@ namespace Math {
     EvaluateLinearAlgebraUnaryAlgorithm();
     Outputs run(const Inputs& matrix, const Parameters& params) const;
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
   };
 
 }}}}

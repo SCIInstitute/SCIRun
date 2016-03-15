@@ -158,7 +158,7 @@ bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& ou
   return (true);
 }
 
-AlgorithmOutput ConvertMeshToPointCloudMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertMeshToPointCloudMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
 

@@ -217,7 +217,7 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
   return (true); 
 }
 
-AlgorithmOutput ProjectPointsOntoMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ProjectPointsOntoMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
   auto objectField = input.get<Field>(Variables::ObjectField);

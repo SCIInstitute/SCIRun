@@ -1309,7 +1309,7 @@ const AlgorithmInputName MapFieldDataOntoElemsAlgo::Source("Source");
 const AlgorithmInputName MapFieldDataOntoElemsAlgo::Destination("Destination");
 const AlgorithmInputName MapFieldDataOntoElemsAlgo::Weights("Weights");
 
-AlgorithmOutput MapFieldDataOntoElemsAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MapFieldDataOntoElemsAlgo::run(const AlgorithmInput& input) const
 {
   dumpAlgoState();
   auto source = input.get<Field>(Source);

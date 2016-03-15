@@ -44,7 +44,7 @@ ReportMatrixSliceMeasureAlgo::ReportMatrixSliceMeasureAlgo()
 }
 
 
-AlgorithmOutput ReportMatrixSliceMeasureAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ReportMatrixSliceMeasureAlgo::run(const AlgorithmInput& input) const
 {
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
   AlgorithmOutput output;

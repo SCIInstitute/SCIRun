@@ -49,7 +49,7 @@ namespace Math {
     Outputs run(const Inputs& input, const Parameters& params) const;
 
     AppendMatrixAlgorithm();
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
   };
 
 }}}}

@@ -50,7 +50,7 @@ namespace SCIRun {
           static AlgorithmParameterName MatchNodeValues;
           static AlgorithmParameterName MakeNoData;
 
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
 
 }}}}

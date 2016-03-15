@@ -149,7 +149,7 @@ ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& 
     );
 }
 
-AlgorithmOutput ReportMatrixInfoAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ReportMatrixInfoAlgorithm::run(const AlgorithmInput& input) const
 {
   auto matrix = input.get<Matrix>(Variables::InputMatrix);
 

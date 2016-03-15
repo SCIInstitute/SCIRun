@@ -343,7 +343,7 @@ RefineTetMeshLocallyAlgorithm::RefineTetMeshLocallyAlgorithm()
   addParameter(RefineTetMeshLocallyMaxNumberRefinementIterations, 5);
 }
 
-AlgorithmOutput RefineTetMeshLocallyAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput RefineTetMeshLocallyAlgorithm::run(const AlgorithmInput& input) const
 {
   auto inputfield = input.get<Field>(Variables::InputField);
   //auto inputmatrix = input.get<DenseMatrix>(Variables::InputMatrix);

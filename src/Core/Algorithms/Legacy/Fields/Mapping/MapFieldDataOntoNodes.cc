@@ -473,7 +473,7 @@ const AlgorithmInputName MapFieldDataOntoNodesAlgo::Source("Source");
 const AlgorithmInputName MapFieldDataOntoNodesAlgo::Destination("Destination");
 const AlgorithmInputName MapFieldDataOntoNodesAlgo::Weights("Weights");
 
-AlgorithmOutput MapFieldDataOntoNodesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MapFieldDataOntoNodesAlgo::run(const AlgorithmInput& input) const
 {
   dumpAlgoState();
   auto source = input.get<Field>(Source);

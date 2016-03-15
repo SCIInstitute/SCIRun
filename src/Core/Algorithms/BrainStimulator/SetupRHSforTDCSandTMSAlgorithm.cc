@@ -115,7 +115,7 @@ SetupTDCSAlgorithm::SetupTDCSAlgorithm()
   addParameter(Parameters::GetContactSurface, false);
 }
 
-AlgorithmOutput SetupTDCSAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetupTDCSAlgorithm::run(const AlgorithmInput& input) const
 {
   auto mesh = input.get<Field>(MESH);
 

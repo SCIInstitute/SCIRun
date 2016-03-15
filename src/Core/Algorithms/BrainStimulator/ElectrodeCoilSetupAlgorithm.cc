@@ -1701,7 +1701,7 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
 } 
 
 
-AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ElectrodeCoilSetupAlgorithm::run(const AlgorithmInput& input) const
 {
   auto scalp = input.get<Field>(SCALP_SURF);
   auto locations = input.get<DenseMatrix>(LOCATIONS);

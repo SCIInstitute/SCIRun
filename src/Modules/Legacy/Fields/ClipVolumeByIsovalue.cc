@@ -99,7 +99,7 @@ void ClipVolumeByIsovalueModule::execute()
        
     algo().set(ClipMeshByIsovalueAlgo::LessThanIsoValue, gui_LessThanIsoValue);
     
-    auto output = algo().run_generic(withInputData((InputField, input)));
+    auto output = algo().run(withInputData((InputField, input)));
 
     sendOutputFromAlgorithm(OutputField, output);
   }

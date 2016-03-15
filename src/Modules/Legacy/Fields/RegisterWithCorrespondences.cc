@@ -66,7 +66,7 @@ void RegisterWithCorrespondences::execute()
   if (needToExecute())
   {
     setAlgoIntFromState(Variables::Operator);
-    auto output = algo().run_generic(withInputData((InputField, input1)(Correspondences1, input2)(Correspondences2, input3)));
+    auto output = algo().run(withInputData((InputField, input1)(Correspondences1, input2)(Correspondences2, input3)));
     sendOutputFromAlgorithm(OutputField, output);
   }
 }

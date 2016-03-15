@@ -56,7 +56,7 @@ GetFieldDataAlgo::GetFieldDataAlgo()
   addParameter(Parameters::CalcNrrd, false);
 }
 
-AlgorithmOutput GetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GetFieldDataAlgo::run(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
 

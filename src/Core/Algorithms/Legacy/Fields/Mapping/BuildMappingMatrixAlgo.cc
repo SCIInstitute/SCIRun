@@ -679,7 +679,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
   return (true);
 }
 
-AlgorithmOutput BuildMappingMatrixAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput BuildMappingMatrixAlgo::run(const AlgorithmInput& input) const
 {
   auto source = input.get<Field>(Variables::Source);
   auto destination = input.get<Field>(Variables::Destination);

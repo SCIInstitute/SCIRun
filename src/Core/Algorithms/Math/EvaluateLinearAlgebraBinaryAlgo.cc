@@ -135,7 +135,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   return result;
 }
 
-AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run(const AlgorithmInput& input) const
 {
   auto LHS = input.get<Matrix>(Variables::LHS);
   auto RHS = input.get<Matrix>(Variables::RHS);

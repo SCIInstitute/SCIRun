@@ -499,7 +499,7 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
 const AlgorithmOutputName CalculateDistanceFieldAlgo::DistanceField("DistanceField");
 const AlgorithmOutputName CalculateDistanceFieldAlgo::ValueField("ValueField");
 
-AlgorithmOutput CalculateDistanceFieldAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput CalculateDistanceFieldAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
   auto objectField = input.get<Field>(Variables::ObjectField);

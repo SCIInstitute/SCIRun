@@ -86,7 +86,7 @@ bool ConvertFieldDataTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) c
   return (true);
 }
 
-AlgorithmOutput ConvertFieldDataTypeAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertFieldDataTypeAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

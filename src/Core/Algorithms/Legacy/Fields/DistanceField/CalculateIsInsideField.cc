@@ -238,7 +238,7 @@ CalculateIsInsideFieldAlgo::runImpl(FieldHandle input, FieldHandle objfield, Fie
   return (true);
 }
 
-AlgorithmOutput CalculateIsInsideFieldAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput CalculateIsInsideFieldAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
   auto objectField = input.get<Field>(Variables::ObjectField);

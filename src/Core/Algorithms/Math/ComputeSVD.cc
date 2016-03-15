@@ -65,7 +65,7 @@ void ComputeSVDAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftSingMat, Den
 }
 
 
-AlgorithmOutput ComputeSVDAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ComputeSVDAlgo::run(const AlgorithmInput& input) const
 {
 	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
 		

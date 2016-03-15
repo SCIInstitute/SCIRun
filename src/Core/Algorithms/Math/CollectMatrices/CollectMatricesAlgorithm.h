@@ -49,7 +49,7 @@ namespace Math {
     public:
       virtual Datatypes::MatrixHandle concat_cols(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const = 0;
       virtual Datatypes::MatrixHandle concat_rows(Datatypes::MatrixHandle m1H, Datatypes::MatrixHandle m2H) const = 0;
-      virtual AlgorithmOutput run_generic(const AlgorithmInput&) const override { throw "not needed for now"; }
+      virtual AlgorithmOutput run(const AlgorithmInput&) const override { throw "not needed for now"; }
     };
 
     class SCISHARE CollectDenseMatricesAlgorithm : public CollectMatricesAlgorithmBase

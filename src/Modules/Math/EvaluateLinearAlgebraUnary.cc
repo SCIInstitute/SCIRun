@@ -69,7 +69,7 @@ void EvaluateLinearAlgebraUnaryModule::execute()
     algo().set(Variables::Operator, oper);
     algo().set(Variables::ScalarValue, scalar);
 	  algo().set(Variables::FunctionString, func);
-    auto output = algo().run_generic(withInputData((InputMatrix, input)));
+    auto output = algo().run(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(Result, output);
   }
 }

@@ -45,7 +45,7 @@ namespace Math {
   public:
     Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix) const; 
     ConvertMatrixTypeAlgorithm();
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
 
   };
 

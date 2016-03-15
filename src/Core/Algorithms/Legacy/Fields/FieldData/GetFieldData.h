@@ -49,7 +49,7 @@ namespace SCIRun {
           Datatypes::DenseMatrixHandle run(FieldHandle input) const;
           NrrdDataHandle runNrrd(FieldHandle input) const;
 
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 
         private:
           template <class MatrixReturnType>

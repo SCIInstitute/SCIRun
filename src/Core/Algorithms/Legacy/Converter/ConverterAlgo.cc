@@ -792,7 +792,7 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
 }
 
 
-AlgorithmOutput ConverterAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConverterAlgo::run(const AlgorithmInput& input) const
 {
   throw "not implemented";
 }

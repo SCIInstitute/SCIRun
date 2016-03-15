@@ -78,7 +78,7 @@ AlgorithmParameterName MarchingCubesAlgo::build_node_interpolant("build_node_int
 AlgorithmParameterName MarchingCubesAlgo::build_elem_interpolant("build_elem_interpolant");
 AlgorithmParameterName MarchingCubesAlgo::num_threads("num_threads");
 
-AlgorithmOutput MarchingCubesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MarchingCubesAlgo::run(const AlgorithmInput& input) const
 {
 
   AlgorithmOutput output;

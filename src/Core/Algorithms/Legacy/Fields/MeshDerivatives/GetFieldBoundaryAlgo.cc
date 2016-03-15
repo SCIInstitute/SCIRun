@@ -465,7 +465,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   return (true);
 }
 
-AlgorithmOutput GetFieldBoundaryAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GetFieldBoundaryAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

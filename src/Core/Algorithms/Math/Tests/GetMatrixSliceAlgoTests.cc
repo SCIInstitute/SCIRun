@@ -120,7 +120,7 @@ TEST(GetMatrixSliceAlgoTests, DISABLED_RunGenericWorks)
   GetMatrixSliceAlgo algo;
 
   DenseMatrixHandle m1(matrix1());
-  //auto output = algo.run_generic()
+  //auto output = algo.run()
 
   FAIL() << "todo";
 }

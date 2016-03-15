@@ -97,7 +97,7 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
   return (true);
 }
 
-AlgorithmOutput SetFieldDataToConstantValueAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetFieldDataToConstantValueAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

@@ -653,7 +653,7 @@ void GeneratePointSamplesFromFieldOrWidget::execute_random(FieldHandle ifield)
 //  algo.setOption("seed_method",gui_randdist_.get());
 //  algo.set_bool("clamp",gui_clamp_.get());
 
-  auto output = algo().run_generic(withInputData((InputField, ifield)));
+  auto output = algo().run(withInputData((InputField, ifield)));
 
   auto state = get_state();
   if (state->getValue(Parameters::IncrementRNGSeed).toBool())

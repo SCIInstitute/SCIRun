@@ -183,7 +183,7 @@ AlgorithmInputName AddKnownsToLinearSystemAlgo::X_Vector("X_Vector");
 AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutLHSMatrix("OutPutLHSMatrix");
 AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector");
 
-AlgorithmOutput AddKnownsToLinearSystemAlgo::run_generic(const AlgorithmInput & input) const
+AlgorithmOutput AddKnownsToLinearSystemAlgo::run(const AlgorithmInput & input) const
 { 
   auto input_lhs = input.get<SparseRowMatrix>(LHS_Matrix);
   auto input_rhs = input.get<DenseMatrix>(RHS_Vector);

@@ -786,7 +786,7 @@ const AlgorithmInputName GenerateStreamLinesAlgo::VectorField("Vector_Field");
 const AlgorithmInputName GenerateStreamLinesAlgo::Seeds("Seed_Points");
 const AlgorithmOutputName GenerateStreamLinesAlgo::Streamlines("Streamlines");
 
-AlgorithmOutput GenerateStreamLinesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GenerateStreamLinesAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(VectorField);
   auto seeds = input.get<Field>(Seeds);

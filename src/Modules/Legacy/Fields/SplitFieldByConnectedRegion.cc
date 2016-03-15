@@ -71,7 +71,7 @@ void SplitFieldByConnectedRegion::execute()
     setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
     setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortAscending());
  
-    auto output = algo().run_generic(make_input((InputField, input_field)));
+    auto output = algo().run(make_input((InputField, input_field)));
 
     sendOutputFromAlgorithm(OutputField1, output);
     sendOutputFromAlgorithm(OutputField2, output);

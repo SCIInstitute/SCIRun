@@ -98,7 +98,7 @@ MapFieldDataOntoElements::execute()
     setAlgoDoubleFromState(Parameters::OutsideValue);
     setAlgoDoubleFromState(Parameters::MaxDistance);
 
-    auto output = algo().run_generic(withInputData((Source, source)(Destination, optionalAlgoInput(destination))(Weights, optionalAlgoInput(weights))));
+    auto output = algo().run(withInputData((Source, source)(Destination, optionalAlgoInput(destination))(Weights, optionalAlgoInput(weights))));
 
     sendOutputFromAlgorithm(OutputField, output);
   }

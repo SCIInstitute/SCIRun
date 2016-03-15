@@ -436,7 +436,7 @@ const AlgorithmOutputName ConvertToNrrdAlgo::Data("Data");
 const AlgorithmOutputName ConvertToNrrdAlgo::Points("Points");
 const AlgorithmOutputName ConvertToNrrdAlgo::Connections("Connections");
 
-AlgorithmOutput ConvertToNrrdAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertToNrrdAlgo::run(const AlgorithmInput& input) const
 {
 	auto input_field = input.get<Field>(Variables::InputField);
 

@@ -426,7 +426,7 @@ run(FieldHandle domainField,
   return (true);
 }
 
-AlgorithmOutput BuildFEGridMappingAlgo::run_generic(const AlgorithmInput &) const
+AlgorithmOutput BuildFEGridMappingAlgo::run(const AlgorithmInput &) const
 {
   throw "not implemented";
 }

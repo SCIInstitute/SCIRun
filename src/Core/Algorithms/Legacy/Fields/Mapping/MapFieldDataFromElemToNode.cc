@@ -229,7 +229,7 @@ MapFieldDataFromElemToNodeAlgo::MapFieldDataFromElemToNodeAlgo()
 
 AlgorithmParameterName MapFieldDataFromElemToNodeAlgo::Method("Method");
 
-AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
 

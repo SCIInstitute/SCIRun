@@ -313,7 +313,7 @@ std::vector<FieldHandle> SplitFieldByConnectedRegionAlgo::run(FieldHandle input)
 }
 
 
-AlgorithmOutput SplitFieldByConnectedRegionAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SplitFieldByConnectedRegionAlgo::run(const AlgorithmInput& input) const
 {
  AlgorithmOutput output;
  

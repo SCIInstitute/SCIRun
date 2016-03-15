@@ -462,7 +462,7 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
   return output;
 }
 
-AlgorithmOutput SetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetFieldDataAlgo::run(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
   auto input_matrix = input.get<DenseMatrix>(Variables::InputMatrix);

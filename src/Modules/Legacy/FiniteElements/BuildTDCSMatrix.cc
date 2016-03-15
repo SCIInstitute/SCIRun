@@ -64,7 +64,7 @@ void BuildTDCSMatrix::execute()
 
   if (needToExecute())
   {
-    auto output = algo().run_generic(withInputData((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Electrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
+    auto output = algo().run(withInputData((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Electrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
 
     sendOutputFromAlgorithm(TDCSMatrix,output);
   }

@@ -574,7 +574,7 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
   return (true);
 }
 
-AlgorithmOutput MapFieldDataFromSourceToDestinationAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MapFieldDataFromSourceToDestinationAlgo::run(const AlgorithmInput& input) const
 {
   auto source = input.get<Field>(Variables::Source);
   auto destination = input.get<Field>(Variables::Destination);

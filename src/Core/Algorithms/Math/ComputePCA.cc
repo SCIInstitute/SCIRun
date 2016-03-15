@@ -94,7 +94,7 @@ DenseMatrix ComputePCAAlgo::centerData(MatrixHandle input_matrix)
 }
 
 //Run the algorithm.
-AlgorithmOutput ComputePCAAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ComputePCAAlgo::run(const AlgorithmInput& input) const
 {
     auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
     

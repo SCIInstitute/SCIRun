@@ -79,7 +79,7 @@ class SCISHARE BuildFEGridMappingAlgo : public AlgorithmBase
       Datatypes::SparseRowMatrixHandle& CurrentGeomToGrid,
       Datatypes::SparseRowMatrixHandle& CurrentGridToGeom) const;
 
-		virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
+		virtual AlgorithmOutput run(const AlgorithmInput &) const;
 };
 
 }}}}

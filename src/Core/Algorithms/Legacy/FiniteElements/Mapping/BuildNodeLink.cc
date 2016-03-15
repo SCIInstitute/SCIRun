@@ -146,7 +146,7 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
   return (true);
 }
 
-AlgorithmOutput BuildNodeLinkAlgo::run_generic(const AlgorithmInput &) const
+AlgorithmOutput BuildNodeLinkAlgo::run(const AlgorithmInput &) const
 {
   throw "not implemented";
 }

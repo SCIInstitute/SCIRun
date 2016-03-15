@@ -111,7 +111,7 @@ ResampleRegularMesh::execute()
     setDimensionParameter("Y", Parameters::ResampleYDim, Parameters::ResampleYDimUseScalingFactor);
     setDimensionParameter("Z", Parameters::ResampleZDim, Parameters::ResampleZDimUseScalingFactor);
 
-    auto output = algo().run_generic(withInputData((InputField, input)));
+    auto output = algo().run(withInputData((InputField, input)));
 
     sendOutputFromAlgorithm(OutputField, output);
   }

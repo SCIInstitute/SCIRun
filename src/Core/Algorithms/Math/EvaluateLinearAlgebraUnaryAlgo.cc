@@ -139,7 +139,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   return result;
 }
 
-AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run(const AlgorithmInput& input) const
 {
   auto matrix = input.get<Matrix>(Variables::InputMatrix);
 

@@ -51,7 +51,7 @@ namespace Math {
     static AlgorithmParameterName rowEndSpinBox();
     Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle rows, Datatypes::DenseMatrixHandle columns) const; 
     SelectSubMatrixAlgorithm();
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
     Datatypes::MatrixHandle get_sub_matrix(Datatypes::MatrixHandle& input_matrix, Datatypes::DenseMatrixHandle rows, Datatypes::DenseMatrixHandle cols) const;
     Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix, std::vector<SCIRun::index_type> rows, std::vector<SCIRun::index_type> cols) const;
   };

@@ -49,7 +49,7 @@ namespace SCIRun {
           bool runImpl(FieldHandle input, NrrdDataHandle data, FieldHandle& output) const;
           bool verify_input_data(FieldHandle input_field, Datatypes::DenseMatrixHandle data, size_type& numvals, FieldInformation& fi) const;
 
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
         private:
           bool setscalardata(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
           bool setvectordata(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;

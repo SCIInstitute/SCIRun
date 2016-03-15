@@ -70,7 +70,7 @@ namespace SCIRun
     class SCISHARE MockAlgorithm : public SCIRun::Core::Algorithms::AlgorithmBase
     {
     public:
-      MOCK_CONST_METHOD1(run_generic, SCIRun::Core::Algorithms::AlgorithmOutput(const SCIRun::Core::Algorithms::AlgorithmInput&));
+      MOCK_CONST_METHOD1(run, SCIRun::Core::Algorithms::AlgorithmOutput(const SCIRun::Core::Algorithms::AlgorithmInput&));
       MOCK_CONST_METHOD1(keyNotFoundPolicy, bool(const SCIRun::Core::Algorithms::AlgorithmParameterName&));
       MOCK_METHOD2(set, bool(const SCIRun::Core::Algorithms::AlgorithmParameterName&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&));
       MOCK_CONST_METHOD1(get, const SCIRun::Core::Algorithms::AlgorithmParameter&(const SCIRun::Core::Algorithms::AlgorithmParameterName&));

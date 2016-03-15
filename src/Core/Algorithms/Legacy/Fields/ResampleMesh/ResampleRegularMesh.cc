@@ -474,7 +474,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   return (true);
 }                           
 
-AlgorithmOutput ResampleRegularMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ResampleRegularMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

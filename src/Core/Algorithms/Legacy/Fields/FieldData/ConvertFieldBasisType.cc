@@ -497,7 +497,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   return runImpl(input,output,dummy);
 }
 
-AlgorithmOutput ConvertFieldBasisTypeAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertFieldBasisTypeAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

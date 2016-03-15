@@ -59,7 +59,7 @@ GetMatrixSliceAlgo::GetMatrixSliceAlgo()
   addParameter(Parameters::PlayModeDelay, 0);
 }
 
-AlgorithmOutput GetMatrixSliceAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GetMatrixSliceAlgo::run(const AlgorithmInput& input) const
 {
   auto inputMatrix = input.get<Matrix>(Variables::InputMatrix);
   auto outputMatrix = runImpl(inputMatrix, get(Parameters::SliceIndex).toInt(), get(Parameters::IsSliceColumn).toBool());

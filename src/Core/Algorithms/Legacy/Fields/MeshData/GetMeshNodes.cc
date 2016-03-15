@@ -110,7 +110,7 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
 
 AlgorithmOutputName GetMeshNodesAlgo::MatrixNodes("MatrixNodes");
 
-AlgorithmOutput GetMeshNodesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GetMeshNodesAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
   DenseMatrixHandle nodes;

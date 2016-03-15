@@ -251,7 +251,7 @@ bool FairMeshAlgo::runImpl(FieldHandle input,FieldHandle& output) const
 const AlgorithmInputName FairMeshAlgo::Input_Mesh("Input_Mesh");
 const AlgorithmOutputName FairMeshAlgo::Faired_Mesh("Faired_Mesh");
 
-AlgorithmOutput FairMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput FairMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Input_Mesh);
 

@@ -113,7 +113,7 @@ void ExtractSimpleIsosurfaceModule::execute()
     std::transform(isoDoubles.begin(), isoDoubles.end(), std::back_inserter(isos), [](double x) { return makeVariable("iso", x); });
     algo().set(Parameters::Isovalues, isos);
 
-    auto output = algo().run_generic(withInputData((InputField, field)));
+    auto output = algo().run(withInputData((InputField, field)));
     sendOutputFromAlgorithm(OutputField, output);
   }
 }

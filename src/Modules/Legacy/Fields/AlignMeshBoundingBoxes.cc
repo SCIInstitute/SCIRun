@@ -53,7 +53,7 @@ void AlignMeshBoundingBoxes::execute()
   {
     update_state(Executing);
 
-    auto output = algo().run_generic(withInputData((InputField, ifield)(AlignmentField, objfield)));
+    auto output = algo().run(withInputData((InputField, ifield)(AlignmentField, objfield)));
 
     sendOutputFromAlgorithm(OutputField, output);
     sendOutputFromAlgorithm(TransformMatrix, output);

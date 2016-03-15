@@ -229,7 +229,7 @@ AlgorithmInputName ApplyMappingMatrixAlgo::Destination("Destination");
 AlgorithmInputName ApplyMappingMatrixAlgo::Mapping("Mapping");
 AlgorithmOutputName ApplyMappingMatrixAlgo::Output("Output");
 
-AlgorithmOutput ApplyMappingMatrixAlgo::run_generic(const AlgorithmInput & input) const
+AlgorithmOutput ApplyMappingMatrixAlgo::run(const AlgorithmInput & input) const
 {
   AlgorithmOutput output;
  

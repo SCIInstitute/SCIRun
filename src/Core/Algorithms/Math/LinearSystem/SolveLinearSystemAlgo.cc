@@ -1205,7 +1205,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   return true;
 }
 
-AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SolveLinearSystemAlgo::run(const AlgorithmInput& input) const
 {
   auto lhs = input.get<SparseRowMatrix>(Variables::LHS);
   auto rhs = input.get<DenseColumnMatrix>(Variables::RHS);

@@ -299,7 +299,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
   return output;
 }
 
-AlgorithmOutput InterfaceWithCleaverAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput InterfaceWithCleaverAlgorithm::run(const AlgorithmInput& input) const
 { 
   auto inputfields = input.getList<Field>(Variables::InputFields);
 

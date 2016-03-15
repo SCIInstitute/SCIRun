@@ -125,7 +125,7 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
   }
 }
 
-AlgorithmOutput ConvertMatrixTypeAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertMatrixTypeAlgorithm::run(const AlgorithmInput& input) const
 {
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
 

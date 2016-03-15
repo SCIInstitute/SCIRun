@@ -55,7 +55,7 @@ void ConvertMatrixToString::execute()
 {
 	auto input_matrix = getRequiredInput(InputMatrix);
 	
-	auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
+	auto output = algo().run(withInputData((InputMatrix,input_matrix)));
 	
 	sendOutputFromAlgorithm(ResultString, output);
 } 

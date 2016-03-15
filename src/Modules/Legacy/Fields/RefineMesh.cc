@@ -90,7 +90,7 @@ auto isovaluefield = getOptionalInput(IsoValueField);
 		#endif
 		remark("Mapping matrix port implementation is not enabled yet--please contact a developer");
 
-		auto output = algo().run_generic(withInputData((InputField, input)));
+		auto output = algo().run(withInputData((InputField, input)));
 		sendOutputFromAlgorithm(OutputField, output);
 
 		#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
