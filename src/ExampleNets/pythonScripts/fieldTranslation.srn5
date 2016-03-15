@@ -4,27 +4,79 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>4</count>
+			<count>10</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>CreateLatVol:0</first>
+				<first>CreateFieldData:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CreateFieldData</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>3</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>BasisString</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>BasisString</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>Linear</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = X+Y;</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateLatVol:0</first>
+				<second>
+					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>NewField</category_name_>
 						<module_name_>CreateLatVol</module_name_>
 					</module>
-					<state class_id="6" tracking_level="0" version="0">
-						<stateMap class_id="7" tracking_level="0" version="0">
+					<state>
+						<stateMap>
 							<count>6</count>
 							<item_version>0</item_version>
-							<item class_id="8" tracking_level="0" version="0">
-								<first class_id="9" tracking_level="0" version="0">
+							<item>
+								<first>
 									<name>DataAtLocation</name>
 								</first>
-								<second class_id="10" tracking_level="0" version="0">
+								<second>
 									<name>DataAtLocation</name>
-									<value class_id="11" tracking_level="0" version="0">
+									<value>
 										<which>0</which>
 										<value>0</value>
 									</value>
@@ -104,7 +156,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>13</count>
+							<count>15</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -115,6 +167,30 @@
 									<value>
 										<which>2</which>
 										<value>FieldInput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputField:1</name>
+								</first>
+								<second>
+									<name>InputField:1</name>
+									<value>
+										<which>2</which>
+										<value>fieldInput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputField:2</name>
+								</first>
+								<second>
+									<name>InputField:2</name>
+									<value>
+										<which>2</which>
+										<value>fieldInput3</value>
 									</value>
 								</second>
 							</item>
@@ -154,6 +230,11 @@
 f = FieldInput1
 print(f)
 fieldOutput1 = f
+f = fieldInput2
+fieldOutput2 = f
+f = fieldInput3
+fieldOutput3 = f
+
 </value>
 									</value>
 								</second>
@@ -271,6 +352,58 @@ fieldOutput1 = f
 				</second>
 			</item>
 			<item>
+				<first>ReadField:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>ReadField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Field File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScriptEnvironmentVariable</name>
+								</first>
+								<second>
+									<name>ScriptEnvironmentVariable</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ReportFieldInfo:0</first>
 				<second>
 					<module>
@@ -302,13 +435,113 @@ fieldOutput1 = f
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>ReportFieldInfo:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:4</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:5</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>3</count>
+			<count>10</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithPython:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>1</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:2</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CreateFieldData:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
@@ -342,14 +575,69 @@ fieldOutput1 = f
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>InterfaceWithPython:0</moduleId1_>
+				<port1_>
+					<name>PythonField2</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:3</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>InterfaceWithPython:0</moduleId1_>
+				<port1_>
+					<name>PythonField3</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:5</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadField:1</moduleId1_>
+				<port1_>
+					<name>Field</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithPython:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>2</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadField:1</moduleId1_>
+				<port1_>
+					<name>Field</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:4</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>4</count>
+		<count>10</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
-			<first>CreateLatVol:0</first>
+			<first>CreateFieldData:0</first>
 			<second class_id="17" tracking_level="0" version="0">
+				<first>-2.60000000000000000e+001</first>
+				<second>-3.27000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateLatVol:0</first>
+			<second>
 				<first>-3.67000000000000000e+002</first>
 				<second>-3.86000000000000000e+002</second>
 			</second>
@@ -359,6 +647,13 @@ fieldOutput1 = f
 			<second>
 				<first>-4.72000000000000000e+002</first>
 				<second>-2.71000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReadField:1</first>
+			<second>
+				<first>-7.15000000000000000e+002</first>
+				<second>-4.36000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
@@ -375,6 +670,34 @@ fieldOutput1 = f
 				<second>-7.40000000000000000e+001</second>
 			</second>
 		</item>
+		<item>
+			<first>ReportFieldInfo:2</first>
+			<second>
+				<first>-1.39000000000000000e+002</first>
+				<second>1.45000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:3</first>
+			<second>
+				<first>1.05000000000000000e+002</first>
+				<second>5.10000000000000000e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:4</first>
+			<second>
+				<first>-8.91000000000000000e+002</first>
+				<second>-2.69000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:5</first>
+			<second>
+				<first>-6.98000000000000000e+002</first>
+				<second>-1.06000000000000000e+002</second>
+			</second>
+		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
 		<count>0</count>
@@ -385,9 +708,13 @@ fieldOutput1 = f
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>4</count>
+		<count>10</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
+			<first>CreateFieldData:0</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>CreateLatVol:0</first>
 			<second>0</second>
 		</item>
@@ -396,11 +723,31 @@ fieldOutput1 = f
 			<second>0</second>
 		</item>
 		<item>
+			<first>ReadField:1</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>ReportFieldInfo:0</first>
 			<second>0</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:3</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:4</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:5</first>
 			<second>0</second>
 		</item>
 	</moduleTags>

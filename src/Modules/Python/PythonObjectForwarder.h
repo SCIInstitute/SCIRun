@@ -33,6 +33,8 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Python/PythonDatatypeConverter.h>
 #include <boost/thread.hpp>
 #include <Modules/Python/share.h>
 
@@ -61,7 +63,7 @@ namespace SCIRun
           }
 
           template <class StringPort, class MatrixPort, class FieldPort>
-          void waitForOutputFromTransientState(const std::string& transientKey, const StringPort& stringPort, const MatrixPort& matrixPort, const FieldPort&)
+          void waitForOutputFromTransientState(const std::string& transientKey, const StringPort& stringPort, const MatrixPort& matrixPort, const FieldPort& fieldPort)
           {
             int tries = 0;
             auto state = module_.get_state();
@@ -90,17 +92,23 @@ namespace SCIRun
                 else
                   module_.sendOutput(stringPort, boost::make_shared<Core::Datatypes::String>("Empty string or non-string received"));
               }
-              else if (var.name().name() == "dense matrix")
+              else if (var.name().name() == Core::Python::pyDenseMatrixLabel())
               {
                 auto dense = boost::dynamic_pointer_cast<Core::Datatypes::DenseMatrix>(var.getDatatype());
                 if (dense)
                   module_.sendOutput(matrixPort, dense);
               }
-              else if (var.name().name() == "sparse matrix")
+              else if (var.name().name() == Core::Python::pySparseRowMatrixLabel())
               {
                 auto sparse = boost::dynamic_pointer_cast<Core::Datatypes::SparseRowMatrix>(var.getDatatype());
                 if (sparse)
                   module_.sendOutput(matrixPort, sparse);
+              }
+              else if (var.name().name() == Core::Python::pyFieldLabel())
+              {
+                auto field = boost::dynamic_pointer_cast<Core::Datatypes::LegacyField>(var.getDatatype());
+                if (field)
+                  module_.sendOutput(fieldPort, field);
               }
             }
 

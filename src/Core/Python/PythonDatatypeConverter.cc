@@ -280,7 +280,11 @@ namespace
         if (twoDlistExtract.check())
         {
           std::vector<int> dims = { static_cast<int>(len(list)), static_cast<int>(len(list[0])) };
+          auto vectorOfLists = to_std_vector<boost::python::list>(list);
+          std::vector<std::vector<double>> vv;
+          std::transform(vectorOfLists.begin(), vectorOfLists.end(), std::back_inserter(vv), [](const boost::python::list& inner) { return to_std_vector<double>(inner); });
           std::vector<double> flattenedValues(dims[0] * dims[1]);  //TODO: fill from py list-of-lists
+          flatten(vv.begin(), vv.end(), flattenedValues.begin());
           value.createdoublematrix(flattenedValues, dims);
         }
         else // 1-D list
@@ -384,15 +388,38 @@ Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python
   //    return makeDatatypeVariable(e);
   //  }
   //}
-  //{
-  //  detail::FieldExtractor e(object);
-  //  if (e.check())
-  //  {
-  //    return makeDatatypeVariable(e);
-  //  }
-  //}
+  {
+    FieldExtractor e(object);
+    if (e.check())
+    {
+      return makeDatatypeVariable(e);
+    }
+  }
   std::cerr << "No known conversion from python object to C++ object" << std::endl;
   return Variable();
+}
+
+template <class Extractor>
+std::string getLabel()
+{
+  boost::python::object empty;
+  Extractor dmc(empty);
+  return dmc.label();
+}
+
+std::string Core::Python::pyDenseMatrixLabel()
+{
+  return getLabel<DenseMatrixExtractor>();
+}
+
+std::string Core::Python::pySparseRowMatrixLabel()
+{
+  return getLabel<SparseRowMatrixExtractor>();
+}
+
+std::string Core::Python::pyFieldLabel()
+{
+  return getLabel<FieldExtractor>();
 }
 
 #endif
