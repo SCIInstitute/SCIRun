@@ -42,7 +42,7 @@ class CreateStandardColorMapModuleTest : public ModuleTest
 {
 };
 
-TEST_F(CreateStandardColorMapModuleTest, ThrowsForUnknownColorMapName)
+TEST_F(CreateStandardColorMapModuleTest, ReturnsRainbowForUnknownColorMapName)
 {
   UseRealModuleStateFactory f;
 
@@ -50,7 +50,8 @@ TEST_F(CreateStandardColorMapModuleTest, ThrowsForUnknownColorMapName)
 
   cbc->get_state()->setValue(Parameters::ColorMapName, std::string("null"));
 
-  EXPECT_THROW(cbc->execute(), InvalidArgumentException);
+  EXPECT_NO_THROW(cbc->execute());
+  //TODO: test output
 }
 
 TEST_F(CreateStandardColorMapModuleTest, CanCreateFromFixedSetOfColormaps)
