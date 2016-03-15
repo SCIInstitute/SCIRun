@@ -727,9 +727,9 @@ void matlabconverter::sciMatrixTOmlMatrix(MatrixHandle scimat, matlabarray &mlma
   // SCIRun matrices are always (up till now) doubles
   if (dataformat == matlabarray::miSAMEASDATA) dataformat = matlabarray::miDOUBLE;
         
-  if (matrix_is::dense(scimat))
+  if (matrixIs::dense(scimat))
   {
-    DenseMatrix tmatrix = matrix_cast::as_dense(scimat)->transpose();
+    DenseMatrix tmatrix = castMatrix::toDense(scimat)->transpose();
               
     std::vector<int> dims(2);
     dims[1] = tmatrix.nrows();
@@ -737,18 +737,18 @@ void matlabconverter::sciMatrixTOmlMatrix(MatrixHandle scimat, matlabarray &mlma
     mlmat.createdensearray(dims,dataformat);
     mlmat.setnumericarray(tmatrix.data(),mlmat.getnumelements());
   }
-  else if (matrix_is::column(scimat))
+  else if (matrixIs::column(scimat))
   {
     std::vector<int> dims(2);
-    DenseColumnMatrixHandle cmatrix = matrix_cast::as_column(scimat);
+    DenseColumnMatrixHandle cmatrix = castMatrix::toColumn(scimat);
     dims[0] = cmatrix->nrows();
     dims[1] = cmatrix->ncols();
     mlmat.createdensearray(dims,dataformat);
     mlmat.setnumericarray(cmatrix->data(),mlmat.getnumelements());
   }
-  else if (matrix_is::sparse(scimat))
+  else if (matrixIs::sparse(scimat))
   {
-    SparseRowMatrix tmatrix = matrix_cast::as_sparse(scimat)->transpose();
+    SparseRowMatrix tmatrix = castMatrix::toSparse(scimat)->transpose();
               
     std::vector<int> dims(2);
     dims[1] = tmatrix.nrows();

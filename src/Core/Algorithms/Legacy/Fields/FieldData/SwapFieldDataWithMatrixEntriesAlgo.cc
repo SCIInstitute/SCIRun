@@ -87,7 +87,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandl
       set_algo_.setOption(Parameters::keepTypeCheckBox, fi.get_data_type());
     }
     size_type numVal;
-    auto denseInput = matrix_convert::to_dense(input_matrix);
+    auto denseInput = convertMatrix::toDense(input_matrix);
     if (set_algo_.verify_input_data(input_field, denseInput, numVal, fi))
     {
       output_field = set_algo_.run(input_field, denseInput);

@@ -76,7 +76,7 @@ TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
   auto filename = TestResources::rootDir() / "Matrices" / "matrix1.txt";
   if (boost::filesystem::exists(filename))
   {
-    DenseMatrixConstHandle matrix = matrix_cast::as_dense(algo.run(filename.string()));
+    DenseMatrixConstHandle matrix = castMatrix::toDense(algo.run(filename.string()));
     ASSERT_TRUE(matrix.get() != nullptr);
     EXPECT_EQ(matrix1(), *matrix);
   }
@@ -99,16 +99,16 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
   {
     auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix.get() != nullptr);
-    ASSERT_TRUE(matrix_is::sparse(matrix));
+    ASSERT_TRUE(matrixIs::sparse(matrix));
 
-    auto sp = matrix_cast::as_sparse(matrix);
+    auto sp = castMatrix::toSparse(matrix);
 
     DenseMatrix a(3, 4);
     a << 1, 0, 0, -1,
       0, 2, 0, 0,
       0, 0, 3, 0;
 
-    EXPECT_EQ(a, *matrix_convert::to_dense(matrix));
+    EXPECT_EQ(a, *convertMatrix::toDense(matrix));
 #if !DEBUG
     EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
 #endif
@@ -125,9 +125,9 @@ TEST(ReadMatrixAlgorithmTest, TestDenseFromRealASCIIMatFile)
   {
     auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix.get() != nullptr);
-    ASSERT_TRUE(matrix_is::dense(matrix));
+    ASSERT_TRUE(matrixIs::dense(matrix));
 
-    auto dense = matrix_cast::as_dense(matrix);
+    auto dense = castMatrix::toDense(matrix);
     double* ptr = dense->data();
     size_t size = dense->get_dense_size();
 
@@ -149,9 +149,9 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealASCIIMatFile)
   {
     auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix.get() != nullptr);
-    ASSERT_TRUE(matrix_is::column(matrix));
+    ASSERT_TRUE(matrixIs::column(matrix));
 
-    auto col = matrix_cast::as_column(matrix);
+    auto col = castMatrix::toColumn(matrix);
     EXPECT_EQ(1, col->cols());
     EXPECT_EQ(5, col->rows());
     EXPECT_NEAR(-4, col->minCoeff(), 1e-12);
@@ -170,9 +170,9 @@ TEST(ReadMatrixAlgorithmTest, DISABLED_TestLargeSparseFromRealASCIIMatFile)
   {
     auto matrix = algo.run(AFile.string());
     ASSERT_TRUE(matrix.get() != nullptr);
-    ASSERT_TRUE(matrix_is::sparse(matrix));
+    ASSERT_TRUE(matrixIs::sparse(matrix));
 
-    auto sp = matrix_cast::as_sparse(matrix);
+    auto sp = castMatrix::toSparse(matrix);
 
     EXPECT_EQ(428931, sp->rows());
     EXPECT_EQ(428931, sp->cols());
@@ -228,13 +228,13 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealBinaryMatFile)
   {
     auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix.get() != nullptr);
-    ASSERT_TRUE(matrix_is::sparse(matrix));
+    ASSERT_TRUE(matrixIs::sparse(matrix));
 
-    auto sp = matrix_cast::as_sparse(matrix);
+    auto sp = castMatrix::toSparse(matrix);
 
     DenseMatrix a = DenseMatrix::Identity(3,3);
 
-    EXPECT_EQ(a, *matrix_convert::to_dense(matrix));
+    EXPECT_EQ(a, *convertMatrix::toDense(matrix));
 #if !DEBUG
     EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
 #endif
@@ -251,9 +251,9 @@ TEST(ReadMatrixAlgorithmTest, TestDenseFromRealBinaryMatFile)
   {
     auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix.get() != nullptr);
-    ASSERT_TRUE(matrix_is::dense(matrix));
+    ASSERT_TRUE(matrixIs::dense(matrix));
 
-    auto dense = matrix_cast::as_dense(matrix);
+    auto dense = castMatrix::toDense(matrix);
 
     DenseMatrix a = DenseMatrix::Identity(3,3);
 
@@ -271,9 +271,9 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile)
   {
     auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix.get() != nullptr);
-    ASSERT_TRUE(matrix_is::dense(matrix)); // artifact of v4 IO
+    ASSERT_TRUE(matrixIs::dense(matrix)); // artifact of v4 IO
 
-    auto col = matrix_convert::to_column(matrix);
+    auto col = convertMatrix::toColumn(matrix);
     DenseColumnMatrix expected(3);
     expected << 1, 2, 3;
     EXPECT_EQ(to_string(*col), to_string(expected));
@@ -290,9 +290,9 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile2)
   {
     auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix.get() != nullptr);
-    ASSERT_TRUE(matrix_is::column(matrix));
+    ASSERT_TRUE(matrixIs::column(matrix));
 
-    auto col = matrix_cast::as_column(matrix);
+    auto col = castMatrix::toColumn(matrix);
     DenseColumnMatrix expected(5);
     expected << 0, 1, 2, 3, 4;
     EXPECT_EQ(to_string(*col), to_string(expected));
@@ -320,7 +320,7 @@ void CallLegacyPio(const boost::filesystem::path& filename, const DenseMatrix& e
 
     std::cout << *matrix << std::endl;
 
-    EXPECT_EQ(expected, *matrix_convert::to_dense(matrix));
+    EXPECT_EQ(expected, *convertMatrix::toDense(matrix));
 #if !DEBUG
     EXPECT_EQ(to_string(expected), to_string(*matrix));
 #endif

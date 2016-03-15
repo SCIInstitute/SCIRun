@@ -41,24 +41,23 @@ namespace Datatypes {
 
   /// No conversion is done.
   /// NULL is returned if the matrix is not of the appropriate type.
-  class SCISHARE matrix_cast
+  class SCISHARE castMatrix
   {
   public:
     template <class ToType>
-    static boost::shared_ptr<ToType> to(const MatrixHandle& matrix, typename boost::enable_if<boost::is_base_of<MatrixBase<typename ToType::value_type>, ToType> >::type* = 0)
+    static boost::shared_ptr<ToType> to(const MatrixHandle& matrix, typename boost::enable_if<boost::is_base_of<MatrixBase<typename ToType::value_type>, ToType> >::type* = nullptr)
     {
       return boost::dynamic_pointer_cast<ToType>(matrix);
     }
 
-    static DenseMatrixHandle as_dense(const MatrixHandle& mh);
-    static SparseRowMatrixHandle as_sparse(const MatrixHandle& mh);
-    static DenseColumnMatrixHandle as_column(const MatrixHandle& mh);
+    static DenseMatrixHandle toDense(const MatrixHandle& mh);
+    static SparseRowMatrixHandle toSparse(const MatrixHandle& mh);
+    static DenseColumnMatrixHandle toColumn(const MatrixHandle& mh);
 
-  private:
-    matrix_cast();
+    castMatrix() = delete;
   };
 
-  class SCISHARE matrix_is
+  class SCISHARE matrixIs
   {
   public:
     // Test to see if the matrix is this subtype.
@@ -67,20 +66,21 @@ namespace Datatypes {
     static bool column(const MatrixHandle& mh);
     static std::string whatType(const MatrixHandle& mh);
     static MatrixTypeCode typeCode(const MatrixHandle& mh);
-  private:
-    matrix_is();
+    
+    matrixIs() = delete;
   };
  
   /// @todo: move
-  class SCISHARE matrix_convert
+  class SCISHARE convertMatrix
   {
   public:
-    static DenseColumnMatrixHandle to_column(const MatrixHandle& mh);
-    static DenseMatrixHandle to_dense(const MatrixHandle& mh);
-    static SparseRowMatrixHandle to_sparse(const MatrixHandle& mh);
-    static SparseRowMatrixHandle denseToSparse(const DenseMatrix& mh);
+    static DenseColumnMatrixHandle toColumn(const MatrixHandle& mh);
+    static DenseMatrixHandle toDense(const MatrixHandle& mh);
+    static SparseRowMatrixHandle toSparse(const MatrixHandle& mh);
+    static SparseRowMatrixHandle fromDenseToSparse(const DenseMatrix& mh);
+
+    convertMatrix() = delete;
   private:
-    matrix_convert();
     static const double zero_threshold;  /// defines a threshold below that its a zero matrix element (sparsematrix)
   };
 

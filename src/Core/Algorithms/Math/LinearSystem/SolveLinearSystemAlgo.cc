@@ -1091,7 +1091,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   ENSURE_POSITIVE_DOUBLE(tolerance, "Tolerance out of range!");
   ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
-  if (!matrix_is::sparse(A))
+  if (!matrixIs::sparse(A))
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix A is not sparse");
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -1104,7 +1104,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 #endif
   }
 
-  if (!matrix_is::dense(b) && !matrix_is::column(b))
+  if (!matrixIs::dense(b) && !matrixIs::column(b))
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix b is not a dense or column matrix");
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -1125,7 +1125,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     x0 = temp;
   }
 
-  if (!matrix_is::dense(x0) && !matrix_is::column(x0))
+  if (!matrixIs::dense(x0) && !matrixIs::column(x0))
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix x0 is not a dense or column matrix");
   }

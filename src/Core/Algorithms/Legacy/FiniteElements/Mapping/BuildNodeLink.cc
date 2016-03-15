@@ -61,7 +61,7 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
     return (false);
   }
 
-  DenseColumnMatrixHandle nodeDomainCol = matrix_convert::to_column(nodeDomain);
+  DenseColumnMatrixHandle nodeDomainCol = convertMatrix::toColumn(nodeDomain);
 
   size_type num_values = nodeDomainCol->nrows();
 

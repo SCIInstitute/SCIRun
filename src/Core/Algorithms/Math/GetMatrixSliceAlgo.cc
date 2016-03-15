@@ -80,12 +80,12 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
     auto max = matrix->ncols() - 1;
 
     // dense case only now
-    auto dense = matrix_cast::as_dense(matrix);
+    auto dense = castMatrix::toDense(matrix);
     if (dense)
       return boost::make_tuple(boost::make_shared<DenseMatrix>(dense->col(index)), max);
     else
     {
-      auto sparse = matrix_cast::as_sparse(matrix);
+      auto sparse = castMatrix::toSparse(matrix);
       if (sparse)
       {
         //TODO: makes a copy of the transpose. Not good. Should test out manually copying elements, trade speed for memory.
@@ -99,12 +99,12 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
     checkIndex(index, matrix->nrows());
     auto max = matrix->nrows() - 1;
 
-    auto dense = matrix_cast::as_dense(matrix);
+    auto dense = castMatrix::toDense(matrix);
     if (dense)
       return boost::make_tuple(boost::make_shared<DenseMatrix>(dense->row(index)), max);
     else
     {
-      auto sparse = matrix_cast::as_sparse(matrix);
+      auto sparse = castMatrix::toSparse(matrix);
       if (sparse)
         return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->row(index)), max);
       return boost::make_tuple(nullptr, 0);

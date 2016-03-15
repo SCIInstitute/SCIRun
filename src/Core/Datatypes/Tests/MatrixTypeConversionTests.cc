@@ -111,7 +111,7 @@ TEST(MatrixTypeConversionTests, denseTocolumn)
 {
    DenseMatrixHandle from(CreateDenseMatrix());
     
-   DenseColumnMatrixHandle result =  matrix_convert::to_column(from);
+   DenseColumnMatrixHandle result =  convertMatrix::toColumn(from);
    
    EXPECT_EQ(from->ncols(), result->ncols());
    EXPECT_EQ(from->nrows(), result->nrows());
@@ -126,7 +126,7 @@ TEST(MatrixTypeConversionTests, denseTocolumn2)
 {
    DenseMatrixHandle from(CreateDenseMatrix_2());
     
-   DenseColumnMatrixHandle result =  matrix_convert::to_column(from);
+   DenseColumnMatrixHandle result =  convertMatrix::toColumn(from);
    
    DenseColumnMatrixHandle expected_result(CreateColumnMatrix_2());
    
@@ -143,7 +143,7 @@ TEST(MatrixTypeConversionTests, denseTosparse)
 {
    DenseMatrixHandle from(CreateDenseMatrix_2());
     
-   SparseRowMatrixHandle result =  matrix_convert::to_sparse(from);
+   SparseRowMatrixHandle result =  convertMatrix::toSparse(from);
    
    if (!result)
    {
@@ -165,7 +165,7 @@ TEST(MatrixTypeConversionTests, colvectorTosparse)
 {  
   DenseColumnMatrixHandle from(CreateColumnMatrix());
 
-  SparseRowMatrixHandle result =  matrix_convert::to_sparse(from);
+  SparseRowMatrixHandle result =  convertMatrix::toSparse(from);
   
   if (!result)
    {
@@ -191,7 +191,7 @@ TEST(MatrixTypeConversionTests, sparseTocol)
 {  
   SparseRowMatrixHandle from = CreateSparseMatrix(); 
   
-  DenseColumnMatrixHandle result =  matrix_convert::to_column(from);
+  DenseColumnMatrixHandle result =  convertMatrix::toColumn(from);
   
   if (!result)
   {
@@ -213,7 +213,7 @@ TEST(MatrixTypeConversionTests, sparseTodense)
 {  
   SparseRowMatrixHandle from = CreateSparseMatrix(); 
   
-  DenseMatrixHandle result =  matrix_convert::to_dense(from);
+  DenseMatrixHandle result =  convertMatrix::toDense(from);
   
   if (!result)
   {
@@ -236,7 +236,7 @@ TEST(MatrixTypeConversionTests, colTodense)
 {
  DenseColumnMatrixHandle from(CreateColumnMatrix()); 
  
- DenseMatrixHandle result =  matrix_convert::to_dense(from);
+ DenseMatrixHandle result =  convertMatrix::toDense(from);
 
  if (!result)
  {

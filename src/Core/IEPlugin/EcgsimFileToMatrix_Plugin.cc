@@ -220,7 +220,7 @@ bool SCIRun::EcgsimFileMatrix_writer(LoggerHandle pr, MatrixHandle matrixInput, 
   std::ofstream outputfile;
   outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
 
-  DenseMatrixHandle matrix = matrix_cast::as_dense(matrixInput);
+  DenseMatrixHandle matrix = castMatrix::toDense(matrixInput);
   
   if (!matrix)
   {

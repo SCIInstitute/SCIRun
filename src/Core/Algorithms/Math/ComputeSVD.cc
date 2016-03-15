@@ -46,9 +46,9 @@ void ComputeSVDAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftSingMat, Den
         
     THROW_ALGORITHM_INPUT_ERROR("Input has a zero dimension.");
 }
-  if (matrix_is::dense(input))
+  if (matrixIs::dense(input))
   {
-    auto denseInput = matrix_cast::as_dense(input);
+    auto denseInput = castMatrix::toDense(input);
 
     Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(*denseInput, Eigen::ComputeFullU | Eigen::ComputeFullV);
 

@@ -89,13 +89,13 @@ SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs
 
   SolveLinearSystemAlgorithmEigenCGImpl impl(*b, tolerance, maxIterations);
   DenseColumnMatrix x;
-  if (matrix_is::dense(A))
+  if (matrixIs::dense(A))
   {
-    x = impl.solveWithEigen(*matrix_cast::as_dense(A));
+    x = impl.solveWithEigen(*castMatrix::toDense(A));
   }
-  else if (matrix_is::sparse(A))
+  else if (matrixIs::sparse(A))
   {
-    x = impl.solveWithEigen(*matrix_cast::as_sparse(A));
+    x = impl.solveWithEigen(*castMatrix::toSparse(A));
   }
   else
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen can only handle dense and sparse matrices."));

@@ -69,12 +69,12 @@ void SolveLinearSystemModule::execute()
     /// @todo: why aren't these checks in the algo class?
     if (rhs->ncols() != 1)
       THROW_ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");
-    if (!matrix_is::sparse(A))
+    if (!matrixIs::sparse(A))
       THROW_ALGORITHM_INPUT_ERROR("Left-hand side matrix to solve must be sparse.");
 
-    auto rhsCol = matrix_cast::as_column(rhs);
+    auto rhsCol = castMatrix::toColumn(rhs);
     if (!rhsCol)
-      rhsCol = matrix_convert::to_column(rhs);
+      rhsCol = convertMatrix::toColumn(rhs);
 
     auto tolerance = get_state()->getValue(Variables::TargetError).toDouble();
     auto maxIterations = get_state()->getValue(Variables::MaxIterations).toInt();

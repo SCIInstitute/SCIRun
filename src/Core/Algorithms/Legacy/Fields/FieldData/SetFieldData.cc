@@ -736,7 +736,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
 
   /// Convert the matrix to a dense matrix if it is not
   MatrixHandle densematrix;
-  if (!(matrix_is::dense(data)) && !(matrix_is::column(data)))
+  if (!(matrixIs::dense(data)) && !(matrixIs::column(data)))
   {
     /// store data in a new handle so it deallocates automatically
     densematrix = data->dense();

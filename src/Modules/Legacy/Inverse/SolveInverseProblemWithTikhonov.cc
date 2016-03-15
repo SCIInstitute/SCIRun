@@ -90,10 +90,10 @@ void SolveInverseProblemWithTikhonov::execute()
     auto gui_tikhonov_solution_subcase = static_cast<TikhonovAlgorithmImpl::AlgorithmSolutionSubcase>(state->getValue(Parameters::TikhonovSolutionSubcase).toInt());
     auto gui_tikhonov_residual_subcase = static_cast<TikhonovAlgorithmImpl::AlgorithmResidualSubcase>(state->getValue(Parameters::TikhonovResidualSubcase).toInt());
     
-    auto denseForward = matrix_cast::as_dense(forward_matrix_h);
-    auto measuredDense = matrix_convert::to_dense(hMatrixMeasDat);
-    auto regMatDense = matrix_cast::as_dense(hMatrixRegMat.get_value_or(nullptr));
-    auto noiseCovDense = matrix_cast::as_dense(hMatrixNoiseCov.get_value_or(nullptr));
+    auto denseForward = castMatrix::toDense(forward_matrix_h);
+    auto measuredDense = convertMatrix::toDense(hMatrixMeasDat);
+    auto regMatDense = castMatrix::toDense(hMatrixRegMat.get_value_or(nullptr));
+    auto noiseCovDense = castMatrix::toDense(hMatrixNoiseCov.get_value_or(nullptr));
     TikhonovAlgorithmImpl algo(denseForward,
       measuredDense,
       gui_tikhonov_case,
