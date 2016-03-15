@@ -633,7 +633,7 @@
               </font>
              </property>
              <property name="text">
-              <string>0.00</string>
+              <string>  0.00</string>
              </property>
             </widget>
            </item>
@@ -652,7 +652,7 @@
               </font>
              </property>
              <property name="text">
-              <string>0.00</string>
+              <string>  0.00</string>
              </property>
             </widget>
            </item>
@@ -671,7 +671,7 @@
               </font>
              </property>
              <property name="text">
-              <string>0.00</string>
+              <string>  0.00</string>
              </property>
             </widget>
            </item>
@@ -684,7 +684,7 @@
               </font>
              </property>
              <property name="text">
-              <string>0.00</string>
+              <string>  0.00</string>
              </property>
             </widget>
            </item>

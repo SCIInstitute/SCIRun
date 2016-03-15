@@ -209,7 +209,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   std::vector<Vector> txt_coords;
   double increment = 1. / static_cast<double>(numlabel - 1);
   //double textSize = 5. * static_cast<double>(txtsize + 3);
-  double textSize = 5. * static_cast<double>(txtsize);
+  double textSize = 3. * static_cast<double>(txtsize);
   double dash_size = 18.;
   double pipe_size = 18.;
   size_t text_size = size_t(textSize);
