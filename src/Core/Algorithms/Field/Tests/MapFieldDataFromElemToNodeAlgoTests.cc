@@ -32,7 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromElemToNode.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -111,7 +111,6 @@ using namespace SCIRun::TestUtils;
 
 TEST(MapFieldDataFromElemToNode, TetMeshTestInterpolateWithFile)
 {
-
  MapFieldDataFromElemToNodeAlgo algo;
 
  FieldHandle  result = algo.runImpl(TetMesh1());
