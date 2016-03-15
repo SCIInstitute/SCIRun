@@ -117,7 +117,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
 
  FieldHandle input=CreateTetMesh2();
 
- FieldHandle result = algo.run(input);
+ FieldHandle result = algo.runImpl(input);
 
  DenseMatrixHandle expected=test_MapFieldDataFromNodeToElemFLD_IntAvr();
 
@@ -134,7 +134,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
 
  FieldHandle input2=CreateTetMesh2();
 
- FieldHandle result2 = algo.run(input);
+ FieldHandle result2 = algo.runImpl(input);
 
  ASSERT_TRUE(result2->vfield()->num_values() == 6);
 
@@ -159,7 +159,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestDataAlreadyOnElems)
  FieldHandle result;
  try
  {
-  result = algo.run(input);
+  result = algo.runImpl(input);
  } catch (...) {}
 
 }
@@ -173,7 +173,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMin)
 
  FieldHandle input=CreateTetMesh2();
 
- FieldHandle result = algo.run(input);
+ FieldHandle result = algo.runImpl(input);
 
  DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Min();
 
@@ -198,7 +198,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMax)
 
  FieldHandle input=CreateTetMesh2();
 
- FieldHandle result = algo.run(input);
+ FieldHandle result = algo.runImpl(input);
 
  DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Max();
 
@@ -223,7 +223,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestSum)
 
  FieldHandle input=CreateTetMesh2();
 
- FieldHandle result = algo.run(input);
+ FieldHandle result = algo.runImpl(input);
 
  DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Sum();
 
@@ -248,7 +248,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMedian)
 
  FieldHandle input=CreateTetMesh2();
 
- FieldHandle result = algo.run(input);
+ FieldHandle result = algo.runImpl(input);
 
  DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Med();
 
@@ -275,7 +275,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestNone)
  FieldHandle result;
  try
  {
-  result = algo.run(input);
+  result = algo.runImpl(input);
  } catch (...) {}
 
  if(result)

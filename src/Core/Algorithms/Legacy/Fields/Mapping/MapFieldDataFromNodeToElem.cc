@@ -229,7 +229,7 @@ AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run(const AlgorithmInput& input)
   auto input_field = input.get<Field>(Variables::InputField);
 
   FieldHandle output_field;
-  output_field = run(input_field);
+  output_field = runImpl(input_field);
 
   AlgorithmOutput output;
   output[Variables::OutputField] = output_field;
@@ -237,7 +237,7 @@ AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run(const AlgorithmInput& input)
   return output;
 }
 
-FieldHandle MapFieldDataFromNodeToElemAlgo::run(FieldHandle input_field) const
+FieldHandle MapFieldDataFromNodeToElemAlgo::runImpl(FieldHandle input_field) const
 {
   FieldHandle output;
 
