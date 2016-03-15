@@ -46,12 +46,6 @@
 #include <sci_defs/error_defs.h>
 #include <Core/Exceptions/share.h>
 
-#ifdef WIN32 
-#define NOEXCEPT
-#else
-#define NOEXCEPT noexcept(true)
-#endif
-
 namespace SCIRun {
   class SCISHARE Exception : public std::exception
   {
@@ -64,7 +58,7 @@ namespace SCIRun {
       return stacktrace_;
     }
 
-    const char* what() const throw()
+    const char* what() const NOEXCEPT
     {
       return message();
     }

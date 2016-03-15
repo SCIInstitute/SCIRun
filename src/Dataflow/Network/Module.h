@@ -90,7 +90,7 @@ namespace Networks {
     virtual std::vector<OutputPortHandle> outputPorts() const;
 
     /// @todo: execute signal here.
-    virtual bool do_execute() throw(); //--C++11--will throw nothing
+    virtual bool do_execute() NOEXCEPT; //--C++11--will throw nothing
     virtual ModuleStateHandle get_state();
     virtual const ModuleStateHandle get_state() const;
     virtual void set_state(ModuleStateHandle state);

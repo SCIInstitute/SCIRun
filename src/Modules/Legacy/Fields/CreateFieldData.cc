@@ -61,7 +61,6 @@ void CreateFieldData::setStateDefaults()
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     virtual void presave();
-    virtual void tcl_command(GuiArgs&, void*);
 
   private:
     GuiString guifunction_;     // function code

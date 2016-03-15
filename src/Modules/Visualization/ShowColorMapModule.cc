@@ -51,7 +51,7 @@ void ShowColorMapModule::setStateDefaults()
   auto state = get_state();
   state->setValue(DisplaySide, 0);
   state->setValue(DisplayLength, 0);
-  state->setValue(TextSize, 2);
+  state->setValue(TextSize, 8);
   state->setValue(TextRed, 1.);
   state->setValue(TextGreen, 1.);
   state->setValue(TextBlue, 1.);
@@ -199,10 +199,11 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   //text
   char str2[128];
   std::stringstream sd;
-  sd << "%." << sigdig << "f";
+  sd << "%." << sigdig << "g";
   std::vector<Vector> txt_coords;
   double increment = 1. / static_cast<double>(numlabel - 1);
-  double textSize = 5. * static_cast<double>(txtsize + 3);
+  //double textSize = 5. * static_cast<double>(txtsize + 3);
+  double textSize = 5. * static_cast<double>(txtsize);
   double dash_size = 18.;
   double pipe_size = 18.;
   size_t text_size = size_t(textSize);

@@ -71,7 +71,7 @@ void ViewScene::setStateDefaults()
   state->setValue(Specular, 0.4);
   state->setValue(Shine, 1.0);
   state->setValue(Emission, 1.0);
-  state->setValue(FogOn, true);
+  state->setValue(FogOn, false);
   state->setValue(ObjectsOnly, true);
   state->setValue(UseBGColor, true);
   state->setValue(FogStart, 0.0);

@@ -36,6 +36,12 @@
 #include <boost/numeric/interval.hpp>
 #include <Core/Utils/share.h>
 
+#ifdef WIN32 
+#define NOEXCEPT _NOEXCEPT
+#else
+#define NOEXCEPT noexcept(true)
+#endif
+
 namespace SCIRun 
 {
 namespace Core
@@ -45,7 +51,7 @@ namespace Core
 
   struct SCISHARE ExceptionBase : virtual std::exception, virtual boost::exception
   {
-    virtual const char* what() const throw();
+    virtual const char* what() const NOEXCEPT;
     std::string typeName() const;
   };
 
@@ -77,7 +83,7 @@ namespace Core
   /// @todo move these exceptions to new exception header file once it exists
   struct SCISHARE DimensionMismatch : virtual ExceptionBase
   {
-    virtual const char* what() const throw() override;
+    virtual const char* what() const NOEXCEPT override;
   };
 
   /// @todo should not need this in production code.

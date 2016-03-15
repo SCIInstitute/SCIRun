@@ -42,6 +42,7 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Utils/Legacy/Environment.h>
 #include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
@@ -95,8 +96,10 @@ GenericReader<HType, PortTag>::GenericReader(const std::string &name,
 template <class HType, class PortTag>
 void GenericReader<HType, PortTag>::setStateDefaults()
 {
-  get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, std::string());
-  get_state()->setValue(SCIRun::Core::Algorithms::Variables::FileTypeName, defaultFileTypeName());
+  auto state = get_state();
+  state->setValue(SCIRun::Core::Algorithms::Variables::Filename, std::string());
+  state->setValue(SCIRun::Core::Algorithms::Variables::FileTypeName, defaultFileTypeName());
+  state->setValue(SCIRun::Core::Algorithms::Variables::ScriptEnvironmentVariable, std::string());
 }
 
 template <class HType, class PortTag> 
@@ -115,30 +118,32 @@ template <class HType, class PortTag>
 void
 GenericReader<HType, PortTag>::execute()
 {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  bool filename_changed = gui_filename_.changed();
-  
-  if (gui_from_env_.get() != "")
+  auto state = get_state();
+  auto environmentVariable = state->getValue(Core::Algorithms::Variables::ScriptEnvironmentVariable).toString();
+  if (!environmentVariable.empty())
   {
-    std::string filename_from_env = gui_from_env_.get(); 
-    if (sci_getenv(filename_from_env))
+    if (sci_getenv(environmentVariable))
     {
-      std::string envfilename = sci_getenv(filename_from_env);
-      gui_filename_.set(envfilename);
-      get_ctx()->reset();
-      filename_changed = true;
+      std::string envfilename(sci_getenv(environmentVariable));
+      state->setValue(SCIRun::Core::Algorithms::Variables::Filename, envfilename);
+    }
+    else
+    {
+      warning("No filename found under environment variable " + environmentVariable + ", resetting current filename.");
+      state->setValue(SCIRun::Core::Algorithms::Variables::Filename, std::string());
     }
   }
-#endif
-
-  // If there is an optional input string set the filename to it in the GUI.
-  /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
-  auto fileOption = getOptionalInput(Filename);
-  if (fileOption && *fileOption)
+  else
   {
-    get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
+    // If there is an optional input string set the filename to it in the GUI.
+    /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
+    auto fileOption = getOptionalInput(Filename);
+    if (fileOption && *fileOption)
+    {
+      state->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
+    }
   }
-  filename_ = get_state()->getValue(SCIRun::Core::Algorithms::Variables::Filename).toFilename().string();
+  filename_ = state->getValue(SCIRun::Core::Algorithms::Variables::Filename).toFilename().string();
 
   
   // Read the status of this file so we can compare modification timestamps

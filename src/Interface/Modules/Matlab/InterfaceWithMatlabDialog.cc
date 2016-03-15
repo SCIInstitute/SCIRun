@@ -1,3 +1,4 @@
+#if 0
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -204,3 +205,4 @@ void InterfaceWithMatlabDialog::pushTable(int row, int col)
     pushOutsides();
     */
 }
+#endif

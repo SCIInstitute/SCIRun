@@ -73,7 +73,7 @@ namespace
 
 Variable::Variable(const Name& name, const Value& value) : name_(name)
 {
-  setValue(value);
+  Variable::setValue(value);
 }
 
 void Variable::setValue(const Value& val)

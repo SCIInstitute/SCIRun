@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="3">
+	<networkInfo class_id="1" tracking_level="0" version="0">
+		<modules class_id="2" tracking_level="0" version="0">
+			<count>4</count>
+			<item_version>0</item_version>
+			<item class_id="3" tracking_level="0" version="0">
+				<first>InterfaceWithPython:2</first>
+				<second class_id="4" tracking_level="0" version="0">
+					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Python</category_name_>
+						<module_name_>InterfaceWithPython</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>12</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>NumberOfRetries</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>NumberOfRetries</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>0</which>
+										<value>4</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PollingIntervalMilliseconds</name>
+								</first>
+								<second>
+									<name>PollingIntervalMilliseconds</name>
+									<value>
+										<which>0</which>
+										<value>200</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonCode</name>
+								</first>
+								<second>
+									<name>PythonCode</name>
+									<value>
+										<which>2</which>
+										<value># Insert Python code here using the SCIRun API.
+matrixOutput1 = [[1,2,3],[4,5,6]]
+matrixOutput2 = [[1,2,3],[4,5,6,7]]
+matrixOutput3 = [[]]
+
+
+</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField1Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField2Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputField3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputField3Name</name>
+									<value>
+										<which>2</which>
+										<value>fieldOutput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix1Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix2Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputMatrix3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputMatrix3Name</name>
+									<value>
+										<which>2</which>
+										<value>matrixOutput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString1Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString1Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString2Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString2Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PythonOutputString3Name</name>
+								</first>
+								<second>
+									<name>PythonOutputString3Name</name>
+									<value>
+										<which>2</which>
+										<value>stringOutput3</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+		</modules>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>3</count>
+			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>InterfaceWithPython:2</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>PythonMatrix1</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:1</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>InterfaceWithPython:2</moduleId1_>
+				<port1_>
+					<name>PythonMatrix2</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>InterfaceWithPython:2</moduleId1_>
+				<port1_>
+					<name>PythonMatrix3</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:3</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+		</connections>
+	</networkInfo>
+	<modulePositions class_id="15" tracking_level="0" version="0">
+		<count>4</count>
+		<item_version>0</item_version>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>InterfaceWithPython:2</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-1.06000000000000000e+002</first>
+				<second>-2.30000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:1</first>
+			<second>
+				<first>-1.40000000000000000e+001</first>
+				<second>-5.80000000000000000e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>
+				<first>-1.41000000000000000e+002</first>
+				<second>5.10000000000000000e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:3</first>
+			<second>
+				<first>1.30000000000000000e+001</first>
+				<second>2.82000000000000000e+002</second>
+			</second>
+		</item>
+	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>4</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>InterfaceWithPython:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:3</first>
+			<second>0</second>
+		</item>
+	</moduleTags>
+</networkFile>
+</boost_serialization>
+

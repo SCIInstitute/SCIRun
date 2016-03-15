@@ -22,11 +22,11 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QTableWidget" name="tableWidget">
-     <row>
+     <column>
       <property name="text">
-       <string>1</string>
+       <string>Port</string>
       </property>
-     </row>
+     </column>
      <column>
       <property name="text">
        <string>Matrix Name</string>
@@ -42,24 +42,6 @@
        <string>Value</string>
       </property>
      </column>
-     <item row="0" column="0">
-      <property name="text">
-       <string>Field1</string>
-      </property>
-     </item>
-     <item row="0" column="1">
-      <property name="text">
-       <string>?</string>
-      </property>
-      <property name="checkState">
-       <enum>Checked</enum>
-      </property>
-     </item>
-     <item row="0" column="2">
-      <property name="text">
-       <string>LatVol</string>
-      </property>
-     </item>
     </widget>
    </item>
   </layout>
