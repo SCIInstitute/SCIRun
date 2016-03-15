@@ -74,7 +74,7 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
   public:
     MatlabToFieldAlgo();
 
-    virtual bool execute(SCIRun::FieldHandle& fieldhandle);
+    bool execute(SCIRun::FieldHandle& fieldhandle);
 
     //////// ANALYZE INPUT FUNCTIONS //////////////////////
 
@@ -85,7 +85,7 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
     
   protected:
 
-    int mlanalyze(matlabarray mlarray, bool postremark);  
+    int mlanalyze(matlabarray mlarray, bool postremark);
     matlabarray findfield(const matlabarray& mlarray,const std::string& fieldnames);
   
     matlabarray mlnode; 
@@ -111,7 +111,6 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
     matlabarray mlfield;
     matlabarray mlfieldedge;
     matlabarray mlfieldface;
-    matlabarray mlfieldcell;
 
     matlabarray mlfieldderivatives; 
     matlabarray mlfieldscalefactors; 
@@ -154,12 +153,13 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
     void uncompressedtensor(std::vector<double> &fielddata,SCIRun::Core::Geometry::Tensor &tens, unsigned int p);
     void compressedtensor(std::vector<double> &fielddata,SCIRun::Core::Geometry::Tensor &tens, unsigned int p);	
     
-    void error(const std::string& error);
-    void warning(const std::string& warning);
-    void remark(const std::string& remark);
+    void error(const std::string& error) const;
+    void warning(const std::string& warning) const;
+    void remark(const std::string& remark) const;
     
   private:
     SCIRun::Core::Logging::LoggerHandle pr_;
+    void remarkAndThrow(const std::string& msg, bool postremark) const;
     
 };
 

@@ -341,12 +341,6 @@ std::string NetworkEditorPythonAPI::scirun_get_module_input_type(const std::stri
   return "Module not found";
 }
 
-//std::string NetworkEditorPythonAPI::scirun_get_module_output(const std::string& moduleId, int portIndex)
-//{
-//  Guard g(pythonLock_.get());
-//  return "OUTPUT FROM " + moduleId + " port " + boost::lexical_cast<std::string>(portIndex);
-//}
-
 //TODO: refactor copy/paste
 boost::shared_ptr<PyDatatype> NetworkEditorPythonAPI::scirun_get_module_input_object_index(const std::string& moduleId, int portIndex)
 {

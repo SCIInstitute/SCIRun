@@ -177,7 +177,7 @@ Q_SIGNALS:
   void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
-  void dynamicPortChanged(const std::string& portID);
+  void dynamicPortChanged(const std::string& portID, bool adding);
   void noteChanged();
   void moduleStateUpdated(int state);
   void moduleSelected(bool selected);
@@ -197,7 +197,7 @@ private Q_SLOTS:
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();
   void replaceModuleWith();
-  void updateDialogWithPortCount(const std::string& portName);
+  void updateDialogForDynamicPortChange(const std::string& portName, bool adding);
   void handleDialogFatalError(const QString& message);
   void changeExecuteButtonToPlay();
   void changeExecuteButtonToStop();

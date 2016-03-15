@@ -28,8 +28,6 @@
 
 #include <Modules/Legacy/Bundle/InsertStringsIntoBundle.h>
 #include <Interface/Modules/Bundle/InsertStringsIntoBundleDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -45,21 +43,21 @@ InsertStringsIntoBundleDialog::InsertStringsIntoBundleDialog(const std::string& 
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
 
-void InsertStringsIntoBundleDialog::pullSpecial()
+void InsertStringsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
 {
-  auto numStrings = transient_value_cast<int>(state_->getTransientValue(SCIRun::Modules::Bundles::InsertStringsIntoBundle::NumStrings.name()));
-  tableWidget->setRowCount(numStrings);
-  for (int i = 0; i < numStrings; ++i)
-  {
-    auto name = new QTableWidgetItem(tr("String %1").arg(i+1));
-    tableWidget->setItem(i, 0, name);
-    auto check = new QTableWidgetItem();
-    check->setCheckState(Qt::Checked);
-    check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
-    tableWidget->setItem(i, 1, check);
-    auto info = new QTableWidgetItem("[unknown, populated upon execute]");
-    //info->setFlags(Qt::NoItemFlags);
-    tableWidget->setItem(i, 2, info);
-  }
-  tableWidget->resizeColumnsToContents();
+  if (type == INITIAL_PORT_CONSTRUCTION)
+    return;
+
+  static const std::string typeName = "Strings";
+  const int lineEditColumn = 1;
+  syncTableRowsWithDynamicPort(portId, typeName, tableWidget, lineEditColumn, type, {
+    [&]()
+    {
+      auto check = new QTableWidgetItem();
+      check->setCheckState(Qt::Checked);
+      check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
+      return check;
+    },
+      [&](){ return new QTableWidgetItem("[unknown, populated upon execute]"); }
+  });
 }

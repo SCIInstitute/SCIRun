@@ -165,7 +165,7 @@ FieldHandle
 SCIRun::CreateField(const std::string& type, MeshHandle mesh)
 {
   FieldHandle handle;
-  if (FieldTypeIDMutex == 0)
+  if (!FieldTypeIDMutex)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
@@ -188,7 +188,7 @@ FieldHandle
 SCIRun::CreateField(const std::string& type)
 {
   FieldHandle handle;
-  if (FieldTypeIDMutex == 0)
+  if (!FieldTypeIDMutex)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }

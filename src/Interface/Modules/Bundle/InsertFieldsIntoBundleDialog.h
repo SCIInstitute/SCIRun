@@ -43,9 +43,9 @@ class SCISHARE InsertFieldsIntoBundleDialog : public ModuleDialogGeneric, public
 public:
   InsertFieldsIntoBundleDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-protected:
-  virtual void pullSpecial() override;
+    QWidget* parent = nullptr);
+public Q_SLOTS:
+  virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
 };
 
 }

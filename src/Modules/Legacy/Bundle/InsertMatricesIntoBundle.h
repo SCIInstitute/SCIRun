@@ -48,8 +48,6 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
         virtual void execute() override;
         virtual bool hasDynamicPorts() const override { return true; }
-        virtual void portAddedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
-        virtual void portRemovedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
 
         INPUT_PORT(0, InputBundle, Bundle);
         INPUT_PORT_DYNAMIC(1, InputMatrices, Matrix);

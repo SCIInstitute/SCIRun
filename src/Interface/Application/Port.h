@@ -218,7 +218,7 @@ public:
     boost::shared_ptr<ConnectionFactory> connectionFactory,
     boost::shared_ptr<ClosestPortFinder> closestPortFinder,
     SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 };
 
 class OutputPortWidget : public PortWidget
@@ -229,7 +229,7 @@ public:
     boost::shared_ptr<ConnectionFactory> connectionFactory,
     boost::shared_ptr<ClosestPortFinder> closestPortFinder,
     SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 };
 
 class DataInfoDialog

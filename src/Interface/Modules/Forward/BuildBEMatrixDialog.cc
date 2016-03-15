@@ -60,7 +60,7 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
   connect(tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(pushTable(int,int)));
 }
 
-void BuildBEMatrixDialog::updateFromPortChange(int numPorts, const std::string&)
+void BuildBEMatrixDialog::updateFromPortChange(int numPorts, const std::string&, DynamicPortChange)
 {
   auto oldRowCount = tableWidget->rowCount();
   tableWidget->setRowCount(numPorts - 1);

@@ -30,6 +30,8 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -39,14 +41,14 @@ using namespace SCIRun::Core::Logging;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
 
-ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
+ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
   pulling_(false),
-  executeAction_(0),
-  shrinkAction_(0),
-  executeInteractivelyToggleAction_(0),
+  executeAction_(nullptr),
+  shrinkAction_(nullptr),
+  executeInteractivelyToggleAction_(nullptr),
   collapsed_(false),
-  dock_(0)
+  dock_(nullptr)
 {
   setModal(false);
   setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
@@ -208,7 +210,7 @@ void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr)
   slotManagers_.push_back(ptr);
 }
 
-void ModuleDialogGeneric::removeManager(const SCIRun::Core::Algorithms::AlgorithmParameterName& stateKey)
+void ModuleDialogGeneric::removeManager(const AlgorithmParameterName& stateKey)
 {
   slotManagers_.erase(std::remove_if(slotManagers_.begin(), slotManagers_.end(), [&](WidgetSlotManagerPtr wsm) { return wsm->name() == stateKey; } ));
 }
@@ -726,4 +728,107 @@ void WidgetStyleMixin::setStateVarTooltipWithStyle(QWidget* widget, const std::s
 {
   widget->setToolTip("State key: " + QString::fromStdString(stateVarName));
   widget->setStyleSheet(widget->styleSheet() + " QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+}
+
+std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile)
+{
+  //note: the incoming portId is the port that was just added, not connected to. we assume the connected port
+  // is one index less.
+  // UNLESS we are loading a file, in which case this function is called when the connected port is the same as portId.
+  //std::cout << "REGEX: " << "Input" + type + "\\:(.+)" << std::endl;
+  boost::regex portIdRegex("Input" + type + "\\:(.+)");
+  boost::smatch what;
+  //std::cout << "MATCHING WITH: " << portId << std::endl;
+  regex_match(portId, what, portIdRegex);
+  const int connectedPortNumber = boost::lexical_cast<int>(what[1]) - (isLoadingFile ? 0 : 1);
+  return std::make_tuple("Input" + type + ":" + boost::lexical_cast<std::string>(connectedPortNumber), connectedPortNumber);
+}
+
+void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId, const std::string& type,
+  QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerList& tableItemMakers)
+{
+  ScopedWidgetSignalBlocker swsb(table);
+  if (portId.find(type) != std::string::npos)
+  {
+    //qDebug() << "adjust input table: " << portId.c_str() << portChangeType;
+    
+    if (portChangeType == USER_ADDED_PORT || portChangeType == USER_ADDED_PORT_DURING_FILE_LOAD)
+    {
+      //qDebug() << "trying to add row via port added, id: " << portId.c_str();
+
+      int connectedPortNumber;
+      std::string connectedPortId;
+      std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type, portChangeType == USER_ADDED_PORT_DURING_FILE_LOAD);
+
+      Name name(connectedPortId);
+      QString lineEditText;
+
+      if (state_->containsKey(name))
+        lineEditText = QString::fromStdString(state_->getValue(name).toString());
+      else
+      {
+        lineEditText = QString::fromStdString(type).toLower() + "Input" + QString::number(connectedPortNumber + 1);
+      }
+
+      {
+        table->insertRow(table->rowCount());
+        auto newRowIndex = table->rowCount() - 1;
+
+        table->setItem(newRowIndex, 0, new QTableWidgetItem(QString::fromStdString(connectedPortId)));
+
+        auto lineEdit = new QLineEdit;
+
+        lineEdit->setText(lineEditText);
+        if (!state_->containsKey(name))
+        {
+          state_->setValue(name, lineEditText.toStdString());
+        }
+
+        addLineEditManager(lineEdit, name);
+        table->setCellWidget(newRowIndex, lineEditIndex, lineEdit);
+        //qDebug() << "row added with " << lineEditText;
+
+        auto tableItemIter = tableItemMakers.begin();
+        for (int i = 1; i < table->columnCount(); ++i)
+        {
+          if (i != lineEditIndex)
+          {
+            if (tableItemIter != tableItemMakers.end())
+            {
+              table->setItem(newRowIndex, i, (*tableItemIter)());
+              ++tableItemIter;
+            }
+          }
+        }
+      }
+    }
+    else
+    {
+      //qDebug() << "trying to remove row with " << portId.c_str();
+      auto items = table->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
+      if (!items.empty())
+      {
+        auto item = items[0];
+        int row = table->row(item);
+        table->removeRow(row);
+        //qDebug() << "row removed" << QString::fromStdString(portId);
+        removeManager(Name(portId));
+      }
+      else
+        qDebug() << "Inconsistent rows versus dynamic ports!";
+    }
+    table->resizeColumnsToContents();
+  }
+}
+
+ScopedWidgetSignalBlocker::ScopedWidgetSignalBlocker(QWidget* widget) : widget_(widget)
+{
+  if (widget_)
+    widget_->blockSignals(true);
+}
+
+ScopedWidgetSignalBlocker::~ScopedWidgetSignalBlocker()
+{
+  if (widget_)
+    widget_->blockSignals(false);
 }

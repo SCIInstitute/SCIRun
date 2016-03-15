@@ -87,10 +87,10 @@ class SCISHARE RefineTetMeshLocallyAlgorithm : public AlgorithmBase
     static const int Case5Lookup[7][4];
     static const int Case6Lookup[12][4];
     static const int NumberTets[12];
-    Datatypes::SparseRowMatrixHandle ChoseEdgesToCut(FieldHandle input, std::vector<long> elems_to_split, VMesh* field_boundary) const;
+    Datatypes::SparseRowMatrixHandle ChoseEdgesToCut(FieldHandle input, const std::vector<long>& elems_to_split, VMesh* field_boundary) const;
     std::vector<int> SelectMeshElements(FieldHandle input, int choose_refinement_option, int& count) const;
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
-    std::vector<int> maxi(std::vector<double> input_vec) const;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+    std::vector<int> maxi(const std::vector<double>& input_vec) const;
     std::vector<int> getEdgeCoding(int pos) const;
     std::vector<double> getEdgeLengths(Geometry::Point p1, Geometry::Point p2, Geometry::Point p3, Geometry::Point p4) const;
 };
