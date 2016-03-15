@@ -674,12 +674,12 @@ void Module::setAlgoStringFromState(const AlgorithmParameterName& name)
 
 void Module::setAlgoOptionFromState(const AlgorithmParameterName& name)
 {
-	algo().set_option(name, get_state()->getValue(name).toString());
+	algo().setOption(name, get_state()->getValue(name).toString());
 }
 
 void Module::setStateStringFromAlgoOption(const AlgorithmParameterName& name)
 {
-  get_state()->setValue(name, algo().get_option(name));
+  get_state()->setValue(name, algo().getOption(name));
 }
 
 void Module::setAlgoListFromState(const AlgorithmParameterName& name)

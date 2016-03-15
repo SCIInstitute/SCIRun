@@ -334,14 +334,14 @@ DatatypeHandle& AlgorithmData::operator[](const Name& name)
   return vec[0];
 }
 
-void AlgorithmParameterList::add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)
+void AlgorithmParameterList::addOption(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)
 {
   std::set<std::string> opts;
   boost::split(opts, options, boost::is_any_of("|"));
   parameters_[key] = AlgorithmParameter(key, AlgoOption(defval, opts));
 }
 
-bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const std::string& value)
+bool AlgorithmParameterList::setOption(const AlgorithmParameterName& key, const std::string& value)
 {
   auto paramIt = parameters_.find(key);
 
@@ -363,7 +363,7 @@ bool AlgorithmParameterList::keyNotFoundPolicy(const AlgorithmParameterName& key
   BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("Algorithm has no parameter/option with name " + key.name_));
 }
 
-bool AlgorithmParameterList::get_option(const AlgorithmParameterName& key, std::string& value) const
+bool AlgorithmParameterList::getOption(const AlgorithmParameterName& key, std::string& value) const
 {
   auto paramIt = parameters_.find(key);
 
@@ -374,17 +374,17 @@ bool AlgorithmParameterList::get_option(const AlgorithmParameterName& key, std::
   return true;
 }
 
-std::string AlgorithmParameterList::get_option(const AlgorithmParameterName& key) const
+std::string AlgorithmParameterList::getOption(const AlgorithmParameterName& key) const
 {
   std::string value;
-  get_option(key, value);
+  getOption(key, value);
   return value;
 }
 
-bool AlgorithmParameterList::check_option(const AlgorithmParameterName& key, const std::string& value) const
+bool AlgorithmParameterList::checkOption(const AlgorithmParameterName& key, const std::string& value) const
 {
   std::string currentValue;
-  get_option(key, currentValue);
+  getOption(key, currentValue);
   return boost::iequals(value, currentValue);
 }
 

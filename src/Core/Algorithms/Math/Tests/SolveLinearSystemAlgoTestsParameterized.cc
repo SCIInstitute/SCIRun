@@ -96,7 +96,7 @@ protected:
 		algo.set(Variables::MaxIterations, 667);
 		algo.set(Variables::TargetError, 1e-4);
 
-		algo.set_option(Variables::Method, ::std::tr1::get<0>(GetParam()));
+		algo.setOption(Variables::Method, ::std::tr1::get<0>(GetParam()));
 		algo.setUpdaterFunc([](double x) {});
 
 		/*

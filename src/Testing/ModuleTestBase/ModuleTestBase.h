@@ -74,8 +74,8 @@ namespace SCIRun
       MOCK_CONST_METHOD1(keyNotFoundPolicy, bool(const SCIRun::Core::Algorithms::AlgorithmParameterName&));
       MOCK_METHOD2(set, bool(const SCIRun::Core::Algorithms::AlgorithmParameterName&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&));
       MOCK_CONST_METHOD1(get, const SCIRun::Core::Algorithms::AlgorithmParameter&(const SCIRun::Core::Algorithms::AlgorithmParameterName&));
-      //MOCK_METHOD2(set_option, void(const AlgorithmParameterName&, const std::string& value));
-      //MOCK_CONST_METHOD1(get_option, std::string(const AlgorithmParameterName&));
+      //MOCK_METHOD2(setOption, void(const AlgorithmParameterName&, const std::string& value));
+      //MOCK_CONST_METHOD1(getOption, std::string(const AlgorithmParameterName&));
     };
 
     typedef boost::shared_ptr< ::testing::NiceMock<MockAlgorithm> > MockAlgorithmPtr;

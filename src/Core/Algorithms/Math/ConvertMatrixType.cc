@@ -44,7 +44,7 @@ ALGORITHM_PARAMETER_DEF(Math, OutputMatrixType);
 /// @image html ConvertMatrixType.png 
 ConvertMatrixTypeAlgorithm::ConvertMatrixTypeAlgorithm()
 {
-  add_option(Parameters::OutputMatrixType, "passThrough", "passThrough|dense|column|sparse");
+  addOption(Parameters::OutputMatrixType, "passThrough", "passThrough|dense|column|sparse");
 }
 
 MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
@@ -79,7 +79,7 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
 
   remark(ostr2.str());
 
-  auto outputType = get_option(Parameters::OutputMatrixType);
+  auto outputType = getOption(Parameters::OutputMatrixType);
 
   if ("passThrough" == outputType) 
   {

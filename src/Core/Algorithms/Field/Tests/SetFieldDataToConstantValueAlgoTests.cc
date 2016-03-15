@@ -76,7 +76,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, InvalidType)
 
   const int value = 5;
   algo.set(Parameters::Value, value);
-  ASSERT_THROW(algo.set_option(Parameters::DataType, std::string("notatype")), AlgorithmParameterNotFound);
+  ASSERT_THROW(algo.setOption(Parameters::DataType, std::string("notatype")), AlgorithmParameterNotFound);
 }
 
 TEST(SetFieldDataToConstantValueAlgoTest, InvalidBasis)
@@ -86,7 +86,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, InvalidBasis)
 
   const int value = 5;
   algo.set(Parameters::Value, value);
-  ASSERT_THROW(algo.set_option(Parameters::BasisOrder, std::string("notabasis")), AlgorithmParameterNotFound);
+  ASSERT_THROW(algo.setOption(Parameters::BasisOrder, std::string("notabasis")), AlgorithmParameterNotFound);
 }
 
 TEST(SetFieldDataToConstantValueAlgoTest, EmptyFieldNoValue)
@@ -276,7 +276,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToInt)
 
   const int value = 5;
   algo.set(Parameters::Value, value);
-  algo.set_option(Parameters::DataType, std::string("int"));
+  algo.setOption(Parameters::DataType, std::string("int"));
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(cubeTriSurf, result));
@@ -304,7 +304,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToIntFromDouble)
   const double value = 5.2;
   const int intValue = 5;
   algo.set(Parameters::Value, value);
-  algo.set_option(Parameters::DataType, std::string("int"));
+  algo.setOption(Parameters::DataType, std::string("int"));
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(cubeTriSurf, result));
@@ -332,7 +332,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTet)
 
   const double value = -5.7;
   algo.set(Parameters::Value, value);
-  algo.set_option(Parameters::BasisOrder, std::string("constant"));
+  algo.setOption(Parameters::BasisOrder, std::string("constant"));
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(tetmesh, result));
@@ -360,7 +360,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTri)
 
   const int value = 5;
   algo.set(Parameters::Value, value);
-  algo.set_option(Parameters::BasisOrder, std::string("constant"));
+  algo.setOption(Parameters::BasisOrder, std::string("constant"));
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(cubeTriSurf, result));

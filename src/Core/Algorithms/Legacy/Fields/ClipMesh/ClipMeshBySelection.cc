@@ -56,7 +56,7 @@ ALGORITHM_PARAMETER_DEF(Fields, BuildMapping);
 
 ClipMeshBySelectionAlgo::ClipMeshBySelectionAlgo()
 {
-  add_option(Parameters::ClipMethod, "One Node", "Element Center|One Node|Most Nodes|All Nodes");
+  addOption(Parameters::ClipMethod, "One Node", "Element Center|One Node|Most Nodes|All Nodes");
   addParameter(Parameters::BuildMapping, true);
 }
 
@@ -124,7 +124,7 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
     return (false);
   }
 
-  std::string method = get_option(Parameters::ClipMethod);
+  std::string method = getOption(Parameters::ClipMethod);
 
   VMesh*   imesh = input->vmesh();
   VMesh*   omesh =  output->vmesh();

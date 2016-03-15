@@ -51,7 +51,7 @@ GeneratePointSamplesFromFieldAlgo::GeneratePointSamplesFromFieldAlgo()
 {
   addParameter(Parameters::NumSamples, 10);
   addParameter(Parameters::RNGSeed, 1);
-  add_option(Parameters::DistributionType,"uniuni","impscat|impuni|uniuni|uniscat");
+  addOption(Parameters::DistributionType,"uniuni","impscat|impuni|uniuni|uniscat");
   addParameter(Parameters::ClampToNodes,true);
 }
 
@@ -158,7 +158,7 @@ GeneratePointSamplesFromFieldAlgo::runImpl(FieldHandle input, FieldHandle& outpu
 
   VField::size_type num_seeds = get(Parameters::NumSamples).toInt();
   int               rng_seeds = get(Parameters::RNGSeed).toInt();
-  std::string method          = get_option(Parameters::DistributionType);
+  std::string method          = getOption(Parameters::DistributionType);
   bool              clamp     = get(Parameters::ClampToNodes).toBool();
 
   if (!input)

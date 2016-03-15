@@ -86,7 +86,7 @@ void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
   SolveLinearSystemAlgo algo;
   algo.set(Variables::MaxIterations, 500);
   algo.set(Variables::TargetError, 7e-4);
-  algo.set_option(Variables::Method, method);
+  algo.setOption(Variables::Method, method);
   algo.setUpdaterFunc([](double x) {});
 
   DenseColumnMatrixHandle solution;

@@ -54,7 +54,7 @@ GetMatrixSliceAlgo::GetMatrixSliceAlgo()
   addParameter(Parameters::SliceIndex, 0);
   addParameter(Parameters::PlayModeActive, false);
   //TODO DAN: make overload to handle const char*
-  add_option(Parameters::PlayModeType, "looponce", "looponce|loopforever"); //TODO add more play options
+  addOption(Parameters::PlayModeType, "looponce", "looponce|loopforever"); //TODO add more play options
   addParameter(Parameters::SliceIncrement, 1);
   addParameter(Parameters::PlayModeDelay, 0);
 }

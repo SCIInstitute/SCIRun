@@ -143,7 +143,7 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMin)
 
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.set_option(MapFieldDataFromElemToNodeAlgo::Method, "Min");
+ algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Min");
 
  FieldHandle  result = algo.run(TetMesh1());
 
@@ -172,7 +172,7 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMax)
 
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.set_option(MapFieldDataFromElemToNodeAlgo::Method, "Max");
+ algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Max");
 
  FieldHandle  result = algo.run(TetMesh1());
 
@@ -201,7 +201,7 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestSum)
 
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.set_option(MapFieldDataFromElemToNodeAlgo::Method, "Sum");
+ algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Sum");
 
  FieldHandle  result = algo.run(TetMesh1());
 
@@ -230,7 +230,7 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMed)
 
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.set_option(MapFieldDataFromElemToNodeAlgo::Method, "Median");
+ algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Median");
 
  FieldHandle  result = algo.run(TetMesh1());
 

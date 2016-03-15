@@ -868,7 +868,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     
      using namespace SCIRun::Core::Algorithms::Fields::Parameters;
      {
-      convert_field_basis.set_option(OutputType, "Linear");
+      convert_field_basis.setOption(OutputType, "Linear");
       convert_field_basis.set(BuildBasisMapping, false); 
       convert_field_basis.runImpl(small_scalp_surf, scalp_linear_data);
      }
@@ -893,7 +893,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       FieldHandle sdf_output_linear;
       using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
       {
-       convert_field_basis.set_option(OutputType, "Linear");
+       convert_field_basis.setOption(OutputType, "Linear");
        convert_field_basis.set(BuildBasisMapping, false); 
        convert_field_basis.runImpl(sdf_output, sdf_output_linear);
       }  
@@ -960,7 +960,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        
         using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
         {
-         convert_field_basis.set_option(OutputType, "Constant");
+         convert_field_basis.setOption(OutputType, "Constant");
          convert_field_basis.set(BuildBasisMapping, false); 
          convert_field_basis.runImpl(clipmeshbyisoval_output, final_electrode_sponge_surf);
         }  
@@ -1033,7 +1033,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	  
       using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
       {
-       convert_field_basis.set_option(OutputType, "Constant");
+       convert_field_basis.setOption(OutputType, "Constant");
        convert_field_basis.set(BuildBasisMapping, false); 
        convert_field_basis.runImpl(sdf_output, final_electrode_sponge_surf);
       }    

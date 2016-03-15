@@ -182,7 +182,7 @@ void ClipVolumeByIsovalueModule::execute()
     algo_.set_scalar("isovalue",gui_iso_value_.get());
     std::string method = "greaterthan";
     if (gui_lte_.get()) method = "lessthan";
-    algo_.set_option("method",method);
+    algo_.setOption("method",method);
     if(!(algo_.run(field_input_handle,field_output_handle,matrix_output_handle))) return;
   
     send_output_handle("Clipped",  field_output_handle);

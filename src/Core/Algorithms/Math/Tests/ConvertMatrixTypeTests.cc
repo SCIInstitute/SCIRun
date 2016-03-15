@@ -144,7 +144,7 @@ TEST(ConvertMatrixTests, PassInputThrough)
   
   ConvertMatrixTypeAlgorithm algo;
 
-  algo.set_option(Parameters::OutputMatrixType, "passThrough");
+  algo.setOption(Parameters::OutputMatrixType, "passThrough");
   
   MatrixHandle input1(CreateDenseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -188,7 +188,7 @@ TEST(ConvertMatrixTests, DenseToColumnMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set_option(Parameters::OutputMatrixType, "column");
+  algo.setOption(Parameters::OutputMatrixType, "column");
 
   MatrixHandle input1(CreateDenseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -208,7 +208,7 @@ TEST(ConvertMatrixTests, DenseToSparseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set_option(Parameters::OutputMatrixType, "sparse");
+  algo.setOption(Parameters::OutputMatrixType, "sparse");
 
   MatrixHandle input1(CreateDenseMatrix_2());
   MatrixHandle output_matrix1 = algo.run(input1); 
@@ -238,7 +238,7 @@ TEST(ConvertMatrixTests, ColumnToDenseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set_option(Parameters::OutputMatrixType, "dense");
+  algo.setOption(Parameters::OutputMatrixType, "dense");
   
   MatrixHandle input1(CreateColumnMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -258,7 +258,7 @@ TEST(ConvertMatrixTests, ColumnToSparseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set_option(Parameters::OutputMatrixType, "sparse");
+  algo.setOption(Parameters::OutputMatrixType, "sparse");
   
   MatrixHandle input1(CreateColumnMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -278,7 +278,7 @@ TEST(ConvertMatrixTests, SparseToColumnMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set_option(Parameters::OutputMatrixType, "column");
+  algo.setOption(Parameters::OutputMatrixType, "column");
 
   MatrixHandle input1(CreateSparseMatrixWithOneColumn());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -299,7 +299,7 @@ TEST(ConvertMatrixTests, SparseToDenseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set_option(Parameters::OutputMatrixType, "dense");
+  algo.setOption(Parameters::OutputMatrixType, "dense");
 
   MatrixHandle input1(CreateSparseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);

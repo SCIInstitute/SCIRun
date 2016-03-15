@@ -582,7 +582,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
     /// do we have a scalar, vector, or tensor
     if (ncols == 1)
     {
-      std::string scalardatatype = get_option("scalardatatype");
+      std::string scalardatatype = getOption("scalardatatype");
       fi.set_data_type(scalardatatype);
       found = true;
     }
@@ -626,7 +626,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
     if (data->nrows() == 1)
     {
       std::string scalardatatype;
-      get_option("scalardatatype",scalardatatype);
+      getOption("scalardatatype",scalardatatype);
 
       fi.set_data_type(scalardatatype);
     }
@@ -671,7 +671,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
       if (data->ncols() == 1)
       {
         std::string scalardatatype;
-        get_option("scalardatatype",scalardatatype);
+        getOption("scalardatatype",scalardatatype);
 
         fi.set_data_type(scalardatatype);
       }
@@ -696,7 +696,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
       if (data->nrows() == 1)
       {
         std::string scalardatatype;
-        get_option("scalardatatype",scalardatatype);
+        getOption("scalardatatype",scalardatatype);
 
         fi.set_data_type(scalardatatype);
       }

@@ -87,7 +87,7 @@ TEST_F(ConvertMeshToTetVolTest, ConvertLatVolToTetVol_ScalarDataDefinedOnElement
   
   MapFieldDataFromNodeToElemAlgo algo1;
 
-  algo1.set_option(MapFieldDataFromNodeToElemAlgo::Method, "Min");
+  algo1.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Min");
 
   FieldHandle latVol_data_on_ele = algo1.run(latVol);
 
