@@ -1407,12 +1407,25 @@ namespace SCIRun {
       std::vector<Vector> points;
       std::vector<uint32_t> indices;
       int32_t numVBOElements = 0;
+      uint32_t index = 0;
       //base line
       points.push_back(Vector(-length, 0.0, 0.0));
       points.push_back(Vector(0.0, 0.0, 0.0));
       numVBOElements += 2;
-      indices.push_back(0);
-      indices.push_back(1);
+      indices.push_back(index++);
+      indices.push_back(index++);
+      if (numTicks > 1)
+      {
+        for (int i = 0; i < numTicks; ++i)
+        {
+          double x = -length + i*length / (numTicks-1);
+          points.push_back(Vector(x, 0.0, 0.0));
+          points.push_back(Vector(x, height, 0.0));
+          numVBOElements += 2;
+          indices.push_back(index++);
+          indices.push_back(index++);
+        }
+      }
 
       // IBO/VBOs and sizes
       uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
@@ -1474,6 +1487,26 @@ namespace SCIRun {
       geom->mIBOs.push_back(geomIBO);
       geom->mVBOs.push_back(geomVBO);
       geom->mPasses.push_back(pass);
+
+      //text
+      size_t text_size = size_t(scaleBar_.fontSize);
+      if (!textBuilder_.isInit())
+        textBuilder_.initFreeType("FreeSans.ttf", text_size);
+      else if (!textBuilder_.isValid())
+        textBuilder_.loadNewFace("FreeSans.ttf", text_size);
+      if (textBuilder_.isInit() && textBuilder_.isValid())
+      {
+        if (textBuilder_.getFaceSize() != text_size)
+          textBuilder_.setFaceSize(text_size);
+        textBuilder_.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
+        std::stringstream ss;
+        std::string oneline;
+        ss << length << " " << scaleBar_.unit;
+        oneline = ss.str();
+        Vector trans(10.0, 0.0, 0.0);
+        Vector shift(1.9, 0.1, 0.0);
+        textBuilder_.printString(oneline, trans, shift, uniqueNodeID, geom);
+      }
 
       handleGeomObject(geom, 0);
     }

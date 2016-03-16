@@ -352,6 +352,7 @@ namespace SCIRun {
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
 
+      Modules::Visualization::TextBuilder textBuilder_;     ///
     };
 
   } // namespace Render
