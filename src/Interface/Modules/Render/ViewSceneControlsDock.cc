@@ -136,11 +136,22 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   ///Object Tab
   tabWidget->setCurrentIndex(0);
 
-  ////View Tab
-  //groupBox->setVisible(false);
+  ///Render Tab
+  shadeSettingsGroupBox_->setEnabled(false);
+  globalSettingsGroupBox_->setEnabled(false);
+  renderSliderFrame_->setEnabled(false);
 
-  ////Render Tab
-  groupBox_6->setVisible(false);
+  ///Materials Tab
+  materialsFrame_->setEnabled(false);
+  fogGroupBox_->setEnabled(false);
+
+  ////View Tab
+  autoRotateGroupBox_->setEnabled(false);
+  viewOptionsGroupBox_->setEnabled(false);
+  showScaleBarTextGroupBox_->setEnabled(false);
+
+  ////Controls Tab
+  transparencyGroupBox_->setVisible(false);
 
 }
 
