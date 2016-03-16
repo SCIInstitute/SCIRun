@@ -41,6 +41,7 @@
 #include "comp/ClippingPlaneUniforms.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderTransBasicSys.h"
+#include "systems/RenderTransText.h"
 
 namespace SCIRun {
 namespace Render {
@@ -52,6 +53,7 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
   registerSystem_AssetBootstrap(core);
   registerSystem_RenderBasicGeom(core);
   registerSystem_RenderBasicTransGeom(core);
+  registerSystem_RenderTransTextGeom(core);
 
   // Register components
   core.registerComponent<StaticSRInterface>();

@@ -62,17 +62,21 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   updateZoomOptionVisibility();
 
-  connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
-  connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
-  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
-  connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
-  connect(contSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeContinuous(bool)));
-  connect(updateSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeUpdate(bool)));
-  connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
+  //-----------Objects Tab-----------------//
   connect(selectAllPushButton_, SIGNAL(clicked()), parent, SLOT(selectAllClicked()));
   connect(deselectAllPushButton_, SIGNAL(clicked()), parent, SLOT(deselectAllClicked()));
-  connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
-  connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
+  //-----------Render Tab-----------------//
+  connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
+  connect(lightingCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(lightingChecked(bool)));
+  connect(bboxCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showBBoxChecked(bool)));
+  connect(useClipCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(useClipChecked(bool)));
+  connect(stereoCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(stereoChecked(bool)));
+  connect(backCullCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(useBackCullChecked(bool)));
+  connect(displayListCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(displayListChecked(bool)));
+  connect(stereoFusionHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setStereoFusion(int)));
+  connect(polygonOffsetHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setPolygonOffset(int)));
+  connect(textOffsetHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setTextOffset(int)));
+  connect(fieldOfViewHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setFieldOfView(int)));  
   //-----------Clipping Tab-----------------//
   connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
   connect(planeVisibleCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneVisible(bool)));
@@ -82,6 +86,38 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(yValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
   connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
   connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
+  //-----------Materials Tab-----------------//
+  connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
+  connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
+  connect(specularDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setSpecularValue(double)));
+  connect(shininessDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setShininessValue(double)));
+  connect(emissionDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setEmissionValue(double)));
+  connect(fogStartDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogStartValue(double)));
+  connect(fogEndDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setFogEndValue(double)));
+  connect(fogGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOn(bool)));
+  connect(fogOnVisibleObjectsCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogOnVisibleObjects(bool)));
+  connect(fogUseBGColorCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setFogUseBGColor(bool)));
+  connect(fogColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignFogColor()));
+  //-----------View Tab-------------------//
+  connect(autoViewOnLoadCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(autoViewOnLoadChecked(bool)));
+  connect(orthoViewCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(useOrthoViewChecked(bool)));
+  connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
+  connect(showAxisCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showAxisChecked(bool)));
+  connect(showScaleBarTextGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setScaleBarVisible(bool)));
+  connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
+  connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
+  connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
+  connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
+  connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
+  connect(scaleBarLineWidthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLineWidth(double)));
+  //-----------Controls Tab-------------------//
+  connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
+  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
+  connect(contSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeContinuous(bool)));
+  connect(updateSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeUpdate(bool)));
+  connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
+  connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
+  connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
 
   connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotChanged(QListWidgetItem*)));
   connect(this, SIGNAL(itemUnselected(const QString&)), parent, SLOT(handleUnselectedItem(const QString&)));
@@ -100,11 +136,22 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   ///Object Tab
   tabWidget->setCurrentIndex(0);
 
-  ////View Tab
-  //groupBox->setVisible(false);
+  ///Render Tab
+  shadeSettingsGroupBox_->setEnabled(false);
+  globalSettingsGroupBox_->setEnabled(false);
+  renderSliderFrame_->setEnabled(false);
 
-  ////Render Tab
-  //groupBox_6->setVisible(false);
+  ///Materials Tab
+  materialsFrame_->setEnabled(false);
+  fogGroupBox_->setEnabled(false);
+
+  ////View Tab
+  autoRotateGroupBox_->setEnabled(false);
+  viewOptionsGroupBox_->setEnabled(false);
+  showScaleBarTextGroupBox_->setEnabled(false);
+
+  ////Controls Tab
+  transparencyGroupBox_->setVisible(false);
 
 }
 
@@ -116,11 +163,57 @@ void ViewSceneControlsDock::setSampleColor(const QColor& color)
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }
 
+void ViewSceneControlsDock::setFogColorLabel(const QColor& color)
+{
+  QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
+    QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
+
+  fogColorLabel_->setStyleSheet(styleSheet);
+}
+
+void ViewSceneControlsDock::setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
+  bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd)
+{
+  ambientDoubleSpinBox_->setValue(ambient);
+  diffuseDoubleSpinBox_->setValue(diffuse);
+  specularDoubleSpinBox_->setValue(specular);
+  shininessDoubleSpinBox_->setValue(shine);
+  emissionDoubleSpinBox_->setValue(emission);
+  fogGroupBox_->setChecked(fogVisible);
+  fogOnVisibleObjectsCheckBox_->setChecked(objectsOnly);
+  fogUseBGColorCheckBox_->setChecked(useBGColor);
+  fogStartDoubleSpinBox_->setValue(fogStart);
+  fogEndDoubleSpinBox_->setValue(fogEnd);
+}
+
 void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
   double numTicks, double lineWidth, const QString& unit)
 {
-  //showScaleBarTextGroupBox_->set
+  showScaleBarTextGroupBox_->setChecked(visible);
+  fontSizeSpinBox_->setValue(fontSize);
+  scaleBarLengthDoubleSpinBox_->setValue(length);
+  scaleBarHeightDoubleSpinBox_->setValue(height);
+  scaleBarMultiplierDoubleSpinBox_->setValue(multiplier);
+  numTicksSpinBox_->setValue(numTicks);
+  scaleBarLineWidthDoubleSpinBox_->setValue(lineWidth);
+  scaleBarUnitLineEdit_->setText(unit);
 }
+
+void ViewSceneControlsDock::setRenderTabValues(bool lighting, bool bbox, bool useClip, bool backCull, bool displayList,
+  bool stereo, double stereoFusion, double polygonOffset, double textOffset, int fov)
+{
+  lightingCheckBox_->setChecked(lighting);
+  bboxCheckBox_->setChecked(bbox);
+  useClipCheckBox_->setChecked(useClip);
+  backCullCheckBox_->setChecked(backCull);
+  displayListCheckBox_->setChecked(displayList);
+  stereoCheckBox_->setChecked(stereo);
+  stereoFusionHorizontalSlider_->setSliderPosition(stereoFusion * 100);
+  polygonOffsetHorizontalSlider_->setSliderPosition(polygonOffset * 100);
+  textOffsetHorizontalSlider_->setSliderPosition(textOffset * 100);
+  fieldOfViewHorizontalSlider_->setSliderPosition(fov);
+}
+
 
 void ViewSceneControlsDock::updateZoomOptionVisibility()
 {
@@ -145,10 +238,44 @@ void ViewSceneControlsDock::updatePlaneSettingsDisplay(bool visible, bool showPl
 
 void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double z, double d)
 {
-  xSliderValueLabel_->setText(QString::number(x, 'f', 2));
-  ySliderValueLabel_->setText(QString::number(y, 'f', 2));
-  zSliderValueLabel_->setText(QString::number(z, 'f', 2));
-  dSliderValueLabel_->setText(QString::number(d, 'f', 2));
+  QString xtext, ytext, ztext, dtext;
+  if (x >= 0)
+  {
+    xtext = "  " + QString::number(x, 'f', 2);
+  }
+  else
+  {
+    xtext = QString::number(x, 'f', 2);
+  }
+  if (y >= 0)
+  {
+    ytext = "  " + QString::number(y, 'f', 2);
+  }
+  else
+  {
+    ytext = QString::number(y, 'f', 2);
+  }
+  if (z >= 0)
+  {
+    ztext = "  " + QString::number(z, 'f', 2);
+  }
+  else
+  {
+    ztext = QString::number(z, 'f', 2);
+  }
+  if (d >= 0)
+  {
+    dtext = "  " + QString::number(d, 'f', 2);
+  }
+  else
+  {
+    dtext = QString::number(d, 'f', 2);
+  }
+
+  xSliderValueLabel_->setText(xtext);
+  ySliderValueLabel_->setText(ytext);
+  zSliderValueLabel_->setText(ztext);
+  dSliderValueLabel_->setText(dtext);
 
   xValueHorizontalSlider_->setSliderPosition(x * 100);
   yValueHorizontalSlider_->setSliderPosition(y * 100);

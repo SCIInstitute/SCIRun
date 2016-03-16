@@ -57,7 +57,7 @@ void ShowColorMapModule::setStateDefaults()
   auto state = get_state();
   state->setValue(DisplaySide, 0);
   state->setValue(DisplayLength, 0);
-  state->setValue(TextSize, 2);
+  state->setValue(TextSize, 8);
   state->setValue(TextRed, 1.);
   state->setValue(TextGreen, 1.);
   state->setValue(TextBlue, 1.);
@@ -205,10 +205,11 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   //text
   char str2[128];
   std::stringstream sd;
-  sd << "%." << sigdig << "f";
+  sd << "%." << sigdig << "g";
   std::vector<Vector> txt_coords;
   double increment = 1. / static_cast<double>(numlabel - 1);
-  double textSize = 5. * static_cast<double>(txtsize + 3);
+  //double textSize = 5. * static_cast<double>(txtsize + 3);
+  double textSize = 3. * static_cast<double>(txtsize);
   double dash_size = 18.;
   double pipe_size = 18.;
   size_t text_size = size_t(textSize);
@@ -339,7 +340,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       SpireIBO geomIBO2(iboName, SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
       geom->mIBOs.push_back(geomIBO2);
       renState.set(RenderState::USE_COLORMAP, false);
-      renState.set(RenderState::USE_TRANSPARENCY, true);
+      renState.set(RenderState::IS_TEXT, true);
       char c[2] = { p[0], 0 };
       SpireText text(c, ftFace_);
 

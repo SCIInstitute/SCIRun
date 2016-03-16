@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
+    <width>450</width>
     <height>460</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>380</width>
-    <height>460</height>
+    <width>410</width>
+    <height>450</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
     </size>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="enabled">
        <bool>true</bool>
@@ -39,7 +39,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="ObjectTab">
        <attribute name="title">
@@ -50,8 +50,8 @@
          <widget class="QGroupBox" name="groupBox_7">
           <property name="font">
            <font>
-            <weight>75</weight>
-            <bold>true</bold>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="title">
@@ -100,96 +100,297 @@
        <attribute name="title">
         <string>Render</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_8">
-        <item row="0" column="0">
-         <widget class="QLabel" name="currentBackgroundLabel_">
+       <layout class="QGridLayout" name="gridLayout_13">
+        <item row="3" column="0" colspan="3">
+         <widget class="QFrame" name="renderSliderFrame_">
           <property name="frameShape">
-           <enum>QFrame::Panel</enum>
+           <enum>QFrame::StyledPanel</enum>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Sunken</enum>
+           <enum>QFrame::Raised</enum>
           </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <spacer name="horizontalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>214</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="setBackgroundColorPushButton_">
-          <property name="text">
-           <string>Scene Color</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <spacer name="horizontalSpacer_8">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>214</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QGroupBox" name="groupBox_6">
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="title">
-           <string>Transparency Rendering</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_6">
+          <layout class="QVBoxLayout" name="verticalLayout_9">
            <item>
-            <widget class="QRadioButton" name="contSortRadioButton_">
-             <property name="text">
-              <string>Continuous Sort</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="steroeFusionHorizontalLayout_">
+             <item>
+              <widget class="QLabel" name="label_21">
+               <property name="text">
+                <string>Stereo Fusion:  </string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="stereoFusionValueLabel_">
+               <property name="text">
+                <string>0.40</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="stereoFusionHorizontalSlider_">
+               <property name="minimum">
+                <number>10</number>
+               </property>
+               <property name="maximum">
+                <number>200</number>
+               </property>
+               <property name="singleStep">
+                <number>2</number>
+               </property>
+               <property name="value">
+                <number>40</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QRadioButton" name="updateSortRadioButton_">
+            <layout class="QHBoxLayout" name="polygonOffsetHorizontalLayout_">
+             <item>
+              <widget class="QLabel" name="label_22">
+               <property name="text">
+                <string>Polygon Offset:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="polygonOffsetValueLabel_">
+               <property name="text">
+                <string>0.00</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="polygonOffsetHorizontalSlider_">
+               <property name="minimum">
+                <number>-400</number>
+               </property>
+               <property name="maximum">
+                <number>400</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="textOffsetHorizontalLayout_">
+             <item>
+              <widget class="QLabel" name="label_23">
+               <property name="text">
+                <string>Text Offset:     </string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="textOffsetValueLabel_">
+               <property name="text">
+                <string>0.00</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="textOffsetHorizontalSlider_">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>50</number>
+               </property>
+               <property name="value">
+                <number>0</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="fovHorizontalLayout_">
+             <item>
+              <widget class="QLabel" name="label_24">
+               <property name="text">
+                <string>Field of View:       </string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="fieldOfViewValueLabel_">
+               <property name="text">
+                <string>20</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="fieldOfViewHorizontalSlider_">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>180</number>
+               </property>
+               <property name="value">
+                <number>20</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+          <zorder></zorder>
+          <zorder></zorder>
+          <zorder></zorder>
+          <zorder></zorder>
+          <zorder></zorder>
+          <zorder></zorder>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="3">
+         <widget class="QGroupBox" name="globalSettingsGroupBox_">
+          <property name="title">
+           <string>Global Settings</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_11">
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="lightingCheckBox_">
              <property name="text">
-              <string>Intermittent Sort</string>
+              <string>Lighting</string>
              </property>
              <property name="checked">
               <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QRadioButton" name="listSortRadioButton_">
+           <item row="0" column="1">
+            <widget class="QCheckBox" name="stereoCheckBox_">
              <property name="text">
-              <string>List Sort</string>
+              <string>Stereo</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="bboxCheckBox_">
+             <property name="text">
+              <string>BBox</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QCheckBox" name="backCullCheckBox_">
+             <property name="text">
+              <string>Back Cull</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QCheckBox" name="useClipCheckBox_">
+             <property name="text">
+              <string>Use Clip</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QCheckBox" name="displayListCheckBox_">
+             <property name="text">
+              <string>Display List</string>
              </property>
             </widget>
            </item>
           </layout>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="0" column="1" rowspan="2" colspan="2">
+         <widget class="QGroupBox" name="shadeSettingsGroupBox_">
+          <property name="title">
+           <string>Shading Settings</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_12">
+           <item row="0" column="0">
+            <widget class="QRadioButton" name="wireRadioButton_">
+             <property name="text">
+              <string>Wire</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">shadingButtonGroup_</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QRadioButton" name="flatRadioButton_">
+             <property name="text">
+              <string>Flat</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">shadingButtonGroup_</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QRadioButton" name="gouraudRadioButton_">
+             <property name="text">
+              <string>Gouraud</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">shadingButtonGroup_</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="0" rowspan="2">
+         <widget class="QFrame" name="frame_2">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QLabel" name="currentBackgroundLabel_">
+             <property name="frameShape">
+              <enum>QFrame::Panel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="setBackgroundColorPushButton_">
+             <property name="text">
+              <string>Scene Color</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+          <zorder>currentBackgroundLabel_</zorder>
+          <zorder>setBackgroundColorPushButton_</zorder>
+          <zorder>currentBackgroundLabel_</zorder>
+          <zorder>setBackgroundColorPushButton_</zorder>
+         </widget>
+        </item>
+        <item row="6" column="0">
          <spacer name="verticalSpacer_3">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -197,7 +398,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>203</height>
+            <height>40</height>
            </size>
           </property>
          </spacer>
@@ -219,8 +420,8 @@
           </property>
           <property name="font">
            <font>
-            <weight>75</weight>
-            <bold>true</bold>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="title">
@@ -303,8 +504,8 @@
          <widget class="QGroupBox" name="groupBox_4">
           <property name="font">
            <font>
-            <weight>75</weight>
-            <bold>true</bold>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="title">
@@ -339,8 +540,8 @@
          <widget class="QGroupBox" name="groupBox_5">
           <property name="font">
            <font>
-            <weight>75</weight>
-            <bold>true</bold>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="title">
@@ -351,8 +552,8 @@
             <widget class="QLabel" name="label">
              <property name="font">
               <font>
-               <weight>75</weight>
-               <bold>true</bold>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
@@ -377,8 +578,8 @@
             <widget class="QLabel" name="label_2">
              <property name="font">
               <font>
-               <weight>75</weight>
-               <bold>true</bold>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
@@ -403,8 +604,8 @@
             <widget class="QLabel" name="label_3">
              <property name="font">
               <font>
-               <weight>75</weight>
-               <bold>true</bold>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
@@ -429,8 +630,8 @@
             <widget class="QLabel" name="label_4">
              <property name="font">
               <font>
-               <weight>75</weight>
-               <bold>true</bold>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
@@ -461,12 +662,12 @@
              </property>
              <property name="font">
               <font>
-               <weight>75</weight>
-               <bold>true</bold>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
-              <string>0.00</string>
+              <string>  0.00</string>
              </property>
             </widget>
            </item>
@@ -480,12 +681,12 @@
              </property>
              <property name="font">
               <font>
-               <weight>75</weight>
-               <bold>true</bold>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
-              <string>0.00</string>
+              <string>  0.00</string>
              </property>
             </widget>
            </item>
@@ -499,12 +700,12 @@
              </property>
              <property name="font">
               <font>
-               <weight>75</weight>
-               <bold>true</bold>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
-              <string>0.00</string>
+              <string>  0.00</string>
              </property>
             </widget>
            </item>
@@ -512,17 +713,269 @@
             <widget class="QLabel" name="dSliderValueLabel_">
              <property name="font">
               <font>
-               <weight>75</weight>
-               <bold>true</bold>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
-              <string>0.00</string>
+              <string>  0.00</string>
              </property>
             </widget>
            </item>
           </layout>
          </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>24</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="MaterialsTab">
+       <attribute name="title">
+        <string>Materials</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <item>
+         <widget class="QFrame" name="materialsFrame_">
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_14">
+             <property name="text">
+              <string>Ambient:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QDoubleSpinBox" name="ambientDoubleSpinBox_">
+             <property name="maximum">
+              <double>5.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.200000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_15">
+             <property name="text">
+              <string>Diffuse:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="diffuseDoubleSpinBox_">
+             <property name="minimum">
+              <double>0.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>5.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_16">
+             <property name="text">
+              <string>Specular:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QDoubleSpinBox" name="specularDoubleSpinBox_">
+             <property name="minimum">
+              <double>0.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>5.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.400000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_17">
+             <property name="text">
+              <string>Shininess:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QDoubleSpinBox" name="shininessDoubleSpinBox_">
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_18">
+             <property name="text">
+              <string>Emission:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QDoubleSpinBox" name="emissionDoubleSpinBox_">
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="fogGroupBox_">
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="title">
+           <string>Fog</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_10">
+           <item row="0" column="0" colspan="2">
+            <widget class="QCheckBox" name="fogOnVisibleObjectsCheckBox_">
+             <property name="text">
+              <string>Visible Objects Only</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QCheckBox" name="fogUseBGColorCheckBox_">
+             <property name="text">
+              <string>Use Background Color</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_19">
+             <property name="text">
+              <string>Fog Start:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QDoubleSpinBox" name="fogStartDoubleSpinBox_">
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_20">
+             <property name="text">
+              <string>Fog End:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QDoubleSpinBox" name="fogEndDoubleSpinBox_">
+             <property name="maximum">
+              <double>2.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.710000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QPushButton" name="fogColorPushButton_">
+             <property name="text">
+              <string>Fog Color</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLabel" name="fogColorLabel_">
+             <property name="frameShape">
+              <enum>QFrame::Panel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>63</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -532,14 +985,14 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <item>
-         <widget class="QGroupBox" name="groupBox">
+         <widget class="QGroupBox" name="autoRotateGroupBox_">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="font">
            <font>
-            <weight>75</weight>
-            <bold>true</bold>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="title">
@@ -586,8 +1039,8 @@
             <widget class="QCheckBox" name="autoRotateCheckBox_">
              <property name="font">
               <font>
-               <weight>75</weight>
-               <bold>true</bold>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="toolTip">
@@ -671,18 +1124,25 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_2">
+         <widget class="QGroupBox" name="viewOptionsGroupBox_">
           <property name="font">
            <font>
-            <weight>75</weight>
-            <bold>true</bold>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="title">
            <string>View Options</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="autoViewOnLoadCheckBox_">
+             <property name="text">
+              <string>Autoview on Load</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
             <widget class="QCheckBox" name="orientationCheckBox_">
              <property name="toolTip">
               <string>Toggle Orientation Axis</string>
@@ -695,6 +1155,20 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="orthoViewCheckBox_">
+             <property name="text">
+              <string>Ortho View</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QCheckBox" name="showAxisCheckBox_">
+             <property name="text">
+              <string>Show Axis</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -702,8 +1176,8 @@
          <widget class="QGroupBox" name="showScaleBarTextGroupBox_">
           <property name="font">
            <font>
-            <weight>75</weight>
-            <bold>true</bold>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="title">
@@ -711,6 +1185,9 @@
           </property>
           <property name="checkable">
            <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="1" column="5">
@@ -978,6 +1455,42 @@
         <string>Controls</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
+        <item row="4" column="0">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>222</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="invertZoomCheckBox_">
+          <property name="text">
+           <string>Invert Zoom</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QCheckBox" name="saveScreenShotOnUpdateCheckBox_">
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>Save screenshot on geometry update</string>
+          </property>
+          <property name="text">
+           <string>Save screenshot on update</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QComboBox" name="mouseControlComboBox_">
           <property name="currentIndex">
@@ -995,48 +1508,12 @@
           </item>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QCheckBox" name="invertZoomCheckBox_">
-          <property name="text">
-           <string>Invert Zoom</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QCheckBox" name="saveScreenShotOnUpdateCheckBox_">
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>Save screenshot on geometry update</string>
-          </property>
-          <property name="text">
-           <string>Save screenshot on update</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>222</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="2" column="0" colspan="2">
          <widget class="QGroupBox" name="zoomBox_">
           <property name="font">
            <font>
-            <weight>75</weight>
-            <bold>true</bold>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="title">
@@ -1107,6 +1584,51 @@
           </layout>
          </widget>
         </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QGroupBox" name="transparencyGroupBox_">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="title">
+           <string>Transparency Rendering</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QRadioButton" name="contSortRadioButton_">
+             <property name="text">
+              <string>Continuous Sort</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="updateSortRadioButton_">
+             <property name="text">
+              <string>Intermittent Sort</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="listSortRadioButton_">
+             <property name="text">
+              <string>List Sort</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -1118,5 +1640,6 @@
  <connections/>
  <buttongroups>
   <buttongroup name="planeButtonGroup_"/>
+  <buttongroup name="shadingButtonGroup_"/>
  </buttongroups>
 </ui>

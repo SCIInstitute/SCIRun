@@ -82,6 +82,17 @@ namespace Render {
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
     static const Core::Algorithms::AlgorithmParameterName BackgroundColor;
+    static const Core::Algorithms::AlgorithmParameterName Ambient;
+    static const Core::Algorithms::AlgorithmParameterName Diffuse;
+    static const Core::Algorithms::AlgorithmParameterName Specular;
+    static const Core::Algorithms::AlgorithmParameterName Shine;
+    static const Core::Algorithms::AlgorithmParameterName Emission;
+    static const Core::Algorithms::AlgorithmParameterName FogOn;
+    static const Core::Algorithms::AlgorithmParameterName ObjectsOnly;
+    static const Core::Algorithms::AlgorithmParameterName UseBGColor;
+    static const Core::Algorithms::AlgorithmParameterName FogStart;
+    static const Core::Algorithms::AlgorithmParameterName FogEnd;
+    static const Core::Algorithms::AlgorithmParameterName FogColor;
     static const Core::Algorithms::AlgorithmParameterName ShowScaleBar;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarUnitValue;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarLength;
@@ -90,6 +101,16 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName ScaleBarNumTicks;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarLineWidth;
     static const Core::Algorithms::AlgorithmParameterName ScaleBarFontSize;
+    static const Core::Algorithms::AlgorithmParameterName Lighting;
+    static const Core::Algorithms::AlgorithmParameterName ShowBBox;
+    static const Core::Algorithms::AlgorithmParameterName UseClip;
+    static const Core::Algorithms::AlgorithmParameterName Stereo;
+    static const Core::Algorithms::AlgorithmParameterName BackCull;
+    static const Core::Algorithms::AlgorithmParameterName DisplayList;
+    static const Core::Algorithms::AlgorithmParameterName StereoFusion;
+    static const Core::Algorithms::AlgorithmParameterName PolygonOffset;
+    static const Core::Algorithms::AlgorithmParameterName TextOffset;
+    static const Core::Algorithms::AlgorithmParameterName FieldOfView;
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
 #ifdef BUILD_TESTING
