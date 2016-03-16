@@ -55,6 +55,7 @@ SET(Interface_Modules_Render_HEADERS
   ES/comp/ClippingPlaneUniforms.h
   ES/systems/RenderBasicSys.h
   ES/systems/RenderTransBasicSys.h
+  ES/systems/RenderTransText.h
 )
 
 SET(Interface_Modules_Render_SOURCES 
@@ -75,6 +76,7 @@ SET(Interface_Modules_Render_SOURCES
   ES/comp/ClippingPlaneUniforms.cc
   ES/systems/RenderBasicSys.cc
   ES/systems/RenderTransBasicSys.cc
+  ES/systems/RenderTransText.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})
