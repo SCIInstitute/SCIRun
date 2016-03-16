@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -62,21 +62,28 @@ bool SCIRun::TestUtils::compareNodes(FieldHandle expected, FieldHandle actual)
   }
   catch (...)
   {
-    std::cerr << " ERROR: RefineTetMeshLocallyAlgorithm: Case 58 does not work (could not get field nodes from input files). " << std::endl;
+    std::cerr << " ERROR: could not get field nodes from input files. " << std::endl;
     return false;
   }
 
   if (output_nodes->ncols() != exp_result_nodes->ncols() || output_nodes->nrows() != exp_result_nodes->nrows())
   {
-    std::cerr << " ERROR: RefineTetMeshLocallyAlgorithm: Case 58 does not work (number of nodes is different than expected). " << std::endl;
+    std::cerr << " ERROR: number of nodes is different than expected. " << std::endl;
     return false;
   }
 
   for (int idx = 0; idx < exp_result_nodes->nrows(); ++idx)
   {
-    EXPECT_NEAR((*exp_result_nodes)(idx, 0), (*output_nodes)(idx, 0), epsilon);
-    EXPECT_NEAR((*exp_result_nodes)(idx, 1), (*output_nodes)(idx, 1), epsilon);
-    EXPECT_NEAR((*exp_result_nodes)(idx, 2), (*output_nodes)(idx, 2), epsilon);
+    for (int c = 0; c < 3; ++c)
+    {
+      if (fabs((*exp_result_nodes)(idx, c) - (*output_nodes)(idx, c)) > epsilon)
+      {
+        std::cerr << " ERROR: node (" << idx << "," << c << ") coordinate value " << (*output_nodes)(idx, c) <<
+          " is different than expected: " << (*exp_result_nodes)(idx, c) << std::endl;
+        std::cerr << "Full expected nodes: \n" << *exp_result_nodes << "\n\nFull actual nodes:\n" << *output_nodes << std::endl;
+        return false;
+      }
+    }
   }
   return true;
 }

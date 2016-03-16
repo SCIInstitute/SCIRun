@@ -101,7 +101,7 @@ boost::python::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field
   for (const auto& fieldName : ma.getfieldnames())
   {
     auto subField = ma.getfield(0, fieldName);
-    //std::cout << "Field: " << fieldName << std::endl;
+    // std::cout << "Field: " << fieldName << std::endl;
     switch (subField.gettype())
     {
     case matfilebase::miUINT8:
@@ -124,6 +124,9 @@ boost::python::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field
     {
       std::vector<double> v;
       subField.getnumericarray(v);
+      // std::cout << "miDOUBLE " << subField.getm() << "x" << subField.getn() << "\n";
+      // std::copy(v.begin(), v.end(), std::ostream_iterator<double>(std::cout, " "));
+      // std::cout << "\n...\n";
       if (1 != subField.getm() && 1 != subField.getn())
         matlabStructure[fieldName] = toPythonListOfLists(v, subField.getn(), subField.getm());
       else
@@ -131,7 +134,7 @@ boost::python::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field
       break;
     }
     default:
-      std::cout << "some other array: " << std::endl;
+      std::cout << "some other array: " << fieldName << " of type " << subField.gettype() << std::endl;
       break;
     }
   }
@@ -162,7 +165,7 @@ boost::python::object SCIRun::Core::Python::convertStringToPython(StringHandle s
   return {};
 }
 
-bool DenseMatrixExtractor::check() const 
+bool DenseMatrixExtractor::check() const
 {
   boost::python::extract<boost::python::list> e(object_);
   if (!e.check())
@@ -187,7 +190,7 @@ DatatypeHandle DenseMatrixExtractor::operator()() const
     auto list = e();
     auto length = len(list);
     bool copyValues = false;
-        
+
     if (length > 0)
     {
       boost::python::extract<boost::python::list> firstRow(list[0]);
@@ -242,7 +245,7 @@ bool FieldExtractor::check() const
   auto length = len(dict);
   if (0 == length)
     return false;
-  
+
   auto keys = dict.keys();
   auto values = dict.values();
 
@@ -290,7 +293,7 @@ namespace
         boost::python::extract<boost::python::list> twoDlistExtract(list[0]);
         if (twoDlistExtract.check())
         {
-          std::vector<int> dims = { static_cast<int>(len(list)), static_cast<int>(len(list[0])) };
+          std::vector<int> dims = { static_cast<int>(len(list[0])), static_cast<int>(len(list)) };
           auto vectorOfLists = to_std_vector<boost::python::list>(list);
           std::vector<std::vector<double>> vv;
           std::transform(vectorOfLists.begin(), vectorOfLists.end(), std::back_inserter(vv), [](const boost::python::list& inner) { return to_std_vector<double>(inner); });
@@ -326,7 +329,7 @@ DatatypeHandle FieldExtractor::operator()() const
   for (int i = 0; i < length; ++i)
   {
     boost::python::extract<std::string> key_i(keys[i]);
-  
+
     boost::python::extract<std::string> value_i_string(values[i]);
     boost::python::extract<boost::python::list> value_i_list(values[i]);
     auto fieldName = key_i();
@@ -339,7 +342,7 @@ DatatypeHandle FieldExtractor::operator()() const
   return field;
 }
 
-namespace 
+namespace
 {
   Variable makeDatatypeVariable(const DatatypePythonExtractor& extractor)
   {

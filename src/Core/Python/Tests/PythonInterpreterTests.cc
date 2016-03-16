@@ -204,13 +204,13 @@ TEST_F(FieldConversionTests, LoopThroughFieldFiles)
   {
     auto expected = field;
     FieldInformation expectedInfo(expected);
-    std::cout << "Converting " << expectedInfo.get_field_type_id() << " to python." << std::endl;
+    // std::cout << "Converting " << expectedInfo.get_field_type_id() << " to python." << std::endl;
     auto pyField = convertFieldToPython(expected);
     FieldExtractor converter(pyField);
 
     ASSERT_TRUE(converter.check());
 
-    std::cout << "Converting " << expectedInfo.get_field_type_id() << " from python." << std::endl;
+    // std::cout << "Converting " << expectedInfo.get_field_type_id() << " from python." << std::endl;
     auto actual = converter();
     ASSERT_TRUE(actual != nullptr);
     auto actualField = boost::dynamic_pointer_cast<Field>(actual);
@@ -219,7 +219,7 @@ TEST_F(FieldConversionTests, LoopThroughFieldFiles)
     FieldInformation info(actualField);
     ASSERT_EQ(expectedInfo, info);
 
-    EXPECT_TRUE(compareNodes(expected, actualField));
+    ASSERT_TRUE(compareNodes(expected, actualField));
 
     std::cout << "Done testing " << expectedInfo.get_field_type_id() << "." << std::endl;
   }
