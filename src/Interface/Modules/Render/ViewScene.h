@@ -78,7 +78,10 @@ namespace SCIRun {
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
+      void autoViewOnLoadChecked(bool value);
+      void useOrthoViewChecked(bool value);
       void showOrientationChecked(bool value);
+      void showAxisChecked(bool value);
       void viewBarButtonClicked();
       void viewAxisSelected(int index);
       void viewVectorSelected(int index);
@@ -105,6 +108,18 @@ namespace SCIRun {
       void setClippingPlaneY(int index);
       void setClippingPlaneZ(int index);
       void setClippingPlaneD(int index);
+      //Materials Controls
+      void setAmbientValue(double value);
+      void setDiffuseValue(double value);
+      void setSpecularValue(double value);
+      void setShininessValue(double value);
+      void setEmissionValue(double value);
+      void setFogOn(bool value);
+      void setFogOnVisibleObjects(bool value);
+      void setFogUseBGColor(bool value);
+      void setFogStartValue(double value);
+      void setFogEndValue(double value);
+      void assignFogColor();
       //Scale Bar
       void setScaleBarVisible(bool value);
       void setScaleBarFontSize(int value);
@@ -114,6 +129,17 @@ namespace SCIRun {
       void setScaleBarMultiplier(double value);
       void setScaleBarNumTicks(int value);
       void setScaleBarLineWidth(double value);
+      //Render Settings
+      void lightingChecked(bool value);
+      void showBBoxChecked(bool value);
+      void useClipChecked(bool value);
+      void stereoChecked(bool value);
+      void useBackCullChecked(bool value);
+      void displayListChecked(bool value);
+      void setStereoFusion(int value);
+      void setPolygonOffset(int value);
+      void setTextOffset(int value);
+      void setFieldOfView(int value);
 
     protected:
       virtual void mousePressEvent(QMouseEvent* event);
@@ -151,7 +177,9 @@ namespace SCIRun {
       void addConfigurationButton();
       void addConfigurationDock(const QString& viewName);
       void setupClippingPlanes();
+      void setupMaterials();
       void setupScaleBar();
+      void setupRenderTabValues();
       void hideConfigurationDock();
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
@@ -178,6 +206,7 @@ namespace SCIRun {
       bool selected_;
       int clippingPlaneIndex_;
       QColor bgColor_;
+      QColor fogColor_;
       ScaleBar scaleBar_;
       std::vector<ClippingPlane> clippingPlanes_;
       std::vector<std::string> unselectedObjectNames_;

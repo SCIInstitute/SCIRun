@@ -66,6 +66,17 @@ void ViewScene::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Ambient, 0.2);
+  state->setValue(Diffuse, 1.0);
+  state->setValue(Specular, 0.4);
+  state->setValue(Shine, 1.0);
+  state->setValue(Emission, 1.0);
+  state->setValue(FogOn, false);
+  state->setValue(ObjectsOnly, true);
+  state->setValue(UseBGColor, true);
+  state->setValue(FogStart, 0.0);
+  state->setValue(FogEnd, 0.71);
+  state->setValue(FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
   state->setValue(ShowScaleBar, false);
   state->setValue(ScaleBarUnitValue, "mm");
   state->setValue(ScaleBarLength, 1.0);
@@ -74,6 +85,16 @@ void ViewScene::setStateDefaults()
   state->setValue(ScaleBarNumTicks, 11);
   state->setValue(ScaleBarLineWidth, 1.0);
   state->setValue(ScaleBarFontSize, 8);
+  state->setValue(Lighting, true);
+  state->setValue(ShowBBox, false);
+  state->setValue(UseClip, true);
+  state->setValue(BackCull, false);
+  state->setValue(DisplayList, false);
+  state->setValue(Stereo, false);
+  state->setValue(StereoFusion, 0.4);
+  state->setValue(PolygonOffset, 0.0);
+  state->setValue(TextOffset, 0.0);
+  state->setValue(FieldOfView, 20);
   postStateChangeInternalSignalHookup();
 }
 
@@ -211,6 +232,17 @@ void ViewScene::processViewSceneObjectFeedback()
 }
 
 const AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+const AlgorithmParameterName ViewScene::Ambient("Ambient");
+const AlgorithmParameterName ViewScene::Diffuse("Diffuse");
+const AlgorithmParameterName ViewScene::Specular("Specular");
+const AlgorithmParameterName ViewScene::Shine("Shine");
+const AlgorithmParameterName ViewScene::Emission("Emission");
+const AlgorithmParameterName ViewScene::FogOn("FogOn");
+const AlgorithmParameterName ViewScene::ObjectsOnly("ObjectsOnly");
+const AlgorithmParameterName ViewScene::UseBGColor("UseBGColor");
+const AlgorithmParameterName ViewScene::FogStart("FogStart");
+const AlgorithmParameterName ViewScene::FogEnd("FogEnd");
+const AlgorithmParameterName ViewScene::FogColor("FogColor");
 const AlgorithmParameterName ViewScene::ShowScaleBar("ShowScaleBar");
 const AlgorithmParameterName ViewScene::ScaleBarUnitValue("ScaleBarUnitValue");
 const AlgorithmParameterName ViewScene::ScaleBarLength("ScaleBarLength");
@@ -219,3 +251,13 @@ const AlgorithmParameterName ViewScene::ScaleBarMultiplier("ScaleBarMultiplier")
 const AlgorithmParameterName ViewScene::ScaleBarNumTicks("ScaleBarNumTicks");
 const AlgorithmParameterName ViewScene::ScaleBarLineWidth("ScaleBarLineWidth");
 const AlgorithmParameterName ViewScene::ScaleBarFontSize("ScaleBarFontSize");
+const AlgorithmParameterName ViewScene::Lighting("Lighting");
+const AlgorithmParameterName ViewScene::ShowBBox("ShowBBox");
+const AlgorithmParameterName ViewScene::UseClip("UseClip");
+const AlgorithmParameterName ViewScene::Stereo("Stereo");
+const AlgorithmParameterName ViewScene::BackCull("BackCull");
+const AlgorithmParameterName ViewScene::DisplayList("DisplayList");
+const AlgorithmParameterName ViewScene::StereoFusion("StereoFusion");
+const AlgorithmParameterName ViewScene::PolygonOffset("PolygonOffset");
+const AlgorithmParameterName ViewScene::TextOffset("TextOffset");
+const AlgorithmParameterName ViewScene::FieldOfView("FieldOfView");

@@ -67,7 +67,7 @@ namespace shaders = CPM_GL_SHADERS_NS;
 namespace SCIRun {
 namespace Render {
 
-class RenderBasicSys :
+class RenderTransText :
     public es::GenericSystem<true,
                              RenderBasicGeom,   // TAG class
                              SRRenderState,
@@ -93,7 +93,7 @@ class RenderBasicSys :
 {
 public:
 
-  static const char* getName() {return "RenderBasicSys";}
+  static const char* getName() {return "RenderTransText";}
 
   bool isComponentOptional(uint64_t type) override
   {
@@ -139,10 +139,7 @@ public:
       return;
     }
     
-    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY) || 
-        srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) || 
-        srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES) ||
-        srstate.front().state.get(RenderState::IS_TEXT))
+    if (!srstate.front().state.get(RenderState::IS_TEXT))
     {
       return;
     }
@@ -209,15 +206,7 @@ public:
     // Bind VBO and IBO
     GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
-    
-    bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
-    bool cullFace = glIsEnabled(GL_CULL_FACE);
-    bool blend = glIsEnabled(GL_BLEND);
-    
-    GL(glDepthMask(GL_TRUE));
-    GL(glDisable(GL_CULL_FACE));
-    GL(glDisable(GL_BLEND));
-		
+
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)
     {
@@ -247,6 +236,17 @@ public:
     }
 
     geom.front().attribs.bind();
+    
+    // Disable zwrite if we are rendering a transparent object.
+    bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
+    bool cullFace = glIsEnabled(GL_CULL_FACE);
+    bool blend = glIsEnabled(GL_BLEND);
+
+    GL(glEnable(GL_DEPTH_TEST));
+    GL(glDepthMask(GL_FALSE));
+    GL(glDisable(GL_CULL_FACE));
+    GL(glEnable(GL_BLEND));
+    GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
     if (rlist.size() > 0)
     {
@@ -361,17 +361,17 @@ public:
       }
     }
 		
-    if (!depthMask)
+    if (depthMask)
     {
-      GL(glDepthMask(GL_FALSE));
+      GL(glDepthMask(GL_TRUE));
     }
     if (cullFace)
     {
       GL(glEnable(GL_CULL_FACE));
     }
-    if (blend)
+    if (!blend)
     {
-      GL(glEnable(GL_BLEND));
+      GL(glDisable(GL_BLEND));
     }
 
     // unbind textures
@@ -392,14 +392,14 @@ public:
   }
 };
 
-void registerSystem_RenderBasicGeom(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_RenderTransTextGeom(CPM_ES_ACORN_NS::Acorn& core)
 {
-  core.registerSystem<RenderBasicSys>();
+  core.registerSystem<RenderTransText>();
 }
 
-const char* getSystemName_RenderBasicGeom()
+const char* getSystemName_RenderTransTextGeom()
 {
-  return RenderBasicSys::getName();
+  return RenderTransText::getName();
 }
 
 } // namespace Render

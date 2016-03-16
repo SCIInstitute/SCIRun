@@ -438,11 +438,30 @@ void ViewSceneDialog::autoViewClicked()
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::autoViewOnLoadChecked(bool value)
+{
+  //TODO: Add to SRInterface
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::useOrthoViewChecked(bool value)
+{
+  //TODO: Add to SRInterface
+}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::showOrientationChecked(bool value)
 {
   auto spire = mSpire.lock();
   spire->showOrientation(value);
 }
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::showAxisChecked(bool value)
+{
+  //TODO: Add to SRInterface
+}
+
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewBarButtonClicked()
@@ -617,6 +636,7 @@ void ViewSceneDialog::configurationButtonClicked()
     mConfigurationDock->setSampleColor(bgColor_);
     mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
       scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
+    setupMaterials();
     newGeometryValue();
   }
 
@@ -797,6 +817,70 @@ void ViewSceneDialog::updatClippingPlaneDisplay()
 }
 
 //------------------------------------------------------------------------------
+//-------------------Materials Bar Tools----------------------------------------
+void ViewSceneDialog::setAmbientValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::Ambient, value);
+}
+
+void ViewSceneDialog::setDiffuseValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::Diffuse, value);
+}
+
+void ViewSceneDialog::setSpecularValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::Specular, value);
+}
+
+void ViewSceneDialog::setShininessValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::Shine, value);
+}
+
+void ViewSceneDialog::setEmissionValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::Emission, value);
+}
+
+void ViewSceneDialog::setFogOn(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::FogOn, value);
+}
+
+void ViewSceneDialog::setFogOnVisibleObjects(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::ObjectsOnly, value);
+}
+
+void ViewSceneDialog::setFogUseBGColor(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::UseBGColor, value);
+}
+
+void ViewSceneDialog::setFogStartValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::FogStart, value);
+}
+
+void ViewSceneDialog::setFogEndValue(double value)
+{
+  state_->setValue(Modules::Render::ViewScene::FogEnd, value);
+}
+
+void ViewSceneDialog::assignFogColor()
+{
+  QString title = windowTitle() + " Choose fog color";
+  auto newColor = QColorDialog::getColor(fogColor_, this, title);
+  if (newColor.isValid())
+  {
+    fogColor_ = newColor;
+    mConfigurationDock->setFogColorLabel(fogColor_);
+    state_->setValue(Modules::Render::ViewScene::FogColor, ColorRGB(fogColor_.red(), fogColor_.green(), fogColor_.blue()).toString());
+  }
+}
+
+//------------------------------------------------------------------------------
 //-------------------Scale Bar Tools--------------------------------------------
 void ViewSceneDialog::setScaleBarVisible(bool value)
 {
@@ -844,6 +928,61 @@ void ViewSceneDialog::setScaleBarLineWidth(double value)
 {
   scaleBar_.lineWidth = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarLineWidth, value);
+}
+
+//------------------------------------------------------------------------------
+//-------------------Render Settings--------------------------------------------
+void ViewSceneDialog::lightingChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::Lighting, value);
+}
+
+void ViewSceneDialog::showBBoxChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::ShowBBox, value);
+}
+
+void ViewSceneDialog::useClipChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::UseClip, value);
+}
+
+void ViewSceneDialog::stereoChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::Stereo, value);
+}
+
+void ViewSceneDialog::useBackCullChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::BackCull, value);
+}
+
+void ViewSceneDialog::displayListChecked(bool value)
+{
+  state_->setValue(Modules::Render::ViewScene::DisplayList, value);
+}
+
+void ViewSceneDialog::setStereoFusion(int value)
+{
+  double fusion = value / 100;
+  state_->setValue(Modules::Render::ViewScene::StereoFusion, fusion);
+}
+
+void ViewSceneDialog::setPolygonOffset(int value)
+{
+  double offset = value / 100;
+  state_->setValue(Modules::Render::ViewScene::PolygonOffset, offset);
+}
+
+void ViewSceneDialog::setTextOffset(int value)
+{
+  double offset = value / 100;
+  state_->setValue(Modules::Render::ViewScene::TextOffset, offset);
+}
+
+void ViewSceneDialog::setFieldOfView(int value)
+{
+  state_->setValue(Modules::Render::ViewScene::FieldOfView, value);
 }
 
 //------------------------------------------------------------------------------
@@ -992,6 +1131,36 @@ void ViewSceneDialog::setupClippingPlanes()
   }
 }
 
+void ViewSceneDialog::setupMaterials()
+{
+  auto colorStr = state_->getValue(Modules::Render::ViewScene::FogColor).toString();
+  if (!colorStr.empty())
+  {
+    ColorRGB color(colorStr);
+    fogColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+
+    mConfigurationDock->setMaterialTabValues(
+      state_->getValue(Modules::Render::ViewScene::Ambient).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::Diffuse).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::Specular).toDouble(), 
+      state_->getValue(Modules::Render::ViewScene::Shine).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::Emission).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::FogOn).toBool(),
+      state_->getValue(Modules::Render::ViewScene::ObjectsOnly).toBool(),
+      state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool(),
+      state_->getValue(Modules::Render::ViewScene::FogStart).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::FogEnd).toDouble());
+  }
+  else
+  {
+    fogColor_ = Qt::blue;
+    mConfigurationDock->setMaterialTabValues(0.2, 1.0, 0.4, 1.0, 1.0, false, true, true, 0.0, 0.71);
+  }
+  mConfigurationDock->setFogColorLabel(fogColor_);
+}
+
 void ViewSceneDialog::setupScaleBar()
 {
   if (state_->getValue(Modules::Render::ViewScene::ScaleBarUnitValue).toString() != "")
@@ -1015,6 +1184,29 @@ void ViewSceneDialog::setupScaleBar()
     scaleBar_.numTicks = 11;
     scaleBar_.lineWidth = 1.0;
     scaleBar_.fontSize = 8;
+  }
+}
+
+void ViewSceneDialog::setupRenderTabValues()
+{
+  auto valueSet = state_->getValue(Modules::Render::ViewScene::Lighting).toString();
+  if (!valueSet.empty())
+  {
+    mConfigurationDock->setRenderTabValues(
+      state_->getValue(Modules::Render::ViewScene::Lighting).toBool(),
+      state_->getValue(Modules::Render::ViewScene::ShowBBox).toBool(),
+      state_->getValue(Modules::Render::ViewScene::UseClip).toBool(),
+      state_->getValue(Modules::Render::ViewScene::BackCull).toBool(),
+      state_->getValue(Modules::Render::ViewScene::DisplayList).toBool(),
+      state_->getValue(Modules::Render::ViewScene::Stereo).toBool(),
+      state_->getValue(Modules::Render::ViewScene::StereoFusion).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::PolygonOffset).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::TextOffset).toDouble(),
+      state_->getValue(Modules::Render::ViewScene::FieldOfView).toInt());
+  }
+  else
+  {
+    mConfigurationDock->setRenderTabValues(true, false, true, false, false, false, 0.4, 0.0, 0.0, 20);
   }
 }
 

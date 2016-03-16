@@ -246,7 +246,8 @@ private:
 
     if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY) &&
         !srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) &&
-        !srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES))
+        !srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES) &&
+        !srstate.front().state.get(RenderState::IS_TEXT))
     {
       return;
     }
