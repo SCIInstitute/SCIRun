@@ -205,7 +205,8 @@ TEST_F(FieldConversionTests, LoopThroughFieldFiles)
     auto expected = field;
     FieldInformation expectedInfo(expected);
     std::cout << "Converting " << expectedInfo.get_field_type_id() << " to python." << std::endl;
-    FieldExtractor converter(convertFieldToPython(expected));
+    auto pyField = convertFieldToPython(expected);
+    FieldExtractor converter(pyField);
 
     ASSERT_TRUE(converter.check());
 
@@ -217,6 +218,9 @@ TEST_F(FieldConversionTests, LoopThroughFieldFiles)
 
     FieldInformation info(actualField);
     ASSERT_EQ(expectedInfo, info);
+
+    EXPECT_TRUE(compareNodes(expected, actualField));
+
     std::cout << "Done testing " << expectedInfo.get_field_type_id() << "." << std::endl;
   }
 }
@@ -250,7 +254,7 @@ TEST_F(FieldConversionTests, RoundTripTriSurf)
 {
   auto expected = CreateTriSurfScalarOnNode();
   auto pyField = convertFieldToPython(expected);
-  EXPECT_EQ(9, len(pyField.items()));
+  EXPECT_EQ(10, len(pyField.items()));
 
   FieldExtractor converter(pyField);
 
@@ -275,7 +279,7 @@ TEST_F(FieldConversionTests, RoundTripTetVolNode)
 {
   auto expected = CreateTetMeshScalarOnNode();
   auto pyField = convertFieldToPython(expected);
-  EXPECT_EQ(9, len(pyField.items()));
+  EXPECT_EQ(10, len(pyField.items()));
 
   FieldExtractor converter(pyField);
 
@@ -291,16 +295,16 @@ TEST_F(FieldConversionTests, RoundTripTetVolNode)
   EXPECT_TRUE(info.is_double());
   EXPECT_TRUE(info.is_scalar());
   EXPECT_TRUE(info.is_linear());
-  EXPECT_EQ("TriSurfMesh<TriLinearLgn<Point>>", info.get_mesh_type_id());
-  EXPECT_EQ("TriSurfMesh", info.get_mesh_type());
-  EXPECT_EQ("GenericField<TriSurfMesh<TriLinearLgn<Point>>,TriLinearLgn<double>,vector<double>>", info.get_field_type_id());
+  EXPECT_EQ("TetVolMesh<TetLinearLgn<Point>>", info.get_mesh_type_id());
+  EXPECT_EQ("TetVolMesh", info.get_mesh_type());
+  EXPECT_EQ("GenericField<TetVolMesh<TetLinearLgn<Point>>,TetLinearLgn<double>,vector<double>>", info.get_field_type_id());
 }
 
 TEST_F(FieldConversionTests, RoundTripTetVolCell)
 {
   auto expected = CreateTetMeshScalarOnElem();
   auto pyField = convertFieldToPython(expected);
-  EXPECT_EQ(9, len(pyField.items()));
+  EXPECT_EQ(10, len(pyField.items()));
 
   FieldExtractor converter(pyField);
 
@@ -316,9 +320,9 @@ TEST_F(FieldConversionTests, RoundTripTetVolCell)
   EXPECT_TRUE(info.is_double());
   EXPECT_TRUE(info.is_scalar());
   EXPECT_TRUE(info.is_constantdata());
-  EXPECT_EQ("TriSurfMesh<TriLinearLgn<Point>>", info.get_mesh_type_id());
-  EXPECT_EQ("TriSurfMesh", info.get_mesh_type());
-  EXPECT_EQ("GenericField<TriSurfMesh<TriLinearLgn<Point>>,TriLinearLgn<double>,vector<double>>", info.get_field_type_id());
+  EXPECT_EQ("TetVolMesh<TetLinearLgn<Point>>", info.get_mesh_type_id());
+  EXPECT_EQ("TetVolMesh", info.get_mesh_type());
+  EXPECT_EQ("GenericField<TetVolMesh<TetLinearLgn<Point>>,ConstantBasis<double>,vector<double>>", info.get_field_type_id());
 }
 
 TEST_F(FieldConversionTests, RejectsEmptyDictionary)

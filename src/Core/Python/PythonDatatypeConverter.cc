@@ -101,6 +101,7 @@ boost::python::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field
   for (const auto& fieldName : ma.getfieldnames())
   {
     auto subField = ma.getfield(0, fieldName);
+    //std::cout << "Field: " << fieldName << std::endl;
     switch (subField.gettype())
     {
     case matfilebase::miUINT8:

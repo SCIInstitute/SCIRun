@@ -28,6 +28,7 @@
 
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 
 using namespace SCIRun;
 
@@ -47,4 +48,35 @@ FieldHandle SCIRun::TestUtils::loadFieldFromFile(const boost::filesystem::path& 
     throw "File read error";
   }
   return handle;
+}
+
+bool SCIRun::TestUtils::compareNodes(FieldHandle expected, FieldHandle actual)
+{
+  Core::Algorithms::Fields::GetMeshNodesAlgo getfieldnodes_algo;
+  Core::Datatypes::DenseMatrixHandle output_nodes, exp_result_nodes;
+  const double epsilon = 1e-8;
+  try
+  {
+    getfieldnodes_algo.run(actual, output_nodes);
+    getfieldnodes_algo.run(expected, exp_result_nodes);
+  }
+  catch (...)
+  {
+    std::cerr << " ERROR: RefineTetMeshLocallyAlgorithm: Case 58 does not work (could not get field nodes from input files). " << std::endl;
+    return false;
+  }
+
+  if (output_nodes->ncols() != exp_result_nodes->ncols() || output_nodes->nrows() != exp_result_nodes->nrows())
+  {
+    std::cerr << " ERROR: RefineTetMeshLocallyAlgorithm: Case 58 does not work (number of nodes is different than expected). " << std::endl;
+    return false;
+  }
+
+  for (int idx = 0; idx < exp_result_nodes->nrows(); ++idx)
+  {
+    EXPECT_NEAR((*exp_result_nodes)(idx, 0), (*output_nodes)(idx, 0), epsilon);
+    EXPECT_NEAR((*exp_result_nodes)(idx, 1), (*output_nodes)(idx, 1), epsilon);
+    EXPECT_NEAR((*exp_result_nodes)(idx, 2), (*output_nodes)(idx, 2), epsilon);
+  }
+  return true;
 }
