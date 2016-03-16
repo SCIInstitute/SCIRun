@@ -109,6 +109,16 @@ boost::python::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field
       matlabStructure[fieldName] = str;
       break;
     }
+    case matfilebase::miUINT32:
+    {
+      std::vector<unsigned int> v;
+      subField.getnumericarray(v);
+      if (1 != subField.getm() && 1 != subField.getn())
+        matlabStructure[fieldName] = toPythonListOfLists(v, subField.getn(), subField.getm());
+      else
+        matlabStructure[fieldName] = toPythonList(v);
+      break;
+    }
     case matfilebase::miDOUBLE:
     {
       std::vector<double> v;

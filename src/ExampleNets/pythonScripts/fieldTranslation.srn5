@@ -227,13 +227,19 @@
 									<value>
 										<which>2</which>
 										<value># Insert Python code here using the SCIRun API.
+
 f = FieldInput1
 print(f)
 fieldOutput1 = f
+
 f = fieldInput2
+print(f)
 fieldOutput2 = f
+
 f = fieldInput3
+print(f)
 fieldOutput3 = f
+
 
 </value>
 									</value>
@@ -645,8 +651,8 @@ fieldOutput3 = f
 		<item>
 			<first>InterfaceWithPython:0</first>
 			<second>
-				<first>-4.72000000000000000e+002</first>
-				<second>-2.71000000000000000e+002</second>
+				<first>-5.32000000000000000e+002</first>
+				<second>-2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
@@ -666,8 +672,8 @@ fieldOutput3 = f
 		<item>
 			<first>ReportFieldInfo:1</first>
 			<second>
-				<first>-4.23000000000000000e+002</first>
-				<second>-7.40000000000000000e+001</second>
+				<first>-4.56000000000000000e+002</first>
+				<second>0.00000000000000000e+000</second>
 			</second>
 		</item>
 		<item>
