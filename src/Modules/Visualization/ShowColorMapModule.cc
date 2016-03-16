@@ -340,7 +340,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       SpireIBO geomIBO2(iboName, SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
       geom->mIBOs.push_back(geomIBO2);
       renState.set(RenderState::USE_COLORMAP, false);
-      renState.set(RenderState::USE_TRANSPARENCY, true);
+      renState.set(RenderState::IS_TEXT, true);
       char c[2] = { p[0], 0 };
       SpireText text(c, ftFace_);
 
