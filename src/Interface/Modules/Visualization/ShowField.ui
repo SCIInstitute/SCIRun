@@ -65,7 +65,7 @@
          <string notr="true"/>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="nodesTab_">
          <attribute name="title">
@@ -578,7 +578,7 @@
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QFrame" name="frame">
+           <widget class="QFrame" name="textOptionsFrame_">
             <property name="font">
              <font>
               <weight>50</weight>
@@ -696,7 +696,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_8">
+           <widget class="QGroupBox" name="textColoringGroupBox_">
             <property name="font">
              <font>
               <weight>50</weight>

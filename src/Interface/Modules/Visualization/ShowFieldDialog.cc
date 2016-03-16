@@ -106,6 +106,10 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   //groupBox_5->setVisible(false); //face coloring
   //checkBox->setVisible(false); //Use Face Normal box
   //checkBox_2->setVisible(false); //Images as texture box
+
+  //Text Tab
+  textOptionsFrame_->setEnabled(false);
+  textColoringGroupBox_->setEnabled(false);
 }
 
 void ShowFieldDialog::push()
