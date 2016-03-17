@@ -163,7 +163,6 @@ ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
 {
   setSceneRect(colorMapPreviewRect);
   addDefaultLine();
-  alphaManager_.updateAlphaFunction();
 }
 
 void ColormapPreview::mousePressEvent(QMouseEvent* event)
@@ -179,8 +178,6 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
   //TODO: remove point if event & RightMouseButton
 
   //TODO: points are movable!
-
-  alphaManager_.updateAlphaFunction();
 }
 
   static QPen alphaLinePen(Qt::red, 1);
@@ -196,8 +193,8 @@ void ColormapPreview::addDefaultLine()
 
 void AlphaFunctionManager::insertEndpoints()
 {
-  alphaPoints_.insert(defaultStart_);
-  alphaPoints_.insert(defaultEnd_);
+  insert(defaultStart_);
+  insert(defaultEnd_);
 }
 
 void ColormapPreview::removeDefaultLine()
@@ -234,6 +231,7 @@ bool AlphaFunctionManager::alreadyExists(const QPointF& point) const
 void AlphaFunctionManager::insert(const QPointF& p)
 {
   alphaPoints_.insert(p);
+  updateAlphaFunction();
 }
 
 void ColormapPreview::drawAlphaPolyline()
@@ -264,11 +262,11 @@ void ColormapPreview::clearAlphaPointGraphics()
     if (dynamic_cast<QGraphicsEllipseItem*>(item))
       scene()->removeItem(item);
   }
-  alphaManager_.clearAlphaPoints();
+  alphaManager_.clear();
   addDefaultLine();
 }
 
-void AlphaFunctionManager::clearAlphaPoints()
+void AlphaFunctionManager::clear()
 {
   alphaPoints_.clear();
   alphaFunction_.assign(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA);

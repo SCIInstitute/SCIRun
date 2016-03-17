@@ -49,12 +49,12 @@ namespace SCIRun {
     {
     public:
       AlphaFunctionManager(const QPointF& start, const QPointF& end);
-      void updateAlphaFunction();
-      void clearAlphaPoints();
+      void clear();
       void insertEndpoints();
       void insert(const QPointF& p);
       bool alreadyExists(const QPointF& p) const;
     private:
+      void updateAlphaFunction();
       std::pair<QPointF,QPointF> alphaLineEndpointsAtColor(double color) const;
       double pointYToAlpha(double y) const;
       QPointF colorToPoint(double color) const;
