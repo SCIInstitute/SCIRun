@@ -37,6 +37,7 @@
 
 using namespace SCIRun;
 using namespace Testing;
+using namespace TestUtils;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Logging;

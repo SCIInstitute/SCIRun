@@ -28,10 +28,10 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Testing/Utils/SCIRunFieldSamples.h>
 #include <Testing/ModuleTestBase/share.h>
 
 namespace SCIRun 
@@ -63,9 +63,6 @@ namespace SCIRun
     {
 
     };
-
-    SCISHARE FieldHandle CreateEmptyLatVol();
-    SCISHARE FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez);
 
     class SCISHARE MockAlgorithm : public SCIRun::Core::Algorithms::AlgorithmBase
     {

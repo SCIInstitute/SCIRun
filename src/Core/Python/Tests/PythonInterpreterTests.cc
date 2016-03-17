@@ -37,6 +37,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
+#include <Testing/Utils/SCIRunFieldSamples.h>
 
 using namespace SCIRun;
 using namespace Core::Python;
