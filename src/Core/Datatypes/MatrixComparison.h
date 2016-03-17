@@ -41,6 +41,18 @@ namespace Core {
 namespace Datatypes {
 
   template <typename T>
+  bool compare(const T& lhs, const T& rhs)
+  {
+    return std::fabs(lhs - rhs) < 1e-15;
+  }
+
+  template <>
+  inline bool compare(const std::complex<double>& lhs, const std::complex<double>& rhs)
+  {
+    return std::norm(lhs - rhs) < 1e-15;
+  }
+
+  template <typename T>
   bool operator==(const DenseMatrixGeneric<T>& lhs, const DenseMatrixGeneric<T>& rhs)
   {
     bool returnValue = 
@@ -53,7 +65,7 @@ namespace Datatypes {
       {
         for (int j = 0; returnValue && j < lhs.cols(); ++j)
         {
-          returnValue &= std::fabs(lhs(i,j) - rhs(i,j)) < 1e-15;
+          returnValue &= compare(lhs(i, j), rhs(i, j));
         }
       }
     }
