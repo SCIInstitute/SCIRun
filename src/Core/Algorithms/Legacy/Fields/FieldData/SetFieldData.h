@@ -48,11 +48,13 @@ namespace SCIRun {
           FieldHandle runImpl(FieldHandle input_field, Datatypes::DenseMatrixHandle input_matrix) const;
           FieldHandle runImplComplex(FieldHandle input_field, Datatypes::ComplexDenseMatrixHandle input_matrix) const;
           bool runImpl(FieldHandle input, NrrdDataHandle data, FieldHandle& output) const;
-          bool verify_input_data(FieldHandle input_field, Datatypes::DenseMatrixHandle data, size_type& numvals, FieldInformation& fi) const;
+          bool verify_input_data(FieldHandle input_field, size_t dataRows, size_t dataCols, size_type& numvals, FieldInformation& fi) const;
 
           virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
         private:
-          bool setscalardata(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
+          FieldHandle runImplRealComplex(FieldHandle input_field, Datatypes::DenseMatrixHandle realData, Datatypes::ComplexDenseMatrixHandle complexData) const;
+          template <typename T>
+          bool setscalardata(VField* ofield, const Datatypes::DenseMatrixGeneric<T>& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
           bool setvectordata(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
           bool settensordata(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
         };
