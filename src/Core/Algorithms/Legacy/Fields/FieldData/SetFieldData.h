@@ -45,7 +45,8 @@ namespace SCIRun {
         {
         public:
           SetFieldDataAlgo();
-          FieldHandle run(FieldHandle input_field, Datatypes::DenseMatrixHandle input_matrix) const;
+          FieldHandle runImpl(FieldHandle input_field, Datatypes::DenseMatrixHandle input_matrix) const;
+          FieldHandle runImplComplex(FieldHandle input_field, Datatypes::ComplexDenseMatrixHandle input_matrix) const;
           bool runImpl(FieldHandle input, NrrdDataHandle data, FieldHandle& output) const;
           bool verify_input_data(FieldHandle input_field, Datatypes::DenseMatrixHandle data, size_type& numvals, FieldInformation& fi) const;
 

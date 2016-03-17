@@ -56,6 +56,7 @@ namespace Datatypes {
 
   typedef SharedPointer<DenseMatrix> DenseMatrixHandle;
   typedef SharedPointer<const DenseMatrix> DenseMatrixConstHandle;
+  typedef SharedPointer<ComplexDenseMatrix> ComplexDenseMatrixHandle;
 
   template <typename T>
   class DenseColumnMatrixGeneric;

@@ -391,7 +391,7 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
   return true;
 }
 
-FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle data) const
+FieldHandle SetFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandle data) const
 {
   if (!input_field)
   {
@@ -462,6 +462,11 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
   return output;
 }
 
+FieldHandle SetFieldDataAlgo::runImplComplex(FieldHandle input_field, ComplexDenseMatrixHandle input_matrix) const
+{
+  throw "not implemented";
+}
+
 AlgorithmOutput SetFieldDataAlgo::run(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
@@ -470,7 +475,7 @@ AlgorithmOutput SetFieldDataAlgo::run(const AlgorithmInput& input) const
 
   FieldHandle output_field;
   if (input_matrix)
-    output_field = run(input_field, input_matrix);
+    output_field = runImpl(input_field, input_matrix);
   else if (input_nrrd)
     runImpl(input_field, input_nrrd, output_field);
 

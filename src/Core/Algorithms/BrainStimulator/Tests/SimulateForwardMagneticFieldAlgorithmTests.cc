@@ -107,7 +107,7 @@ TEST(SimulateForwardMagneticFieldAlgoTest, TestOnLatVol)
 
   SetFieldDataAlgo algo;
 
-  FieldHandle second_with_tensor = algo.run(second, tensor_matrix);
+  FieldHandle second_with_tensor = algo.runImpl(second, tensor_matrix);
 
   SimulateForwardMagneticFieldAlgo algo2;
 
