@@ -45,14 +45,41 @@ namespace SCIRun {
       }
     };
 
+    class AlphaFunctionManager
+    {
+    public:
+      AlphaFunctionManager(const QPointF& start, const QPointF& end);
+      void updateAlphaFunction();
+      void clearAlphaPoints();
+      void insertEndpoints();
+      void insert(const QPointF& p);
+      bool alreadyExists(const QPointF& p) const;
+    private:
+      std::pair<QPointF,QPointF> alphaLineEndpointsAtColor(double color) const;
+      double pointYToAlpha(double y) const;
+      QPointF colorToPoint(double color) const;
+      double interpolateAlphaLineValue(const QPointF& leftEndpoint, const QPointF& rightEndpoint, double color) const;
+
+      std::set<QPointF, SortedByXCoordinate> alphaPoints_;
+      const size_t ALPHA_SAMPLES = 10;
+      const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
+      const double DEFAULT_ALPHA = 0.5;
+      const QPointF defaultStart_;
+      const QPointF defaultEnd_;
+      std::vector<double> alphaFunction_;
+    public:
+      auto begin() const -> decltype(alphaPoints_.begin()) { return alphaPoints_.begin(); }
+      auto end() const -> decltype(alphaPoints_.end()) { return alphaPoints_.end(); }
+    };
+
     class ColormapPreview : public QGraphicsView
     {
     Q_OBJECT
     public:
       explicit ColormapPreview(QGraphicsScene* scene, QWidget* parent = nullptr);
     public Q_SLOTS:
-      void clearAlphaPoints();
-      void updateAlphaFunction();
+      void clearAlphaPointGraphics();
+
     Q_SIGNALS:
       void clicked(int x, int y);
     protected:
@@ -62,17 +89,11 @@ namespace SCIRun {
       void addDefaultLine();
       void removeDefaultLine();
       void drawAlphaPolyline();
-      double pointYToAlpha(double y) const;
-      QPointF colorToPoint(double color) const;
-      double interpolateAlphaLineValue(const QPointF& leftEndpoint, const QPointF& rightEndpoint, double color) const;
-      std::pair<QPointF,QPointF> alphaLineEndpointsAtColor(double color) const;
+
       QGraphicsItem* alphaPath_;
-      QPointF defaultStart_, defaultEnd_;
-      std::set<QPointF, SortedByXCoordinate> alphaPoints_;
-      const size_t ALPHA_SAMPLES = 10;
-      const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
-      const double DEFAULT_ALPHA = 0.5;
-      std::vector<double> alphaFunction_;
+      const QPointF defaultStart_;
+      const QPointF defaultEnd_;
+      AlphaFunctionManager alphaManager_;
     };
 
     class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,

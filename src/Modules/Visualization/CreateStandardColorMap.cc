@@ -33,6 +33,7 @@
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Visualization;
 
@@ -50,6 +51,7 @@ void CreateStandardColorMap::setStateDefaults()
   state->setValue(Parameters::ColorMapResolution, 256);
   state->setValue(Parameters::ColorMapInvert, false);
   state->setValue(Parameters::ColorMapShift, 0.0);
+  state->setValue(Parameters::AlphaPointsVector, Variable::List());
 }
 
 void CreateStandardColorMap::execute()
@@ -61,6 +63,15 @@ void CreateStandardColorMap::execute()
     auto res = state->getValue(Parameters::ColorMapResolution).toInt();
     auto inv = state->getValue(Parameters::ColorMapInvert).toBool();
     auto shift = state->getValue(Parameters::ColorMapShift).toDouble();
+
+    //TODO cbright: pass computed alpha function from transient state to factory
+    auto alphaPoints = state->getValue(Parameters::AlphaPointsVector).toVector();
+    std::cout << "alpha points:" << std::endl;
+    for (const auto& pt : alphaPoints)
+    {
+      std::cout << pt << std::endl;
+    }
+
     //just in case there is a problem with the QT values...
     res = std::min(std::max(res,2),256);
     shift = std::min(std::max(shift,-1.),1.);
@@ -72,3 +83,4 @@ ALGORITHM_PARAMETER_DEF(Visualization, ColorMapName);
 ALGORITHM_PARAMETER_DEF(Visualization, ColorMapInvert);
 ALGORITHM_PARAMETER_DEF(Visualization, ColorMapShift);
 ALGORITHM_PARAMETER_DEF(Visualization, ColorMapResolution);
+ALGORITHM_PARAMETER_DEF(Visualization, AlphaPointsVector);

@@ -57,7 +57,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 
   //TODO: hook up mapping between alpha graph and vector of doubles stored in state.
 
-  
+
   connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(setShiftSlider(double)));
   connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(setResolutionSlider(int)));
   connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(updateColorMapPreview()));
@@ -85,7 +85,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   previewColorMap_->setMinimumSize(100,40);
   previewColorMap_->show();
   connect(previewColorMap_, SIGNAL(clicked(int,int)), this, SLOT(previewClicked(int,int)));
-  connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPoints()));
+  connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPointGraphics()));
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
@@ -143,17 +143,27 @@ void CreateStandardColorMapDialog::onInvertCheck(bool b)
   updateColorMapPreview();
 }
 
-ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
-  : QGraphicsView(scene, parent), alphaPath_(nullptr), alphaFunction_(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA)
+AlphaFunctionManager::AlphaFunctionManager(const QPointF& start, const QPointF& end) :
+  defaultStart_(start), defaultEnd_(end),
+  alphaFunction_(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA)
 {
-  const int h = 83;
-  const int w = 365;
-  setSceneRect(QRectF(0, 0, w, h));
-  defaultStart_ = QPointF(0, h / 2);
-  defaultEnd_ = QPointF(w, h / 2);
+}
+namespace
+{
+  const double colormapPreviewHeight = 83;
+  const double colormapPreviewWidth = 365;
+  const QRectF colorMapPreviewRect(0, 0, colormapPreviewWidth, colormapPreviewHeight);
+}
+
+ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
+  : QGraphicsView(scene, parent), alphaPath_(nullptr),
+  defaultStart_(0, colormapPreviewHeight / 2),
+  defaultEnd_(colormapPreviewWidth, colormapPreviewHeight / 2),
+  alphaManager_(defaultStart_, defaultEnd_)
+{
+  setSceneRect(colorMapPreviewRect);
   addDefaultLine();
-  //connect(this, SIGNAL(clicked(int,int)), this, SLOT(updateAlphaFunction()));
-  updateAlphaFunction();
+  alphaManager_.updateAlphaFunction();
 }
 
 void ColormapPreview::mousePressEvent(QMouseEvent* event)
@@ -170,7 +180,7 @@ void ColormapPreview::mousePressEvent(QMouseEvent* event)
 
   //TODO: points are movable!
 
-  updateAlphaFunction();
+  alphaManager_.updateAlphaFunction();
 }
 
   static QPen alphaLinePen(Qt::red, 1);
@@ -181,6 +191,11 @@ void ColormapPreview::addDefaultLine()
   alphaPath_ = scene()->addLine(defaultStart_.x(), defaultStart_.y(),
     defaultEnd_.x(), defaultEnd_.y(),
     alphaLinePen);
+  alphaManager_.insertEndpoints();
+}
+
+void AlphaFunctionManager::insertEndpoints()
+{
   alphaPoints_.insert(defaultStart_);
   alphaPoints_.insert(defaultEnd_);
 }
@@ -193,7 +208,7 @@ void ColormapPreview::removeDefaultLine()
 
 void ColormapPreview::addPoint(const QPointF& point)
 {
-  if (std::find_if(alphaPoints_.begin(), alphaPoints_.end(), [&](const QPointF& p) { return p.x() == point.x(); }) != alphaPoints_.end())
+  if (alphaManager_.alreadyExists(point))
     return;
 
   removeDefaultLine();
@@ -205,9 +220,20 @@ void ColormapPreview::addPoint(const QPointF& point)
   // QDebug tt(&toolTip);
   // tt << "Alpha point " << point.x() << ", " << point.y() << " y% " << (1 - point.y() / sceneRect().height());
   // item->setToolTip(toolTip);
-  alphaPoints_.insert(point);
+  alphaManager_.insert(point);
 
   drawAlphaPolyline();
+}
+
+bool AlphaFunctionManager::alreadyExists(const QPointF& point) const
+{
+  const double x = point.x();
+  return std::find_if(alphaPoints_.begin(), alphaPoints_.end(), [=](const QPointF& p) { return p.x() == x; }) != alphaPoints_.end();
+}
+
+void AlphaFunctionManager::insert(const QPointF& p)
+{
+  alphaPoints_.insert(p);
 }
 
 void ColormapPreview::drawAlphaPolyline()
@@ -220,7 +246,7 @@ void ColormapPreview::drawAlphaPolyline()
   QPointF from = defaultStart_;
   path.moveTo(from);
 
-  for (const auto& point : alphaPoints_)
+  for (const auto& point : alphaManager_)
   {
     path.lineTo(point);
     path.moveTo(point);
@@ -231,20 +257,24 @@ void ColormapPreview::drawAlphaPolyline()
   scene()->addItem(alphaPath_);
 }
 
-void ColormapPreview::clearAlphaPoints()
+void ColormapPreview::clearAlphaPointGraphics()
 {
-  alphaPoints_.clear();
   for (auto& item : scene()->items())
   {
     if (dynamic_cast<QGraphicsEllipseItem*>(item))
       scene()->removeItem(item);
   }
+  alphaManager_.clearAlphaPoints();
   addDefaultLine();
-  alphaFunction_.assign(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA);
-  updateAlphaFunction();
 }
 
-void ColormapPreview::updateAlphaFunction()
+void AlphaFunctionManager::clearAlphaPoints()
+{
+  alphaPoints_.clear();
+  alphaFunction_.assign(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA);
+}
+
+void AlphaFunctionManager::updateAlphaFunction()
 {
   //from v4, color endpoints (0 and 1) are fixed at alpha = 0.5.
   // alphaFunction_ will sample from in between these endpoints, evenly spaced throughout open interval (0,1)
@@ -265,7 +295,7 @@ void ColormapPreview::updateAlphaFunction()
   }
 }
 
-std::pair<QPointF,QPointF> ColormapPreview::alphaLineEndpointsAtColor(double color) const
+std::pair<QPointF,QPointF> AlphaFunctionManager::alphaLineEndpointsAtColor(double color) const
 {
   auto rightIter = alphaPoints_.upper_bound(colorToPoint(color));
   auto right = *rightIter;
@@ -273,7 +303,7 @@ std::pair<QPointF,QPointF> ColormapPreview::alphaLineEndpointsAtColor(double col
   return {left, right};
 }
 
-double ColormapPreview::interpolateAlphaLineValue(const QPointF& leftEndpoint, const QPointF& rightEndpoint, double color) const
+double AlphaFunctionManager::interpolateAlphaLineValue(const QPointF& leftEndpoint, const QPointF& rightEndpoint, double color) const
 {
   if (rightEndpoint.x() == leftEndpoint.x())
     return 0.5; //???
@@ -285,12 +315,12 @@ double ColormapPreview::interpolateAlphaLineValue(const QPointF& leftEndpoint, c
   return alpha;
 }
 
-double ColormapPreview::pointYToAlpha(double y) const
+double AlphaFunctionManager::pointYToAlpha(double y) const
 {
-  return 1 - y / sceneRect().height();
+  return 1 - y / colorMapPreviewRect.height();
 }
 
-QPointF ColormapPreview::colorToPoint(double color) const
+QPointF AlphaFunctionManager::colorToPoint(double color) const
 {
   return QPointF(color * defaultEnd_.x(), 0);
 }
