@@ -48,18 +48,20 @@ namespace SCIRun {
     class AlphaFunctionManager
     {
     public:
-      AlphaFunctionManager(const QPointF& start, const QPointF& end);
+      AlphaFunctionManager(const QPointF& start, const QPointF& end, SCIRun::Dataflow::Networks::ModuleStateHandle state);
       void clear();
       void insertEndpoints();
       void insert(const QPointF& p);
       bool alreadyExists(const QPointF& p) const;
     private:
       void updateAlphaFunction();
+      void setStateValues();
       std::pair<QPointF,QPointF> alphaLineEndpointsAtColor(double color) const;
       double pointYToAlpha(double y) const;
       QPointF colorToPoint(double color) const;
       double interpolateAlphaLineValue(const QPointF& leftEndpoint, const QPointF& rightEndpoint, double color) const;
 
+      SCIRun::Dataflow::Networks::ModuleStateHandle state_;
       std::set<QPointF, SortedByXCoordinate> alphaPoints_;
       const size_t ALPHA_SAMPLES = 10;
       const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
@@ -76,7 +78,9 @@ namespace SCIRun {
     {
     Q_OBJECT
     public:
-      explicit ColormapPreview(QGraphicsScene* scene, QWidget* parent = nullptr);
+      explicit ColormapPreview(QGraphicsScene* scene,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = nullptr);
     public Q_SLOTS:
       void clearAlphaPointGraphics();
 
@@ -104,7 +108,7 @@ namespace SCIRun {
     public:
       CreateStandardColorMapDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = 0);
+        QWidget* parent = nullptr);
     private Q_SLOTS:
       void updateColorMapPreview();
       void updateColorMapPreview(const QString& s);
@@ -113,7 +117,6 @@ namespace SCIRun {
       void setResolutionSlider(int i);
       void setShiftSpinner(int i);
       void onInvertCheck(bool b);
-      void previewClicked(int x, int y);
     private:
       QGraphicsScene* scene_;
       ColormapPreview* previewColorMap_;

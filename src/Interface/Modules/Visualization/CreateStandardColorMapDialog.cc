@@ -79,12 +79,11 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   connect(colorMapNameComboBox_, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(updateColorMapPreview(const QString&)));
 
   scene_ = new QGraphicsScene(this);
-  previewColorMap_ = new ColormapPreview(scene_, this);
+  previewColorMap_ = new ColormapPreview(scene_, state, this);
   qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_);
   previewColorMap_->setStyleSheet(buildGradientString(*defaultMap));
   previewColorMap_->setMinimumSize(100,40);
   previewColorMap_->show();
-  connect(previewColorMap_, SIGNAL(clicked(int,int)), this, SLOT(previewClicked(int,int)));
   connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPointGraphics()));
 }
 
@@ -94,12 +93,6 @@ void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
     static_cast<double>(shiftSlider_->value()) / 100.,
     invertCheck_->isChecked());
   previewColorMap_->setStyleSheet(buildGradientString(*cm));
-}
-
-void CreateStandardColorMapDialog::previewClicked(int x, int y)
-{
-  //qDebug() << "color map clicked:" << x << y;
-  //TODO: update alpha vector between changed points.
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview()
@@ -143,7 +136,8 @@ void CreateStandardColorMapDialog::onInvertCheck(bool b)
   updateColorMapPreview();
 }
 
-AlphaFunctionManager::AlphaFunctionManager(const QPointF& start, const QPointF& end) :
+AlphaFunctionManager::AlphaFunctionManager(const QPointF& start, const QPointF& end, ModuleStateHandle state) :
+  state_(state),
   defaultStart_(start), defaultEnd_(end),
   alphaFunction_(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA)
 {
@@ -155,11 +149,11 @@ namespace
   const QRectF colorMapPreviewRect(0, 0, colormapPreviewWidth, colormapPreviewHeight);
 }
 
-ColormapPreview::ColormapPreview(QGraphicsScene* scene, QWidget* parent)
+ColormapPreview::ColormapPreview(QGraphicsScene* scene, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent)
   : QGraphicsView(scene, parent), alphaPath_(nullptr),
   defaultStart_(0, colormapPreviewHeight / 2),
   defaultEnd_(colormapPreviewWidth, colormapPreviewHeight / 2),
-  alphaManager_(defaultStart_, defaultEnd_)
+  alphaManager_(defaultStart_, defaultEnd_, state)
 {
   setSceneRect(colorMapPreviewRect);
   addDefaultLine();
@@ -193,8 +187,8 @@ void ColormapPreview::addDefaultLine()
 
 void AlphaFunctionManager::insertEndpoints()
 {
-  insert(defaultStart_);
-  insert(defaultEnd_);
+  alphaPoints_.insert(defaultStart_);
+  insert(defaultEnd_); // only update function and state after both endpoints are added
 }
 
 void ColormapPreview::removeDefaultLine()
@@ -232,6 +226,28 @@ void AlphaFunctionManager::insert(const QPointF& p)
 {
   alphaPoints_.insert(p);
   updateAlphaFunction();
+  setStateValues();
+}
+
+void AlphaFunctionManager::clear()
+{
+  alphaPoints_.clear();
+  alphaFunction_.assign(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA);
+  setStateValues();
+}
+
+void AlphaFunctionManager::setStateValues()
+{
+  qDebug() << "Alpha points:";
+  for (const auto& p : alphaPoints_)
+  {
+    qDebug() << p;
+  }
+  qDebug() << "Alpha function:";
+  for (const auto& a : alphaFunction_)
+  {
+    qDebug() << a;
+  }
 }
 
 void ColormapPreview::drawAlphaPolyline()
@@ -264,12 +280,6 @@ void ColormapPreview::clearAlphaPointGraphics()
   }
   alphaManager_.clear();
   addDefaultLine();
-}
-
-void AlphaFunctionManager::clear()
-{
-  alphaPoints_.clear();
-  alphaFunction_.assign(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA);
 }
 
 void AlphaFunctionManager::updateAlphaFunction()
