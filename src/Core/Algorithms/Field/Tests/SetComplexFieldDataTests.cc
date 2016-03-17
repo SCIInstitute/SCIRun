@@ -48,6 +48,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 TEST(SetComplexFieldDataTest, LatVolOnNodeScalarMat)
 {
+  FAIL() << "NEEDS COMPLEX VALUES";
   SetFieldDataAlgo algo;
 
   auto latvol = CreateEmptyLatVol(2,2,3);

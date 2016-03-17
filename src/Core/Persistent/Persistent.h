@@ -47,6 +47,7 @@
 #include <Core/Persistent/PersistentFwd.h>
 #include <map>
 #include <string>
+#include <complex>
 #include <boost/shared_ptr.hpp>
 
 // for index and size types
@@ -56,6 +57,7 @@
 #include <Core/Logging/LoggerFwd.h>
 
 #include <Core/Persistent/share.h>
+
 
 namespace SCIRun {
 
@@ -159,6 +161,10 @@ class SCISHARE Piostream {
     virtual void io(double&) = 0;
     virtual void io(float&) = 0;
     virtual void io(std::string& str) = 0;
+    virtual void io(std::complex<double>&) /*= 0;*/
+    {
+      REPORT_NOT_IMPLEMENTED("Todo later: how to serialize complex directly.");
+    }
     virtual bool eof() { return false; }
 
     void io(PersistentHandle&, const PersistentTypeID&);

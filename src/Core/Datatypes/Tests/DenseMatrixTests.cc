@@ -286,3 +286,11 @@ TEST(BlockMatrixTest, CanAccessBlockByIndex)
     }
   }
 }
+
+using ComplexDenseMatrix = DenseMatrixGeneric<std::complex<double>>;
+
+TEST(ComplexMatrixTests, CanPrintComplexMatrix)
+{
+  ComplexDenseMatrix cm(2, 2, {0,1});
+  std::cout << cm << std::endl;
+}
