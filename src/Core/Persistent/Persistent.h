@@ -249,6 +249,7 @@ inline void Pio(Piostream& stream, long long& data) { stream.io(data); }
 inline void Pio(Piostream& stream, unsigned long long& data) { stream.io(data); }
 inline void Pio(Piostream& stream, double& data) { stream.io(data); }
 inline void Pio(Piostream& stream, float& data) { stream.io(data); }
+inline void Pio(Piostream& stream, std::complex<double>& data) { stream.io(data); }
 inline void Pio(Piostream& stream, std::string& data) { stream.io(data); }
 inline void Pio(Piostream& stream, Persistent& data) { data.io(stream); }
 

@@ -106,6 +106,7 @@ public:
   VFDATA_ACCESS_DECLARATION(unsigned long long)
   VFDATA_ACCESS_DECLARATION(float)
   VFDATA_ACCESS_DECLARATION(double)
+  VFDATA_ACCESS_DECLARATION(std::complex<double>)
   VFDATA_ACCESS_DECLARATION(Core::Geometry::Vector)
   VFDATA_ACCESS_DECLARATION(Core::Geometry::Tensor)
 
