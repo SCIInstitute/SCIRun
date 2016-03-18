@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Math/ReportMatrixSliceMeasureDialog.h>
+#include <Interface/Modules/Math/CreateGeometricTransformDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
@@ -34,7 +34,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-ReportMatrixSliceMeasureDialog::ReportMatrixSliceMeasureDialog(const std::string& name, ModuleStateHandle state,
+ReportMatrixSliceMeasureDialog::CreateGeometricTransformDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
 	: ModuleDialogGeneric(state, parent)
 {
@@ -42,6 +42,6 @@ ReportMatrixSliceMeasureDialog::ReportMatrixSliceMeasureDialog(const std::string
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
 
-  addRadioButtonGroupManager({ rowbutton_, columnbutton_ }, Variables::Operator);
-  addRadioButtonGroupManager({ sumbutton_, meanbutton_, varbutton_, stdbutton_, normbutton_, maxbutton_, minbutton_, medianbutton_ }, Variables::Method);
+  //addRadioButtonGroupManager({ rowbutton_, columnbutton_ }, Variables::Operator);
+  //addRadioButtonGroupManager({ sumbutton_, meanbutton_, varbutton_, stdbutton_, normbutton_, maxbutton_, minbutton_, medianbutton_ }, Variables::Method);
 }

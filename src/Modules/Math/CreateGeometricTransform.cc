@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,26 +26,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_CREATEGEOMETRICTRANSFORMDIALOG_H
-#define INTERFACE_MODULES_MATH_CREATEGEOMETRICTRANSFORMDIALOG_H 1
+#include <Modules/Math/CreateGeometricTransform.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Dataflow/Network/Module.h>
 
-#include "Interface/Modules/Math/CreateGeometricTransformDialog.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
-namespace SCIRun {
-  namespace Gui {
-    class SCISHARE CreateGeometricTransformDialog : public ModuleDialogGeneric,
-      public Ui::CreateGeometricTransform
-    {
-      Q_OBJECT
-      
-    public:
-      CreateGeometricTransformDialog(const std::string& name,
-                                     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-                                     QWidget* parent = 0);
-    };
+///@file  CreateGeometricTransform.cc
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  March 1999
+
+const ModuleLookupInfo CreateGeometricTransform::staticInfo_("CreateGeometricTransform", "Math", "SCIRun");
+
+ReportMatrixSliceMeasure::CreateGeometricTransform() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(OutputMatrix);
+  INITIALIZE_PORT(Widget);
+}
+
+void CreateGeometricTransform::setStateDefaults()
+{
+}
+
+void CreateGeometricTransform::execute()
+{
+  auto input = getRequiredInput(InputMatrix);
+  
+  if (needToExecute())
+  {
+    
+    
+    
   }
 }
 
-#endif
+
+

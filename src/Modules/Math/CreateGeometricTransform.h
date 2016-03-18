@@ -26,26 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_CREATEGEOMETRICTRANSFORMDIALOG_H
-#define INTERFACE_MODULES_MATH_CREATEGEOMETRICTRANSFORMDIALOG_H 1
+#ifndef MODULES_MATH_CREATEGEOMETRICTRANSFORM_H
+#define MODULES_MATH_CREATEGEOMETRICTRANSFORM_H
 
-#include "Interface/Modules/Math/CreateGeometricTransformDialog.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
-  namespace Gui {
-    class SCISHARE CreateGeometricTransformDialog : public ModuleDialogGeneric,
-      public Ui::CreateGeometricTransform
-    {
-      Q_OBJECT
-      
-    public:
-      CreateGeometricTransformDialog(const std::string& name,
-                                     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-                                     QWidget* parent = 0);
-    };
-  }
-}
+namespace Modules {
+namespace Math {
+  
+  class SCISHARE CreateGeometricTransform : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has2OutputPorts<MatrixPortTag, GeometryPortTag>
+  {
+  public:
+    CreateGeometricTransform();
+    virtual void execute();
+    virtual void setStateDefaults();
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    
+    INPUT_PORT(0, InputMatrix, Matrix);
+    OUTPUT_PORT(0, OutputMatrix, Matrix);
+    OUTPUT_PORT(0, Widget, GeometryObject);
+  };
+}}}
 
 #endif
