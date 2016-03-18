@@ -79,6 +79,11 @@ DenseMatrixHandle GetFieldDataAlgo::runMatrix(FieldHandle input_field) const
   return runImplGeneric<DenseMatrix>(input_field);
 }
 
+ComplexDenseMatrixHandle GetFieldDataAlgo::runComplexMatrix(FieldHandle input_field) const
+{
+  return runImplGeneric<ComplexDenseMatrix>(input_field);
+}
+
 NrrdDataHandle GetFieldDataAlgo::runNrrd(FieldHandle input_field) const
 {
   return runImplGeneric<NrrdData>(input_field);
@@ -128,6 +133,18 @@ namespace SCIRun {
         template <>
         bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
         {
+          return GetScalarFieldDataVDenseImpl(input, output);
+        }
+
+        template <>
+        bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, ComplexDenseMatrixHandle& output) const
+        {
+          return GetScalarFieldDataVDenseImpl(input, output);
+        }
+
+        template <class ValueType>
+        bool GetFieldDataAlgo::GetScalarFieldDataVDenseImpl(FieldHandle input, boost::shared_ptr<DenseMatrixGeneric<ValueType>>& output) const
+        {
           /// Obtain virtual interface
           VField* vfield = input->vfield();
 
@@ -136,7 +153,7 @@ namespace SCIRun {
           VMesh::size_type esize = vfield->num_evalues();
 
           /// Create output object
-          output.reset(new DenseMatrix(size + esize, 1));
+          output.reset(new DenseMatrixGeneric<ValueType>(size + esize, 1));
 
           if (!output)
           {
@@ -151,7 +168,7 @@ namespace SCIRun {
           if (vfield->basis_order() == 2)
           {
             vfield->vmesh()->synchronize(Mesh::EDGES_E);
-            for (VMesh::Elem::index_type idx = size; idx < size + esize; idx++)
+            for (VMesh::Elem::index_type idx = size; idx < size + esize; ++idx)
             {
               vfield->get_evalue((*output)(idx, 0), idx);
             }
