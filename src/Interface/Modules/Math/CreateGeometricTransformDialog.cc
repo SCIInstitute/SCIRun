@@ -34,7 +34,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-ReportMatrixSliceMeasureDialog::CreateGeometricTransformDialog(const std::string& name, ModuleStateHandle state,
+CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
 	: ModuleDialogGeneric(state, parent)
 {
