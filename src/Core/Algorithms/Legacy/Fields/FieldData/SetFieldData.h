@@ -48,7 +48,7 @@ namespace SCIRun {
           FieldHandle runImpl(FieldHandle input_field, Datatypes::DenseMatrixHandle input_matrix) const;
           FieldHandle runImplComplex(FieldHandle input_field, Datatypes::ComplexDenseMatrixHandle input_matrix) const;
           bool runImpl(FieldHandle input, NrrdDataHandle data, FieldHandle& output) const;
-          bool verify_input_data(FieldHandle input_field, size_t dataRows, size_t dataCols, size_type& numvals, FieldInformation& fi) const;
+          bool verify_input_data(FieldHandle input_field, size_t dataRows, size_t dataCols, size_type& numvals, FieldInformation& fi, const std::string& outputDatatype = "double") const;
 
           virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
         private:

@@ -55,17 +55,20 @@ TEST(SetComplexFieldDataTest, LatVolOnNodeScalarMat)
   auto matrix = boost::make_shared<ComplexDenseMatrix>(2 * 2 * 3, 1, std::complex<double>(1, 1));
 
   auto result = algo.runImplComplex(latvol, matrix);
+  FieldInformation fi(result);
+
+  std::cout << "SCIRun's first complex field type: " << fi.get_field_type_id() << std::endl;
+  EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point>>,HexTrilinearLgn<std::complex<double>>,FData3d<std::complex<double>,LatVolMesh<HexTrilinearLgn<Point>>>>", fi.get_field_type_id());
 
   GetFieldDataAlgo algo1;
 
-  auto resultmatrix = algo1.runMatrix(result);
+  auto resultmatrix = algo1.runComplexMatrix(result);
 
-  //TODO: EXPECT_EQ(*resultmatrix, *matrix);
+  EXPECT_EQ(*resultmatrix, *matrix);
 }
 
 TEST(SetComplexFieldDataTest, LatVolOnElemScalarMat)
 {
-  FAIL() << "NEEDS COMPLEX VALUES";
   SetFieldDataAlgo algo;
 
   auto latvol = CreateEmptyLatVol(2, 2, 3);
@@ -76,14 +79,13 @@ TEST(SetComplexFieldDataTest, LatVolOnElemScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  auto resultmatrix = algo1.runMatrix(result);
+  auto resultmatrix = algo1.runComplexMatrix(result);
 
-  //TODO: EXPECT_EQ(*resultmatrix, *matrix);
+  EXPECT_EQ(*resultmatrix, *matrix);
 }
 
-TEST(SetComplexFieldDataTest, TetMeshOnNodeScalarMat)
+TEST(SetComplexFieldDataTest, DISABLED_TetMeshOnNodeScalarMat)
 {
-  FAIL() << "NEEDS COMPLEX VALUES";
   SetFieldDataAlgo algo;
 
   auto tetmesh = LoadTet();
@@ -94,14 +96,13 @@ TEST(SetComplexFieldDataTest, TetMeshOnNodeScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  auto resultmatrix = algo1.runMatrix(result);
+  auto resultmatrix = algo1.runComplexMatrix(result);
 
-  //TODO: EXPECT_EQ(*resultmatrix, *matrix);
+  EXPECT_EQ(*resultmatrix, *matrix);
 }
 
-TEST(SetComplexFieldDataTest, TetMeshOnElemScalarMat)
+TEST(SetComplexFieldDataTest, DISABLED_TetMeshOnElemScalarMat)
 {
-  FAIL() << "NEEDS COMPLEX VALUES";
   SetFieldDataAlgo algo;
 
   auto tetmesh = LoadTet();
@@ -112,7 +113,7 @@ TEST(SetComplexFieldDataTest, TetMeshOnElemScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  auto resultmatrix = algo1.runMatrix(result);
+  auto resultmatrix = algo1.runComplexMatrix(result);
 
-  //TODO: EXPECT_EQ(*resultmatrix, *matrix);
+  EXPECT_EQ(*resultmatrix, *matrix);
 }

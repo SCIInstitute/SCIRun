@@ -56,7 +56,7 @@ SetFieldDataAlgo::SetFieldDataAlgo()
   addParameter(Parameters::keepTypeCheckBox, false);
 }
 
-bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, size_t dataRows, size_t dataCols, size_type& numvals, FieldInformation& fi) const
+bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, size_t dataRows, size_t dataCols, size_type& numvals, FieldInformation& fi, const std::string& outputDatatype) const
 {
   VMesh* imesh = input_field->vmesh();
 
@@ -87,7 +87,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, size_t dataRow
       if (get(Parameters::keepTypeCheckBox).toBool())
         fi.set_data_type(input_field->vfield()->get_data_type());
       else
-        fi.set_data_type("double");
+        fi.set_data_type(outputDatatype);
     }
     else if (ncols == 3)
     {
@@ -421,7 +421,9 @@ FieldHandle SetFieldDataAlgo::runImplRealComplex(FieldHandle input_field, DenseM
   if (realData)
     found = verify_input_data(input_field, realData->nrows(), realData->ncols(), numvals, fi);
   else if (complexData)
-    found = verify_input_data(input_field, complexData->nrows(), complexData->ncols(), numvals, fi);
+  {
+    found = verify_input_data(input_field, complexData->nrows(), complexData->ncols(), numvals, fi, "std::complex<double>");
+  }
 
   if (!found)
   {
@@ -483,7 +485,7 @@ FieldHandle SetFieldDataAlgo::runImplRealComplex(FieldHandle input_field, DenseM
 
 FieldHandle SetFieldDataAlgo::runImplComplex(FieldHandle input_field, ComplexDenseMatrixHandle input_matrix) const
 {
-  throw "not implemented";
+  return runImplRealComplex(input_field, nullptr, input_matrix);
 }
 
 AlgorithmOutput SetFieldDataAlgo::run(const AlgorithmInput& input) const
