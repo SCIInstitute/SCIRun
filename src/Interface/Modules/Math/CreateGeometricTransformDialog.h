@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_MATH_CREATEGEOMETRICTRANSFORMDIALOG_H
 #define INTERFACE_MODULES_MATH_CREATEGEOMETRICTRANSFORMDIALOG_H 1
 
-#include "Interface/Modules/Math/CreateGeometricTransformDialog.h"
+#include "Interface/Modules/Math/ui_CreateGeometricTransform.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 

@@ -48,7 +48,7 @@ namespace Math {
     
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
-    OUTPUT_PORT(0, Widget, GeometryObject);
+    OUTPUT_PORT(1, Widget, GeometryObject);
   };
 }}}
 

@@ -45,7 +45,7 @@ using namespace SCIRun::Core::Datatypes;
 
 const ModuleLookupInfo CreateGeometricTransform::staticInfo_("CreateGeometricTransform", "Math", "SCIRun");
 
-ReportMatrixSliceMeasure::CreateGeometricTransform() : Module(staticInfo_)
+CreateGeometricTransform::CreateGeometricTransform() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(OutputMatrix);
