@@ -55,7 +55,7 @@ namespace SCIRun {
       bool alreadyExists(const QPointF& p) const;
     private:
       void updateAlphaFunction();
-      void setStateValues();
+      void pushToState();
       std::pair<QPointF,QPointF> alphaLineEndpointsAtColor(double color) const;
       double pointYToAlpha(double y) const;
       QPointF colorToPoint(double color) const;

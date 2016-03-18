@@ -92,6 +92,16 @@ namespace Algorithms {
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   SCISHARE Variable makeVariable(const std::string& name, const Variable::Value& value);
 
+  template <typename ... Ts>
+  Variable::List makeVariableList(Ts&&... params)
+  {
+    std::vector<Variable::Value> values{params...};
+    Variable::List vars;
+    std::transform(values.begin(), values.end(), std::back_inserter(vars),
+      [](const Variable::Value& val) { return makeVariable("listElement", val); });
+    return vars;
+  }
+
   typedef Variable AlgorithmParameter;
   typedef Variable::List VariableList;
   typedef boost::shared_ptr<Variable> VariableHandle;

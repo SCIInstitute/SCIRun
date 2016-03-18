@@ -51,7 +51,7 @@ void CreateStandardColorMap::setStateDefaults()
   state->setValue(Parameters::ColorMapResolution, 256);
   state->setValue(Parameters::ColorMapInvert, false);
   state->setValue(Parameters::ColorMapShift, 0.0);
-  state->setValue(Parameters::AlphaPointsVector, Variable::List());
+  state->setValue(Parameters::AlphaUserPointsVector, Variable::List());
 }
 
 void CreateStandardColorMap::execute()
@@ -65,7 +65,7 @@ void CreateStandardColorMap::execute()
     auto shift = state->getValue(Parameters::ColorMapShift).toDouble();
 
     //TODO cbright: pass computed alpha function from transient state to factory
-    auto alphaPoints = state->getValue(Parameters::AlphaPointsVector).toVector();
+    auto alphaPoints = state->getValue(Parameters::AlphaUserPointsVector).toVector();
     std::cout << "alpha points:" << std::endl;
     for (const auto& pt : alphaPoints)
     {
@@ -83,4 +83,5 @@ ALGORITHM_PARAMETER_DEF(Visualization, ColorMapName);
 ALGORITHM_PARAMETER_DEF(Visualization, ColorMapInvert);
 ALGORITHM_PARAMETER_DEF(Visualization, ColorMapShift);
 ALGORITHM_PARAMETER_DEF(Visualization, ColorMapResolution);
-ALGORITHM_PARAMETER_DEF(Visualization, AlphaPointsVector);
+ALGORITHM_PARAMETER_DEF(Visualization, AlphaUserPointsVector);
+ALGORITHM_PARAMETER_DEF(Visualization, AlphaFunctionVector);

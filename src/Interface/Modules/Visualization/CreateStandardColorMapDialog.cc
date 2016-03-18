@@ -32,6 +32,7 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core::Datatypes;
 
@@ -226,28 +227,32 @@ void AlphaFunctionManager::insert(const QPointF& p)
 {
   alphaPoints_.insert(p);
   updateAlphaFunction();
-  setStateValues();
+  pushToState();
 }
 
 void AlphaFunctionManager::clear()
 {
   alphaPoints_.clear();
   alphaFunction_.assign(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA);
-  setStateValues();
+  pushToState();
 }
 
-void AlphaFunctionManager::setStateValues()
+void AlphaFunctionManager::pushToState()
 {
   qDebug() << "Alpha points:";
+  Variable::List alphaPointsVec;
   for (const auto& p : alphaPoints_)
   {
     qDebug() << p;
+    alphaPointsVec.emplace_back(Name("alphaPoint"), makeVariableList(p.x(), p.y()));
   }
+  state_->setValue(Parameters::AlphaUserPointsVector, alphaPointsVec);
   qDebug() << "Alpha function:";
   for (const auto& a : alphaFunction_)
   {
     qDebug() << a;
   }
+  state_->setTransientValue(Parameters::AlphaFunctionVector, alphaFunction_);
 }
 
 void ColormapPreview::drawAlphaPolyline()
