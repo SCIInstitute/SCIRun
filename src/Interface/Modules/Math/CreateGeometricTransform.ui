@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>371</width>
-    <height>510</height>
+    <width>385</width>
+    <height>430</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>371</width>
-    <height>313</height>
+    <width>385</width>
+    <height>430</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="transformTabWidget_">
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="translateTab_">
       <attribute name="title">
@@ -95,7 +95,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>239</height>
+           <height>159</height>
           </size>
          </property>
         </spacer>
@@ -340,7 +340,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>87</height>
+           <height>7</height>
           </size>
          </property>
         </spacer>
@@ -506,7 +506,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>115</height>
+           <height>35</height>
           </size>
          </property>
         </spacer>
@@ -666,7 +666,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>102</height>
+           <height>22</height>
           </size>
          </property>
         </spacer>
@@ -698,7 +698,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>89</width>
+              <width>96</width>
               <height>20</height>
              </size>
             </property>
@@ -718,7 +718,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>89</width>
+              <width>96</width>
               <height>20</height>
              </size>
             </property>
@@ -738,7 +738,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>89</width>
+              <width>96</width>
               <height>20</height>
              </size>
             </property>
@@ -758,7 +758,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>89</width>
+              <width>96</width>
               <height>20</height>
              </size>
             </property>
@@ -778,7 +778,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>89</width>
+              <width>96</width>
               <height>20</height>
              </size>
             </property>
@@ -798,7 +798,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>89</width>
+              <width>96</width>
               <height>20</height>
              </size>
             </property>
@@ -869,7 +869,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>123</height>
+           <height>43</height>
           </size>
          </property>
         </spacer>
@@ -880,7 +880,104 @@
       <attribute name="title">
        <string>Widget</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2"/>
+      <layout class="QVBoxLayout" name="verticalLayout_8">
+       <item>
+        <widget class="QGroupBox" name="widgetGroupBox_">
+         <property name="title">
+          <string>Widget</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLabel" name="label_27">
+              <property name="text">
+               <string>Uniform Scale:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="uniformScaleDoubleSpinBox_">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="decimals">
+               <number>6</number>
+              </property>
+              <property name="maximum">
+               <double>100.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="resetWidgetPushButton_">
+              <property name="text">
+               <string>Reset Widget</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QCheckBox" name="resizeSeparablyCheckBox_">
+              <property name="text">
+               <string>Resize Separably</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_11">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>91</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="ignoreChangesCheckBox_">
+              <property name="text">
+               <string>Ignore Changes</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>178</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
