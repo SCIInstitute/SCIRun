@@ -46,14 +46,14 @@ namespace SCIRun {
         public:
           GetFieldDataAlgo();
                 
-          Datatypes::DenseMatrixHandle run(FieldHandle input) const;
+          Datatypes::DenseMatrixHandle runMatrix(FieldHandle input) const;
           NrrdDataHandle runNrrd(FieldHandle input) const;
 
           virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 
         private:
           template <class MatrixReturnType>
-          boost::shared_ptr<MatrixReturnType> runImpl(FieldHandle input) const;
+          boost::shared_ptr<MatrixReturnType> runImplGeneric(FieldHandle input) const;
           template <class MatrixReturnType>
           bool GetScalarFieldDataV(FieldHandle input, boost::shared_ptr<MatrixReturnType>& output) const;
           template <class MatrixReturnType>

@@ -76,7 +76,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandl
 
   if (get(Parameters::NeedOutputMatrix).toBool())
   {
-    output_matrix = get_algo_.run(input_field);
+    output_matrix = get_algo_.runMatrix(input_field);
   }
   FieldHandle field_output_handle;
 

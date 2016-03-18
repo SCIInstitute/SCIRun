@@ -103,7 +103,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, EmptyFieldNoValue)
   ASSERT_TRUE(result->vfield()->is_constantdata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   // empty matrix
@@ -125,7 +125,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NoValue)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -151,7 +151,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, IntValue)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -180,7 +180,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, PositiveValue)
   ASSERT_TRUE(result->vfield()->is_double());
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -206,7 +206,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NegativeValue)
   ASSERT_TRUE(result->vfield()->is_double());
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -233,7 +233,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntLinear)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -260,7 +260,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntConstant)
   ASSERT_TRUE(result->vfield()->is_constantdata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -287,7 +287,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToInt)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -315,7 +315,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToIntFromDouble)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -343,7 +343,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTet)
   ASSERT_TRUE(tetmesh->vfield()->is_lineardata());
   ASSERT_TRUE(result->vfield()->is_constantdata());
 
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
 
   ASSERT_TRUE(data != nullptr);
 
@@ -371,7 +371,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTri)
   ASSERT_TRUE(result->vfield()->is_constantdata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());

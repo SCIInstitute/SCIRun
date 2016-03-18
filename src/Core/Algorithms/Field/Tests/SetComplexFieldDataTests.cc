@@ -58,7 +58,7 @@ TEST(SetComplexFieldDataTest, LatVolOnNodeScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  auto resultmatrix = algo1.run(result);
+  auto resultmatrix = algo1.runMatrix(result);
 
   //TODO: EXPECT_EQ(*resultmatrix, *matrix);
 }
@@ -76,7 +76,7 @@ TEST(SetComplexFieldDataTest, LatVolOnElemScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  auto resultmatrix = algo1.run(result);
+  auto resultmatrix = algo1.runMatrix(result);
 
   //TODO: EXPECT_EQ(*resultmatrix, *matrix);
 }
@@ -94,7 +94,7 @@ TEST(SetComplexFieldDataTest, TetMeshOnNodeScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  auto resultmatrix = algo1.run(result);
+  auto resultmatrix = algo1.runMatrix(result);
 
   //TODO: EXPECT_EQ(*resultmatrix, *matrix);
 }
@@ -112,7 +112,7 @@ TEST(SetComplexFieldDataTest, TetMeshOnElemScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  auto resultmatrix = algo1.run(result);
+  auto resultmatrix = algo1.runMatrix(result);
 
   //TODO: EXPECT_EQ(*resultmatrix, *matrix);
 }

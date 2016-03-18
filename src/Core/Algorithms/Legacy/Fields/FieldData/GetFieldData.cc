@@ -64,7 +64,7 @@ AlgorithmOutput GetFieldDataAlgo::run(const AlgorithmInput& input) const
 
   if (get(Parameters::CalcMatrix).toBool())
   {
-    output[Variables::OutputMatrix] = run(input_field);;
+    output[Variables::OutputMatrix] = runMatrix(input_field);;
   }
   if (get(Parameters::CalcNrrd).toBool())
   {
@@ -74,18 +74,18 @@ AlgorithmOutput GetFieldDataAlgo::run(const AlgorithmInput& input) const
   return output;
 }
 
-DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
+DenseMatrixHandle GetFieldDataAlgo::runMatrix(FieldHandle input_field) const
 {
-  return runImpl<DenseMatrix>(input_field);
+  return runImplGeneric<DenseMatrix>(input_field);
 }
 
 NrrdDataHandle GetFieldDataAlgo::runNrrd(FieldHandle input_field) const
 {
-  return runImpl<NrrdData>(input_field);
+  return runImplGeneric<NrrdData>(input_field);
 }
 
 template <class MatrixReturnType>
-boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImpl(FieldHandle input_field) const
+boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImplGeneric(FieldHandle input_field) const
 {
   ScopedAlgorithmStatusReporter asr(this, "GetFieldData");
 

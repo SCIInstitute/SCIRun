@@ -312,7 +312,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
      DenseMatrixHandle fielddata;
      try
      {
-      fielddata  = algo_getfielddata.run(coil_fld);
+      fielddata  = algo_getfielddata.runMatrix(coil_fld);
      }
      catch (...)
      {  
@@ -1521,7 +1521,7 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
      DenseMatrixHandle fielddata;
      try
      {
-      fielddata  = algo_getfielddata.run(prototyp);
+       fielddata = algo_getfielddata.runMatrix(prototyp);
      }
      catch (...)
      {

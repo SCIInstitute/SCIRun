@@ -55,7 +55,7 @@ TEST(SetFieldDataTest, TetMeshOnNodeVectorMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -72,7 +72,7 @@ TEST(SetFieldDataTest, TetMeshOnNodeScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -89,7 +89,7 @@ TEST(SetFieldDataTest, DISABLED_TetMeshOnNodeTensorMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -107,7 +107,7 @@ TEST(SetFieldDataTest, TetMeshOnElemScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -124,7 +124,7 @@ TEST(SetFieldDataTest, TetMeshOnElemVectorMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -142,7 +142,7 @@ TEST(SetFieldDataTest, DISABLED_TetMeshOnElemTensorMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -160,7 +160,7 @@ TEST(SetFieldDataTest, TriSurfOnNodeVectorMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -178,7 +178,7 @@ TEST(SetFieldDataTest, TriSurfOnNodeScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -195,7 +195,7 @@ TEST(SetFieldDataTest, DISABLED_TriSurfOnNodeTensorMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -212,7 +212,7 @@ TEST(SetFieldDataTest, TriSurfOnElemVectorMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -230,7 +230,7 @@ TEST(SetFieldDataTest, TriSurfOnElemScalarMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -247,7 +247,7 @@ TEST(SetFieldDataTest, DISABLED_TriSurfOnElemTensorMat)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -265,7 +265,7 @@ TEST(SetFieldDataTest, TriSurfOnNodeScalarMatrixTooSmall)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
@@ -284,7 +284,7 @@ TEST(SetFieldDataTest, DISABLED_TriSurfOnNodeScalarMatrixTooLarge)
 
   GetFieldDataAlgo algo1;
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
+  DenseMatrixHandle resultmatrix = algo1.runMatrix(result);
 
   EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
