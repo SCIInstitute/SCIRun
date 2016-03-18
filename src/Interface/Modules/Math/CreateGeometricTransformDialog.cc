@@ -41,6 +41,7 @@ CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
+  WidgetStyleMixin::tabStyle(transformTabWidget_);
 
   //addRadioButtonGroupManager({ rowbutton_, columnbutton_ }, Variables::Operator);
   //addRadioButtonGroupManager({ sumbutton_, meanbutton_, varbutton_, stdbutton_, normbutton_, maxbutton_, minbutton_, medianbutton_ }, Variables::Method);
