@@ -274,6 +274,8 @@ namespace
         for (const auto& p : mod->outputPorts())
           ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
       }
+      nec_.connectPortAdded([this](const ModuleId& mid, const PortId& pid) { portAddedSlot(mid, pid); });
+      nec_.connectPortRemoved([this](const ModuleId& mid, const PortId& pid) { portAddedSlot(mid, pid); });
     }
 
     virtual boost::shared_ptr<PyPort> getattr(const std::string& name) override
@@ -314,6 +316,16 @@ namespace
       ports_.clear();
     }
   private:
+    void portAddedSlot(const ModuleId& mid, const PortId& pid)
+    {
+      //TODO
+    }
+
+    void portRemovedSlot(const ModuleId& mid, const PortId& pid)
+    {
+      //TODO
+    }
+
     std::vector<boost::shared_ptr<PyPortImpl>> ports_;
     NetworkEditorController& nec_;
     ModuleId modId_;
