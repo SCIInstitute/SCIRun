@@ -176,11 +176,16 @@ void ViewScene::execute()
   if (needToExecute())
   {
     //std::cout << "1execute " << asyncUpdates_ << std::endl;
+    const int maxAsyncWaitTries = 100; //TODO: make configurable for longer-running networks
+    auto asyncWaitTries = 0;
     if (inputPorts().size() > 1) // only send screenshot if input is present
     {
       while (asyncUpdates_ < inputPorts().size() - 1)
       {
         //std::cout << "2execute " << asyncUpdates_ << std::endl;
+        asyncWaitTries++;
+        if (asyncWaitTries == maxAsyncWaitTries)
+          return; // nothing coming down the ports
         //wait until all asyncExecutes are done.
       }
 
