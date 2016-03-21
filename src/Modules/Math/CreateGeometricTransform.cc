@@ -54,6 +54,36 @@ CreateGeometricTransform::CreateGeometricTransform() : Module(staticInfo_)
 
 void CreateGeometricTransform::setStateDefaults()
 {
+  auto state = get_state();
+  state->setValue(TransformType, 0);
+  state->setValue(MultiplyRadioButton, 1);
+  state->setValue(TranslateVectorX, 0.0);
+  state->setValue(TranslateVectorY, 0.0);
+  state->setValue(TranslateVectorZ, 0.0);
+  state->setValue(ScalePointX, 0.0);
+  state->setValue(ScalePointY, 0.0);
+  state->setValue(ScalePointZ, 0.0);
+  state->setValue(LogScale, 0.0);
+  state->setValue(LogScaleX, 0.0);
+  state->setValue(LogScaleY, 0.0);
+  state->setValue(LogScaleZ, 0.0);
+  state->setValue(RotatePointX, 0.0);
+  state->setValue(RotatePointY, 0.0);
+  state->setValue(RotatePointZ, 0.0);
+  state->setValue(RotateAxisX, 0.0);
+  state->setValue(RotateAxisY, 0.0);
+  state->setValue(RotateAxisZ, 0.0);
+  state->setValue(RotateTheta, 0.0);
+  state->setValue(ShearVectorX, 0.0);
+  state->setValue(ShearVectorY, 0.0);
+  state->setValue(ShearVectorZ, 0.0);
+  state->setValue(ShearPlaneA, 0.0);
+  state->setValue(ShearPlaneB, 0.0);
+  state->setValue(ShearPlaneC, 0.0);
+  state->setValue(ShearPlaneD, 1.0);
+  state->setValue(UniformScale, 1.0);
+  state->setValue(ResizeSeparably, true);
+  state->setValue(IgnoreChanges, true);
 }
 
 void CreateGeometricTransform::execute()

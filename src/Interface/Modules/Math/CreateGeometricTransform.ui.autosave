@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="transformTabWidget_">
      <property name="currentIndex">
-      <number>5</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="translateTab_">
       <attribute name="title">
