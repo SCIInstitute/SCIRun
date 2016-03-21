@@ -30,6 +30,7 @@
 #ifndef CORE_DATATYPES_MATRIX_FWD_H
 #define CORE_DATATYPES_MATRIX_FWD_H 
 
+#include <complex>
 #include <boost/shared_ptr.hpp>
 
 namespace SCIRun {
@@ -41,32 +42,37 @@ namespace Datatypes {
 
   typedef MatrixBase<double> Matrix;
 
-  typedef boost::shared_ptr<Matrix> MatrixHandle;
-  typedef boost::shared_ptr<const Matrix> MatrixConstHandle;
+  template <typename T>
+  using SharedPointer = boost::shared_ptr<T>;
+
+  typedef SharedPointer<Matrix> MatrixHandle;
+  typedef SharedPointer<const Matrix> MatrixConstHandle;
 
   template <typename T>
   class DenseMatrixGeneric;
 
   typedef DenseMatrixGeneric<double> DenseMatrix;
+  using ComplexDenseMatrix = DenseMatrixGeneric<std::complex<double>>;
 
-  typedef boost::shared_ptr<DenseMatrix> DenseMatrixHandle;
-  typedef boost::shared_ptr<const DenseMatrix> DenseMatrixConstHandle;
+  typedef SharedPointer<DenseMatrix> DenseMatrixHandle;
+  typedef SharedPointer<const DenseMatrix> DenseMatrixConstHandle;
+  typedef SharedPointer<ComplexDenseMatrix> ComplexDenseMatrixHandle;
 
   template <typename T>
   class DenseColumnMatrixGeneric;
 
   typedef DenseColumnMatrixGeneric<double> DenseColumnMatrix;
 
-  typedef boost::shared_ptr<DenseColumnMatrix> DenseColumnMatrixHandle;
-  typedef boost::shared_ptr<const DenseColumnMatrix> DenseColumnMatrixConstHandle;
+  typedef SharedPointer<DenseColumnMatrix> DenseColumnMatrixHandle;
+  typedef SharedPointer<const DenseColumnMatrix> DenseColumnMatrixConstHandle;
 
   template <typename T>
   class SparseRowMatrixGeneric;
 
   typedef SparseRowMatrixGeneric<double> SparseRowMatrix;
 
-  typedef boost::shared_ptr<SparseRowMatrix> SparseRowMatrixHandle;
-  typedef boost::shared_ptr<const SparseRowMatrix> SparseRowMatrixConstHandle;
+  typedef SharedPointer<SparseRowMatrix> SparseRowMatrixHandle;
+  typedef SharedPointer<const SparseRowMatrix> SparseRowMatrixConstHandle;
 
 }}}
 

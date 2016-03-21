@@ -104,7 +104,7 @@ namespace Algorithms {
 
   typedef Variable AlgorithmParameter;
   typedef Variable::List VariableList;
-  typedef boost::shared_ptr<Variable> VariableHandle;
+  typedef Datatypes::SharedPointer<Variable> VariableHandle;
 
 }
 

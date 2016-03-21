@@ -48,6 +48,7 @@ template <class T> inline T CastFData(const long long &val);
 template <class T> inline T CastFData(const unsigned long long &val);
 template <class T> inline T CastFData(const float &val);
 template <class T> inline T CastFData(const double &val);
+template <class T> inline T CastFData(const std::complex<double> &val);
 template <class T> inline T CastFData(const Core::Geometry::Vector &val);
 template <class T> inline T CastFData(const Core::Geometry::Tensor &val);
 
@@ -102,6 +103,13 @@ template <> inline Core::Geometry::Vector CastFData<Core::Geometry::Vector>(cons
 template <> inline Core::Geometry::Tensor CastFData<Core::Geometry::Tensor>(const double &val) { return (Core::Geometry::Tensor(static_cast<double>(val))); }
 template <> inline float CastFData(const double &val) { return (static_cast<float>(val)); }
 template <> inline double CastFData(const double &val) { return val; }
+template <> inline std::complex<double> CastFData<std::complex<double>>(const double &val) { return { val, 0 }; }
+
+template <class T> inline T CastFData(const std::complex<double>& /*val*/) { return (0); }
+template <> inline double CastFData<double>(const std::complex<double> &val) { return std::norm(val); }
+template <> inline std::complex<double> CastFData<std::complex<double>>(const std::complex<double> &val) { return (val); }
+template <> inline Core::Geometry::Vector CastFData<Core::Geometry::Vector>(const std::complex<double>& val) { return Core::Geometry::Vector(val.real(), val.imag(), 0); }
+template <> inline Core::Geometry::Tensor CastFData<Core::Geometry::Tensor>(const std::complex<double> &val) { return Core::Geometry::Tensor(static_cast<double>(std::norm(val))); }
 
 template <class T> inline T CastFData(const Core::Geometry::Vector& /*val*/) { return (0); }
 template <> inline Core::Geometry::Vector CastFData<Core::Geometry::Vector>(const Core::Geometry::Vector &val) { return (val); }

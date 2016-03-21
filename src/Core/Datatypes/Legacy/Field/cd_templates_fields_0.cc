@@ -45,6 +45,7 @@ typedef LatVolMesh<HexTrilinearLgn<Point> > LVMesh;
 typedef HexTrilinearLgn<Tensor>             FDTensorBasis;
 typedef HexTrilinearLgn<Vector>             FDVectorBasis;
 typedef HexTrilinearLgn<double>             FDdoubleBasis;
+typedef HexTrilinearLgn<std::complex<double>>       FDComplexBasis;
 typedef HexTrilinearLgn<float>              FDfloatBasis;
 typedef HexTrilinearLgn<int>                FDintBasis;
 typedef HexTrilinearLgn<long long>          FDlonglongBasis;
@@ -58,6 +59,7 @@ typedef HexTrilinearLgn<unsigned long>      FDulongBasis;
 typedef ConstantBasis<Tensor>             CFDTensorBasis;
 typedef ConstantBasis<Vector>             CFDVectorBasis;
 typedef ConstantBasis<double>             CFDdoubleBasis;
+typedef ConstantBasis<std::complex<double>>             CFComplexdoubleBasis;
 typedef ConstantBasis<float>              CFDfloatBasis;
 typedef ConstantBasis<int>                CFDintBasis;
 typedef ConstantBasis<long long>          CFDlonglongBasis;
@@ -81,7 +83,8 @@ namespace SCIRun
   //Constant
   template class GenericField<LVMesh, CFDTensorBasis,  FData3d<Tensor, LVMesh> >;
   template class GenericField<LVMesh, CFDVectorBasis,  FData3d<Vector, LVMesh> >;
-  template class GenericField<LVMesh, CFDdoubleBasis,  FData3d<double, LVMesh> >;
+  template class GenericField<LVMesh, CFComplexdoubleBasis, FData3d<std::complex<double>, LVMesh> >;
+  template class GenericField<LVMesh, CFDdoubleBasis, FData3d<double, LVMesh> >;
   template class GenericField<LVMesh, CFDfloatBasis,   FData3d<float, LVMesh> >;
   template class GenericField<LVMesh, CFDintBasis,     FData3d<int, LVMesh> >;
   template class GenericField<LVMesh, CFDlonglongBasis,FData3d<long long, LVMesh> >;
@@ -100,6 +103,7 @@ namespace SCIRun
   template class GenericField<LVMesh, FDTensorBasis,  FData3d<Tensor, LVMesh> >;
   template class GenericField<LVMesh, FDVectorBasis,  FData3d<Vector, LVMesh> >;
   template class GenericField<LVMesh, FDdoubleBasis,  FData3d<double, LVMesh> >;
+  template class GenericField<LVMesh, FDComplexBasis, FData3d<std::complex<double>, LVMesh> >;
   template class GenericField<LVMesh, FDfloatBasis,   FData3d<float, LVMesh> >;
   template class GenericField<LVMesh, FDintBasis,     FData3d<int, LVMesh> >;
   template class GenericField<LVMesh, FDlonglongBasis, FData3d<long long, LVMesh> >;
@@ -139,6 +143,14 @@ backwards_compat_LVFd("LatVolField<double>", "Field",
 		      FData3d<double, LVMesh> >::maker,
 		      GenericField<LVMesh, NDBasis, 
 		      FData3d<double, LVMesh> >::maker);
+PersistentTypeID
+backwards_compat_LVFcd("LatVolField<std::complex<double>>", "Field",
+          GenericField<LVMesh, FDComplexBasis,
+          FData3d<std::complex<double>, LVMesh> >::maker,
+          GenericField<LVMesh, CFComplexdoubleBasis,
+          FData3d<std::complex<double>, LVMesh> >::maker,
+          GenericField<LVMesh, NDBasis,
+          FData3d<std::complex<double>, LVMesh> >::maker);
 PersistentTypeID 
 backwards_compat_LVFf("LatVolField<float>", "Field",
 		      GenericField<LVMesh, FDfloatBasis, 
