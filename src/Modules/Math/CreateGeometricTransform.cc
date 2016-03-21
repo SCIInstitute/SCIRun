@@ -68,5 +68,33 @@ void CreateGeometricTransform::execute()
   }
 }
 
-
+const AlgorithmParameterName CreateGeometricTransform::TransformType("TransformType");
+const AlgorithmParameterName CreateGeometricTransform::MultiplyRadioButton("MultiplyRadioButton");
+const AlgorithmParameterName CreateGeometricTransform::TranslateVectorX("TranslateVectorX");
+const AlgorithmParameterName CreateGeometricTransform::TranslateVectorY("TranslateVectorY");
+const AlgorithmParameterName CreateGeometricTransform::TranslateVectorZ("TranslateVectorZ");
+const AlgorithmParameterName CreateGeometricTransform::ScalePointX("ScalePointX");
+const AlgorithmParameterName CreateGeometricTransform::ScalePointY("ScalePointY");
+const AlgorithmParameterName CreateGeometricTransform::ScalePointZ("ScalePointZ");
+const AlgorithmParameterName CreateGeometricTransform::LogScale("LogScale");
+const AlgorithmParameterName CreateGeometricTransform::LogScaleX("LogScaleX");
+const AlgorithmParameterName CreateGeometricTransform::LogScaleY("LogScaleY");
+const AlgorithmParameterName CreateGeometricTransform::LogScaleZ("LogScaleZ");
+const AlgorithmParameterName CreateGeometricTransform::RotatePointX("RotatePointX");
+const AlgorithmParameterName CreateGeometricTransform::RotatePointY("RotatePointY");
+const AlgorithmParameterName CreateGeometricTransform::RotatePointZ("RotatePointZ");
+const AlgorithmParameterName CreateGeometricTransform::RotateAxisX("RotateAxisX");
+const AlgorithmParameterName CreateGeometricTransform::RotateAxisY("RotateAxisY");
+const AlgorithmParameterName CreateGeometricTransform::RotateAxisZ("RotateAxisZ");
+const AlgorithmParameterName CreateGeometricTransform::RotateTheta("RotateTheta");
+const AlgorithmParameterName CreateGeometricTransform::ShearVectorX("ShearVectorX");
+const AlgorithmParameterName CreateGeometricTransform::ShearVectorY("ShearVectorY");
+const AlgorithmParameterName CreateGeometricTransform::ShearVectorZ("ShearVectorZ");
+const AlgorithmParameterName CreateGeometricTransform::ShearPlaneA("ShearPlaneA");
+const AlgorithmParameterName CreateGeometricTransform::ShearPlaneB("ShearPlaneB");
+const AlgorithmParameterName CreateGeometricTransform::ShearPlaneC("ShearPlaneC");
+const AlgorithmParameterName CreateGeometricTransform::ShearPlaneD("ShearPlaneD");
+const AlgorithmParameterName CreateGeometricTransform::UniformScale("UniformScale");
+const AlgorithmParameterName CreateGeometricTransform::ResizeSeparably("ResizeSeparably");
+const AlgorithmParameterName CreateGeometricTransform::IgnoreChanges("IgnoreChanges");
 

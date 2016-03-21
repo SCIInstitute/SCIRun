@@ -42,7 +42,38 @@ namespace Math {
   {
   public:
     CreateGeometricTransform();
-    virtual void execute();
+    virtual void execute() override;
+
+    static const Core::Algorithms::AlgorithmParameterName TransformType;
+    static const Core::Algorithms::AlgorithmParameterName MultiplyRadioButton;
+    static const Core::Algorithms::AlgorithmParameterName TranslateVectorX;
+    static const Core::Algorithms::AlgorithmParameterName TranslateVectorY;
+    static const Core::Algorithms::AlgorithmParameterName TranslateVectorZ;
+    static const Core::Algorithms::AlgorithmParameterName ScalePointX;
+    static const Core::Algorithms::AlgorithmParameterName ScalePointY;
+    static const Core::Algorithms::AlgorithmParameterName ScalePointZ;
+    static const Core::Algorithms::AlgorithmParameterName LogScale;
+    static const Core::Algorithms::AlgorithmParameterName LogScaleX;
+    static const Core::Algorithms::AlgorithmParameterName LogScaleY;
+    static const Core::Algorithms::AlgorithmParameterName LogScaleZ;
+    static const Core::Algorithms::AlgorithmParameterName RotatePointX;
+    static const Core::Algorithms::AlgorithmParameterName RotatePointY;
+    static const Core::Algorithms::AlgorithmParameterName RotatePointZ;
+    static const Core::Algorithms::AlgorithmParameterName RotateAxisX;
+    static const Core::Algorithms::AlgorithmParameterName RotateAxisY;
+    static const Core::Algorithms::AlgorithmParameterName RotateAxisZ;
+    static const Core::Algorithms::AlgorithmParameterName RotateTheta;
+    static const Core::Algorithms::AlgorithmParameterName ShearVectorX;
+    static const Core::Algorithms::AlgorithmParameterName ShearVectorY;
+    static const Core::Algorithms::AlgorithmParameterName ShearVectorZ;
+    static const Core::Algorithms::AlgorithmParameterName ShearPlaneA;
+    static const Core::Algorithms::AlgorithmParameterName ShearPlaneB;
+    static const Core::Algorithms::AlgorithmParameterName ShearPlaneC;
+    static const Core::Algorithms::AlgorithmParameterName ShearPlaneD;
+    static const Core::Algorithms::AlgorithmParameterName UniformScale;
+    static const Core::Algorithms::AlgorithmParameterName ResizeSeparably;
+    static const Core::Algorithms::AlgorithmParameterName IgnoreChanges;
+
     virtual void setStateDefaults();
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
     
