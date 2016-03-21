@@ -4,10 +4,10 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>1</count>
+			<count>2</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>CreateStandardColorMap:0</first>
+				<first>CreateStandardColorMap:1</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
@@ -27,7 +27,7 @@
 									<value class_id="11" tracking_level="0" version="0">
 										<which>5</which>
 										<value class_id="12" tracking_level="0" version="0">
-											<count>7</count>
+											<count>6</count>
 											<item_version>0</item_version>
 											<item>
 												<name>alphaPoint</name>
@@ -40,38 +40,14 @@
 															<name>listElement</name>
 															<value>
 																<which>1</which>
-																<value>0.00000000000000000e+00</value>
+																<value>4.30000000000000000e+001</value>
 															</value>
 														</item>
 														<item>
 															<name>listElement</name>
 															<value>
 																<which>1</which>
-																<value>4.15000000000000000e+01</value>
-															</value>
-														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>alphaPoint</name>
-												<value>
-													<which>5</which>
-													<value>
-														<count>2</count>
-														<item_version>0</item_version>
-														<item>
-															<name>listElement</name>
-															<value>
-																<which>1</which>
-																<value>5.90000000000000000e+01</value>
-															</value>
-														</item>
-														<item>
-															<name>listElement</name>
-															<value>
-																<which>1</which>
-																<value>1.60000000000000000e+01</value>
+																<value>1.00000000000000000e+001</value>
 															</value>
 														</item>
 													</value>
@@ -88,38 +64,14 @@
 															<name>listElement</name>
 															<value>
 																<which>1</which>
-																<value>1.39000000000000000e+02</value>
+																<value>9.50000000000000000e+001</value>
 															</value>
 														</item>
 														<item>
 															<name>listElement</name>
 															<value>
 																<which>1</which>
-																<value>5.90000000000000000e+01</value>
-															</value>
-														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>alphaPoint</name>
-												<value>
-													<which>5</which>
-													<value>
-														<count>2</count>
-														<item_version>0</item_version>
-														<item>
-															<name>listElement</name>
-															<value>
-																<which>1</which>
-																<value>2.10000000000000000e+02</value>
-															</value>
-														</item>
-														<item>
-															<name>listElement</name>
-															<value>
-																<which>1</which>
-																<value>1.60000000000000000e+01</value>
+																<value>7.40000000000000000e+001</value>
 															</value>
 														</item>
 													</value>
@@ -136,38 +88,14 @@
 															<name>listElement</name>
 															<value>
 																<which>1</which>
-																<value>2.90000000000000000e+02</value>
+																<value>1.75000000000000000e+002</value>
 															</value>
 														</item>
 														<item>
 															<name>listElement</name>
 															<value>
 																<which>1</which>
-																<value>6.80000000000000000e+01</value>
-															</value>
-														</item>
-													</value>
-												</value>
-											</item>
-											<item>
-												<name>alphaPoint</name>
-												<value>
-													<which>5</which>
-													<value>
-														<count>2</count>
-														<item_version>0</item_version>
-														<item>
-															<name>listElement</name>
-															<value>
-																<which>1</which>
-																<value>3.34000000000000000e+02</value>
-															</value>
-														</item>
-														<item>
-															<name>listElement</name>
-															<value>
-																<which>1</which>
-																<value>1.80000000000000000e+01</value>
+																<value>1.10000000000000000e+001</value>
 															</value>
 														</item>
 													</value>
@@ -184,14 +112,62 @@
 															<name>listElement</name>
 															<value>
 																<which>1</which>
-																<value>3.65000000000000000e+02</value>
+																<value>2.29000000000000000e+002</value>
 															</value>
 														</item>
 														<item>
 															<name>listElement</name>
 															<value>
 																<which>1</which>
-																<value>4.15000000000000000e+01</value>
+																<value>7.30000000000000000e+001</value>
+															</value>
+														</item>
+													</value>
+												</value>
+											</item>
+											<item>
+												<name>alphaPoint</name>
+												<value>
+													<which>5</which>
+													<value>
+														<count>2</count>
+														<item_version>0</item_version>
+														<item>
+															<name>listElement</name>
+															<value>
+																<which>1</which>
+																<value>2.83000000000000000e+002</value>
+															</value>
+														</item>
+														<item>
+															<name>listElement</name>
+															<value>
+																<which>1</which>
+																<value>1.20000000000000000e+001</value>
+															</value>
+														</item>
+													</value>
+												</value>
+											</item>
+											<item>
+												<name>alphaPoint</name>
+												<value>
+													<which>5</which>
+													<value>
+														<count>2</count>
+														<item_version>0</item_version>
+														<item>
+															<name>listElement</name>
+															<value>
+																<which>1</which>
+																<value>3.46000000000000000e+002</value>
+															</value>
+														</item>
+														<item>
+															<name>listElement</name>
+															<value>
+																<which>1</which>
+																<value>7.30000000000000000e+001</value>
 															</value>
 														</item>
 													</value>
@@ -245,7 +221,134 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateStandardColorMap:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>5</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AlphaUserPointsVector</name>
+								</first>
+								<second>
+									<name>AlphaUserPointsVector</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name>alphaPoint</name>
+												<value>
+													<which>5</which>
+													<value>
+														<count>2</count>
+														<item_version>0</item_version>
+														<item>
+															<name>listElement</name>
+															<value>
+																<which>1</which>
+																<value>8.50000000000000000e+001</value>
+															</value>
+														</item>
+														<item>
+															<name>listElement</name>
+															<value>
+																<which>1</which>
+																<value>9.00000000000000000e+000</value>
+															</value>
+														</item>
+													</value>
+												</value>
+											</item>
+											<item>
+												<name>alphaPoint</name>
+												<value>
+													<which>5</which>
+													<value>
+														<count>2</count>
+														<item_version>0</item_version>
+														<item>
+															<name>listElement</name>
+															<value>
+																<which>1</which>
+																<value>2.90000000000000000e+002</value>
+															</value>
+														</item>
+														<item>
+															<name>listElement</name>
+															<value>
+																<which>1</which>
+																<value>7.30000000000000000e+001</value>
+															</value>
+														</item>
+													</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapInvert</name>
+								</first>
+								<second>
+									<name>ColorMapInvert</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapName</name>
+								</first>
+								<second>
+									<name>ColorMapName</name>
+									<value>
+										<which>2</which>
+										<value>Grayscale</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapResolution</name>
+								</first>
+								<second>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -260,13 +363,20 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="14" tracking_level="0" version="0">
-		<count>1</count>
+		<count>2</count>
 		<item_version>0</item_version>
 		<item class_id="15" tracking_level="0" version="0">
-			<first>CreateStandardColorMap:0</first>
+			<first>CreateStandardColorMap:1</first>
 			<second class_id="16" tracking_level="0" version="0">
-				<first>4.90000000000000000e+01</first>
-				<second>1.45000000000000000e+01</second>
+				<first>-7.30000000000000000e+001</first>
+				<second>-3.49000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:2</first>
+			<second>
+				<first>1.34000000000000000e+002</first>
+				<second>-3.73500000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -279,10 +389,14 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="18" tracking_level="0" version="0">
-		<count>1</count>
+		<count>2</count>
 		<item_version>0</item_version>
 		<item class_id="19" tracking_level="0" version="0">
-			<first>CreateStandardColorMap:0</first>
+			<first>CreateStandardColorMap:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:2</first>
 			<second>0</second>
 		</item>
 	</moduleTags>

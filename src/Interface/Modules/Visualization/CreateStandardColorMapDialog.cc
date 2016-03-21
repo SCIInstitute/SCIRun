@@ -45,8 +45,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-
-  addComboBoxManager(colorMapNameComboBox_, Parameters::ColorMapName);
+  
   addSpinBoxManager(resolutionSpin_, Parameters::ColorMapResolution);
   addDoubleSpinBoxManager(shiftSpin_, Parameters::ColorMapShift);
   addCheckBoxManager(invertCheck_, Parameters::ColorMapInvert);
@@ -55,9 +54,6 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   {
     colorMapNameComboBox_->addItem(QString::fromStdString(colorMapName));
   }
-
-  //TODO: hook up mapping between alpha graph and vector of doubles stored in state.
-
 
   connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(setShiftSlider(double)));
   connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(setResolutionSlider(int)));
@@ -77,15 +73,34 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   else
     qDebug() << "NO RAINBOW!";
 
+  addComboBoxManager(colorMapNameComboBox_, Parameters::ColorMapName);
   connect(colorMapNameComboBox_, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(updateColorMapPreview(const QString&)));
 
   scene_ = new QGraphicsScene(this);
-  previewColorMap_ = new ColormapPreview(scene_, state, this);
+  previewColorMap_ = new ColormapPreview(scene_, state, pulling_, this);
   qobject_cast<QVBoxLayout*>(groupBox->layout())->insertWidget(0, previewColorMap_);
   previewColorMap_->setStyleSheet(buildGradientString(*defaultMap));
   previewColorMap_->setMinimumSize(100,40);
   previewColorMap_->show();
   connect(clearAlphaPointsToolButton_, SIGNAL(clicked()), previewColorMap_, SLOT(clearAlphaPointGraphics()));
+}
+
+void CreateStandardColorMapDialog::pullSpecial()
+{
+  auto pointsVec = state_->getValue(Parameters::AlphaUserPointsVector).toVector();
+  if (pointsVec.empty())
+  {
+    previewColorMap_->addDefaultLine();
+  }
+  else
+  {
+    previewColorMap_->addEndpoints();
+    for (const auto& p : pointsVec)
+    {
+      auto pVec = p.toVector();
+      previewColorMap_->addPoint(QPointF(pVec[0].toDouble(), pVec[1].toDouble()));
+    }
+  }
 }
 
 void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s)
@@ -101,7 +116,7 @@ void CreateStandardColorMapDialog::updateColorMapPreview()
   updateColorMapPreview(colorMapNameComboBox_->currentText());
 }
 
-const QString CreateStandardColorMapDialog::buildGradientString(const ColorMap& cm)
+QString CreateStandardColorMapDialog::buildGradientString(const ColorMap& cm) const
 {
   //TODO: cache these values, GUI is slow to update.
   std::stringstream ss;
@@ -137,12 +152,14 @@ void CreateStandardColorMapDialog::onInvertCheck(bool b)
   updateColorMapPreview();
 }
 
-AlphaFunctionManager::AlphaFunctionManager(const QPointF& start, const QPointF& end, ModuleStateHandle state) :
+AlphaFunctionManager::AlphaFunctionManager(const QPointF& start, const QPointF& end, ModuleStateHandle state, const boost::atomic<bool>& pulling) :
   state_(state),
   defaultStart_(start), defaultEnd_(end),
-  alphaFunction_(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA)
+  alphaFunction_(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA),
+  dialogPulling_(pulling)
 {
 }
+
 namespace
 {
   const double colormapPreviewHeight = 83;
@@ -150,32 +167,33 @@ namespace
   const QRectF colorMapPreviewRect(0, 0, colormapPreviewWidth, colormapPreviewHeight);
 }
 
-ColormapPreview::ColormapPreview(QGraphicsScene* scene, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent)
+ColormapPreview::ColormapPreview(QGraphicsScene* scene, ModuleStateHandle state, 
+  const boost::atomic<bool>& pulling,
+  QWidget* parent)
   : QGraphicsView(scene, parent), alphaPath_(nullptr),
   defaultStart_(0, colormapPreviewHeight / 2),
   defaultEnd_(colormapPreviewWidth, colormapPreviewHeight / 2),
-  alphaManager_(defaultStart_, defaultEnd_, state)
+  alphaManager_(defaultStart_, defaultEnd_, state, pulling),
+  dialogPulling_(pulling)
 {
   setSceneRect(colorMapPreviewRect);
-  addDefaultLine();
 }
 
 void ColormapPreview::mousePressEvent(QMouseEvent* event)
 {
   QGraphicsView::mousePressEvent(event);
-
-  auto center = mapToScene(event->pos());
-  addPoint(center);
-
-  //Q_EMIT clicked(event->x(), event->y());
-
+  if (event->buttons() & Qt::LeftButton)
+  {
+    auto center = mapToScene(event->pos());
+    addPoint(center);
+  }
 
   //TODO: remove point if event & RightMouseButton
 
   //TODO: points are movable!
 }
 
-  static QPen alphaLinePen(Qt::red, 1);
+static QPen alphaLinePen(Qt::red, 1);
 
 void ColormapPreview::addDefaultLine()
 {
@@ -239,20 +257,19 @@ void AlphaFunctionManager::clear()
 
 void AlphaFunctionManager::pushToState()
 {
-  qDebug() << "Alpha points:";
-  Variable::List alphaPointsVec;
-  for (const auto& p : alphaPoints_)
+  if (!dialogPulling_)
   {
-    qDebug() << p;
-    alphaPointsVec.emplace_back(Name("alphaPoint"), makeVariableList(p.x(), p.y()));
+    Variable::List alphaPointsVec;
+
+    //strip endpoints before saving user-added points
+    auto begin = alphaPoints_.begin(), end = alphaPoints_.end();
+    std::advance(begin, 1);
+    std::advance(end, -1);
+    std::for_each(begin, end, [&](const QPointF& p) { alphaPointsVec.emplace_back(Name("alphaPoint"), makeVariableList(p.x(), p.y())); });
+    state_->setValue(Parameters::AlphaUserPointsVector, alphaPointsVec);
+
+    state_->setTransientValue(Parameters::AlphaFunctionVector, alphaFunction_);
   }
-  state_->setValue(Parameters::AlphaUserPointsVector, alphaPointsVec);
-  qDebug() << "Alpha function:";
-  for (const auto& a : alphaFunction_)
-  {
-    qDebug() << a;
-  }
-  state_->setTransientValue(Parameters::AlphaFunctionVector, alphaFunction_);
 }
 
 void ColormapPreview::drawAlphaPolyline()

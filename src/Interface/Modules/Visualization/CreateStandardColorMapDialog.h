@@ -48,7 +48,7 @@ namespace SCIRun {
     class AlphaFunctionManager
     {
     public:
-      AlphaFunctionManager(const QPointF& start, const QPointF& end, SCIRun::Dataflow::Networks::ModuleStateHandle state);
+      AlphaFunctionManager(const QPointF& start, const QPointF& end, SCIRun::Dataflow::Networks::ModuleStateHandle state, const boost::atomic<bool>& pulling);
       void clear();
       void insertEndpoints();
       void insert(const QPointF& p);
@@ -69,6 +69,7 @@ namespace SCIRun {
       const QPointF defaultStart_;
       const QPointF defaultEnd_;
       std::vector<double> alphaFunction_;
+      const boost::atomic<bool>& dialogPulling_;
     public:
       auto begin() const -> decltype(alphaPoints_.begin()) { return alphaPoints_.begin(); }
       auto end() const -> decltype(alphaPoints_.end()) { return alphaPoints_.end(); }
@@ -80,17 +81,18 @@ namespace SCIRun {
     public:
       explicit ColormapPreview(QGraphicsScene* scene,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        const boost::atomic<bool>& pulling,
         QWidget* parent = nullptr);
+    void addDefaultLine();
+    void addPoint(const QPointF& point);
+    void addEndpoints() { alphaManager_.insertEndpoints(); }
     public Q_SLOTS:
       void clearAlphaPointGraphics();
-
     Q_SIGNALS:
       void clicked(int x, int y);
     protected:
       virtual void mousePressEvent(QMouseEvent* event) override;
     private:
-      void addPoint(const QPointF& point);
-      void addDefaultLine();
       void removeDefaultLine();
       void drawAlphaPolyline();
 
@@ -98,6 +100,7 @@ namespace SCIRun {
       const QPointF defaultStart_;
       const QPointF defaultEnd_;
       AlphaFunctionManager alphaManager_;
+      const boost::atomic<bool>& dialogPulling_;
     };
 
     class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,
@@ -109,10 +112,12 @@ namespace SCIRun {
       CreateStandardColorMapDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
+    protected:
+      virtual void pullSpecial() override;
     private Q_SLOTS:
       void updateColorMapPreview();
       void updateColorMapPreview(const QString& s);
-      const QString buildGradientString(const SCIRun::Core::Datatypes::ColorMap& cm);
+      QString buildGradientString(const SCIRun::Core::Datatypes::ColorMap& cm) const;
       void setShiftSlider(double d);
       void setResolutionSlider(int i);
       void setShiftSpinner(int i);
