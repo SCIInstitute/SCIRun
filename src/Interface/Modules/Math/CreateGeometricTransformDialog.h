@@ -52,6 +52,7 @@ namespace SCIRun {
       void changeTransformType(int index);
       void resetValues();
       void resetFieldMap();
+      void resetWidget();
       void cycleUp();
       void cycleDown();
       void swapXY();
@@ -60,8 +61,9 @@ namespace SCIRun {
       void flipX();
       void flipY();
       void flipZ();
-     
-
+      void applyTransform();
+      void compositeTransform();
+      void calculateLog(const QString& text);
     };
   }
 }

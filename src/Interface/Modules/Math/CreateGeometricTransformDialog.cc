@@ -90,6 +90,7 @@ CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string
   connect(transformTabWidget_, SIGNAL(currentChanged(int)), this, SLOT(changeTransformType(int)));
   connect(resetPushButton_, SIGNAL(clicked()), this, SLOT(resetValues()));
   connect(resetFieldMapPushButton_, SIGNAL(clicked()), this, SLOT(resetFieldMap()));
+  connect(resetWidgetPushButton_, SIGNAL(clicked()), this, SLOT(resetWidget()));
   connect(cycleUpPushButton_, SIGNAL(clicked()), this, SLOT(cycleUp()));
   connect(cycleDownPushButton_, SIGNAL(clicked()), this, SLOT(cycleDown()));
   connect(swapXYPushButton_, SIGNAL(clicked()), this, SLOT(swapXY()));
@@ -97,7 +98,10 @@ CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string
   connect(swapXZPushButton_, SIGNAL(clicked()), this, SLOT(swapXZ()));
   connect(flipXPushButton_, SIGNAL(clicked()), this, SLOT(flipX()));
   connect(flipYPushButton_, SIGNAL(clicked()), this, SLOT(flipY()));
-  connect(flipZPushButton_, SIGNAL(clicked()), this, SLOT(flipZ()));   
+  connect(flipZPushButton_, SIGNAL(clicked()), this, SLOT(flipZ()));
+  connect(applyTransformPushButton_, SIGNAL(clicked()), this, SLOT(applyTransform()));
+  connect(compositeTransformPushButton_, SIGNAL(clicked()), this, SLOT(compositeTransform()));
+  connect(logCalculatorLineEdit_, SIGNAL(textEdited(const QString&)), this, SLOT(calculateLog(const QString&)));
 }
 
 void CreateGeometricTransformDialog::pullSpecial()
@@ -154,6 +158,10 @@ void CreateGeometricTransformDialog::resetFieldMap()
   state_->setValue(Parameters::FieldMapZ, z);
 }
 
+void CreateGeometricTransformDialog::resetWidget()
+{
+  state_->setValue(Parameters::UniformScale, 1.0);
+}
 
 void CreateGeometricTransformDialog::cycleUp()
 {
@@ -195,14 +203,58 @@ void CreateGeometricTransformDialog::swapXZ()
 void CreateGeometricTransformDialog::flipX()
 {
   auto x = state_->getValue(Parameters::FieldMapX).toString();
+  if (x[1] == '+')
+  {
+    x[1] = '-';
+  }
+  else
+  {
+    x[1] = '+';
+  }
+  state_->setValue(Parameters::FieldMapX, x);
 }
 
 void CreateGeometricTransformDialog::flipY()
 {
-
+  auto y = state_->getValue(Parameters::FieldMapY).toString();
+  if (y[1] == '+')
+  {
+    y[1] = '-';
+  }
+  else
+  {
+    y[1] = '+';
+  }
+  state_->setValue(Parameters::FieldMapY, y);
 }
 
 void CreateGeometricTransformDialog::flipZ()
 {
+  auto z = state_->getValue(Parameters::FieldMapZ).toString();
+  if (z[1] == '+')
+  {
+    z[1] = '-';
+  }
+  else
+  {
+    z[1] = '+';
+  }
+  state_->setValue(Parameters::FieldMapZ, z);
+}
 
+void CreateGeometricTransformDialog::applyTransform()
+{
+
+}
+
+void CreateGeometricTransformDialog::compositeTransform()
+{
+
+}
+
+void CreateGeometricTransformDialog::calculateLog(const QString& text)
+{
+  auto val = log(text.toDouble());
+  QString result = QString::number(val, 'f', 5);
+  logCalculatorResultLabel_->setText(result);
 }
