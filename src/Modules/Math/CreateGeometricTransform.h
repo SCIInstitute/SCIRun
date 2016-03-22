@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_CREATEGEOMETRICTRANSFORM_H
-#define MODULES_MATH_CREATEGEOMETRICTRANSFORM_H
+#ifndef MODULES_MATH_CREATEGEOMETRICTRANSFORMMODULE_H
+#define MODULES_MATH_CREATEGEOMETRICTRANSFORMMODULE_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Math/share.h>
@@ -36,12 +36,12 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
   
-  class SCISHARE CreateGeometricTransform : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE CreateGeometricTransformModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
     public Has2OutputPorts<MatrixPortTag, GeometryPortTag>
   {
   public:
-    CreateGeometricTransform();
+    CreateGeometricTransformModule();
     virtual void execute() override;
 
     static const Core::Algorithms::AlgorithmParameterName TransformType;
@@ -70,6 +70,9 @@ namespace Math {
     static const Core::Algorithms::AlgorithmParameterName ShearPlaneB;
     static const Core::Algorithms::AlgorithmParameterName ShearPlaneC;
     static const Core::Algorithms::AlgorithmParameterName ShearPlaneD;
+    static const Core::Algorithms::AlgorithmParameterName FieldMapX;
+    static const Core::Algorithms::AlgorithmParameterName FieldMapY;
+    static const Core::Algorithms::AlgorithmParameterName FieldMapZ;
     static const Core::Algorithms::AlgorithmParameterName UniformScale;
     static const Core::Algorithms::AlgorithmParameterName ResizeSeparably;
     static const Core::Algorithms::AlgorithmParameterName IgnoreChanges;

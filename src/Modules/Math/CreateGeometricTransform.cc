@@ -43,16 +43,16 @@ using namespace SCIRun::Core::Datatypes;
 ///   University of Utah
 ///@date  March 1999
 
-const ModuleLookupInfo CreateGeometricTransform::staticInfo_("CreateGeometricTransform", "Math", "SCIRun");
+const ModuleLookupInfo CreateGeometricTransformModule::staticInfo_("CreateGeometricTransform", "Math", "SCIRun");
 
-CreateGeometricTransform::CreateGeometricTransform() : Module(staticInfo_)
+CreateGeometricTransformModule::CreateGeometricTransformModule() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(OutputMatrix);
   INITIALIZE_PORT(Widget);
 }
 
-void CreateGeometricTransform::setStateDefaults()
+void CreateGeometricTransformModule::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(TransformType, 0);
@@ -81,12 +81,15 @@ void CreateGeometricTransform::setStateDefaults()
   state->setValue(ShearPlaneB, 0.0);
   state->setValue(ShearPlaneC, 0.0);
   state->setValue(ShearPlaneD, 1.0);
+  state->setValue(FieldMapX, "x+");
+  state->setValue(FieldMapY, "y+");
+  state->setValue(FieldMapZ, "z+");
   state->setValue(UniformScale, 1.0);
   state->setValue(ResizeSeparably, true);
   state->setValue(IgnoreChanges, true);
 }
 
-void CreateGeometricTransform::execute()
+void CreateGeometricTransformModule::execute()
 {
   auto input = getRequiredInput(InputMatrix);
   
@@ -98,33 +101,36 @@ void CreateGeometricTransform::execute()
   }
 }
 
-const AlgorithmParameterName CreateGeometricTransform::TransformType("TransformType");
-const AlgorithmParameterName CreateGeometricTransform::MultiplyRadioButton("MultiplyRadioButton");
-const AlgorithmParameterName CreateGeometricTransform::TranslateVectorX("TranslateVectorX");
-const AlgorithmParameterName CreateGeometricTransform::TranslateVectorY("TranslateVectorY");
-const AlgorithmParameterName CreateGeometricTransform::TranslateVectorZ("TranslateVectorZ");
-const AlgorithmParameterName CreateGeometricTransform::ScalePointX("ScalePointX");
-const AlgorithmParameterName CreateGeometricTransform::ScalePointY("ScalePointY");
-const AlgorithmParameterName CreateGeometricTransform::ScalePointZ("ScalePointZ");
-const AlgorithmParameterName CreateGeometricTransform::LogScale("LogScale");
-const AlgorithmParameterName CreateGeometricTransform::LogScaleX("LogScaleX");
-const AlgorithmParameterName CreateGeometricTransform::LogScaleY("LogScaleY");
-const AlgorithmParameterName CreateGeometricTransform::LogScaleZ("LogScaleZ");
-const AlgorithmParameterName CreateGeometricTransform::RotatePointX("RotatePointX");
-const AlgorithmParameterName CreateGeometricTransform::RotatePointY("RotatePointY");
-const AlgorithmParameterName CreateGeometricTransform::RotatePointZ("RotatePointZ");
-const AlgorithmParameterName CreateGeometricTransform::RotateAxisX("RotateAxisX");
-const AlgorithmParameterName CreateGeometricTransform::RotateAxisY("RotateAxisY");
-const AlgorithmParameterName CreateGeometricTransform::RotateAxisZ("RotateAxisZ");
-const AlgorithmParameterName CreateGeometricTransform::RotateTheta("RotateTheta");
-const AlgorithmParameterName CreateGeometricTransform::ShearVectorX("ShearVectorX");
-const AlgorithmParameterName CreateGeometricTransform::ShearVectorY("ShearVectorY");
-const AlgorithmParameterName CreateGeometricTransform::ShearVectorZ("ShearVectorZ");
-const AlgorithmParameterName CreateGeometricTransform::ShearPlaneA("ShearPlaneA");
-const AlgorithmParameterName CreateGeometricTransform::ShearPlaneB("ShearPlaneB");
-const AlgorithmParameterName CreateGeometricTransform::ShearPlaneC("ShearPlaneC");
-const AlgorithmParameterName CreateGeometricTransform::ShearPlaneD("ShearPlaneD");
-const AlgorithmParameterName CreateGeometricTransform::UniformScale("UniformScale");
-const AlgorithmParameterName CreateGeometricTransform::ResizeSeparably("ResizeSeparably");
-const AlgorithmParameterName CreateGeometricTransform::IgnoreChanges("IgnoreChanges");
+const AlgorithmParameterName CreateGeometricTransformModule::TransformType("TransformType");
+const AlgorithmParameterName CreateGeometricTransformModule::MultiplyRadioButton("MultiplyRadioButton");
+const AlgorithmParameterName CreateGeometricTransformModule::TranslateVectorX("TranslateVectorX");
+const AlgorithmParameterName CreateGeometricTransformModule::TranslateVectorY("TranslateVectorY");
+const AlgorithmParameterName CreateGeometricTransformModule::TranslateVectorZ("TranslateVectorZ");
+const AlgorithmParameterName CreateGeometricTransformModule::ScalePointX("ScalePointX");
+const AlgorithmParameterName CreateGeometricTransformModule::ScalePointY("ScalePointY");
+const AlgorithmParameterName CreateGeometricTransformModule::ScalePointZ("ScalePointZ");
+const AlgorithmParameterName CreateGeometricTransformModule::LogScale("LogScale");
+const AlgorithmParameterName CreateGeometricTransformModule::LogScaleX("LogScaleX");
+const AlgorithmParameterName CreateGeometricTransformModule::LogScaleY("LogScaleY");
+const AlgorithmParameterName CreateGeometricTransformModule::LogScaleZ("LogScaleZ");
+const AlgorithmParameterName CreateGeometricTransformModule::RotatePointX("RotatePointX");
+const AlgorithmParameterName CreateGeometricTransformModule::RotatePointY("RotatePointY");
+const AlgorithmParameterName CreateGeometricTransformModule::RotatePointZ("RotatePointZ");
+const AlgorithmParameterName CreateGeometricTransformModule::RotateAxisX("RotateAxisX");
+const AlgorithmParameterName CreateGeometricTransformModule::RotateAxisY("RotateAxisY");
+const AlgorithmParameterName CreateGeometricTransformModule::RotateAxisZ("RotateAxisZ");
+const AlgorithmParameterName CreateGeometricTransformModule::RotateTheta("RotateTheta");
+const AlgorithmParameterName CreateGeometricTransformModule::ShearVectorX("ShearVectorX");
+const AlgorithmParameterName CreateGeometricTransformModule::ShearVectorY("ShearVectorY");
+const AlgorithmParameterName CreateGeometricTransformModule::ShearVectorZ("ShearVectorZ");
+const AlgorithmParameterName CreateGeometricTransformModule::ShearPlaneA("ShearPlaneA");
+const AlgorithmParameterName CreateGeometricTransformModule::ShearPlaneB("ShearPlaneB");
+const AlgorithmParameterName CreateGeometricTransformModule::ShearPlaneC("ShearPlaneC");
+const AlgorithmParameterName CreateGeometricTransformModule::ShearPlaneD("ShearPlaneD");
+const AlgorithmParameterName CreateGeometricTransformModule::FieldMapX("FieldMapX");
+const AlgorithmParameterName CreateGeometricTransformModule::FieldMapY("FieldMapY");
+const AlgorithmParameterName CreateGeometricTransformModule::FieldMapZ("FieldMapZ");
+const AlgorithmParameterName CreateGeometricTransformModule::UniformScale("UniformScale");
+const AlgorithmParameterName CreateGeometricTransformModule::ResizeSeparably("ResizeSeparably");
+const AlgorithmParameterName CreateGeometricTransformModule::IgnoreChanges("IgnoreChanges");
 

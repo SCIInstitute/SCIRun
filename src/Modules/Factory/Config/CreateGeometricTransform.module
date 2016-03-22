@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "CreateGeometricTransform",
+    "name": "CreateGeometricTransformModule",
     "namespace": "Math",
     "status": "GUI finished. Working on Algorithm.",
     "description": "Build a 4x4 geometric transformation matrix capable of translation, scaling, rotation, sheering and permutation.",

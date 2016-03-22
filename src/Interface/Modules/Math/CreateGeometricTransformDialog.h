@@ -44,6 +44,9 @@ namespace SCIRun {
       CreateGeometricTransformDialog(const std::string& name,
                                      SCIRun::Dataflow::Networks::ModuleStateHandle state,
                                      QWidget* parent = 0);
+
+    protected:
+      virtual void pullSpecial() override;
     };
   }
 }
