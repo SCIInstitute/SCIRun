@@ -152,17 +152,6 @@ protected:
   virtual void TearDown(){ }
 };
 
-// TODO: repeated code - can use above???
-FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type=DOUBLE_E)
-{
-  FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
-  Point minb(-1.0, -1.0, -1.0);
-  Point maxb(1.0, 1.0, 1.0);
-  MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
-  FieldHandle ofh = CreateField(lfi,mesh);
-  return ofh;
-}
-
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)
 {
   input.push_back(CreateEmptyLatVol(2, 3, 4, INT_E));

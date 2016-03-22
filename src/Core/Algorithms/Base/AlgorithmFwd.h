@@ -29,7 +29,7 @@
 #ifndef ALGORITHMS_BASE_ALGORITHMFWD_H
 #define ALGORITHMS_BASE_ALGORITHMFWD_H
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
@@ -37,10 +37,10 @@ namespace Core {
 namespace Algorithms {
 
   class AlgorithmBase;
-  typedef boost::shared_ptr<AlgorithmBase> AlgorithmHandle;
+  typedef Datatypes::SharedPointer<AlgorithmBase> AlgorithmHandle;
 
   class AlgorithmFactory;
-  typedef boost::shared_ptr<AlgorithmFactory> AlgorithmFactoryHandle;
+  typedef Datatypes::SharedPointer<AlgorithmFactory> AlgorithmFactoryHandle;
 
 }}}
 

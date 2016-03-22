@@ -84,6 +84,9 @@ void AddMatrices::visit(DenseMatrixGeneric<double>& dense)
   case SPARSE_ROW:
     *castMatrix::toSparse(sum_) = *castMatrix::toSparse(sum_) + *convertMatrix::fromDenseToSparse(dense);
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 void AddMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
@@ -101,6 +104,9 @@ void AddMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
   case SPARSE_ROW:
     *castMatrix::toSparse(sum_) = *castMatrix::toSparse(sum_) + sparse;
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 void AddMatrices::visit(DenseColumnMatrixGeneric<double>& column)
@@ -116,6 +122,9 @@ void AddMatrices::visit(DenseColumnMatrixGeneric<double>& column)
   case SPARSE_ROW:
     *castMatrix::toSparse(sum_) = *castMatrix::toSparse(sum_) + *convertMatrix::fromDenseToSparse(column);
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 
@@ -136,6 +145,9 @@ void MultiplyMatrices::visit(DenseMatrixGeneric<double>& dense)
   case SPARSE_ROW:
     *castMatrix::toSparse(product_) = *castMatrix::toSparse(product_) * *convertMatrix::fromDenseToSparse(dense);
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 void MultiplyMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
@@ -153,6 +165,9 @@ void MultiplyMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
   case SPARSE_ROW:
     *castMatrix::toSparse(product_) = *castMatrix::toSparse(product_) * sparse;
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 void MultiplyMatrices::visit(DenseColumnMatrixGeneric<double>& column)
@@ -168,6 +183,9 @@ void MultiplyMatrices::visit(DenseColumnMatrixGeneric<double>& column)
   case SPARSE_ROW:
     *castMatrix::toSparse(product_) = *castMatrix::toSparse(product_) * *convertMatrix::fromDenseToSparse(column);
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 
@@ -195,4 +213,19 @@ void ScalarMultiplyMatrix::visit(SparseRowMatrixGeneric<double>& sparse)
 void ScalarMultiplyMatrix::visit(DenseColumnMatrixGeneric<double>& column)
 {
   column *= scalar_;
+}
+
+ComplexDenseMatrix SCIRun::Core::Datatypes::makeComplexMatrix(const DenseMatrix& real, const DenseMatrix& imag)
+{
+  if (real.rows() != imag.rows())
+    THROW_INVALID_ARGUMENT("Real and imaginary dimensions do not match: rows");
+  if (real.cols() != imag.cols())
+    THROW_INVALID_ARGUMENT("Real and imaginary dimensions do not match: columns");
+
+  const std::complex<double> i(0, 1);
+  ComplexDenseMatrix result(real.rows(), real.cols());
+  for (auto r = 0; r < real.rows(); ++r)
+    for (auto c = 0; c < real.cols(); ++c)
+      result(r, c) = real(r, c) + i * imag(r, c);
+  return result;
 }

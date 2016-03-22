@@ -45,34 +45,62 @@ namespace SCIRun {
       }
     };
 
+    class AlphaFunctionManager
+    {
+    public:
+      AlphaFunctionManager(const QPointF& start, const QPointF& end, SCIRun::Dataflow::Networks::ModuleStateHandle state, const boost::atomic<bool>& pulling);
+      void clear();
+      void insertEndpoints();
+      void insert(const QPointF& p);
+      bool alreadyExists(const QPointF& p) const;
+    private:
+      void updateAlphaFunction();
+      void pushToState();
+      std::pair<QPointF,QPointF> alphaLineEndpointsAtColor(double color) const;
+      double pointYToAlpha(double y) const;
+      QPointF colorToPoint(double color) const;
+      double interpolateAlphaLineValue(const QPointF& leftEndpoint, const QPointF& rightEndpoint, double color) const;
+
+      SCIRun::Dataflow::Networks::ModuleStateHandle state_;
+      std::set<QPointF, SortedByXCoordinate> alphaPoints_;
+      const size_t ALPHA_SAMPLES = 10;
+      const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
+      const double DEFAULT_ALPHA = 0.5;
+      const QPointF defaultStart_;
+      const QPointF defaultEnd_;
+      std::vector<double> alphaFunction_;
+      const boost::atomic<bool>& dialogPulling_;
+    public:
+      auto begin() const -> decltype(alphaPoints_.begin()) { return alphaPoints_.begin(); }
+      auto end() const -> decltype(alphaPoints_.end()) { return alphaPoints_.end(); }
+    };
+
     class ColormapPreview : public QGraphicsView
     {
     Q_OBJECT
     public:
-      explicit ColormapPreview(QGraphicsScene* scene, QWidget* parent = nullptr);
+      explicit ColormapPreview(QGraphicsScene* scene,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        const boost::atomic<bool>& pulling,
+        QWidget* parent = nullptr);
+    void addDefaultLine();
+    void addPoint(const QPointF& point);
+    void addEndpoints() { alphaManager_.insertEndpoints(); }
     public Q_SLOTS:
-      void clearAlphaPoints();
-      void updateAlphaFunction();
+      void clearAlphaPointGraphics();
     Q_SIGNALS:
       void clicked(int x, int y);
     protected:
       virtual void mousePressEvent(QMouseEvent* event) override;
     private:
-      void addPoint(const QPointF& point);
-      void addDefaultLine();
       void removeDefaultLine();
       void drawAlphaPolyline();
-      double pointYToAlpha(double y) const;
-      QPointF colorToPoint(double color) const;
-      double interpolateAlphaLineValue(const QPointF& leftEndpoint, const QPointF& rightEndpoint, double color) const;
-      std::pair<QPointF,QPointF> alphaLineEndpointsAtColor(double color) const;
+
       QGraphicsItem* alphaPath_;
-      QPointF defaultStart_, defaultEnd_;
-      std::set<QPointF, SortedByXCoordinate> alphaPoints_;
-      const size_t ALPHA_SAMPLES = 10;
-      const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
-      const double DEFAULT_ALPHA = 0.5;
-      std::vector<double> alphaFunction_;
+      const QPointF defaultStart_;
+      const QPointF defaultEnd_;
+      AlphaFunctionManager alphaManager_;
+      const boost::atomic<bool>& dialogPulling_;
     };
 
     class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,
@@ -83,16 +111,17 @@ namespace SCIRun {
     public:
       CreateStandardColorMapDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = 0);
+        QWidget* parent = nullptr);
+    protected:
+      virtual void pullSpecial() override;
     private Q_SLOTS:
       void updateColorMapPreview();
       void updateColorMapPreview(const QString& s);
-      const QString buildGradientString(const SCIRun::Core::Datatypes::ColorMap& cm);
+      QString buildGradientString(const SCIRun::Core::Datatypes::ColorMap& cm) const;
       void setShiftSlider(double d);
       void setResolutionSlider(int i);
       void setShiftSpinner(int i);
       void onInvertCheck(bool b);
-      void previewClicked(int x, int y);
     private:
       QGraphicsScene* scene_;
       ColormapPreview* previewColorMap_;

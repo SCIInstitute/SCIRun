@@ -33,7 +33,7 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Visualization/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
@@ -45,15 +45,16 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(ColorMapInvert);
         ALGORITHM_PARAMETER_DECL(ColorMapShift);
         ALGORITHM_PARAMETER_DECL(ColorMapResolution);
+        ALGORITHM_PARAMETER_DECL(AlphaUserPointsVector);
+        ALGORITHM_PARAMETER_DECL(AlphaFunctionVector);
       }
     }
   }
 
-  namespace Modules 
+  namespace Modules
   {
-    namespace Visualization 
+    namespace Visualization
     {
-
       class SCISHARE CreateStandardColorMap : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,
         public Has1OutputPort<ColorMapPortTag>

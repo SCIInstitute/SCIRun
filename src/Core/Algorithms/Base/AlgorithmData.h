@@ -97,8 +97,8 @@ namespace Algorithms {
     VariableHandle additionalAlgoOutput_;
   };
 
-  typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
-  typedef boost::shared_ptr<AlgorithmOutput> AlgorithmOutputHandle;
+  typedef Datatypes::SharedPointer<AlgorithmInput> AlgorithmInputHandle;
+  typedef Datatypes::SharedPointer<AlgorithmOutput> AlgorithmOutputHandle;
   
 }}}
 

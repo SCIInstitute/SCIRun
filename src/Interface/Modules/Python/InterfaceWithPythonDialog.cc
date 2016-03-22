@@ -30,8 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
 #include <Core/Logging/Log.h>
-#include <boost/regex.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -97,6 +95,14 @@ void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::st
   //qDebug() << "InterfaceWithPythonDialog::updateFromPortChange" << numPorts << portId.c_str() << type;
   if (type == INITIAL_PORT_CONSTRUCTION)
     return;
+
+  if (type == USER_REMOVED_PORT)
+  {
+    QMessageBox::warning(this, "Warning: possible Python code update required", windowTitle() + 
+      ": The connection to port " + QString::fromStdString(portId) + " was deleted. The variable name \"" +
+      QString::fromStdString(state_->getValue(SCIRun::Core::Algorithms::Name(portId)).toString()) + "\" is no longer valid."
+      + " Please update your Python code to reflect this.");
+  }
 
   inputVariableNamesTableWidget_->blockSignals(true);
 

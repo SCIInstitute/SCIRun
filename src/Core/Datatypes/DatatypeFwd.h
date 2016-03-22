@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Datatypes/DatatypeFwd.h
+
 #ifndef CORE_DATATYPES_DATATYPE_FWD_H
 #define CORE_DATATYPES_DATATYPE_FWD_H
 
@@ -41,8 +41,8 @@ namespace Core {
 namespace Datatypes {
 
   class Datatype;
-  typedef boost::shared_ptr<Datatype> DatatypeHandle;
-  typedef boost::shared_ptr<const Datatype> DatatypeConstHandle;
+  typedef SharedPointer<Datatype> DatatypeHandle;
+  typedef SharedPointer<const Datatype> DatatypeConstHandle;
   typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
 
   template <typename T>
@@ -56,20 +56,20 @@ namespace Datatypes {
   class ColorMap;
   class Bundle;
 
-  typedef boost::shared_ptr<String> StringHandle;
-  typedef boost::shared_ptr<GeometryObject> GeometryBaseHandle;
-  typedef boost::shared_ptr<ColorMap> ColorMapHandle;
-  typedef boost::shared_ptr<Bundle> BundleHandle;
+  typedef SharedPointer<String> StringHandle;
+  typedef SharedPointer<GeometryObject> GeometryBaseHandle;
+  typedef SharedPointer<ColorMap> ColorMapHandle;
+  typedef SharedPointer<Bundle> BundleHandle;
 }}
 
   class Field;
   class Mesh;
-  typedef boost::shared_ptr<Field> FieldHandle;
-  typedef boost::shared_ptr<Mesh> MeshHandle;
+  typedef Core::Datatypes::SharedPointer<Field> FieldHandle;
+  typedef Core::Datatypes::SharedPointer<Mesh> MeshHandle;
   typedef std::vector<FieldHandle> FieldList;
 
   class NrrdData;
-  typedef boost::shared_ptr<NrrdData> NrrdDataHandle;
+  typedef Core::Datatypes::SharedPointer<NrrdData> NrrdDataHandle;
 
   namespace Core {
   namespace Datatypes {

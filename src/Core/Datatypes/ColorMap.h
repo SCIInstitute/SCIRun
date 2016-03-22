@@ -52,7 +52,7 @@ namespace Datatypes {
       const std::string& name = "Rainbow", const size_t resolution = 256,
                         const double shift = 0.0, const bool invert = false,
                         const double rescale_scale = .5, const double rescale_shift = 1.);
-                        //TODO: pass in alpha vector
+                        //TODO cbright: pass in alpha vector
     virtual ColorMap* clone() const override;
 
     ColorMapStrategyHandle getColorStrategy() const { return color_; }
