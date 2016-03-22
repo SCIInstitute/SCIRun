@@ -95,7 +95,9 @@ CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string
   connect(swapXYPushButton_, SIGNAL(clicked()), this, SLOT(swapXY()));
   connect(swapYZPushButton_, SIGNAL(clicked()), this, SLOT(swapYZ()));
   connect(swapXZPushButton_, SIGNAL(clicked()), this, SLOT(swapXZ()));
-   
+  connect(flipXPushButton_, SIGNAL(clicked()), this, SLOT(flipX()));
+  connect(flipYPushButton_, SIGNAL(clicked()), this, SLOT(flipY()));
+  connect(flipZPushButton_, SIGNAL(clicked()), this, SLOT(flipZ()));   
 }
 
 void CreateGeometricTransformDialog::pullSpecial()
@@ -188,4 +190,19 @@ void CreateGeometricTransformDialog::swapXZ()
   std::string temp = state_->getValue(Parameters::FieldMapX).toString();
   state_->setValue(Parameters::FieldMapX, state_->getValue(Parameters::FieldMapZ).toString());
   state_->setValue(Parameters::FieldMapZ, temp);
+}
+
+void CreateGeometricTransformDialog::flipX()
+{
+  auto x = state_->getValue(Parameters::FieldMapX).toString();
+}
+
+void CreateGeometricTransformDialog::flipY()
+{
+
+}
+
+void CreateGeometricTransformDialog::flipZ()
+{
+
 }

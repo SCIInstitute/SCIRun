@@ -57,6 +57,9 @@ namespace SCIRun {
       void swapXY();
       void swapYZ();
       void swapXZ();
+      void flipX();
+      void flipY();
+      void flipZ();
      
 
     };
