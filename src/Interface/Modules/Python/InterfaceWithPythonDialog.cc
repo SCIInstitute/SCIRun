@@ -101,7 +101,7 @@ void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::st
     QMessageBox::warning(this, "Warning: possible Python code update required", windowTitle() + 
       ": The connection to port " + QString::fromStdString(portId) + " was deleted. The variable name \"" +
       QString::fromStdString(state_->getValue(SCIRun::Core::Algorithms::Name(portId)).toString()) + "\" is no longer valid."
-      + " Please update your Python code to reflect this.");
+      + " Please update your Python code or input variable table to reflect this.");
   }
 
   inputVariableNamesTableWidget_->blockSignals(true);
