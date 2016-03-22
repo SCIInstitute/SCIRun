@@ -1503,9 +1503,9 @@ namespace SCIRun {
         std::string oneline;
         ss << length << " " << scaleBar_.unit;
         oneline = ss.str();
-        Vector trans(10.0, 0.0, 0.0);
         Vector shift(1.9, 0.1, 0.0);
-        textBuilder_.printString(oneline, trans, shift, uniqueNodeID, geom);
+        Vector trans(10.0, 0.0, 0.0);
+        textBuilder_.printString(oneline, shift, trans, uniqueNodeID, geom);
       }
 
       handleGeomObject(geom, 0);
