@@ -63,7 +63,7 @@ void ConvertFieldDataType::execute()
     update_state(Executing);
     setAlgoOptionFromState(Parameters::FieldDatatype);
 
-    auto output = algo().run_generic(withInputData((InputField, input)));
+    auto output = algo().run(withInputData((InputField, input)));
     
     auto state = get_state();
     state->setValue(Parameters::InputType, input->vfield()->get_data_type());

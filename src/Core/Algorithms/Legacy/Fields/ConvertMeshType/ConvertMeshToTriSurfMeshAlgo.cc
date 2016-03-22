@@ -229,7 +229,7 @@ bool ConvertMeshToTriSurfMeshAlgo::run(FieldHandle input, FieldHandle& output) c
 AlgorithmInputName ConvertMeshToTriSurfMeshAlgo::QuadSurf("QuadSurf");
 AlgorithmOutputName ConvertMeshToTriSurfMeshAlgo::TriSurf("TriSurf");
 
-AlgorithmOutput ConvertMeshToTriSurfMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertMeshToTriSurfMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto quad = input.get<Field>(QuadSurf);
 

@@ -59,7 +59,7 @@ namespace BrainStimulator {
   class SCISHARE GenerateROIStatisticsAlgorithm : public AlgorithmBase
   {
   public:
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
     GenerateROIStatisticsAlgorithm();
     static const AlgorithmInputName MeshDataOnElements;
     static const AlgorithmInputName PhysicalUnit;

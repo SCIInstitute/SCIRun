@@ -190,8 +190,8 @@ void ClipFieldByFunction::execute()
     FieldHandle sfield;
     engine.get_field("RESULT",sfield);    
     
-    algo().set_option(Parameters::ClipMethod, method);
-    auto output = algo().run_generic(withInputData((Variables::InputField, field)(ClipMeshBySelectionAlgo::SelectionField, sfield)));
+    algo().setOption(Parameters::ClipMethod, method);
+    auto output = algo().run(withInputData((Variables::InputField, field)(ClipMeshBySelectionAlgo::SelectionField, sfield)));
 
     sendOutputFromAlgorithm(OutputField, output);
     sendOutputFromAlgorithm(Mapping, output);

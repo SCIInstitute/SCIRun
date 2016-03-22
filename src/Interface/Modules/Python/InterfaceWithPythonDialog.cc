@@ -30,8 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
 #include <Core/Logging/Log.h>
-#include <boost/regex.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -98,6 +96,14 @@ void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::st
   if (type == INITIAL_PORT_CONSTRUCTION)
     return;
 
+  if (type == USER_REMOVED_PORT)
+  {
+    QMessageBox::warning(this, "Warning: possible Python code update required", windowTitle() + 
+      ": The connection to port " + QString::fromStdString(portId) + " was deleted. The variable name \"" +
+      QString::fromStdString(state_->getValue(SCIRun::Core::Algorithms::Name(portId)).toString()) + "\" is no longer valid."
+      + " Please update your Python code to reflect this.");
+  }
+
   inputVariableNamesTableWidget_->blockSignals(true);
 
   handleInputTableWidgetRowChange(portId, "Matrix", type);
@@ -112,8 +118,7 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(const std::strin
 {
   const int lineEditColumn = 2;
   syncTableRowsWithDynamicPort(portId, type, inputVariableNamesTableWidget_, lineEditColumn, portChangeType, 
-    { [&](){ return new QTableWidgetItem(QString::fromStdString(std::get<0>(getConnectedDynamicPortId(portId, type, portChangeType == USER_ADDED_PORT_DURING_FILE_LOAD)))); },
-      [&](){ return new QTableWidgetItem(QString::fromStdString(type)); }});
+    { [&](){ return new QTableWidgetItem(QString::fromStdString(type)); }});
 }
 
 void InterfaceWithPythonDialog::loadAPIDocumentation()

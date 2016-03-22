@@ -49,7 +49,7 @@ namespace SCIRun {
         public:
           SetFieldDataToConstantValueAlgo();
 
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 
           bool runImpl(FieldHandle input, FieldHandle& output) const;
         };

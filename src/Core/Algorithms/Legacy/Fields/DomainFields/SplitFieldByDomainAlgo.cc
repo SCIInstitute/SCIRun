@@ -256,7 +256,7 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, FieldList& output) const
   return(true);
 }
 
-AlgorithmOutput SplitFieldByDomainAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SplitFieldByDomainAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

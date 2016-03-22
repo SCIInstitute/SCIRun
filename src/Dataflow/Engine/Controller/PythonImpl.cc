@@ -257,7 +257,7 @@ namespace
   class PyPortsImpl : public PyPorts
   {
   public:
-    PyPortsImpl(ModuleHandle mod, bool input, NetworkEditorController& nec) : nec_(nec), modId_(mod->get_id())
+    PyPortsImpl(ModuleHandle mod, bool input, NetworkEditorController& nec) : mod_(mod), nec_(nec), modId_(mod->get_id())
     {
       //wish:
       //boost::push_back(ports_,
@@ -266,13 +266,17 @@ namespace
       //  );
       if (input)
       {
-        for (const auto& p : mod->inputPorts())
-          ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
+        setupInputs();
+
+        if (mod->hasDynamicPorts())
+        {
+          nec_.connectPortAdded([this](const ModuleId& mid, const PortId& pid) { portAddedSlot(mid, pid); });
+          nec_.connectPortRemoved([this](const ModuleId& mid, const PortId& pid) { portRemovedSlot(mid, pid); });
+        }
       }
       else
       {
-        for (const auto& p : mod->outputPorts())
-          ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
+        setupOutputs();
       }
     }
 
@@ -314,7 +318,32 @@ namespace
       ports_.clear();
     }
   private:
+    void portAddedSlot(const ModuleId& mid, const PortId& pid)
+    {
+      setupInputs();
+    }
+
+    void portRemovedSlot(const ModuleId& mid, const PortId& pid)
+    {
+      setupInputs();
+    }
+
+    void setupInputs()
+    {
+      ports_.clear();
+      for (const auto& p : mod_->inputPorts())
+        ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
+    }
+
+    void setupOutputs()
+    {
+      ports_.clear();
+      for (const auto& p : mod_->outputPorts())
+        ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
+    }
+
     std::vector<boost::shared_ptr<PyPortImpl>> ports_;
+    ModuleHandle mod_;
     NetworkEditorController& nec_;
     ModuleId modId_;
   };

@@ -3136,8 +3136,8 @@ namespace
 
 MappingDataSourceHandle SCIRun::Core::Algorithms::Fields::CreateDataSource(FieldHandle sfield, FieldHandle wfield, const AlgorithmBase* algo)
 {
-  std::string quantity = algo->get_option(Parameters::Quantity);
-  const std::string value =  algo->get_option(Parameters::InterpolationModel);
+  std::string quantity = algo->getOption(Parameters::Quantity);
+  const std::string value =  algo->getOption(Parameters::InterpolationModel);
 
   const double def_value = algo->get(Parameters::OutsideValue).toDouble();
   const double max_dist = algo->get(Parameters::MaxDistance).toDouble();

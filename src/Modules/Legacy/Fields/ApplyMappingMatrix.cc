@@ -60,7 +60,7 @@ void ApplyMappingMatrixModule::execute()
   {
    update_state(Executing);
    
-   auto out = algo().run_generic(withInputData((Source, src)(Destination, dest)(Mapping, mapp)));
+   auto out = algo().run(withInputData((Source, src)(Destination, dest)(Mapping, mapp)));
  
    sendOutputFromAlgorithm(Output, out);
   }

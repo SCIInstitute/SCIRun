@@ -49,8 +49,8 @@ TEST(CollectDenseMatricesAlgorithmTest, AppendColumns)
   auto m1 = MAKE_DENSE_MATRIX_HANDLE((1, 2, 3)(4, 5, 6)(7, 8, 9));
   DenseMatrixHandle m2 = MAKE_DENSE_MATRIX_HANDLE((-1, -2)(-4, -5)(-7, -8));
   MatrixHandle out = algo.concat_cols(m1, m2);
-  ASSERT_TRUE(matrix_is::dense(out));
-  auto denseOut = matrix_cast::as_dense(out);
+  ASSERT_TRUE(matrixIs::dense(out));
+  auto denseOut = castMatrix::toDense(out);
 
   EXPECT_MATRIX_EQ_TO(*denseOut,
     (1,2,3,-1,-2)
@@ -65,8 +65,8 @@ TEST(CollectDenseMatricesAlgorithmTest, AppendRows)
   DenseMatrixHandle m1 = MAKE_DENSE_MATRIX_HANDLE((1, 2, 3)(4, 5, 6)(7, 8, 9));
   DenseMatrixHandle m2 = MAKE_DENSE_MATRIX_HANDLE((-1, -2, -3)(-4, -5, -6)(-7, -8, -9));
   MatrixHandle out = algo.concat_rows(m1, m2);
-  ASSERT_TRUE(matrix_is::dense(out));
-  auto denseOut = matrix_cast::as_dense(out);
+  ASSERT_TRUE(matrixIs::dense(out));
+  auto denseOut = castMatrix::toDense(out);
 
   EXPECT_MATRIX_EQ_TO(*denseOut,
     (1,2,3)
@@ -84,14 +84,14 @@ TEST(CollectDenseMatricesAlgorithmTest, AppendZeroColumns)
   DenseMatrixHandle m1 = MAKE_DENSE_MATRIX_HANDLE((1, 2, 3)(4, 5, 6)(7, 8, 9));
   DenseMatrixHandle m2(new DenseMatrix(3,0));
   MatrixHandle out = algo.concat_cols(m1, m2);
-  ASSERT_TRUE(matrix_is::dense(out));
-  auto denseOut = matrix_cast::as_dense(out);
+  ASSERT_TRUE(matrixIs::dense(out));
+  auto denseOut = castMatrix::toDense(out);
 
   EXPECT_MATRIX_EQ(*denseOut, *m1);
 
   auto neg_m1 = boost::make_shared<DenseMatrix>(-*m1);
   out = algo.concat_cols(m2, neg_m1);
-  denseOut = matrix_cast::as_dense(out);
+  denseOut = castMatrix::toDense(out);
   EXPECT_MATRIX_EQ(*denseOut, *neg_m1);
 }
 
@@ -102,14 +102,14 @@ TEST(CollectDenseMatricesAlgorithmTest, AppendZeroRows)
   DenseMatrixHandle m1 = MAKE_DENSE_MATRIX_HANDLE((1, 2, 3)(4, 5, 6)(7, 8, 9));
   DenseMatrixHandle m2(new DenseMatrix(0,3));
   MatrixHandle out = algo.concat_rows(m1, m2);
-  EXPECT_TRUE(matrix_is::dense(out));
-  auto denseOut = matrix_cast::as_dense(out);
+  EXPECT_TRUE(matrixIs::dense(out));
+  auto denseOut = castMatrix::toDense(out);
 
   EXPECT_MATRIX_EQ(*denseOut, *m1);
 
   auto neg_m1 = boost::make_shared<DenseMatrix>(-*m1);
   out = algo.concat_rows(m2, neg_m1);
-  denseOut = matrix_cast::as_dense(out);
+  denseOut = castMatrix::toDense(out);
 
   EXPECT_MATRIX_EQ(*denseOut, *neg_m1);
 }
@@ -124,8 +124,8 @@ TEST(CollectSparseRowMatricesAlgorithmTest, AppendColumns)
   SparseRowMatrixHandle m2 = MAKE_SPARSE_MATRIX_HANDLE((-1, -2)(-4, -5)(-7, -8));
   MatrixHandle out = algo.concat_cols(m1, m2);
   
-  ASSERT_TRUE(matrix_is::sparse(out));
-  auto sparseOut = matrix_cast::as_sparse(out);
+  ASSERT_TRUE(matrixIs::sparse(out));
+  auto sparseOut = castMatrix::toSparse(out);
   //convert to dense for comparison
   auto denseOut = makeDense(*sparseOut);
 
@@ -143,8 +143,8 @@ TEST(CollectSparseRowMatricesAlgorithmTest, AppendRows)
   SparseRowMatrixHandle m2 = MAKE_SPARSE_MATRIX_HANDLE((-1, -2, -3)(-4, -5, -6)(-7, -8, -9));
   MatrixHandle out = algo.concat_rows(m1, m2);
 
-  ASSERT_TRUE(matrix_is::sparse(out));
-  auto sparseOut = matrix_cast::as_sparse(out);
+  ASSERT_TRUE(matrixIs::sparse(out));
+  auto sparseOut = castMatrix::toSparse(out);
   //convert to dense for comparison
   auto denseOut = makeDense(*sparseOut);
 
@@ -164,8 +164,8 @@ TEST(CollectSparseRowMatricesAlgorithmTest, AppendZeroColumns)
   SparseRowMatrixHandle m1 = MAKE_SPARSE_MATRIX_HANDLE((1, 2, 3)(4, 5, 6)(7, 8, 9));
   SparseRowMatrixHandle m2 = toSparseHandle(DenseMatrix(3, 0));
   MatrixHandle out = algo.concat_cols(m1, m2);
-  ASSERT_TRUE(matrix_is::sparse(out));
-  auto sparseOut = matrix_cast::as_sparse(out);
+  ASSERT_TRUE(matrixIs::sparse(out));
+  auto sparseOut = castMatrix::toSparse(out);
   //convert to dense for comparison
   //auto denseOut = makeDense(*sparseOut);
   
@@ -173,7 +173,7 @@ TEST(CollectSparseRowMatricesAlgorithmTest, AppendZeroColumns)
 
   auto neg_m1 = boost::make_shared<SparseRowMatrix>(-*m1);
   out = algo.concat_cols(m2, neg_m1);
-  sparseOut = matrix_cast::as_sparse(out);
+  sparseOut = castMatrix::toSparse(out);
 
   EXPECT_MATRIX_EQ(*sparseOut, *neg_m1);
 }
@@ -186,14 +186,14 @@ TEST(CollectSparseRowMatricesAlgorithmTest, AppendZeroRows)
   SparseRowMatrixHandle m2 = toSparseHandle(DenseMatrix(0, 3));
   MatrixHandle out = algo.concat_rows(m1, m2);
 
-  ASSERT_TRUE(matrix_is::sparse(out));
-  auto sparseOut = matrix_cast::as_sparse(out);
+  ASSERT_TRUE(matrixIs::sparse(out));
+  auto sparseOut = castMatrix::toSparse(out);
   
   EXPECT_MATRIX_EQ(*sparseOut, *m1);
 
   auto neg_m1 = boost::make_shared<SparseRowMatrix>(-*m1);
   out = algo.concat_rows(m2, neg_m1);
-  sparseOut = matrix_cast::as_sparse(out);
+  sparseOut = castMatrix::toSparse(out);
 
   EXPECT_MATRIX_EQ(*sparseOut, *neg_m1);
 }

@@ -247,6 +247,11 @@ namespace SCIRun {
     void SRInterface::inputMouseWheel(int32_t delta)
     {
       mCamera->mouseWheelEvent(delta, mZoomSpeed);
+      if (scaleBar_.visible)
+      {
+        updateScaleBarLength();
+        updateGeometryScaleBar();
+      }
     }
 
     //------------------------------------------------------------------------------

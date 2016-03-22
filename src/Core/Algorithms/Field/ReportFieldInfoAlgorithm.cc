@@ -154,7 +154,7 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::run(const Inputs& in
   return update_input_attributes(input);
 }
 
-AlgorithmOutput ReportFieldInfoAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ReportFieldInfoAlgorithm::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

@@ -79,7 +79,7 @@ void SetConductivitiesToMesh::execute()
 
     /// algorithm input and run,
     auto input = make_input((InputField, mesh));
-    auto output = algo().run_generic(input);
+    auto output = algo().run(input);
    
     /// algorithm output
     sendOutputFromAlgorithm(OutputField, output);

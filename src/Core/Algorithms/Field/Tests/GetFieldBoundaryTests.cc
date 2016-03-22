@@ -74,7 +74,7 @@ void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const
     ASSERT_TRUE(mapping != nullptr);
     EXPECT_EQ(expectedMatrixRows, mapping->nrows());
     EXPECT_EQ(expectedMatrixColumns, mapping->ncols());
-    EXPECT_EQ(expectedMatrixString, matrix_to_string(*matrix_convert::to_dense(mapping)));
+    EXPECT_EQ(expectedMatrixString, matrix_to_string(*convertMatrix::toDense(mapping)));
   }
 }
 

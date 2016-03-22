@@ -158,24 +158,6 @@ void ModuleTestBase::connectDummyOutputConnection(Dataflow::Networks::ModuleHand
   }
 }
 
-FieldHandle SCIRun::Testing::CreateEmptyLatVol()
-{
-  size_type sizex = 3, sizey = 4, sizez = 5;
-  return CreateEmptyLatVol(sizex, sizey, sizez);
-}
-
-FieldHandle SCIRun::Testing::CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez)
-{
-  FieldInformation lfi("LatVolMesh", 1, "double");
-
-  Point minb(-1.0, -1.0, -1.0);
-  Point maxb(1.0, 1.0, 1.0);
-  MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
-  FieldHandle ofh = CreateField(lfi, mesh);
-  ofh->vfield()->clear_all_values();
-  return ofh;
-}
-
 UseRealAlgorithmFactory::UseRealAlgorithmFactory()
 {
   Module::defaultAlgoFactory_.reset(new HardCodedAlgorithmFactory);

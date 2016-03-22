@@ -56,7 +56,7 @@ void AppendMatrixModule::execute()
   auto param = get_state()->getValue(Variables::RowsOrColumns).toInt();
 
   algo().set(Variables::RowsOrColumns, param);
-  auto output = algo().run_generic(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)));
+  auto output = algo().run(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)));
 
   sendOutputFromAlgorithm(ResultMatrix, output);
 }

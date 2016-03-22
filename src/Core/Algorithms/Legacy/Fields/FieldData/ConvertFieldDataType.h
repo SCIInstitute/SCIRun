@@ -49,7 +49,7 @@ namespace SCIRun {
           //static const AlgorithmInputName ScalarField;
           //static const AlgorithmOutputName VectorField;
 
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
 
       }

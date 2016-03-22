@@ -57,7 +57,7 @@ public:
   static const AlgorithmInputName SelectionField;
   static const AlgorithmOutputName Mapping;
   
-  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+  virtual AlgorithmOutput run(const AlgorithmInput& input) const;
 };
 
       }}}}

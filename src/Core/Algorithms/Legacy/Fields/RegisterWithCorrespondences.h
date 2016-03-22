@@ -51,7 +51,7 @@ class SCISHARE RegisterWithCorrespondencesAlgo : public AlgorithmBase
     RegisterWithCorrespondencesAlgo();
 	static AlgorithmInputName Correspondences1;
 	static AlgorithmInputName Correspondences2;
-	AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+	AlgorithmOutput run(const AlgorithmInput& input) const;
   
     /// run the algorithm
     bool runM(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const;

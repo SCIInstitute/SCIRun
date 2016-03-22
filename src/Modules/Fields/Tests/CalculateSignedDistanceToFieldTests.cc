@@ -33,6 +33,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::TestUtils;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -57,11 +58,6 @@ TEST_F(CalculateSignedDistanceToFieldModuleTests, ThrowsForNullInput)
   stubPortNWithThisData(csdf, 1, nullField);
 
   EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
-}
-
-TEST_F(CalculateSignedDistanceToFieldModuleTests, DISABLED_Foo)
-{
-  FAIL() << "TODO";
 }
 
 TEST_F(CalculateSignedDistanceToFieldModuleTests, MakesAlgoDecisionBasedOnValuePortConnection)

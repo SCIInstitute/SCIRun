@@ -76,7 +76,7 @@ void BuildFEMatrix::execute()
     algo_.set_int("num_processors", num_proc);
 #endif
 
-    auto output = algo().run_generic(withInputData((InputField, field)(Conductivity_Table, optionalAlgoInput(conductivity))));
+    auto output = algo().run(withInputData((InputField, field)(Conductivity_Table, optionalAlgoInput(conductivity))));
 
     sendOutputFromAlgorithm(Stiffness_Matrix, output);
   }

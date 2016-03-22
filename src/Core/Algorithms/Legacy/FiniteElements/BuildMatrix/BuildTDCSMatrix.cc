@@ -748,7 +748,7 @@ AlgorithmInputName BuildTDCSMatrixAlgo::Contact_Impedance("Contact_Impedance");
 AlgorithmOutputName BuildTDCSMatrixAlgo::TDCSMatrix("TDCSMatrix");
 
 //(FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Eletrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance))
-AlgorithmOutput BuildTDCSMatrixAlgo::run_generic(const AlgorithmInput & input) const
+AlgorithmOutput BuildTDCSMatrixAlgo::run(const AlgorithmInput & input) const
 {
   auto a = input.get<SparseRowMatrix>(FEM_Stiffness_Matrix);
   auto b = input.get<Field>(FEM_Mesh);

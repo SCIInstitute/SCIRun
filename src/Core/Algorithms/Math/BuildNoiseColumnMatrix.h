@@ -46,7 +46,7 @@ namespace SCIRun {
 						static AlgorithmParameterName SignalToNoiseRatio();
 						BuildNoiseColumnMatrixAlgorithm();
             Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix) const;
-						AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+						AlgorithmOutput run(const AlgorithmInput& input) const;
 				};
 			}
 		}

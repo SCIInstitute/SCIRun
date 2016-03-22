@@ -434,8 +434,6 @@ void PythonInterpreter::initialize(bool needProgramName, const std::string& comm
   //this->private_->thread_condition_variable_.wait( lock );
   this->private_->initialized_ = true;
   //std::cerr << "Python initialized." << std::endl;
-
-  std::cerr << "Python initialized." << std::endl;
 }
 
 void PythonInterpreter::print_banner()

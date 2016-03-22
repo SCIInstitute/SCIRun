@@ -92,7 +92,7 @@ CalculateDistanceToFieldBoundary::execute()
     inputs[Variables::ObjectField] = object;
 
     algo().set(Parameters::OutputValueField, value_connected);
-    auto output = algo().run_generic(inputs);
+    auto output = algo().run(inputs);
     sendOutputFromAlgorithm(DistanceField, output);
 
     if (value_connected)

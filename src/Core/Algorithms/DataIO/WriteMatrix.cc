@@ -73,7 +73,7 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
     THROW_ALGORITHM_PROCESSING_ERROR("file failed to be written!");
 }
 
-AlgorithmOutput WriteMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput WriteMatrixAlgorithm::run(const AlgorithmInput& input) const
 {
   auto filename = get(Variables::Filename).toFilename().string();
   run(input.get<Matrix>(Variables::MatrixToWrite), filename);

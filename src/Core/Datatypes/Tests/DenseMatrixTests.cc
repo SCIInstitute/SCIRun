@@ -286,3 +286,33 @@ TEST(BlockMatrixTest, CanAccessBlockByIndex)
     }
   }
 }
+
+TEST(ComplexMatrixTests, CanPrintComplexMatrix)
+{
+  ComplexDenseMatrix cm(2, 2, {0,1});
+  std::cout << cm << std::endl;
+}
+
+namespace
+{
+  std::complex<double> c(double r, double i) { return{ r, i }; }
+}
+
+TEST(ComplexMatrixTests, CanConstructComplexMatrixFromTwoRealMatrices)
+{
+  DenseMatrix real = MAKE_DENSE_MATRIX(
+    (1, 0, 0)
+    (0, 0, 0)
+    (0, 2, 0));
+  DenseMatrix imaginary(3, 3);
+  imaginary << -1, 0, 0.5, 0, 0, 5, 0, 2, 1;
+
+  auto actual = makeComplexMatrix(real, imaginary);
+
+  ComplexDenseMatrix expected(3, 3);
+  expected << c(1, -1), c(0, 0), c(0,0.5),
+    c(0, 0), c(0, 0), c(0, 5),
+    c(0, 0), c(2, 2), c(0, 1);
+  EXPECT_EQ(expected, actual);
+
+}

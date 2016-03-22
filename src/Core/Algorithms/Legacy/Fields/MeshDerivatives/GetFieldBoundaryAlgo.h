@@ -54,7 +54,7 @@ public:
   /// Without mapping
   bool run(FieldHandle input, FieldHandle& output);
 
-  AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const;
 };
 
 }}}}

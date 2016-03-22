@@ -165,6 +165,8 @@ namespace Datatypes {
     }
   }
 
+  SCISHARE ComplexDenseMatrix makeComplexMatrix(const DenseMatrix& real, const DenseMatrix& imag);
+
 }}}
 
 #include <Core/Datatypes/MatrixIO.h>

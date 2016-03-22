@@ -51,5 +51,5 @@ TEST(MapFieldDataFromSourceToDestinationAlgoTests, ThrowsOnNullInput)
 {
   MapFieldDataFromSourceToDestinationAlgo algo;
   AlgorithmInput empty;
-  EXPECT_THROW(algo.run_generic(empty), AlgorithmProcessingException);
+  EXPECT_THROW(algo.run(empty), AlgorithmProcessingException);
 }

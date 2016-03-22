@@ -57,14 +57,14 @@ void ConvertMatrixToScalar::execute()
   {
     update_state(Executing);
     
-    if (!matrix_is::dense(input_matrix))
+    if (!matrixIs::dense(input_matrix))
     {
       //TODO implement something with sparse
       error("Currently only works with dense matrices");
       return;
     }
     
-    auto dense = matrix_cast::as_dense (input_matrix);
+    auto dense = castMatrix::toDense (input_matrix);
     
     if (dense->get_dense_size()!=1)
     {

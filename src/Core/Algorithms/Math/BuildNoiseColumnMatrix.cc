@@ -84,7 +84,7 @@ MatrixHandle BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle input_matrix) con
   return output;
 }
 
-AlgorithmOutput BuildNoiseColumnMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput BuildNoiseColumnMatrixAlgorithm::run(const AlgorithmInput& input) const
 {
 	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
 

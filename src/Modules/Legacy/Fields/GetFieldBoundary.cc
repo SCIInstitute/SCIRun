@@ -52,7 +52,7 @@ GetFieldBoundary::execute()
   {
     update_state(Executing);
 
-    auto output = algo().run_generic(withInputData((InputField, field)));
+    auto output = algo().run(withInputData((InputField, field)));
 
     sendOutputFromAlgorithm(BoundaryField, output);
     sendOutputFromAlgorithm(Mapping, output);

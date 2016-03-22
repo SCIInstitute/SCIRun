@@ -78,6 +78,14 @@ namespace SCIRun
           boost::python::stl_input_iterator< T >());
       }
 
+      template <class ContainerOfIterableIterator, class OutputIterator>
+      void flatten(ContainerOfIterableIterator outerBegin, ContainerOfIterableIterator outerEnd, OutputIterator dest)
+      {
+        while (outerBegin != outerEnd) {
+          dest = std::copy(outerBegin->begin(), outerBegin->end(), dest);
+          ++outerBegin;
+        }
+      }
 
       SCISHARE boost::python::dict convertFieldToPython(FieldHandle field);
       SCISHARE boost::python::list convertMatrixToPython(Datatypes::DenseMatrixHandle matrix);
@@ -124,6 +132,10 @@ namespace SCIRun
         virtual Datatypes::DatatypeHandle operator()() const override;
         virtual std::string label() const override { return "field"; }
       };
+
+      SCISHARE std::string pyDenseMatrixLabel();
+      SCISHARE std::string pySparseRowMatrixLabel();
+      SCISHARE std::string pyFieldLabel();
     }
   }
 }

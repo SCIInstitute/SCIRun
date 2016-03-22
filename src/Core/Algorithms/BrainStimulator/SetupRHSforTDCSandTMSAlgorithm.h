@@ -62,7 +62,7 @@ namespace BrainStimulator {
   {
   public:
     SetupTDCSAlgorithm();
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 
     boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle,
     Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle, Datatypes::DenseMatrixHandle, std::vector<double>> run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc,int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;

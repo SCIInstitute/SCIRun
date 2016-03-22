@@ -56,10 +56,10 @@ GenerateStreamLinesAlgo::GenerateStreamLinesAlgo()
   addParameter(Parameters::StreamlineStepSize, 0.01);
   addParameter(Parameters::StreamlineTolerance, 0.0001);
   addParameter(Parameters::StreamlineMaxSteps, 2000);
-  add_option(Parameters::StreamlineDirection, "Both", "Negative|Both|Positive");
-  add_option(Parameters::StreamlineValue, "Seed index", "Seed value|Seed index|Integration index|Integration step|Distance from seed|Streamline length");
+  addOption(Parameters::StreamlineDirection, "Both", "Negative|Both|Positive");
+  addOption(Parameters::StreamlineValue, "Seed index", "Seed value|Seed index|Integration index|Integration step|Distance from seed|Streamline length");
   addParameter(Parameters::RemoveColinearPoints, false);
-  add_option(Parameters::StreamlineMethod, "RungeKuttaFehlberg", "AdamsBashforth|Heun|RungeKutta|RungeKuttaFehlberg|CellWalk");
+  addOption(Parameters::StreamlineMethod, "RungeKuttaFehlberg", "AdamsBashforth|Heun|RungeKutta|RungeKuttaFehlberg|CellWalk");
   // Estimate step size and tolerance automatically based on average edge length
   addParameter(Parameters::AutoParameters,false);
 
@@ -373,8 +373,8 @@ GenerateStreamLinesAlgoP::run(const AlgorithmBase* algo,
   tolerance_ = algo->get(Parameters::StreamlineTolerance).toDouble();
   step_size_ = algo->get(Parameters::StreamlineStepSize).toDouble();
   max_steps_ = algo->get(Parameters::StreamlineMaxSteps).toInt();
-  direction_ = convertDirectionOption(algo->get_option(Parameters::StreamlineDirection));
-  value_ = convertValue(algo->get_option(Parameters::StreamlineValue));
+  direction_ = convertDirectionOption(algo->getOption(Parameters::StreamlineDirection));
+  value_ = convertValue(algo->getOption(Parameters::StreamlineValue));
   remove_colinear_pts_ = algo->get(Parameters::RemoveColinearPoints).toBool();
   method_ = method;
 
@@ -438,8 +438,8 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
     omesh_ = output->vmesh();
 
     max_steps_ = algo->get(Parameters::StreamlineMaxSteps).toInt();
-    direction_ = convertDirectionOption(algo->get_option(Parameters::StreamlineDirection));
-    value_ = convertValue(algo->get_option(Parameters::StreamlineValue));
+    direction_ = convertDirectionOption(algo->getOption(Parameters::StreamlineDirection));
+    value_ = convertValue(algo->getOption(Parameters::StreamlineValue));
     remove_colinear_pts_ = algo->get(Parameters::RemoveColinearPoints).toBool();
 
     Point seed;
@@ -717,7 +717,7 @@ bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, Fiel
     return (false);
   }
 
-  auto method = detail::convertMethod(get_option(Parameters::StreamlineMethod));
+  auto method = detail::convertMethod(getOption(Parameters::StreamlineMethod));
 
   if (method == CellWalk && ifield->basis_order() != 0)
   {
@@ -786,7 +786,7 @@ const AlgorithmInputName GenerateStreamLinesAlgo::VectorField("Vector_Field");
 const AlgorithmInputName GenerateStreamLinesAlgo::Seeds("Seed_Points");
 const AlgorithmOutputName GenerateStreamLinesAlgo::Streamlines("Streamlines");
 
-AlgorithmOutput GenerateStreamLinesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GenerateStreamLinesAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(VectorField);
   auto seeds = input.get<Field>(Seeds);

@@ -96,7 +96,7 @@ SplitFieldIntoNrrdData::execute()
     algo().set(Parameters::BuildData, compute_data_p);
     setAlgoStringFromState(Parameters::DataLabel);
 
-    auto output = algo().run_generic(withInputData((InputField, field_handle)));
+    auto output = algo().run(withInputData((InputField, field_handle)));
     sendOutputFromAlgorithm(Points, output);
     sendOutputFromAlgorithm(Data, output);
     sendOutputFromAlgorithm(Connections, output);

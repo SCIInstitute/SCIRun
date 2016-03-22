@@ -136,11 +136,22 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   ///Object Tab
   tabWidget->setCurrentIndex(0);
 
-  ////View Tab
-  //groupBox->setVisible(false);
+  ///Render Tab
+  shadeSettingsGroupBox_->setEnabled(false);
+  globalSettingsGroupBox_->setEnabled(false);
+  renderSliderFrame_->setEnabled(false);
 
-  ////Render Tab
-  groupBox_6->setVisible(false);
+  ///Materials Tab
+  materialsFrame_->setEnabled(false);
+  fogGroupBox_->setEnabled(false);
+
+  ////View Tab
+  autoRotateGroupBox_->setEnabled(false);
+  viewOptionsGroupBox_->setEnabled(false);
+  showScaleBarTextGroupBox_->setEnabled(false);
+
+  ////Controls Tab
+  transparencyGroupBox_->setVisible(false);
 
 }
 
@@ -227,10 +238,44 @@ void ViewSceneControlsDock::updatePlaneSettingsDisplay(bool visible, bool showPl
 
 void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double z, double d)
 {
-  xSliderValueLabel_->setText(QString::number(x, 'f', 2));
-  ySliderValueLabel_->setText(QString::number(y, 'f', 2));
-  zSliderValueLabel_->setText(QString::number(z, 'f', 2));
-  dSliderValueLabel_->setText(QString::number(d, 'f', 2));
+  QString xtext, ytext, ztext, dtext;
+  if (x >= 0)
+  {
+    xtext = "  " + QString::number(x, 'f', 2);
+  }
+  else
+  {
+    xtext = QString::number(x, 'f', 2);
+  }
+  if (y >= 0)
+  {
+    ytext = "  " + QString::number(y, 'f', 2);
+  }
+  else
+  {
+    ytext = QString::number(y, 'f', 2);
+  }
+  if (z >= 0)
+  {
+    ztext = "  " + QString::number(z, 'f', 2);
+  }
+  else
+  {
+    ztext = QString::number(z, 'f', 2);
+  }
+  if (d >= 0)
+  {
+    dtext = "  " + QString::number(d, 'f', 2);
+  }
+  else
+  {
+    dtext = QString::number(d, 'f', 2);
+  }
+
+  xSliderValueLabel_->setText(xtext);
+  ySliderValueLabel_->setText(ytext);
+  zSliderValueLabel_->setText(ztext);
+  dSliderValueLabel_->setText(dtext);
 
   xValueHorizontalSlider_->setSliderPosition(x * 100);
   yValueHorizontalSlider_->setSliderPosition(y * 100);

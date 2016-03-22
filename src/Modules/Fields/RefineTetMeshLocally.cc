@@ -90,7 +90,7 @@ void RefineTetMeshLocally::execute()
         if (RadioButton==-1)
        RadioButton=0;
     algo().set(Parameters::RefineTetMeshLocallyRadioButtons, RadioButton);      
-    auto output = algo().run_generic(withInputData((InputField, inputfield_)));
+    auto output = algo().run(withInputData((InputField, inputfield_)));
     sendOutputFromAlgorithm(OutputField, output);
   }
 }

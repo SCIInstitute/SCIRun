@@ -46,27 +46,27 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <complex>
 #include <sstream>
 
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Datatypes/Legacy/Base/share.h>
 
+
 namespace SCIRun {
-
-
 
 class TypeNameGenerator
 {
 /// @todo: callers of these can be compressed using macros.  worth it?
 public:
-  static const std::string make_template_id(const std::string& templateName, const std::string& templateParam)
+  static std::string make_template_id(const std::string& templateName, const std::string& templateParam)
   {
     std::ostringstream o;
     o << templateName << leftAngleBracket << templateParam << rightAngleBracket;
     return o.str();
   }
 
-  static const std::string make_template_id(const std::string& templateName, 
+  static std::string make_template_id(const std::string& templateName, 
     const std::string& templateParam1, 
     const std::string& templateParam2)
   {
@@ -77,7 +77,7 @@ public:
     return o.str();
   }
 
-  static const std::string make_template_id(const std::string& templateName, 
+  static std::string make_template_id(const std::string& templateName, 
     const std::string& templateParam1, 
     const std::string& templateParam2,
     const std::string& templateParam3)
@@ -99,42 +99,43 @@ private:
 
 //////////
 // Function to return name of type of its argument
-template <class T> const std::string find_type_name(T*)
+template <class T> std::string find_type_name(T*)
 {
   return T::type_name(-1);
 }
 
 
-template<class T, class S> const std::string find_type_name( std::pair<T,S> *);
+template<class T, class S> std::string find_type_name( std::pair<T,S> *);
 
 class IntVector;
 class NrrdData;
 
-template<> SCISHARE const std::string find_type_name(float*);
-template<> SCISHARE const std::string find_type_name(double*);
-template<> SCISHARE const std::string find_type_name(long double*);
-template<> SCISHARE const std::string find_type_name(short*);
-template<> SCISHARE const std::string find_type_name(unsigned short*);
-template<> SCISHARE const std::string find_type_name(int*);
-template<> SCISHARE const std::string find_type_name(unsigned int*);
-template<> SCISHARE const std::string find_type_name(long*);
-template<> SCISHARE const std::string find_type_name(unsigned long*);
-template<> SCISHARE const std::string find_type_name(long long*);
-template<> SCISHARE const std::string find_type_name(unsigned long long*);
-template<> SCISHARE const std::string find_type_name(char*);
-template<> SCISHARE const std::string find_type_name(unsigned char*);
-template<> SCISHARE const std::string find_type_name(bool*);
-template<> SCISHARE const std::string find_type_name(SCIRun::Core::Geometry::Vector*);
-template<> SCISHARE const std::string find_type_name(IntVector*);
-template<> SCISHARE const std::string find_type_name(SCIRun::Core::Geometry::Point*);
-template<> SCISHARE const std::string find_type_name(SCIRun::Core::Geometry::Transform*);
-template<> SCISHARE const std::string find_type_name(std::string*);
+template<> SCISHARE std::string find_type_name(float*);
+template<> SCISHARE std::string find_type_name(double*);
+template<> SCISHARE std::string find_type_name(std::complex<double>*);
+template<> SCISHARE std::string find_type_name(long double*);
+template<> SCISHARE std::string find_type_name(short*);
+template<> SCISHARE std::string find_type_name(unsigned short*);
+template<> SCISHARE std::string find_type_name(int*);
+template<> SCISHARE std::string find_type_name(unsigned int*);
+template<> SCISHARE std::string find_type_name(long*);
+template<> SCISHARE std::string find_type_name(unsigned long*);
+template<> SCISHARE std::string find_type_name(long long*);
+template<> SCISHARE std::string find_type_name(unsigned long long*);
+template<> SCISHARE std::string find_type_name(char*);
+template<> SCISHARE std::string find_type_name(unsigned char*);
+template<> SCISHARE std::string find_type_name(bool*);
+template<> SCISHARE std::string find_type_name(SCIRun::Core::Geometry::Vector*);
+template<> SCISHARE std::string find_type_name(IntVector*);
+template<> SCISHARE std::string find_type_name(SCIRun::Core::Geometry::Point*);
+template<> SCISHARE std::string find_type_name(SCIRun::Core::Geometry::Transform*);
+template<> SCISHARE std::string find_type_name(std::string*);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-template<> SCISHARE const std::string find_type_name(LockingHandle< Matrix<double> > *);
-template<> SCISHARE const std::string find_type_name(LockingHandle<NrrdData> *);
-template<> SCISHARE const std::string find_type_name(LockingHandle<Field> *);
-template<> SCISHARE const std::string find_type_name(LockingHandle<String> *);
+template<> SCISHARE std::string find_type_name(LockingHandle< Matrix<double> > *);
+template<> SCISHARE std::string find_type_name(LockingHandle<NrrdData> *);
+template<> SCISHARE std::string find_type_name(LockingHandle<Field> *);
+template<> SCISHARE std::string find_type_name(LockingHandle<String> *);
 #endif
 
 //////////
@@ -142,27 +143,28 @@ template<> SCISHARE const std::string find_type_name(LockingHandle<String> *);
 template<class T> class Array1;
 template<class T> class Array2;
 
-template <class T> const std::string find_type_name(Array1<T>*)
+template <class T>
+std::string find_type_name(Array1<T>*)
 {
-  static const std::string name = TypeNameGenerator::make_template_id("Array1", find_type_name(static_cast<T*>(0)));
+  static const std::string name = TypeNameGenerator::make_template_id("Array1", find_type_name(static_cast<T*>(nullptr)));
   return name;
 }
 
-template <class T> const std::string find_type_name(Array2<T>*)
+template <class T> std::string find_type_name(Array2<T>*)
 {
-  static const std::string name = TypeNameGenerator::make_template_id("Array2", find_type_name(static_cast<T*>(0)));
+  static const std::string name = TypeNameGenerator::make_template_id("Array2", find_type_name(static_cast<T*>(nullptr)));
   return name;
 }
 
-template <class T> const std::string find_type_name(std::vector<T>*)
+template <class T> std::string find_type_name(std::vector<T>*)
 {
-  static const std::string name = TypeNameGenerator::make_template_id("vector", find_type_name(static_cast<T*>(0)));
+  static const std::string name = TypeNameGenerator::make_template_id("vector", find_type_name(static_cast<T*>(nullptr)));
   return name;
 }
 
-template<class T, class S> const std::string find_type_name( std::pair<T,S> *)
+template<class T, class S> std::string find_type_name( std::pair<T,S> *)
 {
-  static const std::string name = TypeNameGenerator::make_template_id("pair", find_type_name(static_cast<T*>(0)), find_type_name(static_cast<S*>(0)));
+  static const std::string name = TypeNameGenerator::make_template_id("pair", find_type_name(static_cast<T*>(nullptr)), find_type_name(static_cast<S*>(nullptr)));
   return name;
 }
 

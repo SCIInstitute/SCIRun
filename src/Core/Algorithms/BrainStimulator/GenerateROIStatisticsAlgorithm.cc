@@ -370,7 +370,7 @@ std::vector<std::string> GenerateROIStatisticsAlgorithm::ConvertInputAtlasString
   return result;
 }
 
-AlgorithmOutput GenerateROIStatisticsAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GenerateROIStatisticsAlgorithm::run(const AlgorithmInput& input) const
 {
 
   auto mesh_ = input.get<Field>(MeshDataOnElements);

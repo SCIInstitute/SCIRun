@@ -56,7 +56,7 @@ void  FlipSurfaceNormals::execute()
 	{
 		update_state(Executing);
 	
-		auto output = algo().run_generic(withInputData((InputField,ifield)));
+		auto output = algo().run(withInputData((InputField,ifield)));
 	
 		sendOutputFromAlgorithm(OutputField,output);
 	}

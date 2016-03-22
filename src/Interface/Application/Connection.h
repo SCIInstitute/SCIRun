@@ -104,6 +104,7 @@ private:
   bool menuOpen_;
   QColor placeHoldingColor_;
   int placeHoldingWidth_;
+  double defaultZValue() const;
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};

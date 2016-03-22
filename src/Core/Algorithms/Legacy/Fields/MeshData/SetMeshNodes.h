@@ -47,7 +47,7 @@ class SCISHARE SetMeshNodesAlgo : public AlgorithmBase
 
     static AlgorithmInputName MatrixNodes;
     static AlgorithmOutputName OutputField;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const; 
 };
 
 }}}}

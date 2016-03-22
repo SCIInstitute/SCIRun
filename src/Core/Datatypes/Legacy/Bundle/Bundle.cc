@@ -342,15 +342,15 @@ Bundle::NrrdToMatrix(NrrdDataHandle nrrdH,MatrixHandle& matH)
 bool Bundle::MatrixToNrrdConvertible(MatrixHandle matH)
 {
   if (matH.get_rep() == 0) return(false);
-  if (matrix_is::dense(matH)) return(true);
-  if (matrix_is::column(matH)) return(true);
+  if (matrixIs::dense(matH)) return(true);
+  if (matrixIs::column(matH)) return(true);
   return(false);
 }
 
 bool Bundle::MatrixToNrrd(MatrixHandle matH,NrrdDataHandle &nrrdH)
 {
   if (matH.get_rep() == 0) return false;
-  if (matrix_is::dense(matH))
+  if (matrixIs::dense(matH))
   {
     DenseMatrix* matrix = matH->dense();
 
@@ -416,7 +416,7 @@ bool Bundle::MatrixToNrrd(MatrixHandle matH,NrrdDataHandle &nrrdH)
     }
     return(true);
   }
-  else if (matrix_is::column(matH))
+  else if (matrixIs::column(matH))
   {
     ColumnMatrix* matrix = matH->column();
     size_t size[NRRD_DIM_MAX];

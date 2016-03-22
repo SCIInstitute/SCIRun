@@ -36,7 +36,8 @@ SCIRUN_ADD_UNIT_TEST(Core_ImportExport_Tests
 
 TARGET_LINK_LIBRARIES(Core_ImportExport_Tests
   Core_ImportExport
-  Testing_ModuleTestBase
+  Testing_Utils
+  Core_Matlab
   gtest_main
   gtest
   gmock

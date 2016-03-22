@@ -225,6 +225,7 @@ struct SCISHARE ScopedTimer
 
 // TODO: move to Field utils file
 SCISHARE FieldHandle loadFieldFromFile(const boost::filesystem::path& filename);
+SCISHARE bool compareNodes(FieldHandle expected, FieldHandle actual);
 
 }
 

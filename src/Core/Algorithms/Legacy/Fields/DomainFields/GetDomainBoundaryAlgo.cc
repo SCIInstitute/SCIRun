@@ -551,7 +551,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   return true;
 }
 
-AlgorithmOutput GetDomainBoundaryAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GetDomainBoundaryAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
   auto elemlink = input.get<SparseRowMatrix>(ElemLink);
