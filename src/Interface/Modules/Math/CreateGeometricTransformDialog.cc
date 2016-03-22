@@ -34,7 +34,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
 
 CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
@@ -45,45 +45,147 @@ CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string
 	fixSize();
   WidgetStyleMixin::tabStyle(transformTabWidget_);
 
-  auto tabIndex = state_->getValue(CreateGeometricTransformModule::TransformType).toInt();
+  auto tabIndex = state_->getValue(Parameters::TransformType).toInt();
   if (tabIndex)
   {
     transformTabWidget_->setCurrentIndex(tabIndex);
   }
+  else
+  {
+    resetValues();
+  }
+  
+  addRadioButtonGroupManager({ preMultiplyRadioButton_, postMultiplyRadioButton_ }, Parameters::MultiplyRadioButton);
+  addDoubleSpinBoxManager(translateVectorXDoubleSpinBox_, Parameters::TranslateVectorX);
+  addDoubleSpinBoxManager(translateVectorYDoubleSpinBox_, Parameters::TranslateVectorY);
+  addDoubleSpinBoxManager(translateVectorZDoubleSpinBox_, Parameters::TranslateVectorZ);
+  addDoubleSpinBoxManager(scaleFixedPointXDoubleSpinBox_, Parameters::ScalePointX);
+  addDoubleSpinBoxManager(scaleFixedPointYDoubleSpinBox_, Parameters::ScalePointY);
+  addDoubleSpinBoxManager(scaleFixedPointZDoubleSpinBox_, Parameters::ScalePointZ);
+  addDoubleSpinBoxManager(logScaleDoubleSpinBox_, Parameters::LogScale);
+  addDoubleSpinBoxManager(logScaleXDoubleSpinBox_, Parameters::LogScaleX);
+  addDoubleSpinBoxManager(logScaleYDoubleSpinBox_, Parameters::LogScaleY);
+  addDoubleSpinBoxManager(logScaleZDoubleSpinBox_, Parameters::LogScaleZ);
+  addDoubleSpinBoxManager(rotationFixedPointXDoubleSpinBox_, Parameters::RotatePointX);
+  addDoubleSpinBoxManager(rotationFixedPointYDoubleSpinBox_, Parameters::RotatePointY);
+  addDoubleSpinBoxManager(rotationFixedPointZDoubleSpinBox_, Parameters::RotatePointZ);
+  addDoubleSpinBoxManager(rotateXAxisDoubleSpinBox_, Parameters::RotateAxisX);
+  addDoubleSpinBoxManager(rotateYAxisDoubleSpinBox_, Parameters::RotateAxisY);
+  addDoubleSpinBoxManager(rotateZAxisDoubleSpinBox_, Parameters::RotateAxisZ);
+  addDoubleSpinBoxManager(rotateThetaDoubleSpinBox_, Parameters::RotateTheta);
+  addDoubleSpinBoxManager(shearVectorXDoubleSpinBox_, Parameters::ShearVectorX);
+  addDoubleSpinBoxManager(shearVectorYDoubleSpinBox_, Parameters::ShearVectorY);
+  addDoubleSpinBoxManager(shearVectorZDoubleSpinBox_, Parameters::ShearVectorZ);
+  addDoubleSpinBoxManager(shearFixedPlaneADoubleSpinBox_, Parameters::ShearPlaneA);
+  addDoubleSpinBoxManager(shearFixedPlaneBDoubleSpinBox_, Parameters::ShearPlaneB);
+  addDoubleSpinBoxManager(shearFixedPlaneCDoubleSpinBox_, Parameters::ShearPlaneC);
+  addDoubleSpinBoxManager(shearFixedPlaneDDoubleSpinBox_, Parameters::ShearPlaneD);
+  addDynamicLabelManager(fieldMapXLabel_, Parameters::FieldMapX);
+  addDynamicLabelManager(fieldMapYLabel_, Parameters::FieldMapY);
+  addDynamicLabelManager(fieldMapZLabel_, Parameters::FieldMapZ);
+  addDoubleSpinBoxManager(uniformScaleDoubleSpinBox_, Parameters::UniformScale);
+  addCheckBoxManager(resizeSeparablyCheckBox_, Parameters::ResizeSeparably);
+  addCheckBoxManager(ignoreChangesCheckBox_, Parameters::IgnoreChanges);
 
-  addRadioButtonGroupManager({ preMultiplyRadioButton_, postMultiplyRadioButton_ }, CreateGeometricTransformModule::MultiplyRadioButton);
-  addDoubleSpinBoxManager(translateVectorXDoubleSpinBox_, CreateGeometricTransformModule::TranslateVectorX);
-  addDoubleSpinBoxManager(translateVectorYDoubleSpinBox_, CreateGeometricTransformModule::TranslateVectorY);
-  addDoubleSpinBoxManager(translateVectorZDoubleSpinBox_, CreateGeometricTransformModule::TranslateVectorZ);
-  addDoubleSpinBoxManager(scaleFixedPointXDoubleSpinBox_, CreateGeometricTransformModule::ScalePointX);
-  addDoubleSpinBoxManager(scaleFixedPointYDoubleSpinBox_, CreateGeometricTransformModule::ScalePointY);
-  addDoubleSpinBoxManager(scaleFixedPointZDoubleSpinBox_, CreateGeometricTransformModule::ScalePointZ);
-  addDoubleSpinBoxManager(logScaleDoubleSpinBox_, CreateGeometricTransformModule::LogScale);
-  addDoubleSpinBoxManager(logScaleXDoubleSpinBox_, CreateGeometricTransformModule::LogScaleX);
-  addDoubleSpinBoxManager(logScaleYDoubleSpinBox_, CreateGeometricTransformModule::LogScaleY);
-  addDoubleSpinBoxManager(logScaleZDoubleSpinBox_, CreateGeometricTransformModule::LogScaleZ);
-  addDoubleSpinBoxManager(rotationFixedPointXDoubleSpinBox_, CreateGeometricTransformModule::RotatePointX);
-  addDoubleSpinBoxManager(rotationFixedPointYDoubleSpinBox_, CreateGeometricTransformModule::RotatePointY);
-  addDoubleSpinBoxManager(rotationFixedPointZDoubleSpinBox_, CreateGeometricTransformModule::RotatePointZ);
-  addDoubleSpinBoxManager(rotateXAxisDoubleSpinBox_, CreateGeometricTransformModule::RotateAxisX);
-  addDoubleSpinBoxManager(rotateYAxisDoubleSpinBox_, CreateGeometricTransformModule::RotateAxisY);
-  addDoubleSpinBoxManager(rotateZAxisDoubleSpinBox_, CreateGeometricTransformModule::RotateAxisZ);
-  addDoubleSpinBoxManager(rotateThetaDoubleSpinBox_, CreateGeometricTransformModule::RotateTheta);
-  addDoubleSpinBoxManager(shearVectorXDoubleSpinBox_, CreateGeometricTransformModule::ShearVectorX);
-  addDoubleSpinBoxManager(shearVectorYDoubleSpinBox_, CreateGeometricTransformModule::ShearVectorY);
-  addDoubleSpinBoxManager(shearVectorZDoubleSpinBox_, CreateGeometricTransformModule::ShearVectorZ);
-  addDoubleSpinBoxManager(shearFixedPlaneADoubleSpinBox_, CreateGeometricTransformModule::ShearPlaneA);
-  addDoubleSpinBoxManager(shearFixedPlaneBDoubleSpinBox_, CreateGeometricTransformModule::ShearPlaneB);
-  addDoubleSpinBoxManager(shearFixedPlaneCDoubleSpinBox_, CreateGeometricTransformModule::ShearPlaneC);
-  addDoubleSpinBoxManager(shearFixedPlaneDDoubleSpinBox_, CreateGeometricTransformModule::ShearPlaneD);
-  addDynamicLabelManager(fieldMapXLabel_, CreateGeometricTransformModule::FieldMapX);
-  addDynamicLabelManager(fieldMapYLabel_, CreateGeometricTransformModule::FieldMapY);
-  addDynamicLabelManager(fieldMapZLabel_, CreateGeometricTransformModule::FieldMapZ);
-  addDoubleSpinBoxManager(uniformScaleDoubleSpinBox_, CreateGeometricTransformModule::UniformScale);
-  addCheckBoxManager(resizeSeparablyCheckBox_, CreateGeometricTransformModule::ResizeSeparably);
-  addCheckBoxManager(ignoreChangesCheckBox_, CreateGeometricTransformModule::IgnoreChanges);
+  connect(transformTabWidget_, SIGNAL(currentChanged(int)), this, SLOT(changeTransformType(int)));
+  connect(resetPushButton_, SIGNAL(clicked()), this, SLOT(resetValues()));
+  connect(resetFieldMapPushButton_, SIGNAL(clicked()), this, SLOT(resetFieldMap()));
+  connect(cycleUpPushButton_, SIGNAL(clicked()), this, SLOT(cycleUp()));
+  connect(cycleDownPushButton_, SIGNAL(clicked()), this, SLOT(cycleDown()));
+  connect(swapXYPushButton_, SIGNAL(clicked()), this, SLOT(swapXY()));
+  connect(swapYZPushButton_, SIGNAL(clicked()), this, SLOT(swapYZ()));
+  connect(swapXZPushButton_, SIGNAL(clicked()), this, SLOT(swapXZ()));
+   
 }
 
 void CreateGeometricTransformDialog::pullSpecial()
 {
+}
+
+void CreateGeometricTransformDialog::changeTransformType(int index)
+{
+  state_->setValue(Parameters::TransformType, index);
+}
+
+void CreateGeometricTransformDialog::resetValues()
+{
+  state_->setValue(Parameters::TransformType, 0);
+  state_->setValue(Parameters::MultiplyRadioButton, 1);
+  state_->setValue(Parameters::TranslateVectorX, 0.0);
+  state_->setValue(Parameters::TranslateVectorY, 0.0);
+  state_->setValue(Parameters::TranslateVectorZ, 0.0);
+  state_->setValue(Parameters::ScalePointX, 0.0);
+  state_->setValue(Parameters::ScalePointY, 0.0);
+  state_->setValue(Parameters::ScalePointZ, 0.0);
+  state_->setValue(Parameters::LogScale, 0.0);
+  state_->setValue(Parameters::LogScaleX, 0.0);
+  state_->setValue(Parameters::LogScaleY, 0.0);
+  state_->setValue(Parameters::LogScaleZ, 0.0);
+  state_->setValue(Parameters::RotatePointX, 0.0);
+  state_->setValue(Parameters::RotatePointY, 0.0);
+  state_->setValue(Parameters::RotatePointZ, 0.0);
+  state_->setValue(Parameters::RotateAxisX, 0.0);
+  state_->setValue(Parameters::RotateAxisY, 0.0);
+  state_->setValue(Parameters::RotateAxisZ, 1.0);
+  state_->setValue(Parameters::RotateTheta, 0.0);
+  state_->setValue(Parameters::ShearVectorX, 0.0);
+  state_->setValue(Parameters::ShearVectorY, 0.0);
+  state_->setValue(Parameters::ShearVectorZ, 0.0);
+  state_->setValue(Parameters::ShearPlaneA, 0.0);
+  state_->setValue(Parameters::ShearPlaneB, 0.0);
+  state_->setValue(Parameters::ShearPlaneC, 0.0);
+  state_->setValue(Parameters::ShearPlaneD, 1.0);
+  state_->setValue(Parameters::UniformScale, 1.0);
+  state_->setValue(Parameters::ResizeSeparably, true);
+  state_->setValue(Parameters::IgnoreChanges, true);
+
+  transformTabWidget_->setCurrentIndex(state_->getValue(Parameters::TransformType).toInt());
+}
+
+void CreateGeometricTransformDialog::resetFieldMap()
+{
+  std::string x = "x+";
+  std::string y = "y+";
+  std::string z = "z+";
+  state_->setValue(Parameters::FieldMapX, x);
+  state_->setValue(Parameters::FieldMapY, y);
+  state_->setValue(Parameters::FieldMapZ, z);
+}
+
+
+void CreateGeometricTransformDialog::cycleUp()
+{
+  std::string temp = state_->getValue(Parameters::FieldMapX).toString();
+  state_->setValue(Parameters::FieldMapX, state_->getValue(Parameters::FieldMapY).toString());
+  state_->setValue(Parameters::FieldMapY, state_->getValue(Parameters::FieldMapZ).toString());
+  state_->setValue(Parameters::FieldMapZ, temp);
+}
+
+void CreateGeometricTransformDialog::cycleDown()
+{
+  std::string temp = state_->getValue(Parameters::FieldMapX).toString();
+  state_->setValue(Parameters::FieldMapX, state_->getValue(Parameters::FieldMapZ).toString());
+  state_->setValue(Parameters::FieldMapZ, state_->getValue(Parameters::FieldMapY).toString());
+  state_->setValue(Parameters::FieldMapY, temp);
+}
+
+void CreateGeometricTransformDialog::swapXY()
+{
+  std::string temp = state_->getValue(Parameters::FieldMapX).toString();
+  state_->setValue(Parameters::FieldMapX, state_->getValue(Parameters::FieldMapY).toString());
+  state_->setValue(Parameters::FieldMapY, temp);
+}
+
+void CreateGeometricTransformDialog::swapYZ()
+{
+  std::string temp = state_->getValue(Parameters::FieldMapY).toString();
+  state_->setValue(Parameters::FieldMapY, state_->getValue(Parameters::FieldMapZ).toString());
+  state_->setValue(Parameters::FieldMapZ, temp);
+}
+
+void CreateGeometricTransformDialog::swapXZ()
+{
+  std::string temp = state_->getValue(Parameters::FieldMapX).toString();
+  state_->setValue(Parameters::FieldMapX, state_->getValue(Parameters::FieldMapZ).toString());
+  state_->setValue(Parameters::FieldMapZ, temp);
 }

@@ -26,57 +26,63 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_CREATEGEOMETRICTRANSFORMMODULE_H
-#define MODULES_MATH_CREATEGEOMETRICTRANSFORMMODULE_H
+#ifndef MODULES_MATH_CREATEGEOMETRICTRANSFORM_H
+#define MODULES_MATH_CREATEGEOMETRICTRANSFORM_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Math/share.h>
 
 namespace SCIRun {
+
+  namespace Core {
+    namespace Algorithms {
+      namespace Math {
+        ALGORITHM_PARAMETER_DECL(TransformType);
+        ALGORITHM_PARAMETER_DECL(MultiplyRadioButton);
+        ALGORITHM_PARAMETER_DECL(TranslateVectorX);
+        ALGORITHM_PARAMETER_DECL(TranslateVectorY);
+        ALGORITHM_PARAMETER_DECL(TranslateVectorZ);
+        ALGORITHM_PARAMETER_DECL(ScalePointX);
+        ALGORITHM_PARAMETER_DECL(ScalePointY);
+        ALGORITHM_PARAMETER_DECL(ScalePointZ);
+        ALGORITHM_PARAMETER_DECL(LogScale);
+        ALGORITHM_PARAMETER_DECL(LogScaleX);
+        ALGORITHM_PARAMETER_DECL(LogScaleY);
+        ALGORITHM_PARAMETER_DECL(LogScaleZ);
+        ALGORITHM_PARAMETER_DECL(RotatePointX);
+        ALGORITHM_PARAMETER_DECL(RotatePointY);
+        ALGORITHM_PARAMETER_DECL(RotatePointZ);
+        ALGORITHM_PARAMETER_DECL(RotateAxisX);
+        ALGORITHM_PARAMETER_DECL(RotateAxisY);
+        ALGORITHM_PARAMETER_DECL(RotateAxisZ);
+        ALGORITHM_PARAMETER_DECL(RotateTheta);
+        ALGORITHM_PARAMETER_DECL(ShearVectorX);
+        ALGORITHM_PARAMETER_DECL(ShearVectorY);
+        ALGORITHM_PARAMETER_DECL(ShearVectorZ);
+        ALGORITHM_PARAMETER_DECL(ShearPlaneA);
+        ALGORITHM_PARAMETER_DECL(ShearPlaneB);
+        ALGORITHM_PARAMETER_DECL(ShearPlaneC);
+        ALGORITHM_PARAMETER_DECL(ShearPlaneD);
+        ALGORITHM_PARAMETER_DECL(FieldMapX);
+        ALGORITHM_PARAMETER_DECL(FieldMapY);
+        ALGORITHM_PARAMETER_DECL(FieldMapZ);
+        ALGORITHM_PARAMETER_DECL(UniformScale);
+        ALGORITHM_PARAMETER_DECL(ResizeSeparably);
+        ALGORITHM_PARAMETER_DECL(IgnoreChanges);
+      }
+    }
+  }
 namespace Modules {
 namespace Math {
   
-  class SCISHARE CreateGeometricTransformModule : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE CreateGeometricTransform : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
     public Has2OutputPorts<MatrixPortTag, GeometryPortTag>
   {
   public:
-    CreateGeometricTransformModule();
+    CreateGeometricTransform();
     virtual void execute() override;
-
-    static const Core::Algorithms::AlgorithmParameterName TransformType;
-    static const Core::Algorithms::AlgorithmParameterName MultiplyRadioButton;
-    static const Core::Algorithms::AlgorithmParameterName TranslateVectorX;
-    static const Core::Algorithms::AlgorithmParameterName TranslateVectorY;
-    static const Core::Algorithms::AlgorithmParameterName TranslateVectorZ;
-    static const Core::Algorithms::AlgorithmParameterName ScalePointX;
-    static const Core::Algorithms::AlgorithmParameterName ScalePointY;
-    static const Core::Algorithms::AlgorithmParameterName ScalePointZ;
-    static const Core::Algorithms::AlgorithmParameterName LogScale;
-    static const Core::Algorithms::AlgorithmParameterName LogScaleX;
-    static const Core::Algorithms::AlgorithmParameterName LogScaleY;
-    static const Core::Algorithms::AlgorithmParameterName LogScaleZ;
-    static const Core::Algorithms::AlgorithmParameterName RotatePointX;
-    static const Core::Algorithms::AlgorithmParameterName RotatePointY;
-    static const Core::Algorithms::AlgorithmParameterName RotatePointZ;
-    static const Core::Algorithms::AlgorithmParameterName RotateAxisX;
-    static const Core::Algorithms::AlgorithmParameterName RotateAxisY;
-    static const Core::Algorithms::AlgorithmParameterName RotateAxisZ;
-    static const Core::Algorithms::AlgorithmParameterName RotateTheta;
-    static const Core::Algorithms::AlgorithmParameterName ShearVectorX;
-    static const Core::Algorithms::AlgorithmParameterName ShearVectorY;
-    static const Core::Algorithms::AlgorithmParameterName ShearVectorZ;
-    static const Core::Algorithms::AlgorithmParameterName ShearPlaneA;
-    static const Core::Algorithms::AlgorithmParameterName ShearPlaneB;
-    static const Core::Algorithms::AlgorithmParameterName ShearPlaneC;
-    static const Core::Algorithms::AlgorithmParameterName ShearPlaneD;
-    static const Core::Algorithms::AlgorithmParameterName FieldMapX;
-    static const Core::Algorithms::AlgorithmParameterName FieldMapY;
-    static const Core::Algorithms::AlgorithmParameterName FieldMapZ;
-    static const Core::Algorithms::AlgorithmParameterName UniformScale;
-    static const Core::Algorithms::AlgorithmParameterName ResizeSeparably;
-    static const Core::Algorithms::AlgorithmParameterName IgnoreChanges;
-
+   
     virtual void setStateDefaults();
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
     
