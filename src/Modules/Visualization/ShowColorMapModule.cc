@@ -243,53 +243,6 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
     textBuilder_.printString(oneline, trans, shift, id, geom);
   }
 
-      //add the actual points and colors
-      std::string uniqueFontStr = getUniqueFontString(p, x, y, z, w, h);
-      uniqueNodeID = id + "colorMapLegendTextFont" + uniqueFontStr;
-      vboName = uniqueNodeID + "VBO";
-      iboName = uniqueNodeID + "IBO";
-      passName = uniqueNodeID + "Pass";
-
-      // NOTE: Attributes will depend on the color scheme. We will want to
-      // normalize the colors if the color scheme is COLOR_IN_SITU.
-
-      // Construct VBO.
-      shader = "Shaders/ColorMapLegendText";
-      attribs.clear();
-      attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-      attribs.push_back(SpireVBO::AttributeData("aTexCoord", 2 * sizeof(float)));
-      uniforms.clear();
-      uniforms.push_back(SpireSubPass::Uniform("uXTranslate", static_cast<float>(xTrans)));
-      uniforms.push_back(SpireSubPass::Uniform("uYTranslate", static_cast<float>(yTrans)));
-      uniforms.push_back(SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
-      uniforms.push_back(SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
-      uniforms.push_back(SpireSubPass::Uniform("uColor", glm::vec4(red, green, blue, 1.0f)));
-      SpireVBO geomVBO2 = SpireVBO(vboName, attribs, vboBufferSPtr2,
-        numVBOElements, BBox(), true);
-
-      geom->mVBOs.push_back(geomVBO2);
-
-      // Construct IBO.
-
-      SpireIBO geomIBO2(iboName, SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
-      geom->mIBOs.push_back(geomIBO2);
-      renState.set(RenderState::USE_COLORMAP, false);
-      renState.set(RenderState::IS_TEXT, true);
-      char c[2] = { p[0], 0 };
-      SpireText text(c, ftFace_);
-
-      SpireSubPass pass2(passName, vboName, iboName, shader,
-        COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO2, geomIBO2, text);
-
-      // Add all uniforms generated above to the pass.
-      for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
-      //******************************************************************************************
-      // TODO we're not adding this geometry (font) until we debug for it to work on Windows.
-      geom->mPasses.push_back(pass2);
-      //******************************************************************************************
-    }
-  }
-
   return geom;
 }
 
