@@ -33,7 +33,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Plane.h>
-//#include <Core/Datatypes/Legacy/Matrix/MatrixAlgorithms.h>
+#include <Core/Datatypes/MatrixAlgorithms.h>
 
 #include <Core/Math/MiscMath.h>
 
@@ -171,7 +171,7 @@ void CreateGeometricTransform::execute()
     Transform input_transform;
     if (input_matrix_H)
     {
-      //input_transform = MatrixAlgorithms::matrix_to_transform(*input_matrix_H);
+      input_transform = MatrixAlgorithms::matrix_to_transform(*input_matrix_H);
     }
 
     Transform local_transform;
