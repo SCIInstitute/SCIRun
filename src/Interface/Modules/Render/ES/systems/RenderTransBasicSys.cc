@@ -244,10 +244,16 @@ private:
       return;
     }
 
-    if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY) &&
-        !srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) &&
-        !srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES) &&
-        !srstate.front().state.get(RenderState::IS_TEXT))
+    if (srstate.front().state.get(RenderState::IS_TEXT))
+    {
+      return;
+    }
+
+    bool doRender = srstate.front().state.get(RenderState::USE_TRANSPARENCY) ||
+      srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) ||
+      srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES);
+
+    if (!doRender)
     {
       return;
     }
