@@ -32,15 +32,14 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/algorithm/string/join.hpp>
 #include <boost/timer.hpp>
 #include <atomic>
 
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
-#include <Dataflow/Network/DataflowInterfaces.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>
+#include <Dataflow/Network/DataflowInterfaces.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
@@ -547,7 +546,7 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
   if (module_)
   {
     DatatypeSourceInterfaceHandle source(source_maker_ ? source_maker_() : nullptr);
-    OutputPortHandle port(boost::make_shared<OutputPort>(module_.get(), params, source));
+    auto port(boost::make_shared<OutputPort>(module_.get(), params, source));
     port->setIndex(module_->add_output_port(port));
   }
   return *this;

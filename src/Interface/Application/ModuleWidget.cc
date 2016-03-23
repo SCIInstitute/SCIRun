@@ -720,7 +720,7 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
   for (const auto& port : inputs)
   {
     auto type = port->get_typename();
-    std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
+    //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
       portAlpha()), type,
       moduleId, port->id(),
@@ -925,7 +925,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     //{
     //  qDebug() << input->name() << input->getIndex();
     //}
-    //qDebug() << "Last index of " << w->name() << ports_->lastIndexOf(w->name());
+    qDebug() << "Last index of " << w->name() << ports_->lastIndexOf(w->name()) << "DOES IT MATCH" << port->getIndex();
 
     const int newPortIndex = ports_->lastIndexOf(w->name()) + 1;
     ports_->insertPort(newPortIndex, w);
@@ -985,6 +985,8 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
+  disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
+
   if (!theModule_->isStoppable())
   {
     removeWidgetFromExecutionDisableList(miniWidgetDisplay_->getExecuteButton());
