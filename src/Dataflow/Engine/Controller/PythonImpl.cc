@@ -234,7 +234,7 @@ namespace
       }
       return nullptr;
     }
-    
+
     void reset()
     {
       port_.reset();
@@ -270,8 +270,8 @@ namespace
 
         if (mod->hasDynamicPorts())
         {
-          connections_.push_back(std::make_unique<boost::signals2::scoped_connection>(nec_.connectPortAdded([this](const ModuleId& mid, const PortId& pid) { portAddedSlot(mid, pid); })));
-          connections_.push_back(std::make_unique<boost::signals2::scoped_connection>(nec_.connectPortRemoved([this](const ModuleId& mid, const PortId& pid) { portRemovedSlot(mid, pid); })));
+          connections_.push_back(boost::make_shared<boost::signals2::scoped_connection>(nec_.connectPortAdded([this](const ModuleId& mid, const PortId& pid) { portAddedSlot(mid, pid); })));
+          connections_.push_back(boost::make_shared<boost::signals2::scoped_connection>(nec_.connectPortRemoved([this](const ModuleId& mid, const PortId& pid) { portRemovedSlot(mid, pid); })));
         }
       }
       else
@@ -346,7 +346,7 @@ namespace
     ModuleHandle mod_;
     NetworkEditorController& nec_;
     ModuleId modId_;
-    std::vector<std::unique_ptr<boost::signals2::scoped_connection>> connections_;
+    std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> connections_;
   };
 
   class PyModuleImpl : public PyModule

@@ -30,10 +30,11 @@
 
 
 #ifndef DATAFLOW_NETWORK_PORTMANAGER_H
-#define DATAFLOW_NETWORK_PORTMANAGER_H 
+#define DATAFLOW_NETWORK_PORTMANAGER_H
 
 #include <Dataflow/Network/Port.h>
 #include <Core/Utils/Exception.h>
+#include <iostream>
 
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
@@ -45,7 +46,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-template<class T> 
+template<class T>
 class PortManager : boost::noncopyable
 {
 private:
@@ -84,14 +85,14 @@ PortManager<T>::PortManager() :
 template<class T>
 size_t
 PortManager<T>::size() const
-{ 
+{
   return ports_.size();
 }
 
 template<class T>
 size_t
 PortManager<T>::add(const T& item)
-{ 
+{
   ports_[item->id()] = item;
   isDynamic_[item->id().name] = item->isDynamic();
 
@@ -225,7 +226,7 @@ std::vector<T> PortManager<T>::findAllByNameImpl(const std::string& name) const
   std::vector<T> portsWithName;
 
   boost::copy(
-    ports_ | boost::adaptors::map_values 
+    ports_ | boost::adaptors::map_values
     | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
 
   return portsWithName;
