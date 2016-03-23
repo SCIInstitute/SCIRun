@@ -34,18 +34,18 @@
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-	namespace Gui {
-		class SCISHARE ReportMatrixSliceMeasureDialog : public ModuleDialogGeneric,
-			public Ui::ReportMatrixSliceMeasureDialog
-		{
-			Q_OBJECT
-
-		public:
-			ReportMatrixSliceMeasureDialog(const std::string& name,
-						SCIRun::Dataflow::Networks::ModuleStateHandle state,
-						QWidget* parent = 0);
-		};
-	}
+  namespace Gui {
+    class SCISHARE ReportMatrixSliceMeasureDialog : public ModuleDialogGeneric,
+    public Ui::ReportMatrixSliceMeasureDialog
+    {
+      Q_OBJECT
+      
+    public:
+      ReportMatrixSliceMeasureDialog(const std::string& name,
+                                     SCIRun::Dataflow::Networks::ModuleStateHandle state,
+                                     QWidget* parent = 0);
+    };
+  }
 }
 
 #endif

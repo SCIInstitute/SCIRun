@@ -30,6 +30,7 @@ SET(Core_Utils_SRCS
   Exception.cc
   Singleton.cc
   ProgressReporter.cc
+  CurrentFileName.cc
 )
 
 SET(Core_Utils_HEADERS
@@ -42,6 +43,8 @@ SET(Core_Utils_HEADERS
   StringUtil.h
   ProgressReporter.h
   TypeIDTable.h
+  share.h
+  CurrentFileName.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Utils 

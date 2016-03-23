@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,43 +26,71 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Algorithms/Legacy/Converter/ConvertToNrrd.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+#include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
-#include <Core/Algorithms/Converter/ConvertToNrrd.h>
+using namespace SCIRun;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Converters;
 
-namespace SCIRunAlgo {
+ALGORITHM_PARAMETER_DEF(Converters, BuildPoints);
+ALGORITHM_PARAMETER_DEF(Converters, BuildConnections);
+ALGORITHM_PARAMETER_DEF(Converters, BuildData);
+ALGORITHM_PARAMETER_DEF(Converters, DataLabel);
+
+ConvertToNrrdAlgo::ConvertToNrrdAlgo()
+{
+  addParameter(Parameters::BuildPoints, true);
+  addParameter(Parameters::BuildConnections, true);
+  addParameter(Parameters::BuildData, true);
+  addParameter(Parameters::DataLabel, std::string("unknown"));
+}
 
 bool
-ConvertToNrrdAlgo::run(FieldHandle input, NrrdDataHandle& points, 
-             NrrdDataHandle& connections,NrrdDataHandle& data)
+ConvertToNrrdAlgo::runImpl(FieldHandle input, NrrdDataHandle& points,
+             NrrdDataHandle& connections,NrrdDataHandle& data) const
 {
-  algo_start("ConvertToNrrd");
+  ScopedAlgorithmStatusReporter asr(this, "ConvertToNrrd");
 
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
-  
+
   VField* field = input->vfield();
   VMesh* mesh = input->vmesh();
 
-  std::vector<size_type> ddims; // data dims 
+  std::vector<size_type> dataDims;
   std::vector<size_type> ndims;
   Vector spc;
   Point minP, maxP;
   bool with_spacing = true;
 
-
-  if (mesh->is_regularmesh()) 
+  if (mesh->is_regularmesh())
   {
     VMesh::dimension_type dims;
     mesh->get_dimensions(dims);
     for (size_t j=0;j<dims.size(); j++) ndims.push_back(dims[j]);
-    
+
     // regular
     BBox bbox = mesh->get_bounding_box();
-    minP = bbox.min();
-    maxP = bbox.max();
+    minP = bbox.get_min();
+    maxP = bbox.get_max();
     spc = maxP - minP;
     if (field->basis_order() == 0)
     {
@@ -88,16 +116,16 @@ ConvertToNrrdAlgo::run(FieldHandle input, NrrdDataHandle& points,
         spc.z(spc.z() / (ndims[2] - 1));
       }
     }
-    ddims = ndims;
+    dataDims = ndims;
     if (field->basis_order() == 0)
     {
-      for (size_t i = 0; i < ddims.size(); i++)
+      for (size_t i = 0; i < dataDims.size(); i++)
       {
-        ddims[i]--;
+        dataDims[i]--;
       }
     }
-  } 
-  else 
+  }
+  else
   {
     // unstructured data so create a 1D nrrd (2D if vector or tensor)
     size_type nsz = 0;
@@ -106,8 +134,8 @@ ConvertToNrrdAlgo::run(FieldHandle input, NrrdDataHandle& points,
     mesh->synchronize(Mesh::NODES_E);
     mesh->size(size);
     nsz = size;
-    
-    switch(field->basis_order()) 
+
+    switch(field->basis_order())
     {
       case 1 :
         sz = nsz;
@@ -118,22 +146,22 @@ ConvertToNrrdAlgo::run(FieldHandle input, NrrdDataHandle& points,
     }
 
     ndims.push_back(nsz);
-    ddims.push_back(sz); 
+    dataDims.push_back(sz);
 
     with_spacing = false;
   }
 
-  if (get_bool("build_points"))
+  if (get(Parameters::BuildPoints).toBool())
   {
-    points = new NrrdData();
-    switch(ndims.size()) 
+    points.reset(new NrrdData());
+    switch(ndims.size())
     {
       case 1:
       {
         size_t size[NRRD_DIM_MAX];
         size[0] = 3;
         size[1] = ndims[0];
-        nrrdAlloc_nva(points->nrrd_, nrrdTypeDouble, 2, size);
+        nrrdAlloc_nva(points->getNrrd(), nrrdTypeDouble, 2, size);
       }
       break;
       case 2:
@@ -142,7 +170,7 @@ ConvertToNrrdAlgo::run(FieldHandle input, NrrdDataHandle& points,
         size[0] = 3;
         size[1] = ndims[0];
         size[2] = ndims[1];
-        nrrdAlloc_nva(points->nrrd_, nrrdTypeDouble, 3, size);
+        nrrdAlloc_nva(points->getNrrd(), nrrdTypeDouble, 3, size);
       }
       break;
       case 3:
@@ -152,12 +180,12 @@ ConvertToNrrdAlgo::run(FieldHandle input, NrrdDataHandle& points,
         size[1] = ndims[0];
         size[2] = ndims[1];
         size[3] = ndims[2];
-        nrrdAlloc_nva(points->nrrd_, nrrdTypeDouble, 4, size);
+        nrrdAlloc_nva(points->getNrrd(), nrrdTypeDouble, 4, size);
       }
       break;
     }
 
-    double *data = reinterpret_cast<double*>(points->nrrd_->data);    
+    double *data = reinterpret_cast<double*>(points->getNrrd()->data);
     VMesh::size_type num_nodes = mesh->num_nodes();
     for (VMesh::Node::index_type idx = 0; idx <num_nodes; idx++)
     {
@@ -171,48 +199,48 @@ ConvertToNrrdAlgo::run(FieldHandle input, NrrdDataHandle& points,
   }
 
 
-  if (get_bool("build_connections"))
+  if (get(Parameters::BuildConnections).toBool())
   {
-    connections = new NrrdData();
-    
+    connections.reset(new NrrdData());
+
     VMesh::size_type num_elems = mesh->num_elems();
     VMesh::Node::array_type array;
     mesh->get_nodes(array ,VMesh::Elem::index_type(0));
-    
+
     VMesh::size_type dof = array.size();
-    if (dof == 1) 
+    if (dof == 1)
     {
       size_t size[NRRD_DIM_MAX];
       size[0] = num_elems;
-      nrrdAlloc_nva(connections->nrrd_, nrrdTypeInt, 1, size);
+      nrrdAlloc_nva(connections->getNrrd(), nrrdTypeInt, 1, size);
     }
-    else 
+    else
     {
       size_t size[NRRD_DIM_MAX];
       size[0] = dof;
       size[1] = num_elems;
-      nrrdAlloc_nva(connections->nrrd_, nrrdTypeInt, 2, size);
+      nrrdAlloc_nva(connections->getNrrd(), nrrdTypeInt, 2, size);
     }
 
-    int* data2 = reinterpret_cast<int*>(connections->nrrd_->data);
+    int* data2 = reinterpret_cast<int*>(connections->getNrrd()->data);
 
     for (VMesh::Elem::index_type idx=0; idx<num_elems;idx++)
     {
       mesh->get_nodes(array ,idx);
-	
-      for(size_t i=0; i<array.size() && i<static_cast<size_t>(dof); i++) 
+
+      for(size_t i=0; i<array.size() && i<static_cast<size_t>(dof); i++)
       {
         data2[i] = array[i];
-      }	
+      }
       data2 += array.size();
     }
   }
 
 
-  if (get_bool("build_data") && field->basis_order() > -1 && field->basis_order() < 2)
+  if (get(Parameters::BuildData).toBool() && field->basis_order() > -1 && field->basis_order() < 2)
   {
-    data = new NrrdData();
-  
+    data.reset(new NrrdData());
+
     size_t elsize = 0;
     int    nrrdtype = 0;
     if (field->is_char()) { nrrdtype = nrrdTypeChar; elsize = 1; }
@@ -232,79 +260,79 @@ ConvertToNrrdAlgo::run(FieldHandle input, NrrdDataHandle& points,
     {
       size_t size[NRRD_DIM_MAX];
       unsigned int centers[NRRD_DIM_MAX];
-      for (size_t j=0;j<ddims.size(); j++) size[j] = ddims[j];
-      nrrdAlloc_nva(data->nrrd_, nrrdtype, ddims.size(), size);
-      
-      if (field->basis_order() == 1) 
+      for (size_t j=0;j<dataDims.size(); j++) size[j] = dataDims[j];
+      nrrdAlloc_nva(data->getNrrd(), nrrdtype, dataDims.size(), size);
+
+      if (field->basis_order() == 1)
       {
-        for (size_t j=0;j<ddims.size(); j++) centers[j] = nrrdCenterNode;
-        nrrdAxisInfoSet_nva(data->nrrd_, nrrdAxisInfoCenter, centers);
-      } 
-      else if (field->basis_order() == 0) 
-      {
-        for (size_t j=0;j<ddims.size(); j++) centers[j] = nrrdCenterCell;
-        nrrdAxisInfoSet_nva(data->nrrd_, nrrdAxisInfoCenter, centers);
-      } 
-      else  
-      {
-        for (size_t j=0;j<ddims.size(); j++) centers[j] = nrrdCenterUnknown;
-        nrrdAxisInfoSet_nva(data->nrrd_, nrrdAxisInfoCenter, centers);
+        for (size_t j=0;j<dataDims.size(); j++) centers[j] = nrrdCenterNode;
+        nrrdAxisInfoSet_nva(data->getNrrd(), nrrdAxisInfoCenter, centers);
       }
-      if (ddims.size() > 0) data->nrrd_->axis[0].label = airStrdup("x");
-      if (ddims.size() > 1) data->nrrd_->axis[1].label = airStrdup("y");
-      if (ddims.size() > 2) data->nrrd_->axis[2].label = airStrdup("z");
-      
-      if (with_spacing) 
+      else if (field->basis_order() == 0)
       {
-        if (ddims.size() > 0)
-        {
-          data->nrrd_->axis[0].min=minP.x();
-          data->nrrd_->axis[0].max=maxP.x();
-          data->nrrd_->axis[0].spacing=spc.x();
-        }
-        if (ddims.size() > 1)
-        {
-          data->nrrd_->axis[1].min=minP.x();
-          data->nrrd_->axis[1].max=maxP.x();
-          data->nrrd_->axis[1].spacing=spc.x();
-        }
-        if (ddims.size() > 2)
-        {
-          data->nrrd_->axis[2].min=minP.x();
-          data->nrrd_->axis[2].max=maxP.x();
-          data->nrrd_->axis[2].spacing=spc.x();
-        }           
+        for (size_t j=0;j<dataDims.size(); j++) centers[j] = nrrdCenterCell;
+        nrrdAxisInfoSet_nva(data->getNrrd(), nrrdAxisInfoCenter, centers);
       }
-      
-      for (size_t j=0;j<ddims.size(); j++) data->nrrd_->axis[j].kind = nrrdKindDomain;
-    
+      else
+      {
+        for (size_t j=0;j<dataDims.size(); j++) centers[j] = nrrdCenterUnknown;
+        nrrdAxisInfoSet_nva(data->getNrrd(), nrrdAxisInfoCenter, centers);
+      }
+      if (dataDims.size() > 0) data->getNrrd()->axis[0].label = airStrdup("x");
+      if (dataDims.size() > 1) data->getNrrd()->axis[1].label = airStrdup("y");
+      if (dataDims.size() > 2) data->getNrrd()->axis[2].label = airStrdup("z");
+
+      if (with_spacing)
+      {
+        if (dataDims.size() > 0)
+        {
+          data->getNrrd()->axis[0].min=minP.x();
+          data->getNrrd()->axis[0].max=maxP.x();
+          data->getNrrd()->axis[0].spacing=spc.x();
+        }
+        if (dataDims.size() > 1)
+        {
+          data->getNrrd()->axis[1].min=minP.x();
+          data->getNrrd()->axis[1].max=maxP.x();
+          data->getNrrd()->axis[1].spacing=spc.x();
+        }
+        if (dataDims.size() > 2)
+        {
+          data->getNrrd()->axis[2].min=minP.x();
+          data->getNrrd()->axis[2].max=maxP.x();
+          data->getNrrd()->axis[2].spacing=spc.x();
+        }
+      }
+
+      for (size_t j=0;j<dataDims.size(); j++) data->getNrrd()->axis[j].kind = nrrdKindDomain;
+
       VField::size_type num_values = field->num_values();
-      if (field->is_char()) 
-        field->get_values(reinterpret_cast<char*>(data->nrrd_->data),num_values);
-      if (field->is_unsigned_char()) 
-        field->get_values(reinterpret_cast<unsigned char*>(data->nrrd_->data),num_values);
-      if (field->is_short()) 
-        field->get_values(reinterpret_cast<short*>(data->nrrd_->data),num_values);
-      if (field->is_unsigned_short()) 
-        field->get_values(reinterpret_cast<unsigned short*>(data->nrrd_->data),num_values);
-      if (field->is_int()) 
-        field->get_values(reinterpret_cast<int*>(data->nrrd_->data),num_values);
-      if (field->is_unsigned_int()) 
-        field->get_values(reinterpret_cast<unsigned int*>(data->nrrd_->data),num_values);
-      if (field->is_longlong()) 
-        field->get_values(reinterpret_cast<long long*>(data->nrrd_->data),num_values);
-      if (field->is_unsigned_longlong()) 
-        field->get_values(reinterpret_cast<unsigned long long*>(data->nrrd_->data),num_values);
-      if (field->is_float()) 
-        field->get_values(reinterpret_cast<float*>(data->nrrd_->data),num_values);
-      if (field->is_double()) 
-        field->get_values(reinterpret_cast<double*>(data->nrrd_->data),num_values);
+      if (field->is_char())
+        field->get_values(reinterpret_cast<char*>(data->getNrrd()->data),num_values);
+      if (field->is_unsigned_char())
+        field->get_values(reinterpret_cast<unsigned char*>(data->getNrrd()->data),num_values);
+      if (field->is_short())
+        field->get_values(reinterpret_cast<short*>(data->getNrrd()->data),num_values);
+      if (field->is_unsigned_short())
+        field->get_values(reinterpret_cast<unsigned short*>(data->getNrrd()->data),num_values);
+      if (field->is_int())
+        field->get_values(reinterpret_cast<int*>(data->getNrrd()->data),num_values);
+      if (field->is_unsigned_int())
+        field->get_values(reinterpret_cast<unsigned int*>(data->getNrrd()->data),num_values);
+      if (field->is_longlong())
+        field->get_values(reinterpret_cast<long long*>(data->getNrrd()->data),num_values);
+      if (field->is_unsigned_longlong())
+        field->get_values(reinterpret_cast<unsigned long long*>(data->getNrrd()->data),num_values);
+      if (field->is_float())
+        field->get_values(reinterpret_cast<float*>(data->getNrrd()->data),num_values);
+      if (field->is_double())
+        field->get_values(reinterpret_cast<double*>(data->getNrrd()->data),num_values);
     }
     else
     {
       int kind = nrrdKind3Vector;
       int type = nrrdTypeFloat;
-      std::string data_label = get_string("data_label");
+      std::string data_label = get(Parameters::DataLabel).toString();
       std::string label = data_label + ":Vector";
       if (field->is_tensor())
       {
@@ -312,66 +340,66 @@ ConvertToNrrdAlgo::run(FieldHandle input, NrrdDataHandle& points,
         label = data_label + ":Tensor";
         type = nrrdTypeFloat;
       }
-      
+
       size_t size[NRRD_DIM_MAX];
       unsigned int centers[NRRD_DIM_MAX];
-      
+
       size[0] = elsize;
-      for (size_t j=0;j<ddims.size(); j++) size[j+1] = ddims[j];
-      nrrdAlloc_nva(data->nrrd_, type, ddims.size()+1, size);
-      
-      if (field->basis_order() == 1) 
+      for (size_t j=0;j<dataDims.size(); j++) size[j+1] = dataDims[j];
+      nrrdAlloc_nva(data->getNrrd(), type, dataDims.size()+1, size);
+
+      if (field->basis_order() == 1)
       {
-        for (size_t j=0;j<ddims.size()+1; j++) centers[j] = nrrdCenterNode;
-        nrrdAxisInfoSet_nva(data->nrrd_, nrrdAxisInfoCenter, centers);
-      } 
-      else if (field->basis_order() == 0) 
-      {
-        for (size_t j=0;j<ddims.size()+1; j++) centers[j] = nrrdCenterCell;
-        nrrdAxisInfoSet_nva(data->nrrd_, nrrdAxisInfoCenter, centers);
-      } 
-      else  
-      {
-        for (size_t j=0;j<ddims.size()+1; j++) centers[j] = nrrdCenterUnknown;
-        nrrdAxisInfoSet_nva(data->nrrd_, nrrdAxisInfoCenter, centers);
+        for (size_t j=0;j<dataDims.size()+1; j++) centers[j] = nrrdCenterNode;
+        nrrdAxisInfoSet_nva(data->getNrrd(), nrrdAxisInfoCenter, centers);
       }
-      
-      data->nrrd_->axis[0].label = airStrdup(label.c_str());
-      if (ddims.size() > 0) data->nrrd_->axis[1].label = airStrdup("x");
-      if (ddims.size() > 1) data->nrrd_->axis[2].label = airStrdup("y");
-      if (ddims.size() > 2) data->nrrd_->axis[3].label = airStrdup("z");
-      
-      if (with_spacing) 
+      else if (field->basis_order() == 0)
       {
-        if (ddims.size() > 0)
-        {
-          data->nrrd_->axis[1].min=minP.x();
-          data->nrrd_->axis[1].max=maxP.x();
-          data->nrrd_->axis[1].spacing=spc.x();
-        }
-        if (ddims.size() > 1)
-        {
-          data->nrrd_->axis[2].min=minP.x();
-          data->nrrd_->axis[2].max=maxP.x();
-          data->nrrd_->axis[2].spacing=spc.x();
-        }
-        if (ddims.size() > 2)
-        {
-          data->nrrd_->axis[3].min=minP.x();
-          data->nrrd_->axis[3].max=maxP.x();
-          data->nrrd_->axis[3].spacing=spc.x();
-        }           
+        for (size_t j=0;j<dataDims.size()+1; j++) centers[j] = nrrdCenterCell;
+        nrrdAxisInfoSet_nva(data->getNrrd(), nrrdAxisInfoCenter, centers);
       }
-      
-      data->nrrd_->axis[0].kind = kind;
-      for (size_t j=0;j<ddims.size(); j++) data->nrrd_->axis[j+1].kind = nrrdKindDomain;
+      else
+      {
+        for (size_t j=0;j<dataDims.size()+1; j++) centers[j] = nrrdCenterUnknown;
+        nrrdAxisInfoSet_nva(data->getNrrd(), nrrdAxisInfoCenter, centers);
+      }
+
+      data->getNrrd()->axis[0].label = airStrdup(label.c_str());
+      if (dataDims.size() > 0) data->getNrrd()->axis[1].label = airStrdup("x");
+      if (dataDims.size() > 1) data->getNrrd()->axis[2].label = airStrdup("y");
+      if (dataDims.size() > 2) data->getNrrd()->axis[3].label = airStrdup("z");
+
+      if (with_spacing)
+      {
+        if (dataDims.size() > 0)
+        {
+          data->getNrrd()->axis[1].min=minP.x();
+          data->getNrrd()->axis[1].max=maxP.x();
+          data->getNrrd()->axis[1].spacing=spc.x();
+        }
+        if (dataDims.size() > 1)
+        {
+          data->getNrrd()->axis[2].min=minP.x();
+          data->getNrrd()->axis[2].max=maxP.x();
+          data->getNrrd()->axis[2].spacing=spc.x();
+        }
+        if (dataDims.size() > 2)
+        {
+          data->getNrrd()->axis[3].min=minP.x();
+          data->getNrrd()->axis[3].max=maxP.x();
+          data->getNrrd()->axis[3].spacing=spc.x();
+        }
+      }
+
+      data->getNrrd()->axis[0].kind = kind;
+      for (size_t j=0;j<dataDims.size(); j++) data->getNrrd()->axis[j+1].kind = nrrdKindDomain;
 
       VField::size_type num_values = field->num_values();
-      
+
       if (field->is_vector())
       {
         Vector vec;
-        float* data_ptr = reinterpret_cast<float*>(data->nrrd_->data);
+        float* data_ptr = reinterpret_cast<float*>(data->getNrrd()->data);
         for(VField::index_type idx=0; idx<num_values; idx++)
         {
           field->get_value(vec,idx);
@@ -384,24 +412,40 @@ ConvertToNrrdAlgo::run(FieldHandle input, NrrdDataHandle& points,
       else
       {
         Tensor tensor;
-        float* data_ptr = reinterpret_cast<float*>(data->nrrd_->data);
+        float* data_ptr = reinterpret_cast<float*>(data->getNrrd()->data);
         for(VField::index_type idx=0; idx<num_values; idx++)
         {
           field->get_value(tensor,idx);
           data_ptr[0] = static_cast<float>(1.0);
-          data_ptr[1] = static_cast<float>(tensor.mat_[0][0]);
-          data_ptr[2] = static_cast<float>(tensor.mat_[0][1]);
-          data_ptr[3] = static_cast<float>(tensor.mat_[0][2]);
-          data_ptr[4] = static_cast<float>(tensor.mat_[1][1]);
-          data_ptr[5] = static_cast<float>(tensor.mat_[1][2]);
-          data_ptr[6] = static_cast<float>(tensor.mat_[2][2]);
+          data_ptr[1] = static_cast<float>(tensor.val(0,0));
+          data_ptr[2] = static_cast<float>(tensor.val(0,1));
+          data_ptr[3] = static_cast<float>(tensor.val(0,2));
+          data_ptr[4] = static_cast<float>(tensor.val(1,1));
+          data_ptr[5] = static_cast<float>(tensor.val(1,2));
+          data_ptr[6] = static_cast<float>(tensor.val(2,2));
           data_ptr += 7;
         }
-      }      
+      }
     }
   }
-  
-  algo_end(); return(true);
+
+  return(true);
 }
 
-} // end namespace SCIRunAlgo
+const AlgorithmOutputName ConvertToNrrdAlgo::Data("Data");
+const AlgorithmOutputName ConvertToNrrdAlgo::Points("Points");
+const AlgorithmOutputName ConvertToNrrdAlgo::Connections("Connections");
+
+AlgorithmOutput ConvertToNrrdAlgo::run_generic(const AlgorithmInput& input) const
+{
+	auto input_field = input.get<Field>(Variables::InputField);
+
+	NrrdDataHandle pts, cxns, data;
+	runImpl(input_field, pts, cxns, data);
+
+	AlgorithmOutput output;
+	output[Points] = pts;
+  output[Connections] = cxns;
+  output[Data] = data;
+	return output;
+}

@@ -26,39 +26,48 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/FieldData/ConvertFieldDataType.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldDataType.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
 
-bool
-ConvertFieldDataTypeAlgo::run(FieldHandle input, FieldHandle& output)
+ALGORITHM_PARAMETER_DEF(Fields, FieldDatatype);
+
+ConvertFieldDataTypeAlgo::ConvertFieldDataTypeAlgo()
 {
-  algo_start("ConvertFieldData");
+  add_option(Parameters::FieldDatatype, "double", "char|unsigned char|short|unsigned short|int|unsigned int|float|double|Vector|Tensor");
+}
+
+bool ConvertFieldDataTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
+{
+  ScopedAlgorithmStatusReporter asr(this, "ConvertFieldData");
   
-  /// Safety check
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
   
   /// Get the information of the input field
   FieldInformation fo(input);
   
-  std::string datatype;
-  get_option("datatype",datatype);
+  std::string datatype = get_option(Parameters::FieldDatatype);
   
   fo.set_data_type(datatype);
   
   output = CreateField(fo,input->mesh());
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could no create output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   VField* ifield = input->vfield();
@@ -66,7 +75,7 @@ ConvertFieldDataTypeAlgo::run(FieldHandle input, FieldHandle& output)
   
   ofield->resize_values();
   ofield->copy_values(ifield);
-  ofield->copy_properties(ifield);
+  CopyProperties(*input, *output);
   
   /// Support for quadratic fields
   if (ofield->basis_order() == 2)
@@ -74,7 +83,18 @@ ConvertFieldDataTypeAlgo::run(FieldHandle input, FieldHandle& output)
     ofield->copy_evalues(ifield);
   }
   
-  algo_end(); return (true);
+  return (true);
 }
 
-} // end namespace SCIRunAlgo
+AlgorithmOutput ConvertFieldDataTypeAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(Variables::InputField);
+
+  FieldHandle outputField;
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
+}

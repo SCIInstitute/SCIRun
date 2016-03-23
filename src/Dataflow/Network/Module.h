@@ -133,12 +133,12 @@ namespace Networks {
     virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const override;
     virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override;
 
-    virtual bool hasDynamicPorts() const
+    virtual bool hasDynamicPorts() const override
     {
       return false; /// @todo: need to examine HasPorts base classes
     }
 
-    virtual bool isStoppable() const final;
+    virtual bool isStoppable() const override final;
 
     bool oport_connected(const PortId& id) const;
     bool inputsChanged() const;
@@ -254,6 +254,7 @@ namespace Networks {
     void setAlgoBoolFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoIntFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoDoubleFromState(const Core::Algorithms::AlgorithmParameterName& name);
+    void setAlgoStringFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoOptionFromState(const Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoListFromState(const Core::Algorithms::AlgorithmParameterName& name);
 

@@ -52,7 +52,9 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateSignedDistanceToField.h
   ClipFieldByFunction3.h
   ClipFieldByMesh.h
+  ConvertMatricesToMesh.h
   ConvertQuadSurfToTriSurf.h
+  ConvertMeshToPointCloud.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
   SetFieldData.h
@@ -118,7 +120,7 @@ SET(Modules_Legacy_Fields_SRCS
   ClipFieldByMesh.cc
   #ClipFieldToFieldOrWidget.cc
   #ClipLatVolByIndicesOrWidget.cc
-  #ConvertMatricesToMesh.cc
+  ConvertMatricesToMesh.cc
   #CollectPointClouds.cc
   #CoregisterPointClouds.cc
   #EditMeshBoundingBox.cc
@@ -159,7 +161,7 @@ SET(Modules_Legacy_Fields_SRCS
   GeneratePointSamplesFromField.cc
   #SelectFieldROIWithBoxWidget.cc
   SetFieldOrMeshStringProperty.cc
-  #ConvertMeshToPointCloud.cc
+  ConvertMeshToPointCloud.cc
   #ConvertMeshToIrregularMesh.cc
   #ConvertMeshToUnstructuredMesh.cc
   CalculateFieldData5.cc

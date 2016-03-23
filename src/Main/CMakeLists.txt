@@ -146,6 +146,7 @@ IF(APPLE AND BUILD_BUNDLE)
   ELSE()
     SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib)
   ENDIF()
+
   # otool can be used to check list of dependent dylibs
   ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
     POST_BUILD
@@ -166,9 +167,6 @@ IF(APPLE AND BUILD_BUNDLE)
       COMMAND ${CMAKE_COMMAND} ARGS -E chdir ${APP_PATH}/Frameworks tar xf ${SCI_PYTHON_FRAMEWORK_ARCHIVE}
       COMMAND chmod u+w  ${PYTHON_PATH}/Python
       COMMAND install_name_tool -id Python ${PYTHON_PATH}/Python
-      COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
-        @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-        ${APP_PATH}/MacOS/${APPLICATION_NAME}
       COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
         @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
         ${APP_PATH}/MacOS/${APPLICATION_NAME}
@@ -288,6 +286,12 @@ ELSE()
       ${QT_BINARY_DIR}/${QTOPENGLNAME}.dll
       ${QT_BINARY_DIR}/${QTNETWORKNAME}.dll
       DESTINATION bin)
+    IF(BUILD_WITH_PYTHON)
+      INSTALL(PROGRAMS
+        ${SCI_PYTHON_DLL_PATH}
+        DESTINATION bin)
+      INSTALL(DIRECTORY "${SCI_PYTHON_MODULE_LIBRARY_PATH}/" DESTINATION bin/${PYTHON_MODULE_SEARCH_PATH})
+    ENDIF()
 
     IF(BUILD_WITH_PYTHON)
       INSTALL(PROGRAMS

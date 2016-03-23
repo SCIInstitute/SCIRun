@@ -27,46 +27,33 @@
 */
 /// @todo Documentation Modules/Legacy/String/GetNetworkFileName.cc
 
-#include <Core/Util/Environment.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/StringPort.h>
-
-namespace SCIRun {
+#include <Modules/Legacy/String/GetNetworkFileName.h>
+#include <Core/Utils/CurrentFileName.h>
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Datatypes;
 
-class GetNetworkFileName : public Module {
-public:
-  GetNetworkFileName(GuiContext*);
-  virtual void execute();
-};
+const ModuleLookupInfo GetNetworkFileName::staticInfo_("GetNetworkFileName", "String", "SCIRun");
 
-
-DECLARE_MAKER(GetNetworkFileName)
-
-GetNetworkFileName::GetNetworkFileName(GuiContext* ctx) :
-  Module("GetNetworkFileName", ctx, Source, "String", "SCIRun")
+GetNetworkFileName::GetNetworkFileName()
+  : Module(staticInfo_, false)
 {
+  INITIALIZE_PORT(Current_FileName);
 }
-
 
 void
 GetNetworkFileName::execute()
 {
-  std::string srn = "new.srn";
-  if (sci_getenv_p("SCIRUN_NETFILE")) 
-  {
-    srn = sci_getenv("SCIRUN_NETFILE");
-    if (srn.find("MyNetwork.srn") != std::string::npos)
-      remark("GetNetworkFileName likely outputting filename of the last backed up .srn file, rather than the currently saved active network.");
-  }
+  std::string srn = "new.srn5";
+  auto current = getCurrentFileName();
+  if (!current.empty())
+    srn = current;
 
-  StringHandle srnfn = new String(srn);
-  send_output_handle("String",srnfn,true);
+  StringHandle srnfn(new String(srn));
+  sendOutput(Current_FileName, srnfn);
+
 }
-
-
-} // End namespace SCIRun
-
-

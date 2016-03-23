@@ -33,8 +33,6 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-//typedef SCIRun::Modules::Fields::ConvertFieldBasis ConvertFieldBasisModule;
-
 ConvertFieldBasisDialog::ConvertFieldBasisDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)

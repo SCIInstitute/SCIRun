@@ -46,6 +46,7 @@
 #include <es-render/comp/StaticIBOMan.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticShaderMan.hpp>
+#include <es-render/comp/StaticFBOMan.hpp>
 #include <es-render/comp/Texture.hpp>
 #include <es-render/util/Uniform.hpp>
 #include <es-render/comp/VBO.hpp>
@@ -200,8 +201,8 @@ namespace SCIRun {
       float orthoZNear = -1000.0f;
       float orthoZFar = 1000.0f;
       glm::mat4 orthoProj = glm::ortho(/*left*/   -1.0f,      /*right*/ 1.0f,
-                                       /*bottom*/ -1.0f,      /*top*/   1.0f,
-                                       /*znear*/  orthoZNear, /*zfar*/  orthoZFar);
+        /*bottom*/ -1.0f,      /*top*/   1.0f,
+        /*znear*/  orthoZNear, /*zfar*/  orthoZFar);
       orthoCam->data.setOrthoProjection(orthoProj, aspect, 2.0f, 2.0f, orthoZNear, orthoZFar);
       orthoCam->data.winWidth = static_cast<float>(width);
     }
@@ -248,6 +249,260 @@ namespace SCIRun {
       selectWidget_ = shiftDown;
     }
 
+    void SRInterface::select(const glm::ivec2& pos,
+      std::list<Graphics::Datatypes::GeometryHandle> &objList,
+      int port)
+    {
+      mSelected = "";
+      // Ensure our rendering context is current on our thread.
+      mContext->makeCurrent();
+
+      //get vbo ibo man
+      std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
+      std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
+      std::shared_ptr<ren::VBOMan> vboMan = vm.lock();
+      std::shared_ptr<ren::IBOMan> iboMan = im.lock();
+      if (!vboMan || !iboMan)
+        return;
+
+      //retrieve and bind fbo for selection
+      std::weak_ptr<ren::FBOMan> fm = mCore.getStaticComponent<ren::StaticFBOMan>()->instance_;
+      std::shared_ptr<ren::FBOMan> fboMan = fm.lock();
+      if (!fboMan)
+        return;
+      std::string fboName = "Selection:FBO:0";
+      GLuint fboId = fboMan->getOrCreateFBO(mCore, GL_TEXTURE_2D,
+        mScreenWidth, mScreenHeight, 1,
+        fboName);
+      fboMan->bindFBO(fboId);
+
+      //a map from selection id to name
+      std::map<uint32_t, std::string> selMap;
+      std::vector<uint64_t> entityList;
+
+      //modify and add each object to draw
+      for (auto& obj : objList)
+      {
+        std::string objectName = obj->uniqueID();
+        uint32_t selid = getSelectIDForName(objectName);
+        selMap.insert(std::make_pair(selid, objectName));
+        glm::vec4 selCol = getVectorForID(selid);
+
+        // Add vertex buffer objects.
+        std::vector<char*> vbo_buffer;
+        std::vector<size_t> stride_vbo;
+
+        int nameIndex = 0;
+        for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
+        {
+          const auto& vbo = *it;
+
+          if (vbo.onGPU)
+          {
+            // Generate vector of attributes to pass into the entity system.
+            std::vector<std::tuple<std::string, size_t, bool>> attributeData;
+            for (const auto& attribData : vbo.attributes)
+            {
+              attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
+            }
+
+            vboMan->addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(), attributeData, vbo.name);
+          }
+
+          vbo_buffer.push_back(reinterpret_cast<char*>(vbo.data->getBuffer()));
+          size_t stride = 0;
+          for (auto a : vbo.attributes)
+            stride += a.sizeInBytes;
+          stride_vbo.push_back(stride);
+        }
+
+        // Add index buffer objects.
+        nameIndex = 0;
+        for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
+        {
+          const auto& ibo = *it;
+          GLenum primType = GL_UNSIGNED_SHORT;
+          switch (ibo.indexSize)
+          {
+          case 1: // 8-bit
+            primType = GL_UNSIGNED_BYTE;
+            break;
+
+          case 2: // 16-bit
+            primType = GL_UNSIGNED_SHORT;
+            break;
+
+          case 4: // 32-bit
+            primType = GL_UNSIGNED_INT;
+            break;
+
+          default:
+            primType = GL_UNSIGNED_INT;
+            throw std::invalid_argument("Unable to determine index buffer depth.");
+            break;
+          }
+
+          GLenum primitive = GL_TRIANGLES;
+          switch (ibo.prim)
+          {
+          case SpireIBO::POINTS:
+            primitive = GL_POINTS;
+            break;
+
+          case SpireIBO::LINES:
+            primitive = GL_LINES;
+            break;
+
+          case SpireIBO::TRIANGLES:
+          default:
+            primitive = GL_TRIANGLES;
+            break;
+          }
+
+          int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+          iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+        }
+
+        std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
+        if (auto shaderMan = sm.lock())
+        {
+          // Add passes
+          for (auto& pass : obj->mPasses)
+          {
+            uint64_t entityID = getEntityIDForName(pass.passName, port);
+
+            if (pass.renderType == RENDER_VBO_IBO)
+            {
+              addVBOToEntity(entityID, pass.vboName);
+              addIBOToEntity(entityID, pass.iboName);
+            }
+            else
+            {
+              // We will be constructing a render list from the VBO and IBO.
+              RenderList list;
+
+              for (const auto& vbo : obj->mVBOs)
+              {
+                if (vbo.name == pass.vboName)
+                {
+                  list.data = vbo.data;
+                  list.attributes = vbo.attributes;
+                  list.renderType = pass.renderType;
+                  list.numElements = vbo.numElements;
+                  mCore.addComponent(entityID, list);
+                  break;
+                }
+              }
+
+              // Lookup the VBOs and IBOs associated with this particular draw list
+              // and add them to our entity in question.
+              std::string assetName = "Assets/sphere.geom";
+
+              addVBOToEntity(entityID, assetName);
+              addIBOToEntity(entityID, assetName);
+            }
+
+            // Load vertex and fragment shader will use an already loaded program.
+            //shaderMan->loadVertexAndFragmentShader(mCore, entityID, "Shaders/Selection");
+            //					addShaderToEntity(entityID, "Shaders/Selection");
+            //					shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
+            const char* selectionShaderName = "Shaders/Selection";
+            GLuint shaderID = shaderMan->getIDForAsset(selectionShaderName);
+            if (shaderID == 0)
+            {
+              const char* vs =
+                "uniform mat4 uProjIVObject;\n"
+                "uniform vec4 uColor;\n"
+                "attribute vec3 aPos;\n"
+                "varying vec4 fColor;\n"
+                "void main()\n"
+                "{\n"
+                "  gl_Position = uProjIVObject * vec4(aPos, 1.0);\n"
+                "  fColor = uColor;\n"
+                "}\n";
+              const char* fs =
+                "#ifdef OPENGL_ES\n"
+                "  #ifdef GL_FRAGMENT_PRECISION_HIGH\n"
+                "    precision highp float;\n"
+                "  #else\n"
+                "    precision mediump float;\n"
+                "  #endif\n"
+                "#endif\n"
+                "varying vec4 fColor;\n"
+                "void main()\n"
+                "{\n"
+                "  gl_FragColor = fColor;\n"
+                "}\n";
+
+              shaderID = shaderMan->addInMemoryVSFS(vs, fs, selectionShaderName);
+            }
+            addShaderToEntity(entityID, selectionShaderName);
+
+            // Add transformation
+            gen::Transform trafo;
+            mCore.addComponent(entityID, trafo);
+
+            // Add lighting uniform checks
+            LightingUniforms lightUniforms;
+            mCore.addComponent(entityID, lightUniforms);
+
+            // Add SCIRun render state.
+            SRRenderState state;
+            state.state = pass.renderState;
+            mCore.addComponent(entityID, state);
+            RenderBasicGeom geom;
+            mCore.addComponent(entityID, geom);
+            ren::CommonUniforms commonUniforms;
+            mCore.addComponent(entityID, commonUniforms);
+
+            for (const auto& uniform : pass.mUniforms)
+            {
+              applyUniform(entityID, uniform);
+            }
+            SpireSubPass::Uniform uniform(
+              "uColor", selCol);
+            applyUniform(entityID, uniform);
+
+            // Add components associated with entity. We just need a base class which
+            // we can pass in an entity ID, then a derived class which bundles
+            // all associated components (including types) together. We can use
+            // a variadic template for this. This will allow us to place any components
+            // we want on the objects in question in show field. This could lead to
+            // much simpler customization.
+
+            pass.renderState.mSortType = mRenderSortType;
+            pass.renderState.set(RenderState::ActionFlags::USE_BLEND, false);
+            mCore.addComponent(entityID, pass);
+            entityList.push_back(entityID);
+          }
+        }
+      }
+
+      updateCamera();
+      updateWorldLight();
+
+      mCore.execute(0, 50);
+
+      GLuint value;
+      if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
+        (GLvoid*)&value))
+      {
+        //std::cout << pos.x << "\t" << pos.y << "\n";
+        //selection in value
+        auto it = selMap.find(value);
+        if (it != selMap.end())
+          mSelected = it->second;
+
+        //  std::cout << it->second << " is selected.\n"
+        //  << pos.x << "\t" << pos.y << "\n";
+      }
+      //release and restore fbo
+      fboMan->unbindFBO();
+
+      for (auto& it : entityList)
+        mCore.removeEntity(it);
+    }
+
     //------------------------------------------------------------------------------
     void SRInterface::doAutoView()
     {
@@ -282,6 +537,12 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
+    std::string &SRInterface::getSelection()
+    {
+      return mSelected;
+    }
+
+    //------------------------------------------------------------------------------
     void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
     {
     }
@@ -290,6 +551,26 @@ namespace SCIRun {
     uint64_t SRInterface::getEntityIDForName(const std::string& name, int port)
     {
       return (static_cast<uint64_t>(std::hash<std::string>()(name)) >> 8) + (static_cast<uint64_t>(port) << 56);
+    }
+
+    uint32_t SRInterface::getSelectIDForName(const std::string& name)
+    {
+      return (static_cast<uint32_t>(std::hash<std::string>()(name)));
+    }
+
+    glm::vec4 SRInterface::getVectorForID(const uint32_t id)
+    {
+      float a = ((id >> 24) & 0xff) / 255.0f;
+      float b = ((id >> 16) & 0xff) / 255.0f;
+      float g = ((id >> 8) & 0xff) / 255.0f;
+      float r = (id & 0xff) / 255.0f;
+      glm::vec4 vec(r, g, b, a);
+      return vec;
+    }
+
+    uint32_t SRInterface::getIDForVector(const glm::vec4& vec)
+    {
+      return 0;
     }
 
     //------------------------------------------------------------------------------
@@ -312,351 +593,351 @@ namespace SCIRun {
 
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
       std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
-      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) 
+      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock())
       {
-          if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) 
+        if (std::shared_ptr<ren::IBOMan> iboMan = im.lock())
+        {
+          if (foundObject != mSRObjects.end())
           {
-              if (foundObject != mSRObjects.end())
+            // Iterate through each of the passes and remove their associated
+            // entity ID.
+            for (const auto& pass : foundObject->mPasses)
+            {
+              uint64_t entityID = getEntityIDForName(pass.passName, port);
+              mCore.removeEntity(entityID);
+            }
+
+            // We need to renormalize the core after removing entities. We don't need
+            // to run a new pass however. Renormalization is enough to remove
+            // old entities from the system.
+            mCore.renormalize(true);
+
+            // Run a garbage collection cycle for the VBOs and IBOs. We will likely
+            // be using similar VBO and IBO names.
+            vboMan->runGCCycle(mCore);
+            iboMan->runGCCycle(mCore);
+
+            // Remove the object from the entity system.
+            mSRObjects.erase(foundObject);
+          }
+
+          // Add vertex buffer objects.
+          std::vector<char*> vbo_buffer;
+          std::vector<size_t> stride_vbo;
+
+          int nameIndex = 0;
+          for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
+          {
+            const auto& vbo = *it;
+
+            if (vbo.onGPU)
+            {
+              // Generate vector of attributes to pass into the entity system.
+              std::vector<std::tuple<std::string, size_t, bool>> attributeData;
+              for (const auto& attribData : vbo.attributes)
               {
-                // Iterate through each of the passes and remove their associated
-                // entity ID.
-                for (const auto& pass : foundObject->mPasses)
-                {
-                  uint64_t entityID = getEntityIDForName(pass.passName, port);
-                  mCore.removeEntity(entityID);
-                }
-
-                // We need to renormalize the core after removing entities. We don't need
-                // to run a new pass however. Renormalization is enough to remove
-                // old entities from the system.
-                mCore.renormalize(true);
-
-                // Run a garbage collection cycle for the VBOs and IBOs. We will likely
-                // be using similar VBO and IBO names.
-                vboMan->runGCCycle(mCore);
-                iboMan->runGCCycle(mCore);
-
-                // Remove the object from the entity system.
-                mSRObjects.erase(foundObject);
+                attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
               }
 
-              // Add vertex buffer objects.
-              std::vector<char*> vbo_buffer;
-              std::vector<size_t> stride_vbo;
+              vboMan->addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(), attributeData, vbo.name);
+            }
 
-              int nameIndex = 0;
-              for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
+            vbo_buffer.push_back(reinterpret_cast<char*>(vbo.data->getBuffer()));
+            size_t stride = 0;
+            for (auto a : vbo.attributes)
+              stride += a.sizeInBytes;
+            stride_vbo.push_back(stride);
+
+            bbox.extend(vbo.boundingBox);
+          }
+
+          // Add index buffer objects.
+          nameIndex = 0;
+          for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
+          {
+            const auto& ibo = *it;
+            GLenum primType = GL_UNSIGNED_SHORT;
+            switch (ibo.indexSize)
+            {
+            case 1: // 8-bit
+              primType = GL_UNSIGNED_BYTE;
+              break;
+
+            case 2: // 16-bit
+              primType = GL_UNSIGNED_SHORT;
+              break;
+
+            case 4: // 32-bit
+              primType = GL_UNSIGNED_INT;
+              break;
+
+            default:
+              primType = GL_UNSIGNED_INT;
+              throw std::invalid_argument("Unable to determine index buffer depth.");
+              break;
+            }
+
+            GLenum primitive = GL_TRIANGLES;
+            switch (ibo.prim)
+            {
+            case SpireIBO::POINTS:
+              primitive = GL_POINTS;
+              break;
+
+            case SpireIBO::LINES:
+              primitive = GL_LINES;
+              break;
+
+            case SpireIBO::TRIANGLES:
+            default:
+              primitive = GL_TRIANGLES;
+              break;
+            }
+
+            if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
+            {
+              /// Create sorted lists of Buffers for transparency in each direction of the axis
+              uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
+              size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+              Core::Geometry::Vector dir(0.0, 0.0, 0.0);
+
+              std::vector<DepthIndex> rel_depth(num_triangles);
+              for (int i = 0; i <= 6; ++i)
               {
-                const auto& vbo = *it;
-
-                if (vbo.onGPU)
+                std::string name = ibo.name;
+                if (i == 0)
                 {
-                  // Generate vector of attributes to pass into the entity system.
-                  std::vector<std::tuple<std::string, size_t, bool>> attributeData;
-                  for (const auto& attribData : vbo.attributes)
+                  int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+                  iboMan->addInMemoryIBO(ibo.data->getBuffer(),
+                    ibo.data->getBufferSize(), primitive, primType,
+                    numPrimitives, ibo.name);
+                }
+                if (i == 1)
+                {
+                  dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
+                  name += "X";
+                }
+                if (i == 2)
+                {
+                  dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
+                  name += "Y";
+                }
+                if (i == 3)
+                {
+                  dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
+                  name += "Z";
+                }
+                if (i == 4)
+                {
+                  dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
+                  name += "NegX";
+                }
+                if (i == 5)
+                {
+                  dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
+                  name += "NegY";
+                }
+                if (i == 6)
+                {
+                  dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
+                  name += "NegZ";
+                }
+                if (i > 0)
+                {
+                  for (size_t j = 0; j < num_triangles; j++)
                   {
-                    attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
+                    float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
+                    Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+
+                    float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
+                    Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+
+                    float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
+                    Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+
+                    rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+                    rel_depth[j].mIndex = j;
                   }
 
-                  vboMan->addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(), attributeData, vbo.name);
+                  std::sort(rel_depth.begin(), rel_depth.end());
+
+                  int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+
+                  std::vector<char> sorted_buffer(ibo.data->getBufferSize());
+                  char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
+                  char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
+
+                  if (sbuffer && num_triangles > 0)
+                  {
+                    size_t tri_size = ibo.data->getBufferSize() / num_triangles;
+                    for (size_t j = 0; j < num_triangles; j++)
+                    {
+                      memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+                    }
+                    iboMan->addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
+                  }
                 }
-
-                vbo_buffer.push_back(reinterpret_cast<char*>(vbo.data->getBuffer()));
-                size_t stride = 0;
-                for (auto a : vbo.attributes)
-                  stride += a.sizeInBytes;
-                stride_vbo.push_back(stride);
-
-                bbox.extend(vbo.boundingBox);
               }
+            }
+            else
+            {
+              int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+              iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+            }
+          }
 
-              // Add index buffer objects.
-              nameIndex = 0;
-              for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
+          // Add default identity transform to the object globally (instead of per-pass)
+          glm::mat4 xform;
+          mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap, port));
+          SRObject& elem = mSRObjects.back();
+
+          std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
+          if (auto shaderMan = sm.lock())
+          {
+            // Add passes
+            for (auto& pass : obj->mPasses)
+            {
+              uint64_t entityID = getEntityIDForName(pass.passName, port);
+
+              if (pass.renderType == RENDER_VBO_IBO)
               {
-                const auto& ibo = *it;
-                GLenum primType = GL_UNSIGNED_SHORT;
-                switch (ibo.indexSize)
-                {
-                case 1: // 8-bit
-                  primType = GL_UNSIGNED_BYTE;
-                  break;
-
-                case 2: // 16-bit
-                  primType = GL_UNSIGNED_SHORT;
-                  break;
-
-                case 4: // 32-bit
-                  primType = GL_UNSIGNED_INT;
-                  break;
-
-                default:
-                  primType = GL_UNSIGNED_INT;
-                  throw std::invalid_argument("Unable to determine index buffer depth.");
-                  break;
-                }
-
-                GLenum primitive = GL_TRIANGLES;
-                switch (ibo.prim)
-                {
-                case SpireIBO::POINTS:
-                  primitive = GL_POINTS;
-                  break;
-
-                case SpireIBO::LINES:
-                  primitive = GL_LINES;
-                  break;
-
-                case SpireIBO::TRIANGLES:
-                default:
-                  primitive = GL_TRIANGLES;
-                  break;
-                }
-
+                addVBOToEntity(entityID, pass.vboName);
                 if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
                 {
-                  /// Create sorted lists of Buffers for transparency in each direction of the axis
-                  uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
-                  size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
-                  Core::Geometry::Vector dir(0.0, 0.0, 0.0);
-
-                  std::vector<DepthIndex> rel_depth(num_triangles);
                   for (int i = 0; i <= 6; ++i)
                   {
-                    std::string name = ibo.name;
-                    if (i == 0)
-                    {
-                      int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-                      iboMan->addInMemoryIBO(ibo.data->getBuffer(),
-                                            ibo.data->getBufferSize(), primitive, primType,
-                                            numPrimitives, ibo.name);
-                    }
+                    std::string name = pass.iboName;
                     if (i == 1)
-                    {
-                      dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
                       name += "X";
-                    }
                     if (i == 2)
-                    {
-                      dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
                       name += "Y";
-                    }
                     if (i == 3)
-                    {
-                      dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
                       name += "Z";
-                    }
                     if (i == 4)
-                    {
-                      dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
                       name += "NegX";
-                    }
                     if (i == 5)
-                    {
-                      dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
                       name += "NegY";
-                    }
                     if (i == 6)
-                    {
-                      dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
                       name += "NegZ";
-                    }
-                    if (i > 0)
-                    {
-                      for (size_t j = 0; j < num_triangles; j++)
-                      {
-                        float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
-                        Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
 
-                        float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
-                        Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
-
-                        float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
-                        Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
-
-                        rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
-                        rel_depth[j].mIndex = j;
-                      }
-
-                      std::sort(rel_depth.begin(), rel_depth.end());
-
-                      int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-
-                      std::vector<char> sorted_buffer(ibo.data->getBufferSize());
-                      char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
-                      char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
-
-                      if (sbuffer && num_triangles > 0)
-                      {
-                        size_t tri_size = ibo.data->getBufferSize() / num_triangles;
-                        for (size_t j = 0; j < num_triangles; j++)
-                        {
-                          memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
-                        }
-                        iboMan->addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
-                      }
-                    }
+                    addIBOToEntity(entityID, name);
                   }
                 }
                 else
                 {
-                  int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-                  iboMan->addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+                  addIBOToEntity(entityID, pass.iboName);
                 }
               }
-
-              // Add default identity transform to the object globally (instead of per-pass)
-              glm::mat4 xform;
-              mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap, port));
-              SRObject& elem = mSRObjects.back();
-
-              std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
-              if (auto shaderMan = sm.lock()) 
+              else
               {
-                  // Add passes
-                for (auto& pass : obj->mPasses)
+                // We will be constructing a render list from the VBO and IBO.
+                RenderList list;
+
+                for (const auto& vbo : obj->mVBOs)
+                {
+                  if (vbo.name == pass.vboName)
                   {
-                    uint64_t entityID = getEntityIDForName(pass.passName, port);
-
-                    if (pass.renderType == RENDER_VBO_IBO)
-                    {
-                      addVBOToEntity(entityID, pass.vboName);
-                      if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
-                      {
-                        for (int i = 0; i <= 6; ++i)
-                        {
-                          std::string name = pass.iboName;
-                          if (i == 1)
-                            name += "X";
-                          if (i == 2)
-                            name += "Y";
-                          if (i == 3)
-                            name += "Z";
-                          if (i == 4)
-                            name += "NegX";
-                          if (i == 5)
-                            name += "NegY";
-                          if (i == 6)
-                            name += "NegZ";
-
-                          addIBOToEntity(entityID, name);
-                        }
-                      }
-                      else
-                      {
-                        addIBOToEntity(entityID, pass.iboName);
-                      }
-                    }
-                    else
-                    {
-                      // We will be constructing a render list from the VBO and IBO.
-                      RenderList list;
-
-                      for (const auto& vbo : obj->mVBOs)
-                      {
-                        if (vbo.name == pass.vboName)
-                        {
-                          list.data = vbo.data;
-                          list.attributes = vbo.attributes;
-                          list.renderType = pass.renderType;
-                          list.numElements = vbo.numElements;
-                          mCore.addComponent(entityID, list);
-                          break;
-                        }
-                      }
-
-                      // Lookup the VBOs and IBOs associated with this particular draw list
-                      // and add them to our entity in question.
-                      std::string assetName = "Assets/sphere.geom";
-
-                      if (pass.renderType == RENDER_RLIST_SPHERE)
-                      {
-                        assetName = "Assets/sphere.geom";
-                      }
-
-                      if (pass.renderType == RENDER_RLIST_CYLINDER)
-                      {
-                        assetName = "Assests/arrow.geom";
-                      }
-
-                      addVBOToEntity(entityID, assetName);
-                      addIBOToEntity(entityID, assetName);
-                    }
-
-                    // Load vertex and fragment shader will use an already loaded program.
-                    //addShaderToEntity(entityID, pass.programName);
-                    shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
-
-                    // Add transformation
-                    gen::Transform trafo;
-
-                    if (pass.renderState.get(RenderState::IS_WIDGET))
-                    {
-                      widgetExists_ = true;
-                    }
-
-                    if (pass.renderType == RENDER_RLIST_SPHERE)
-                    {
-                      double scale = pass.scalar;
-                      trafo.transform[0].x = scale;
-                      trafo.transform[1].y = scale;
-                      trafo.transform[2].z = scale;
-                    }
-                    mCore.addComponent(entityID, trafo);
-
-                    // Add lighting uniform checks
-                    LightingUniforms lightUniforms;
-                    mCore.addComponent(entityID, lightUniforms);
-
-                    // Add SCIRun render state.
-                    SRRenderState state;
-                    state.state = pass.renderState;
-                    mCore.addComponent(entityID, state);
-                    RenderBasicGeom geom;
-                    mCore.addComponent(entityID, geom);
-                    if (pass.passName.find("TextFont") != std::string::npos)
-                    { //this is a font texture
-                      // Construct texture component and add it to our entity for rendering.
-                      ren::Texture component;
-                      component.textureUnit = 0;
-                      component.setUniformName("uTX0");
-                      component.textureType = GL_TEXTURE_2D;
-                      component.glid = mFontTexture;
-                      mCore.addComponent(entityID, component);
-                    }
-                    // Ensure common uniforms are covered.
-                    ren::CommonUniforms commonUniforms;
-                    mCore.addComponent(entityID, commonUniforms);
-
-                    for (const auto& uniform : pass.mUniforms)
-                    {
-                      applyUniform(entityID, uniform);
-                    }
-
-                    // Add components associated with entity. We just need a base class which
-                    // we can pass in an entity ID, then a derived class which bundles
-                    // all associated components (including types) together. We can use
-                    // a variadic template for this. This will allow us to place any components
-                    // we want on the objects in question in show field. This could lead to
-                    // much simpler customization.
-
-                    // Add a pass to our local object.
-                    elem.mPasses.emplace_back(pass.passName, pass.renderType);
-                    pass.renderState.mSortType = mRenderSortType;
-                    mCore.addComponent(entityID, pass);
+                    list.data = vbo.data;
+                    list.attributes = vbo.attributes;
+                    list.renderType = pass.renderType;
+                    list.numElements = vbo.numElements;
+                    mCore.addComponent(entityID, list);
+                    break;
                   }
+                }
 
-                  // Recalculate scene bounding box. Should only be done when an object is added.
-                  mSceneBBox.reset();
-                  for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
-                  {
-                    if (it->mBBox.valid())
-                    {
-                      mSceneBBox.extend(it->mBBox);
-                    }
-                  }
+                // Lookup the VBOs and IBOs associated with this particular draw list
+                // and add them to our entity in question.
+                std::string assetName = "Assets/sphere.geom";
+
+                if (pass.renderType == RENDER_RLIST_SPHERE)
+                {
+                  assetName = "Assets/sphere.geom";
+                }
+
+                if (pass.renderType == RENDER_RLIST_CYLINDER)
+                {
+                  assetName = "Assests/arrow.geom";
+                }
+
+                addVBOToEntity(entityID, assetName);
+                addIBOToEntity(entityID, assetName);
               }
+
+              // Load vertex and fragment shader will use an already loaded program.
+              //addShaderToEntity(entityID, pass.programName);
+              shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
+
+              // Add transformation
+              gen::Transform trafo;
+
+              if (pass.renderState.get(RenderState::IS_WIDGET))
+              {
+                widgetExists_ = true;
+              }
+
+              if (pass.renderType == RENDER_RLIST_SPHERE)
+              {
+                double scale = pass.scalar;
+                trafo.transform[0].x = scale;
+                trafo.transform[1].y = scale;
+                trafo.transform[2].z = scale;
+              }
+              mCore.addComponent(entityID, trafo);
+
+              // Add lighting uniform checks
+              LightingUniforms lightUniforms;
+              mCore.addComponent(entityID, lightUniforms);
+
+              // Add SCIRun render state.
+              SRRenderState state;
+              state.state = pass.renderState;
+              mCore.addComponent(entityID, state);
+              RenderBasicGeom geom;
+              mCore.addComponent(entityID, geom);
+              if (pass.passName.find("TextFont") != std::string::npos)
+              { //this is a font texture
+                // Construct texture component and add it to our entity for rendering.
+                ren::Texture component;
+                component.textureUnit = 0;
+                component.setUniformName("uTX0");
+                component.textureType = GL_TEXTURE_2D;
+                component.glid = mFontTexture;
+                mCore.addComponent(entityID, component);
+              }
+              // Ensure common uniforms are covered.
+              ren::CommonUniforms commonUniforms;
+              mCore.addComponent(entityID, commonUniforms);
+
+              for (const auto& uniform : pass.mUniforms)
+              {
+                applyUniform(entityID, uniform);
+              }
+
+              // Add components associated with entity. We just need a base class which
+              // we can pass in an entity ID, then a derived class which bundles
+              // all associated components (including types) together. We can use
+              // a variadic template for this. This will allow us to place any components
+              // we want on the objects in question in show field. This could lead to
+              // much simpler customization.
+
+              // Add a pass to our local object.
+              elem.mPasses.emplace_back(pass.passName, pass.renderType);
+              pass.renderState.mSortType = mRenderSortType;
+              mCore.addComponent(entityID, pass);
+            }
+
+            // Recalculate scene bounding box. Should only be done when an object is added.
+            mSceneBBox.reset();
+            for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+            {
+              if (it->mBBox.valid())
+              {
+                mSceneBBox.extend(it->mBBox);
+              }
+            }
           }
+        }
       }
     }
 
@@ -665,9 +946,9 @@ namespace SCIRun {
     {
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
       if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) {
-          ren::VBO vbo;
-          vbo.glid = vboMan->hasVBO(vboName);
-          mCore.addComponent(entityID, vbo);
+        ren::VBO vbo;
+        vbo.glid = vboMan->hasVBO(vboName);
+        mCore.addComponent(entityID, vbo);
       }
     }
 
@@ -676,14 +957,14 @@ namespace SCIRun {
     {
       std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
       if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) {
-          ren::IBO ibo;
-          auto iboData = iboMan->getIBOData(iboName);
-          ibo.glid = iboMan->hasIBO(iboName);
-          ibo.primType = iboData.primType;
-          ibo.primMode = iboData.primMode;
-          ibo.numPrims = iboData.numPrims;
+        ren::IBO ibo;
+        auto iboData = iboMan->getIBOData(iboName);
+        ibo.glid = iboMan->hasIBO(iboName);
+        ibo.primType = iboData.primType;
+        ibo.primMode = iboData.primMode;
+        ibo.numPrims = iboData.numPrims;
 
-          mCore.addComponent(entityID, ibo);
+        mCore.addComponent(entityID, ibo);
       }
     }
 
@@ -692,9 +973,9 @@ namespace SCIRun {
     {
       std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
       if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) {
-          ren::Shader shader;
-          shader.glid = shaderMan->getIDForAsset(shaderName.c_str());
-          mCore.addComponent(entityID, shader);
+        ren::Shader shader;
+        shader.glid = shaderMan->getIDForAsset(shaderName.c_str());
+        mCore.addComponent(entityID, shader);
       }
     }
 
@@ -846,11 +1127,11 @@ namespace SCIRun {
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
       std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
       std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
-      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock()) 
+      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock())
       {
-        if (std::shared_ptr<ren::IBOMan> iboMan = im.lock()) 
+        if (std::shared_ptr<ren::IBOMan> iboMan = im.lock())
         {
-          if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) 
+          if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock())
           {
             GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
             GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
@@ -1075,25 +1356,25 @@ namespace SCIRun {
     }
 
     // Create default colormaps.
-    void SRInterface::generateTextures() 
+    void SRInterface::generateTextures()
     {
       //font texture
       //read in the font data
       bool success = true;
       auto fontPath = SCIRun::Core::Application::Instance().executablePath() / "Assets" / "times_new_roman.font";
       std::ifstream in(fontPath.string());
-      if (in.fail()) 
+      if (in.fail())
       {
         //try the MAC App location if the UNIX/Windows location didn't work.
         in.open("SCIRun.app/Contents/MacOS/Assets/times_new_roman.font");
-        if (in.fail()) 
+        if (in.fail())
         {
           std::cerr << "Cannot find font \"Assets/times_new_roman.font\"" << std::endl;
           success = false;
           in.close();
         }
       }
-      if (success) 
+      if (success)
       {
         size_t w, h;
         in >> w >> h;
@@ -1102,7 +1383,7 @@ namespace SCIRun {
         in.close();
         std::vector<uint8_t> font;
         font.reserve(w * h * 4);
-        for (size_t i = 0; i < w*h; i++) 
+        for (size_t i = 0; i < w*h; i++)
         {
           uint16_t pixel = font_data[i];
           font.push_back(static_cast<uint8_t>(pixel >> 8));

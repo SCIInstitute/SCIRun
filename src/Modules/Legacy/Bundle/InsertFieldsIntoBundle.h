@@ -45,9 +45,9 @@ namespace SCIRun {
       {
       public:
         InsertFieldsIntoBundle();
-        virtual void setStateDefaults();
-        virtual void execute();
-        virtual bool hasDynamicPorts() const { return true; }
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
+        virtual bool hasDynamicPorts() const override { return true; }
         virtual void portAddedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
         virtual void portRemovedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
 
@@ -55,14 +55,12 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(1, InputFields, LegacyField);
         OUTPUT_PORT(0, OutputBundle, Bundle);
 
-        static Core::Algorithms::AlgorithmParameterName BundleName;
-        static Core::Algorithms::AlgorithmParameterName NumFields;
-        static Core::Algorithms::AlgorithmParameterName FieldNames;
-        static Core::Algorithms::AlgorithmParameterName FieldReplace;
+        static const Core::Algorithms::AlgorithmParameterName BundleName;
+        static const Core::Algorithms::AlgorithmParameterName NumFields;
+        static const Core::Algorithms::AlgorithmParameterName FieldNames;
+        static const Core::Algorithms::AlgorithmParameterName FieldReplace;
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
-      private:
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }
