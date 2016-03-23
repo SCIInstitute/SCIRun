@@ -70,6 +70,9 @@ namespace SCIRun {
           const Core::Geometry::Vector &shiftPxlSpc,
           const std::string& id,
           Graphics::Datatypes::GeometryHandle geom);
+        //get string length based on current settings
+        //return value in pixels
+        double getStringLen(const std::string oneline);
 
       private:
         std::string libName_;

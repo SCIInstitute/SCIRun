@@ -134,6 +134,9 @@ void TextBuilder::printString(const std::string oneline,
   const Vector &startNrmSpc, const Vector &shiftPxlSpc,
   const std::string& id, GeometryHandle geom)
 {
+  if (!ftValid_)
+    return;
+
   std::vector<Vector> points;
   std::vector<uint32_t> indices;
   std::vector<Vector> txt_coords;
@@ -232,7 +235,8 @@ void TextBuilder::printString(const std::string oneline,
     geom->mIBOs.push_back(geomIBO);
     RenderState renState;
     renState.set(RenderState::USE_COLORMAP, false);
-    renState.set(RenderState::USE_TRANSPARENCY, true);
+    renState.set(RenderState::USE_TRANSPARENCY, false);
+    renState.set(RenderState::IS_TEXT, true);
     char c[2] = { p[0], 0 };
     SpireText text(c, ftFace_);
 
@@ -244,4 +248,21 @@ void TextBuilder::printString(const std::string oneline,
 
     geom->mPasses.push_back(pass2);
   }
+}
+
+double TextBuilder::getStringLen(const std::string oneline)
+{
+  if (!ftValid_)
+    return 0.0;
+
+  double len = 0.0;
+  const char *p;
+  for (p = oneline.c_str(); *p; p++)
+  {
+    if (FT_Load_Char(ftFace_, *p, FT_LOAD_RENDER))
+      continue;
+    FT_GlyphSlot g = ftFace_->glyph;
+    len += g->bitmap.width;
+  }
+  return len;
 }

@@ -35,7 +35,7 @@
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 #include <Core/Application/Application.h>
-#include <Modules/Visualization/ShowColorMapModule.h>
+//#include <Modules/Visualization/ShowColorMapModule.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 
 // CPM modules.
@@ -144,10 +144,6 @@ namespace SCIRun {
         mCore.addStaticComponent(iface);
       }
 
-      std::string filesystemRoot = Core::Application::Instance().executablePath().string();
-      std::string sep;
-      sep += boost::filesystem::path::preferred_separator;
-      Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
     }
 
     //------------------------------------------------------------------------------
@@ -247,11 +243,6 @@ namespace SCIRun {
     void SRInterface::inputMouseWheel(int32_t delta)
     {
       mCamera->mouseWheelEvent(delta, mZoomSpeed);
-      if (scaleBar_.visible)
-      {
-        updateScaleBarLength();
-        updateGeometryScaleBar();
-      }
     }
 
     //------------------------------------------------------------------------------
@@ -634,8 +625,20 @@ namespace SCIRun {
       updateClippingPlanes();
     }
 
+    const glm::mat4& SRInterface::getWorldToProjection() const
+    { return mCamera->getWorldToProjection(); }
+
+    const glm::mat4& SRInterface::getWorldToView() const
+    { return mCamera->getWorldToView(); }
+
+    const glm::mat4& SRInterface::getViewToWorld() const
+    { return mCamera->getViewToWorld(); }
+
+    const glm::mat4& SRInterface::getViewToProjection() const
+    { return mCamera->getViewToProjection(); }
+
     //------------------------------------------------------------------------------
-    void SRInterface::setScaleBar(const ScaleBar &scaleBarData)
+    /*void SRInterface::setScaleBar(const ScaleBar &scaleBarData)
     {
       scaleBar_.visible = scaleBarData.visible;
       scaleBar_.fontSize = scaleBarData.fontSize;
@@ -650,7 +653,7 @@ namespace SCIRun {
         updateScaleBarLength();
         updateGeometryScaleBar();
       }
-    }
+    }*/
 
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
@@ -1397,143 +1400,6 @@ namespace SCIRun {
       glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
         colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
       handleGeomObject(geom2, 0);*/
-    }
-
-    // update scale bar geometries
-    void SRInterface::updateGeometryScaleBar()
-    {
-      const int    numTicks = scaleBar_.numTicks;
-      const double mult = scaleBar_.multiplier;
-      double length = scaleBar_.projLength;
-      const double height = scaleBar_.height;
-      glm::vec4 color(1.0);
-      glm::vec4 shift(1.9, 0.1, 0.0, 0.0);
-
-      std::vector<Vector> points;
-      std::vector<uint32_t> indices;
-      int32_t numVBOElements = 0;
-      uint32_t index = 0;
-      //base line
-      points.push_back(Vector(-length, 0.0, 0.0));
-      points.push_back(Vector(0.0, 0.0, 0.0));
-      numVBOElements += 2;
-      indices.push_back(index++);
-      indices.push_back(index++);
-      if (numTicks > 1)
-      {
-        for (int i = 0; i < numTicks; ++i)
-        {
-          double x = -length + i*length / (numTicks-1);
-          points.push_back(Vector(x, 0.0, 0.0));
-          points.push_back(Vector(x, height, 0.0));
-          numVBOElements += 2;
-          indices.push_back(index++);
-          indices.push_back(index++);
-        }
-      }
-
-      // IBO/VBOs and sizes
-      uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
-      uint32_t vboSize = sizeof(float) * 3 * static_cast<uint32_t>(points.size());
-
-      std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-        new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-      std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
-        new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
-
-      CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
-      CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
-
-      for (auto a : indices) iboBuffer->write(a);
-
-      for (size_t i = 0; i < points.size(); i++) {
-        vboBuffer->write(static_cast<float>(points[i].x()));
-        vboBuffer->write(static_cast<float>(points[i].y()));
-        vboBuffer->write(static_cast<float>(points[i].z()));
-      }
-
-      std::stringstream ss;
-      ss << "scale_bar";
-      std::string uniqueNodeID = ss.str();
-      std::string vboName = uniqueNodeID + "VBO";
-      std::string iboName = uniqueNodeID + "IBO";
-      std::string passName = uniqueNodeID + "Pass";
-
-      // Construct VBO.
-      std::string shader = "Shaders/HudUniform";
-      std::vector<SpireVBO::AttributeData> attribs;
-      attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-      std::vector<SpireSubPass::Uniform> uniforms;
-      uniforms.push_back(SpireSubPass::Uniform("uTrans", shift));
-      uniforms.push_back(SpireSubPass::Uniform("uColor", color));
-      SpireVBO geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr,
-        numVBOElements, BBox(), true);
-
-      // Construct IBO.
-
-      SpireIBO geomIBO(iboName, SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr);
-
-      RenderState renState;
-      renState.set(RenderState::IS_ON, true);
-      renState.set(RenderState::HAS_DATA, true);
-      renState.set(RenderState::USE_COLORMAP, false);
-      renState.set(RenderState::USE_TRANSPARENCY, false);
-
-      SpireText text;
-
-      SpireSubPass pass(passName, vboName, iboName, shader,
-        COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO, geomIBO, text);
-
-      // Add all uniforms generated above to the pass.
-      for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
-      GeometryHandle geom(new GeometryObjectSpire(uniqueNodeID));
-
-      geom->mIBOs.push_back(geomIBO);
-      geom->mVBOs.push_back(geomVBO);
-      geom->mPasses.push_back(pass);
-
-      //text
-      size_t text_size = size_t(scaleBar_.fontSize);
-      if (!textBuilder_.isInit())
-        textBuilder_.initFreeType("FreeSans.ttf", text_size);
-      else if (!textBuilder_.isValid())
-        textBuilder_.loadNewFace("FreeSans.ttf", text_size);
-      if (textBuilder_.isInit() && textBuilder_.isValid())
-      {
-        if (textBuilder_.getFaceSize() != text_size)
-          textBuilder_.setFaceSize(text_size);
-        textBuilder_.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
-        std::stringstream ss;
-        std::string oneline;
-        ss << length << " " << scaleBar_.unit;
-        oneline = ss.str();
-        Vector shift(1.9, 0.1, 0.0);
-        Vector trans(10.0, 0.0, 0.0);
-        textBuilder_.printString(oneline, shift, trans, uniqueNodeID, geom);
-      }
-
-      handleGeomObject(geom, 0);
-    }
-
-    void SRInterface::updateScaleBarLength()
-    {
-      glm::vec4 p1(-scaleBar_.length / 2.0, 0.0, 0.0, 1.0);
-      glm::vec4 p2(scaleBar_.length / 2.0, 0.0, 0.0, 1.0);
-      glm::mat4 matIV = mCamera->getWorldToView();
-      matIV[0][0] = 1.0; matIV[0][1] = 0.0; matIV[0][2] = 0.0;
-      matIV[1][0] = 0.0; matIV[1][1] = 1.0; matIV[1][2] = 0.0;
-      matIV[2][0] = 0.0; matIV[2][1] = 0.0; matIV[2][2] = 1.0;
-      glm::mat4 matProj = mCamera->getViewToProjection();
-      p1 = matProj * matIV * p1;
-      p2 = matProj * matIV * p2;
-      glm::vec2 p(p1.x/p1.w-p2.x/p2.w, p1.y/p1.w-p2.y/p2.w);
-      glm::vec2 pp(p.x*mScreenWidth / 2.0,
-        p.y*mScreenHeight / 2.0);
-      scaleBar_.projLength = glm::length(pp);
-      //std::cout << "p1:\t" << p1.x << "\t" << p1.y << "\t" << p1.z << "\t" << p1.w << "\n";
-      //std::cout << "p2:\t" << p2.x << "\t" << p2.y << "\t" << p2.z << "\t" << p2.w << "\n";
-      //std::cout << "pp:\t" << pp.x << "\t" << pp.y << "\n";
     }
 
     //------------------------------------------------------------------------------

@@ -37,10 +37,11 @@ DEALINGS IN THE SOFTWARE.
 #include <boost/shared_ptr.hpp>
 
 #include <Modules/Basic/SendScalarModuleState.h>
+#include <Modules/Visualization/TextBuilder.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Interface/Modules/Render/share.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
 
 #include <glm/glm.hpp>
 
@@ -78,6 +79,7 @@ namespace SCIRun {
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
+      void newOwnGeometryValue();
       void autoViewOnLoadChecked(bool value);
       void useOrthoViewChecked(bool value);
       void showOrientationChecked(bool value);
@@ -129,7 +131,7 @@ namespace SCIRun {
       void setScaleBarMultiplier(double value);
       void setScaleBarNumTicks(int value);
       void setScaleBarLineWidth(double value);
-      void setSpireScaleBar();
+      void setScaleBar();
       //Render Settings
       void lightingChecked(bool value);
       void showBBoxChecked(bool value);
@@ -146,6 +148,7 @@ namespace SCIRun {
       virtual void mousePressEvent(QMouseEvent* event);
       virtual void mouseReleaseEvent(QMouseEvent* event);
       virtual void mouseMoveEvent(QMouseEvent* event);
+      virtual void wheelEvent(QWheelEvent* event);
       virtual void keyPressEvent(QKeyEvent* event);
       virtual void keyReleaseEvent(QKeyEvent*event);
       virtual void closeEvent(QCloseEvent* evt) override;
@@ -163,6 +166,7 @@ namespace SCIRun {
         int fontSize;
         double length, height, multiplier, numTicks, lineWidth;
         std::string unit;
+        double projLength;
       };
 
       void selectObject(const int x, const int y);
@@ -189,6 +193,10 @@ namespace SCIRun {
       void lookDownAxisY(int upIndex, glm::vec3& up);
       void lookDownAxisZ(int upIndex, glm::vec3& up);
 
+      // update scale bar geometries
+      Graphics::Datatypes::GeometryHandle buildGeometryScaleBar();
+      void updateScaleBarLength();
+
       GLWidget*                             mGLWidget;            ///< GL widget containing context.
       std::weak_ptr<Render::SRInterface>    mSpire;               ///< Instance of Spire.
       QToolBar*                             mToolBar;             ///< Tool bar.
@@ -214,6 +222,10 @@ namespace SCIRun {
       std::vector<std::string> previousObjectNames_;
       class Screenshot* screenshotTaker_;
       bool saveScreenshotOnNewGeometry_;
+
+      //geometries
+      Modules::Visualization::TextBuilder textBuilder_;
+      Graphics::Datatypes::GeometryHandle scaleBarGeom_;
 
       friend class ViewSceneControlsDock;
     };

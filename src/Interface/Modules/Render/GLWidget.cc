@@ -137,6 +137,7 @@ void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 void GLWidget::wheelEvent(QWheelEvent * event)
 {
   mGraphics->inputMouseWheel(event->delta());
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------

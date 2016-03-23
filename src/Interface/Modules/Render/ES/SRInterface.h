@@ -44,7 +44,6 @@
 #include <es-render/comp/CommonUniforms.hpp>
 
 #include <Graphics/Datatypes/GeometryImpl.h>
-#include <Modules/Visualization/TextBuilder.h>
 #include <Interface/Modules/Render/share.h>
 
 namespace SCIRun {
@@ -167,16 +166,11 @@ namespace SCIRun {
       void setClippingPlaneZ(double value);
       void setClippingPlaneD(double value);
 
-      struct ScaleBar {
-        bool visible;
-        int fontSize;
-        double length, height, multiplier, numTicks, lineWidth;
-        std::string unit;
-        double projLength;
-      };
-
-      //scale bar
-      void setScaleBar(const ScaleBar &scaleBarData);
+      //camera matrices
+      const glm::mat4& getWorldToProjection() const;
+      const glm::mat4& getWorldToView() const;
+      const glm::mat4& getViewToWorld() const;
+      const glm::mat4& getViewToProjection() const;
 
     private:
 
@@ -305,10 +299,6 @@ namespace SCIRun {
       // update clipping plane geometries
       void updateGeometryClippingPlane(int index, glm::vec4 plane);
 
-      // update scale bar geometries
-      void updateGeometryScaleBar();
-      void updateScaleBarLength();
-
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
       bool                              selectWidget_;    ///< Whether mouse click will select a widget.
@@ -336,7 +326,7 @@ namespace SCIRun {
 
       ESCore                            mCore;            ///< Entity system core.
 
-      Modules::Visualization::TextBuilder mTextBuilder;   /// text builder
+      //Modules::Visualization::TextBuilder mTextBuilder;   /// text builder
       std::string                       mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
       std::string                       mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
       std::string                       mArrowObjectName; ///< Object name for profile arrow.
@@ -344,7 +334,7 @@ namespace SCIRun {
       std::vector<ClippingPlane>        clippingPlanes_;
       int                               clippingPlaneIndex_;
 
-      ScaleBar                          scaleBar_;
+      //ScaleBar                          scaleBar_;
 
       ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
       ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
@@ -352,7 +342,7 @@ namespace SCIRun {
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
 
-      Modules::Visualization::TextBuilder textBuilder_;     ///
+      //Modules::Visualization::TextBuilder textBuilder_;     ///
     };
 
   } // namespace Render
