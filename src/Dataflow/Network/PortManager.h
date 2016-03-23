@@ -34,7 +34,7 @@
 
 #include <Dataflow/Network/Port.h>
 #include <Core/Utils/Exception.h>
-#include <iostream>
+//#include <iostream>
 
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
@@ -74,7 +74,7 @@ public:
   std::vector<T> view() const;
 };
 
-struct PortOutOfBoundsException : virtual Core::ExceptionBase {};
+struct SCISHARE PortOutOfBoundsException : virtual Core::ExceptionBase {};
 
 template<class T>
 PortManager<T>::PortManager() :
@@ -93,16 +93,37 @@ template<class T>
 size_t
 PortManager<T>::add(const T& item)
 {
+  auto lastIndexWithSameName = lastIndexByName(item->id().name);
+
   ports_[item->id()] = item;
   isDynamic_[item->id().name] = item->isDynamic();
 
   if (item->isDynamic())
   {
     checkDynamicPortInvariant(item->id().name);
-    auto afterExistingClonedPort = lastIndexByName(item->id().name);
-    if (afterExistingClonedPort >= 0)
-      return afterExistingClonedPort + 1;
+
+    if (lastIndexWithSameName >= 0)
+    {
+      const auto newPortIndex = lastIndexWithSameName + 1;
+      //std::cout << "cloned port: " << item->id().toString() << " newIndex: " << newPortIndex << std::endl;
+
+      for (auto& portPair : ports_)
+      {
+        //std::cout << "\t id " << portPair.second->id().toString() << " index before setting " << portPair.second->getIndex() << std::endl;
+        if (portPair.second->getIndex() >= newPortIndex)
+          portPair.second->setIndex(portPair.second->getIndex() + 1);
+      }
+
+      //for (const auto& portPair : ports_)
+      //{
+        //std::cout << "\t id " << portPair.second->id().toString() << " index after setting " << portPair.second->getIndex() << std::endl;
+      //}
+
+      return newPortIndex;
+    }
   }
+  //if (item->isDynamic())
+    //std::cout << "original port: " << item->id().toString() << " newIndex: " << size() - 1 << std::endl;
   return size() - 1;
 }
 
@@ -111,13 +132,16 @@ int
 PortManager<T>::lastIndexByName(const std::string& name) const
 {
   auto matches = findAllByNameImpl(name);
-  std::cout << name << "  Input port object indexes:\n";
-  for (const auto& input : matches)
-  {
-    std::cout << input->id() << " " << input->id().name << " " << input->getIndex() << std::endl;
-  }
+
   if (matches.empty())
     return -1;
+
+  //std::cout << name << "  Input port object indexes:\n";
+  //for (const auto& input : matches)
+  //{
+  //  std::cout << input->id() << " " << input->id().name << " " << input->getIndex() << std::endl;
+  //}
+
   return static_cast<int>((*std::max_element(matches.begin(), matches.end(), [](const T& port1, const T& port2) { return port1->getIndex() < port2->getIndex(); }))->getIndex());
 }
 
@@ -149,10 +173,14 @@ PortManager<T>::remove(const PortId& id)
     ostr << "PortManager tried to remove a port that does not exist: " << id;
     BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
   }
+  //std::cout << "~~~removing port " << id.toString() << std::endl;
   ports_.erase(it);
   size_t i = 0;
   for (auto& portPair : ports_)
+  {
+    //std::cout << "\t resetting index " << portPair.second->id().toString() << " " << i;
     portPair.second->setIndex(i++);
+  }
 }
 
 template<class T>

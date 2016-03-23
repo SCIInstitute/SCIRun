@@ -53,9 +53,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Logging/LoggerInterface.h>
 
-#include <Dataflow/Network/Module.h>
-#include <vector>
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
@@ -71,10 +68,10 @@ ApplyFEMVoltageSourceAlgo::ApplyFEMVoltageSourceAlgo()
 void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(const DenseMatrixHandle& dirBC, DenseColumnMatrixHandle& rhs, SparseRowMatrixHandle& mat)
 {
   //! adjusting matrix for Dirichlet BC
-  index_type *idcNz; 
+  index_type *idcNz;
   double *valNz;
   index_type idcNzsize;
-    
+
   std::vector<double> dbc;
   index_type idx;
   size_type size = dirBC->nrows();
@@ -82,10 +79,10 @@ void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(const DenseMatrixHandle& dirBC,
   {
     index_type ni = (*dirBC)(idx, 0);
     double val = (*dirBC)(idx, 1);
-  
+
     // -- getting column indices of non-zero elements for the current row
     mat->getRowNonzerosNoCopy(ni, idcNzsize, idcNz, valNz);
-  
+
     // -- updating rhs
     for (index_type i=0; i<idcNzsize; ++i)
     {
@@ -93,23 +90,23 @@ void ApplyFEMVoltageSourceAlgo::ExecuteAlgorithm(const DenseMatrixHandle& dirBC,
       (*rhs)[j] += -val * valNz[i];
     }
   }
- 
+
   //! zeroing matrix row and column corresponding to the dirichlet nodes
   size = dirBC->nrows();
   for(idx = 0; idx<size; ++idx)
   {
     index_type ni = (*dirBC)(idx, 0);
     double val = (*dirBC)(idx, 1);
-  
+
     mat->getRowNonzerosNoCopy(ni, idcNzsize, idcNz, valNz);
-    
+
     for (index_type i=0; i<idcNzsize; ++i)
     {
       index_type j = idcNz?idcNz[i]:i;
       mat->put(ni, j, 0.0);
-      mat->put(j, ni, 0.0); 
+      mat->put(j, ni, 0.0);
     }
-    
+
     //! updating dirichlet node and corresponding entry in rhs
     mat->put(ni, ni, 1);
     (*rhs)[ni] = val;
