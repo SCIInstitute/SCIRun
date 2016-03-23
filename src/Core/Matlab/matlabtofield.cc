@@ -616,7 +616,6 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
   }
 
   mlfieldedge = findfield(mlarray,"fieldedge;edge;line;");
-  mlfieldface = findfield(mlarray,"fieldface;face;quad;fac;tri;");
 
   mlfieldderivatives  = findfield(mlarray,"fieldderivatives;derivatives;");
   mlfieldscalefactors = findfield(mlarray,"fieldscalefactors;scalefactors;");
@@ -945,7 +944,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
         if (fieldtype == "")
         {
           fieldtype = "double";
-          matlabarray::mitype type = mlfield.gettype();
+          auto type = mlfield.gettype();
           if (type == miINT8) fieldtype = "char";
           else if (type == miUINT8) fieldtype = "unsigned char";
           else if (type == miINT16) fieldtype = "short";
@@ -1683,7 +1682,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     }
 
     if ((mlmeshderivatives.isdense())||(mlfieldderivatives.isdense())||
-      (mlfieldedge.isdense())||(mlfieldface.isdense()))
+      (mlfieldedge.isdense()))
     {
       remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (element is a point, hence no linear/higher order interpolation is supported)", postremark);
     }
@@ -1714,8 +1713,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
 
     // established meshtype //
 
-    if ((mlface.isdense())||(mlcell.isdense())||
-        (mlfieldface.isdense()))
+    if ((mlface.isdense())||(mlcell.isdense()))
     {   // a matrix with multiple connectivities is not yet allowed
       remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (multiple connectivity matrices defined)", postremark);
     }
@@ -1946,7 +1944,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     }
 
     // Connectivity should be 2D
-    if ((mlface.getnumdims() > 2)||(mlfieldface.getnumdims() > 2))
+    if ((mlface.getnumdims() > 2))
     {
       remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (face connectivity matrix should be 2D)", postremark);
     }
@@ -2086,7 +2084,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
       }
       else
       {
-        if ((meshbasistype == "quadratic")&&(mlfieldface.isdense()))
+        if ((meshbasistype == "quadratic"))
         {
           fieldbasistype = "linear";
         }
@@ -2129,61 +2127,11 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
 
     if (fieldbasis == "quadratic")
     {
-      if (((meshbasistype == "linear")||(meshbasistype == "cubic"))&&(mlfieldface.isempty()))
+      if (((meshbasistype == "linear")||(meshbasistype == "cubic"))&&(true))
       {
         remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (no fieldedge connectivity matrix)", postremark);
       }
       if (meshtype == "TriSurfMesh") fieldbasis = "TriQuadraticLgn"; else fieldbasis = "QuadBiquadraticLgn";
-    }
-
-    // established fieldbasis //
-
-    if (meshtype == "TriSurfMesh")
-    {
-      if (mlfieldface.isdense())
-      {
-        m = mlfieldface.getm(); n = mlfieldface.getn();
-        if (fieldbasistype == "quadratic")
-        {
-          if (!(((m==6)&&(n==numelements))||((m==numelements)&&(n==6))))
-          {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldface needs to be of size 6)", postremark);
-          }
-          if (m!=6) mlfieldface.transpose();
-        }
-        else
-        {
-          if (!(((m==3)&&(n==numelements))||((m==numelements)&&(n==3))))
-          {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldface needs to be of size 3)", postremark);
-          }
-          if (m!=3) mlfieldface.transpose();
-        }
-      }
-    }
-    else
-    {
-      if (mlfieldface.isdense())
-      {
-        m = mlfieldface.getm(); n = mlfieldface.getn();
-        if (fieldbasistype == "quadratic")
-        {
-          
-          if (!(((m==8)&&(n==numelements))||((m==numelements)&&(n==8))))
-          {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldface needs to be of size 8)", postremark);
-          }
-          if (m!=8) mlfieldface.transpose();
-        }
-        else
-        {
-          if (!(((m==4)&&(n==numelements))||((m==numelements)&&(n==4))))
-          {
-            remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (one of the dimensions of fieldface needs to be of size 4)", postremark);
-          }
-          if (m!=4) mlfieldface.transpose();
-        }
-      }
     }
 
     if ((mlfieldderivatives.isdense())&&(fieldbasistype == "cubic"))
@@ -2244,7 +2192,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     // established meshtype //
 
     if ((mledge.isdense())||(mlface.isdense())||
-        (mlfieldedge.isdense())||(mlfieldface.isdense()))
+        (mlfieldedge.isdense()))
     {   // a matrix with multiple connectivities is not yet allowed
       remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (multiple connectivity matrices defined)", postremark);
     }
@@ -2435,7 +2383,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
       }
       else
       {
-        if ((meshbasistype == "quadratic")&&(mlfieldface.isdense()))
+        if ((meshbasistype == "quadratic"))
         {
           fieldbasistype = "linear";
         }
@@ -2482,7 +2430,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
 
     if (fieldbasis == "quadratic")
     {
-      if (((meshbasistype == "linear")||(meshbasistype == "cubic"))&&(mlfieldface.isempty()))
+      if (((meshbasistype == "linear")||(meshbasistype == "cubic")))
       {
         remarkAndThrow("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (no fieldface connectivity matrix)", postremark);
       }
