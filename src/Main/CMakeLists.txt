@@ -47,19 +47,26 @@ IF(APPLE)
     )
   ENDIF()
 
-  LIST(APPEND SCIRunMain_SOURCES "${APPLICATION_OSX_ICON_FULL_PATH}")
-  SET_SOURCE_FILES_PROPERTIES(${APPLICATION_OSX_ICON_FULL_PATH}
-                              PROPERTIES
-                              MACOSX_PACKAGE_LOCATION Resources)
-  SET(MACOSX_BUNDLE_ICON_FILE "${APPLICATION_OSX_ICON}" )
+  IF(BUILD_HEADLESS)
+    ADD_EXECUTABLE(${APPLICATION_NAME} ${SCIRunMain_SOURCES})
+  ELSE()
+    LIST(APPEND SCIRunMain_SOURCES "${APPLICATION_OSX_ICON_FULL_PATH}")
+    SET_SOURCE_FILES_PROPERTIES(${APPLICATION_OSX_ICON_FULL_PATH}
+                                PROPERTIES
+                                MACOSX_PACKAGE_LOCATION Resources)
+    SET(MACOSX_BUNDLE_ICON_FILE "${APPLICATION_OSX_ICON}" )
 
-  ADD_EXECUTABLE(${APPLICATION_NAME} MACOSX_BUNDLE ${SCIRunMain_SOURCES})
+    ADD_EXECUTABLE(${APPLICATION_NAME} MACOSX_BUNDLE ${SCIRunMain_SOURCES})
+  ENDIF()
 
 ELSEIF(WIN32)
+  # TODO: windows headless mode?
+
   SET(SCIRunMain_SOURCES ${SCIRunMain_SOURCES} "${APPLICATION_WINDOWS_RC}")
   IF(SCIRUN_SHOW_CONSOLE)
     ADD_DEFINITIONS(-DSCIRUN_SHOW_CONSOLE=1)
   ENDIF()
+
   ADD_EXECUTABLE(${APPLICATION_NAME} WIN32 ${SCIRunMain_SOURCES})
 
   # TODO: probably need this for Xcode
@@ -72,6 +79,13 @@ ELSEIF(WIN32)
       ARGS -E copy_directory
       ${SCIRun_BINARY_DIR}/Shaders
       ${SCIRun_BINARY_DIR}/$<CONFIGURATION>/Shaders
+    )
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND}
+      ARGS -E copy_directory
+      ${SCIRun_BINARY_DIR}/Fonts
+      ${SCIRun_BINARY_DIR}/$<CONFIGURATION>/Fonts
    )
    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
      POST_BUILD
@@ -90,7 +104,11 @@ TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
   Core_Util_Legacy
 )
 
-IF(NOT BUILD_HEADLESS)
+IF(BUILD_HEADLESS)
+  TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
+    Core_ConsoleApplication
+  )
+ELSE()
   TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
     Interface_Application
   )
@@ -102,11 +120,16 @@ IF(BUILD_WITH_PYTHON)
   )
 ENDIF()
 
-OPTION(DISABLE_MAC_BUNDLE "Disable Mac bundle" OFF)
-MARK_AS_ADVANCED(DISABLE_MAC_BUNDLE)
+OPTION(BUILD_BUNDLE "Build Mac bundle" ON)
+MARK_AS_ADVANCED(BUILD_BUNDLE)
 
-IF(APPLE)
-  SET(BUILD_BUNDLE NOT ${DISABLE_MAC_BUNDLE})
+IF(BUILD_HEADLESS)
+  SET(BUILD_BUNDLE OFF)
+ENDIF()
+
+MESSAGE(STATUS "Build Mac bundle: ${BUILD_BUNDLE}")
+
+IF(APPLE AND BUILD_BUNDLE)
 
   IF(${MACDEPLOYQT} MATCHES "NOTFOUND" OR ${SED} MATCHES "NOTFOUND" OR ${AWK} MATCHES "NOTFOUND")
     SET(BUILD_BUNDLE FALSE)
@@ -131,6 +154,7 @@ IF(APPLE AND BUILD_BUNDLE)
     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCIRUN_LIB_DIR} ${APP_PATH}/Frameworks
     WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
   )
+
   IF(BUILD_WITH_PYTHON)
     SET(VERSION_PATH Versions/${SCI_PYTHON_VERSION_SHORT})
     SET(FRAMEWORK_PATH Frameworks/Python.framework)
@@ -149,19 +173,19 @@ IF(APPLE AND BUILD_BUNDLE)
         @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
         ${APP_PATH}/MacOS/${APPLICATION_NAME}
         WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+
     SET(SCIRUN_LIBS "Core_Application"
                     "Core_Python"
                     "SCIRunPythonAPI"
+                    "Interface_Application"
                     "Engine_Network"
+                    "Interface_Modules_Factory"
+                    "Interface_Modules_Render"
+                    "Interface_Modules_Python"
                     "Core_ConsoleApplication"
+                    "Modules_Factory"
+                    "Modules_Python"
     )
-    IF(BUILD_HEADLESS)
-      LIST(APPEND SCIRUN_LIBS
-                  "Interface_Application"
-                  "Interface_Modules_Factory"
-                  "Interface_Modules_Render"
-      )
-    ENDIF()
 
     FOREACH(lib ${SCIRUN_LIBS})
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
@@ -171,22 +195,72 @@ IF(APPLE AND BUILD_BUNDLE)
           ${APP_PATH}/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
         WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
     ENDFOREACH()
-
-    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-      POST_BUILD
-       # configure Qt libs
-       # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
-       COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
-       COMMAND ${CMAKE_COMMAND} ARGS -E copy ${SCIRun_SOURCE_DIR}/CMake/qt.conf ${APPLICATION_NAME}.app/Contents/Resources
-       COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
-         ${SCIRun_BINARY_DIR}/Shaders ${APP_PATH}/MacOS/Shaders
-       COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
-         ${SCIRun_BINARY_DIR}/Assets ${APP_PATH}/MacOS/Assets
-       WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-    )
   ENDIF()
 
+  ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+    POST_BUILD
+    # configure Qt libs
+    # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
+    COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
+    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${SCIRun_SOURCE_DIR}/CMake/qt.conf ${APPLICATION_NAME}.app/Contents/Resources
+    COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
+      ${SCIRun_BINARY_DIR}/Shaders ${APP_PATH}/MacOS/Shaders
+    COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
+      ${SCIRun_BINARY_DIR}/Assets ${APP_PATH}/MacOS/Assets
+    COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
+      ${SCIRun_BINARY_DIR}/Fonts ${APP_PATH}/MacOS/Fonts
+    WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+  )
+
   INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION . BUNDLE DESTINATION . )
+
+ELSEIF(APPLE)
+
+  MESSAGE(STATUS "Building Mac OS X headless app")
+MESSAGE(STATUS "CMAKE_CFG_INTDIR=${CMAKE_CFG_INTDIR}")
+  SET(APP_PATH ${CMAKE_CFG_INTDIR})
+
+  IF(${CMAKE_GENERATOR} MATCHES "Xcode")
+    SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib/$<CONFIGURATION>)
+  ELSE()
+    SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib)
+  ENDIF()
+
+  IF(BUILD_WITH_PYTHON)
+    SET(VERSION_PATH Versions/${SCI_PYTHON_VERSION_SHORT})
+    SET(FRAMEWORK_PATH Python.framework)
+    SET(PYTHON_PATH ${APP_PATH}/${FRAMEWORK_PATH}/${VERSION_PATH})
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+      POST_BUILD
+      # TODO: when CMake 2.8 support is dropped, and CMP0042 new is enabled, change to @rpath
+      COMMAND ${CMAKE_COMMAND} ARGS -E chdir ${APP_PATH} tar xf ${SCI_PYTHON_FRAMEWORK_ARCHIVE}
+      COMMAND chmod u+w  ${PYTHON_PATH}/Python
+      COMMAND install_name_tool -id Python ${PYTHON_PATH}/Python
+      COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
+        @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
+        ${APP_PATH}/${APPLICATION_NAME}
+      COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
+        @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
+        ${APP_PATH}/${APPLICATION_NAME}
+        WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+
+    SET(SCIRUN_LIBS "Core_Application"
+                    "Core_Python"
+                    "SCIRunPythonAPI"
+                    "Engine_Network"
+                    "Core_ConsoleApplication"
+                    "Modules_Factory"
+                    "Modules_Python"
+    )
+
+    FOREACH(lib ${SCIRUN_LIBS})
+      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+        POST_BUILD
+        COMMAND echo "install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python ${SCIRUN_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python ${SCIRUN_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
+        WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+    ENDFOREACH()
+  ENDIF()
 
 ELSE()
 
@@ -215,7 +289,15 @@ ELSE()
       ${QT_BINARY_DIR}/${QTNETWORKNAME}.dll
       DESTINATION bin)
 
+    IF(BUILD_WITH_PYTHON)
+      INSTALL(PROGRAMS
+        ${SCI_PYTHON_DLL_PATH}
+        DESTINATION bin)
+      INSTALL(DIRECTORY "${SCI_PYTHON_MODULE_LIBRARY_PATH}/" DESTINATION bin/${PYTHON_MODULE_SEARCH_PATH})
+    ENDIF()
+
     INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Shaders" DESTINATION bin USE_SOURCE_PERMISSIONS)
+    INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)
     INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)
   ELSE()
     IF(BUILD_WITH_PYTHON)
@@ -227,7 +309,6 @@ ELSE()
       IF(SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH AND EXISTS ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH})
         ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
           POST_BUILD
-          COMMAND echo "${CMAKE_COMMAND} ARGS -E copy_directory ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH} ${PYTHON_MODULE_SEARCH_PATH}"
           COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory  ${SCI_PYTHON_64BIT_MODULE_LIBRARY_PATH} ${PYTHON_MODULE_SEARCH_PATH}
           WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
       ENDIF()
