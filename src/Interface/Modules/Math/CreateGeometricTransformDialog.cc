@@ -254,7 +254,7 @@ void CreateGeometricTransformDialog::compositeTransform()
 
 void CreateGeometricTransformDialog::calculateLog(const QString& text)
 {
-  auto val = log(text.toDouble());
+  auto val = log10(text.toDouble());
   QString result = QString::number(val, 'f', 5);
   logCalculatorResultLabel_->setText(result);
 }

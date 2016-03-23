@@ -30,6 +30,7 @@
 #define MODULES_MATH_CREATEGEOMETRICTRANSFORM_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/GeometryPrimitives/Transform.h>
 #include <Modules/Math/share.h>
 
 namespace SCIRun {
@@ -89,6 +90,11 @@ namespace Math {
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
     OUTPUT_PORT(1, Widget, GeometryObject);
+
+  private:
+    Core::Datatypes::MatrixHandle omatrixH_;
+    Core::Geometry::Transform composite_trans_;
+    Core::Geometry::Transform latest_trans_;
   };
 }}}
 

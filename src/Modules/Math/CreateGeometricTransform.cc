@@ -30,11 +30,20 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Module.h>
 
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Plane.h>
+//#include <Core/Datatypes/Legacy/Matrix/MatrixAlgorithms.h>
+
+#include <Core/Math/MiscMath.h>
+
+using namespace SCIRun::Core;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
+using namespace Geometry;
 
 ///@file  CreateGeometricTransform.cc
 ///
@@ -128,12 +137,140 @@ void CreateGeometricTransform::setStateDefaults()
 
 void CreateGeometricTransform::execute()
 {
-  auto input = getRequiredInput(InputMatrix);
+  auto input_matrix_H = getRequiredInput(InputMatrix);
+  
   
   if (needToExecute())
   {
+    auto state = get_state();
+    /*
+    GeometryOPortHandle ogeom;
+    get_oport_handle("Geometry", ogeom);
+    const std::string which_transform = which_transform_gui_.get();
+
+    // Create the widget.
+    if (!have_been_initialized_)
+    {
+      Point C, R, D, I;
+      box_widget_->GetPosition(C, R, D, I);
+      C = Point(0, 0, 0); R = Point(1, 0, 0); D = Point(0, 1, 0), I = Point(0, 0, 1);
+      widget_pose_center_ = C;
+      box_widget_->SetPosition(C, R, D, I);
+      box_widget_->SetCurrentMode(2);
+      if (which_transform != "widget")
+      {
+        ((GeomSwitch *)(widget_switch_.get_rep()))->set_state(0);
+      }
+      widgetid_ = ogeom->addObj(widget_switch_, widget_name, &widget_lock_);
+      ogeom->flushViews();
+      have_been_initialized_ = 1;
+    }
+    */
+    // get the input matrix if there is one
+    //MatrixHandle input_matrix_H;
+    Transform input_transform;
+    if (input_matrix_H)
+    {
+      //input_transform = MatrixAlgorithms::matrix_to_transform(*input_matrix_H);
+    }
+
+    Transform local_transform;
+
+    // get the "fixed point"
+    Vector t(state->getValue(Parameters::TranslateVectorX).toDouble(),
+      state->getValue(Parameters::TranslateVectorY).toDouble(),
+      state->getValue(Parameters::TranslateVectorZ).toDouble());
+
+    // build the local transform
+    auto which_transform = state->getValue(Parameters::TransformType).toInt();
+    if (which_transform == 0) //translate
+    {
+      local_transform.post_translate(t);
+    }
+    else if (which_transform == 1) //scale
+    {
+      double new_scale = state->getValue(Parameters::UniformScale).toDouble();
+      double s = pow(10., new_scale);
+      double new_scalex = state->getValue(Parameters::ScalePointX).toDouble();
+      double sx = pow(10., new_scalex)*s;
+      double new_scaley = state->getValue(Parameters::ScalePointY).toDouble();
+      double sy = pow(10., new_scaley)*s;
+      double new_scalez = state->getValue(Parameters::ScalePointZ).toDouble();
+      double sz = pow(10., new_scalez)*s;
+      Vector sc(sx, sy, sz);
+      local_transform.post_translate(t);
+      local_transform.post_scale(sc);
+      local_transform.post_translate(-t);
+    }
+    else if (which_transform == 2) //rotate
+    {
+      Vector axis(state->getValue(Parameters::RotateAxisX).toDouble(),
+        state->getValue(Parameters::RotateAxisY).toDouble(),
+        state->getValue(Parameters::RotateAxisZ).toDouble());
+      if (!axis.length2()) axis.x(1);
+      axis.normalize();
+      local_transform.post_translate(t);
+      local_transform.post_rotate(state->getValue(Parameters::RotateTheta).toDouble()*M_PI / 180., axis);
+      local_transform.post_translate(-t);
+    }
+    else if (which_transform == 3) //shear
+    {
+      local_transform.post_shear(t, Plane(state->getValue(Parameters::ShearPlaneA).toDouble(),
+        state->getValue(Parameters::ShearPlaneB).toDouble(),
+        state->getValue(Parameters::ShearPlaneC).toDouble(),
+        state->getValue(Parameters::ShearPlaneD).toDouble()));
+    }
+    else if (which_transform == 4) //permute
+    {
+      /*
+      local_transform.post_permute(permute_x_gui_.get(),
+      permute_y_gui_.get(),
+      permute_z_gui_.get());
+      */
+    }
+    else //widget
+    {
+      /*
+      Point R, D, I, C;
+      box_widget_->GetPosition(C, R, D, I);
+
+      double ratio = widget_scale_gui_.get();
+      widget_scale_gui_.set(1);
+      R = C + (R - C)*ratio;
+      D = C + (D - C)*ratio;
+      I = C + (I - C)*ratio;
+      box_widget_->SetPosition(C, R, D, I);
+
+      // find the difference between widget_pose(_inv) and the current pose
+      if (!ignoring_widget_changes_gui_.get()) {
+        local_transform.load_basis(C, R - C, D - C, I - C);
+        local_transform.post_trans(widget_pose_inv_trans_);
+        local_transform.post_translate(-widget_pose_center_.vector());
+        local_transform.pre_translate(C.vector());
+      }
+      local_transform.post_trans(latest_widget_trans_);
+      latest_widget_trans_ = local_transform;
+      widget_pose_center_ = C;
+      widget_pose_inv_trans_.load_basis(C, R - C, D - C, I - C);
+      widget_pose_inv_trans_.invert();
+      */
+    }
     
-    
-    
+    omatrixH_.reset(new DenseMatrix(4, 4));
+
+    // now either pre- or post-multiply the transforms and store in matrix
+    if (state->getValue(Parameters::MultiplyRadioButton).toInt() == 0) {
+      local_transform.post_trans(composite_trans_);
+      latest_trans_ = local_transform;
+      local_transform.post_trans(input_transform);
+    }
+    else {
+      local_transform.pre_trans(composite_trans_);
+      latest_trans_ = local_transform;
+      local_transform.pre_trans(input_transform);
+    }
+
+    MatrixHandle mtmp(new DenseMatrix(local_transform));
+    sendOutput(OutputMatrix, mtmp);
   }
 }
