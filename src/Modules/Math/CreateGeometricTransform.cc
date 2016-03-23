@@ -143,7 +143,7 @@ void CreateGeometricTransform::setStateDefaults()
 
 void CreateGeometricTransform::execute()
 {
-  auto input_matrix_H = getRequiredInput(InputMatrix);
+  auto input_matrix_H = getOptionalInput(InputMatrix);
   
   
   if (needToExecute())
@@ -177,7 +177,8 @@ void CreateGeometricTransform::execute()
     Transform input_transform;
     if (input_matrix_H)
     {
-      input_transform = MatrixAlgorithms::matrix_to_transform(*input_matrix_H);
+      auto input = *input_matrix_H;
+      input_transform = MatrixAlgorithms::matrix_to_transform(*input);
     }
 
     Transform local_transform;
