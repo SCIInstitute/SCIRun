@@ -264,7 +264,7 @@ namespace Networks {
 
     //For modules that need to initialize some internal state signal/slots, this needs to be called after set_state to reinitialize.
     virtual void postStateChangeInternalSignalHookup() {}
-    void sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback);
+    void sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback) const;
 
   private:
     template <class T>

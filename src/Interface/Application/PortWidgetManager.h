@@ -58,7 +58,10 @@ public:
   size_t numInputPorts() const { return inputPorts_.size(); }
   size_t numOutputPorts() const { return outputPorts_.size(); }
 
+  size_t lastIndexOf(const QString& name) const;
+
   void addPort(InputPortWidget* port);
+  void insertPort(int index, InputPortWidget* port);
   void addPort(OutputPortWidget* port);
   bool removeDynamicPort(const SCIRun::Dataflow::Networks::PortId& pid, QHBoxLayout* layout);
   void addInputsToLayout(QHBoxLayout* layout);

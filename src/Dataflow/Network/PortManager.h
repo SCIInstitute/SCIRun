@@ -75,7 +75,7 @@ struct PortOutOfBoundsException : virtual Core::ExceptionBase {};
 
 template<class T>
 PortManager<T>::PortManager() :
-  module_(0)
+  module_(nullptr)
 {
 }
 

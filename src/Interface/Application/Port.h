@@ -56,14 +56,14 @@ class PortActionsMenu;
 class PortWidgetBase : public QPushButton, public SCIRun::Dataflow::Networks::PortDescriptionInterface
 {
 public:
-  virtual SCIRun::Dataflow::Networks::PortId id() const = 0;
-  virtual size_t nconnections() const = 0;
-  virtual std::string get_typename() const = 0;
-  virtual std::string get_portname() const = 0;
-  virtual bool isInput() const = 0;
-  virtual bool isDynamic() const = 0;
-  virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const = 0;
-  virtual size_t getIndex() const = 0;
+  virtual SCIRun::Dataflow::Networks::PortId id() const override = 0;
+  virtual size_t nconnections() const override = 0;
+  virtual std::string get_typename() const override = 0;
+  virtual std::string get_portname() const override = 0;
+  virtual bool isInput() const override = 0;
+  virtual bool isDynamic() const override = 0;
+  virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override = 0;
+  virtual size_t getIndex() const override = 0;
 
   virtual QColor color() const = 0;
   virtual bool isLightOn() const = 0;
@@ -88,24 +88,24 @@ public:
     boost::shared_ptr<ConnectionFactory> connectionFactory,
     boost::shared_ptr<ClosestPortFinder> closestPortFinder,
     SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
   virtual ~PortWidget();
 
   QString name() const { return name_; }
   virtual QColor color() const override { return color_; }
-  virtual bool isInput() const { return isInput_; }
-  virtual bool isDynamic() const { return isDynamic_; }
+  virtual bool isInput() const override { return isInput_; }
+  virtual bool isDynamic() const override { return isDynamic_; }
   bool isConnected() const { return isConnected_; }
   void setConnected(bool connected) { isConnected_ = connected; }
 
-  virtual size_t nconnections() const;
-  virtual std::string get_typename() const;
-  virtual std::string get_portname() const;
-  virtual Dataflow::Networks::ModuleId getUnderlyingModuleId() const;
-  virtual size_t getIndex() const;
+  virtual size_t nconnections() const override;
+  virtual std::string get_typename() const override;
+  virtual std::string get_portname() const override;
+  virtual Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;
+  virtual size_t getIndex() const override;
   void setIndex(size_t i);
 
-  virtual SCIRun::Dataflow::Networks::PortId id() const;
+  virtual SCIRun::Dataflow::Networks::PortId id() const override;
 
   void toggleLight();
   void turn_on_light();
@@ -137,7 +137,7 @@ public:
   SCIRun::Dataflow::Networks::PortDataDescriber getPortDataDescriber() const { return portDataDescriber_; }
 
 protected:
-  virtual void moveEvent(QMoveEvent * event);
+  virtual void moveEvent(QMoveEvent * event) override;
 
 public Q_SLOTS:
   void MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
@@ -197,17 +197,17 @@ class BlankPort : public PortWidgetBase
 {
 public:
   explicit BlankPort(QWidget* parent);
-  virtual SCIRun::Dataflow::Networks::PortId id() const;
-  virtual size_t nconnections() const { return 0; }
-  virtual std::string get_typename() const { return ""; }
-  virtual std::string get_portname() const { return "<Blank>"; }
-  virtual bool isInput() const { return false; }
-  virtual bool isDynamic() const { return false; }
-  virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const;// { return "<Blank>"; }
-  virtual size_t getIndex() const { return 0; }
+  virtual SCIRun::Dataflow::Networks::PortId id() const override;
+  virtual size_t nconnections() const override { return 0; }
+  virtual std::string get_typename() const override { return ""; }
+  virtual std::string get_portname() const override { return "<Blank>"; }
+  virtual bool isInput() const override { return false; }
+  virtual bool isDynamic() const override { return false; }
+  virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;// { return "<Blank>"; }
+  virtual size_t getIndex() const override { return 0; }
 
-  virtual QColor color() const;
-  virtual bool isLightOn() const { return false; }
+  virtual QColor color() const override;
+  virtual bool isLightOn() const override { return false; }
 };
 
 class InputPortWidget : public PortWidget
