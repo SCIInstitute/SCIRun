@@ -67,6 +67,9 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(FieldMapX);
         ALGORITHM_PARAMETER_DECL(FieldMapY);
         ALGORITHM_PARAMETER_DECL(FieldMapZ);
+        ALGORITHM_PARAMETER_DECL(PermuteX);
+        ALGORITHM_PARAMETER_DECL(PermuteY);
+        ALGORITHM_PARAMETER_DECL(PermuteZ);
         ALGORITHM_PARAMETER_DECL(UniformScale);
         ALGORITHM_PARAMETER_DECL(ResizeSeparably);
         ALGORITHM_PARAMETER_DECL(IgnoreChanges);

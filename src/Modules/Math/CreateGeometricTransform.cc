@@ -83,6 +83,9 @@ ALGORITHM_PARAMETER_DEF(Math, ShearPlaneD);
 ALGORITHM_PARAMETER_DEF(Math, FieldMapX);
 ALGORITHM_PARAMETER_DEF(Math, FieldMapY);
 ALGORITHM_PARAMETER_DEF(Math, FieldMapZ);
+ALGORITHM_PARAMETER_DEF(Math, PermuteX);
+ALGORITHM_PARAMETER_DEF(Math, PermuteY);
+ALGORITHM_PARAMETER_DEF(Math, PermuteZ);
 ALGORITHM_PARAMETER_DEF(Math, UniformScale);
 ALGORITHM_PARAMETER_DEF(Math, ResizeSeparably);
 ALGORITHM_PARAMETER_DEF(Math, IgnoreChanges);
@@ -129,7 +132,10 @@ void CreateGeometricTransform::setStateDefaults()
   std::string z = "z+";
   state->setValue(FieldMapX, x);
   state->setValue(FieldMapY, y);
-  state->setValue(FieldMapZ, z);
+  state->setValue(FieldMapZ, z); 
+  state->setValue(PermuteX, 1);
+  state->setValue(PermuteY, 2);
+  state->setValue(PermuteZ, 3);
   state->setValue(UniformScale, 1.0);
   state->setValue(ResizeSeparably, true);
   state->setValue(IgnoreChanges, true);
@@ -222,11 +228,9 @@ void CreateGeometricTransform::execute()
     }
     else if (which_transform == 4) //permute
     {
-      /*
-      local_transform.post_permute(permute_x_gui_.get(),
-      permute_y_gui_.get(),
-      permute_z_gui_.get());
-      */
+      local_transform.post_permute(state->getValue(Parameters::PermuteX).toInt(),
+        state->getValue(Parameters::PermuteY).toInt(),
+        state->getValue(Parameters::PermuteZ).toInt());
     }
     else //widget
     {

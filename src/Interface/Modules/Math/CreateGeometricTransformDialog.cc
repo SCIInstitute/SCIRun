@@ -156,6 +156,9 @@ void CreateGeometricTransformDialog::resetFieldMap()
   state_->setValue(Parameters::FieldMapX, x);
   state_->setValue(Parameters::FieldMapY, y);
   state_->setValue(Parameters::FieldMapZ, z);
+  state_->setValue(Parameters::PermuteX, 1);
+  state_->setValue(Parameters::PermuteY, 2);
+  state_->setValue(Parameters::PermuteZ, 3);
 }
 
 void CreateGeometricTransformDialog::resetWidget()
@@ -169,6 +172,11 @@ void CreateGeometricTransformDialog::cycleUp()
   state_->setValue(Parameters::FieldMapX, state_->getValue(Parameters::FieldMapY).toString());
   state_->setValue(Parameters::FieldMapY, state_->getValue(Parameters::FieldMapZ).toString());
   state_->setValue(Parameters::FieldMapZ, temp);
+
+  int value = state_->getValue(Parameters::PermuteX).toInt();
+  state_->setValue(Parameters::PermuteX, state_->getValue(Parameters::PermuteY).toInt());
+  state_->setValue(Parameters::PermuteY, state_->getValue(Parameters::PermuteZ).toInt());
+  state_->setValue(Parameters::PermuteZ, value);
 }
 
 void CreateGeometricTransformDialog::cycleDown()
@@ -177,6 +185,11 @@ void CreateGeometricTransformDialog::cycleDown()
   state_->setValue(Parameters::FieldMapX, state_->getValue(Parameters::FieldMapZ).toString());
   state_->setValue(Parameters::FieldMapZ, state_->getValue(Parameters::FieldMapY).toString());
   state_->setValue(Parameters::FieldMapY, temp);
+
+  int value = state_->getValue(Parameters::PermuteX).toInt();
+  state_->setValue(Parameters::PermuteX, state_->getValue(Parameters::PermuteZ).toInt());
+  state_->setValue(Parameters::PermuteZ, state_->getValue(Parameters::PermuteY).toInt());
+  state_->setValue(Parameters::PermuteY, value);
 }
 
 void CreateGeometricTransformDialog::swapXY()
@@ -184,6 +197,10 @@ void CreateGeometricTransformDialog::swapXY()
   std::string temp = state_->getValue(Parameters::FieldMapX).toString();
   state_->setValue(Parameters::FieldMapX, state_->getValue(Parameters::FieldMapY).toString());
   state_->setValue(Parameters::FieldMapY, temp);
+
+  int value = state_->getValue(Parameters::PermuteX).toInt();
+  state_->setValue(Parameters::PermuteX, state_->getValue(Parameters::PermuteY).toInt());
+  state_->setValue(Parameters::PermuteY, value);
 }
 
 void CreateGeometricTransformDialog::swapYZ()
@@ -191,6 +208,10 @@ void CreateGeometricTransformDialog::swapYZ()
   std::string temp = state_->getValue(Parameters::FieldMapY).toString();
   state_->setValue(Parameters::FieldMapY, state_->getValue(Parameters::FieldMapZ).toString());
   state_->setValue(Parameters::FieldMapZ, temp);
+
+  int value = state_->getValue(Parameters::PermuteY).toInt();
+  state_->setValue(Parameters::PermuteY, state_->getValue(Parameters::PermuteZ).toInt());
+  state_->setValue(Parameters::PermuteZ, value);
 }
 
 void CreateGeometricTransformDialog::swapXZ()
@@ -198,11 +219,16 @@ void CreateGeometricTransformDialog::swapXZ()
   std::string temp = state_->getValue(Parameters::FieldMapX).toString();
   state_->setValue(Parameters::FieldMapX, state_->getValue(Parameters::FieldMapZ).toString());
   state_->setValue(Parameters::FieldMapZ, temp);
+
+  int value = state_->getValue(Parameters::PermuteX).toInt();
+  state_->setValue(Parameters::PermuteX, state_->getValue(Parameters::PermuteZ).toInt());
+  state_->setValue(Parameters::PermuteZ, value);
 }
 
 void CreateGeometricTransformDialog::flipX()
 {
   auto x = state_->getValue(Parameters::FieldMapX).toString();
+  auto value = state_->getValue(Parameters::PermuteX).toInt();
   if (x[1] == '+')
   {
     x[1] = '-';
@@ -212,11 +238,13 @@ void CreateGeometricTransformDialog::flipX()
     x[1] = '+';
   }
   state_->setValue(Parameters::FieldMapX, x);
+  state_->setValue(Parameters::PermuteX, -value);
 }
 
 void CreateGeometricTransformDialog::flipY()
 {
   auto y = state_->getValue(Parameters::FieldMapY).toString();
+  auto value = state_->getValue(Parameters::PermuteY).toInt();
   if (y[1] == '+')
   {
     y[1] = '-';
@@ -226,11 +254,13 @@ void CreateGeometricTransformDialog::flipY()
     y[1] = '+';
   }
   state_->setValue(Parameters::FieldMapY, y);
+  state_->setValue(Parameters::PermuteY, -value);
 }
 
 void CreateGeometricTransformDialog::flipZ()
 {
   auto z = state_->getValue(Parameters::FieldMapZ).toString();
+  auto value = state_->getValue(Parameters::PermuteZ).toInt();
   if (z[1] == '+')
   {
     z[1] = '-';
@@ -240,6 +270,7 @@ void CreateGeometricTransformDialog::flipZ()
     z[1] = '+';
   }
   state_->setValue(Parameters::FieldMapZ, z);
+  state_->setValue(Parameters::PermuteZ, -value);
 }
 
 void CreateGeometricTransformDialog::applyTransform()
