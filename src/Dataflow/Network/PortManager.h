@@ -57,6 +57,8 @@ private:
   void checkDynamicPortInvariant(const std::string& name);
   void throwForPortNotFound(const PortId& id) const;
   std::vector<T> findAllByName(const std::string& name) const;
+  int lastIndexByName(const std::string& name) const;
+  std::vector<T> findAllByNameImpl(const std::string& name) const;
 
 public:
   PortManager();
@@ -94,12 +96,28 @@ PortManager<T>::add(const T& item)
   isDynamic_[item->id().name] = item->isDynamic();
 
   if (item->isDynamic())
+  {
     checkDynamicPortInvariant(item->id().name);
+    auto afterExistingClonedPort = lastIndexByName(item->id().name);
+    if (afterExistingClonedPort >= 0)
+      return afterExistingClonedPort + 1;
+  }
+  return size() - 1;
+}
 
-  /// @todo: who should manage port indexes?
-  //item->setIndex(size() - 1);
-  auto index = size() - 1;
-  return index;
+template<class T>
+int
+PortManager<T>::lastIndexByName(const std::string& name) const
+{
+  auto matches = findAllByNameImpl(name);
+  std::cout << name << "  Input port object indexes:\n";
+  for (const auto& input : matches)
+  {
+    std::cout << input->id() << " " << input->id().name << " " << input->getIndex() << std::endl;
+  }
+  if (matches.empty())
+    return -1;
+  return static_cast<int>((*std::max_element(matches.begin(), matches.end(), [](const T& port1, const T& port2) { return port1->getIndex() < port2->getIndex(); }))->getIndex());
 }
 
 template<class T>
@@ -191,16 +209,24 @@ std::vector<T> PortManager<T>::operator[](const std::string& name) const
 template<class T>
 std::vector<T> PortManager<T>::findAllByName(const std::string& name) const
 {
-  std::vector<T> portsWithName;
-
-  boost::copy(
-    ports_ | boost::adaptors::map_values 
-    | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
+  auto portsWithName = findAllByNameImpl(name);
 
   if (portsWithName.empty())
   {
     BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager does not contain a port by name: " + name));
   }
+
+  return portsWithName;
+}
+
+template<class T>
+std::vector<T> PortManager<T>::findAllByNameImpl(const std::string& name) const
+{
+  std::vector<T> portsWithName;
+
+  boost::copy(
+    ports_ | boost::adaptors::map_values 
+    | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
 
   return portsWithName;
 }

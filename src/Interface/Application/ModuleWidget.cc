@@ -920,16 +920,28 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
 
-    //qDebug() << "Input port widget indexes:";
-    //for (const auto& input : ports_->inputs())
-    //{
-    //  qDebug() << input->name() << input->getIndex();
-    //}
-    qDebug() << "Last index of " << w->name() << ports_->lastIndexOf(w->name()) << "DOES IT MATCH" << port->getIndex();
+    
 
     const int newPortIndex = ports_->lastIndexOf(w->name()) + 1;
+
+    qDebug() << "Last index of " << w->name() << newPortIndex << "DOES IT MATCH" << port->getIndex();
+
+    qDebug() << "Input port widget indexes (BEFORE REINDEX):";
+    for (const auto& input : ports_->inputs())
+    {
+      qDebug() << input->name() << input->getIndex() << port->getIndex();
+    }
+
     ports_->insertPort(newPortIndex, w);
     ports_->reindexInputs();
+
+
+    qDebug() << "Input port widget indexes (AFTER REINDEX):";
+    for (const auto& input : ports_->inputs())
+    {
+      qDebug() << input->name() << input->getIndex() << port->getIndex();
+    }
+
     inputPortLayout_->insertWidget(newPortIndex, w);
 
     Q_EMIT dynamicPortChanged(pid.toString(), true);
