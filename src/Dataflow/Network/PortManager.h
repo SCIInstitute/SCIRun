@@ -34,7 +34,6 @@
 
 #include <Dataflow/Network/Port.h>
 #include <Core/Utils/Exception.h>
-//#include <iostream>
 
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
@@ -111,19 +110,19 @@ PortManager<T>::add(const T& item)
       {
         //std::cout << "\t id " << portPair.second->id().toString() << " index before setting " << portPair.second->getIndex() << std::endl;
         if (portPair.second->getIndex() >= newPortIndex)
-          portPair.second->setIndex(portPair.second->getIndex() + 1);
+          portPair.second->incrementIndex();
       }
 
       //for (const auto& portPair : ports_)
       //{
-        //std::cout << "\t id " << portPair.second->id().toString() << " index after setting " << portPair.second->getIndex() << std::endl;
+      //  std::cout << "\t id " << portPair.second->id().toString() << " index after setting " << portPair.second->getIndex() << std::endl;
       //}
 
       return newPortIndex;
     }
   }
   //if (item->isDynamic())
-    //std::cout << "original port: " << item->id().toString() << " newIndex: " << size() - 1 << std::endl;
+  //  std::cout << "original port: " << item->id().toString() << " newIndex: " << size() - 1 << std::endl;
   return size() - 1;
 }
 
@@ -158,7 +157,7 @@ PortManager<T>::checkDynamicPortInvariant(const std::string& name)
     if (0 == port->nconnections() && i != lastIndex)
       toRemove.push_back(port->id());
   }
-  for (const PortId& id : toRemove)
+  for (const auto& id : toRemove)
     remove(id);
 }
 
@@ -173,13 +172,16 @@ PortManager<T>::remove(const PortId& id)
     ostr << "PortManager tried to remove a port that does not exist: " << id;
     BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
   }
-  //std::cout << "~~~removing port " << id.toString() << std::endl;
+  auto removedIndex = it->second->getIndex();
+  //std::cout << "~~~removing port " << id.toString() << " index " << removedIndex << std::endl;
   ports_.erase(it);
-  size_t i = 0;
   for (auto& portPair : ports_)
   {
-    //std::cout << "\t resetting index " << portPair.second->id().toString() << " " << i;
-    portPair.second->setIndex(i++);
+    if (portPair.second->getIndex() > removedIndex)
+    {
+      //std::cout << "\t resetting index " << portPair.second->id().toString() << " " << portPair.second->getIndex()-1 << std::endl;
+      portPair.second->decrementIndex();
+    }
   }
 }
 

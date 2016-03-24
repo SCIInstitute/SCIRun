@@ -58,21 +58,21 @@ public:
   Port(ModuleInterface* module, const ConstructionParams& params);
   virtual ~Port();
 
-  size_t nconnections() const;
-  const Connection* connection(size_t) const;
+  size_t nconnections() const override;
+  const Connection* connection(size_t) const override;
 
-  virtual PortId id() const { return id_; }
-  virtual void setId(const PortId& id) { id_ = id; }
-  std::string get_typename() const { return typeName_; }
+  virtual PortId id() const override { return id_; }
+  virtual void setId(const PortId& id) override { id_ = id; }
+  std::string get_typename() const override { return typeName_; }
   std::string get_colorname() const { return colorName_; }
-  std::string get_portname() const { return portName_; }
+  std::string get_portname() const override { return portName_; }
 
-  virtual void attach(Connection* conn);
-  virtual void detach(Connection* conn);
+  virtual void attach(Connection* conn) override;
+  virtual void detach(Connection* conn) override;
 
-  virtual ModuleId getUnderlyingModuleId() const;
-  virtual size_t getIndex() const;
-  virtual void setIndex(size_t index);
+  virtual ModuleId getUnderlyingModuleId() const override;
+  virtual size_t getIndex() const override;
+  virtual void setIndex(size_t index) override;
 
   /// @todo:
   // light interface
