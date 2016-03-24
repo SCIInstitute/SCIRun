@@ -46,13 +46,15 @@ CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string
   WidgetStyleMixin::tabStyle(transformTabWidget_);
 
   auto tabIndex = state_->getValue(Parameters::TransformType).toInt();
-  if (tabIndex)
+  std::cout << "tab index: " << tabIndex << std::endl;
+  if (tabIndex >= 0)
   {
     transformTabWidget_->setCurrentIndex(tabIndex);
   }
   else
   {
     resetValues();
+    resetFieldMap();
   }
   
   addRadioButtonGroupManager({ preMultiplyRadioButton_, postMultiplyRadioButton_ }, Parameters::MultiplyRadioButton);
