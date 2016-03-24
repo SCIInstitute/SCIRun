@@ -30,6 +30,7 @@
 SET(Interface_Modules_Math_FORMS
   SelectSubMatrix.ui
   AppendMatrix.ui
+  CreateGeometricTransform.ui
   CreateMatrix.ui
   EvaluateLinearAlgebraBinary.ui
   EvaluateLinearAlgebraGeneral.ui
@@ -48,6 +49,7 @@ SET(Interface_Modules_Math_FORMS
 SET(Interface_Modules_Math_HEADERS
   SelectSubMatrixDialog.h
   AppendMatrixDialog.h
+  CreateGeometricTransformDialog.h
   CreateMatrixDialog.h
   EvaluateLinearAlgebraBinaryDialog.h
   EvaluateLinearAlgebraGeneralDialog.h
@@ -73,6 +75,7 @@ ENDIF()
 SET(Interface_Modules_Math_SOURCES
   SelectSubMatrixDialog.cc
   AppendMatrixDialog.cc
+  CreateGeometricTransformDialog.cc
   CreateMatrixDialog.cc
   EvaluateLinearAlgebraBinaryDialog.cc
   EvaluateLinearAlgebraGeneralDialog.cc
