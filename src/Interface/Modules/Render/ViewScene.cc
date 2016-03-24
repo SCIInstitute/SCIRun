@@ -37,6 +37,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
 #include <boost/thread.hpp>
+#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -383,12 +385,27 @@ void ViewSceneDialog::newGeometryValue()
     }
     //add objects of its own
     //scale bar
+    ++port;
     if (scaleBar_.visible && scaleBarGeom_)
     {
       auto name = scaleBarGeom_->uniqueID();
       auto displayName = QString::fromStdString(name).split('_').at(1);
-      objectNames.push_back(displayName.toStdString());
+      objectNames.push_back(name/*displayName.toStdString()*/);
       auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(scaleBarGeom_);
+      if (realObj)
+      {
+        spire->handleGeomObject(realObj, port);
+        validObjects.push_back(name);
+      }
+    }
+    ++port;
+    //clippingplanes
+    for (auto i : clippingPlaneGeoms_)
+    {
+      auto name = i->uniqueID();
+      auto displayName = QString::fromStdString(name).split('_').at(1);
+      objectNames.push_back(name/*displayName.toStdString()*/);
+      auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(i);
       if (realObj)
       {
         spire->handleGeomObject(realObj, port);
@@ -817,6 +834,7 @@ void ViewSceneDialog::setClippingPlaneVisible(bool value)
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneVisible(clippingPlanes_[clippingPlaneIndex_].visible);
+  updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
@@ -826,6 +844,7 @@ void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneFrameOn(clippingPlanes_[clippingPlaneIndex_].showFrame);
+  updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
@@ -834,6 +853,7 @@ void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
   auto spire = mSpire.lock();
   if (spire)
     spire->reverseClippingPlaneNormal(clippingPlanes_[clippingPlaneIndex_].reverseNormal);
+  updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneX(int index)
@@ -879,6 +899,10 @@ void ViewSceneDialog::updatClippingPlaneDisplay()
     clippingPlanes_[clippingPlaneIndex_].y,
     clippingPlanes_[clippingPlaneIndex_].z,
     clippingPlanes_[clippingPlaneIndex_].d);
+
+  //geometry
+  buildGeomClippingPlanes();
+  newGeometryValue();
 }
 
 //------------------------------------------------------------------------------
@@ -1165,6 +1189,98 @@ void ViewSceneDialog::updateScaleBarLength()
     //std::cout << "p2:\t" << p2.x << "\t" << p2.y << "\t" << p2.z << "\t" << p2.w << "\n";
     //std::cout << "pp:\t" << pp.x << "\t" << pp.y << "\n";
   }
+}
+
+void ViewSceneDialog::buildGeomClippingPlanes()
+{
+  auto spire = mSpire.lock();
+  if (!spire)
+    return;
+  StaticClippingPlanes* clippingPlanes = spire->getClippingPlanes();
+
+  clippingPlaneGeoms_.clear();
+  int index = 0;
+  for (auto i : clippingPlanes->clippingPlanes)
+  {
+    if (clippingPlanes_[index].showFrame)
+      buildGeometryClippingPlane(index, i, spire->getSceneBox());
+    index++;
+  }
+}
+
+//
+void ViewSceneDialog::buildGeometryClippingPlane(
+  int index, glm::vec4 plane, SCIRun::Core::Geometry::BBox bbox)
+{
+  Core::Geometry::Vector diag(bbox.diagonal());
+  Core::Geometry::Point c(bbox.center());
+  Core::Geometry::Vector n(plane.x, plane.y, plane.z);
+  n.normalize();
+  Core::Geometry::Point p(c + (n * diag.length() / 2.0) * plane.w);
+  if (clippingPlanes_[index].reverseNormal)
+    n = -n;
+  double w, h; w = h = diag.length() / 2.0;
+  Core::Geometry::Vector axis1, axis2;
+  Point intersect;
+  n.find_orthogonal(axis1, axis2);
+  if (bbox.intersect(c, axis1, intersect))
+    w = std::max(w, 2.1 * (intersect - c).length());
+  if (bbox.intersect(c, axis2, intersect))
+    h = std::max(h, 2.1 * (intersect - c).length());
+  if (clippingPlanes_[index].reverseNormal)
+    p = Core::Geometry::Point(n * plane.w);
+  else
+    p = Core::Geometry::Point(-n * plane.w);
+  Core::Geometry::Point p1 = p - axis1 * w / 2.0 - axis2 * h / 2.0;
+  Core::Geometry::Point p2 = p + axis1 * w / 2.0 - axis2 * h / 2.0;
+  Core::Geometry::Point p3 = p + axis1 * w / 2.0 + axis2 * h / 2.0;
+  Core::Geometry::Point p4 = p - axis1 * w / 2.0 + axis2 * h / 2.0;
+
+  std::stringstream ss;
+  std::string uniqueNodeID;
+
+  Graphics::GlyphGeom glyphs;
+  glyphs.addClippingPlane(p1, p2, p3, p4, 0.01 * std::min(w, h),
+    50, ColorRGB(), ColorRGB());
+  ss << "clipping_plane" << index <<
+    p1.x() << p1.y() << p1.z() <<
+    p2.x() << p2.y() << p2.z() <<
+    p3.x() << p3.y() << p3.z() <<
+    p4.x() << p4.y() << p4.z();
+  uniqueNodeID = ss.str();
+  Graphics::Datatypes::ColorScheme colorScheme(Graphics::Datatypes::ColorScheme::COLOR_UNIFORM);
+  RenderState renState;
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::USE_TRANSPARENCY, false);
+  renState.defaultColor = ColorRGB(0.4, 0.4, 1);
+  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::IS_WIDGET, true);
+  SCIRun::Graphics::Datatypes::GeometryHandle geom(
+    new SCIRun::Graphics::Datatypes::GeometryObjectSpire(uniqueNodeID));
+  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+    colorScheme, renState, SCIRun::Graphics::Datatypes::SpireIBO::TRIANGLES, bbox);
+  //handleGeomObject(geom, 0);
+
+  Graphics::GlyphGeom glyphs2;
+  glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
+  ss.str("");
+  ss << "clipping_plane_trans" << index <<
+    p1.x() << p1.y() << p1.z() <<
+    p2.x() << p2.y() << p2.z() <<
+    p3.x() << p3.y() << p3.z() <<
+    p4.x() << p4.y() << p4.z();
+  uniqueNodeID = ss.str();
+  renState.set(RenderState::USE_TRANSPARENCY, true);
+  renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
+  SCIRun::Graphics::Datatypes::GeometryHandle geom2(
+    new SCIRun::Graphics::Datatypes::GeometryObjectSpire(ss.str()));
+  glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
+    colorScheme, renState, SCIRun::Graphics::Datatypes::SpireIBO::TRIANGLES, bbox);
+  //handleGeomObject(geom2, 0);
+
+  clippingPlaneGeoms_.push_back(geom);
+  clippingPlaneGeoms_.push_back(geom2);
 }
 
 //------------------------------------------------------------------------------

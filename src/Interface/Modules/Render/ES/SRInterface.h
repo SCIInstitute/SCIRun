@@ -42,7 +42,7 @@
 // CPM Modules
 #include <es-render/util/Shader.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
-
+#include "comp/StaticClippingPlanes.h"
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
 
@@ -88,6 +88,11 @@ namespace SCIRun {
       {
         MOUSE_OLDSCIRUN,
         MOUSE_NEWSCIRUN
+      };
+
+      struct ClippingPlane {
+        bool visible, showFrame, reverseNormal;
+        double x, y, z, d;
       };
 
       void inputMouseDown(const glm::ivec2& pos, MouseButton btn);
@@ -172,6 +177,12 @@ namespace SCIRun {
       const glm::mat4& getViewToWorld() const;
       const glm::mat4& getViewToProjection() const;
 
+      //clipping planes
+      StaticClippingPlanes* getClippingPlanes();
+
+      //get scenenox
+      Core::Geometry::BBox getSceneBox();
+
     private:
 
       class DepthIndex {
@@ -239,11 +250,6 @@ namespace SCIRun {
         int										          mPort;
       };
 
-      struct ClippingPlane {
-        bool visible, showFrame, reverseNormal;
-        double x, y, z, d;
-      };
-
       // Sets up ESCore.
       void setupCore();
 
@@ -295,9 +301,6 @@ namespace SCIRun {
 
       // make sure clipping plane number matches
       void checkClippingPlanes(int n);
-
-      // update clipping plane geometries
-      void updateGeometryClippingPlane(int index, glm::vec4 plane);
 
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.

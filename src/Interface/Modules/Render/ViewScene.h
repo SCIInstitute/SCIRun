@@ -197,6 +197,10 @@ namespace SCIRun {
       Graphics::Datatypes::GeometryHandle buildGeometryScaleBar();
       void updateScaleBarLength();
 
+      // update clipping plane geometries
+      void buildGeomClippingPlanes();
+      void buildGeometryClippingPlane(int index, glm::vec4 plane, Core::Geometry::BBox bbox);
+
       GLWidget*                             mGLWidget;            ///< GL widget containing context.
       std::weak_ptr<Render::SRInterface>    mSpire;               ///< Instance of Spire.
       QToolBar*                             mToolBar;             ///< Tool bar.
@@ -226,6 +230,7 @@ namespace SCIRun {
       //geometries
       Modules::Visualization::TextBuilder textBuilder_;
       Graphics::Datatypes::GeometryHandle scaleBarGeom_;
+      std::vector<Graphics::Datatypes::GeometryHandle> clippingPlaneGeoms_;
 
       friend class ViewSceneControlsDock;
     };

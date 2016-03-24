@@ -61,7 +61,6 @@
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
 #include "comp/StaticWorldLight.h"
-#include "comp/StaticClippingPlanes.h"
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
 
@@ -1297,6 +1296,7 @@ namespace SCIRun {
         std::abs(glm::dot(n, a3)),
         std::abs(glm::dot(n, a4))));
     }
+
     void SRInterface::updateClippingPlanes()
     {
       StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
@@ -1334,72 +1334,23 @@ namespace SCIRun {
             i.showFrame ? 1.0 : 0.0,
             i.reverseNormal ? 1.0 : 0.0, 0.0);
           clippingPlanes->clippingPlaneCtrls.push_back(control);
-          if (i.showFrame)
-            updateGeometryClippingPlane(index, n);
+          //if (i.showFrame)
+          //  updateGeometryClippingPlane(index, n);
           index++;
         }
       }
     }
 
-    //
-    void SRInterface::updateGeometryClippingPlane(int index, glm::vec4 plane)
+    StaticClippingPlanes* SRInterface::getClippingPlanes()
     {
-      Core::Geometry::Vector diag(mSceneBBox.diagonal());
-      Core::Geometry::Point c(mSceneBBox.center());
-      Core::Geometry::Vector n(plane.x, plane.y, plane.z);
-      n.normalize();
-      Core::Geometry::Point p(c + (n * diag.length() / 2.0) * plane.w);
-      if (clippingPlanes_[index].reverseNormal)
-        n = -n;
-      double w, h; w = h = diag.length() / 2.0;
-      Core::Geometry::Vector axis1, axis2;
-      Point intersect;
-      n.find_orthogonal(axis1, axis2);
-      if (mSceneBBox.intersect(c, axis1, intersect))
-        w = std::max(w, 2.1 * (intersect - c).length());
-      if (mSceneBBox.intersect(c, axis2, intersect))
-        h = std::max(h, 2.1 * (intersect - c).length());
-      if (clippingPlanes_[index].reverseNormal)
-        p = Core::Geometry::Point(n * plane.w);
-      else
-        p = Core::Geometry::Point(-n * plane.w);
-      Core::Geometry::Point p1 = p - axis1 * w / 2.0 - axis2 * h / 2.0;
-      Core::Geometry::Point p2 = p + axis1 * w / 2.0 - axis2 * h / 2.0;
-      Core::Geometry::Point p3 = p + axis1 * w / 2.0 + axis2 * h / 2.0;
-      Core::Geometry::Point p4 = p - axis1 * w / 2.0 + axis2 * h / 2.0;
+      StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
+      return clippingPlanes;
+    }
 
-      std::stringstream ss;
-      std::string uniqueNodeID;
-
-      Graphics::GlyphGeom glyphs;
-      glyphs.addClippingPlane(p1, p2, p3, p4, 0.01 * std::min(w, h),
-        50, ColorRGB(), ColorRGB());
-      ss << "clipping_plane" << index;
-      uniqueNodeID = ss.str();
-      ColorScheme colorScheme(COLOR_UNIFORM);
-      RenderState renState;
-      renState.set(RenderState::IS_ON, true);
-      renState.set(RenderState::USE_TRANSPARENCY, false);
-      renState.defaultColor = ColorRGB(0.4, 0.4, 1);
-      renState.set(RenderState::USE_DEFAULT_COLOR, true);
-      renState.set(RenderState::USE_NORMALS, true);
-      renState.set(RenderState::IS_WIDGET, true);
-      GeometryHandle geom(new GeometryObjectSpire(uniqueNodeID));
-      glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-        colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
-      handleGeomObject(geom, 0);
-
-/*      Graphics::GlyphGeom glyphs2;
-      glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
-      ss.str("");
-      ss << "clipping_plane_trans" << index;
-      uniqueNodeID = ss.str();
-      renState.set(RenderState::USE_TRANSPARENCY, true);
-      renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
-      GeometryHandle geom2(new GeometryObjectSpire(ss.str()));
-      glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
-        colorScheme, renState, SpireIBO::TRIANGLES, mSceneBBox);
-      handleGeomObject(geom2, 0);*/
+    //get scenenox
+    Core::Geometry::BBox SRInterface::getSceneBox()
+    {
+      return mSceneBBox;
     }
 
     //------------------------------------------------------------------------------
