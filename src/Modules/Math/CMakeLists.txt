@@ -31,6 +31,7 @@ SET(Modules_Math_SRCS
   #SelectSubMatrix.cc
   #GetSubmatrix.cc 
   AppendMatrix.cc
+  CreateGeometricTransform.cc
   ConvertMatrixToScalar.cc
   ConvertScalarToMatrix.cc
   CreateMatrix.cc
@@ -48,6 +49,7 @@ SET(Modules_Math_HEADERS
   #SelectSubMatrix.h
   #GetSubmatrix.h
   AppendMatrix.h
+  CreateGeometricTransform.h
   ConvertMatrixToScalar.cc
   ConvertScalarToMatrix.h
   CreateMatrix.h
