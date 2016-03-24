@@ -876,6 +876,7 @@ void NetworkEditor::removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleI
 
 void NetworkEditor::clear()
 {
+  ModuleWidget::NetworkClearingScope clearing;
   //auto portSwitch = createDynamicPortDisabler();
   scene_->clear();
   //TODO: this (unwritten) method does not need to be called here.  the dtors of all the module widgets get called when the scene_ is cleared, which triggered removal from the underlying network.

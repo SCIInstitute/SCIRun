@@ -933,7 +933,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 
 void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
 {
-  if (mid.id_ == moduleId_ && !deleting_)
+  if (mid.id_ == moduleId_ && !deleting_ && !networkBeingCleared_)
   {
     if (ports_->removeDynamicPort(pid, inputPortLayout_))
     {
@@ -968,6 +968,18 @@ void ModuleWidget::printPortPositions() const
     std::cout << "\t" << p->pos();
   }
   std::cout << std::endl;
+}
+
+bool ModuleWidget::networkBeingCleared_(false);
+
+ModuleWidget::NetworkClearingScope::NetworkClearingScope()
+{
+  networkBeingCleared_ = true;
+}
+
+ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
+{
+  networkBeingCleared_ = false;
 }
 
 ModuleWidget::~ModuleWidget()
@@ -1180,7 +1192,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
-  if (dialog_)
+  if (dialog_ && !deleting_ && !networkBeingCleared_)
     dialog_->updateFromPortChange(numInputPorts(), portId, adding ? USER_ADDED_PORT : USER_REMOVED_PORT);
 }
 

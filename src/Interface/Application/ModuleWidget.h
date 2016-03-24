@@ -137,6 +137,12 @@ public:
 
   void updateNoteFromFile(const Note& note);
 
+  struct NetworkClearingScope
+  {
+    NetworkClearingScope();
+    ~NetworkClearingScope();
+  };
+
 public Q_SLOTS:
   virtual void execute() override;
   void toggleOptionsDialog();
@@ -254,6 +260,7 @@ private:
   QHBoxLayout* outputPortLayout_;
   NetworkEditor* editor_;
   bool deleting_;
+  static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
   int fullIndex_, miniIndex_;
   bool isViewScene_; //TODO: lots of special logic around this case.
