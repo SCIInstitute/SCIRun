@@ -43,6 +43,7 @@ namespace Datatypes
   {
   public:
     GeometryObject(const GeometryIDGenerator& idGenerator, const std::string& tag);
+    GeometryObject(const std::string& tag);
 
     GeometryObject(const GeometryObject& other) = delete;
     GeometryObject& operator=(const GeometryObject& other) = delete;

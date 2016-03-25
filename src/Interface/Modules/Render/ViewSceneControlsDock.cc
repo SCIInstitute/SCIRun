@@ -148,7 +148,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   ////View Tab
   autoRotateGroupBox_->setEnabled(false);
   viewOptionsGroupBox_->setEnabled(false);
-  showScaleBarTextGroupBox_->setEnabled(false);
+  //showScaleBarTextGroupBox_->setEnabled(false);
 
   ////Controls Tab
   transparencyGroupBox_->setVisible(false);

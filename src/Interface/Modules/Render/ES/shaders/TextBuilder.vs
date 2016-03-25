@@ -26,27 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Graphics/Datatypes/GeometryImpl.h>
+// Uniforms
+uniform float    uAspectRatio  ;      
+uniform float    uWindowWidth  ;
+uniform vec4     uTrans        ;
 
-using namespace SCIRun::Core;
-using namespace SCIRun::Graphics::Datatypes;
+// Attributes
+attribute vec3  aPos;
+attribute vec2  aTexCoord;
 
-GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator, const std::string& tag) : 
-GeometryObject(idGenerator, tag),
-mLowestValue(0.0),
-mHighestValue(0.0),
-isVisible(true),
-isClippable(true)
+//Outputs
+varying vec2 fTexCoord;
+
+void main( void )
 {
-  
-}
-
-GeometryObjectSpire::GeometryObjectSpire(const std::string& tag) :
-GeometryObject(tag),
-mLowestValue(0.0),
-mHighestValue(0.0),
-isVisible(true),
-isClippable(false)
-{
-
+  float x_scale = 2. / uWindowWidth;
+  float y_scale = 2. / (uWindowWidth / uAspectRatio);
+  gl_Position = vec4(aPos.x * x_scale + uTrans.x - 1.0, 
+                     aPos.y * y_scale + uTrans.y - 1.0,
+                     0.0, 1.0);
+  fTexCoord = aTexCoord;
 }

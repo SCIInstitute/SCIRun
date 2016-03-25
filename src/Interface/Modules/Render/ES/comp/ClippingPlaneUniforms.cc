@@ -76,15 +76,15 @@ namespace SCIRun {
       {
         if (i && c < clippingPlanes.size())
         {
-          /*glm::vec4 o = clippingPlanes[c] * clippingPlanes[c].w;
+          /*glm::vec4 o = clippingPlanes[c] * (-clippingPlanes[c].w);
           o.w = 1;
           glm::vec4 n = clippingPlanes[c];
           n.w = 0;
-          o = glm::inverse(transform) * o;
-          n = glm::transpose(transform) * n;
+          o = transform * o;
+          n = glm::inverseTranspose(transform) * n;
           o.w = 0;
           n.w = 0;
-          n.w = glm::dot(o, n);
+          n.w = -glm::dot(o, n);
           GL(glUniform4f(locClippingPlaneUniforms[c], n.x, n.y, n.z, n.w));*/
           glm::vec3 n(clippingPlanes[c].x, clippingPlanes[c].y, clippingPlanes[c].z);
           n = glm::normalize(n);

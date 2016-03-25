@@ -31,15 +31,19 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/GLWidget.h>
+#include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
 #include <boost/thread.hpp>
+#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Core::Algorithms;
@@ -124,6 +128,11 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
+
+  std::string filesystemRoot = Core::Application::Instance().executablePath().string();
+  std::string sep;
+  sep += boost::filesystem::path::preferred_separator;
+  Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
 }
 
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
@@ -196,6 +205,16 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 
 void ViewSceneDialog::mouseMoveEvent(QMouseEvent* event)
 {
+}
+
+void ViewSceneDialog::wheelEvent(QWheelEvent* event)
+{
+  if (scaleBar_.visible)
+  {
+    updateScaleBarLength();
+    scaleBarGeom_ = buildGeometryScaleBar();
+    newGeometryValue();
+  }
 }
 
 void ViewSceneDialog::keyPressEvent(QKeyEvent* event)
@@ -364,6 +383,35 @@ void ViewSceneDialog::newGeometryValue()
         }
       }
     }
+    //add objects of its own
+    //scale bar
+    ++port;
+    if (scaleBar_.visible && scaleBarGeom_)
+    {
+      auto name = scaleBarGeom_->uniqueID();
+      auto displayName = QString::fromStdString(name).split('_').at(1);
+      objectNames.push_back(name/*displayName.toStdString()*/);
+      auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(scaleBarGeom_);
+      if (realObj)
+      {
+        spire->handleGeomObject(realObj, port);
+        validObjects.push_back(name);
+      }
+    }
+    ++port;
+    //clippingplanes
+    for (auto i : clippingPlaneGeoms_)
+    {
+      auto name = i->uniqueID();
+      auto displayName = QString::fromStdString(name).split('_').at(1);
+      objectNames.push_back(name/*displayName.toStdString()*/);
+      auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(i);
+      if (realObj)
+      {
+        spire->handleGeomObject(realObj, port);
+        validObjects.push_back(name);
+      }
+    }
     spire->gcInvalidObjects(validObjects);
 
     sort(objectNames.begin(), objectNames.end());
@@ -408,6 +456,39 @@ void ViewSceneDialog::newGeometryValue()
 
   //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
   //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
+}
+
+void ViewSceneDialog::newOwnGeometryValue()
+{
+  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+
+  Guard lock(Modules::Render::ViewScene::mutex_.get());
+
+  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+
+  auto spire = mSpire.lock();
+  if (!spire)
+    return;
+
+  int port = 0;
+  std::vector<std::string> objectNames;
+  std::vector<std::string> validObjects;
+  //add objects of its own
+  //scale bar
+  if (scaleBar_.visible && scaleBarGeom_)
+  {
+    auto name = scaleBarGeom_->uniqueID();
+    auto displayName = QString::fromStdString(name).split('_').at(1);
+    objectNames.push_back(displayName.toStdString());
+    auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(scaleBarGeom_);
+    if (realObj)
+    {
+      spire->handleGeomObject(realObj, port);
+      validObjects.push_back(name);
+    }
+  }
+  spire->gcInvalidObjects(validObjects);
+
 }
 
 //------------------------------------------------------------------------------
@@ -753,14 +834,17 @@ void ViewSceneDialog::setClippingPlaneVisible(bool value)
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneVisible(clippingPlanes_[clippingPlaneIndex_].visible);
+  updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
 {
+  newGeometryValue();
   clippingPlanes_[clippingPlaneIndex_].showFrame = value;
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneFrameOn(clippingPlanes_[clippingPlaneIndex_].showFrame);
+  updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
@@ -769,6 +853,7 @@ void ViewSceneDialog::reverseClippingPlaneNormal(bool value)
   auto spire = mSpire.lock();
   if (spire)
     spire->reverseClippingPlaneNormal(clippingPlanes_[clippingPlaneIndex_].reverseNormal);
+  updatClippingPlaneDisplay();
 }
 
 void ViewSceneDialog::setClippingPlaneX(int index)
@@ -814,6 +899,10 @@ void ViewSceneDialog::updatClippingPlaneDisplay()
     clippingPlanes_[clippingPlaneIndex_].y,
     clippingPlanes_[clippingPlaneIndex_].z,
     clippingPlanes_[clippingPlaneIndex_].d);
+
+  //geometry
+  buildGeomClippingPlanes();
+  newGeometryValue();
 }
 
 //------------------------------------------------------------------------------
@@ -886,48 +975,312 @@ void ViewSceneDialog::setScaleBarVisible(bool value)
 {
   scaleBar_.visible = value;
   state_->setValue(Modules::Render::ViewScene::ShowScaleBar, value);
+  setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarFontSize(int value)
 {
   scaleBar_.fontSize = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarFontSize, value);
+  setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarUnitValue(const QString& text)
 {
   scaleBar_.unit = text.toStdString();
   state_->setValue(Modules::Render::ViewScene::ScaleBarUnitValue, text.toStdString());
+  setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarLength(double value)
 {
   scaleBar_.length = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarLength, value);
+  setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarHeight(double value)
 {
   scaleBar_.height = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarHeight, value);
+  setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarMultiplier(double value)
 {
   scaleBar_.multiplier = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarMultiplier, value);
+  setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarNumTicks(int value)
 {
   scaleBar_.numTicks = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarNumTicks, value);
+  setScaleBar();
 }
 
 void ViewSceneDialog::setScaleBarLineWidth(double value)
 {
   scaleBar_.lineWidth = value;
   state_->setValue(Modules::Render::ViewScene::ScaleBarLineWidth, value);
+  setScaleBar();
+}
+
+void ViewSceneDialog::setScaleBar()
+{
+  if (scaleBar_.visible)
+  {
+    updateScaleBarLength();
+    scaleBarGeom_ = buildGeometryScaleBar();
+    newGeometryValue();
+  }
+}
+
+// update scale bar geometries
+SCIRun::Graphics::Datatypes::GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
+{
+  const int    numTicks = scaleBar_.numTicks;
+  const double mult = scaleBar_.multiplier;
+  double length = scaleBar_.projLength;
+  const double height = scaleBar_.height;
+  glm::vec4 color(1.0);
+  glm::vec4 shift(1.95, 0.1, 0.0, 0.0);
+
+  //figure out text length first
+  size_t text_size = size_t(scaleBar_.fontSize);
+  if (!textBuilder_.isInit())
+    textBuilder_.initFreeType("FreeSans.ttf", text_size);
+  else if (!textBuilder_.isValid())
+    textBuilder_.loadNewFace("FreeSans.ttf", text_size);
+  //text
+  std::stringstream ss;
+  std::string oneline;
+  ss << scaleBar_.length << " " << scaleBar_.unit;
+  oneline = ss.str();
+  double text_len = 0.0;
+  if (textBuilder_.isInit() && textBuilder_.isValid())
+    text_len = textBuilder_.getStringLen(oneline);
+  text_len += 5;//add a 5-pixel gap
+
+  std::vector<Vector> points;
+  std::vector<uint32_t> indices;
+  int32_t numVBOElements = 0;
+  uint32_t index = 0;
+  //base line
+  points.push_back(Vector(-length - text_len, 0.0, 0.0));
+  points.push_back(Vector(-text_len, 0.0, 0.0));
+  numVBOElements += 2;
+  indices.push_back(index++);
+  indices.push_back(index++);
+  if (numTicks > 1)
+  {
+    for (int i = 0; i < numTicks; ++i)
+    {
+      double x = -length - text_len + i*length / (numTicks - 1);
+      points.push_back(Vector(x, 0.0, 0.0));
+      points.push_back(Vector(x, height, 0.0));
+      numVBOElements += 2;
+      indices.push_back(index++);
+      indices.push_back(index++);
+    }
+  }
+
+  // IBO/VBOs and sizes
+  uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
+  uint32_t vboSize = sizeof(float) * 3 * static_cast<uint32_t>(points.size());
+
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
+    new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
+    new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+
+  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
+  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+
+  for (auto a : indices) iboBuffer->write(a);
+
+  for (size_t i = 0; i < points.size(); i++) {
+    vboBuffer->write(static_cast<float>(points[i].x()));
+    vboBuffer->write(static_cast<float>(points[i].y()));
+    vboBuffer->write(static_cast<float>(points[i].z()));
+  }
+
+  ss.str("");
+  ss << "scale_bar" << scaleBar_.fontSize << scaleBar_.length <<
+    scaleBar_.height << scaleBar_.numTicks << scaleBar_.projLength;
+  std::string uniqueNodeID = ss.str();
+  std::string vboName = uniqueNodeID + "VBO";
+  std::string iboName = uniqueNodeID + "IBO";
+  std::string passName = uniqueNodeID + "Pass";
+
+  // Construct VBO.
+  std::string shader = "Shaders/HudUniform";
+  std::vector<Graphics::Datatypes::SpireVBO::AttributeData> attribs;
+  attribs.push_back(Graphics::Datatypes::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  std::vector<Graphics::Datatypes::SpireSubPass::Uniform> uniforms;
+  uniforms.push_back(Graphics::Datatypes::SpireSubPass::Uniform("uTrans", shift));
+  uniforms.push_back(Graphics::Datatypes::SpireSubPass::Uniform("uColor", color));
+  Graphics::Datatypes::SpireVBO geomVBO = Graphics::Datatypes::SpireVBO(vboName, attribs, vboBufferSPtr,
+    numVBOElements, BBox(), true);
+
+  // Construct IBO.
+
+  Graphics::Datatypes::SpireIBO geomIBO(iboName, Graphics::Datatypes::SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr);
+
+  RenderState renState;
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::HAS_DATA, true);
+  renState.set(RenderState::USE_COLORMAP, false);
+  renState.set(RenderState::USE_TRANSPARENCY, false);
+  renState.set(RenderState::IS_TEXT, true);
+
+  Graphics::Datatypes::SpireText text;
+
+  Graphics::Datatypes::SpireSubPass pass(passName, vboName, iboName, shader,
+    Graphics::Datatypes::COLOR_MAP, renState, Graphics::Datatypes::RENDER_VBO_IBO,
+    geomVBO, geomIBO, text);
+
+  // Add all uniforms generated above to the pass.
+  for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
+
+  Graphics::Datatypes::GeometryHandle geom(new Graphics::Datatypes::GeometryObjectSpire(uniqueNodeID));
+
+  geom->mIBOs.push_back(geomIBO);
+  geom->mVBOs.push_back(geomVBO);
+  geom->mPasses.push_back(pass);
+
+  //text
+  if (textBuilder_.isInit() && textBuilder_.isValid())
+  {
+    if (textBuilder_.getFaceSize() != text_size)
+      textBuilder_.setFaceSize(text_size);
+    textBuilder_.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
+    Vector shift(1.95, 0.1, 0.0);
+    Vector trans(-text_len + 5, 0.0, 0.0);
+    textBuilder_.printString(oneline, shift, trans, uniqueNodeID, geom);
+  }
+
+  return geom;
+}
+
+void ViewSceneDialog::updateScaleBarLength()
+{
+  auto spire = mSpire.lock();
+  if (spire)
+  {
+    size_t width = spire->getScreenWidthPixels();
+    size_t height = spire->getScreenHeightPixels();
+
+    glm::vec4 p1(-scaleBar_.length / 2.0, 0.0, 0.0, 1.0);
+    glm::vec4 p2(scaleBar_.length / 2.0, 0.0, 0.0, 1.0);
+    glm::mat4 matIV = spire->getWorldToView();
+    matIV[0][0] = 1.0; matIV[0][1] = 0.0; matIV[0][2] = 0.0;
+    matIV[1][0] = 0.0; matIV[1][1] = 1.0; matIV[1][2] = 0.0;
+    matIV[2][0] = 0.0; matIV[2][1] = 0.0; matIV[2][2] = 1.0;
+    glm::mat4 matProj = spire->getViewToProjection();
+    p1 = matProj * matIV * p1;
+    p2 = matProj * matIV * p2;
+    glm::vec2 p(p1.x / p1.w - p2.x / p2.w, p1.y / p1.w - p2.y / p2.w);
+    glm::vec2 pp(p.x*width / 2.0,
+      p.y*height / 2.0);
+    scaleBar_.projLength = glm::length(pp);
+    //std::cout << "p1:\t" << p1.x << "\t" << p1.y << "\t" << p1.z << "\t" << p1.w << "\n";
+    //std::cout << "p2:\t" << p2.x << "\t" << p2.y << "\t" << p2.z << "\t" << p2.w << "\n";
+    //std::cout << "pp:\t" << pp.x << "\t" << pp.y << "\n";
+  }
+}
+
+void ViewSceneDialog::buildGeomClippingPlanes()
+{
+  auto spire = mSpire.lock();
+  if (!spire)
+    return;
+  StaticClippingPlanes* clippingPlanes = spire->getClippingPlanes();
+
+  clippingPlaneGeoms_.clear();
+  int index = 0;
+  for (auto i : clippingPlanes->clippingPlanes)
+  {
+    if (clippingPlanes_[index].showFrame)
+      buildGeometryClippingPlane(index, i, spire->getSceneBox());
+    index++;
+  }
+}
+
+//
+void ViewSceneDialog::buildGeometryClippingPlane(
+  int index, glm::vec4 plane, SCIRun::Core::Geometry::BBox bbox)
+{
+  Core::Geometry::Vector diag(bbox.diagonal());
+  Core::Geometry::Point c(bbox.center());
+  Core::Geometry::Vector n(plane.x, plane.y, plane.z);
+  n.normalize();
+  Core::Geometry::Point p(c + (n * diag.length() / 2.0) * plane.w);
+  if (clippingPlanes_[index].reverseNormal)
+    n = -n;
+  double w, h; w = h = diag.length() / 2.0;
+  Core::Geometry::Vector axis1, axis2;
+  Point intersect;
+  n.find_orthogonal(axis1, axis2);
+  if (bbox.intersect(c, axis1, intersect))
+    w = std::max(w, 2.1 * (intersect - c).length());
+  if (bbox.intersect(c, axis2, intersect))
+    h = std::max(h, 2.1 * (intersect - c).length());
+  if (clippingPlanes_[index].reverseNormal)
+    p = Core::Geometry::Point(n * plane.w);
+  else
+    p = Core::Geometry::Point(-n * plane.w);
+  Core::Geometry::Point p1 = p - axis1 * w / 2.0 - axis2 * h / 2.0;
+  Core::Geometry::Point p2 = p + axis1 * w / 2.0 - axis2 * h / 2.0;
+  Core::Geometry::Point p3 = p + axis1 * w / 2.0 + axis2 * h / 2.0;
+  Core::Geometry::Point p4 = p - axis1 * w / 2.0 + axis2 * h / 2.0;
+
+  std::stringstream ss;
+  std::string uniqueNodeID;
+
+  Graphics::GlyphGeom glyphs;
+  glyphs.addClippingPlane(p1, p2, p3, p4, 0.01 * std::min(w, h),
+    50, ColorRGB(), ColorRGB());
+  ss << "clipping_plane" << index <<
+    p1.x() << p1.y() << p1.z() <<
+    p2.x() << p2.y() << p2.z() <<
+    p3.x() << p3.y() << p3.z() <<
+    p4.x() << p4.y() << p4.z();
+  uniqueNodeID = ss.str();
+  Graphics::Datatypes::ColorScheme colorScheme(Graphics::Datatypes::ColorScheme::COLOR_UNIFORM);
+  RenderState renState;
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::USE_TRANSPARENCY, false);
+  renState.defaultColor = ColorRGB(0.4, 0.4, 1);
+  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::IS_WIDGET, true);
+  SCIRun::Graphics::Datatypes::GeometryHandle geom(
+    new SCIRun::Graphics::Datatypes::GeometryObjectSpire(uniqueNodeID));
+  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+    colorScheme, renState, SCIRun::Graphics::Datatypes::SpireIBO::TRIANGLES, bbox);
+  //handleGeomObject(geom, 0);
+
+  Graphics::GlyphGeom glyphs2;
+  glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
+  ss.str("");
+  ss << "clipping_plane_trans" << index <<
+    p1.x() << p1.y() << p1.z() <<
+    p2.x() << p2.y() << p2.z() <<
+    p3.x() << p3.y() << p3.z() <<
+    p4.x() << p4.y() << p4.z();
+  uniqueNodeID = ss.str();
+  renState.set(RenderState::USE_TRANSPARENCY, true);
+  renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
+  SCIRun::Graphics::Datatypes::GeometryHandle geom2(
+    new SCIRun::Graphics::Datatypes::GeometryObjectSpire(ss.str()));
+  glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
+    colorScheme, renState, SCIRun::Graphics::Datatypes::SpireIBO::TRIANGLES, bbox);
+  //handleGeomObject(geom2, 0);
+
+  clippingPlaneGeoms_.push_back(geom);
+  clippingPlaneGeoms_.push_back(geom2);
 }
 
 //------------------------------------------------------------------------------

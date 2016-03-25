@@ -113,7 +113,10 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string& uniqueNodeID
     ColorRGB dft = state.defaultColor;
     if (useTriangles)
     {
-      shader = "Shaders/DirPhong";
+      if (geom->isClippable)
+        shader = "Shaders/DirPhong";
+      else
+        shader = "Shaders/DirPhongNoClipping";
       uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
       uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
@@ -235,6 +238,27 @@ void GlyphGeom::addCone(const Point p1, const Point& p2, double radius, double r
 {
   //std::cout << "p1: " << p1 << " p2 " << p2 << " radius: " << radius << " resolution: " << resolution << " color1: " << color1 << " color2: " << color2 << std::endl;
   generateCylinder(p1, p2, radius, 0.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
+}
+
+void GlyphGeom::addClippingPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
+  const Core::Geometry::Point& p3, const Core::Geometry::Point& p4, double radius, double resolution,
+  const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2)
+{
+  addSphere(p1, radius, resolution, color1);
+  addSphere(p2, radius, resolution, color1);
+  addSphere(p3, radius, resolution, color1);
+  addSphere(p4, radius, resolution, color1);
+  addCylinder(p1, p2, radius, resolution, color1, color2);
+  addCylinder(p2, p3, radius, resolution, color1, color2);
+  addCylinder(p3, p4, radius, resolution, color1, color2);
+  addCylinder(p4, p1, radius, resolution, color1, color2);
+}
+
+void GlyphGeom::addPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
+  const Core::Geometry::Point& p3, const Core::Geometry::Point& p4,
+  const Core::Datatypes::ColorRGB& color1)
+{
+  generatePlane(p1, p2, p3, p4, color1, numVBOElements_, points_, normals_, indices_, colors_);
 }
 
 void GlyphGeom::addLine(Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
@@ -432,7 +456,36 @@ void GlyphGeom::generatePoint(const Point p, const ColorRGB& color,
   ++numVBOElements;
 }
 
-
+void GlyphGeom::generatePlane(const Core::Geometry::Point p1, const Core::Geometry::Point p2,
+  const Core::Geometry::Point p3, const Core::Geometry::Point p4, const Core::Datatypes::ColorRGB& color,
+  int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals,
+  std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors)
+{
+  points.push_back(Vector(p1));
+  points.push_back(Vector(p2));
+  points.push_back(Vector(p3));
+  points.push_back(Vector(p4));
+  colors.push_back(color);
+  colors.push_back(color);
+  colors.push_back(color);
+  colors.push_back(color);
+  Vector n;
+  n = Cross(p2 - p1, p4 - p1).normal();
+  normals.push_back(n);
+  n = Cross(p3 - p2, p1 - p2).normal();
+  normals.push_back(n);
+  n = Cross(p4 - p3, p2 - p3).normal();
+  normals.push_back(n);
+  n = Cross(p1 - p4, p3 - p4).normal();
+  normals.push_back(n);
+  indices.push_back(0 + numVBOElements);
+  indices.push_back(1 + numVBOElements);
+  indices.push_back(2 + numVBOElements);
+  indices.push_back(2 + numVBOElements);
+  indices.push_back(3 + numVBOElements);
+  indices.push_back(0 + numVBOElements);
+  numVBOElements += 4;
+}
 
 // Addarrow from SCIRun 4
 void GlyphGeom::addArrow(const Point& center, const Vector& t,

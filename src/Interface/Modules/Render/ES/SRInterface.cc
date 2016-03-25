@@ -35,7 +35,8 @@
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 #include <Core/Application/Application.h>
-#include <Modules/Visualization/ShowColorMapModule.h>
+//#include <Modules/Visualization/ShowColorMapModule.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 
 // CPM modules.
 #include <es-general/comp/StaticScreenDims.hpp>
@@ -60,7 +61,6 @@
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
 #include "comp/StaticWorldLight.h"
-#include "comp/StaticClippingPlanes.h"
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
 
@@ -75,8 +75,6 @@ namespace fs = CPM_ES_FS_NS;
 namespace SCIRun {
   namespace Render {
 
-    std::string SRInterface::mFSRoot;
-    std::string SRInterface::mFSSeparator;
     //------------------------------------------------------------------------------
     SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
       int frameInitLimit) :
@@ -145,10 +143,6 @@ namespace SCIRun {
         mCore.addStaticComponent(iface);
       }
 
-      std::string filesystemRoot = Core::Application::Instance().executablePath().string();
-      std::string sep;
-      sep += boost::filesystem::path::preferred_separator;
-      Modules::Visualization::ShowColorMapModule::setFSStrings(filesystemRoot, sep);
     }
 
     //------------------------------------------------------------------------------
@@ -558,16 +552,6 @@ namespace SCIRun {
       return mWidgetTransform;
     }
     
-    std::string &SRInterface::getFSRoot()
-    {
-      return mFSRoot;
-    }
-
-    std::string &SRInterface::getFSSeparator()
-    {
-      return mFSSeparator;
-    }
-
     //------------------------------------------------------------------------------
     //--------------Clipping Plane Tools--------------------------------------------
     void SRInterface::checkClippingPlanes(int n)
@@ -602,6 +586,7 @@ namespace SCIRun {
     {
       checkClippingPlanes(clippingPlaneIndex_);
       clippingPlanes_[clippingPlaneIndex_].showFrame = value;
+      updateClippingPlanes();
     }
 
     void SRInterface::reverseClippingPlaneNormal(bool value)
@@ -638,6 +623,36 @@ namespace SCIRun {
       clippingPlanes_[clippingPlaneIndex_].d = value;
       updateClippingPlanes();
     }
+
+    const glm::mat4& SRInterface::getWorldToProjection() const
+    { return mCamera->getWorldToProjection(); }
+
+    const glm::mat4& SRInterface::getWorldToView() const
+    { return mCamera->getWorldToView(); }
+
+    const glm::mat4& SRInterface::getViewToWorld() const
+    { return mCamera->getViewToWorld(); }
+
+    const glm::mat4& SRInterface::getViewToProjection() const
+    { return mCamera->getViewToProjection(); }
+
+    //------------------------------------------------------------------------------
+    /*void SRInterface::setScaleBar(const ScaleBar &scaleBarData)
+    {
+      scaleBar_.visible = scaleBarData.visible;
+      scaleBar_.fontSize = scaleBarData.fontSize;
+      scaleBar_.length = scaleBarData.length;
+      scaleBar_.height = scaleBarData.height;
+      scaleBar_.multiplier = scaleBarData.multiplier;
+      scaleBar_.numTicks = scaleBarData.numTicks;
+      scaleBar_.lineWidth = scaleBarData.lineWidth;
+      scaleBar_.unit = scaleBarData.unit;
+      if (scaleBar_.visible)
+      {
+        updateScaleBarLength();
+        updateGeometryScaleBar();
+      }
+    }*/
 
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
@@ -1267,6 +1282,21 @@ namespace SCIRun {
     }
 
     //
+    double SRInterface::getMaxProjLength(const glm::vec3 &n)
+    {
+      glm::vec3 a1(-1.0, 1.0, -1.0);
+      glm::vec3 a2(-1.0, 1.0, 1.0);
+      glm::vec3 a3(1.0, 1.0, -1.0);
+      glm::vec3 a4(1.0, 1.0, 1.0);
+      return std::max(
+        std::max(
+        std::abs(glm::dot(n, a1)),
+        std::abs(glm::dot(n, a2))),
+        std::max(
+        std::abs(glm::dot(n, a3)),
+        std::abs(glm::dot(n, a4))));
+    }
+
     void SRInterface::updateClippingPlanes()
     {
       StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
@@ -1274,13 +1304,53 @@ namespace SCIRun {
       {
         clippingPlanes->clippingPlanes.clear();
         clippingPlanes->clippingPlaneCtrls.clear();
+        //boundbox transformation
+        glm::mat4 trans_bb;
+        glm::vec3 scale_bb(mSceneBBox.x_length() / 2.0, mSceneBBox.y_length() / 2.0, mSceneBBox.z_length() / 2.0);
+        glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
+        trans_bb = glm::scale(trans_bb, scale_bb);
+        trans_bb = glm::translate(trans_bb, center_bb);
+        int index = 0;
         for (auto i : clippingPlanes_)
         {
-          clippingPlanes->clippingPlanes.push_back(glm::vec4(i.x, i.y, i.z, i.d));
-          clippingPlanes->clippingPlaneCtrls.push_back(
-            glm::vec4(i.visible?1.0:0.0, i.showFrame?1.0:0.0, i.reverseNormal?1.0:0.0, 0.0));
+          glm::vec3 n3(i.x, i.y, i.z);
+          double d = i.d;
+          glm::vec4 n(0.0);
+          if (glm::length(n3) > 0.0)
+          {
+            n3 = glm::normalize(n3);
+            n = glm::vec4(n3, 0.0);
+            d *= getMaxProjLength(n3);
+          }
+          glm::vec4 o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
+          o.w = 1;
+          o = trans_bb * o;
+          n = glm::inverseTranspose(trans_bb) * n;
+          o.w = 0;
+          n.w = 0;
+          n.w = glm::dot(o, n);
+          clippingPlanes->clippingPlanes.push_back(n);
+          glm::vec4 control(i.visible ? 1.0 : 0.0,
+            i.showFrame ? 1.0 : 0.0,
+            i.reverseNormal ? 1.0 : 0.0, 0.0);
+          clippingPlanes->clippingPlaneCtrls.push_back(control);
+          //if (i.showFrame)
+          //  updateGeometryClippingPlane(index, n);
+          index++;
         }
       }
+    }
+
+    StaticClippingPlanes* SRInterface::getClippingPlanes()
+    {
+      StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
+      return clippingPlanes;
+    }
+
+    //get scenenox
+    Core::Geometry::BBox SRInterface::getSceneBox()
+    {
+      return mSceneBBox;
     }
 
     //------------------------------------------------------------------------------

@@ -42,7 +42,7 @@
 // CPM Modules
 #include <es-render/util/Shader.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
-
+#include "comp/StaticClippingPlanes.h"
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
 
@@ -88,6 +88,11 @@ namespace SCIRun {
       {
         MOUSE_OLDSCIRUN,
         MOUSE_NEWSCIRUN
+      };
+
+      struct ClippingPlane {
+        bool visible, showFrame, reverseNormal;
+        double x, y, z, d;
       };
 
       void inputMouseDown(const glm::ivec2& pos, MouseButton btn);
@@ -166,6 +171,18 @@ namespace SCIRun {
       void setClippingPlaneZ(double value);
       void setClippingPlaneD(double value);
 
+      //camera matrices
+      const glm::mat4& getWorldToProjection() const;
+      const glm::mat4& getWorldToView() const;
+      const glm::mat4& getViewToWorld() const;
+      const glm::mat4& getViewToProjection() const;
+
+      //clipping planes
+      StaticClippingPlanes* getClippingPlanes();
+
+      //get scenenox
+      Core::Geometry::BBox getSceneBox();
+
     private:
 
       class DepthIndex {
@@ -233,11 +250,6 @@ namespace SCIRun {
         int										          mPort;
       };
 
-      struct ClippingPlane {
-        bool visible, showFrame, reverseNormal;
-        double x, y, z, d;
-      };
-
       // Sets up ESCore.
       void setupCore();
 
@@ -248,6 +260,7 @@ namespace SCIRun {
       void updateWorldLight();
 
       //update the clipping planes
+      double getMaxProjLength(const glm::vec3 &n);
       void updateClippingPlanes();
 
       // Renders coordinate axes on the screen.
@@ -316,7 +329,7 @@ namespace SCIRun {
 
       ESCore                            mCore;            ///< Entity system core.
 
-
+      //Modules::Visualization::TextBuilder mTextBuilder;   /// text builder
       std::string                       mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
       std::string                       mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
       std::string                       mArrowObjectName; ///< Object name for profile arrow.
@@ -324,14 +337,15 @@ namespace SCIRun {
       std::vector<ClippingPlane>        clippingPlanes_;
       int                               clippingPlaneIndex_;
 
+      //ScaleBar                          scaleBar_;
+
       ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
       ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
       RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
 
-      static std::string mFSRoot;/// file system root
-      static std::string mFSSeparator;/// file system seperator
+      //Modules::Visualization::TextBuilder textBuilder_;     ///
     };
 
   } // namespace Render

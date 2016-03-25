@@ -24,29 +24,10 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+ */
+uniform vec4 uColor;
 
-#include <Graphics/Datatypes/GeometryImpl.h>
-
-using namespace SCIRun::Core;
-using namespace SCIRun::Graphics::Datatypes;
-
-GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator, const std::string& tag) : 
-GeometryObject(idGenerator, tag),
-mLowestValue(0.0),
-mHighestValue(0.0),
-isVisible(true),
-isClippable(true)
+void main()
 {
-  
-}
-
-GeometryObjectSpire::GeometryObjectSpire(const std::string& tag) :
-GeometryObject(tag),
-mLowestValue(0.0),
-mHighestValue(0.0),
-isVisible(true),
-isClippable(false)
-{
-
+   gl_FragColor = uColor;
 }

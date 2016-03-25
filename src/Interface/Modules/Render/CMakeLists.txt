@@ -93,7 +93,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   Interface_Modules_Base
   Core_Application_Preferences
   Core_Application
-  Core_Datatypes
   ${OPENGL_LIBRARIES}
   ${QT_OPENGL_LIBRARY}
   ${CPM_LIBRARIES}
