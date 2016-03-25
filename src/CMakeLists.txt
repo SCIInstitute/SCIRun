@@ -876,7 +876,9 @@ IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
   SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
   SET_PROPERTY(TARGET Modules_Python   PROPERTY FOLDER "Modules/Python")
-  SET_PROPERTY(TARGET Interface_Modules_Python   PROPERTY FOLDER "Interface/Modules")
+  IF(NOT BUILD_HEADLESS)
+    SET_PROPERTY(TARGET Interface_Modules_Python   PROPERTY FOLDER "Interface/Modules")
+  ENDIF()
 ENDIF()
 
 ########################################################################
