@@ -222,7 +222,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   {
     std::stringstream ss;
     std::string oneline;
-    sprintf(str2, sd.str().c_str(), i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift());
+    sprintf(str2, sd.str().c_str(), (i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift()) * scale);
     ss << str2 << " " << st->getValue(Units).toString();
     Vector shift = Vector((displaySide == 0) ?
       (xTrans > 50 ? -(textSize*strlen(ss.str().c_str())) : dash_size) : 0.,

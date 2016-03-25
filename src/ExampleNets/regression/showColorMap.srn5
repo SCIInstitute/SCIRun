@@ -156,7 +156,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>12</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -238,7 +238,7 @@
 									<name>TextBlue</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -262,7 +262,7 @@
 									<name>TextGreen</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>6.70000000000000040e-001</value>
 									</value>
 								</second>
 							</item>
@@ -274,7 +274,7 @@
 									<name>TextRed</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>3.30000000000000020e-001</value>
 									</value>
 								</second>
 							</item>
@@ -299,6 +299,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YTranslation</name>
+								</first>
+								<second>
+									<name>YTranslation</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
