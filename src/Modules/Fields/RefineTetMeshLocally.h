@@ -1,4 +1,3 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -27,30 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H 1
+#ifndef MODULES_FIELDS_RefineTetMeshLocally_H__
+#define MODULES_FIELDS_RefineTetMeshLocally_H__
 
-
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+//#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Fields/share.h>
 
 namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
+  namespace Modules {
+				namespace Fields {
 
-class SCISHARE MapFieldDataFromNodeToElemAlgo : public AlgorithmBase
-{
-  public:
-    MapFieldDataFromNodeToElemAlgo();
-    
-    static AlgorithmInputName InputField;
-    static AlgorithmOutputName OutputField;
-    static AlgorithmParameterName Method;
-    FieldHandle run(FieldHandle input_field) const; 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+	/// @class RefineTetMeshLocally
+	/// @brief Module to refine parts of Cleaver meshes 
 
-};
+      class SCISHARE RefineTetMeshLocally : public Dataflow::Networks::Module,
+	public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        RefineTetMeshLocally();
 
-}}}}
+        virtual void execute();
+        virtual void setStateDefaults(); 
+
+        INPUT_PORT(0, InputField, LegacyField);
+	OUTPUT_PORT(0, OutputField, LegacyField);
+	static const Dataflow::Networks::ModuleLookupInfo staticInfo_; 
+      };
+
+    }
+  }
+}
+
 #endif

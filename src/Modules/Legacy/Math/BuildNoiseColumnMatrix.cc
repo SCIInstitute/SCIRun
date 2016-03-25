@@ -60,6 +60,6 @@ void BuildNoiseColumnMatrix::execute()
 {
 	auto input_matrix = getRequiredInput(InputMatrix);
   algo().set(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio(),get_state()->getValue(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio()).toDouble());
-	auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
+	auto output = algo().run(withInputData((InputMatrix,input_matrix)));
 	sendOutputFromAlgorithm(ResultMatrix, output);
 } 

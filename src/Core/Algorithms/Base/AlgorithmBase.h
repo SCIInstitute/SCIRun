@@ -44,7 +44,6 @@ namespace Algorithms {
   {
   public:
     virtual ~AlgorithmBase();
-    AlgorithmOutput run(const AlgorithmInput& input) const { return run_generic(input); }
   protected:
     void dumpAlgoState() const;
   };

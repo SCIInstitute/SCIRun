@@ -131,7 +131,7 @@ ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& 
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(input, "Null input matrix");
 
-  const std::string type = matrix_is::whatType(input);
+  const std::string type = matrixIs::whatType(input);
 
   NumberOfElements num;
   input->accept(num);
@@ -149,7 +149,7 @@ ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& 
     );
 }
 
-AlgorithmOutput ReportMatrixInfoAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ReportMatrixInfoAlgorithm::run(const AlgorithmInput& input) const
 {
   auto matrix = input.get<Matrix>(Variables::InputMatrix);
 

@@ -52,7 +52,16 @@ namespace SCIRun {
     public:
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
       void setSampleColor(const QColor& color);
+      void setFogColorLabel(const QColor& color);
+      void setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
+        bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
+      void setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
+        double numTicks, double lineWidth, const QString& unit);
+      void setRenderTabValues(bool lighting, bool bbox, bool useClip, bool backCull, bool displayList, bool stereo,
+        double stereoFusion, double polygonOffset, double textOffset, int fov);
       void updateZoomOptionVisibility();
+      void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
+      void updatePlaneControlDisplay(double x, double y, double z, double d);
 
     public Q_SLOTS:
       void addItem(const QString& name, bool checked); 
@@ -64,7 +73,7 @@ namespace SCIRun {
     private Q_SLOTS:
       void slotChanged(QListWidgetItem* item);
 
-    private:
+    private:      
       std::vector<QListWidgetItem*> items_;
       void setupObjectListWidget();
     };

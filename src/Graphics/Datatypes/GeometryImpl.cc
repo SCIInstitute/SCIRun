@@ -35,7 +35,18 @@ GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator,
 GeometryObject(idGenerator, tag),
 mLowestValue(0.0),
 mHighestValue(0.0),
-isVisible(true)
+isVisible(true),
+isClippable(true)
 {
   
+}
+
+GeometryObjectSpire::GeometryObjectSpire(const std::string& tag) :
+GeometryObject(tag),
+mLowestValue(0.0),
+mHighestValue(0.0),
+isVisible(true),
+isClippable(false)
+{
+
 }

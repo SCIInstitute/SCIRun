@@ -56,7 +56,7 @@ class SCISHARE AppendFieldsAlgorithm : public AlgorithmBase
     // Algorithm Functions
     bool run(std::vector<FieldHandle>& input, FieldHandle& output);   
     bool run(std::list<FieldHandle>& input, FieldHandle& output);   
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
     AppendFieldsAlgorithm();
 };
 

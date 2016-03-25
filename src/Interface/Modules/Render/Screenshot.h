@@ -31,7 +31,7 @@
 
 #include <QtGui>
 #ifndef Q_MOC_RUN
-#include <Core/Datatypes/MatrixFwd.h>
+#include <Modules/Render/ViewScene.h>
 #endif
 
 class QGLWidget;
@@ -48,7 +48,9 @@ namespace SCIRun
       void takeScreenshot();
       void saveScreenshot();
       QString screenshotFile() const;
-      Core::Datatypes::DenseMatrixHandle toMatrix() const;
+
+
+      Modules::Render::RGBMatrices toMatrix() const;
     private:
       QGLWidget* viewport_;
       QImage screenshot_;

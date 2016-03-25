@@ -821,7 +821,7 @@ const AlgorithmOutputName CalculateSignedDistanceFieldAlgo::SignedDistanceField(
 const AlgorithmOutputName CalculateSignedDistanceFieldAlgo::ValueField("ValueField");
 const AlgorithmParameterName CalculateSignedDistanceFieldAlgo::OutputValueField("OutputValueField");
 
-AlgorithmOutput CalculateSignedDistanceFieldAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput CalculateSignedDistanceFieldAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
   auto objectField = input.get<Field>(ObjectField);

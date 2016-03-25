@@ -47,7 +47,7 @@ namespace SCIRun {
           static const AlgorithmOutputName Transformed_Field;
 
           bool run(FieldHandle input, Core::Datatypes::DenseMatrixHandle transform, FieldHandle& output) const;
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
 
       }

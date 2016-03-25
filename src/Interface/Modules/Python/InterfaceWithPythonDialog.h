@@ -44,14 +44,12 @@ namespace Gui {
 public:
     InterfaceWithPythonDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
 public Q_SLOTS:
-  virtual void updateFromPortChange(int numPorts, const std::string&) override;
+  virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
 private Q_SLOTS:
   void resetObjects();
   void loadAPIDocumentation();
 private:
-  int numMatrixPorts_ = 0, numFieldPorts_ = 0, numStringPorts_ = 0;
-  int totalInputPorts() const { return numMatrixPorts_ + numFieldPorts_ + numStringPorts_; }
-  void handleInputTableWidgetRowChange(int numPorts, const std::string& portId, const std::string& type, int& portCount);
+  void handleInputTableWidgetRowChange(const std::string& portId, const std::string& type, DynamicPortChange portChangeType);
   void setupOutputTableCells();
 };
 

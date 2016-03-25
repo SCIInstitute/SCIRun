@@ -28,6 +28,7 @@
 
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Modules/DataIO/ReadBundle.h>
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::DataIO;
@@ -57,4 +58,9 @@ void ReadBundleModule::execute()
 std::string ReadBundleModule::fileTypeList()
 {
   return "SCIRun Bundle File (*.bdl)";
+}
+
+std::string ReadBundleModule::defaultFileTypeName() const
+{
+  return fileTypeList();
 }

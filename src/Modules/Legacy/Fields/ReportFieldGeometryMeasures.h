@@ -26,30 +26,49 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromElemToNode_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromElemToNode_H 1
+#ifndef MODULES_LEGACY_FIELDS_REPORTFIELDGEOMETRYMEASURES_H__
+#define MODULES_LEGACY_FIELDS_REPORTFIELDGEOMETRYMEASURES_H__
 
-
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Fields
+      {
+        ALGORITHM_PARAMETER_DECL(MeasureLocation);
+        ALGORITHM_PARAMETER_DECL(XPositionFlag);
+        ALGORITHM_PARAMETER_DECL(YPositionFlag);
+        ALGORITHM_PARAMETER_DECL(ZPositionFlag);
+        ALGORITHM_PARAMETER_DECL(IndexFlag);
+        ALGORITHM_PARAMETER_DECL(SizeFlag);
+        ALGORITHM_PARAMETER_DECL(NormalsFlag);
+      }
+    }
+  }
+  namespace Modules {
+    namespace Fields {
 
-class SCISHARE MapFieldDataFromElemToNodeAlgo : public AlgorithmBase
-{
-  public:
-    MapFieldDataFromElemToNodeAlgo();
-    
-    static AlgorithmInputName InputField;
-    static AlgorithmOutputName OutputField;
-    static AlgorithmParameterName Method;
-    FieldHandle run(FieldHandle input_field) const; 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+      class SCISHARE ReportFieldGeometryMeasures : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<MatrixPortTag>
+      {
+      public:
+        ReportFieldGeometryMeasures();
 
-};
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
-}}}}
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, Output_Measures, Matrix);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+    }
+  }
+}
+
 #endif

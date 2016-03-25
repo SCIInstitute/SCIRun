@@ -72,7 +72,7 @@ void BuildFEVolRHS::execute()
   if (needToExecute())
   {
     update_state(Executing);
-    auto output = algo().run_generic(make_input((Mesh, mesh)));
+    auto output = algo().run(make_input((Mesh, mesh)));
     sendOutputFromAlgorithm(RHS, output);
   }
  

@@ -37,6 +37,7 @@
 #include <Graphics/Glyphs/GlyphGeom.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 //
 //#include <Core/Thread/CrowdMonitor.h>
@@ -45,6 +46,7 @@
 
 using namespace SCIRun;
 using namespace Core;
+using namespace Core::Algorithms;
 using namespace Datatypes;
 using namespace Dataflow::Networks;
 using namespace Modules::Fields;
@@ -66,6 +68,7 @@ ALGORITHM_PARAMETER_DEF(Fields, FieldElem);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
+ALGORITHM_PARAMETER_DEF(Fields, WidgetMoved);
 
 namespace SCIRun
 {
@@ -98,10 +101,72 @@ namespace SCIRun
 GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
   : GeometryGeneratingModule(staticInfo_), impl_(new GenerateSinglePointProbeFromFieldImpl)
 {
+  counter_ = -1;
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeneratedWidget);
   INITIALIZE_PORT(GeneratedPoint);
   INITIALIZE_PORT(ElementIndex);
+}
+
+void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var)
+{
+  auto xyTr = any_cast_or_default_<Variable>(var);
+  DenseMatrixHandle transformHandle(new DenseMatrix(4, 4));
+  int row = 0; 
+  int col = 0;
+  int i = 0;
+  int counter;
+  for (const auto& subVar : xyTr.toVector())
+  {
+    if (i == 0)
+    {
+      counter = subVar.toInt();
+      if (counter_ != counter)
+        counter_ = counter;
+      else
+        return;
+    }
+    else
+    {
+      if (col > 3)
+      {
+        col = 0;
+        ++row;
+      }
+      (*transformHandle)(row, col) = subVar.toDouble();
+      ++col;
+    }
+    ++i;
+  }
+  
+  //std::cout << "in probe: " << (*transformHandle) << std::endl;
+  adjustPositionFromTransform(transformHandle);
+}
+
+
+void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseMatrixHandle& transformMatrix)
+{
+  //std::cout << "GenerateSinglePointProbeFromField::adjustPositionFromTransform\n";
+  DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
+  (*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
+  //(*centerHandle) << 0, 0, 0, 1;
+  DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
+
+  Point newLocation(newTransform.get(0, 0) / newTransform.get(3, 0),
+                    newTransform.get(1, 0) / newTransform.get(3, 0),
+                    newTransform.get(2, 0) / newTransform.get(3, 0));
+
+  auto state = get_state();
+  using namespace Parameters;
+  state->setValue(XLocation, newLocation.x());
+  state->setValue(YLocation, newLocation.y());
+  state->setValue(ZLocation, newLocation.z());
+  std::string oldMoveMethod = state->getValue(MoveMethod).toString();
+  state->setValue(MoveMethod, std::string("Location"));
+  //TODO: Communicate with dialog to Q_EMIT executeActionTriggered();
+  state->setValue(WidgetMoved, true);
+  state->setValue(MoveMethod, std::string(oldMoveMethod));
+ 
 }
 
 void GenerateSinglePointProbeFromField::setStateDefaults()
@@ -121,6 +186,9 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeSize, 1.0);
   state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
+  state->setValue(WidgetMoved, false);
+
+  getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](ModuleFeedback var) { processWidgetFeedback(var); });
 }
 
 #if 0
@@ -154,19 +222,22 @@ Point GenerateSinglePointProbeFromField::currentLocation() const
 
 void GenerateSinglePointProbeFromField::execute()
 {
-  FieldHandle field = GenerateOutputField();
-  sendOutput(GeneratedPoint, field);
+  auto ifieldOption = getOptionalInput(InputField);
+  if (needToExecute())
+  {
+    FieldHandle field = GenerateOutputField(ifieldOption);
+    sendOutput(GeneratedPoint, field);
 
-  index_type index = GenerateIndex();
-  sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
+    index_type index = GenerateIndex();
+    sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
 
-  auto geom = impl_->buildWidgetObject(field, get_state(), *this);
-  sendOutput(GeneratedWidget, geom);
+    auto geom = impl_->buildWidgetObject(field, get_state(), *this);
+    sendOutput(GeneratedWidget, geom);
+  }
 }
 
-FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
+FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::optional<FieldHandle> ifieldOption)
 {
-  auto ifieldOption = getOptionalInput(InputField);
   FieldHandle ifield;
 
   update_state(Executing);
@@ -176,6 +247,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField()
   using namespace Parameters;
 
   //std::cout << "Size: " << state->getValue(ProbeSize).toInt() << std::endl;
+  //std::cout << "executing" << std::endl;
 
   // Maybe update the widget.
   BBox bbox;

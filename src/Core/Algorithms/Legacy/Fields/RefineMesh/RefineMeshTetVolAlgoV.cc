@@ -818,7 +818,7 @@ RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output,
   return (true);
 }
 
-AlgorithmOutput RefineMeshTetVolAlgoV::run_generic(const AlgorithmInput& input) const 
+AlgorithmOutput RefineMeshTetVolAlgoV::run(const AlgorithmInput& input) const 
 {
   throw "not implemented";
 }

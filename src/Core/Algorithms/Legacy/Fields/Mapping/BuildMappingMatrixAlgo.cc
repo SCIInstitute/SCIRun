@@ -51,7 +51,7 @@ const AlgorithmOutputName BuildMappingMatrixAlgo::Mapping("Mapping");
 BuildMappingMatrixAlgo::BuildMappingMatrixAlgo()
 {
   addParameter(Parameters::MaxDistance, -1.0);
-  add_option(Parameters::MappingMethod, "interpolateddata","interpolateddata|closestdata|singledestination");
+  addOption(Parameters::MappingMethod, "interpolateddata","interpolateddata|closestdata|singledestination");
 }
 
 namespace detail
@@ -548,7 +548,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
   VField* sfield = source->vfield();
   VField* dfield = destination->vfield();
 
-  std::string method = get_option(Parameters::MappingMethod);
+  std::string method = getOption(Parameters::MappingMethod);
   int sbasis_order = sfield->basis_order();
   int dbasis_order = dfield->basis_order();
 
@@ -679,7 +679,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
   return (true);
 }
 
-AlgorithmOutput BuildMappingMatrixAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput BuildMappingMatrixAlgo::run(const AlgorithmInput& input) const
 {
   auto source = input.get<Field>(Variables::Source);
   auto destination = input.get<Field>(Variables::Destination);

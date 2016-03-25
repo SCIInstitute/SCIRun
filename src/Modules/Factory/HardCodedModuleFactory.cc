@@ -54,8 +54,6 @@ ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(fals
 
   addEssentialModules();
 
-  addBundleModules();
-
   /// @todo: possibly use different build setting for these.
   if (includeTestingModules_)
   {

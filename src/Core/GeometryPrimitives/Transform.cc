@@ -1022,3 +1022,21 @@ SCIRun::Core::Geometry::operator*(const Tensor &d, const Transform &t)
   return Tensor(result[0],result[1],result[2],result[4],result[5],result[8]);
 }
 
+
+bool SCIRun::Core::Geometry::operator==(const Transform& lhs, const Transform& rhs)
+{
+  for (int i = 0; i < 4; i++)
+  {
+    for (int j = 0; j < 4; j++)
+    {
+      if (lhs.get_mat_val(i, j) != rhs.get_mat_val(i, j))
+        return false;
+    }
+  }
+  return true;
+}
+
+bool SCIRun::Core::Geometry::operator!=(const Transform& lhs, const Transform& rhs)
+{
+  return !(lhs == rhs);
+}

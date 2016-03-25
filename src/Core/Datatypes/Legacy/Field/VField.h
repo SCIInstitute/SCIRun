@@ -280,7 +280,7 @@ public:
   { vfdata_->get_values(values,&(idx[0]),idx.size()); }  
   
   /// Set all values to a specific value
-  template<class T> inline void set_all_values(const T val)
+  template<class T> inline void set_all_values(const T& val)
   { vfdata_->set_all_values(val); }
 
   /// Functions for getting a weighted value

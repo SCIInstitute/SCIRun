@@ -35,72 +35,72 @@
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-const double matrix_convert::zero_threshold = 1.00000e-08f;
+const double convertMatrix::zero_threshold = 1.00000e-08f;
 
-DenseMatrixHandle matrix_cast::as_dense(const MatrixHandle& mh)
+DenseMatrixHandle castMatrix::toDense(const MatrixHandle& mh)
 {
   return to<DenseMatrix>(mh);
 }
 
-SparseRowMatrixHandle matrix_cast::as_sparse(const MatrixHandle& mh)
+SparseRowMatrixHandle castMatrix::toSparse(const MatrixHandle& mh)
 {
   return to<SparseRowMatrix>(mh);
 }
 
-DenseColumnMatrixHandle matrix_cast::as_column(const MatrixHandle& mh)
+DenseColumnMatrixHandle castMatrix::toColumn(const MatrixHandle& mh)
 {
   return to<DenseColumnMatrix>(mh);
 }
 
-bool matrix_is::dense(const MatrixHandle& mh)
+bool matrixIs::dense(const MatrixHandle& mh)
 {
-  return matrix_cast::as_dense(mh) != 0;
+  return castMatrix::toDense(mh) != 0;
 }
 
-bool matrix_is::sparse(const MatrixHandle& mh)
+bool matrixIs::sparse(const MatrixHandle& mh)
 {
-  return matrix_cast::as_sparse(mh) != 0;
+  return castMatrix::toSparse(mh) != 0;
 }
 
-bool matrix_is::column(const MatrixHandle& mh)
+bool matrixIs::column(const MatrixHandle& mh)
 {
-  return matrix_cast::as_column(mh) != 0;
+  return castMatrix::toColumn(mh) != 0;
 }
 
-std::string matrix_is::whatType(const MatrixHandle& mh)
+std::string matrixIs::whatType(const MatrixHandle& mh)
 {
   if (!mh)
     return "<null>";
-  if (matrix_is::column(mh))
+  if (matrixIs::column(mh))
     return "DenseColumnMatrix";
-  else if (matrix_is::dense(mh))
+  else if (matrixIs::dense(mh))
     return "DenseMatrix";
-  else if (matrix_is::sparse(mh))
+  else if (matrixIs::sparse(mh))
     return "SparseRowMatrix";
   return typeid(*mh).name();
 }
 
-MatrixTypeCode matrix_is::typeCode(const MatrixHandle& mh)
+MatrixTypeCode matrixIs::typeCode(const MatrixHandle& mh)
 {
   if (!mh)
     return NULL_MATRIX;
-  if (matrix_is::column(mh))
+  if (matrixIs::column(mh))
     return COLUMN;
-  else if (matrix_is::dense(mh))
+  else if (matrixIs::dense(mh))
     return DENSE;
-  else if (matrix_is::sparse(mh))
+  else if (matrixIs::sparse(mh))
     return SPARSE_ROW;
   return UNKNOWN;
 }
 
 /* Old Code - disabled
-DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
+DenseColumnMatrixHandle convertMatrix::toColumn(const MatrixHandle& mh)
 {
-auto col = matrix_cast::as_column(mh);
+auto col = castMatrix::toColumn(mh);
 if (col)
 return col;
 
-auto dense = matrix_cast::as_dense(mh);
+auto dense = castMatrix::toDense(mh);
 if (dense)
 return boost::make_shared<DenseColumnMatrix>(dense->col(0));
 
@@ -108,17 +108,17 @@ return DenseColumnMatrixHandle();
 }
 */
 
-DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
+DenseColumnMatrixHandle convertMatrix::toColumn(const MatrixHandle& mh)
 {
-  auto col = matrix_cast::as_column(mh);
+  auto col = castMatrix::toColumn(mh);
   if (col)
     return col;
 
-  auto dense = matrix_cast::as_dense(mh);
+  auto dense = castMatrix::toDense(mh);
   if (dense)
     return boost::make_shared<DenseColumnMatrix>(dense->col(0));
 
-  auto sparse = matrix_cast::as_sparse(mh);
+  auto sparse = castMatrix::toSparse(mh);
   if (sparse)
   {
     DenseColumnMatrix dense_col(DenseColumnMatrix::Zero(sparse->nrows()));
@@ -131,17 +131,17 @@ DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
   return DenseColumnMatrixHandle();
 }
 
-DenseMatrixHandle matrix_convert::to_dense(const MatrixHandle& mh)
+DenseMatrixHandle convertMatrix::toDense(const MatrixHandle& mh)
 {
-  auto dense = matrix_cast::as_dense(mh);
+  auto dense = castMatrix::toDense(mh);
   if (dense)
     return dense;
 
-  auto col = matrix_cast::as_column(mh);
+  auto col = castMatrix::toColumn(mh);
   if (col)
     return boost::make_shared<DenseMatrix>(*col);
 
-  auto sparse = matrix_cast::as_sparse(mh);
+  auto sparse = castMatrix::toSparse(mh);
   if (sparse)
   {
     //warn user or log a message?
@@ -158,13 +158,13 @@ DenseMatrixHandle matrix_convert::to_dense(const MatrixHandle& mh)
   return DenseMatrixHandle();
 }
 
-SparseRowMatrixHandle matrix_convert::to_sparse(const MatrixHandle& mh)
+SparseRowMatrixHandle convertMatrix::toSparse(const MatrixHandle& mh)
 {
-  auto sparse = matrix_cast::as_sparse(mh);
+  auto sparse = castMatrix::toSparse(mh);
   if (sparse)
     return sparse;
 
-  auto col = matrix_cast::as_column(mh);
+  auto col = castMatrix::toColumn(mh);
   if (col)
   {
     SparseRowMatrixFromMap::Values data;
@@ -175,16 +175,16 @@ SparseRowMatrixHandle matrix_convert::to_sparse(const MatrixHandle& mh)
     return SparseRowMatrixFromMap::make(col->nrows(), 1, data);
   }
 
-  auto dense = matrix_cast::as_dense(mh);
+  auto dense = castMatrix::toDense(mh);
   if (dense)
   {
-    return denseToSparse(*dense);
+    return fromDenseToSparse(*dense);
   }
 
   return SparseRowMatrixHandle();
 }
 
-SparseRowMatrixHandle matrix_convert::denseToSparse(const DenseMatrix& dense)
+SparseRowMatrixHandle convertMatrix::fromDenseToSparse(const DenseMatrix& dense)
 {
   SparseRowMatrixFromMap::Values data;
   for (auto i = 0; i < dense.nrows(); i++)

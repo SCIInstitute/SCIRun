@@ -52,7 +52,7 @@ TEST(SwapFieldDataWithMatrixEntries, TetMeshOnNodeVectorMatLinear)
   EXPECT_NEAR(338.38, min, 1e-3);
   EXPECT_NEAR(340.657, max, 1e-4);
 
-  //algo.set_option(Parameters::OutputType, "Linear");
+  //algo.setOption(Parameters::OutputType, "Linear");
   //algo.set(Parameters::BuildBasisMapping, false);
 
   FieldHandle result;
@@ -84,7 +84,7 @@ TEST(SwapFieldDataWithMatrixEntries, TetMeshOnNodeVectorMatLinear)
 //  EXPECT_NEAR(338.38, min, 1e-3);
 //  EXPECT_NEAR(340.657, max, 1e-4);
 //
-//  algo.set_option(Parameters::OutputType, "Constant");
+//  algo.setOption(Parameters::OutputType, "Constant");
 //  algo.set(Parameters::BuildBasisMapping, false);
 //
 //  FieldHandle result;
@@ -114,7 +114,7 @@ TEST(SwapFieldDataWithMatrixEntries, TetMeshOnNodeVectorMatLinear)
 //  EXPECT_NEAR(338.38, min, 1e-3);
 //  EXPECT_NEAR(340.657, max, 1e-4);
 //
-//  algo.set_option(Parameters::OutputType, "None");
+//  algo.setOption(Parameters::OutputType, "None");
 //  algo.set(Parameters::BuildBasisMapping, false);
 //
 //  FieldHandle result;

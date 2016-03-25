@@ -78,7 +78,7 @@ void JoinFields::execute()
     setAlgoBoolFromState(JoinFieldsAlgo::MakeNoData);
     setAlgoDoubleFromState(JoinFieldsAlgo::Tolerance);
         
-    auto output = algo().run_generic(withInputData((InputFields, fields)));
+    auto output = algo().run(withInputData((InputFields, fields)));
     auto outputField = output.get<Field>(Core::Algorithms::AlgorithmParameterName(OutputField));
 
     if (forcepointcloud)

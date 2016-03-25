@@ -56,7 +56,7 @@ namespace Fields {
     static AlgorithmParameterName VolumeScalingZ;
     
     FieldHandle run(const FieldList& input) const;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const override;
+    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
 
     static boost::shared_ptr<Cleaver::ScalarField> makeCleaverFieldFromLatVol(FieldHandle field);
   };

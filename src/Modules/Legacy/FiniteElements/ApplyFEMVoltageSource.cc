@@ -107,7 +107,7 @@ void ApplyFEMVoltageSource::execute()
     (*odirichletMatrix) << 0, 0.0;
   }
 
-  if (!matrix_is::sparse(stiffnessMatrix))
+  if (!matrixIs::sparse(stiffnessMatrix))
   {
     error("Input stiffness matrix wasn't sparse.");
     return;
@@ -122,13 +122,13 @@ void ApplyFEMVoltageSource::execute()
   if (needToExecute())
   {
     unsigned int nsize = stiffnessMatrix->ncols();
-    SparseRowMatrixHandle mat(matrix_cast::as_sparse(stiffnessMatrix));
+    MatrixHandle stiffCopy(stiffnessMatrix->clone());
+    SparseRowMatrixHandle mat(castMatrix::toSparse(stiffCopy));
     DenseColumnMatrixHandle rhs(new DenseColumnMatrix(nsize));
     
     if (rhsMatrix)
     {
-      //rhsIn = rhsMatrix->column();
-      DenseColumnMatrixHandle rhsIn(matrix_cast::as_column((*rhsMatrix)));
+      DenseColumnMatrixHandle rhsIn(castMatrix::toColumn((*rhsMatrix)));
 
       if (rhsIn && (rhsIn->nrows() == nsize))
       {
@@ -137,12 +137,12 @@ void ApplyFEMVoltageSource::execute()
       }
       else
       {
-        rhs->Zero(nsize);
+        rhs->setZero(nsize);
       }
     }
     else
     {
-      rhs->Zero(nsize);
+      rhs->setZero(nsize);
     }
 
     ApplyFEMVoltageSourceAlgo algo;

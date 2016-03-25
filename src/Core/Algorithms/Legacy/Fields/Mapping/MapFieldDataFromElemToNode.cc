@@ -54,7 +54,7 @@ bool
   FieldHandle& input,
   FieldHandle& output)
 {
-  std::string method = algo->get_option(MapFieldDataFromElemToNodeAlgo::Method);
+  std::string method = algo->getOption(MapFieldDataFromElemToNodeAlgo::Method);
 
   VField *ifield = input->vfield();
   VField *ofield = output->vfield();
@@ -224,17 +224,17 @@ bool
 
 MapFieldDataFromElemToNodeAlgo::MapFieldDataFromElemToNodeAlgo()
 {
-  add_option(Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
+  addOption(Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
 }
 
 AlgorithmParameterName MapFieldDataFromElemToNodeAlgo::Method("Method");
 
-AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
 
   FieldHandle output_field;
-  output_field = run(input_field);
+  output_field = runImpl(input_field);
 
   AlgorithmOutput output;
   output[Variables::OutputField] = output_field;
@@ -243,7 +243,7 @@ AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run_generic(const AlgorithmInput
 }
 
 /// Function call to convert data from Field into Matrix data
-FieldHandle MapFieldDataFromElemToNodeAlgo::run(FieldHandle input_field) const
+FieldHandle MapFieldDataFromElemToNodeAlgo::runImpl(FieldHandle input_field) const
 {
   FieldHandle output;
 

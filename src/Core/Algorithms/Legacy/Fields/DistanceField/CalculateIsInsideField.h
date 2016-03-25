@@ -49,7 +49,7 @@ class SCISHARE CalculateIsInsideFieldAlgo : public AlgorithmBase
     CalculateIsInsideFieldAlgo();
     bool runImpl(FieldHandle input, FieldHandle object, FieldHandle& output) const;
 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 };
 
 }}}}

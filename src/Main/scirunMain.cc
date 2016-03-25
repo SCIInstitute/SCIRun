@@ -83,6 +83,16 @@ const char* utf8_encode(const std::wstring &wstr)
   return strTo;
 }
 
+static std::vector<std::string> env_strings;
+static char** winEnvironmentArray;
+static char* toCString(const std::string& str)
+{
+  char* cstring = new char[str.size() + 1];
+  std::copy(str.begin(), str.end(), cstring);
+  cstring[str.size()] = 0;
+  return cstring;
+}
+
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 #ifdef SCIRUN_SHOW_CONSOLE
@@ -114,8 +124,28 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     // Free memory allocated for CommandLineToArgvW arguments.
     LocalFree(szArglist);
   }
+  {
+    const char* a = GetEnvironmentStrings();
+    int prev = 0;
+    for (int i = 0;; i++) {
+      if (a[i] == '\0') {
+        env_strings.push_back(std::string(a + prev, a + i));
+        prev = i + 1;
+        if (a[i + 1] == '\0') {
+          break;
+        }
+      }
+    }
+  }
+  winEnvironmentArray = new char*[env_strings.size() + 1];
+  auto winEnvironmentArrayPtr = winEnvironmentArray;
+  for (const auto& env : env_strings)
+  {
+    *winEnvironmentArrayPtr++ = toCString(env);
+  }
+  winEnvironmentArray[env_strings.size()] = nullptr;
 
-  return mainImpl(argc, argv, nullptr);
+  return mainImpl(argc, argv, winEnvironmentArray);
 }
 
 #else // If not WIN32 use this main()/entry point.

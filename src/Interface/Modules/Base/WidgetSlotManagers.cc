@@ -33,16 +33,15 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Algorithms;
 
 WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog, QWidget* widget, const AlgorithmParameterName& name)
-  : state_(state), dialog_(dialog)
+  : state_(state), dialog_(dialog), name_(name)
 {
   if (widget)
   {
-    widget->setToolTip("State key: " + QString::fromStdString(name.name_));
-    widget->setStyleSheet(widget->styleSheet() + " QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+    WidgetStyleMixin::setStateVarTooltipWithStyle(widget, name.name());
   }
 }
 
-WidgetSlotManager::~WidgetSlotManager() 
+WidgetSlotManager::~WidgetSlotManager()
 {
 }
 

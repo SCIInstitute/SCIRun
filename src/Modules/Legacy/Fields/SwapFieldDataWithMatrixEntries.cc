@@ -66,7 +66,7 @@ SwapFieldDataWithMatrixEntries::execute()
     setAlgoBoolFromState(Parameters::PreserveScalar);
     algo().set(Parameters::NeedOutputMatrix, oport_connected(OutputMatrix));
 
-    auto output = algo().run_generic(withInputData((InputField, input_field)(InputMatrix, optionalAlgoInput(input_matrix))));
+    auto output = algo().run(withInputData((InputField, input_field)(InputMatrix, optionalAlgoInput(input_matrix))));
 
     sendOutputFromAlgorithm(OutputField, output);
     sendOutputFromAlgorithm(OutputMatrix, output);

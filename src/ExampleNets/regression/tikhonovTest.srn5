@@ -4,29 +4,329 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>6</count>
+			<count>16</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ReadMatrix:0</first>
+				<first>BuildNoiseColumnMatrix:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>BuildNoiseColumnMatrix</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>2</count>
+							<count>1</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>FileTypeName</name>
+									<name>SignalToNoiseRatio</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>FileTypeName</name>
+									<name>SignalToNoiseRatio</name>
 									<value class_id="11" tracking_level="0" version="0">
+										<which>1</which>
+										<value>3.00000000000000000e+01</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateStandardColorMap:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ColorMapInvert</name>
+								</first>
+								<second>
+									<name>ColorMapInvert</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapName</name>
+								</first>
+								<second>
+									<name>ColorMapName</name>
+									<value>
 										<which>2</which>
-										<value>SCIRun Matrix File</value>
+										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapResolution</name>
+								</first>
+								<second>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>EvaluateLinearAlgebraBinary:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>EvaluateLinearAlgebraBinary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>x+y</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Operator</name>
+								</first>
+								<second>
+									<name>Operator</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>EvaluateLinearAlgebraBinary:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>EvaluateLinearAlgebraBinary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>x+y</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Operator</name>
+								</first>
+								<second>
+									<name>Operator</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>EvaluateLinearAlgebraBinary:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>EvaluateLinearAlgebraBinary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>x+y</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Operator</name>
+								</first>
+								<second>
+									<name>Operator</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GetMatrixSlice:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>GetMatrixSlice</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>6</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>IsSliceColumn</name>
+								</first>
+								<second>
+									<name>IsSliceColumn</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxIndex</name>
+								</first>
+								<second>
+									<name>MaxIndex</name>
+									<value>
+										<which>0</which>
+										<value>20</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlayModeDelay</name>
+								</first>
+								<second>
+									<name>PlayModeDelay</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlayModeType</name>
+								</first>
+								<second>
+									<name>PlayModeType</name>
+									<value>
+										<which>2</which>
+										<value>looponce</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SliceIncrement</name>
+								</first>
+								<second>
+									<name>SliceIncrement</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SliceIndex</name>
+								</first>
+								<second>
+									<name>SliceIndex</name>
+									<value>
+										<which>0</which>
+										<value>8</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReadField:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>ReadField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Field File</value>
 									</value>
 								</second>
 							</item>
@@ -38,7 +338,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Matrices/tikhonov/tikhOutput_v4.mat</value>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/tikhonov_inv/25feb97_sock_closed.fld</value>
 									</value>
 								</second>
 							</item>
@@ -78,7 +378,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Matrices/tikhonov/tikhDataVector.mat</value>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/tikhonov_inv/epi_pot_128_fr_170to190.mat</value>
 									</value>
 								</second>
 							</item>
@@ -159,6 +459,330 @@
 				</second>
 			</item>
 			<item>
+				<first>RescaleColorMap:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>9.85428732007672625e+03</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>-1.25839976014293879e+04</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>SetFieldData:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>SetFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>keepTypeCheckBox</name>
+								</first>
+								<second>
+									<name>keepTypeCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowField:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>18</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CylinderRadius</name>
+								</first>
+								<second>
+									<name>CylinderRadius</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000006e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CylinderResolution</name>
+								</first>
+								<second>
+									<name>CylinderResolution</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(0.5,0.5,0.5)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparency</name>
+								</first>
+								<second>
+									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparencyValue</name>
+								</first>
+								<second>
+									<name>EdgeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparencyValue</name>
+								</first>
+								<second>
+									<name>NodeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>2.99999999999999989e-02</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>SolveInverseProblemWithTikhonov:3</first>
 				<second>
 					<module>
@@ -178,7 +802,7 @@
 									<name>LCurveText</name>
 									<value>
 										<which>2</which>
-										<value>SolveInverseProblemWithTikhonov:3 plot_graph &quot; 1.6781 6.21512 1.6781 6.2138 1.6781 6.21226 1.6781 6.21045 1.67811 6.20834 1.67811 6.20588 1.67812 6.20302 1.67813 6.19968 1.67815 6.19581 1.67817 6.19132 1.67819 6.18613 1.67823 6.18014 1.67827 6.17325 1.67833 6.16536 1.6784 6.15634 1.6785 6.14608 1.67862 6.13446 1.67877 6.12136 1.67895 6.10668 1.67918 6.09031 1.67945 6.07216 1.67977 6.05217 1.68015 6.03029 1.68058 6.00649 1.68107 5.98076 1.68162 5.95313 1.68222 5.92363 1.68286 5.89231 1.68356 5.85924 1.68428 5.8245 1.68504 5.78815 1.68582 5.75028 1.68661 5.71097 1.68741 5.67028 1.68821 5.62829 1.68901 5.58509 1.68979 5.54075 1.69055 5.49538 1.69128 5.44908 1.69199 5.402 1.69266 5.35428 1.6933 5.30612 1.69391 5.25771 1.69448 5.20927 1.69501 5.16104 1.6955 5.11325 1.69596 5.06616 1.69638 5.02001 1.69678 4.97502 1.69715 4.93142 1.69749 4.88939 1.6978 4.84908 1.6981 4.8106 1.69838 4.77403 1.69864 4.7394 1.69889 4.7067 1.69913 4.6759 1.69936 4.64694 1.69958 4.61976 1.6998 4.5943 1.70001 4.57049 1.70022 4.54827 1.70043 4.52756 1.70063 4.50829 1.70084 4.49039 1.70105 4.47375 1.70126 4.4583 1.70148 4.44394 1.7017 4.43058 1.70193 4.41814 1.70216 4.40656 1.70241 4.39579 1.70267 4.38577 1.70293 4.37646 1.70321 4.36784 1.7035 4.35986 1.70381 4.35249 1.70413 4.34569 1.70446 4.33943 1.70481 4.33367 1.70519 4.32835 1.70558 4.32345 1.706 4.31892 1.70644 4.31472 1.70692 4.31081 1.70743 4.30716 1.70799 4.30373 1.7086 4.30049 1.70927 4.29739 1.71002 4.29441 1.71086 4.29151 1.71181 4.28866 1.71291 4.28582 1.71418 4.28297 1.71566 4.28008 1.71742 4.27713 1.71949 4.27409 1.72194 4.27095 1.72486 4.26769 1.72832 4.2643 1.73242 4.26078 1.73725 4.2571 1.74295 4.25326 1.74963 4.24925 1.75743 4.24505 1.7665 4.24065 1.777 4.23603 1.78907 4.23116 1.80286 4.22602 1.81849 4.22058 1.83603 4.21484 1.8555 4.20878 1.87686 4.20238 1.9 4.19564 1.92475 4.18858 1.95091 4.1812 1.97824 4.17353 2.00649 4.16558 2.03545 4.15736 2.06493 4.14892 2.09477 4.14024 2.12486 4.13135 2.15512 4.12224 2.18551 4.11291 2.21599 4.10334 2.24656 4.09352 2.27718 4.08344 2.30784 4.07307 2.33853 4.0624 2.36923 4.05142 2.39993 4.04009 2.43064 4.02838 2.4614 4.01625 2.49224 4.00362 2.52324 3.99042 2.55446 3.97653 2.58595 3.96182 2.61773 3.94617 2.64981 3.92939 2.6821 3.91134 2.71449 3.89187 2.74679 3.87081 2.77879 3.84807 2.81022 3.82354 2.84084 3.7972 2.8704 3.76903 2.89868 3.73909 2.9255 3.7075 2.95073 3.67443 2.9743 3.64011 2.99618 3.60479 3.01638 3.56878 3.03496 3.53238 3.05202 3.4959 3.06767 3.4596 3.08207 3.42366 3.09536 3.3882 3.10772 3.35324 3.1193 3.31869 3.13025 3.28438 3.14072 3.25009 3.15081 3.21555 3.1606 3.1805 3.17017 3.1447 3.17952 3.10795 3.18866 3.0701 3.19756 3.03108 3.20619 2.99092 3.21449 2.94971 3.22241 2.90764 3.22991 2.86498 3.23695 2.82207 3.24352 2.77928 3.24961 2.73706 3.25522 2.6958 3.26039 2.65587 3.26516 2.61753 3.26956 2.58093 3.27367 2.54606 3.27754 2.51274 3.28124 2.48067 3.28485 2.44943 3.28842 2.41855 3.29202 2.38754 3.2957 2.3559 3.29949 2.32319 3.30341 2.28903 3.30747 2.2531 3.31163 2.21516 3.31587 2.17503 3.32015 2.13261 3.32441 2.08786 3.32859 2.04079 3.33263 1.99146 3.3365 1.93996 3.34015 1.88641 3.34355 1.83095 3.34669 1.77373 3.34955 1.71491 3.35214 1.65463 &quot; &quot; 0.678097 4.27713 1.71742 4.27713 1.71742 1.65463 &quot; 0.00219639 95 ; 
+										<value>SolveInverseProblemWithTikhonov:3 plot_graph &quot; 2.62456 7.15244 2.62456 7.15124 2.62456 7.14983 2.62457 7.14818 2.62457 7.14625 2.62458 7.144 2.62458 7.14136 2.62459 7.1383 2.62461 7.13472 2.62462 7.13057 2.62465 7.12575 2.62468 7.12016 2.62472 7.11371 2.62477 7.10628 2.62484 7.09774 2.62493 7.08796 2.62504 7.0768 2.62518 7.06413 2.62536 7.0498 2.62558 7.03367 2.62585 7.01562 2.62617 6.99553 2.62654 6.9733 2.62698 6.94885 2.62748 6.92214 2.62804 6.89316 2.62865 6.86193 2.62931 6.8285 2.63002 6.79297 2.63075 6.75548 2.63151 6.71617 2.63228 6.67524 2.63305 6.6329 2.63381 6.58936 2.63455 6.54487 2.63527 6.49963 2.63596 6.45386 2.63663 6.40775 2.63725 6.36148 2.63785 6.31519 2.63841 6.26902 2.63895 6.22307 2.63945 6.17746 2.63992 6.13229 2.64037 6.08765 2.64079 6.04364 2.64119 6.00038 2.64156 5.95793 2.64192 5.9164 2.64226 5.87582 2.64258 5.83623 2.64288 5.79763 2.64318 5.75996 2.64347 5.72317 2.64374 5.68714 2.64401 5.65176 2.64428 5.6169 2.64455 5.58243 2.64481 5.54823 2.64507 5.5142 2.64534 5.48028 2.6456 5.44642 2.64587 5.41263 2.64613 5.37893 2.6464 5.3454 2.64666 5.31214 2.64693 5.27926 2.64719 5.24689 2.64745 5.21517 2.64771 5.18421 2.64797 5.15413 2.64822 5.12502 2.64848 5.09691 2.64873 5.06986 2.64898 5.04386 2.64923 5.01892 2.64949 4.99501 2.64974 4.97213 2.65 4.95026 2.65027 4.92938 2.65054 4.9095 2.65081 4.89063 2.65109 4.87277 2.65138 4.85594 2.65167 4.84016 2.65197 4.82542 2.65227 4.81172 2.65258 4.79904 2.6529 4.78734 2.65323 4.77658 2.65357 4.76669 2.65392 4.7576 2.65428 4.74924 2.65465 4.74155 2.65505 4.73445 2.65546 4.72791 2.6559 4.72185 2.65636 4.71626 2.65684 4.71108 2.65736 4.70629 2.65791 4.70185 2.65849 4.69774 2.65912 4.6939 2.6598 4.69031 2.66054 4.68692 2.66135 4.68369 2.66226 4.68058 2.66327 4.67755 2.66443 4.67456 2.66576 4.67157 2.6673 4.66857 2.6691 4.66553 2.67121 4.66243 2.67369 4.65925 2.67661 4.65598 2.68007 4.65258 2.68416 4.64905 2.689 4.64536 2.69474 4.64148 2.70154 4.63738 2.70957 4.63304 2.71902 4.62842 2.73007 4.6235 2.74291 4.61824 2.75768 4.61261 2.77446 4.60661 2.79328 4.60022 2.81411 4.59342 2.83682 4.58622 2.86125 4.57862 2.8872 4.57063 2.91444 4.56226 2.94278 4.55351 2.97202 4.54436 3.00205 4.53481 3.03277 4.5248 3.06412 4.5143 3.09609 4.50323 3.12865 4.4915 3.16174 4.47904 3.19529 4.46574 3.22917 4.45153 3.26319 4.43635 3.29714 4.42015 3.33075 4.40294 3.36379 4.38474 3.39599 4.36564 3.42715 4.34574 3.45709 4.32518 3.48571 4.30415 3.51296 4.28279 3.53884 4.26126 3.56344 4.23967 3.58688 4.21809 3.60933 4.19652 3.63098 4.17488 3.65204 4.15307 3.6727 4.13089 3.69313 4.10816 3.71347 4.08466 3.73377 4.06018 3.75406 4.03456 3.77427 4.00765 3.79432 3.97939 3.81405 3.94975 3.83332 3.91881 3.85194 3.88669 3.86979 3.85364 3.88672 3.81994 3.90264 3.78595 3.9175 3.7521 3.93128 3.71879 3.94402 3.68643 3.95576 3.65536 3.96661 3.62578 3.97668 3.5978 3.98613 3.57135 3.9951 3.54623 4.00379 3.52212 4.01237 3.49861 4.02102 3.47526 4.02991 3.4516 4.03917 3.42717 4.04891 3.40156 4.05918 3.3744 4.06999 3.34538 4.08127 3.31422 4.09293 3.28072 4.10482 3.24476 4.11675 3.20623 4.12856 3.16511 4.14006 3.12142 4.15109 3.07521 4.16154 3.02658 4.17131 2.97566 4.18033 2.92259 4.18857 2.86752 4.19604 2.81063 4.20274 2.75208 4.20872 2.69203 &quot; &quot; 1.62456 4.66553 2.6691 4.66553 2.6691 2.69203 &quot; 0.00802643 111 ; 
 </value>
 									</value>
 								</second>
@@ -191,7 +815,7 @@
 									<name>LambdaCorner</name>
 									<value>
 										<which>1</which>
-										<value>2.19638537241656755e-03</value>
+										<value>8.02643352225726643e-03</value>
 									</value>
 								</second>
 							</item>
@@ -319,14 +943,143 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>ViewScene:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>ViewScene</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>BackgroundColor</name>
+								</first>
+								<second>
+									<name>BackgroundColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>GeometryFeedbackInfo</name>
+								</first>
+								<second>
+									<name>GeometryFeedbackInfo</name>
+									<value>
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name>x</name>
+												<value>
+													<which>0</which>
+													<value>231</value>
+												</value>
+											</item>
+											<item>
+												<name>y</name>
+												<value>
+													<which>0</which>
+													<value>276</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
-			<count>4</count>
+		<connections class_id="13" tracking_level="0" version="0">
+			<count>19</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ReadMatrix:0</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
-					<name>Matrix</name>
+			<item class_id="14" tracking_level="0" version="0">
+				<moduleId1_>BuildNoiseColumnMatrix:0</moduleId1_>
+				<port1_ class_id="15" tracking_level="0" version="0">
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:1</moduleId2_>
+				<port2_>
+					<name>RHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraBinary:0</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildNoiseColumnMatrix:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraBinary:0</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:1</moduleId2_>
+				<port2_>
+					<name>LHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraBinary:1</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:2</moduleId2_>
+				<port2_>
+					<name>RHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraBinary:1</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SolveInverseProblemWithTikhonov:3</moduleId2_>
+				<port2_>
+					<name>MeasuredPotentials</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraBinary:2</moduleId1_>
+				<port1_>
+					<name>Result</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportMatrixInfo:5</moduleId2_>
@@ -336,14 +1089,50 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>GetMatrixSlice:0</moduleId1_>
+				<port1_>
+					<name>OutputMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:0</moduleId2_>
+				<port2_>
+					<name>RHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadField:0</moduleId1_>
+				<port1_>
+					<name>Field</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetFieldData:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>ReadMatrix:1</moduleId1_>
 				<port1_>
 					<name>Matrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SolveInverseProblemWithTikhonov:3</moduleId2_>
+				<moduleId2_>GetMatrixSlice:0</moduleId2_>
 				<port2_>
-					<name>MeasuredPotentials</name>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadMatrix:2</moduleId1_>
+				<port1_>
+					<name>Matrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:0</moduleId2_>
+				<port2_>
+					<name>LHS</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -360,6 +1149,54 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:0</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:0</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>SolveInverseProblemWithTikhonov:3</moduleId1_>
 				<port1_>
 					<name>InverseSolution</name>
@@ -371,67 +1208,239 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>SolveInverseProblemWithTikhonov:3</moduleId1_>
+				<port1_>
+					<name>InverseSolution</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetFieldData:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SolveInverseProblemWithTikhonov:3</moduleId1_>
+				<port1_>
+					<name>RegInverse</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:2</moduleId2_>
+				<port2_>
+					<name>LHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>6</count>
+	<modulePositions class_id="16" tracking_level="0" version="0">
+		<count>16</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
-			<first>ReadMatrix:0</first>
-			<second class_id="17" tracking_level="0" version="0">
-				<first>-1.52000000000000000e+02</first>
-				<second>-4.56000000000000000e+02</second>
+		<item class_id="17" tracking_level="0" version="0">
+			<first>BuildNoiseColumnMatrix:0</first>
+			<second class_id="18" tracking_level="0" version="0">
+				<first>0.00000000000000000e+00</first>
+				<second>-5.32000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:0</first>
+			<second>
+				<first>-9.12000000000000000e+02</first>
+				<second>-7.60000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:0</first>
+			<second>
+				<first>-4.56000000000000000e+02</first>
+				<second>-5.32000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:1</first>
+			<second>
+				<first>-3.80000000000000000e+02</first>
+				<second>-3.80000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:2</first>
+			<second>
+				<first>-7.60000000000000000e+01</first>
+				<second>0.00000000000000000e+00</second>
+			</second>
+		</item>
+		<item>
+			<first>GetMatrixSlice:0</first>
+			<second>
+				<first>-3.04000000000000000e+02</first>
+				<second>-6.84000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReadField:0</first>
+			<second>
+				<first>-8.36000000000000000e+02</first>
+				<second>-5.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:1</first>
 			<second>
-				<first>-4.56000000000000000e+02</first>
-				<second>-4.56000000000000000e+02</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>-9.12000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:2</first>
 			<second>
-				<first>-7.60000000000000000e+02</first>
-				<second>-4.56000000000000000e+02</second>
+				<first>-6.84000000000000000e+02</first>
+				<second>-6.84000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:4</first>
 			<second>
-				<first>-6.08000000000000000e+02</first>
-				<second>-1.52000000000000000e+02</second>
+				<first>-3.80000000000000000e+02</first>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:5</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>-1.52000000000000000e+02</second>
+				<first>-7.60000000000000000e+01</first>
+				<second>2.28000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:0</first>
+			<second>
+				<first>-9.88000000000000000e+02</first>
+				<second>0.00000000000000000e+00</second>
+			</second>
+		</item>
+		<item>
+			<first>SetFieldData:0</first>
+			<second>
+				<first>-8.36000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:0</first>
+			<second>
+				<first>-6.84000000000000000e+02</first>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SolveInverseProblemWithTikhonov:3</first>
 			<second>
-				<first>-6.08000000000000000e+02</first>
-				<second>-3.04000000000000000e+02</second>
+				<first>-5.32000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ViewScene:0</first>
+			<second>
+				<first>-4.71000000000000000e+02</first>
+				<second>2.89000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>0</count>
+	<moduleNotes class_id="19" tracking_level="0" version="0">
+		<count>4</count>
 		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>EvaluateLinearAlgebraBinary:2</first>
+			<second class_id="21" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Use regularized inverse operator to compute inverse solution&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Use regularized inverse operator to compute inverse solution</noteText>
+				<position>3</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>ReadMatrix:1</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Epicardial potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Epicardial potentials</noteText>
+				<position>5</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>ReadMatrix:2</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Forward&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Matrix&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Forward
+Matrix</noteText>
+				<position>3</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:0</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>ID: 0</noteText>
+				<position>0</position>
+				<fontSize>13</fontSize>
+			</second>
+		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>6</count>
+	<moduleTags class_id="22" tracking_level="0" version="0">
+		<count>16</count>
 		<item_version>0</item_version>
-		<item class_id="20" tracking_level="0" version="0">
-			<first>ReadMatrix:0</first>
+		<item class_id="23" tracking_level="0" version="0">
+			<first>BuildNoiseColumnMatrix:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>GetMatrixSlice:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReadField:0</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -451,7 +1460,23 @@
 			<second>0</second>
 		</item>
 		<item>
+			<first>RescaleColorMap:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>SetFieldData:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ShowField:0</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>SolveInverseProblemWithTikhonov:3</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ViewScene:0</first>
 			<second>0</second>
 		</item>
 	</moduleTags>

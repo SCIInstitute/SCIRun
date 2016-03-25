@@ -81,11 +81,11 @@ protected:
 		}
 		{
 			ScopedTimer t("reading sparse matrix");
-			A = matrix_cast::as_sparse(reader.run(Afile.string()));
+			A = castMatrix::toSparse(reader.run(Afile.string()));
 		}
 		{
 			ScopedTimer t("reading rhs");
-			rhs = matrix_cast::as_dense(reader.run(rhsFile.string()));
+			rhs = castMatrix::toDense(reader.run(rhsFile.string()));
 		}
 		 // algo object will initialize x0 to the zero vector
 
@@ -96,7 +96,7 @@ protected:
 		algo.set(Variables::MaxIterations, 667);
 		algo.set(Variables::TargetError, 1e-4);
 
-		algo.set_option(Variables::Method, ::std::tr1::get<0>(GetParam()));
+		algo.setOption(Variables::Method, ::std::tr1::get<0>(GetParam()));
 		algo.setUpdaterFunc([](double x) {});
 
 		/*
@@ -109,7 +109,7 @@ protected:
 
 		auto scirun4solution = reader.run(solutionFile.string());
 		ASSERT_TRUE(scirun4solution.get() != nullptr);
-		DenseColumnMatrixHandle expected = matrix_convert::to_column(scirun4solution);
+		DenseColumnMatrixHandle expected = convertMatrix::toColumn(scirun4solution);
 
 		EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*expected, *solution, ::std::tr1::get<1>(GetParam()));
 
@@ -138,7 +138,7 @@ TEST_P(SolveLinearSystemTestsAlgoParameterized, CanSolveDarrellParameterized)
 
 		ASSERT_FALSE(x0);
 
-		ASSERT_TRUE(algo.run(A, matrix_convert::to_column(rhs), x0, solution));
+		ASSERT_TRUE(algo.run(A, convertMatrix::toColumn(rhs), x0, solution));
 
 		ASSERT_TRUE(solution.get() != nullptr);
 		EXPECT_EQ(10149, solution->nrows());

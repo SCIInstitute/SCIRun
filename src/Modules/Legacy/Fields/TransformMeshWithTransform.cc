@@ -56,7 +56,7 @@ void TransformMeshWithTransform::execute()
 
   if (needToExecute())
   {
-    auto output = algo().run_generic(withInputData((InputField, ifield)(TransformMatrix, imatrix)));
+    auto output = algo().run(withInputData((InputField, ifield)(TransformMatrix, imatrix)));
     sendOutputFromAlgorithm(Transformed_Field, output);
   }
 }

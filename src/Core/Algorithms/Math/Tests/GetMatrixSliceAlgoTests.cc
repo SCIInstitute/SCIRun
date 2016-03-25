@@ -57,7 +57,7 @@ namespace
 
   SparseRowMatrixHandle matrix2()
   {
-    return matrix_convert::to_sparse(matrix1());
+    return convertMatrix::toSparse(matrix1());
   }
 }
 
@@ -78,14 +78,14 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowDense)
     auto col = algo.runImpl(m1, i, true);
     DenseMatrix expected(m1->col(i));
     //std::cout << "expected column:\n" << expected << std::endl;
-    EXPECT_EQ(expected, *matrix_cast::as_dense(col.get<0>()));
+    EXPECT_EQ(expected, *castMatrix::toDense(col.get<0>()));
     EXPECT_EQ(m1->ncols() - 1, col.get<1>());
   }
   for (int i = 0; i < m1->nrows(); ++i)
   {
     auto row = algo.runImpl(m1, i, false);
     DenseMatrix expected(m1->row(i));
-    EXPECT_EQ(expected, *matrix_cast::as_dense(row.get<0>()));
+    EXPECT_EQ(expected, *castMatrix::toDense(row.get<0>()));
     EXPECT_EQ(m1->nrows() - 1, row.get<1>());
   }
 }
@@ -101,8 +101,8 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowSparse)
     auto col = algo.runImpl(m1, i, true);
     DenseMatrix expected(matrix1()->col(i));
     ASSERT_TRUE(col.get<0>() != nullptr);
-    //std::cout << "expected\n" << expected << "\n\nactual\n" << *matrix_convert::to_dense(matrix_cast::as_sparse(col.get<0>())) << std::endl;
-    EXPECT_EQ(expected, *matrix_convert::to_dense(matrix_cast::as_sparse(col.get<0>())));
+    //std::cout << "expected\n" << expected << "\n\nactual\n" << *convertMatrix::toDense(castMatrix::toSparse(col.get<0>())) << std::endl;
+    EXPECT_EQ(expected, *convertMatrix::toDense(castMatrix::toSparse(col.get<0>())));
     EXPECT_EQ(m1->ncols() - 1, col.get<1>());
   }
   for (int i = 0; i < m1->nrows(); ++i)
@@ -110,7 +110,7 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowSparse)
     auto row = algo.runImpl(m1, i, false);
     SparseRowMatrix expected(m1->row(i));
     ASSERT_TRUE(row.get<0>() != nullptr);
-    EXPECT_SPARSE_EQ(expected, *matrix_cast::as_sparse(row.get<0>()));
+    EXPECT_SPARSE_EQ(expected, *castMatrix::toSparse(row.get<0>()));
     EXPECT_EQ(m1->nrows() - 1, row.get<1>());
   }
 }
@@ -120,7 +120,7 @@ TEST(GetMatrixSliceAlgoTests, DISABLED_RunGenericWorks)
   GetMatrixSliceAlgo algo;
 
   DenseMatrixHandle m1(matrix1());
-  //auto output = algo.run_generic()
+  //auto output = algo.run()
 
   FAIL() << "todo";
 }

@@ -45,7 +45,7 @@ ALGORITHM_PARAMETER_DEF(Fields, FilterCutoff);
 
 FairMeshAlgo::FairMeshAlgo()
 {
-  add_option(Parameters::FairMeshMethod,"fast","fast|desbrun");
+  addOption(Parameters::FairMeshMethod,"fast","fast|desbrun");
   addParameter(Parameters::NumIterations,50);
   addParameter(Parameters::Lambda,0.6307);
   addParameter(Parameters::FilterCutoff,0.1);
@@ -75,7 +75,7 @@ bool FairMeshAlgo::runImpl(FieldHandle input,FieldHandle& output) const
     return (true);
   }
 
-  std::string method = get_option(Parameters::FairMeshMethod);
+  std::string method = getOption(Parameters::FairMeshMethod);
   int num_iter = 2*get(Parameters::NumIterations).toInt();
   double lambda = get(Parameters::Lambda).toDouble();
   double filter_cutoff = get(Parameters::FilterCutoff).toDouble();
@@ -251,7 +251,7 @@ bool FairMeshAlgo::runImpl(FieldHandle input,FieldHandle& output) const
 const AlgorithmInputName FairMeshAlgo::Input_Mesh("Input_Mesh");
 const AlgorithmOutputName FairMeshAlgo::Faired_Mesh("Faired_Mesh");
 
-AlgorithmOutput FairMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput FairMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Input_Mesh);
 

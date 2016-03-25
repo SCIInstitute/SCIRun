@@ -78,7 +78,7 @@ AlgorithmParameterName MarchingCubesAlgo::build_node_interpolant("build_node_int
 AlgorithmParameterName MarchingCubesAlgo::build_elem_interpolant("build_elem_interpolant");
 AlgorithmParameterName MarchingCubesAlgo::num_threads("num_threads");
 
-AlgorithmOutput MarchingCubesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MarchingCubesAlgo::run(const AlgorithmInput& input) const
 {
 
   AlgorithmOutput output;
@@ -189,7 +189,7 @@ MarchingCubesAlgoP<TESSELATOR>::run(const AlgorithmBase* algo,
  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   append_fields_.set_progress_reporter(algo->get_progress_reporter());
   append_matrices_.set_progress_reporter(algo->get_progress_reporter());
-  append_matrices_.set_option("method","append_rows");
+  append_matrices_.setOption("method","append_rows");
  #endif
 
   for (size_t j=0; j<iso_values_.size(); j++)

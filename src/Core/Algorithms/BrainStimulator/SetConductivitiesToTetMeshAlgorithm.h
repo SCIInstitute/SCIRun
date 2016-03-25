@@ -64,7 +64,7 @@ namespace BrainStimulator {
       SetConductivitiesToMeshAlgorithm();
       FieldHandle run(FieldHandle fh) const;
     
-      AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+      AlgorithmOutput run(const AlgorithmInput& input) const override;
       static AlgorithmInputName InputField;
       static AlgorithmOutputName OutputField;
       

@@ -55,39 +55,11 @@ void InsertMatricesIntoBundle::setStateDefaults()
 
 }
 
-void InsertMatricesIntoBundle::portAddedSlot(const ModuleId& mid, const PortId& pid)
-{
-  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == id_)
-  {
-    int matrices = num_input_ports() - 2; // -1 for empty end, -1 for bundle port 0
-    get_state()->setTransientValue(NumMatrices, matrices);
-  }
-}
-
-void InsertMatricesIntoBundle::portRemovedSlot(const ModuleId& mid, const PortId& pid)
-{
-  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == id_)
-  {
-    int matrices = num_input_ports() - 2; // -1 for empty end, -1 for bundle port 0
-    get_state()->setTransientValue(NumMatrices, matrices);
-  }
-}
-
 void InsertMatricesIntoBundle::execute()
 {
   auto bundleOption = getOptionalInput(InputBundle);
   auto matrices = getRequiredDynamicInputs(InputMatrices);
 
-  //if (inputs_changed_ || guiMatrice1name_.changed() || 
-  //  guiMatrice2name_.changed() || guiMatrice3name_.changed() ||
-  //  guiMatrice4name_.changed() || guiMatrice5name_.changed() ||
-  //  guiMatrice6name_.changed() || 
-  //  guireplace1_.changed() || guireplace2_.changed() ||
-  //  guireplace3_.changed() || guireplace4_.changed() ||
-  //  guireplace5_.changed() || guireplace6_.changed() ||
-  //  guibundlename_.changed() || !oport_cached("bundle"))
   if (needToExecute())
   {
     update_state(Executing);
@@ -107,19 +79,24 @@ void InsertMatricesIntoBundle::execute()
     }
 
     //TODO: instead grab a vector of tuple<string,bool>. need to modify Variable::Value again
-    auto matrixNames = get_state()->getValue(MatrixNames).toVector();
     auto replace = get_state()->getValue(MatrixReplace).toVector();
+    auto iPorts = inputPorts();
+    if (matrices.size() != iPorts.size() - 2)
+      warning("Problem in state of dynamic ports");
+    auto matrixPortNameIterator = iPorts.begin() + 1; // bundle port is first
+    auto state = get_state();
 
     for (int i = 0; i < matrices.size(); ++i)
     {
-      auto mat = matrices[i];
-      if (mat)
+      auto matrix = matrices[i];
+      auto stateName = state->getValue(Name((*matrixPortNameIterator++)->id().toString())).toString();
+      if (matrix)
       {
-        auto name = i < matrixNames.size() ? matrixNames[i].toString() : ("Matrix" + boost::lexical_cast<std::string>(i));
-        auto replaceMatrice = i < replace.size() ? replace[i].toBool() : true;
-        if (replaceMatrice || !bundle->isMatrix(name))
+        auto name = !stateName.empty() ? stateName : ("matrix" + boost::lexical_cast<std::string>(i));
+        auto replaceMatrix = i < replace.size() ? replace[i].toBool() : true;
+        if (replaceMatrix || !bundle->isMatrix(name))
         {
-          bundle->set(name, mat);
+          bundle->set(name, matrix);
         }
       }
     }

@@ -28,10 +28,10 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Testing/Utils/SCIRunFieldSamples.h>
 #include <Testing/ModuleTestBase/share.h>
 
 namespace SCIRun 
@@ -64,18 +64,15 @@ namespace SCIRun
 
     };
 
-    SCISHARE FieldHandle CreateEmptyLatVol();
-    SCISHARE FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez);
-
     class SCISHARE MockAlgorithm : public SCIRun::Core::Algorithms::AlgorithmBase
     {
     public:
-      MOCK_CONST_METHOD1(run_generic, SCIRun::Core::Algorithms::AlgorithmOutput(const SCIRun::Core::Algorithms::AlgorithmInput&));
+      MOCK_CONST_METHOD1(run, SCIRun::Core::Algorithms::AlgorithmOutput(const SCIRun::Core::Algorithms::AlgorithmInput&));
       MOCK_CONST_METHOD1(keyNotFoundPolicy, bool(const SCIRun::Core::Algorithms::AlgorithmParameterName&));
       MOCK_METHOD2(set, bool(const SCIRun::Core::Algorithms::AlgorithmParameterName&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&));
       MOCK_CONST_METHOD1(get, const SCIRun::Core::Algorithms::AlgorithmParameter&(const SCIRun::Core::Algorithms::AlgorithmParameterName&));
-      //MOCK_METHOD2(set_option, void(const AlgorithmParameterName&, const std::string& value));
-      //MOCK_CONST_METHOD1(get_option, std::string(const AlgorithmParameterName&));
+      //MOCK_METHOD2(setOption, void(const AlgorithmParameterName&, const std::string& value));
+      //MOCK_CONST_METHOD1(getOption, std::string(const AlgorithmParameterName&));
     };
 
     typedef boost::shared_ptr< ::testing::NiceMock<MockAlgorithm> > MockAlgorithmPtr;

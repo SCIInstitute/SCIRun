@@ -55,6 +55,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(ProbeSize);
         ALGORITHM_PARAMETER_DECL(ProbeLabel);
         ALGORITHM_PARAMETER_DECL(ProbeColor);
+        ALGORITHM_PARAMETER_DECL(WidgetMoved);
       }
     }
   }
@@ -79,12 +80,14 @@ namespace SCIRun {
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
+        int counter_;
         boost::shared_ptr<class GenerateSinglePointProbeFromFieldImpl> impl_;
         Core::Geometry::Point currentLocation() const;
+        void processWidgetFeedback(Dataflow::Networks::ModuleFeedback var);
+        void adjustPositionFromTransform(const Core::Datatypes::DenseMatrixHandle& transformMatrix);
         
-        FieldHandle GenerateOutputField();
-        index_type GenerateIndex();
-        
+        FieldHandle GenerateOutputField(boost::optional<FieldHandle> ifieldOption);
+        index_type GenerateIndex();        
       };
 
       class SCISHARE PointWidgetStub

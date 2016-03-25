@@ -253,8 +253,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 
   setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges | ItemIsFocusable);
 
-  //TODO: need dynamic zValue
-  setZValue(1);
+  setZValue(defaultZValue());
   setToolTip("Left - Highlight\nDouble-Left - Menu\ni - Datatype info");
   setAcceptHoverEvents(true);
 
@@ -314,6 +313,7 @@ void ConnectionLine::trackNodes()
     //qDebug() << "trackNodes";
     drawer_->draw(this, fromPort_->position(), toPort_->position());
     updateNotePosition();
+    setZValue(defaultZValue());
   }
   else
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
@@ -328,6 +328,12 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
   }
 }
 
+double ConnectionLine::defaultZValue() const
+{
+  // longer the connection length, the lower the z-value should be. Just negate the length.
+  return -(fromPort_->position() - toPort_->position()).manhattanLength();
+}
+
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
   //TODO: this is a bit inconsistent, disabling for now
@@ -336,7 +342,7 @@ void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 	setColorAndWidth(placeHoldingColor_, placeHoldingWidth_);
 	menuOpen_ = false;
-	setZValue(0);
+	setZValue(defaultZValue());
   fromPort_->turn_off_light();
   toPort_->turn_off_light();
   QGraphicsPathItem::mouseReleaseEvent(event);
@@ -351,7 +357,7 @@ void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		placeHoldingColor_ = color();
     placeHoldingWidth_ = pen().width();
 		setColorAndWidth(Qt::red, HOVERED_CONNECTION_WIDTH);
-		setZValue(100);
+		setZValue(1);
     fromPort_->turn_on_light();
     toPort_->turn_on_light();
 	}

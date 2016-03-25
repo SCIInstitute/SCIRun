@@ -265,6 +265,7 @@ public:
   VFDATA_ACCESS_DECLARATION(unsigned long long)
   VFDATA_ACCESS_DECLARATION(float)
   VFDATA_ACCESS_DECLARATION(double)
+  VFDATA_ACCESS_DECLARATION(std::complex<double>)
   VFDATA_ACCESS_DECLARATION(Core::Geometry::Vector)
   VFDATA_ACCESS_DECLARATION(Core::Geometry::Tensor)
 
@@ -745,8 +746,41 @@ protected:
   HFDATA& hfdata_;  // Additional data for hermitian interpolation data
 };
 
+template <typename Scalar>
+struct LessThan
+{
+  bool operator()(const Scalar& lhs, const Scalar& rhs) const
+  {
+    return lhs < rhs;
+  }
+};
 
+template <>
+struct SCISHARE LessThan<std::complex<double>>
+{
+  bool operator()(const std::complex<double>& lhs, const std::complex<double>& rhs) const
+  {
+    return std::norm(lhs) < std::norm(rhs);
+  }
+};
 
+template <typename Scalar>
+struct GreaterThan
+{
+  bool operator()(const Scalar& lhs, const Scalar& rhs) const
+  {
+    return lhs > rhs;
+  }
+};
+
+template <>
+struct SCISHARE GreaterThan<std::complex<double>>
+{
+  bool operator()(const std::complex<double>& lhs, const std::complex<double>& rhs) const
+  {
+    return std::norm(lhs) > std::norm(rhs);
+  }
+};
 
 
 template<class FDATA, class EFDATA, class HFDATA>
@@ -770,9 +804,10 @@ public:
     else 
       return (false);
 
+    LessThan<typename FDATA::value_type> less;
     for (size_type p=1; p<sz; p++) 
     {
-      if (this->fdata_[p] < tval) 
+      if (less(this->fdata_[p], tval))
       { 
         tval = this->fdata_[p]; 
         idx = VMesh::index_type(p); 
@@ -788,8 +823,15 @@ public:
     idx = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
     if (sz > 0) tval = this->fdata_[0]; else return (false);
-    for (size_type p=1; p<sz; p++) 
-        if (this->fdata_[p] > tval) { tval = this->fdata_[p]; idx = VMesh::index_type(p); }
+    GreaterThan<typename FDATA::value_type> greater;
+    for (size_type p = 1; p < sz; p++)
+    {
+      if (greater(this->fdata_[p], tval))
+      {
+        tval = this->fdata_[p]; 
+        idx = VMesh::index_type(p);
+      }
+    }
     val = CastFData<double>(tval);
     return (true);
   }
@@ -803,10 +845,12 @@ public:
     idxmax = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
     if (sz > 0) { tval = this->fdata_[0]; tval2 = tval; } else return (false);
+    LessThan<typename FDATA::value_type> less;
+    GreaterThan<typename FDATA::value_type> greater;
     for (size_type p=1; p<sz; p++) 
     {
-      if (this->fdata_[p] < tval) { tval = this->fdata_[p]; idxmin = VMesh::index_type(p); }
-      if (this->fdata_[p] > tval2) { tval2 = this->fdata_[p]; idxmax = VMesh::index_type(p); }
+      if (less(this->fdata_[p], tval)) { tval = this->fdata_[p]; idxmin = VMesh::index_type(p); }
+      if (greater(this->fdata_[p], tval2)) { tval2 = this->fdata_[p]; idxmax = VMesh::index_type(p); }
     }
     min = CastFData<double>(tval);
     max = CastFData<double>(tval2);
@@ -944,6 +988,7 @@ public:
 
 
 VFDATAT_ACCESS_DEFINITION(double)
+VFDATAT_ACCESS_DEFINITION(std::complex<double>)
 VFDATAT_ACCESS_DEFINITION(Core::Geometry::Vector)
 VFDATAT_ACCESS_DEFINITION(Core::Geometry::Tensor)
 VFDATAT_ACCESS_DEFINITION(char)
@@ -959,6 +1004,7 @@ VFDATAT_ACCESS_DEFINITION(unsigned long long)
 VFDATAT_ACCESS_DEFINITION2(int)
 VFDATAT_ACCESS_DEFINITION2(float)
 VFDATAT_ACCESS_DEFINITION2(double)
+//VFDATAT_ACCESS_DEFINITION2(std::complex<double>)
 VFDATAT_ACCESS_DEFINITION2(Core::Geometry::Vector)
 VFDATAT_ACCESS_DEFINITION2(Core::Geometry::Tensor)
 

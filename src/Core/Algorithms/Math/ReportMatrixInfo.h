@@ -46,7 +46,7 @@ namespace Math {
     Outputs run(const Inputs& input) const;
     static std::string summarize(const Outputs& info);
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
   };
 
 }}}}

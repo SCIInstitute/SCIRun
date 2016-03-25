@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_READ_MATRIX_H
-#define INTERFACE_MODULES_READ_MATRIX_H
+// Uniforms
+uniform float    uAspectRatio  ;      
+uniform float    uWindowWidth  ;
+uniform vec4     uTrans        ;
 
-#include "Interface/Modules/DataIO/ui_ReadMatrix.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
-#include <Interface/Modules/DataIO/share.h>
+// Attributes
+attribute vec3  aPos;
 
-namespace SCIRun {
-namespace Gui {
-
-class SCISHARE ReadMatrixDialog : public ModuleDialogGeneric,
-  //public SCIRun::State::SendScalarState,
-  public Ui::ReadMatrix, public RemembersFileDialogDirectory
+void main( void )
 {
-	Q_OBJECT
-
-public:
-  ReadMatrixDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-protected:
-  virtual void pullSpecial() override;
-
-private Q_SLOTS:
-  void pushFileNameToState();
-  void openFile();
-};
-
+  float x_scale = 2. / uWindowWidth;
+  float y_scale = 2. / (uWindowWidth / uAspectRatio);
+  gl_Position = vec4(aPos.x * x_scale + uTrans.x - 1.0, 
+                     aPos.y * y_scale + uTrans.y - 1.0,
+                     0.0, 1.0);
 }
-}
-
-#endif

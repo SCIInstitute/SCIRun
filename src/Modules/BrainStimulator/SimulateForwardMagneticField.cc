@@ -63,7 +63,7 @@ void SimulateForwardMagneticFieldModule::execute()
   
   if (needToExecute())
   {
-     auto output = algo().run_generic(make_input((ElectricField, EField)(ConductivityTensor, CondTensor)(DipoleSources, Dipoles)(DetectorLocations, Detectors)));
+     auto output = algo().run(make_input((ElectricField, EField)(ConductivityTensor, CondTensor)(DipoleSources, Dipoles)(DetectorLocations, Detectors)));
     sendOutputFromAlgorithm(MagneticField, output);
     sendOutputFromAlgorithm(MagneticFieldMagnitudes, output);
   }

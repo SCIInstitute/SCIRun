@@ -64,7 +64,7 @@ void ProjectPointsOntoMesh::execute()
 
     setAlgoOptionFromState(Parameters::ProjectMethod);
 
-    auto output = algo().run_generic(withInputData((InputField, input)(ObjectField, object)));
+    auto output = algo().run(withInputData((InputField, input)(ObjectField, object)));
     
     sendOutputFromAlgorithm(OutputField, output);
   }

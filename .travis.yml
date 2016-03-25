@@ -1,3 +1,4 @@
+sudo: required
 language:
 - cpp
 
@@ -34,9 +35,7 @@ install:
 # hopefully make OS X builds a bit faster
 script:
   - cd bin
-  - cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../Superbuild
-  - make -j4
-  - cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF ../Superbuild # factory config needs 2 cmakes ?!?
+  - cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DRUN_BASIC_REGRESSION_TESTS:BOOL=OFF -DBUILD_TESTING:BOOL=OFF ../Superbuild
   - make -j4
 #  make SCIRunTestData_external
 #  && make test

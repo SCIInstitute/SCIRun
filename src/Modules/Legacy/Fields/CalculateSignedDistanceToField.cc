@@ -60,7 +60,7 @@ void CalculateSignedDistanceToField::execute()
     auto inputs = make_input((InputField, input)(ObjectField, object));
 
     algo().set(CalculateSignedDistanceFieldAlgo::OutputValueField, value_connected);
-    auto output = algo().run_generic(inputs);
+    auto output = algo().run(inputs);
 
     sendOutputFromAlgorithm(SignedDistanceField, output);
 

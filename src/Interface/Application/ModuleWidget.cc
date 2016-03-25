@@ -107,7 +107,7 @@ namespace Gui {
   };
 }}
 
-QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
+QColor Gui::to_color(const std::string& str, int alpha)
 {
   QColor result;
   if (SCIRunMainWindow::Instance()->newInterface())
@@ -712,11 +712,12 @@ void ModuleWidget::addPorts(int index)
   addOutputPortsToLayout(index);
 }
 
-void ModuleWidget::createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
+void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider)
 {
   const ModuleId moduleId = moduleInfoProvider.get_id();
   size_t i = 0;
-  for (const auto& port : moduleInfoProvider.inputPorts())
+  const auto& inputs = moduleInfoProvider.inputPorts();
+  for (const auto& port : inputs)
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
@@ -725,18 +726,32 @@ void ModuleWidget::createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfo
       moduleId, port->id(),
       i, port->isDynamic(), connectionFactory_,
       closestPortFinder_,
-      0,
+      PortDataDescriber(),
       this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
     ++i;
-    if (dialog_)
-      dialog_->updateFromPortChange(i, port->id().toString());
+    if (dialog_ && port->isDynamic())
+    {
+      auto portConstructionType = INITIAL_PORT_CONSTRUCTION;
+      auto nameMatches = [&](const InputPortHandle& in)
+      {
+        return in->id().name == port->id().name;
+      };
+      auto justAddedIndex = i - 1;
+      bool isNotLastDynamicPortOfThisName = justAddedIndex < inputs.size() - 1
+        && std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.cend();
+      //qDebug() << "UPDATE FROM PORT CHANGE TYPE CHECK:" << isNotLastDynamicPortOfThisName << justAddedIndex << inputs.size() << (justAddedIndex < inputs.size() - 1)
+        //<< ((justAddedIndex < inputs.size() - 1) && (std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.end()));
+      if (isNotLastDynamicPortOfThisName)
+        portConstructionType = USER_ADDED_PORT_DURING_FILE_LOAD;
+      dialog_->updateFromPortChange(i, port->id().toString(), portConstructionType);
+    }
   }
 }
 
-void ModuleWidget::printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
+void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider)
 {
   const ModuleId moduleId = moduleInfoProvider.get_id();
   std::cout << "Module input ports: " << moduleId << std::endl;
@@ -749,7 +764,7 @@ void ModuleWidget::printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoP
   }
 }
 
-void ModuleWidget::createOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
+void ModuleWidget::createOutputPorts(const ModuleInfoProvider& moduleInfoProvider)
 {
   const ModuleId moduleId = moduleInfoProvider.get_id();
   size_t i = 0;
@@ -880,6 +895,11 @@ void PortWidgetManager::addPort(InputPortWidget* port)
   inputPorts_.push_back(port);
 }
 
+void PortWidgetManager::insertPort(int index, InputPortWidget* port)
+{
+  inputPorts_.insert(inputPorts_.begin() + index, port);
+}
+
 void PortWidgetManager::setHighlightPorts(bool on)
 {
   for (auto& port : getAllPorts())
@@ -892,27 +912,32 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_)
   {
-    InputPortHandle port = theModule_->getInputPort(pid);
+    //std::cout << "ADDING NEW DYNAMIC PORT: " << pid << std::endl;
+    auto port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, 0, this);
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, PortDataDescriber(), this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    ports_->addPort(w);
-    ports_->reindexInputs();
-    inputPortLayout_->addWidget(w);
 
-    Q_EMIT dynamicPortChanged(pid.toString());
+    const int newPortIndex = port->getIndex();
+
+    ports_->insertPort(newPortIndex, w);
+    ports_->reindexInputs();
+
+    inputPortLayout_->insertWidget(newPortIndex, w);
+
+    Q_EMIT dynamicPortChanged(pid.toString(), true);
   }
 }
 
 void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
 {
-  if (mid.id_ == moduleId_ && !deleting_)
+  if (mid.id_ == moduleId_ && !deleting_ && !networkBeingCleared_)
   {
     if (ports_->removeDynamicPort(pid, inputPortLayout_))
     {
-      Q_EMIT dynamicPortChanged(pid.toString());
+      Q_EMIT dynamicPortChanged(pid.toString(), false);
     }
   }
 }
@@ -945,8 +970,22 @@ void ModuleWidget::printPortPositions() const
   std::cout << std::endl;
 }
 
+bool ModuleWidget::networkBeingCleared_(false);
+
+ModuleWidget::NetworkClearingScope::NetworkClearingScope()
+{
+  networkBeingCleared_ = true;
+}
+
+ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
+{
+  networkBeingCleared_ = false;
+}
+
 ModuleWidget::~ModuleWidget()
 {
+  disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
+
   if (!theModule_->isStoppable())
   {
     removeWidgetFromExecutionDisableList(miniWidgetDisplay_->getExecuteButton());
@@ -1112,7 +1151,7 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
-      connect(this, SIGNAL(dynamicPortChanged(const std::string&)), this, SLOT(updateDialogWithPortCount(const std::string&)));
+      connect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
       connect(dialog_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
       connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
       connect(dialog_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
@@ -1126,7 +1165,7 @@ void ModuleWidget::makeOptionsDialog()
       dockable_->setAutoFillBackground(true);
       SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
       if (!isViewScene_)
-        dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
+        dockable_->setFloating(!Preferences::Instance().modulesAreDockable);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
       connect(dockable_, SIGNAL(topLevelChanged(bool)), this, SLOT(updateDockWidgetProperties(bool)));
@@ -1151,15 +1190,15 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
   }
 }
 
-void ModuleWidget::updateDialogWithPortCount(const std::string& portId)
+void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
-  if (dialog_)
-    dialog_->updateFromPortChange(numInputPorts(), portId);
+  if (dialog_ && !deleting_ && !networkBeingCleared_)
+    dialog_->updateFromPortChange(numInputPorts(), portId, adding ? USER_ADDED_PORT : USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
 {
-  return Core::Preferences::Instance().modulesAreDockable ? Qt::RightDockWidgetArea : Qt::NoDockWidgetArea;
+  return Preferences::Instance().modulesAreDockable ? Qt::RightDockWidgetArea : Qt::NoDockWidgetArea;
 }
 
 void ModuleWidget::adjustDockState(bool dockEnabled)
@@ -1243,7 +1282,7 @@ void ModuleWidget::launchDocumentation()
 
 void ModuleWidget::setStartupNote(const QString& text)
 {
-  if (isViewScene_ || Core::Preferences::Instance().autoNotes)
+  if (isViewScene_ || Preferences::Instance().autoNotes)
   {
     auto note = getCurrentNote();
     note.plainText_ = text;
@@ -1275,7 +1314,7 @@ void ModuleWidget::duplicate()
   Q_EMIT duplicateModule(theModule_);
 }
 
-void ModuleWidget::connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+void ModuleWidget::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }

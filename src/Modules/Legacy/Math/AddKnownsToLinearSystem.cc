@@ -64,7 +64,7 @@ void AddKnownsToLinearSystem::execute()
   if (needToExecute())
   {
    update_state(Executing);
-   auto output = algo().run_generic(withInputData((LHS_Matrix,lhs)(RHS_Vector, optionalAlgoInput(rhs))(X_Vector,x)));
+   auto output = algo().run(withInputData((LHS_Matrix,lhs)(RHS_Vector, optionalAlgoInput(rhs))(X_Vector,x)));
 
    sendOutputFromAlgorithm(OutPutLHSMatrix,output);
    sendOutputFromAlgorithm(OutPutRHSVector,output);

@@ -55,8 +55,8 @@ CalculateDistanceFieldAlgo::CalculateDistanceFieldAlgo()
   addParameter(Truncate, false);
   addParameter(TruncateDistance, 1.0);
   addParameter(OutputValueField, false);
-  add_option(BasisType, "same as input","same as input|constant|linear");
-  add_option(OutputFieldDatatype, "double","char|unsigned char|short|unsigned short|int|unsigned int|float|double");
+  addOption(BasisType, "same as input","same as input|constant|linear");
+  addOption(OutputFieldDatatype, "double","char|unsigned char|short|unsigned short|int|unsigned int|float|double");
 }
 
 namespace detail
@@ -363,10 +363,10 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
   FieldInformation fo(input);
   if (fo.is_nodata()) fo.make_lineardata();
 
-  if (check_option(Parameters::BasisType,"linear")) fo.make_lineardata();
-  if (check_option(Parameters::BasisType,"constant")) fo.make_constantdata();
+  if (checkOption(Parameters::BasisType,"linear")) fo.make_lineardata();
+  if (checkOption(Parameters::BasisType,"constant")) fo.make_constantdata();
 
-  fo.set_data_type(get_option(Parameters::OutputFieldDatatype));
+  fo.set_data_type(getOption(Parameters::OutputFieldDatatype));
 
   fo.make_double();
   output = CreateField(fo,input->mesh());
@@ -444,10 +444,10 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
   fo.set_data_type(fb.get_data_type());
   value = CreateField(fo,input->mesh());
 
-  if (check_option(Parameters::BasisType,"linear")) fo.make_lineardata();
-  if (check_option(Parameters::BasisType,"constant")) fo.make_constantdata();
+  if (checkOption(Parameters::BasisType,"linear")) fo.make_lineardata();
+  if (checkOption(Parameters::BasisType,"constant")) fo.make_constantdata();
 
-  fo.set_data_type(get_option(Parameters::OutputFieldDatatype));
+  fo.set_data_type(getOption(Parameters::OutputFieldDatatype));
   distance = CreateField(fo,input->mesh());
 
   if (!distance)
@@ -499,7 +499,7 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
 const AlgorithmOutputName CalculateDistanceFieldAlgo::DistanceField("DistanceField");
 const AlgorithmOutputName CalculateDistanceFieldAlgo::ValueField("ValueField");
 
-AlgorithmOutput CalculateDistanceFieldAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput CalculateDistanceFieldAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
   auto objectField = input.get<Field>(Variables::ObjectField);

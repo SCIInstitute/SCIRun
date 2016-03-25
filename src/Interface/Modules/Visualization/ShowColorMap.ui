@@ -25,306 +25,297 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_13">
+  <layout class="QVBoxLayout" name="verticalLayout_7">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_12">
-     <item>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
-        <string>Display Side:</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Display Side:</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QRadioButton" name="leftRadioButton_">
-            <property name="text">
-             <string>Left</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="bottomRadioButton_">
-            <property name="text">
-             <string>Bottom</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox_2">
-       <property name="title">
-        <string>Display Length</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QRadioButton" name="fullRadioButton_">
-            <property name="text">
-             <string>Full</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="firstHalfRadioButton_">
-            <property name="text">
-             <string>First Half</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="secondHalfRadioButton_">
-            <property name="text">
-             <string>Second Half</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox_3">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="title">
-        <string>Text Size: </string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QRadioButton" name="TRadioButton_">
-            <property name="text">
-             <string>T</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="SRadioButton_">
-            <property name="text">
-             <string>S</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="MRadioButton_">
-            <property name="text">
-             <string>M</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="LRadioButton_">
-            <property name="text">
-             <string>L</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="XLRadioButton_">
-            <property name="text">
-             <string>XL</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1,1">
-          <item>
-           <widget class="QPushButton" name="textColorPushButton_">
-            <property name="text">
-             <string>Text Color</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="textColorDisplayLabel_">
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color: white;</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox_4">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="title">
-        <string/>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Labels</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="ticksSpinner_">
-              <property name="minimum">
-               <number>2</number>
-              </property>
-              <property name="value">
-               <number>10</number>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>Scale</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDoubleSpinBox" name="scaleSpinner_">
-              <property name="minimum">
-               <double>0.010000000000000</double>
-              </property>
-              <property name="singleStep">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>Units</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="unitsText_"/>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Decimal Digits</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="sigDigitsSpinner_">
-              <property name="maximum">
-               <number>8</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox_5">
-       <property name="title">
-        <string/>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <property name="bottomMargin">
-           <number>0</number>
+         <widget class="QRadioButton" name="leftRadioButton_">
+          <property name="text">
+           <string>Left</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="bottomRadioButton_">
+          <property name="text">
+           <string>Bottom</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Display Length</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QRadioButton" name="fullRadioButton_">
+          <property name="text">
+           <string>Full</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="firstHalfRadioButton_">
+          <property name="text">
+           <string>First Half</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="secondHalfRadioButton_">
+          <property name="text">
+           <string>Second Half</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Text </string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <item>
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Text Size:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="textSizeSpinner_">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>8</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1,1">
+        <item>
+         <widget class="QPushButton" name="textColorPushButton_">
+          <property name="text">
+           <string>Text Color</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="textColorDisplayLabel_">
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: white;</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string/>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
-           <widget class="QLabel" name="label_5">
+           <widget class="QLabel" name="label">
             <property name="text">
-             <string>Translate   X:</string>
+             <string>Labels</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="xTranslationSpin_">
-            <property name="maximum">
-             <number>100</number>
+           <widget class="QSpinBox" name="ticksSpinner_">
+            <property name="minimum">
+             <number>2</number>
+            </property>
+            <property name="value">
+             <number>10</number>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_6">
-            <property name="maximumSize">
-             <size>
-              <width>15</width>
-              <height>16777215</height>
-             </size>
-            </property>
+           <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>Y:</string>
+             <string>Scale</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="yTranslationSpin_">
+           <widget class="QDoubleSpinBox" name="scaleSpinner_">
+            <property name="minimum">
+             <double>0.010000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Units</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="unitsText_"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Significant Digits</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="sigDigitsSpinner_">
+            <property name="minimum">
+             <number>1</number>
+            </property>
             <property name="maximum">
-             <number>100</number>
+             <number>8</number>
             </property>
            </widget>
           </item>
          </layout>
         </item>
        </layout>
-      </widget>
-     </item>
-    </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="title">
+      <string/>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_6">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Translate   X:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="xTranslationSpin_">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_6">
+          <property name="maximumSize">
+           <size>
+            <width>15</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Y:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="yTranslationSpin_">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>

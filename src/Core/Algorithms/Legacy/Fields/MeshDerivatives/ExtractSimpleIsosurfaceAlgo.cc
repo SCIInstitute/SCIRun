@@ -59,7 +59,7 @@ ExtractSimpleIsosurfaceAlgo::ExtractSimpleIsosurfaceAlgo()
   addParameter(Parameters::Isovalues, VariableList());
   addParameter(Parameters::ListOfIsovalues, std::string());
   addParameter(Parameters::QuantityOfIsovalues, 1);
-  add_option(Parameters::IsovalueChoice, "Single", "Single|List|Quantity");
+  addOption(Parameters::IsovalueChoice, "Single", "Single|List|Quantity");
 }
 
 bool ExtractSimpleIsosurfaceAlgo::run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& output) const
@@ -76,7 +76,7 @@ bool ExtractSimpleIsosurfaceAlgo::run(FieldHandle input, std::vector<double>& is
   return (true);
 }
 
-AlgorithmOutput ExtractSimpleIsosurfaceAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ExtractSimpleIsosurfaceAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
   FieldHandle output_field;

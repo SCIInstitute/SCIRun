@@ -51,7 +51,7 @@ void GetFieldNodes::execute()
   if (needToExecute())
   {    
     update_state(Executing);
-    auto output = algo().run_generic(withInputData((InputField, input)));
+    auto output = algo().run(withInputData((InputField, input)));
 
     sendOutputFromAlgorithm(MatrixNodes, output);
   }

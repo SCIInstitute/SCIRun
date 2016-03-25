@@ -55,7 +55,6 @@ namespace Algorithms {
       bool,
       AlgoOption,
       List
-      //,std::vector<double>
     > Value;
 
     Variable() {}
@@ -74,7 +73,6 @@ namespace Algorithms {
     std::string toString() const;
     boost::filesystem::path toFilename() const;
     bool toBool() const;
-    std::vector<double> toDoubleVector() const;
     List toVector() const;
     AlgoOption toOption() const;
 
@@ -94,9 +92,19 @@ namespace Algorithms {
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   SCISHARE Variable makeVariable(const std::string& name, const Variable::Value& value);
 
+  template <typename ... Ts>
+  Variable::List makeVariableList(Ts&&... params)
+  {
+    std::vector<Variable::Value> values{params...};
+    Variable::List vars;
+    std::transform(values.begin(), values.end(), std::back_inserter(vars),
+      [](const Variable::Value& val) { return makeVariable("listElement", val); });
+    return vars;
+  }
+
   typedef Variable AlgorithmParameter;
   typedef Variable::List VariableList;
-  typedef boost::shared_ptr<Variable> VariableHandle;
+  typedef Datatypes::SharedPointer<Variable> VariableHandle;
 
 }
 

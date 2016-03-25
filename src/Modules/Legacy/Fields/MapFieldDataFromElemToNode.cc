@@ -64,7 +64,7 @@ void MapFieldDataFromElemToNodeModule::execute()
 
    setAlgoOptionFromState(MapFieldDataFromElemToNodeAlgo::Method);
 
-   auto output = algo().run_generic(withInputData((InputField, input)));
+   auto output = algo().run(withInputData((InputField, input)));
 
    sendOutputFromAlgorithm(OutputField, output);
   }

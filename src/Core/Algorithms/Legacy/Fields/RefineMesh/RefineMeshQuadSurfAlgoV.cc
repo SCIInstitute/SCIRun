@@ -511,7 +511,7 @@ runImpl(FieldHandle input, FieldHandle& output,
   return (true);
 }
 
-AlgorithmOutput RefineMeshQuadSurfAlgoV::run_generic(const AlgorithmInput& input) const 
+AlgorithmOutput RefineMeshQuadSurfAlgoV::run(const AlgorithmInput& input) const 
 {
   throw "not implemented";
 }

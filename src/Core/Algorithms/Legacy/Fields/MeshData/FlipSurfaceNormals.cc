@@ -44,7 +44,7 @@ using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
 
-AlgorithmOutput FlipSurfaceNormalsAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput FlipSurfaceNormalsAlgo::run(const AlgorithmInput& input) const
 {
 	auto input_field = input.get<Field>(Variables::InputField);
 	

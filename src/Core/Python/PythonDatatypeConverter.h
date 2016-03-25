@@ -32,9 +32,9 @@
 
 #include <boost/python.hpp>
 #include <boost/python/stl_iterator.hpp>
-#include <boost/shared_ptr.hpp>
 #include <vector>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/Variable.h>
 
 
 #include <Core/Python/share.h>
@@ -78,11 +78,64 @@ namespace SCIRun
           boost::python::stl_input_iterator< T >());
       }
 
+      template <class ContainerOfIterableIterator, class OutputIterator>
+      void flatten(ContainerOfIterableIterator outerBegin, ContainerOfIterableIterator outerEnd, OutputIterator dest)
+      {
+        while (outerBegin != outerEnd) {
+          dest = std::copy(outerBegin->begin(), outerBegin->end(), dest);
+          ++outerBegin;
+        }
+      }
 
-      SCISHARE boost::python::object convertFieldToPython(FieldHandle field);
-      SCISHARE boost::python::object convertMatrixToPython(Datatypes::DenseMatrixHandle matrix);
+      SCISHARE boost::python::dict convertFieldToPython(FieldHandle field);
+      SCISHARE boost::python::list convertMatrixToPython(Datatypes::DenseMatrixHandle matrix);
       SCISHARE boost::python::object convertMatrixToPython(Datatypes::SparseRowMatrixHandle matrix);
       SCISHARE boost::python::object convertStringToPython(Datatypes::StringHandle str);
+
+      SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object);
+
+      class SCISHARE DatatypePythonExtractor
+      {
+      public:
+        virtual ~DatatypePythonExtractor() {}
+        explicit DatatypePythonExtractor(const boost::python::object& object) : object_(object) {}
+        virtual bool check() const = 0;
+        virtual Datatypes::DatatypeHandle operator()() const = 0;
+        virtual std::string label() const = 0;
+      protected:
+        const boost::python::object& object_;
+      };
+
+      class SCISHARE DenseMatrixExtractor : public DatatypePythonExtractor
+      {
+      public:
+        explicit DenseMatrixExtractor(const boost::python::object& object) : DatatypePythonExtractor(object) {}
+        virtual bool check() const override;
+        virtual Datatypes::DatatypeHandle operator()() const override;
+        virtual std::string label() const override { return "dense matrix"; }
+      };
+
+      class SCISHARE SparseRowMatrixExtractor : public DatatypePythonExtractor
+      {
+      public:
+        explicit SparseRowMatrixExtractor(const boost::python::object& object) : DatatypePythonExtractor(object) {}
+        virtual bool check() const override;
+        virtual Datatypes::DatatypeHandle operator()() const override;
+        virtual std::string label() const override { return "sparse matrix"; }
+      };
+
+      class SCISHARE FieldExtractor : public DatatypePythonExtractor
+      {
+      public:
+        explicit FieldExtractor(const boost::python::object& object) : DatatypePythonExtractor(object) {}
+        virtual bool check() const override;
+        virtual Datatypes::DatatypeHandle operator()() const override;
+        virtual std::string label() const override { return "field"; }
+      };
+
+      SCISHARE std::string pyDenseMatrixLabel();
+      SCISHARE std::string pySparseRowMatrixLabel();
+      SCISHARE std::string pyFieldLabel();
     }
   }
 }

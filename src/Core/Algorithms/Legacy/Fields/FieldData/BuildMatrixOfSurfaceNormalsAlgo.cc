@@ -96,7 +96,7 @@ bool BuildMatrixOfSurfaceNormalsAlgo::runImpl(FieldHandle input, DenseMatrixHand
   return (true);
 }
 
-AlgorithmOutput BuildMatrixOfSurfaceNormalsAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput BuildMatrixOfSurfaceNormalsAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 	DenseMatrixHandle outputMatrix; 

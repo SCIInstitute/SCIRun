@@ -61,7 +61,7 @@ namespace Fields {
 
     static std::string summarize(const Outputs& info);
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
 
   private:
     Outputs update_input_attributes(SCIRun::FieldHandle f) const;

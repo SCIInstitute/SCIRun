@@ -72,7 +72,7 @@ BuildFEGridMappingAlgo::run(
     return (false);
   }
 
-  if (!matrix_is::sparse(nodeLink))
+  if (!matrixIs::sparse(nodeLink))
   {
     error("NodeLink Matrix is not sparse");
     return (false);
@@ -84,7 +84,7 @@ BuildFEGridMappingAlgo::run(
     return (false);
   }
 
-  SparseRowMatrixHandle spr = matrix_cast::as_sparse(nodeLink);
+  SparseRowMatrixHandle spr = castMatrix::toSparse(nodeLink);
   size_type m = spr->ncols();
   const index_type *rows = spr->get_rows();
   const index_type *cols = spr->get_cols();
@@ -254,7 +254,7 @@ run(FieldHandle domainField,
     return (false);
   }
 
-  if (!matrix_is::sparse(nodeLink))
+  if (!matrixIs::sparse(nodeLink))
   {
     error("NodeLink Matrix is not sparse");
     return (false);
@@ -289,7 +289,7 @@ run(FieldHandle domainField,
     return (false);
   }
 
-  SparseRowMatrixHandle spr = matrix_cast::as_sparse(nodeLink);
+  SparseRowMatrixHandle spr = castMatrix::toSparse(nodeLink);
   size_type m = spr->ncols();
   const index_type *rows = spr->get_rows();
   const index_type *cols = spr->get_cols();
@@ -426,7 +426,7 @@ run(FieldHandle domainField,
   return (true);
 }
 
-AlgorithmOutput BuildFEGridMappingAlgo::run_generic(const AlgorithmInput &) const
+AlgorithmOutput BuildFEGridMappingAlgo::run(const AlgorithmInput &) const
 {
   throw "not implemented";
 }

@@ -29,7 +29,6 @@
 #ifndef MODULES_DATAIO_READ_BUNDLE_H
 #define MODULES_DATAIO_READ_BUNDLE_H
 
-//#include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Modules/DataIO/GenericReader.h>
 #include <Modules/DataIO/share.h>
 
@@ -42,8 +41,7 @@ namespace DataIO {
   public:
     typedef GenericReader<Core::Datatypes::BundleHandle, BundlePortTag> my_base;
     ReadBundleModule();
-    virtual void execute();
-    virtual void setStateDefaults() {}
+    virtual void execute() override;
     virtual bool useCustomImporter(const std::string& filename) const override { return false; }
 
     OUTPUT_PORT(0, Bundle, Bundle);
@@ -51,6 +49,8 @@ namespace DataIO {
     static std::string fileTypeList();
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  protected:
+    virtual std::string defaultFileTypeName() const override;
   };
 
 }}}

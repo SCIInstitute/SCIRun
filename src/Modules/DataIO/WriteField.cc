@@ -128,3 +128,9 @@ bool WriteFieldModule::useCustomExporter(const std::string& filename) const
     ft == "SCIRun Field ASCII" ||
     ft == "Binary");
 }
+
+std::string WriteFieldModule::defaultFileTypeName() const
+{
+  FieldIEPluginManager mgr;
+  return defaultImportTypeForFile(&mgr);
+}

@@ -370,7 +370,7 @@ bool ConvertMeshToTetVolMeshAlgo::run(FieldHandle input, FieldHandle& output) co
 AlgorithmInputName ConvertMeshToTetVolMeshAlgo::HexOrLatVol("HexOrLatVol");
 AlgorithmOutputName ConvertMeshToTetVolMeshAlgo::TetVol("TetVol");
 
-AlgorithmOutput ConvertMeshToTetVolMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertMeshToTetVolMeshAlgo::run(const AlgorithmInput& input) const
 {
  auto hex_or_latvol = input.get<Field>(HexOrLatVol);
  

@@ -29,26 +29,61 @@
 #ifndef MODULES_VISUALIZATION_TEXTBUILDER_H
 #define MODULES_VISUALIZATION_TEXTBUILDER_H
 
-#include <Core/GeometryPrimitives/Vector.h>
-#include <vector>
+//freetype
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Modules/Visualization/share.h>
+#include <glm/glm.hpp>
+#include <string>
 
 namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class TextBuilder
+      class SCISHARE TextBuilder
       {
       public:
-        explicit TextBuilder(const std::string& text = "", const double scale = 1.,
-          const Core::Geometry::Vector& shift = Core::Geometry::Vector());
-        void reset(const std::string& text, const double scale,
-          const Core::Geometry::Vector& shift);
-        void getStringVerts(std::vector<Core::Geometry::Vector> &verts, std::vector<Core::Geometry::Vector> &colors);
+        TextBuilder();
+        ~TextBuilder();
+
+        void initFreeType(const std::string &libName, size_t size);
+        void loadNewFace(const std::string &libName, size_t size);
+        void setFaceSize(size_t size);
+        size_t getFaceSize() { return ftSize_; }
+        void setColor(const glm::vec4 &color) { color_ = color; }
+
+        bool isInit() { return ftInit_; }
+        bool isValid() { return ftValid_; }
+
+        static void setFSStrings(std::string &root, std::string &separator);
+
+        std::string getUniqueFontString(const char *p, double x,
+          double y, double z, double w, double h);
+
+        //startNrmSpc: start position in normalized space [[0, 2][0, 2]], origin at lower left corner
+        //shiftPxlSpc: shift from start position in pixel space
+        void printString(const std::string oneline,
+          const Core::Geometry::Vector &startNrmSpc,
+          const Core::Geometry::Vector &shiftPxlSpc,
+          const std::string& id,
+          Graphics::Datatypes::GeometryHandle geom);
+        //get string length based on current settings
+        //return value in pixels
+        double getStringLen(const std::string oneline);
+
       private:
-        std::string text_;
-        double scale_;
-        Core::Geometry::Vector shift_;
-        void getCharVerts(const char c, std::vector<Core::Geometry::Vector> &verts, std::vector<Core::Geometry::Vector> &colors);
+        std::string libName_;
+        FT_Library ftLib_;
+        FT_Face ftFace_;
+        size_t ftSize_;
+        bool ftInit_;
+        bool ftValid_;
+        static std::string mFSRoot;
+        static std::string mFSSeparator;
+        glm::vec4 color_;
       };
     }
   }

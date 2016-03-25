@@ -65,7 +65,7 @@ namespace FEInputData
   SparseRowMatrixHandle expectedOutput(const std::string& file)
   {
     ReadMatrixAlgorithm reader;
-    return matrix_cast::as_sparse(reader.run((expectedOutputRoot() / file).string()));
+    return castMatrix::toSparse(reader.run((expectedOutputRoot() / file).string()));
   }
 
   DenseMatrixHandle nullConductivityMatrix()

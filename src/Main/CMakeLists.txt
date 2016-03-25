@@ -244,12 +244,12 @@ ELSEIF(APPLE)
         WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
 
     SET(SCIRUN_LIBS "Core_Application"
-                               "Core_Python"
-                               "SCIRunPythonAPI"
-                               "Engine_Network"
-                               "Core_ConsoleApplication"
-                               "Modules_Factory"
-                               "Modules_Python"
+                    "Core_Python"
+                    "SCIRunPythonAPI"
+                    "Engine_Network"
+                    "Core_ConsoleApplication"
+                    "Modules_Factory"
+                    "Modules_Python"
     )
 
     FOREACH(lib ${SCIRUN_LIBS})

@@ -66,7 +66,7 @@ void GetFieldDataModule::execute()
     algo().set(Parameters::CalcMatrix, need_matrix_data);
     algo().set(Parameters::CalcNrrd, need_nrrd_data);
 
-    auto output = algo().run_generic(withInputData((InputField, input)));
+    auto output = algo().run(withInputData((InputField, input)));
 
     sendOutputFromAlgorithm(OutputMatrix, output);
     sendOutputFromAlgorithm(OutputNrrd, output);

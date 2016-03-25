@@ -26,7 +26,7 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 ExternalProject_Add(Tetgen_external
-  URL "http://www.tetgen.org/1.5/src/tetgen1.5.0.tar.gz"
+  URL "http://www.tetgen.org/1.5/src/tetgen1.5.1-beta1.tar.gz"
   PATCH_COMMAND ""
   INSTALL_COMMAND ""
   CMAKE_CACHE_ARGS

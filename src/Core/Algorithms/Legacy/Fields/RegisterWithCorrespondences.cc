@@ -61,7 +61,7 @@ RegisterWithCorrespondencesAlgo::RegisterWithCorrespondencesAlgo()
   addParameter(Variables::Operator, 0);
 }
 
-AlgorithmOutput RegisterWithCorrespondencesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput RegisterWithCorrespondencesAlgo::run(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
   auto corres1 = input.get<Field>(Correspondences1);

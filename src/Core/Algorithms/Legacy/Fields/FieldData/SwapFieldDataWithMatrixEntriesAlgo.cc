@@ -76,7 +76,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandl
 
   if (get(Parameters::NeedOutputMatrix).toBool())
   {
-    output_matrix = get_algo_.run(input_field);
+    output_matrix = get_algo_.runMatrix(input_field);
   }
   FieldHandle field_output_handle;
 
@@ -84,13 +84,13 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandl
   {
     if (preserve_scalar)
     {
-      set_algo_.set_option(Parameters::keepTypeCheckBox, fi.get_data_type());
+      set_algo_.setOption(Parameters::keepTypeCheckBox, fi.get_data_type());
     }
     size_type numVal;
-    auto denseInput = matrix_convert::to_dense(input_matrix);
-    if (set_algo_.verify_input_data(input_field, denseInput, numVal, fi))
+    auto denseInput = convertMatrix::toDense(input_matrix);
+    if (set_algo_.verify_input_data(input_field, denseInput->nrows(), denseInput->ncols(), numVal, fi))
     {
-      output_field = set_algo_.run(input_field, denseInput);
+      output_field = set_algo_.runImpl(input_field, denseInput);
     }
     else
     {
@@ -117,7 +117,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input, MatrixHandle inpu
   return runImpl(input, input_matrix, output, dummy);
 }
 
-AlgorithmOutput SwapFieldDataWithMatrixEntriesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SwapFieldDataWithMatrixEntriesAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
   auto inputmatrix = input.get<Matrix>(Variables::InputMatrix);

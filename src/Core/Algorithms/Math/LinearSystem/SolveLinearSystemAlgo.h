@@ -61,7 +61,7 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
              Datatypes::DenseColumnMatrixHandle x0, 
              Datatypes::DenseColumnMatrixHandle& x) const;
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
 };
 
 

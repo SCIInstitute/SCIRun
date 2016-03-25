@@ -52,6 +52,8 @@ namespace DataIO {
     OUTPUT_PORT(0, Field, LegacyField);
 
     static std::string fileTypeList();
+  protected:
+    virtual std::string defaultFileTypeName() const override;
   };
 
 }}}

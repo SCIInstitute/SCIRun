@@ -35,6 +35,7 @@
 #include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Testing;
+using namespace SCIRun::TestUtils;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;

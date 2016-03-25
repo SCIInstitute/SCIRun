@@ -56,7 +56,7 @@ SetFieldDataAlgo::SetFieldDataAlgo()
   addParameter(Parameters::keepTypeCheckBox, false);
 }
 
-bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHandle data, size_type& numvals, FieldInformation& fi) const
+bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, size_t dataRows, size_t dataCols, size_type& numvals, FieldInformation& fi, const std::string& outputDatatype) const
 {
   VMesh* imesh = input_field->vmesh();
 
@@ -66,19 +66,19 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
 
   bool found = false;
 
-  if ((data->nrows() >= numnodes + numelems) ||
-    (data->ncols() >= numnodes + numelems))
+  if ((dataRows >= numnodes + numelems) ||
+    (dataCols >= numnodes + numelems))
   {
     imesh->synchronize(Mesh::EDGES_E);
     numenodes = numnodes + imesh->num_edges();
   }
 
   /// try to see whether the matrix dimensions fit the field size
-  if ((data->nrows() == numnodes) ||
-    (data->nrows() == numelems) ||
-    (data->nrows() == numenodes))
+  if ((dataRows == numnodes) ||
+    (dataRows == numelems) ||
+    (dataRows == numenodes))
   {
-    size_type ncols = data->ncols();
+    size_type ncols = dataCols;
 
     /// do we have a scalar, vector, or tensor
     if (ncols == 1)
@@ -87,7 +87,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
       if (get(Parameters::keepTypeCheckBox).toBool())
         fi.set_data_type(input_field->vfield()->get_data_type());
       else
-        fi.set_data_type("double");
+        fi.set_data_type(outputDatatype);
     }
     else if (ncols == 3)
     {
@@ -104,7 +104,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
 
     if (found)
     {
-      numvals = data->nrows();
+      numvals = dataRows;
       if ((numnodes != numelems) || (numvals == numenodes))
       {
         if (numvals == numnodes) fi.make_lineardata();
@@ -119,12 +119,12 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
       }
     }
   }
-  else if (((!found) && ((data->ncols() == numnodes) || (data->ncols() == numelems))) || (data->ncols() == numenodes))
+  else if (((!found) && ((dataCols == numnodes) || (dataCols == numelems))) || (dataCols == numenodes))
   {
     found = true;
 
     /// do we have a scalar, vector, or tensor  ?
-    if (data->nrows() == 1)
+    if (dataRows == 1)
     {
       if (get(Parameters::keepTypeCheckBox).toBool())
         fi.set_data_type(input_field->vfield()->get_data_type());
@@ -132,13 +132,13 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
         fi.set_data_type("double");
     }
 
-    else if (data->nrows() == 3)
+    else if (dataRows == 3)
     {
       fi.make_vector();
     }
-    else if ((data->nrows() == 6) ||
-      (data->nrows() == 7) ||
-      (data->nrows() == 9))
+    else if ((dataRows == 6) ||
+      (dataRows == 7) ||
+      (dataRows == 9))
     {
       fi.make_tensor();
     }
@@ -149,7 +149,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
 
     if (found)
     {
-      numvals = data->ncols();
+      numvals = dataCols;
       if ((numnodes != numelems) || (numvals == numenodes))
       {
         if (numvals == numnodes) fi.make_lineardata();
@@ -167,20 +167,20 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
   else
   {
     /// Do we have a constant that has to be fitted in every field position ?
-    if (data->nrows() == 1)
+    if (dataRows == 1)
     {
       found = true;
-      if (data->ncols() == 1)
+      if (dataCols == 1)
       {
         fi.set_data_type("scalar");
       }
-      else if (data->ncols() == 3)
+      else if (dataCols == 3)
       {
         fi.make_vector();
       }
-      else if ((data->ncols() == 6) ||
-        (data->nrows() == 7) ||
-        (data->ncols() == 9))
+      else if ((dataCols == 6) ||
+        (dataRows == 7) ||
+        (dataCols == 9))
       {
         fi.make_tensor();
       }
@@ -189,20 +189,20 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
         found = false;
       }
     }
-    else if (data->ncols() == 1)
+    else if (dataCols == 1)
     {
       found = true;
-      if (data->nrows() == 1)
+      if (dataRows == 1)
       {
         fi.set_data_type("scalar");
       }
-      else if (data->nrows() == 3)
+      else if (dataRows == 3)
       {
         fi.make_vector();
       }
-      else if ((data->nrows() == 6) ||
-        (data->nrows() == 7) ||
-        (data->nrows() == 9))
+      else if ((dataRows == 6) ||
+        (dataRows == 7) ||
+        (dataRows == 9))
       {
         fi.make_tensor();
       }
@@ -216,29 +216,29 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle input_field, DenseMatrixHan
   return found;
 }
 
-bool SetFieldDataAlgo::setscalardata(VField* ofield, DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
+template <typename T>
+bool SetFieldDataAlgo::setscalardata(VField* ofield, const DenseMatrixGeneric<T>& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
 {
   if (((nrows == 1) && (ncols == numvals)) || ((ncols == 1) && (nrows == numvals)))
   {
-    std::vector<double> values(numvals);
-    if (((nrows == 1) && (ncols == numvals))) for (VField::index_type j = 0; j < numvals; j++) values[j] = (*data)(0, j);
-    if (((ncols == 1) && (nrows == numvals))) for (VField::index_type j = 0; j < numvals; j++) values[j] = (*data)(j, 0);
+    std::vector<T> values(numvals);
+    if (((nrows == 1) && (ncols == numvals))) for (VField::index_type j = 0; j < numvals; j++) values[j] = data(0, j);
+    if (((ncols == 1) && (nrows == numvals))) for (VField::index_type j = 0; j < numvals; j++) values[j] = data(j, 0);
 
     ofield->set_values(values);
 
     if (numevals)
     {
-      std::vector<double> values2(numevals);
-      if (((nrows == 1)&&(ncols == numvals))) for (VField::index_type j=numnvals; j<numvals+numevals; j++) values[j] = (* data)(0,j);
-      if (((ncols == 1)&&(nrows == numvals))) for (VField::index_type j=numnvals; j<numvals+numevals; j++) values[j] = (* data)(j,0);
+      std::vector<T> values2(numevals);
+      if (((nrows == 1)&&(ncols == numvals))) for (VField::index_type j=numnvals; j<numvals+numevals; j++) values[j] = data(0,j);
+      if (((ncols == 1)&&(nrows == numvals))) for (VField::index_type j=numnvals; j<numvals+numevals; j++) values[j] = data(j,0);
       ofield->set_evalues(values2);
-      //if (numevals) ofield->set_evalues(matrixdata,numevals);
     }
 
   }
   else if ((nrows == 1) && (ncols == 1))
   {
-    ofield->set_all_values((*data)(0, 0));
+    ofield->set_all_values(data(0, 0));
   }
   else
   {
@@ -254,9 +254,9 @@ bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle data, siz
   /// Handle Vector values
   if ((ncols == 3) && (nrows == numvals))
   {
-    Vector v;
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
+      Vector v;
       v[0] = (*data)(i, 0); v[1] = (*data)(i, 1); v[2] = (*data)(i, 2);
       ofield->set_value(v, i);
     }
@@ -391,18 +391,21 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
   return true;
 }
 
-FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle data) const
+FieldHandle SetFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandle data) const
+{
+  return runImplRealComplex(input_field, data, nullptr);
+}
+
+FieldHandle SetFieldDataAlgo::runImplRealComplex(FieldHandle input_field, DenseMatrixHandle realData, ComplexDenseMatrixHandle complexData) const
 {
   if (!input_field)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not obtain input field");
-    return FieldHandle();
   }
 
-  if (!data)
+  if (!realData && !complexData)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not obtain input matrix");
-    return FieldHandle();
   }
 
   FieldInformation fi(input_field);
@@ -414,7 +417,13 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
 
   size_type numvals;
 
-  bool found = verify_input_data(input_field, data, numvals, fi);
+  bool found = false;
+  if (realData)
+    found = verify_input_data(input_field, realData->nrows(), realData->ncols(), numvals, fi);
+  else if (complexData)
+  {
+    found = verify_input_data(input_field, complexData->nrows(), complexData->ncols(), numvals, fi, "std::complex<double>");
+  }
 
   if (!found)
   {
@@ -430,10 +439,6 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
 
   VField* ofield = output->vfield();
 
-  size_type nrows = data->nrows();
-  size_type ncols = data->ncols();
-
-
   size_type numnvals = numvals;
   size_type numevals = 0;
 
@@ -443,26 +448,47 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
     numevals = numvals - numnodes;
   }
 
-  if (fi.is_scalar())
+  if (realData)
   {
-    if (!setscalardata(ofield, data, numvals, nrows, ncols, numnvals, numevals))
-      return FieldHandle();
+    size_type nrows = realData->nrows();
+    size_type ncols = realData->ncols();
+    if (fi.is_scalar())
+    {
+      if (!setscalardata(ofield, *realData, numvals, nrows, ncols, numnvals, numevals))
+        return nullptr;
+    }
+    else if (fi.is_vector())
+    {
+      if (!setvectordata(ofield, realData, numvals, nrows, ncols, numnvals, numevals))
+        return nullptr;
+    }
+    else if (fi.is_tensor())
+    {
+      if (!settensordata(ofield, realData, numvals, nrows, ncols, numnvals, numevals))
+        return nullptr;
+    }
   }
-  else if (fi.is_vector())
+  else if (complexData)
   {
-    if (!setvectordata(ofield, data, numvals, nrows, ncols, numnvals, numevals))
-      return FieldHandle();
-  }
-  else if (fi.is_tensor())
-  {
-    if (!settensordata(ofield, data, numvals, nrows, ncols, numnvals, numevals))
-      return FieldHandle();
+    size_type nrows = complexData->nrows();
+    size_type ncols = complexData->ncols();
+    if (fi.is_scalar())
+    {
+      if (!setscalardata(ofield, *complexData, numvals, nrows, ncols, numnvals, numevals))
+        return nullptr;
+      //TODO: complex vectors, tensors
+    }
   }
 
   return output;
 }
 
-AlgorithmOutput SetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
+FieldHandle SetFieldDataAlgo::runImplComplex(FieldHandle input_field, ComplexDenseMatrixHandle input_matrix) const
+{
+  return runImplRealComplex(input_field, nullptr, input_matrix);
+}
+
+AlgorithmOutput SetFieldDataAlgo::run(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
   auto input_matrix = input.get<DenseMatrix>(Variables::InputMatrix);
@@ -470,7 +496,7 @@ AlgorithmOutput SetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 
   FieldHandle output_field;
   if (input_matrix)
-    output_field = run(input_field, input_matrix);
+    output_field = runImpl(input_field, input_matrix);
   else if (input_nrrd)
     runImpl(input_field, input_nrrd, output_field);
 
@@ -582,7 +608,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
     /// do we have a scalar, vector, or tensor
     if (ncols == 1)
     {
-      std::string scalardatatype = get_option("scalardatatype");
+      std::string scalardatatype = getOption("scalardatatype");
       fi.set_data_type(scalardatatype);
       found = true;
     }
@@ -626,7 +652,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
     if (data->nrows() == 1)
     {
       std::string scalardatatype;
-      get_option("scalardatatype",scalardatatype);
+      getOption("scalardatatype",scalardatatype);
 
       fi.set_data_type(scalardatatype);
     }
@@ -671,7 +697,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
       if (data->ncols() == 1)
       {
         std::string scalardatatype;
-        get_option("scalardatatype",scalardatatype);
+        getOption("scalardatatype",scalardatatype);
 
         fi.set_data_type(scalardatatype);
       }
@@ -696,7 +722,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
       if (data->nrows() == 1)
       {
         std::string scalardatatype;
-        get_option("scalardatatype",scalardatatype);
+        getOption("scalardatatype",scalardatatype);
 
         fi.set_data_type(scalardatatype);
       }
@@ -736,7 +762,7 @@ bool SetFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle data, FieldHandle
 
   /// Convert the matrix to a dense matrix if it is not
   MatrixHandle densematrix;
-  if (!(matrix_is::dense(data)) && !(matrix_is::column(data)))
+  if (!(matrixIs::dense(data)) && !(matrixIs::column(data)))
   {
     /// store data in a new handle so it deallocates automatically
     densematrix = data->dense();

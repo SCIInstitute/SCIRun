@@ -50,7 +50,7 @@ AlgorithmOutputName GetFieldBoundaryAlgo::MappingMatrix("Mapping");
 
 GetFieldBoundaryAlgo::GetFieldBoundaryAlgo() 
 {
-  add_option(AlgorithmParameterName("mapping"),"auto","auto|node|elem|none");
+  addOption(AlgorithmParameterName("mapping"),"auto","auto|node|elem|none");
 }
 
 struct IndexHash {
@@ -193,10 +193,10 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     (
     (ifield->basis_order() == 0)
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-      && check_option("mapping","auto")
+      && checkOption("mapping","auto")
       )
       ||
-       check_option("mapping","elem")
+       checkOption("mapping","elem")
 #else
     )
 #endif
@@ -230,9 +230,9 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   else if (
     ((ifield->basis_order() == 1) 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    && check_option("mapping","auto"))
+    && checkOption("mapping","auto"))
     ||
-      check_option("mapping","node")
+      checkOption("mapping","node")
 #else
     )
 #endif
@@ -465,7 +465,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   return (true);
 }
 
-AlgorithmOutput GetFieldBoundaryAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GetFieldBoundaryAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

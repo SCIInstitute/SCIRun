@@ -54,6 +54,7 @@ public:
   static const AlgorithmParameterName FormatString;
 	static const AlgorithmParameterName FunctionString;
   static const AlgorithmParameterName ObjectInfo; 
+  static const AlgorithmParameterName ScriptEnvironmentVariable;
 
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmInputName FirstMatrix;

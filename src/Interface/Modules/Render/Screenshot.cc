@@ -65,18 +65,20 @@ QString Screenshot::screenshotFile() const
   return filePath + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
 }
 
-DenseMatrixHandle Screenshot::toMatrix() const
+SCIRun::Modules::Render::RGBMatrices Screenshot::toMatrix() const
 {
-  DenseMatrixHandle image(new DenseMatrix(screenshot_.height(), screenshot_.width()));
+  DenseMatrixHandle red(new DenseMatrix(screenshot_.height(), screenshot_.width()));
+  DenseMatrixHandle green(new DenseMatrix(screenshot_.height(), screenshot_.width()));
+  DenseMatrixHandle blue(new DenseMatrix(screenshot_.height(), screenshot_.width()));
   for (int i = 0; i < screenshot_.height(); i++)
   {
-    const uchar* scan = screenshot_.scanLine(i);
-    const int depth = 4;
     for (int j = 0; j < screenshot_.width(); j++)
     {
-      auto pixel = scan + j*depth;
-      (*image)(i, j) = *pixel;
+      auto rgb = screenshot_.pixel(j, i);
+      (*red)(i, j) = qRed(rgb);
+      (*green)(i, j) = qGreen(rgb);
+      (*blue)(i, j) = qBlue(rgb);
     }
   }
-  return image;
+  return { red, green, blue };
 }
