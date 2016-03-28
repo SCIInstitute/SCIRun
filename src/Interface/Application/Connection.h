@@ -78,6 +78,7 @@ public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
   void updateNote(const Note& note);
+  void toggleDisabled();
 
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
@@ -102,6 +103,7 @@ private:
   bool destroyed_;
   class ConnectionMenu* menu_;
   bool menuOpen_;
+  bool disabled_ {false};
   QColor placeHoldingColor_;
   int placeHoldingWidth_;
   double defaultZValue() const;

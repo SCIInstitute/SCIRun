@@ -51,6 +51,8 @@ namespace Gui
 
   QString colorToString(const QColor& color);
 
+  QGraphicsEffect* blurEffect(double radius = 2);
+
   inline QAction* separatorAction(QWidget* parent)
   {
     auto sep = new QAction(parent);

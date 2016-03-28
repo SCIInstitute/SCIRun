@@ -1182,10 +1182,10 @@ QString SCIRun::Gui::colorToString(const QColor& color)
   return QString("rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
 }
 
-static QGraphicsEffect* blurEffect()
+QGraphicsEffect* SCIRun::Gui::blurEffect(double radius)
 {
   auto blur = new QGraphicsBlurEffect;
-  blur->setBlurRadius(2);
+  blur->setBlurRadius(radius);
   return blur;
 }
 
@@ -1214,7 +1214,7 @@ void NetworkEditor::tagLayer(bool active, int tag)
       }
     }
     else
-      item->setGraphicsEffect(0);
+      item->setGraphicsEffect(nullptr);
   }
 }
 

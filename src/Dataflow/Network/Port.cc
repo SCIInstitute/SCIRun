@@ -173,7 +173,7 @@ void OutputPort::sendData(DatatypeHandle data)
 
   for (Connection* c : connections_)
   {
-    if (c && c->iport_)
+    if (c && !c->disabled() && c->iport_)
       source_->send(c->iport_->sink());
   }
 }
