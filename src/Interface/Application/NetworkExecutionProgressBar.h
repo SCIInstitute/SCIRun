@@ -56,6 +56,7 @@ private:
   class QProgressBar* progressBar_;
   class QWidgetAction* counterAction_;
   class QLabel* counterLabel_;
+  class QAction* timingAction_;
   size_t numModulesDone_;
   size_t totalModules_;
   double totalExecutionTime_;

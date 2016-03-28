@@ -47,12 +47,18 @@ NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numM
   counterLabel_->setToolTip("modules done executing / total modules");
   counterLabel_->setWhatsThis("This shows the fraction of completed modules while the network is executing.");
   counterAction_->setVisible(true);
+
+  timingAction_ = new QAction(parent);
+  timingAction_->setToolTip("Execution Timing");
+  timingAction_->setVisible(true);
+  timingAction_->setIcon(QPixmap(":/general/Resources/timepiece-512.png"));
+
   progressBar_->setStyleSheet(parent->styleSheet());
 }
 
 QList<QAction*> NetworkExecutionProgressBar::actions() const
 {
-  return QList<QAction*>() << barAction_ << counterAction_;
+  return QList<QAction*>() << barAction_ << counterAction_ << timingAction_;
 }
 
 void NetworkExecutionProgressBar::updateTotalModules(size_t count)
