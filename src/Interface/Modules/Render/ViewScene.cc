@@ -1045,7 +1045,7 @@ SCIRun::Graphics::Datatypes::GeometryHandle ViewSceneDialog::buildGeometryScaleB
   double length = scaleBar_.projLength;
   const double height = scaleBar_.height;
   glm::vec4 color(1.0);
-  glm::vec4 shift(1.95, 0.1, 0.0, 0.0);
+  glm::vec4 shift(1.9, 0.1, 0.0, 0.0);
 
   //figure out text length first
   size_t text_size = size_t(scaleBar_.fontSize);
@@ -1156,7 +1156,7 @@ SCIRun::Graphics::Datatypes::GeometryHandle ViewSceneDialog::buildGeometryScaleB
     if (textBuilder_.getFaceSize() != text_size)
       textBuilder_.setFaceSize(text_size);
     textBuilder_.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
-    Vector shift(1.95, 0.1, 0.0);
+    Vector shift(1.9, 0.1, 0.0);
     Vector trans(-text_len + 5, 0.0, 0.0);
     textBuilder_.printString(oneline, shift, trans, uniqueNodeID, geom);
   }
