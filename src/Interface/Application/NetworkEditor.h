@@ -110,7 +110,7 @@ namespace Gui {
     void trackModule(SCIRun::Dataflow::Networks::ModuleHandle module);
   Q_SIGNALS:
     void moduleExecuteStart(const std::string& id);
-    void moduleExecuteEnd(const std::string& id);
+    void moduleExecuteEnd(double execTime, const std::string& id);
   };
 
   class ModuleProxyWidget;

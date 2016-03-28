@@ -958,8 +958,8 @@ ModuleEventProxy::ModuleEventProxy()
 
 void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle module)
 {
-  module->connectExecuteBegins(boost::bind(&ModuleEventProxy::moduleExecuteStart, this, _1));
-  module->connectExecuteEnds(boost::bind(&ModuleEventProxy::moduleExecuteEnd, this, _1));
+  module->connectExecuteBegins([this](const std::string& id) { moduleExecuteStart(id); });
+  module->connectExecuteEnds([this](double t, const std::string& id) { moduleExecuteEnd(t, id); });
 }
 
 void NetworkEditor::disableInputWidgets()

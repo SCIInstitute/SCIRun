@@ -33,11 +33,12 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Thread;
 
-NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numModulesDone_(0), totalModules_(0), mutex_("progress bar")
+NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numModulesDone_(0),
+  totalModules_(0), totalExecutionTime_(0), mutex_("progress bar")
 {
   barAction_ = new QWidgetAction(parent);
   barAction_->setDefaultWidget(progressBar_ = new QProgressBar(parent));
-  progressBar_->setToolTip("Percentage of completed modules");
+  progressBar_->setToolTip("Percentage of completed modules and total execution time");
   progressBar_->setWhatsThis("This displays the percentage of completed modules while the network is executing.");
   barAction_->setVisible(true);
 
@@ -61,13 +62,14 @@ void NetworkExecutionProgressBar::updateTotalModules(size_t count)
   {
     totalModules_ = count;
     numModulesDone_ = 0;
+    totalExecutionTime_ = 0;
     counterLabel_->setText(counterLabelString());
     if (0 != count)
       progressBar_->setMaximum(count);
     progressBar_->setValue(0);
   }
 }
-void NetworkExecutionProgressBar::incrementModulesDone()
+void NetworkExecutionProgressBar::incrementModulesDone(double execTime)
 {
   Guard g(mutex_.get());
   if (numModulesDone_ < totalModules_)
@@ -75,6 +77,10 @@ void NetworkExecutionProgressBar::incrementModulesDone()
     numModulesDone_++;
     counterLabel_->setText(counterLabelString());
     progressBar_->setValue(numModulesDone_);
+    totalExecutionTime_ += execTime;
+    double wallTime = executionTimer_.elapsed();
+    progressBar_->setToolTip(QString("Total execution time: %1\nTotal wall time: %2")
+      .arg(totalExecutionTime_).arg(wallTime));
   }
 }
 
@@ -82,8 +88,11 @@ void NetworkExecutionProgressBar::resetModulesDone()
 {
   Guard g(mutex_.get());
   numModulesDone_ = 0;
+  totalExecutionTime_ = 0;
+  executionTimer_.restart();
   counterLabel_->setText(counterLabelString());
   progressBar_->setValue(numModulesDone_);
+  progressBar_->setToolTip("Percentage of completed modules and total execution time");
 }
 
 QString NetworkExecutionProgressBar::counterLabelString() const

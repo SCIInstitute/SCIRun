@@ -334,7 +334,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   actionBrainStimulator_->setIcon(QPixmap(":/general/Resources/download.png"));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
-  connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
+  connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double)));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
 

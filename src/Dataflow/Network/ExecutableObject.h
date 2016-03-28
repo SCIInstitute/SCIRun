@@ -28,7 +28,7 @@
 /// @todo Documentation Dataflow/Network/ExecutableObject.h
 
 #ifndef DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H
-#define DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H 
+#define DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H
 
 #include <boost/signals2.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
@@ -39,7 +39,7 @@ namespace Dataflow {
 namespace Networks {
 
   typedef boost::signals2::signal<void (const ModuleId&)> ExecuteBeginsSignalType;
-  typedef boost::signals2::signal<void (const ModuleId&)> ExecuteEndsSignalType;
+  typedef boost::signals2::signal<void (double, const ModuleId&)> ExecuteEndsSignalType; // 1st parameter is execution time
   typedef boost::signals2::signal<void (const ModuleId&)> ErrorSignalType;
 
   class SCISHARE ExecutableObject

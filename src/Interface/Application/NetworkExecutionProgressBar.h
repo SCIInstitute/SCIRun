@@ -30,7 +30,10 @@
 #define INTERFACE_APPLICATION_NETWORKEXECUTIONPROGRESSBAR_H
 
 #include <QObject>
+#ifndef Q_MOC_RUN
+#include <boost/timer.hpp>
 #include <Core/Thread/Mutex.h>
+#endif
 
 namespace SCIRun {
 namespace Gui {
@@ -45,7 +48,7 @@ public:
 
   public Q_SLOTS:
     void updateTotalModules(size_t count);
-    void incrementModulesDone();
+    void incrementModulesDone(double execTime);
     void resetModulesDone();
 
 private:
@@ -55,7 +58,9 @@ private:
   class QLabel* counterLabel_;
   size_t numModulesDone_;
   size_t totalModules_;
+  double totalExecutionTime_;
   Core::Thread::Mutex mutex_;
+  boost::timer executionTimer_;
 
   QString counterLabelString() const;
 };
