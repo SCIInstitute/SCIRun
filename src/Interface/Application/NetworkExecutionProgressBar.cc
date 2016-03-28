@@ -49,7 +49,7 @@ NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numM
   counterAction_->setVisible(true);
 
   timingAction_ = new QAction(parent);
-  timingAction_->setToolTip("Execution Timing");
+  timingAction_->setToolTip("Click to copy execution times to clipboard");
   timingAction_->setVisible(true);
   timingAction_->setIcon(QPixmap(":/general/Resources/timepiece-512.png"));
   connect(timingAction_, SIGNAL(triggered()), this, SLOT(displayTimingInfo()));
@@ -89,8 +89,8 @@ void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const st
     double wallTime = executionTimer_.elapsed();
     progressBar_->setToolTip(QString("Total execution time: %1\nTotal wall time: %2")
       .arg(totalExecutionTime_).arg(wallTime));
-    timingStream_ << '\t' << moduleId.c_str() << "\n\t\t" << execTime << '\t' << totalExecutionTime_
-      << '\t'  << wallTime << '\n';
+    timingStream_ << '\t' << moduleId.c_str() << "," << execTime << ',' << totalExecutionTime_
+      << ','  << wallTime << '\n';
 
     if (numModulesDone_ == totalModules_)
       timingStream_ << "TIMING LOG: " << "execution ended at " << QTime::currentTime().toString("hh:mm:ss.zzz") << '\n';
@@ -108,13 +108,14 @@ void NetworkExecutionProgressBar::resetModulesDone()
   progressBar_->setToolTip("");
   timingLog_.clear();
   timingStream_ << "TIMING LOG: " << "execution began at " << QTime::currentTime().toString("hh:mm:ss.zzz")
-    << "\n\tModule ID\tmodule time\ttotal module time\ttotal wall time\n";
+    << "\n\tModule ID,module time,total module time,total wall time\n";
 }
 
 void NetworkExecutionProgressBar::displayTimingInfo()
 {
-  qDebug() << timingLog_;
-  QMessageBox::information(nullptr, "Execution timing", timingLog_);
+  //qDebug() << timingLog_;
+  QApplication::clipboard()->setText(timingLog_);
+  //QMessageBox::information(nullptr, "Execution timing", timingLog_);
 }
 
 QString NetworkExecutionProgressBar::counterLabelString() const
