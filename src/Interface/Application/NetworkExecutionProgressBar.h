@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_NETWORKEXECUTIONPROGRESSBAR_H
 
 #include <QObject>
+#include <QTextStream>
 #ifndef Q_MOC_RUN
 #include <boost/timer.hpp>
 #include <Core/Thread/Mutex.h>
@@ -48,8 +49,9 @@ public:
 
   public Q_SLOTS:
     void updateTotalModules(size_t count);
-    void incrementModulesDone(double execTime);
+    void incrementModulesDone(double execTime, const std::string& moduleId);
     void resetModulesDone();
+    void displayTimingInfo();
 
 private:
   class QWidgetAction* barAction_;
@@ -62,6 +64,8 @@ private:
   double totalExecutionTime_;
   Core::Thread::Mutex mutex_;
   boost::timer executionTimer_;
+  QString timingLog_;
+  QTextStream timingStream_;
 
   QString counterLabelString() const;
 };

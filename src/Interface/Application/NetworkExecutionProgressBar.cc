@@ -34,7 +34,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Thread;
 
 NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numModulesDone_(0),
-  totalModules_(0), totalExecutionTime_(0), mutex_("progress bar")
+  totalModules_(0), totalExecutionTime_(0), mutex_("progress bar"), timingStream_(&timingLog_)
 {
   barAction_ = new QWidgetAction(parent);
   barAction_->setDefaultWidget(progressBar_ = new QProgressBar(parent));
@@ -52,6 +52,8 @@ NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numM
   timingAction_->setToolTip("Execution Timing");
   timingAction_->setVisible(true);
   timingAction_->setIcon(QPixmap(":/general/Resources/timepiece-512.png"));
+  connect(timingAction_, SIGNAL(triggered()), this, SLOT(displayTimingInfo()));
+  timingStream_.setRealNumberPrecision(4);
 
   progressBar_->setStyleSheet(parent->styleSheet());
 }
@@ -75,7 +77,7 @@ void NetworkExecutionProgressBar::updateTotalModules(size_t count)
     progressBar_->setValue(0);
   }
 }
-void NetworkExecutionProgressBar::incrementModulesDone(double execTime)
+void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const std::string& moduleId)
 {
   Guard g(mutex_.get());
   if (numModulesDone_ < totalModules_)
@@ -87,6 +89,11 @@ void NetworkExecutionProgressBar::incrementModulesDone(double execTime)
     double wallTime = executionTimer_.elapsed();
     progressBar_->setToolTip(QString("Total execution time: %1\nTotal wall time: %2")
       .arg(totalExecutionTime_).arg(wallTime));
+    timingStream_ << '\t' << moduleId.c_str() << "\n\t\t" << execTime << '\t' << totalExecutionTime_
+      << '\t'  << wallTime << '\n';
+
+    if (numModulesDone_ == totalModules_)
+      timingStream_ << "TIMING LOG: " << "execution ended at " << QTime::currentTime().toString("hh:mm:ss.zzz") << '\n';
   }
 }
 
@@ -98,7 +105,16 @@ void NetworkExecutionProgressBar::resetModulesDone()
   executionTimer_.restart();
   counterLabel_->setText(counterLabelString());
   progressBar_->setValue(numModulesDone_);
-  progressBar_->setToolTip("Percentage of completed modules and total execution time");
+  progressBar_->setToolTip("");
+  timingLog_.clear();
+  timingStream_ << "TIMING LOG: " << "execution began at " << QTime::currentTime().toString("hh:mm:ss.zzz")
+    << "\n\tModule ID\tmodule time\ttotal module time\ttotal wall time\n";
+}
+
+void NetworkExecutionProgressBar::displayTimingInfo()
+{
+  qDebug() << timingLog_;
+  QMessageBox::information(nullptr, "Execution timing", timingLog_);
 }
 
 QString NetworkExecutionProgressBar::counterLabelString() const
