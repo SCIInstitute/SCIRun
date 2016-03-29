@@ -228,10 +228,10 @@ namespace
   const int HOVERED_CONNECTION_WIDTH = 5.0;
 }
 
-ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
+ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : HasNotes(id, false),
   NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
-  fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(0), menuOpen_(0), placeHoldingWidth_(0)
+  fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(nullptr), menuOpen_(0), placeHoldingWidth_(0)
 {
   if (fromPort_)
   {
@@ -272,10 +272,10 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 
 ConnectionLine::~ConnectionLine()
 {
-  destroy();
+  destroyConnection();
 }
 
-void ConnectionLine::destroy()
+void ConnectionLine::destroyConnection()
 {
   if (!destroyed_)
   {
@@ -296,7 +296,12 @@ void ConnectionLine::destroy()
 
 void ConnectionLine::toggleDisabled()
 {
-  disabled_ = !disabled_;
+  setDisabled(!disabled_);
+}
+
+void ConnectionLine::setDisabled(bool disabled)
+{
+  disabled_ = disabled;
   qDebug() << "Disabled set to " << disabled_ << "on" << id_.id_.c_str();
   if (disabled_)
   {
@@ -312,6 +317,7 @@ void ConnectionLine::toggleDisabled()
     placeHoldingColor_ = fromPort_->color();
     setGraphicsEffect(nullptr);
   }
+  toPort_->connectionDisabled(disabled_);
 }
 
 void ConnectionLine::setColor(const QColor& color)
@@ -394,7 +400,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
   if (action && action->text() == deleteAction)
   {
     scene()->removeItem(this);
-    destroy(); //TODO: another place to hook up deleteLater()
+    destroyConnection(); //TODO: another place to hook up deleteLater()
   }
   else if (action && action->text() == editNotesAction)
   {

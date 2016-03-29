@@ -45,7 +45,6 @@
 #include <Dataflow/Network/ExecutableObject.h>
 #endif
 
-class QGraphicsProxyWidget;
 class QDockWidget;
 class QProgressBar;
 
@@ -208,6 +207,7 @@ private Q_SLOTS:
   void changeExecuteButtonToPlay();
   void changeExecuteButtonToStop();
   void updateDockWidgetProperties(bool isFloating);
+  void incomingConnectionStateChanged(bool disabled);
 private:
   ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
@@ -215,7 +215,7 @@ private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
-  bool isMini_, errored_, executedOnce_, skipExecute_;
+  bool isMini_, errored_, executedOnce_, skipExecute_, disabled_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
   std::atomic<int> previousModuleState_;

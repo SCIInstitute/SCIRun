@@ -466,6 +466,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   errored_(false),
   executedOnce_(false),
   skipExecute_(false),
+  disabled_(false),
   theModule_(theModule),
   previousModuleState_(UNSET),
   moduleId_(theModule->get_id()),
@@ -730,6 +731,7 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
       this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+    connect(w, SIGNAL(incomingConnectionStateChange(bool)), this, SLOT(incomingConnectionStateChanged(bool)));
     ports_->addPort(w);
     ++i;
     if (dialog_ && port->isDynamic())
@@ -1208,18 +1210,13 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
     dockable_->setAllowedAreas(allowedDockArea());
   }
 
-  if (dockEnabled)
-  {
-
-  }
-  else
+  if (!dockEnabled)
   {
     if (dockable_ && !dockable_->isHidden())
     {
       dockable_->setFloating(true);
     }
   }
-
 }
 
 boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;
@@ -1489,4 +1486,28 @@ void ModuleWidget::updateMetadata(bool active)
   }
   else
     setToolTip("");
+}
+
+void ModuleWidget::incomingConnectionStateChanged(bool disabled)
+{
+  qDebug() << "MODULE connection DISABLED " << getModuleId().c_str() << " called with " << disabled;
+  if (disabled)
+    disabled_ = true;
+  else
+  {
+    //auto port = qobject_cast<PortWidget*>(sender());
+    disabled_ = std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->isConnected() && input->firstConnection()->disabled(); });
+  }
+  qDebug() << "MODULE DISABLED SET " << getModuleId().c_str() << " to " << disabled_;
+  
+  //TODO: need to set this on proxy widget
+  if (disabled_)
+    setGraphicsEffect(blurEffect(3));
+  else
+    setGraphicsEffect(nullptr);
+
+  for (const auto& output : ports().outputs())
+  {
+    output->setConnectionsDisabled(disabled_ || disabled);
+  }
 }
