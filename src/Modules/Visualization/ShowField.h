@@ -64,6 +64,7 @@ namespace SCIRun {
         ShowFieldModule();
         virtual void execute() override;
 
+        static const Core::Algorithms::AlgorithmParameterName FieldName;
         static const Core::Algorithms::AlgorithmParameterName NodesAvailable;
         static const Core::Algorithms::AlgorithmParameterName EdgesAvailable;
         static const Core::Algorithms::AlgorithmParameterName FacesAvailable;
