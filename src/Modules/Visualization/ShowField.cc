@@ -331,7 +331,6 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   }
 
   GeometryHandle geom(new GeometryObjectSpire(gid, idname));
-  std::cout << geom->uniqueID() << " from showfield" << std::endl;
 
   /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
