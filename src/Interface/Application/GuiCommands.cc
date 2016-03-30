@@ -77,14 +77,30 @@ bool ExecuteCurrentNetworkCommandGui::execute()
   return true;
 }
 
+static const AlgorithmParameterName RunningPython("RunningPython");
+
+QuitAfterExecuteCommandGui::QuitAfterExecuteCommandGui()
+{
+  addParameter(RunningPython, false);
+}
+
 bool QuitAfterExecuteCommandGui::execute()
 {
+  if (get(RunningPython).toBool())
+    SCIRunMainWindow::Instance()->skipSaveCheck();
   SCIRunMainWindow::Instance()->setupQuitAfterExecute();
   return true;
 }
 
+QuitCommandGui::QuitCommandGui()
+{
+  addParameter(RunningPython, false);
+}
+
 bool QuitCommandGui::execute()
 {
+  if (get(RunningPython).toBool())
+    SCIRunMainWindow::Instance()->skipSaveCheck();
   SCIRunMainWindow::Instance()->quit();
   exit(0);
   return true;

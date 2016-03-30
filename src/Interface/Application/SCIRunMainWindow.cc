@@ -745,7 +745,7 @@ bool SCIRunMainWindow::okToContinue()
   if (isWindowModified()
 		&& !Application::Instance().parameters()->isRegressionMode()
 		&& !quitAfterExecute_
-		&& !runningPythonScript_)
+		&& !skipSaveCheck_)
   {
     int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"),
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
@@ -1017,7 +1017,6 @@ void SCIRunMainWindow::setupPythonConsole()
 void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
-  runningPythonScript_ = true;
   GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
   SCIRun::Core::PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   SCIRun::Core::PythonInterpreter::Instance().run_file(scriptFileName.toStdString());

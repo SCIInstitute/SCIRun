@@ -87,6 +87,7 @@ public:
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
   void preexecute();
+  void skipSaveCheck() { skipSaveCheck_ = true; }
 
   ~SCIRunMainWindow();
   int returnCode() const { return returnCode_; }
@@ -153,7 +154,7 @@ private:
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool quitAfterExecute_;
-  bool runningPythonScript_ = false;
+  bool skipSaveCheck_ = false;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
