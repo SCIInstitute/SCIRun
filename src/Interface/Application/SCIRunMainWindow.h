@@ -86,6 +86,8 @@ public:
   bool isInFavorites(const QString& module) const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
+  void preexecute();
+
   ~SCIRunMainWindow();
   int returnCode() const { return returnCode_; }
 public Q_SLOTS:
