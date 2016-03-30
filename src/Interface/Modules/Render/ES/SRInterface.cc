@@ -514,6 +514,8 @@ namespace SCIRun {
       if (mSceneBBox.valid())
       {
         mCamera->doAutoView(mSceneBBox);
+
+        //std::cout << mSceneBBox.get_min() << "\t" << mSceneBBox.get_max() << "\n";
       }
     }
 
@@ -1305,11 +1307,17 @@ namespace SCIRun {
         clippingPlanes->clippingPlanes.clear();
         clippingPlanes->clippingPlaneCtrls.clear();
         //boundbox transformation
-        glm::mat4 trans_bb;
+        glm::mat4 trans_bb = glm::mat4();
         glm::vec3 scale_bb(mSceneBBox.x_length() / 2.0, mSceneBBox.y_length() / 2.0, mSceneBBox.z_length() / 2.0);
         glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
-        trans_bb = glm::scale(trans_bb, scale_bb);
-        trans_bb = glm::translate(trans_bb, center_bb);
+        glm::mat4 temp = glm::scale(glm::mat4(), scale_bb);
+        trans_bb = temp * trans_bb;
+        temp = glm::translate(glm::mat4(), center_bb);
+        trans_bb = temp * trans_bb;
+        //std::cout << trans_bb[0][0] << "\t" << trans_bb[1][0] << "\t" << trans_bb[2][0] << "\t" << trans_bb[3][0] << "\n" <<
+        //  trans_bb[0][1] << "\t" << trans_bb[1][1] << "\t" << trans_bb[2][1] << "\t" << trans_bb[3][1] << "\n" <<
+        //  trans_bb[0][2] << "\t" << trans_bb[1][2] << "\t" << trans_bb[2][2] << "\t" << trans_bb[3][2] << "\n" <<
+        //  trans_bb[0][3] << "\t" << trans_bb[1][3] << "\t" << trans_bb[2][3] << "\t" << trans_bb[3][3] << "\n";
         int index = 0;
         for (auto i : clippingPlanes_)
         {
@@ -1322,20 +1330,21 @@ namespace SCIRun {
             n = glm::vec4(n3, 0.0);
             d *= getMaxProjLength(n3);
           }
+          //std::cout << i.d << "\t" << getMaxProjLength(n3) << "\t" << d << "\n";
           glm::vec4 o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
           o.w = 1;
           o = trans_bb * o;
           n = glm::inverseTranspose(trans_bb) * n;
           o.w = 0;
           n.w = 0;
-          n.w = glm::dot(o, n);
+          n = glm::normalize(n);
+          n.w = -glm::dot(o, n);
+          //std::cout << n.x << "\t" << n.y << "\t" << n.z << "\t" << n.w << "\n";
           clippingPlanes->clippingPlanes.push_back(n);
           glm::vec4 control(i.visible ? 1.0 : 0.0,
             i.showFrame ? 1.0 : 0.0,
             i.reverseNormal ? 1.0 : 0.0, 0.0);
           clippingPlanes->clippingPlaneCtrls.push_back(control);
-          //if (i.showFrame)
-          //  updateGeometryClippingPlane(index, n);
           index++;
         }
       }
