@@ -1045,7 +1045,7 @@ SCIRun::Graphics::Datatypes::GeometryHandle ViewSceneDialog::buildGeometryScaleB
   double length = scaleBar_.projLength;
   const double height = scaleBar_.height;
   glm::vec4 color(1.0);
-  glm::vec4 shift(1.95, 0.1, 0.0, 0.0);
+  glm::vec4 shift(1.9, 0.1, 0.0, 0.0);
 
   //figure out text length first
   size_t text_size = size_t(scaleBar_.fontSize);
@@ -1156,7 +1156,7 @@ SCIRun::Graphics::Datatypes::GeometryHandle ViewSceneDialog::buildGeometryScaleB
     if (textBuilder_.getFaceSize() != text_size)
       textBuilder_.setFaceSize(text_size);
     textBuilder_.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
-    Vector shift(1.95, 0.1, 0.0);
+    Vector shift(1.9, 0.1, 0.0);
     Vector trans(-text_len + 5, 0.0, 0.0);
     textBuilder_.printString(oneline, shift, trans, uniqueNodeID, geom);
   }
@@ -1216,7 +1216,9 @@ void ViewSceneDialog::buildGeometryClippingPlane(
   Core::Geometry::Point c(bbox.center());
   Core::Geometry::Vector n(plane.x, plane.y, plane.z);
   n.normalize();
-  Core::Geometry::Point p(c + (n * diag.length() / 2.0) * plane.w);
+  //Core::Geometry::Point p(c + (n * diag.length() / 2.0) * (plane.w));
+  Core::Geometry::Point p(c + ((-plane.w) - Core::Geometry::Dot(c, n)) * n);
+  //std::cout << "p0" << "\t" << p << "\n";
   if (clippingPlanes_[index].reverseNormal)
     n = -n;
   double w, h; w = h = diag.length() / 2.0;
@@ -1227,10 +1229,11 @@ void ViewSceneDialog::buildGeometryClippingPlane(
     w = std::max(w, 2.1 * (intersect - c).length());
   if (bbox.intersect(c, axis2, intersect))
     h = std::max(h, 2.1 * (intersect - c).length());
-  if (clippingPlanes_[index].reverseNormal)
-    p = Core::Geometry::Point(n * plane.w);
-  else
-    p = Core::Geometry::Point(-n * plane.w);
+  //if (clippingPlanes_[index].reverseNormal)
+  //  p = Core::Geometry::Point(n * plane.w);
+  //else
+  //  p = Core::Geometry::Point(-n * plane.w);
+  //std::cout << "pp" << "\t" << p << "\n";
   Core::Geometry::Point p1 = p - axis1 * w / 2.0 - axis2 * h / 2.0;
   Core::Geometry::Point p2 = p + axis1 * w / 2.0 - axis2 * h / 2.0;
   Core::Geometry::Point p3 = p + axis1 * w / 2.0 + axis2 * h / 2.0;
