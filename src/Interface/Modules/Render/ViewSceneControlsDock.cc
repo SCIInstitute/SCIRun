@@ -142,7 +142,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   renderSliderFrame_->setEnabled(false);
 
   ///Materials Tab
-  materialsFrame_->setEnabled(false);
+  //materialsFrame_->setEnabled(false);
   fogGroupBox_->setEnabled(false);
 
   ////View Tab

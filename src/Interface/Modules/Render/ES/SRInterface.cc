@@ -87,7 +87,11 @@ namespace SCIRun {
       mContext(context),
       frameInitLimit_(frameInitLimit),
       mCamera(new SRCamera(*this)),  // Should come after all vars have been initialized.
-      clippingPlaneIndex_(0)
+      clippingPlaneIndex_(0),
+      mMatAmbient(0.2),
+      mMatDiffuse(1.0),
+      mMatSpecular(0.0),
+      mMatShine(2.0)
     {
       // Create default colormaps.
       //generateTextures();
@@ -626,6 +630,26 @@ namespace SCIRun {
       updateClippingPlanes();
     }
 
+    //set material factors
+    void SRInterface::setMaterialFactor(MatFactor factor, double value)
+    {
+      switch (factor)
+      {
+      case MAT_AMBIENT:
+        mMatAmbient = value;
+        break;
+      case MAT_DIFFUSE:
+        mMatDiffuse = value;
+        break;
+      case MAT_SPECULAR:
+        mMatSpecular = value;
+        break;
+      case MAT_SHINE:
+        mMatShine = value;
+        break;
+      }
+    }
+
     const glm::mat4& SRInterface::getWorldToProjection() const
     { return mCamera->getWorldToProjection(); }
 
@@ -1023,8 +1047,9 @@ namespace SCIRun {
               ren::CommonUniforms commonUniforms;
               mCore.addComponent(entityID, commonUniforms);
 
-              for (const auto& uniform : pass.mUniforms)
+              for (auto& uniform : pass.mUniforms)
               {
+                applyMatFactors(uniform);
                 applyUniform(entityID, uniform);
               }
 
@@ -1139,6 +1164,17 @@ namespace SCIRun {
         ren::addGLUniform(mCore, entityID, uniform.name.c_str(), uniform.data);
         break;
       }
+    }
+
+    //apply material factors
+    void SRInterface::applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform)
+    {
+      if (uniform.name == "uAmbientColor")
+        uniform.data = glm::vec4(mMatAmbient);// *uniform.data;
+      else if (uniform.name == "uSpecularColor")
+        uniform.data = glm::vec4(mMatSpecular);// *uniform.data;
+      else if (uniform.name == "uSpecularPower")
+        uniform.data = glm::vec4(mMatShine);
     }
 
     //------------------------------------------------------------------------------

@@ -910,21 +910,29 @@ void ViewSceneDialog::updatClippingPlaneDisplay()
 void ViewSceneDialog::setAmbientValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Ambient, value);
+  setMaterialFactor(SRInterface::MAT_AMBIENT, value);
+  newGeometryValue();
 }
 
 void ViewSceneDialog::setDiffuseValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Diffuse, value);
+  setMaterialFactor(SRInterface::MAT_DIFFUSE, value);
+  newGeometryValue();
 }
 
 void ViewSceneDialog::setSpecularValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Specular, value);
+  setMaterialFactor(SRInterface::MAT_SPECULAR, value);
+  newGeometryValue();
 }
 
 void ViewSceneDialog::setShininessValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Shine, value);
+  setMaterialFactor(SRInterface::MAT_SHINE, value);
+  newGeometryValue();
 }
 
 void ViewSceneDialog::setEmissionValue(double value)
@@ -1285,6 +1293,15 @@ void ViewSceneDialog::buildGeometryClippingPlane(
   clippingPlaneGeoms_.push_back(geom);
   clippingPlaneGeoms_.push_back(geom2);
 }
+
+//set material
+void ViewSceneDialog::setMaterialFactor(int factor, double value)
+{
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setMaterialFactor(static_cast<SRInterface::MatFactor>(factor), value);
+}
+
 
 //------------------------------------------------------------------------------
 //-------------------Render Settings--------------------------------------------
