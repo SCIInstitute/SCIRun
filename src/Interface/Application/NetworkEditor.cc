@@ -58,7 +58,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
-  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
+  boost::shared_ptr<DefaultNotePositionGetter> dnpg,
+  boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
+  PreexecuteFunc preexecuteFunc,
   TagColorFunc tagColor,
   QWidget* parent)
   : QGraphicsView(parent),
@@ -74,7 +76,8 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
   zLevelManager_(new ZLevelManager(scene_)),
-  fileLoading_(false)
+  fileLoading_(false),
+  preexecute_(preexecuteFunc)
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
@@ -832,6 +835,7 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
 
 void NetworkEditor::executeAll()
 {
+  preexecute_();
   // explicit type needed for older Qt and/or clang
   std::function<void()> exec = [this]() { controller_->executeAll(*this); };
   QtConcurrent::run(exec);
@@ -843,6 +847,7 @@ void NetworkEditor::executeAll()
 
 void NetworkEditor::executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
 {
+  preexecute_();
   // explicit type needed for older Qt and/or clang
   std::function<void()> exec = [this, &module]() { controller_->executeModule(module, *this); };
   QtConcurrent::run(exec);
