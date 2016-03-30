@@ -312,7 +312,7 @@ void ViewSceneControlsDock::removeItem(const QString& name)
 
 void ViewSceneControlsDock::removeAllItems()
 {
-  if (objectListWidget_->count() > 1)
+  if (objectListWidget_->count() > 0)
   {
     LOG_DEBUG("ViewScene items cleared" << std::endl);
     objectListWidget_->clear();
