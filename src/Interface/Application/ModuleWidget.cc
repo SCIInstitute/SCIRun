@@ -899,7 +899,10 @@ void PortWidgetManager::addPort(InputPortWidget* port)
 
 void PortWidgetManager::insertPort(int index, InputPortWidget* port)
 {
-  inputPorts_.insert(inputPorts_.begin() + index, port);
+  if (index > inputPorts_.size())
+    inputPorts_.push_back(port);
+  else
+    inputPorts_.insert(inputPorts_.begin() + index, port);
 }
 
 void PortWidgetManager::setHighlightPorts(bool on)
