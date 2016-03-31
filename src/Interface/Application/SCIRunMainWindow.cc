@@ -770,6 +770,7 @@ void SCIRunMainWindow::networkModified()
 
 QString SCIRunMainWindow::mostRecentFile() const
 {
+  return !recentFiles_.empty() ? recentFiles_[0] : "";
 }
 
 void SCIRunMainWindow::setActionIcons()
