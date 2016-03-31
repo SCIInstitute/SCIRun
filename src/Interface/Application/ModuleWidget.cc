@@ -736,7 +736,7 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
     ++i;
     if (dialog_ && port->isDynamic())
     {
-      auto portConstructionType = INITIAL_PORT_CONSTRUCTION;
+      auto portConstructionType = DynamicPortChange::INITIAL_PORT_CONSTRUCTION;
       auto nameMatches = [&](const InputPortHandle& in)
       {
         return in->id().name == port->id().name;
@@ -747,7 +747,7 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
       //qDebug() << "UPDATE FROM PORT CHANGE TYPE CHECK:" << isNotLastDynamicPortOfThisName << justAddedIndex << inputs.size() << (justAddedIndex < inputs.size() - 1)
         //<< ((justAddedIndex < inputs.size() - 1) && (std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.end()));
       if (isNotLastDynamicPortOfThisName)
-        portConstructionType = USER_ADDED_PORT_DURING_FILE_LOAD;
+        portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
       dialog_->updateFromPortChange(i, port->id().toString(), portConstructionType);
     }
   }
@@ -1198,7 +1198,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
   if (dialog_ && !deleting_ && !networkBeingCleared_)
-    dialog_->updateFromPortChange(numInputPorts(), portId, adding ? USER_ADDED_PORT : USER_REMOVED_PORT);
+    dialog_->updateFromPortChange(numInputPorts(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
@@ -1272,12 +1272,7 @@ void ModuleWidget::updateModuleTime()
 void ModuleWidget::launchDocumentation()
 {
   //TODO: push this help url construction to module layer
-  std::string url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + getModule()->get_module_name();
-
-  QUrl qurl(QString::fromStdString(url), QUrl::TolerantMode);
-
-  if (!QDesktopServices::openUrl(qurl))
-    GuiLogger::Instance().logError("Failed to open help page: " + qurl.toString());
+  openUrl("http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + QString::fromStdString(getModule()->get_module_name()), "module help page");
 }
 
 void ModuleWidget::setStartupNote(const QString& text)

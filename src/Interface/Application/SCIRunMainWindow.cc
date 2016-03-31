@@ -235,6 +235,9 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   connect(actionRestoreAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(restoreAllModuleUIs()));
   connect(actionHideAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(hideAllModuleUIs()));
 
+  connect(helpActionPythonAPI_, SIGNAL(triggered()), this, SLOT(loadPythonAPIDoc()));
+  connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
+
   connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
 
 #ifndef BUILD_WITH_PYTHON
@@ -1670,6 +1673,16 @@ void SCIRunMainWindow::copyVersionToClipboard()
 {
   QApplication::clipboard()->setText(QString::fromStdString(VersionInfo::GIT_VERSION_TAG));
   statusBar()->showMessage("Version string copied to clipboard.", 2000);
+}
+
+void SCIRunMainWindow::showSnippetHelp()
+{
+  qDebug() << "show snippet help";
+}
+
+void SCIRunMainWindow::loadPythonAPIDoc()
+{
+  qDebug() << "load python api";
 }
 
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)

@@ -93,10 +93,10 @@ void InterfaceWithPythonDialog::setupOutputTableCells()
 void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
 {
   //qDebug() << "InterfaceWithPythonDialog::updateFromPortChange" << numPorts << portId.c_str() << type;
-  if (type == INITIAL_PORT_CONSTRUCTION)
+  if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;
 
-  if (type == USER_REMOVED_PORT)
+  if (type == DynamicPortChange::USER_REMOVED_PORT)
   {
     QMessageBox::warning(this, "Warning: possible Python code update required", windowTitle() + 
       ": The connection to port " + QString::fromStdString(portId) + " was deleted. The variable name \"" +
@@ -123,8 +123,5 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(const std::strin
 
 void InterfaceWithPythonDialog::loadAPIDocumentation()
 {
-  const QString url = "https://github.com/SCIInstitute/SCIRun/wiki/SCIRun-Python-API-0.2";
-
-  if (!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode)))
-    Core::Logging::Log::get() << Core::Logging::ERROR_LOG << "Failed to open SCIRun Python API page.";
+  openUrl("https://github.com/SCIInstitute/SCIRun/wiki/SCIRun-Python-API-0.2", "SCIRun Python API page");
 }

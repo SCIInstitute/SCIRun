@@ -202,6 +202,8 @@ private Q_SLOTS:
   void resetWindowLayout();
   void zoomNetwork();
   void networkTimedOut();
+  void loadPythonAPIDoc();
+  void showSnippetHelp();
   void copyVersionToClipboard();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
