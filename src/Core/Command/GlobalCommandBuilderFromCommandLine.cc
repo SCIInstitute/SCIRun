@@ -33,8 +33,10 @@
 #include <Core/Command/CommandQueue.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Utils/Exception.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Core::Commands;
+using namespace SCIRun::Core::CommandLine;
 using namespace SCIRun::Core::Algorithms;
 
   GlobalCommandBuilderFromCommandLine::GlobalCommandBuilderFromCommandLine(GlobalCommandFactoryHandle cmdFactory) : cmdFactory_(cmdFactory)
@@ -42,66 +44,68 @@ using namespace SCIRun::Core::Algorithms;
     ENSURE_NOT_NULL(cmdFactory, "CommandFactory");
   }
 
-  CommandQueueHandle GlobalCommandBuilderFromCommandLine::build(SCIRun::Core::CommandLine::ApplicationParametersHandle params)
+  CommandQueueHandle GlobalCommandBuilderFromCommandLine::build(ApplicationParametersHandle params) const
   {
     ENSURE_NOT_NULL(params, "Application parameters");
-    CommandQueueHandle q(boost::make_shared<CommandQueue>());
+    auto q(boost::make_shared<CommandQueue>());
 
     if (params->help())
     {
-      q->enqueue(cmdFactory_->create(PrintHelp));
-      q->enqueue(cmdFactory_->create(QuitCommand));
+      q->enqueue(cmdFactory_->create(GlobalCommands::PrintHelp));
+      q->enqueue(cmdFactory_->create(GlobalCommands::QuitCommand));
       return q;
     }
 
     if (params->printModuleList())
     {
-      q->enqueue(cmdFactory_->create(PrintModules));
-      q->enqueue(cmdFactory_->create(QuitCommand));
+      q->enqueue(cmdFactory_->create(GlobalCommands::PrintModules));
+      q->enqueue(cmdFactory_->create(GlobalCommands::QuitCommand));
       return q;
     }
 
     if (params->version())
     {
-      q->enqueue(cmdFactory_->create(PrintVersion));
-      q->enqueue(cmdFactory_->create(QuitCommand));
+      q->enqueue(cmdFactory_->create(GlobalCommands::PrintVersion));
+      q->enqueue(cmdFactory_->create(GlobalCommands::QuitCommand));
       return q;
     }
 
     if (!params->disableSplash() && !params->disableGui())
-      q->enqueue(cmdFactory_->create(ShowSplashScreen));
+      q->enqueue(cmdFactory_->create(GlobalCommands::ShowSplashScreen));
 
     if (!params->disableGui())
-      q->enqueue(cmdFactory_->create(ShowMainWindow));
+      q->enqueue(cmdFactory_->create(GlobalCommands::ShowMainWindow));
     else
       std::cout << "HEADLESS MODE" << std::endl;  /// @todo obviously
 
     if (params->dataDirectory())
-      q->enqueue(cmdFactory_->create(SetupDataDirectory));
+      q->enqueue(cmdFactory_->create(GlobalCommands::SetupDataDirectory));
 
-    if (!params->inputFiles().empty())
+    if (!params->inputFiles().empty() || params->loadMostRecentFile())
     {
       const int last = 1;
       //TODO: support multiple files loaded--need to be able to execute and wait for each before loading next. See #825
       // last = params->inputFiles().size()
       for (int i = 0; i < last; ++i)
       {
-        auto load = cmdFactory_->create(LoadNetworkFile);
+        auto load = cmdFactory_->create(GlobalCommands::LoadNetworkFile);
         load->set(Name("FileNum"), i);
+        if (params->loadMostRecentFile())
+          load->set(Variables::Filename, mostRecentFileCode());
         q->enqueue(load);
 
         if (params->executeNetwork())
-          q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
+          q->enqueue(cmdFactory_->create(GlobalCommands::ExecuteCurrentNetwork));
         else if (params->executeNetworkAndQuit())
         {
           if (i == last - 1)
-            q->enqueue(cmdFactory_->create(SetupQuitAfterExecute));
-          q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
+            q->enqueue(cmdFactory_->create(GlobalCommands::SetupQuitAfterExecute));
+          q->enqueue(cmdFactory_->create(GlobalCommands::ExecuteCurrentNetwork));
         }
       }
     }
     else if (params->pythonScriptFile())
-      q->enqueue(cmdFactory_->create(RunPythonScript));
+      q->enqueue(cmdFactory_->create(GlobalCommands::RunPythonScript));
 
     return q;
   }

@@ -45,6 +45,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -d [ --datadir ] arg    scirun data directory\n"
     "  -r [ --regression ] arg regression test a network\n"
     "  -l [ --logfile ] arg    add output messages to a logfile--TODO\n"
+    "  -1 [ --most-recent ]    load the most recently used file\n"
     "  -i [ --interactive ]    interactive mode--TODO\n"
     "  -x [ --headless ]       disable GUI (Qt still needed, for now)\n"
     "  --input-file arg        SCIRun Network Input File\n"
@@ -154,5 +155,14 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
     ASSERT_TRUE(!!aph->threadMode());
     EXPECT_EQ("serial", *aph->threadMode());
+  }
+
+  {
+    const char* argv[] = { "scirun.exe", "-1" };
+    int argc = sizeof(argv) / sizeof(char*);
+
+    ApplicationParametersHandle aph = parser.parse(argc, argv);
+
+    ASSERT_TRUE(aph->loadMostRecentFile());
   }
 }

@@ -91,6 +91,8 @@ public:
 
   ~SCIRunMainWindow();
   int returnCode() const { return returnCode_; }
+
+  QString mostRecentFile() const;
 public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);

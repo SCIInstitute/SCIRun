@@ -768,6 +768,10 @@ void SCIRunMainWindow::networkModified()
   networkProgressBar_->updateTotalModules(networkEditor_->numModules());
 }
 
+QString SCIRunMainWindow::mostRecentFile() const
+{
+}
+
 void SCIRunMainWindow::setActionIcons()
 {
   actionNew_->setIcon(QPixmap(":/general/Resources/new/general/new.png"));

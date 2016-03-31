@@ -63,10 +63,15 @@ bool LoadFileCommandGui::execute()
 {
   std::string inputFile;
   auto inputFilesFromCommandLine = Application::Instance().parameters()->inputFiles();
+
   if (!inputFilesFromCommandLine.empty())
     inputFile = inputFilesFromCommandLine[index_];
   else
+  {
     inputFile = get(Variables::Filename).toFilename().string();
+    if (mostRecentFileCode() == inputFile)
+      inputFile = SCIRunMainWindow::Instance()->mostRecentFile().toStdString();
+  }
 
   return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile));
 }
