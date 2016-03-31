@@ -176,6 +176,7 @@ namespace Gui {
   };
 
   SCISHARE void openUrl(const QString& url, const std::string& name);
+  SCISHARE void openPythonAPIDoc();
 
 }
 }

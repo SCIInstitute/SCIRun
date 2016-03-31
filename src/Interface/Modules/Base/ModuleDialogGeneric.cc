@@ -838,3 +838,8 @@ void SCIRun::Gui::openUrl(const QString& url, const std::string& name)
   if (!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode)))
     Log::get() << ERROR_LOG << "Failed to open " << name;
 }
+
+void SCIRun::Gui::openPythonAPIDoc()
+{
+  openUrl("https://github.com/SCIInstitute/SCIRun/wiki/SCIRun-Python-API-0.2", "SCIRun Python API page");
+}

@@ -1654,7 +1654,7 @@ void SCIRunMainWindow::showKeyboardShortcutsDialog()
 void SCIRunMainWindow::runNewModuleWizard()
 {
 	qDebug() << "new module wizard coming soon";
-	ClassWizard* wizard = new ClassWizard(this);
+  auto wizard = new ClassWizard(this);
 	wizard->show();
 }
 
@@ -1677,12 +1677,19 @@ void SCIRunMainWindow::copyVersionToClipboard()
 
 void SCIRunMainWindow::showSnippetHelp()
 {
-  qDebug() << "show snippet help";
+  QMessageBox::information(this, "Snippets", 
+    "Snippets are strings that encode a subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
+    "Currently, only linear subnetworks are supported. "
+    "\n\nThey are available in the module selector and work just like the single module entries there: double-click or drag onto the "
+    "network editor to insert the entire snippet. \n\nCustom snippets can be created by editing the file snippets.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one snippet per line in the prescribed format, then restart SCIRun for them to appear."
+    "\n\nFeatures coming soon include: auto-UI opening, support for non-linear snippet graphs, and a snippet designer GUI."
+    "\n\nFor feedback, please comment on this issue: https://github.com/SCIInstitute/SCIRun/issues/1161"
+    );
 }
 
 void SCIRunMainWindow::loadPythonAPIDoc()
 {
-  qDebug() << "load python api";
+  openPythonAPIDoc();
 }
 
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
@@ -1709,7 +1716,7 @@ void FileDownloader::downloadProgress(qint64 received, qint64 total)
 
 void SCIRunMainWindow::toolkitDownload()
 {
-	QAction* action = qobject_cast<QAction*>(sender());
+  auto action = qobject_cast<QAction*>(sender());
 
 	static std::vector<ToolkitDownloader*> downloaders;
   downloaders.push_back(new ToolkitDownloader(action, statusBar(), this));
@@ -1775,7 +1782,7 @@ void ToolkitDownloader::saveToolkit()
   if (!zipDownloader_)
     return;
 
-  QString fullFilename = toolkitDir_.filePath(filename_);
+  auto fullFilename = toolkitDir_.filePath(filename_);
   //qDebug() << "saving to " << fullFilename;
   QFile file(fullFilename);
   file.open(QIODevice::WriteOnly);

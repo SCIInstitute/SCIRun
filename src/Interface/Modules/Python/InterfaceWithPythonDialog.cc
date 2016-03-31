@@ -29,7 +29,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Python/InterfaceWithPythonDialog.h>
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
-#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -123,5 +122,5 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(const std::strin
 
 void InterfaceWithPythonDialog::loadAPIDocumentation()
 {
-  openUrl("https://github.com/SCIInstitute/SCIRun/wiki/SCIRun-Python-API-0.2", "SCIRun Python API page");
+  openPythonAPIDoc();
 }
