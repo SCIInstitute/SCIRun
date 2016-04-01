@@ -1681,9 +1681,9 @@ void SCIRunMainWindow::showSnippetHelp()
     "Snippets are strings that encode a subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
     "Currently, only linear subnetworks are supported. "
     "\n\nThey are available in the module selector and work just like the single module entries there: double-click or drag onto the "
-    "network editor to insert the entire snippet. \n\nCustom snippets can be created by editing the file snippets.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one snippet per line in the prescribed format, then restart SCIRun for them to appear."
-    "\n\nFeatures coming soon include: auto-UI opening, support for non-linear snippet graphs, and a snippet designer GUI."
-    "\n\nFor feedback, please comment on this issue: https://github.com/SCIInstitute/SCIRun/issues/1161"
+    "network editor to insert the entire snippet. A '*' at the end of the module name will open the UI for that module.\n\nCustom snippets can be created by editing the file snippets.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one snippet per line in the prescribed format, then restart SCIRun for them to appear."
+    "\n\nFeatures coming soon include: hotkeys, support for non-linear snippet graphs, and a snippet designer GUI."
+    "\n\nFor feedback, please comment on this issue: https://github.com/SCIInstitute/SCIRun/issues/1263"
     );
 }
 
