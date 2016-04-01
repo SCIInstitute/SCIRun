@@ -543,7 +543,7 @@ void ModuleWidget::setupLogging()
   theModule_->setLogger(logger);
   theModule_->setUpdaterFunc(boost::bind(&ModuleWidget::updateProgressBarSignal, this, _1));
   if (theModule_->has_ui())
-    theModule_->setUiToggleFunc([&](bool b){ dialog_->setVisible(b); });
+    theModule_->setUiToggleFunc([this](bool b){ dockable_->setVisible(b); });
 }
 
 void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name)
@@ -1497,7 +1497,7 @@ void ModuleWidget::incomingConnectionStateChanged(bool disabled)
     disabled_ = std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->isConnected() && input->firstConnection()->disabled(); });
   }
   qDebug() << "MODULE DISABLED SET " << getModuleId().c_str() << " to " << disabled_;
-  
+
   //TODO: need to set this on proxy widget
   if (disabled_)
     setGraphicsEffect(blurEffect(3));

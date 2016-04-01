@@ -1142,9 +1142,9 @@ namespace {
 
 		//hard-code a few popular ones.
 
-    addSnippet("[ReadField->ShowField->ViewScene]", snips);
+    addSnippet("[ReadField*->ShowField->ViewScene]", snips);
     addSnippet("[CreateLatVol->ShowField->ViewScene]", snips);
-    addSnippet("[ReadField->ReportFieldInfo]", snips);
+    addSnippet("[ReadField*->ReportFieldInfo]", snips);
     addSnippet("[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]", snips);
     addSnippet("[GetFieldBoundary->FairMesh->ShowField]", snips);
     //TODO coming later, with grammar
@@ -1677,7 +1677,7 @@ void SCIRunMainWindow::copyVersionToClipboard()
 
 void SCIRunMainWindow::showSnippetHelp()
 {
-  QMessageBox::information(this, "Snippets", 
+  QMessageBox::information(this, "Snippets",
     "Snippets are strings that encode a subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
     "Currently, only linear subnetworks are supported. "
     "\n\nThey are available in the module selector and work just like the single module entries there: double-click or drag onto the "
