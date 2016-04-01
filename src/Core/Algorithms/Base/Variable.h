@@ -34,7 +34,9 @@
 #include <iosfwd>
 #include <boost/variant.hpp>
 #include <boost/filesystem/path.hpp>
+#ifndef Q_MOC_RUN
 #include <boost/iterator/counting_iterator.hpp>
+#endif
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/Name.h>
 #include <Core/Algorithms/Base/Option.h>
