@@ -265,7 +265,7 @@ void AlphaFunctionManager::pushToState()
     auto begin = alphaPoints_.begin(), end = alphaPoints_.end();
     std::advance(begin, 1);
     std::advance(end, -1);
-    std::for_each(begin, end, [&](const QPointF& p) { alphaPointsVec.emplace_back(Name("alphaPoint"), makeVariableList(p.x(), p.y())); });
+    std::for_each(begin, end, [&](const QPointF& p) { alphaPointsVec.emplace_back(Name("alphaPoint"), makeAnonymousVariableList(p.x(), p.y())); });
     state_->setValue(Parameters::AlphaUserPointsVector, alphaPointsVec);
 
     state_->setTransientValue(Parameters::AlphaFunctionVector, alphaFunction_);

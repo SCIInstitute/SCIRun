@@ -142,11 +142,11 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
   for (int i = 0; i < locations->nrows(); i++)
   {
 
-    Variable::List tmp;
+    Variable::List row;
 
     if (tab_values.size() < locations->nrows())
     {
-      tmp +=
+      row +=
         Variable(columnNames[0], boost::str(boost::format("%s") % "0")),
         Variable(columnNames[1], boost::str(boost::format("%s") % "0")),
         Variable(columnNames[2], boost::str(boost::format("%.3f") % (*locations)(i, 0))),
@@ -157,7 +157,21 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
         Variable(columnNames[7], std::string("???")),
         Variable(columnNames[8], std::string("???")),
         Variable(columnNames[9], std::string("???"));
-
+/*
+//TODO: this compiles but needs testing by user. Not sure it's an improvement.
+      row = makeNamedVariableList(columnNames,
+        boost::str(boost::format("%s") % "0"),
+        boost::str(boost::format("%s") % "0"),
+        boost::str(boost::format("%.3f") % (*locations)(i, 0)),
+        boost::str(boost::format("%.3f") % (*locations)(i, 1)),
+        boost::str(boost::format("%.3f") % (*locations)(i, 2)),
+        boost::str(boost::format("???")),
+        std::string("???"),
+        std::string("???"),
+        std::string("???"),
+        std::string("???")
+        );
+*/
     }
     else
     {
@@ -203,12 +217,12 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
         Variable var8 = makeVariable("NY", boost::str(boost::format("%s") % str8));
         Variable var9 = makeVariable("NZ", boost::str(boost::format("%s") % str9));
         Variable var10 = makeVariable("thickness", boost::str(boost::format("%s") % str10));
-        tmp += var1, var2, var3, var4, var5, var6, var7, var8, var9, var10;
+        row += var1, var2, var3, var4, var5, var6, var7, var8, var9, var10;
 
       }
     }
 
-    table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp));
+    table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), row));
   }
   VariableHandle output(new Variable(Name("Table"), table));
 
@@ -443,7 +457,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
               {
                 for (int j = 0; j < fielddata->nrows(); j++)
                 {
-                  DenseMatrixHandle pos_vec(boost::make_shared<DenseMatrix>(3, 1));
+                  auto pos_vec(boost::make_shared<DenseMatrix>(3, 1));
                   (*pos_vec)(0, 0) = (*fielddata)(j, 0);
                   (*pos_vec)(1, 0) = (*fielddata)(j, 1);
                   (*pos_vec)(2, 0) = (*fielddata)(j, 2);
@@ -515,7 +529,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
 
 boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm::make_table_row(int i, double x, double y, double z, double nx, double ny, double nz) const
 {
-  Variable::List tmp;
+  Variable::List row;
   double out_nx, out_ny, out_nz;
   auto tab_values = get(Parameters::TableValues).toVector();
   auto col = tab_values[i].toVector();
@@ -602,9 +616,9 @@ boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm
   Variable var9 = makeVariable("NZ", boost::str(boost::format("%s") % str9));
 
   Variable var10 = makeVariable("thickness", boost::str(boost::format("%s") % str10));
-  tmp += var1, var2, var3, var4, var5, var6, var7, var8, var9, var10;
+  row += var1, var2, var3, var4, var5, var6, var7, var8, var9, var10;
 
-  return boost::make_tuple(tmp, out_nx, out_ny, out_nz);
+  return boost::make_tuple(row, out_nx, out_ny, out_nz);
 }
 
 
