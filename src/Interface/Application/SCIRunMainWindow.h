@@ -58,6 +58,7 @@ class ShortcutsInterface;
 class TagManagerWindow;
 class PythonConsoleWidget;
 class FileDownloader;
+class ScriptedEventsWindow;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -118,6 +119,7 @@ private:
   QToolButton* executeButton_;
   QByteArray windowState_;
   QPushButton* versionButton_;
+  ScriptedEventsWindow* scriptedEventsWindow_;
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
@@ -130,6 +132,7 @@ private:
   void readSettings();
   void setupNetworkEditor();
   void setupProvenanceWindow();
+  void setupScriptedEventsWindow();
   void setupDevConsole();
   void setupPreferencesWindow();
   void setupTagManagerWindow();

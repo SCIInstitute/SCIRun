@@ -252,8 +252,9 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
     connect(recentFileActions_[i], SIGNAL(triggered()), this, SLOT(loadRecentNetwork()));
   }
 
+	setupScriptedEventsWindow();
   setupProvenanceWindow();
-  provenanceWindow_->hide();
+
   setupDevConsole();
   setupPythonConsole();
 
@@ -939,6 +940,14 @@ void SCIRunMainWindow::resetBackgroundColor()
   GuiLogger::Instance().logInfo("Background color set to " + defaultColor.name());
 }
 
+void SCIRunMainWindow::setupScriptedEventsWindow()
+{
+	qDebug() << "TODO";
+	// scriptedEventsWindow_ = new ScriptedEventsWindow(this);
+	// connect(actionScriptedEvents_, SIGNAL(toggled(bool)), scriptedEventsWindow_, SLOT(setVisible(bool)));
+  // connect(scriptedEventsWindow_, SIGNAL(visibilityChanged(bool)), actionScriptedEvents_, SLOT(setChecked(bool)));
+}
+
 void SCIRunMainWindow::setupProvenanceWindow()
 {
   ProvenanceManagerHandle provenanceManager(new Dataflow::Engine::ProvenanceManager<SCIRun::Dataflow::Networks::NetworkFileHandle>(networkEditor_));
@@ -957,6 +966,8 @@ void SCIRunMainWindow::setupProvenanceWindow()
   commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
 
   connect(commandConverter_.get(), SIGNAL(provenanceItemCreated(SCIRun::Dataflow::Engine::ProvenanceItemHandle)), provenanceWindow_, SLOT(addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle)));
+
+	provenanceWindow_->hide();
 }
 
 void SCIRunMainWindow::filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item)
