@@ -1498,11 +1498,7 @@ void ModuleWidget::incomingConnectionStateChanged(bool disabled)
   }
   qDebug() << "MODULE DISABLED SET " << getModuleId().c_str() << " to " << disabled_;
 
-  //TODO: need to set this on proxy widget
-  if (disabled_)
-    setGraphicsEffect(blurEffect(3));
-  else
-    setGraphicsEffect(nullptr);
+  Q_EMIT moduleDisabled(disabled_);
 
   for (const auto& output : ports().outputs())
   {

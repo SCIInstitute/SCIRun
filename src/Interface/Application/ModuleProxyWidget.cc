@@ -118,7 +118,7 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   module_(module),
   grabbedByWidget_(false),
   isSelected_(false),
-  pressedSubWidget_(0),
+  pressedSubWidget_(nullptr),
   doHighlight_(false)
 {
   setWidget(module);
@@ -128,6 +128,7 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
   connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureThisVisible()));
   connect(module, SIGNAL(deleteMeLater()), this, SLOT(deleteLater()));
+  connect(module, SIGNAL(moduleDisabled(bool)), this, SLOT(disableModuleGUI(bool)));
 
   stackDepth_ = 0;
 }
@@ -168,6 +169,14 @@ void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
 ModuleWidget* ModuleProxyWidget::getModuleWidget()
 {
   return module_;
+}
+
+void ModuleProxyWidget::disableModuleGUI(bool disabled)
+{
+  if (disabled)
+    setGraphicsEffect(blurEffect(3));
+  else
+    setGraphicsEffect(nullptr);
 }
 
 void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
