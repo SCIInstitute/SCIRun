@@ -101,6 +101,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Basic/NeedToExecuteTester.h>
 #include <Modules/Legacy/Matlab/Interface/InterfaceWithMatlab.h>
 #include <Modules/Legacy/Converters/ConvertMatrixToString.h>
+#include <Modules/Basic/PortFeedbackTestModules.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
@@ -200,4 +201,6 @@ void ModuleDescriptionLookup::addTestingModules()
   addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
   addModuleDesc<AsyncPortTestModule>("...", "ViewScene clone");
   addModuleDesc<NeedToExecuteTester>("...", "...");
+  addModuleDesc<PortFeedbackReceiver>("...", "...");
+  addModuleDesc<PortFeedbackSender>("...", "...");
 }

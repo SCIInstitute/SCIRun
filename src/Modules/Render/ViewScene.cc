@@ -231,8 +231,8 @@ void ViewScene::processViewSceneObjectFeedback()
   //TODO: lost equality test here due to change to boost::any. Would be nice to form a data class with equality to avoid repetitive signalling.
   if (newInfo)
   {
-    sendFeedbackUpstreamAlongIncomingConnections(*newInfo);
-    (*newInfo).clear();
+    auto vsInfo = transient_value_cast<ViewSceneFeedback>(newInfo);
+    sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
   }
 }
 

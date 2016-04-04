@@ -113,7 +113,7 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string& uniqueNodeID
     ColorRGB dft = state.defaultColor;
     if (useTriangles)
     {
-      if (geom->isClippable)
+      if (geom->isClippable())
         shader = "Shaders/DirPhong";
       else
         shader = "Shaders/DirPhongNoClipping";
