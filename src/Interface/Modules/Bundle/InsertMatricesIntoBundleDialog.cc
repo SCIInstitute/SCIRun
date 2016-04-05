@@ -45,7 +45,7 @@ InsertMatricesIntoBundleDialog::InsertMatricesIntoBundleDialog(const std::string
 
 void InsertMatricesIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
 {
-  if (type == INITIAL_PORT_CONSTRUCTION)
+  if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;
 
   static const std::string typeName = "Matrices";

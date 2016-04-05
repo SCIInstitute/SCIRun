@@ -752,13 +752,13 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
   {
     //qDebug() << "adjust input table: " << portId.c_str() << portChangeType;
     
-    if (portChangeType == USER_ADDED_PORT || portChangeType == USER_ADDED_PORT_DURING_FILE_LOAD)
+    if (portChangeType == DynamicPortChange::USER_ADDED_PORT || portChangeType == DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD)
     {
       //qDebug() << "trying to add row via port added, id: " << portId.c_str();
 
       int connectedPortNumber;
       std::string connectedPortId;
-      std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type, portChangeType == USER_ADDED_PORT_DURING_FILE_LOAD);
+      std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type, portChangeType == DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD);
 
       Name name(connectedPortId);
       QString lineEditText;
@@ -831,4 +831,15 @@ ScopedWidgetSignalBlocker::~ScopedWidgetSignalBlocker()
 {
   if (widget_)
     widget_->blockSignals(false);
+}
+
+void SCIRun::Gui::openUrl(const QString& url, const std::string& name)
+{
+  if (!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode)))
+    Log::get() << ERROR_LOG << "Failed to open " << name;
+}
+
+void SCIRun::Gui::openPythonAPIDoc()
+{
+  openUrl("https://github.com/SCIInstitute/SCIRun/wiki/SCIRun-Python-API-0.2", "SCIRun Python API page");
 }

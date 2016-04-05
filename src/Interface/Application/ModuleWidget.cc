@@ -466,6 +466,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   errored_(false),
   executedOnce_(false),
   skipExecute_(false),
+  disabled_(false),
   theModule_(theModule),
   previousModuleState_(UNSET),
   moduleId_(theModule->get_id()),
@@ -542,7 +543,7 @@ void ModuleWidget::setupLogging()
   theModule_->setLogger(logger);
   theModule_->setUpdaterFunc(boost::bind(&ModuleWidget::updateProgressBarSignal, this, _1));
   if (theModule_->has_ui())
-    theModule_->setUiToggleFunc([&](bool b){ dialog_->setVisible(b); });
+    theModule_->setUiToggleFunc([this](bool b){ dockable_->setVisible(b); });
 }
 
 void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name)
@@ -730,11 +731,12 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
       this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+    connect(w, SIGNAL(incomingConnectionStateChange(bool)), this, SLOT(incomingConnectionStateChanged(bool)));
     ports_->addPort(w);
     ++i;
     if (dialog_ && port->isDynamic())
     {
-      auto portConstructionType = INITIAL_PORT_CONSTRUCTION;
+      auto portConstructionType = DynamicPortChange::INITIAL_PORT_CONSTRUCTION;
       auto nameMatches = [&](const InputPortHandle& in)
       {
         return in->id().name == port->id().name;
@@ -745,7 +747,7 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
       //qDebug() << "UPDATE FROM PORT CHANGE TYPE CHECK:" << isNotLastDynamicPortOfThisName << justAddedIndex << inputs.size() << (justAddedIndex < inputs.size() - 1)
         //<< ((justAddedIndex < inputs.size() - 1) && (std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.end()));
       if (isNotLastDynamicPortOfThisName)
-        portConstructionType = USER_ADDED_PORT_DURING_FILE_LOAD;
+        portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
       dialog_->updateFromPortChange(i, port->id().toString(), portConstructionType);
     }
   }
@@ -897,7 +899,10 @@ void PortWidgetManager::addPort(InputPortWidget* port)
 
 void PortWidgetManager::insertPort(int index, InputPortWidget* port)
 {
-  inputPorts_.insert(inputPorts_.begin() + index, port);
+  if (index > inputPorts_.size())
+    inputPorts_.push_back(port);
+  else
+    inputPorts_.insert(inputPorts_.begin() + index, port);
 }
 
 void PortWidgetManager::setHighlightPorts(bool on)
@@ -1193,7 +1198,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
   if (dialog_ && !deleting_ && !networkBeingCleared_)
-    dialog_->updateFromPortChange(numInputPorts(), portId, adding ? USER_ADDED_PORT : USER_REMOVED_PORT);
+    dialog_->updateFromPortChange(numInputPorts(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
@@ -1208,18 +1213,13 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
     dockable_->setAllowedAreas(allowedDockArea());
   }
 
-  if (dockEnabled)
-  {
-
-  }
-  else
+  if (!dockEnabled)
   {
     if (dockable_ && !dockable_->isHidden())
     {
       dockable_->setFloating(true);
     }
   }
-
 }
 
 boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;
@@ -1272,12 +1272,7 @@ void ModuleWidget::updateModuleTime()
 void ModuleWidget::launchDocumentation()
 {
   //TODO: push this help url construction to module layer
-  std::string url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + getModule()->get_module_name();
-
-  QUrl qurl(QString::fromStdString(url), QUrl::TolerantMode);
-
-  if (!QDesktopServices::openUrl(qurl))
-    GuiLogger::Instance().logError("Failed to open help page: " + qurl.toString());
+  openUrl("http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + QString::fromStdString(getModule()->get_module_name()), "module help page");
 }
 
 void ModuleWidget::setStartupNote(const QString& text)
@@ -1489,4 +1484,24 @@ void ModuleWidget::updateMetadata(bool active)
   }
   else
     setToolTip("");
+}
+
+void ModuleWidget::incomingConnectionStateChanged(bool disabled)
+{
+  qDebug() << "MODULE connection DISABLED " << getModuleId().c_str() << " called with " << disabled;
+  if (disabled)
+    disabled_ = true;
+  else
+  {
+    //auto port = qobject_cast<PortWidget*>(sender());
+    disabled_ = std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->isConnected() && input->firstConnection()->disabled(); });
+  }
+  qDebug() << "MODULE DISABLED SET " << getModuleId().c_str() << " to " << disabled_;
+
+  Q_EMIT moduleDisabled(disabled_);
+
+  for (const auto& output : ports().outputs())
+  {
+    output->setConnectionsDisabled(disabled_ || disabled);
+  }
 }

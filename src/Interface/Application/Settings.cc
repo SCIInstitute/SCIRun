@@ -57,7 +57,7 @@ namespace
 
 void SCIRunMainWindow::readSettings()
 {
-  Preferences& prefs = Preferences::Instance();
+  auto& prefs = Preferences::Instance();
   QSettings settings("SCI:CIBC Software", "SCIRun5");
 
   //TODO: centralize all these values in Preferences singleton, together with keys as names.
@@ -109,7 +109,7 @@ void SCIRunMainWindow::readSettings()
     }
   }
 
-  const QString snapTo = qname(prefs.modulesSnapToGrid);
+  const auto snapTo = qname(prefs.modulesSnapToGrid);
   if (settings.contains(snapTo))
   {
     auto value = settings.value(snapTo).toBool();
@@ -234,7 +234,7 @@ void SCIRunMainWindow::readSettings()
 void SCIRunMainWindow::writeSettings()
 {
   QSettings settings("SCI:CIBC Software", "SCIRun5");
-  Preferences& prefs = Preferences::Instance();
+  auto& prefs = Preferences::Instance();
 
   //TODO: centralize all these values in Preferences singleton, together with keys as names
 

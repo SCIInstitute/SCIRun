@@ -38,6 +38,7 @@ SET(Modules_Basic_SRCS
   SendTestMatrix.cc
   SendScalarModuleState.cc
   ChooseInput.cc
+  PortFeedbackTestModules.cc
 )
 
 SET(Modules_Basic_HEADERS
@@ -52,6 +53,7 @@ SET(Modules_Basic_HEADERS
   SendScalarModuleState.h
   SendTestMatrix.h
   ChooseInput.h
+  PortFeedbackTestModules.h
   share.h
 )
 

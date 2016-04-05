@@ -44,7 +44,7 @@ namespace SCIRun
 	    Q_OBJECT
 
     public:
-      explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
+      explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = nullptr);
       ~ModuleProxyWidget();
       ModuleWidget* getModuleWidget();
       void createStartupNote();
@@ -71,6 +71,7 @@ namespace SCIRun
     private Q_SLOTS:
       void updateNote(const Note& note);
       void ensureThisVisible();
+      void disableModuleGUI(bool disabled);
     private:
       void ensureItemVisible(QGraphicsItem* item);
       bool isSubwidget(QWidget* alienWidget) const;

@@ -265,7 +265,6 @@ bool Module::do_execute() NOEXCEPT
 
   try
   {
-    //TODO: could we call needToExecute() here?
     execute();
     returnCode = true;
   }
@@ -311,8 +310,8 @@ bool Module::do_execute() NOEXCEPT
   }
   threadStopped_ = threadStopValue;
 
+  auto executionTime = executionTimer.elapsed();
   {
-    double executionTime = executionTimer.elapsed();
     std::ostringstream ostr;
     ostr << executionTime;
     metadata_.setMetadata("last execution duration (seconds)", ostr.str());
@@ -327,7 +326,7 @@ bool Module::do_execute() NOEXCEPT
   executionState_->transitionTo(endState);
   resetStateChanged();
   inputsChanged_ = false;
-  executeEnds_(id_);
+  executeEnds_(executionTime, id_);
   return returnCode;
 }
 

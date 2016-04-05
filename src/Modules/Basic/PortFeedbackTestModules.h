@@ -25,32 +25,44 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Dataflow/Network/ExecutableObject.h
 
-#ifndef DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H
-#define DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H
+#ifndef MODULES_BASIC_PORTFEEDBACKTESTMODULES_H
+#define MODULES_BASIC_PORTFEEDBACKTESTMODULES_H
 
-#include <boost/signals2.hpp>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Network/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Basic/share.h>
 
 namespace SCIRun {
-namespace Dataflow {
-namespace Networks {
-
-  typedef boost::signals2::signal<void (const ModuleId&)> ExecuteBeginsSignalType;
-  typedef boost::signals2::signal<void (double, const ModuleId&)> ExecuteEndsSignalType; // 1st parameter is execution time
-  typedef boost::signals2::signal<void (const ModuleId&)> ErrorSignalType;
-
-  class SCISHARE ExecutableObject
+namespace Modules {
+namespace Basic {
+  
+  class SCISHARE PortFeedbackSender : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<StringPortTag>,
+    public HasNoOutputPorts
   {
   public:
-    virtual ~ExecutableObject() {}
-    virtual void execute() = 0;
+    PortFeedbackSender();
+    virtual void execute() override;
+    virtual void setStateDefaults() override {}
 
-    virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) = 0;
-    virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) = 0;
-    virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) = 0;
+    INPUT_PORT(0, Input, String);
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
+
+  class SCISHARE PortFeedbackReceiver : public SCIRun::Dataflow::Networks::Module,
+    public Has1OutputPort<StringPortTag>,
+    public HasNoInputPorts
+  {
+  public:
+    void processFeedback(const Core::Datatypes::ModuleFeedback& var);
+    PortFeedbackReceiver();
+    virtual void execute() override;
+    virtual void setStateDefaults() override {}
+
+    OUTPUT_PORT(0, Output, Matrix);
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 
 }}}

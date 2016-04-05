@@ -76,7 +76,7 @@ namespace SCIRun
       {
       };
 
-      enum GlobalCommands
+      enum class GlobalCommands
       {
         ShowMainWindow,
         ShowSplashScreen,
@@ -92,6 +92,8 @@ namespace SCIRun
         SetupQuitAfterExecute,
         QuitCommand
       };
+
+      SCISHARE std::string mostRecentFileCode();
     }
   }
 }

@@ -110,7 +110,7 @@ namespace Gui {
     void trackModule(SCIRun::Dataflow::Networks::ModuleHandle module);
   Q_SIGNALS:
     void moduleExecuteStart(const std::string& id);
-    void moduleExecuteEnd(const std::string& id);
+    void moduleExecuteEnd(double execTime, const std::string& id);
   };
 
   class ModuleProxyWidget;
@@ -148,6 +148,7 @@ namespace Gui {
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
 				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
+        PreexecuteFunc preexecuteFunc,
         TagColorFunc tagColor = defaultTagColor,
         QWidget* parent = 0);
     ~NetworkEditor();
@@ -294,6 +295,7 @@ namespace Gui {
     boost::shared_ptr<ZLevelManager> zLevelManager_;
     std::string latestModuleId_;
     bool fileLoading_;
+    PreexecuteFunc preexecute_;
   };
 }
 }

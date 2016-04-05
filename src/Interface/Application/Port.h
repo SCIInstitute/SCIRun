@@ -82,6 +82,7 @@ protected:
 class PortWidget : public PortWidgetBase, public NeedsScenePositionProvider
 {
   Q_OBJECT
+
 public:
   PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
     const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isInput, bool isDynamic,
@@ -130,11 +131,16 @@ public:
   bool sharesParentModule(const PortWidget& other) const;
   bool isFullInputPort() const;
 
+  void connectionDisabled(bool disabled);
+  void setConnectionsDisabled(bool disabled);
+
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   QGraphicsItem* doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::KeyboardModifiers modifiers);
 
   SCIRun::Dataflow::Networks::PortDataDescriber getPortDataDescriber() const { return portDataDescriber_; }
+
+  const ConnectionLine* firstConnection() const { return !connections_.empty() ? *connections_.cbegin() : nullptr; }
 
 protected:
   virtual void moveEvent(QMoveEvent * event) override;
@@ -152,10 +158,12 @@ Q_SIGNALS:
   void portMoved();
   void connectionNoteChanged();
   void highlighted(bool highlighted);
+  void incomingConnectionStateChange(bool disabled);
 protected:
   virtual void mousePressEvent(QMouseEvent* event) override;
   virtual void mouseReleaseEvent(QMouseEvent* event) override;
-  virtual void mouseMoveEvent(QMouseEvent* event) override;
+  virtual void mouseMoveEvent(QMouseEvent* event) override; 
+
 private:
   template <typename Func, typename Pred>
   static void forEachPort(Func func, Pred pred);

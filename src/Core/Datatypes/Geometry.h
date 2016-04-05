@@ -43,7 +43,6 @@ namespace Datatypes
   {
   public:
     GeometryObject(const GeometryIDGenerator& idGenerator, const std::string& tag);
-    GeometryObject(const std::string& tag);
 
     GeometryObject(const GeometryObject& other) = delete;
     GeometryObject& operator=(const GeometryObject& other) = delete;
@@ -56,6 +55,11 @@ namespace Datatypes
     
   private:
     const std::string objectName_;     ///< Name of this object. Should be unique across all modules in the network.
+  };
+
+  struct SCISHARE ModuleFeedback
+  {
+    // tag class
   };
 
 }}}

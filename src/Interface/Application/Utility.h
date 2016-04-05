@@ -48,8 +48,11 @@ namespace Gui
 
   QColor defaultTagColor(int tag);
   typedef std::function<QColor(int)> TagColorFunc;
+  using PreexecuteFunc = std::function<void()>;
 
   QString colorToString(const QColor& color);
+
+  QGraphicsEffect* blurEffect(double radius = 2);
 
   inline QAction* separatorAction(QWidget* parent)
   {

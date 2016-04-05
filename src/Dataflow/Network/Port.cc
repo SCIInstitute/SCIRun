@@ -173,7 +173,7 @@ void OutputPort::sendData(DatatypeHandle data)
 
   for (Connection* c : connections_)
   {
-    if (c && c->iport_)
+    if (c && !c->disabled() && c->iport_)
       source_->send(c->iport_->sink());
   }
 }
@@ -205,7 +205,7 @@ boost::signals2::connection OutputPort::connectConnectionFeedbackListener(const 
   return cxnFeedback_.connect(subscriber);
 }
 
-void OutputPort::sendConnectionFeedback(ModuleFeedback info)
+void OutputPort::sendConnectionFeedback(const ModuleFeedback& info)
 {
   cxnFeedback_(info);
 }

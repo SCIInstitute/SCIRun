@@ -25,34 +25,43 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Dataflow/Network/ExecutableObject.h
 
-#ifndef DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H
-#define DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H
+#include <iostream>
+#include <Modules/Basic/PortFeedbackTestModules.h>
+#include <Core/Datatypes/String.h>
 
-#include <boost/signals2.hpp>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Network/share.h>
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-namespace SCIRun {
-namespace Dataflow {
-namespace Networks {
+const ModuleLookupInfo PortFeedbackSender::staticInfo_("PortFeedbackSender", "Testing", "SCIRun");
 
-  typedef boost::signals2::signal<void (const ModuleId&)> ExecuteBeginsSignalType;
-  typedef boost::signals2::signal<void (double, const ModuleId&)> ExecuteEndsSignalType; // 1st parameter is execution time
-  typedef boost::signals2::signal<void (const ModuleId&)> ErrorSignalType;
+PortFeedbackSender::PortFeedbackSender()
+  : Module(staticInfo_, false)
+{
+  INITIALIZE_PORT(Input);
+}
 
-  class SCISHARE ExecutableObject
-  {
-  public:
-    virtual ~ExecutableObject() {}
-    virtual void execute() = 0;
+void PortFeedbackSender::execute()
+{
+ 
+}
 
-    virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) = 0;
-    virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) = 0;
-    virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) = 0;
-  };
+const ModuleLookupInfo PortFeedbackReceiver::staticInfo_("PortFeedbackReceiver", "Testing", "SCIRun");
 
-}}}
+PortFeedbackReceiver::PortFeedbackReceiver()
+  : Module(staticInfo_, false)
+{
+  INITIALIZE_PORT(Output);
 
-#endif
+  getOutputPort(Output)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processFeedback(var); });
+}
+
+void PortFeedbackReceiver::execute()
+{
+
+}
+
+void PortFeedbackReceiver::processFeedback(const ModuleFeedback& var)
+{
+}

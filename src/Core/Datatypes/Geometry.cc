@@ -36,11 +36,6 @@ GeometryObject::GeometryObject(const GeometryIDGenerator& idGenerator, const std
 {
 }
 
-GeometryObject::GeometryObject(const std::string& tag) :
-objectName_(tag)
-{
-}
-
 GeometryObject* GeometryObject::clone() const
 {
   return nullptr; //TODO

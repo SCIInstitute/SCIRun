@@ -58,7 +58,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
-  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
+  boost::shared_ptr<DefaultNotePositionGetter> dnpg,
+  boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
+  PreexecuteFunc preexecuteFunc,
   TagColorFunc tagColor,
   QWidget* parent)
   : QGraphicsView(parent),
@@ -74,7 +76,8 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
   zLevelManager_(new ZLevelManager(scene_)),
-  fileLoading_(false)
+  fileLoading_(false),
+  preexecute_(preexecuteFunc)
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
@@ -832,6 +835,7 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
 
 void NetworkEditor::executeAll()
 {
+  preexecute_();
   // explicit type needed for older Qt and/or clang
   std::function<void()> exec = [this]() { controller_->executeAll(*this); };
   QtConcurrent::run(exec);
@@ -843,6 +847,7 @@ void NetworkEditor::executeAll()
 
 void NetworkEditor::executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
 {
+  preexecute_();
   // explicit type needed for older Qt and/or clang
   std::function<void()> exec = [this, &module]() { controller_->executeModule(module, *this); };
   QtConcurrent::run(exec);
@@ -958,8 +963,8 @@ ModuleEventProxy::ModuleEventProxy()
 
 void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle module)
 {
-  module->connectExecuteBegins(boost::bind(&ModuleEventProxy::moduleExecuteStart, this, _1));
-  module->connectExecuteEnds(boost::bind(&ModuleEventProxy::moduleExecuteEnd, this, _1));
+  module->connectExecuteBegins([this](const std::string& id) { moduleExecuteStart(id); });
+  module->connectExecuteEnds([this](double t, const std::string& id) { moduleExecuteEnd(t, id); });
 }
 
 void NetworkEditor::disableInputWidgets()
@@ -1182,10 +1187,10 @@ QString SCIRun::Gui::colorToString(const QColor& color)
   return QString("rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
 }
 
-static QGraphicsEffect* blurEffect()
+QGraphicsEffect* SCIRun::Gui::blurEffect(double radius)
 {
   auto blur = new QGraphicsBlurEffect;
-  blur->setBlurRadius(2);
+  blur->setBlurRadius(radius);
   return blur;
 }
 
@@ -1214,7 +1219,7 @@ void NetworkEditor::tagLayer(bool active, int tag)
       }
     }
     else
-      item->setGraphicsEffect(0);
+      item->setGraphicsEffect(nullptr);
   }
 }
 

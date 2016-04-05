@@ -119,9 +119,17 @@ namespace
       const double moduleHorizontalSpacing = 264;
       const double moduleSpacingOffset = 10;
       static int numSnips = 0;
-      for (const auto& m : modsNeeded)
+      for (auto m : modsNeeded)
       {
+        bool uiVisible = false;
+        if (m.back() == '*')
+        {
+          m = m.substr(0, m.length() - 1);
+          uiVisible = true;
+        }
         auto mod = nec_.addModule(m);
+        if (mod->has_ui())
+          mod->setUiVisible(uiVisible);
         mods_.push_back(mod);
         positions.modulePositions[mod->get_id().id_] = std::make_pair(moduleSpacingOffset + numSnips*moduleHorizontalSpacing, moduleVerticalSpacing * i++ + moduleSpacingOffset);
       }

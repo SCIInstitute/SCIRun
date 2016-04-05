@@ -46,7 +46,6 @@ CreateGeometricTransformDialog::CreateGeometricTransformDialog(const std::string
   WidgetStyleMixin::tabStyle(transformTabWidget_);
 
   auto tabIndex = state_->getValue(Parameters::TransformType).toInt();
-  std::cout << "tab index: " << tabIndex << std::endl;
   if (tabIndex >= 0)
   {
     transformTabWidget_->setCurrentIndex(tabIndex);

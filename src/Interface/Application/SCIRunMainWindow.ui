@@ -141,11 +141,26 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <widget class="QMenu" name="menuNew_Features">
+     <property name="title">
+      <string>Learn About New Features</string>
+     </property>
+     <addaction name="helpActionSnippets_"/>
+     <addaction name="helpActionMetadataLayer_"/>
+     <addaction name="helpActionTagLayer_"/>
+     <addaction name="helpActionPythonInterpreter_"/>
+     <addaction name="helpActionPythonAPI_"/>
+     <addaction name="helpActionProvenance_"/>
+     <addaction name="helpActionToolkitDownloads_"/>
+     <addaction name="helpActionNetworkFileImport_"/>
+     <addaction name="helpActionNetworkEditorGUI_"/>
+    </widget>
     <addaction name="actionShow_Tooltips_"/>
     <addaction name="actionAbout_"/>
     <addaction name="actionCredits_"/>
     <addaction name="actionLicense_"/>
     <addaction name="actionKeyboardShortcuts_"/>
+    <addaction name="menuNew_Features"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -195,6 +210,8 @@
     <addaction name="actionToggleTagLayer_"/>
     <addaction name="separator"/>
     <addaction name="actionCleanUpNetwork_"/>
+    <addaction name="separator"/>
+    <addaction name="actionScriptEvents_"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
@@ -932,6 +949,77 @@
   <action name="actionImportNetwork_">
    <property name="text">
     <string>*Import 4.x network file...</string>
+   </property>
+  </action>
+  <action name="helpActionSnippets_">
+   <property name="text">
+    <string>Snippets</string>
+   </property>
+  </action>
+  <action name="helpActionMetadataLayer_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Metadata Layer*</string>
+   </property>
+  </action>
+  <action name="helpActionTagLayer_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Tag Layer*</string>
+   </property>
+  </action>
+  <action name="helpActionPythonInterpreter_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Python Interpreter*</string>
+   </property>
+  </action>
+  <action name="helpActionPythonAPI_">
+   <property name="text">
+    <string>Python API</string>
+   </property>
+  </action>
+  <action name="helpActionProvenance_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Provenance*</string>
+   </property>
+  </action>
+  <action name="helpActionToolkitDownloads_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Toolkit Downloads*</string>
+   </property>
+  </action>
+  <action name="helpActionNetworkFileImport_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Network File Import*</string>
+   </property>
+  </action>
+  <action name="helpActionNetworkEditorGUI_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Network Editor GUI*</string>
+   </property>
+  </action>
+  <action name="actionScriptEvents_">
+   <property name="text">
+    <string>Script Events...</string>
    </property>
   </action>
  </widget>

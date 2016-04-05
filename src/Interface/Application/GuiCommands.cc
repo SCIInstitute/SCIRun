@@ -63,10 +63,15 @@ bool LoadFileCommandGui::execute()
 {
   std::string inputFile;
   auto inputFilesFromCommandLine = Application::Instance().parameters()->inputFiles();
+
   if (!inputFilesFromCommandLine.empty())
     inputFile = inputFilesFromCommandLine[index_];
   else
+  {
     inputFile = get(Variables::Filename).toFilename().string();
+    if (mostRecentFileCode() == inputFile)
+      inputFile = SCIRunMainWindow::Instance()->mostRecentFile().toStdString();
+  }
 
   return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile));
 }
@@ -77,14 +82,30 @@ bool ExecuteCurrentNetworkCommandGui::execute()
   return true;
 }
 
+static const AlgorithmParameterName RunningPython("RunningPython");
+
+QuitAfterExecuteCommandGui::QuitAfterExecuteCommandGui()
+{
+  addParameter(RunningPython, false);
+}
+
 bool QuitAfterExecuteCommandGui::execute()
 {
+  if (get(RunningPython).toBool())
+    SCIRunMainWindow::Instance()->skipSaveCheck();
   SCIRunMainWindow::Instance()->setupQuitAfterExecute();
   return true;
 }
 
+QuitCommandGui::QuitCommandGui()
+{
+  addParameter(RunningPython, false);
+}
+
 bool QuitCommandGui::execute()
 {
+  if (get(RunningPython).toBool())
+    SCIRunMainWindow::Instance()->skipSaveCheck();
   SCIRunMainWindow::Instance()->quit();
   exit(0);
   return true;

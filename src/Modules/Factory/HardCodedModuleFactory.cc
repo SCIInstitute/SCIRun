@@ -99,8 +99,7 @@ HardCodedModuleFactory::HardCodedModuleFactory() : impl_(new HardCodedModuleFact
 
 void HardCodedModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
 {
-  stateFactory_ = stateFactory;
-  Module::defaultStateFactory_ = stateFactory_;
+  Module::defaultStateFactory_ = stateFactory_ = stateFactory;
 }
 
 void HardCodedModuleFactory::setAlgorithmFactory(AlgorithmFactoryHandle algoFactory)
@@ -122,18 +121,16 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   else
     builder.with_name(desc.lookupInfo_.module_name_);
 
-  for (const InputPortDescription& input : desc.input_ports_)
+  for (const auto& input : desc.input_ports_)
   {
     builder.add_input_port(Port::ConstructionParams(input.id, input.datatype, input.isDynamic));
   }
-  for (const OutputPortDescription& output : desc.output_ports_)
+  for (const auto& output : desc.output_ports_)
   {
     builder.add_output_port(Port::ConstructionParams(output.id, output.datatype, output.isDynamic));
   }
 
-  ModuleHandle module = builder.setStateDefaults().build();
-
-  return module;
+  return builder.setStateDefaults().build();
 }
 
 ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupInfo& info) const

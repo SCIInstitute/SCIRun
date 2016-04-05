@@ -235,6 +235,9 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   connect(actionRestoreAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(restoreAllModuleUIs()));
   connect(actionHideAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(hideAllModuleUIs()));
 
+  connect(helpActionPythonAPI_, SIGNAL(triggered()), this, SLOT(loadPythonAPIDoc()));
+  connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
+
   connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
 
 #ifndef BUILD_WITH_PYTHON
@@ -249,8 +252,9 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
     connect(recentFileActions_[i], SIGNAL(triggered()), this, SLOT(loadRecentNetwork()));
   }
 
+	setupScriptedEventsWindow();
   setupProvenanceWindow();
-  provenanceWindow_->hide();
+
   setupDevConsole();
   setupPythonConsole();
 
@@ -334,7 +338,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   actionBrainStimulator_->setIcon(QPixmap(":/general/Resources/download.png"));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
-  connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
+  connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
 
@@ -494,7 +498,9 @@ void SCIRunMainWindow::setupNetworkEditor()
   //Log::get("Modules").addCustomAppender(moduleLog);
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*prefsWindow_->defaultNotePositionComboBox_));
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
-  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, tagColorFunc, scrollAreaWidgetContents_);
+	auto preexecuteFunc = [this]() { preexecute(); };
+  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
+		tagColorFunc, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   //networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -508,13 +514,16 @@ void SCIRunMainWindow::executeCommandLineRequests()
   SCIRun::Core::Application::Instance().executeCommandLineRequests();
 }
 
+void SCIRunMainWindow::preexecute()
+{
+	if (Core::Preferences::Instance().saveBeforeExecute && !Application::Instance().parameters()->isRegressionMode())
+	{
+		saveNetwork();
+	}
+}
+
 void SCIRunMainWindow::executeAll()
 {
-  if (Core::Preferences::Instance().saveBeforeExecute && !Application::Instance().parameters()->isRegressionMode())
-  {
-    saveNetwork();
-  }
-
 	if (Application::Instance().parameters()->isRegressionMode())
 	{
 		auto timeout = Application::Instance().parameters()->regressionTimeoutSeconds();
@@ -737,7 +746,10 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 
 bool SCIRunMainWindow::okToContinue()
 {
-  if (isWindowModified() && !Application::Instance().parameters()->isRegressionMode() && !quitAfterExecute_ && !runningPythonScript_)
+  if (isWindowModified()
+		&& !Application::Instance().parameters()->isRegressionMode()
+		&& !quitAfterExecute_
+		&& !skipSaveCheck_)
   {
     int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"),
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
@@ -758,6 +770,11 @@ void SCIRunMainWindow::networkModified()
 {
   setWindowModified(true);
   networkProgressBar_->updateTotalModules(networkEditor_->numModules());
+}
+
+QString SCIRunMainWindow::mostRecentFile() const
+{
+  return !recentFiles_.empty() ? recentFiles_[0] : "";
 }
 
 void SCIRunMainWindow::setActionIcons()
@@ -923,6 +940,14 @@ void SCIRunMainWindow::resetBackgroundColor()
   GuiLogger::Instance().logInfo("Background color set to " + defaultColor.name());
 }
 
+void SCIRunMainWindow::setupScriptedEventsWindow()
+{
+	qDebug() << "TODO";
+	// scriptedEventsWindow_ = new ScriptedEventsWindow(this);
+	// connect(actionScriptedEvents_, SIGNAL(toggled(bool)), scriptedEventsWindow_, SLOT(setVisible(bool)));
+  // connect(scriptedEventsWindow_, SIGNAL(visibilityChanged(bool)), actionScriptedEvents_, SLOT(setChecked(bool)));
+}
+
 void SCIRunMainWindow::setupProvenanceWindow()
 {
   ProvenanceManagerHandle provenanceManager(new Dataflow::Engine::ProvenanceManager<SCIRun::Dataflow::Networks::NetworkFileHandle>(networkEditor_));
@@ -941,6 +966,8 @@ void SCIRunMainWindow::setupProvenanceWindow()
   commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
 
   connect(commandConverter_.get(), SIGNAL(provenanceItemCreated(SCIRun::Dataflow::Engine::ProvenanceItemHandle)), provenanceWindow_, SLOT(addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle)));
+
+	provenanceWindow_->hide();
 }
 
 void SCIRunMainWindow::filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item)
@@ -1009,7 +1036,6 @@ void SCIRunMainWindow::setupPythonConsole()
 void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
-  runningPythonScript_ = true;
   GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
   SCIRun::Core::PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   SCIRun::Core::PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
@@ -1127,9 +1153,9 @@ namespace {
 
 		//hard-code a few popular ones.
 
-    addSnippet("[ReadField->ShowField->ViewScene]", snips);
+    addSnippet("[ReadField*->ShowField->ViewScene]", snips);
     addSnippet("[CreateLatVol->ShowField->ViewScene]", snips);
-    addSnippet("[ReadField->ReportFieldInfo]", snips);
+    addSnippet("[ReadField*->ReportFieldInfo]", snips);
     addSnippet("[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]", snips);
     addSnippet("[GetFieldBoundary->FairMesh->ShowField]", snips);
     //TODO coming later, with grammar
@@ -1639,7 +1665,7 @@ void SCIRunMainWindow::showKeyboardShortcutsDialog()
 void SCIRunMainWindow::runNewModuleWizard()
 {
 	qDebug() << "new module wizard coming soon";
-	ClassWizard* wizard = new ClassWizard(this);
+  auto wizard = new ClassWizard(this);
 	wizard->show();
 }
 
@@ -1658,6 +1684,23 @@ void SCIRunMainWindow::copyVersionToClipboard()
 {
   QApplication::clipboard()->setText(QString::fromStdString(VersionInfo::GIT_VERSION_TAG));
   statusBar()->showMessage("Version string copied to clipboard.", 2000);
+}
+
+void SCIRunMainWindow::showSnippetHelp()
+{
+  QMessageBox::information(this, "Snippets",
+    "Snippets are strings that encode a subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
+    "Currently, only linear subnetworks are supported. "
+    "\n\nThey are available in the module selector and work just like the single module entries there: double-click or drag onto the "
+    "network editor to insert the entire snippet. A '*' at the end of the module name will open the UI for that module.\n\nCustom snippets can be created by editing the file snippets.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one snippet per line in the prescribed format, then restart SCIRun for them to appear."
+    "\n\nFeatures coming soon include: hotkeys, support for non-linear snippet graphs, and a snippet designer GUI."
+    "\n\nFor feedback, please comment on this issue: https://github.com/SCIInstitute/SCIRun/issues/1263"
+    );
+}
+
+void SCIRunMainWindow::loadPythonAPIDoc()
+{
+  openPythonAPIDoc();
 }
 
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
@@ -1684,7 +1727,7 @@ void FileDownloader::downloadProgress(qint64 received, qint64 total)
 
 void SCIRunMainWindow::toolkitDownload()
 {
-	QAction* action = qobject_cast<QAction*>(sender());
+  auto action = qobject_cast<QAction*>(sender());
 
 	static std::vector<ToolkitDownloader*> downloaders;
   downloaders.push_back(new ToolkitDownloader(action, statusBar(), this));
@@ -1750,7 +1793,7 @@ void ToolkitDownloader::saveToolkit()
   if (!zipDownloader_)
     return;
 
-  QString fullFilename = toolkitDir_.filePath(filename_);
+  auto fullFilename = toolkitDir_.filePath(filename_);
   //qDebug() << "saving to " << fullFilename;
   QFile file(fullFilename);
   file.open(QIODevice::WriteOnly);

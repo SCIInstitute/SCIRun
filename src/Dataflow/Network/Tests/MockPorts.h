@@ -100,7 +100,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(source, DatatypeSourceInterfaceHandle());
           MOCK_CONST_METHOD0(getPortDataDescriber, PortDataDescriber());
           MOCK_METHOD1(connectConnectionFeedbackListener, boost::signals2::connection(const ConnectionFeedbackSignalType::slot_type&));
-          MOCK_METHOD1(sendConnectionFeedback, void(ModuleFeedback));
+          MOCK_METHOD1(sendConnectionFeedback, void(const Core::Datatypes::ModuleFeedback&));
         };
 
         typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;

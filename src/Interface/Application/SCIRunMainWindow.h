@@ -58,6 +58,7 @@ class ShortcutsInterface;
 class TagManagerWindow;
 class PythonConsoleWidget;
 class FileDownloader;
+class ScriptedEventsWindow;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -86,8 +87,13 @@ public:
   bool isInFavorites(const QString& module) const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
+  void preexecute();
+  void skipSaveCheck() { skipSaveCheck_ = true; }
+
   ~SCIRunMainWindow();
   int returnCode() const { return returnCode_; }
+
+  QString mostRecentFile() const;
 public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
@@ -113,6 +119,7 @@ private:
   QToolButton* executeButton_;
   QByteArray windowState_;
   QPushButton* versionButton_;
+  ScriptedEventsWindow* scriptedEventsWindow_;
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
@@ -125,6 +132,7 @@ private:
   void readSettings();
   void setupNetworkEditor();
   void setupProvenanceWindow();
+  void setupScriptedEventsWindow();
   void setupDevConsole();
   void setupPreferencesWindow();
   void setupTagManagerWindow();
@@ -151,7 +159,7 @@ private:
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool quitAfterExecute_;
-  bool runningPythonScript_ = false;
+  bool skipSaveCheck_ = false;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
@@ -197,6 +205,8 @@ private Q_SLOTS:
   void resetWindowLayout();
   void zoomNetwork();
   void networkTimedOut();
+  void loadPythonAPIDoc();
+  void showSnippetHelp();
   void copyVersionToClipboard();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();

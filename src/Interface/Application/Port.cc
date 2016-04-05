@@ -405,6 +405,19 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
   }
 }
 
+void PortWidget::connectionDisabled(bool disabled)
+{
+  Q_EMIT incomingConnectionStateChange(disabled);
+}
+
+void PortWidget::setConnectionsDisabled(bool disabled)
+{
+  for (auto& conn : connections_)
+  {
+    conn->setDisabled(disabled);
+  }
+}
+
 void PortWidget::setPositionObject(PositionProviderPtr provider)
 {
   NeedsScenePositionProvider::setPositionObject(provider);

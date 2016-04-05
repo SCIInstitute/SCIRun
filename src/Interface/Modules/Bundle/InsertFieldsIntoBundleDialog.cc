@@ -46,7 +46,7 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
 void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
 {
   //qDebug() << "updateFromPortChange" << portId.c_str() << type;
-  if (type == INITIAL_PORT_CONSTRUCTION)
+  if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;
 
   static const std::string typeName = "Fields";

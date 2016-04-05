@@ -83,7 +83,7 @@ namespace Networks {
     virtual bool hasInputPort(const PortId& id) const;
     virtual bool hasOutputPort(const PortId& id) const;
     virtual InputPortHandle getInputPort(const PortId& id);
-    virtual OutputPortHandle getOutputPort(const PortId& id) const;
+    virtual OutputPortHandle getOutputPort(const PortId& id) const override final;
     virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const;
     virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const;
     virtual std::vector<InputPortHandle> inputPorts() const;
@@ -264,7 +264,7 @@ namespace Networks {
 
     //For modules that need to initialize some internal state signal/slots, this needs to be called after set_state to reinitialize.
     virtual void postStateChangeInternalSignalHookup() {}
-    void sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback) const;
+    void sendFeedbackUpstreamAlongIncomingConnections(const Core::Datatypes::ModuleFeedback& feedback) const;
 
   private:
     template <class T>

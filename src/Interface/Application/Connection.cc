@@ -182,7 +182,7 @@ namespace SCIRun
   {
     const QString deleteAction("Delete");
     const QString insertModuleAction("Insert Module->*");
-    const QString disableEnableAction("Disable*");
+    const QString disableEnableAction("Disable");
     const QString editNotesAction("Edit Notes...");
 
     class ConnectionMenu : public QMenu
@@ -193,7 +193,7 @@ namespace SCIRun
         deleteAction_ = addAction(deleteAction);
         addWidgetToExecutionDisableList(deleteAction_);
         addAction(insertModuleAction)->setDisabled(true);
-        addAction(disableEnableAction)->setDisabled(true);
+        disableAction_ = addAction(disableEnableAction);
         notesAction_ = addAction(editNotesAction);
       }
       ~ConnectionMenu()
@@ -202,6 +202,7 @@ namespace SCIRun
       }
       QAction* notesAction_;
       QAction* deleteAction_;
+      QAction* disableAction_;
     };
   }
 }
@@ -227,10 +228,10 @@ namespace
   const int HOVERED_CONNECTION_WIDTH = 5.0;
 }
 
-ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
+ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : HasNotes(id, false),
   NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
-  fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(0), menuOpen_(0), placeHoldingWidth_(0)
+  fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(nullptr), menuOpen_(0), placeHoldingWidth_(0)
 {
   if (fromPort_)
   {
@@ -263,16 +264,18 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 
   setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
 
+  connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
+
   trackNodes();
   GuiLogger::Instance().logInfoStd("Connection made: " + id_.id_);
 }
 
 ConnectionLine::~ConnectionLine()
 {
-  destroy();
+  destroyConnection();
 }
 
-void ConnectionLine::destroy()
+void ConnectionLine::destroyConnection()
 {
   if (!destroyed_)
   {
@@ -289,6 +292,32 @@ void ConnectionLine::destroy()
     NoteDisplayHelper::destroy();
     destroyed_ = true;
   }
+}
+
+void ConnectionLine::toggleDisabled()
+{
+  setDisabled(!disabled_);
+}
+
+void ConnectionLine::setDisabled(bool disabled)
+{
+  disabled_ = disabled;
+  qDebug() << "Disabled set to " << disabled_ << "on" << id_.id_.c_str();
+  if (disabled_)
+  {
+    menu_->disableAction_->setText("Enable");
+    setColor(Qt::gray);
+    placeHoldingColor_ = Qt::gray;
+    setGraphicsEffect(blurEffect(3));
+  }
+  else
+  {
+    menu_->disableAction_->setText("Disable");
+    setColor(fromPort_->color());
+    placeHoldingColor_ = fromPort_->color();
+    setGraphicsEffect(nullptr);
+  }
+  toPort_->connectionDisabled(disabled_);
 }
 
 void ConnectionLine::setColor(const QColor& color)
@@ -371,7 +400,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
   if (action && action->text() == deleteAction)
   {
     scene()->removeItem(this);
-    destroy(); //TODO: another place to hook up deleteLater()
+    destroyConnection(); //TODO: another place to hook up deleteLater()
   }
   else if (action && action->text() == editNotesAction)
   {

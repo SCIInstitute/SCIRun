@@ -323,7 +323,14 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
   // Resultant geometry type (representing a spire object and a number of passes).
-  GeometryHandle geom(new GeometryObjectSpire(gid, "EntireField"));
+
+  std::string idname = "EntireField";
+  if (state->getValue(ShowFieldModule::FieldName).toString() != "")
+  {
+    idname = idname + "_" + state->getValue(ShowFieldModule::FieldName).toString();
+  }
+
+  GeometryHandle geom(new GeometryObjectSpire(gid, idname, true));
 
   /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
@@ -1415,6 +1422,7 @@ void ShowFieldModule::updateAvailableRenderOptions(FieldHandle field)
   }
 }
 
+const AlgorithmParameterName ShowFieldModule::FieldName("FieldName");
 const AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");
 const AlgorithmParameterName ShowFieldModule::ShowEdges("ShowEdges");
 const AlgorithmParameterName ShowFieldModule::ShowFaces("ShowFaces");
