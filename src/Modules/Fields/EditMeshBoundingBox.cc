@@ -172,6 +172,8 @@ void EditMeshBoundingBox::processWidgetFeedback(const Core::Datatypes::ModuleFee
   std::cout << "EditMeshBoundingBox::processWidgetFeedback, name received from ViewSceneDialog is:\n\t" << xyTr.name() << std::endl;
   for (const auto& subVar : xyTr.toVector())
     std::cout << "EditMeshBoundingBox::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << subVar << std::endl;
+  std::cout << "EditMeshBoundingBox::processWidgetFeedback transfrom from ViewSceneDialog:" << std::endl;
+  vsf.transform.print();
 }
 
 void EditMeshBoundingBox::createBoxWidget()

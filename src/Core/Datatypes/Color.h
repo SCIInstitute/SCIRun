@@ -34,6 +34,7 @@
 #include <iosfwd>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Algorithms/Base/Variable.h>
 #include <Core/Datatypes/share.h>
 
@@ -80,6 +81,7 @@ namespace Datatypes {
   struct SCISHARE ViewSceneFeedback : ModuleFeedback
   {
     Algorithms::Variable info;
+    Core::Geometry::Transform transform;
   };
 
 }}}

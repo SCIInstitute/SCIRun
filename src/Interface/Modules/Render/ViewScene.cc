@@ -38,6 +38,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Render/Screenshot.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Core/GeometryPrimitives/Transform.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -1613,6 +1614,18 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
   saveScreenshotOnNewGeometry_ = state != 0;
 }
 
+namespace //TODO: move to appropriate location
+{
+  Transform toSciTransform(const glm::mat4& mat)
+  {
+    Transform t;
+    for (int i = 0; i < 4; ++i)
+      for (int j = 0; j < 4; ++j)
+        t.set_mat_val(i, j, mat[i][j]);
+    return t;
+  }
+}
+
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
 {
   //qDebug() << "sendGeometryFeedbackToState" << x << y;
@@ -1652,6 +1665,7 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
   
   ViewSceneFeedback vsf;
   vsf.info = var;
+  vsf.transform = toSciTransform(trans);
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 }
 
