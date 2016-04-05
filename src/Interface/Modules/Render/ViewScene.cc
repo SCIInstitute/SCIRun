@@ -1056,7 +1056,7 @@ SCIRun::Graphics::Datatypes::GeometryHandle ViewSceneDialog::buildGeometryScaleB
   //text
   std::stringstream ss;
   std::string oneline;
-  ss << scaleBar_.length << " " << scaleBar_.unit;
+  ss << scaleBar_.length * scaleBar_.multiplier << " " << scaleBar_.unit;
   oneline = ss.str();
   double text_len = 0.0;
   if (textBuilder_.isInit() && textBuilder_.isValid())
