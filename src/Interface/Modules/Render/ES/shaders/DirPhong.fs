@@ -57,6 +57,10 @@ uniform vec4    uClippingPlaneCtrl3;// clipping plane 3 control (visible, showFr
 uniform vec4    uClippingPlaneCtrl4;// clipping plane 4 control (visible, showFrame, reverseNormal, 0)
 uniform vec4    uClippingPlaneCtrl5;// clipping plane 5 control (visible, showFrame, reverseNormal, 0)
 
+//fog
+uniform vec4    uFogSettings;       // fog settings (intensity, start, end, 0.0)
+uniform vec4    uFogColor;          // fog color
+
 // Lighting in world space. Generally, it's better to light in eye space if you
 // are dealing with point lights. Since we are only dealing with directional
 // lights we light in world space.
@@ -133,5 +137,21 @@ void main()
   spec              = pow(spec, uSpecularPower);
   gl_FragColor      = vec4((diffuse * spec * uSpecularColor + 
                        diffuse * uDiffuseColor + uAmbientColor).rgb, uTransparency);
+                       
+  //calculate fog
+  if (uFogSettings.x > 0.0)
+  {
+    vec4 fp;
+    fp.x = uFogSettings.x;
+    fp.y = uFogSettings.y;
+    fp.z = uFogSettings.z;
+    fp.w = gl_FragCoord.z;
+    float fog_factor;
+    fog_factor = (fp.w-fp.y)/(fp.z-fp.y);
+    //fog_factor = clamp(fog_factor, 0.0, 1.0);
+    //fog_factor = exp(-pow(fog_factor*2.5, 2.0));
+    //gl_FragColor.xyz = mix(gl_FragColor.xyz, uFogColor.xyz, fog_factor);
+    gl_FragColor.xyz = vec3(fog_factor); 
+  }
 }
 

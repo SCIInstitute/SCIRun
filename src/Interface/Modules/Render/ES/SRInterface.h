@@ -98,6 +98,13 @@ namespace SCIRun {
         MAT_SHINE
       };
 
+      enum FogFactor
+      {
+        FOG_INTENSITY,
+        FOG_START,
+        FOG_END
+      };
+
       struct ClippingPlane {
         bool visible, showFrame, reverseNormal;
         double x, y, z, d;
@@ -181,6 +188,10 @@ namespace SCIRun {
 
       //set material factors
       void setMaterialFactor(MatFactor factor, double value);
+
+      //set fog
+      void setFog(FogFactor factor, double value);
+      void setFogColor(const glm::vec4 &color);
 
       //camera matrices
       const glm::mat4& getWorldToProjection() const;
@@ -307,6 +318,9 @@ namespace SCIRun {
       //apply material factors
       void applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
 
+      //apply fog
+      void applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
+
       // search for a widget at mouse position
       bool foundWidget(const glm::ivec2& pos);
 
@@ -357,10 +371,17 @@ namespace SCIRun {
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
 
+      //material settings
       double                            mMatAmbient;
       double                            mMatDiffuse;
       double                            mMatSpecular;
       double                            mMatShine;
+
+      //fog settings
+      double                            mFogIntensity;
+      double                            mFogStart;
+      double                            mFogEnd;
+      glm::vec4                         mFogColor;
     };
 
   } // namespace Render

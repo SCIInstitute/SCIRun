@@ -943,6 +943,11 @@ void ViewSceneDialog::setEmissionValue(double value)
 void ViewSceneDialog::setFogOn(bool value)
 {
   state_->setValue(Modules::Render::ViewScene::FogOn, value);
+  if (value)
+    setFog(SRInterface::FOG_INTENSITY, 1.0);
+  else
+    setFog(SRInterface::FOG_INTENSITY, 0.0);
+  newGeometryValue();
 }
 
 void ViewSceneDialog::setFogOnVisibleObjects(bool value)
@@ -958,11 +963,15 @@ void ViewSceneDialog::setFogUseBGColor(bool value)
 void ViewSceneDialog::setFogStartValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::FogStart, value);
+  setFog(SRInterface::FOG_START, value);
+  newGeometryValue();
 }
 
 void ViewSceneDialog::setFogEndValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::FogEnd, value);
+  setFog(SRInterface::FOG_END, value);
+  newGeometryValue();
 }
 
 void ViewSceneDialog::assignFogColor()
@@ -975,6 +984,8 @@ void ViewSceneDialog::assignFogColor()
     mConfigurationDock->setFogColorLabel(fogColor_);
     state_->setValue(Modules::Render::ViewScene::FogColor, ColorRGB(fogColor_.red(), fogColor_.green(), fogColor_.blue()).toString());
   }
+  setFogColor(glm::vec4(fogColor_.red(), fogColor_.green(), fogColor_.blue(), 1.0));
+  newGeometryValue();
 }
 
 //------------------------------------------------------------------------------
@@ -1302,6 +1313,20 @@ void ViewSceneDialog::setMaterialFactor(int factor, double value)
     spire->setMaterialFactor(static_cast<SRInterface::MatFactor>(factor), value);
 }
 
+//set fog
+void ViewSceneDialog::setFog(int factor, double value)
+{
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setFog(static_cast<SRInterface::FogFactor>(factor), value);
+}
+
+void ViewSceneDialog::setFogColor(const glm::vec4 &color)
+{
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setFogColor(color);
+}
 
 //------------------------------------------------------------------------------
 //-------------------Render Settings--------------------------------------------

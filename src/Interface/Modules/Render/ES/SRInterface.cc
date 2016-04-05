@@ -91,7 +91,11 @@ namespace SCIRun {
       mMatAmbient(0.2),
       mMatDiffuse(1.0),
       mMatSpecular(0.0),
-      mMatShine(2.0)
+      mMatShine(2.0),
+      mFogIntensity(0.0),
+      mFogStart(0.0),
+      mFogEnd(1.0),
+      mFogColor(glm::vec4(1.0))
     {
       // Create default colormaps.
       //generateTextures();
@@ -650,6 +654,28 @@ namespace SCIRun {
       }
     }
 
+    //set fog
+    void SRInterface::setFog(FogFactor factor, double value)
+    {
+      switch (factor)
+      {
+      case FOG_INTENSITY:
+        mFogIntensity = value;
+        break;
+      case FOG_START:
+        mFogStart = value;
+        break;
+      case FOG_END:
+        mFogEnd = value;
+        break;
+      }
+    }
+
+    void SRInterface::setFogColor(const glm::vec4 &color)
+    {
+      mFogColor = color;
+    }
+
     const glm::mat4& SRInterface::getWorldToProjection() const
     { return mCamera->getWorldToProjection(); }
 
@@ -1053,6 +1079,16 @@ namespace SCIRun {
                 applyUniform(entityID, uniform);
               }
 
+              if (mFogIntensity > 0.0)
+              {
+                Graphics::Datatypes::SpireSubPass::Uniform uniform;
+                uniform.name = "uFogSettings";
+                applyFog(uniform);
+                applyUniform(entityID, uniform);
+                uniform.name = "uFogColor";
+                applyFog(uniform);
+                applyUniform(entityID, uniform);
+              }
 
               // Add components associated with entity. We just need a base class which
               // we can pass in an entity ID, then a derived class which bundles
@@ -1170,11 +1206,21 @@ namespace SCIRun {
     void SRInterface::applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform)
     {
       if (uniform.name == "uAmbientColor")
-        uniform.data = glm::vec4(mMatAmbient);// *uniform.data;
+        uniform.data = glm::vec4(mMatAmbient);
       else if (uniform.name == "uSpecularColor")
-        uniform.data = glm::vec4(mMatSpecular);// *uniform.data;
+        uniform.data = glm::vec4(mMatSpecular);
       else if (uniform.name == "uSpecularPower")
         uniform.data = glm::vec4(mMatShine);
+    }
+
+    //apply fog
+    void SRInterface::applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform)
+    {
+      if (uniform.name == "uFogSettings")
+        uniform.data = glm::vec4(mFogIntensity, mFogStart, mFogEnd, 0.0);
+      else if (uniform.name == "uFogColor")
+        uniform.data = mFogColor;
+      uniform.type = Graphics::Datatypes::SpireSubPass::Uniform::UNIFORM_VEC4;
     }
 
     //------------------------------------------------------------------------------

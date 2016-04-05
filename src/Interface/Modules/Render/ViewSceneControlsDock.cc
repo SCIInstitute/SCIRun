@@ -143,7 +143,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   ///Materials Tab
   //materialsFrame_->setEnabled(false);
-  fogGroupBox_->setEnabled(false);
+  //fogGroupBox_->setEnabled(false);
 
   ////View Tab
   autoRotateGroupBox_->setEnabled(false);
