@@ -254,8 +254,6 @@
           <zorder></zorder>
           <zorder></zorder>
           <zorder></zorder>
-          <zorder></zorder>
-          <zorder></zorder>
          </widget>
         </item>
         <item row="2" column="0" colspan="3">
@@ -384,10 +382,6 @@
             </widget>
            </item>
           </layout>
-          <zorder>currentBackgroundLabel_</zorder>
-          <zorder>setBackgroundColorPushButton_</zorder>
-          <zorder>currentBackgroundLabel_</zorder>
-          <zorder>setBackgroundColorPushButton_</zorder>
          </widget>
         </item>
         <item row="6" column="0">
@@ -1366,6 +1360,9 @@
               </size>
              </property>
              <property name="inputMask">
+              <string/>
+             </property>
+             <property name="text">
               <string>mm</string>
              </property>
             </widget>
