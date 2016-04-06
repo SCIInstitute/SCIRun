@@ -39,6 +39,7 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Dataflow/Network/DataflowInterfaces.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
@@ -244,7 +245,7 @@ namespace //TODO requirements for state metadata reporting
   }
 }
 
-bool Module::do_execute() NOEXCEPT
+bool Module::doExecute() NOEXCEPT
 {
   //Log::get() << INFO << "executing module: " << id_ << std::endl;
   //std::cout << "executing module: " << id_ << std::endl;
@@ -931,7 +932,7 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 
 bool Module::isStoppable() const
 {
-  return dynamic_cast<const Core::Thread::Interruptible*>(this) != nullptr;
+  return dynamic_cast<const Interruptible*>(this) != nullptr;
 }
 
 void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback) const

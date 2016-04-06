@@ -1050,7 +1050,7 @@ void ModuleWidget::execute()
     errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
-    theModule_->do_execute();
+    theModule_->doExecute();
     Q_EMIT updateProgressBarSignal(1);
     //colorLocked_ = false;
   }

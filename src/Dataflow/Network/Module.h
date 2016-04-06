@@ -69,69 +69,69 @@ namespace Networks {
     ModuleId get_id() const { return id_; }
 
     //for serialization
-    virtual const ModuleLookupInfo& get_info() const { return info_; }
-    virtual void set_id(const std::string& id);
+    virtual const ModuleLookupInfo& get_info() const override final { return info_; }
+    virtual void set_id(const std::string& id) override final;
 
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();
 
     bool has_ui() const { return has_ui_; }
     void setUiVisible(bool visible);
-    virtual size_t num_input_ports() const;
-    virtual size_t num_output_ports() const;
+    virtual size_t num_input_ports() const override final;
+    virtual size_t num_output_ports() const override final;
 
-    virtual bool hasInputPort(const PortId& id) const;
-    virtual bool hasOutputPort(const PortId& id) const;
-    virtual InputPortHandle getInputPort(const PortId& id);
+    virtual bool hasInputPort(const PortId& id) const override final;
+    virtual bool hasOutputPort(const PortId& id) const override final;
+    virtual InputPortHandle getInputPort(const PortId& id) override final;
     virtual OutputPortHandle getOutputPort(const PortId& id) const override final;
-    virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const;
-    virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const;
-    virtual std::vector<InputPortHandle> inputPorts() const;
-    virtual std::vector<OutputPortHandle> outputPorts() const;
+    virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const override final;
+    virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const override final;
+    virtual std::vector<InputPortHandle> inputPorts() const override final;
+    virtual std::vector<OutputPortHandle> outputPorts() const override final;
 
     /// @todo: execute signal here.
-    virtual bool do_execute() NOEXCEPT; //--C++11--will throw nothing
-    virtual ModuleStateHandle get_state();
-    virtual const ModuleStateHandle get_state() const;
-    virtual void set_state(ModuleStateHandle state);
+    virtual bool doExecute() NOEXCEPT override final; //--C++11--will throw nothing
+    virtual ModuleStateHandle get_state() override final;
+    virtual const ModuleStateHandle get_state() const override final;
+    virtual void set_state(ModuleStateHandle state) override final;
 
-    virtual ModuleExecutionState& executionState();
+    virtual ModuleExecutionState& executionState() override final;
 
-    virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber);
+    virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) override final;
 
-    virtual void enqueueExecuteAgain();
+    virtual void enqueueExecuteAgain() override final;
 
-    virtual const MetadataMap& metadata() const override;
+    virtual const MetadataMap& metadata() const override final;
 
   private:
-    virtual Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
-    virtual std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id);
-    virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data);
+    virtual Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
+    virtual std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
+    virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
 
   public:
-    virtual void setLogger(Core::Logging::LoggerHandle log);
-    virtual Core::Logging::LoggerHandle getLogger() const;
-    virtual void error(const std::string& msg) const { errorSignal_(id_); getLogger()->error(msg); }
-    virtual void warning(const std::string& msg) const { getLogger()->warning(msg); }
-    virtual void remark(const std::string& msg) const { getLogger()->remark(msg); }
-    virtual void status(const std::string& msg) const { getLogger()->status(msg); }
+    virtual void setLogger(Core::Logging::LoggerHandle log) override final;
+    virtual Core::Logging::LoggerHandle getLogger() const override final;
+    virtual void error(const std::string& msg) const override final { errorSignal_(id_); getLogger()->error(msg); }
+    virtual void warning(const std::string& msg) const override final { getLogger()->warning(msg); }
+    virtual void remark(const std::string& msg) const override final { getLogger()->remark(msg); }
+    virtual void status(const std::string& msg) const override final { getLogger()->status(msg); }
 
-    virtual Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const { return updaterFunc_; }
-    virtual void setUpdaterFunc(Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func);
-    virtual void setUiToggleFunc(UiToggleFunc func) { uiToggleFunc_ = func; }
+    virtual Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override final { return updaterFunc_; }
+    virtual void setUpdaterFunc(Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) override final;
+    virtual void setUiToggleFunc(UiToggleFunc func) override final { uiToggleFunc_ = func; }
 
-    virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber);
-    virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
-    virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber);
+    virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) override final;
+    virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) override final;
+    virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) override final;
 
-    virtual void addPortConnection(const boost::signals2::connection& con) override;
+    virtual void addPortConnection(const boost::signals2::connection& con) override final;
 
-    virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const { return algo_; }
+    virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const override final { return algo_; }
 
-    virtual bool needToExecute() const override;
+    virtual bool needToExecute() const override final;
 
-    virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const override;
-    virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override;
+    virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const override final;
+    virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override final;
 
     virtual bool hasDynamicPorts() const override
     {

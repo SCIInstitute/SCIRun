@@ -239,7 +239,7 @@ void GetSliceFromStructuredFieldByIndices::execute()
   {
 
     // Update the state. Other state changes are handled in either
-    // getting handles or in the calling method Module::do_execute.
+    // getting handles or in the calling method Module::doExecute.
     update_state(Executing);
 
     if (ifield->basis_order() == 0)
