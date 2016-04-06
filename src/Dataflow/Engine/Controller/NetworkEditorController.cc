@@ -281,7 +281,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   return newModule;
 }
 
-void NetworkEditorController::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+void NetworkEditorController::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   auto newMod = addModule(newModuleName);
 
@@ -311,6 +311,11 @@ void NetworkEditorController::connectNewModule(const ModuleHandle& moduleToConne
       }
     }
   }
+}
+
+void NetworkEditorController::insertNewModule(const PortDescriptionInterface* outputPort, const PortDescriptionInterface* inputPort, const std::string& newModuleName)
+{
+  std::cout << "TODO nec insertNewModule" << std::endl;
 }
 
 void NetworkEditorController::printNetwork() const

@@ -217,7 +217,16 @@ void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, cons
   QPointF increment(0, portToConnect->isInput() ? -110 : 110);
   lastModulePosition_ = widget->scenePos() + increment;
 
-  controller_->connectNewModule(moduleToConnectTo, portToConnect, newModuleName);
+  controller_->connectNewModule(portToConnect, newModuleName);
+}
+
+void NetworkEditor::insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* outputPort, const SCIRun::Dataflow::Networks::PortDescriptionInterface* inputPort, const std::string& newModuleName)
+{
+  auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
+  //QPointF increment(0, portToConnect->isInput() ? -110 : 110);
+  //lastModulePosition_ = widget->scenePos() + increment;
+
+  controller_->insertNewModule(outputPort, inputPort, newModuleName);
 }
 
 void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const std::string& newModuleName)

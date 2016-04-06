@@ -181,7 +181,7 @@ namespace SCIRun
   namespace Gui
   {
     const QString deleteAction("Delete");
-    const QString insertModuleAction("Insert Module->*");
+    const QString insertModuleAction("Insert Module");
     const QString disableEnableAction("Disable");
     const QString editNotesAction("Edit Notes...");
 
@@ -192,7 +192,8 @@ namespace SCIRun
       {
         deleteAction_ = addAction(deleteAction);
         addWidgetToExecutionDisableList(deleteAction_);
-        addAction(insertModuleAction)->setDisabled(true);
+        insertAction_ = addAction(insertModuleAction);
+        addWidgetToExecutionDisableList(insertAction_);
         disableAction_ = addAction(disableEnableAction);
         addWidgetToExecutionDisableList(disableAction_);
         notesAction_ = addAction(editNotesAction);
@@ -200,10 +201,13 @@ namespace SCIRun
       ~ConnectionMenu()
       {
         removeWidgetFromExecutionDisableList(deleteAction_);
+        removeWidgetFromExecutionDisableList(insertAction_);
+        removeWidgetFromExecutionDisableList(disableAction_);
       }
       QAction* notesAction_;
       QAction* deleteAction_;
       QAction* disableAction_;
+      QAction* insertAction_;
     };
   }
 }
@@ -263,7 +267,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
 
-  setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
+  NeedsScenePositionProvider::setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
 
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
 

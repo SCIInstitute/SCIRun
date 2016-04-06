@@ -86,6 +86,7 @@ SET(Interface_Application_HEADERS
   NoteEditor.h
   Connection.h
   Port.h
+  PositionProvider.h
   PreferencesWindow.h
   PythonConsoleWidget.h
   TagManagerWindow.h

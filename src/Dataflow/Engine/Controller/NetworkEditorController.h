@@ -103,7 +103,8 @@ namespace Engine {
     void interruptModule(const Networks::ModuleId& id);
 
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
-    void connectNewModule(const Networks::ModuleHandle& moduleToConnectTo, const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+    void connectNewModule(const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+    void insertNewModule(const Networks::PortDescriptionInterface* outputPort, const Networks::PortDescriptionInterface* inputPort, const std::string& newModuleName);
 
     boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);

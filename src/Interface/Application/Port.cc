@@ -31,14 +31,12 @@
 #include <boost/lambda/lambda.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
-#include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 
 using namespace SCIRun::Gui;
@@ -87,7 +85,7 @@ namespace SCIRun {
           {
             if (modulePred(module.second))
             {
-              const std::string& moduleName = module.first;
+              const auto& moduleName = module.first;
               auto qname = QString::fromStdString(moduleName);
               auto action = new QAction(qname, menu);
               hookup(action);
@@ -105,8 +103,8 @@ namespace SCIRun {
         if (!packageMenus.isEmpty())
         {
           auto p = new QMenu(QString::fromStdString(packageName), parent);
-          for (QMenu* menu : packageMenus)
-            p->addMenu(menu);
+          for (auto pm : packageMenus)
+            p->addMenu(pm);
 
           menu->addMenu(p);
           menu->addSeparator();
@@ -139,7 +137,7 @@ namespace SCIRun {
         auto m = new QMenu("Connect Module", parent);
         faves_ = new QMenu("Favorites", parent);
         m->addMenu(faves_);
-        compatibleModuleActions_ = fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
+        compatibleModuleActions_ = fillMenu(m, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
         addMenu(m);
       }
       void filterFavorites()
@@ -168,7 +166,7 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidgetBase(parent),
-  name_(name), moduleId_(moduleId), portId_(portId), index_(index), color_(color), typename_(datatype), isInput_(isInput), isDynamic_(isDynamic), isConnected_(false), lightOn_(false), currentConnection_(0),
+  name_(name), moduleId_(moduleId), portId_(portId), index_(index), color_(color), typename_(datatype), isInput_(isInput), isDynamic_(isDynamic), isConnected_(false), lightOn_(false), currentConnection_(nullptr),
   connectionFactory_(connectionFactory),
   closestPortFinder_(closestPortFinder),
   menu_(new PortActionsMenu(this)),
@@ -344,7 +342,7 @@ namespace SCIRun {
 void PortWidget::cancelConnectionsInProgress()
 {
   delete currentConnection_;
-  currentConnection_ = 0;
+  currentConnection_ = nullptr;
 }
 
 void PortWidget::makeConnection(const QPointF& pos)
@@ -389,13 +387,13 @@ void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double thr
   }
 }
 
-void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
+void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
 {
   if (matches(cd))
   {
     auto out = portWidgetMap_[cd.out_.moduleId_][false][cd.out_.portId_];
     auto in = portWidgetMap_[cd.in_.moduleId_][true][cd.in_.portId_];
-    auto id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
+    auto id = ConnectionId::create(cd);
     auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
     connect(c, SIGNAL(noteChanged()), this, SIGNAL(connectionNoteChanged()));
@@ -430,7 +428,7 @@ void PortWidget::moveEvent(QMoveEvent * event)
   Q_EMIT portMoved();
 }
 
-bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const
+bool PortWidget::matches(const ConnectionDescription& cd) const
 {
   return (isInput() && cd.in_.moduleId_ == moduleId_ && cd.in_.portId_ == portId_)
     || (!isInput() && cd.out_.moduleId_ == moduleId_ && cd.out_.portId_ == portId_);
