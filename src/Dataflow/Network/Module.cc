@@ -154,11 +154,9 @@ Module::Module(const ModuleLookupInfo& info,
   const std::string& version)
   : info_(info),
   id_(info.module_name_, idGenerator_->makeId(info.module_name_)),
-  inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
   metadata_(state_),
-  threadStopped_(false),
   executionState_(new detail::ModuleExecutionStateImpl)
 {
   iports_.set_module(this);

@@ -103,6 +103,9 @@ namespace Networks {
 
     virtual const MetadataMap& metadata() const override final;
 
+    virtual bool isDisabled() const override final { return disabled_; }
+    virtual void setDisabled(bool disable) override final { disabled_ = disable; }
+
   private:
     virtual Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
     virtual std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
@@ -274,7 +277,7 @@ namespace Networks {
     template <class T>
     boost::shared_ptr<T> checkInput(Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 
-    boost::atomic<bool> inputsChanged_;
+    boost::atomic<bool> inputsChanged_ { false };
 
 
     friend class Builder;
@@ -297,9 +300,10 @@ namespace Networks {
     ExecutionSelfRequestSignalType executionSelfRequested_;
 
     ModuleReexecutionStrategyHandle reexecute_;
-    std::atomic<bool> threadStopped_;
+    std::atomic<bool> threadStopped_ { false };
 
     ModuleExecutionStateHandle executionState_;
+    std::atomic<bool> disabled_ { false };
 
     Core::Logging::LoggerHandle log_;
     Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
