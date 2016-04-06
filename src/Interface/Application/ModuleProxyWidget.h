@@ -76,7 +76,6 @@ namespace SCIRun
       void ensureItemVisible(QGraphicsItem* item);
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
-      void addPort();
 
       ModuleWidget* module_;
       bool grabbedByWidget_, isSelected_;

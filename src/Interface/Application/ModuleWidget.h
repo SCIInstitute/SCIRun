@@ -113,6 +113,9 @@ public:
   void setColorSelected();
   void setColorUnselected();
 
+  bool executionDisabled() const { return disabled_; }
+  void setExecutionDisabled(bool disabled);
+
   void highlightPorts();
   void unhighlightPorts();
 
@@ -194,7 +197,7 @@ Q_SIGNALS:
   void disableWidgetDisabling();
   void reenableWidgetDisabling();
   void executeAgain();
-  void moduleDisabled(bool disabled);
+  void executionDisabled(bool disabled);
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);

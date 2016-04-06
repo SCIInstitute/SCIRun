@@ -128,7 +128,7 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
   connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureThisVisible()));
   connect(module, SIGNAL(deleteMeLater()), this, SLOT(deleteLater()));
-  connect(module, SIGNAL(moduleDisabled(bool)), this, SLOT(disableModuleGUI(bool)));
+  connect(module, SIGNAL(executionDisabled(bool)), this, SLOT(disableModuleGUI(bool)));
 
   stackDepth_ = 0;
 }

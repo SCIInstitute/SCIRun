@@ -103,8 +103,8 @@ namespace Networks {
 
     virtual const MetadataMap& metadata() const override final;
 
-    virtual bool isDisabled() const override final { return disabled_; }
-    virtual void setDisabled(bool disable) override final { disabled_ = disable; }
+    virtual bool executionDisabled() const override final { return executionDisabled_; }
+    virtual void setExecutionDisabled(bool disable) override final { executionDisabled_ = disable; }
 
   private:
     virtual Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
@@ -303,7 +303,7 @@ namespace Networks {
     std::atomic<bool> threadStopped_ { false };
 
     ModuleExecutionStateHandle executionState_;
-    std::atomic<bool> disabled_ { false };
+    std::atomic<bool> executionDisabled_ { false };
 
     Core::Logging::LoggerHandle log_;
     Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;

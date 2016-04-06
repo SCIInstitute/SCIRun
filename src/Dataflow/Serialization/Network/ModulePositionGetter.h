@@ -59,7 +59,7 @@ namespace Networks {
     virtual ModuleTagsHandle dumpModuleTags(ModuleFilter filter) const = 0;
     virtual void updateModuleTags(const ModuleTags& notes) = 0;
 
-    virtual DisabledComponentsHandle dumpDisabledComponents(ModuleFilter filter) const = 0;
+    virtual DisabledComponentsHandle dumpDisabledComponents(ModuleFilter modFilter, ConnectionFilter connFilter) const = 0;
     virtual void updateDisabledComponents(const DisabledComponents& disabled) = 0;
   };
 

@@ -178,8 +178,8 @@ namespace Networks {
 
     virtual bool isStoppable() const = 0;
 
-    virtual bool isDisabled() const = 0;
-    virtual void setDisabled(bool disable) = 0;
+    virtual bool executionDisabled() const = 0;
+    virtual void setExecutionDisabled(bool disable) = 0;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

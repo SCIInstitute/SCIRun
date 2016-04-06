@@ -296,6 +296,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, SIGNAL(interrupt(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(interrupt(const SCIRun::Dataflow::Networks::ModuleId&)));
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(noteChanged()), this, SIGNAL(modified()));
+  connect(module, SIGNAL(executionDisabled(bool)), this, SIGNAL(modified()));
   connect(module, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
     this, SLOT(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
   connect(module, SIGNAL(duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle&)), this, SLOT(duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle&)));
@@ -767,9 +768,25 @@ ModuleTagsHandle NetworkEditor::dumpModuleTags(ModuleFilter filter) const
   return tags;
 }
 
-DisabledComponentsHandle NetworkEditor::dumpDisabledComponents(ModuleFilter filter) const
+DisabledComponentsHandle NetworkEditor::dumpDisabledComponents(ModuleFilter modFilter, ConnectionFilter connFilter) const
 {
-  return nullptr;
+  auto disabled(boost::make_shared<DisabledComponents>());
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto mod = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      if (mod->getModuleWidget()->executionDisabled() && modFilter(mod->getModuleWidget()->getModule()))
+        disabled->disabledModules.push_back(mod->getModuleWidget()->getModuleId());
+    }
+    if (auto conn = dynamic_cast<ConnectionLine*>(item))
+    {
+      if (conn->disabled() && connFilter(conn->id().describe()))
+      {
+        disabled->disabledConnections.emplace_back(connectionNoteId(conn->getConnectedToModuleIds()));
+      }
+    }
+  }
+  return disabled;
 }
 
 void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions)
@@ -838,9 +855,27 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
   }
 }
 
-void NetworkEditor::updateDisabledComponents(const DisabledComponents& notes)
+void NetworkEditor::updateDisabledComponents(const DisabledComponents& disabled)
 {
-  
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto conn = dynamic_cast<ConnectionLine*>(item))
+    {
+      auto id = connectionNoteId(conn->getConnectedToModuleIds());
+      if (std::find(disabled.disabledConnections.begin(), disabled.disabledConnections.end(), id) != disabled.disabledConnections.end())
+      {
+        conn->setDisabled(true);
+      }
+    }
+
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      if (std::find(disabled.disabledModules.begin(), disabled.disabledModules.end(), w->getModuleWidget()->getModuleId()) != disabled.disabledModules.end())
+      {
+        w->getModuleWidget()->setExecutionDisabled(true);
+      }
+    }
+  }
 }
 
 void NetworkEditor::executeAll()

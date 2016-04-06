@@ -200,7 +200,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, Module
     file->moduleNotes = *nesm_->dumpModuleNotes(modFilter);
     file->connectionNotes = *nesm_->dumpConnectionNotes(connFilter);
     file->moduleTags = *nesm_->dumpModuleTags(modFilter);
-    file->disabledComponents = *nesm_->dumpDisabledComponents(modFilter);
+    file->disabledComponents = *nesm_->dumpDisabledComponents(modFilter, connFilter);
   }
   return file;
 }

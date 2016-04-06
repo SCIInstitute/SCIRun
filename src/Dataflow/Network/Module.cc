@@ -264,7 +264,7 @@ bool Module::doExecute() NOEXCEPT
 
   try
   {
-    if (!isDisabled())
+    if (!executionDisabled())
       execute();
     returnCode = true;
   }
@@ -325,7 +325,7 @@ bool Module::doExecute() NOEXCEPT
   auto endState = ModuleExecutionState::Completed;
   executionState_->transitionTo(endState);
 
-  if (!isDisabled())
+  if (!executionDisabled())
   {
     resetStateChanged();
     inputsChanged_ = false;

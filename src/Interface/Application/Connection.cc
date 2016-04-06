@@ -303,7 +303,6 @@ void ConnectionLine::toggleDisabled()
 void ConnectionLine::setDisabled(bool disabled)
 {
   disabled_ = disabled;
-  qDebug() << "Disabled set to " << disabled_ << "on" << id_.id_.c_str();
   if (disabled_)
   {
     menu_->disableAction_->setText("Enable");
@@ -340,7 +339,6 @@ void ConnectionLine::trackNodes()
 {
   if (fromPort_ && toPort_)
   {
-    //qDebug() << "trackNodes";
     drawer_->draw(this, fromPort_->position(), toPort_->position());
     updateNotePosition();
     setZValue(defaultZValue());

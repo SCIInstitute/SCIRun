@@ -82,7 +82,7 @@ namespace Networks {
   typedef std::map<std::string, ModuleWithState> ModuleMapXML;
   typedef std::map<std::string, NoteXML> NotesMapXML;
   typedef std::map<std::string, int> ModuleTagsMapXML;
-  typedef std::map<std::string, bool> DisabledComponentMapXML;
+  typedef std::vector<std::string> DisabledComponentListXML;
 
   struct SCISHARE ModuleNotes
   {
@@ -101,8 +101,8 @@ namespace Networks {
 
   struct SCISHARE DisabledComponents
   {
-    DisabledComponentMapXML disabledModules;
-    DisabledComponentMapXML disabledConnections;
+    DisabledComponentListXML disabledModules;
+    DisabledComponentListXML disabledConnections;
   };
 
   class SCISHARE NetworkXML

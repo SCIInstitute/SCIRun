@@ -722,7 +722,7 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
       portAlpha()), type,
       moduleId, port->id(),
       i, port->isDynamic(), connectionFactory_,
@@ -773,7 +773,7 @@ void ModuleWidget::createOutputPorts(const ModuleInfoProvider& moduleInfoProvide
   for (const auto& port : moduleInfoProvider.outputPorts())
   {
     auto type = port->get_typename();
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
+    auto w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
       type, moduleId, port->id(), i, port->isDynamic(),
       connectionFactory_,
       closestPortFinder_,
@@ -1487,21 +1487,34 @@ void ModuleWidget::updateMetadata(bool active)
     setToolTip("");
 }
 
+void ModuleWidget::setExecutionDisabled(bool disabled)
+{
+  disabled_ = disabled;
+
+  Q_EMIT executionDisabled(disabled_);
+
+  theModule_->setExecutionDisabled(disabled_);
+}
+
 void ModuleWidget::incomingConnectionStateChanged(bool disabled)
 {
-  qDebug() << "MODULE connection DISABLED " << getModuleId().c_str() << " called with " << disabled;
+  bool shouldDisable;
   if (disabled)
-    disabled_ = true;
+  {
+    if (isViewScene_)
+      shouldDisable = !std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->firstConnection() && !input->firstConnection()->disabled(); });
+    else // here is where to consider optional ports, see issue #?
+      shouldDisable = true;
+  }
   else
   {
-    //auto port = qobject_cast<PortWidget*>(sender());
-    disabled_ = std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->isConnected() && input->firstConnection()->disabled(); });
+    if (isViewScene_)
+      shouldDisable = !std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->firstConnection() && !input->firstConnection()->disabled(); });
+    else
+      shouldDisable = std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->isConnected() && input->firstConnection()->disabled(); });
   }
-  qDebug() << "MODULE DISABLED SET " << getModuleId().c_str() << " to " << disabled_;
 
-  Q_EMIT moduleDisabled(disabled_);
-
-  theModule_->setDisabled(disabled_);
+  setExecutionDisabled(shouldDisable);
 
   for (const auto& output : ports().outputs())
   {

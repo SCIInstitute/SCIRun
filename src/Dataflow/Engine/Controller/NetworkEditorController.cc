@@ -457,6 +457,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         serializationManager_->updateModuleNotes(xml->moduleNotes);
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
         serializationManager_->updateModuleTags(xml->moduleTags);
+        serializationManager_->updateDisabledComponents(xml->disabledComponents);
       }
       else
         Log::get() << INFO <<  "module position editor unavailable, module positions at default" << std::endl;
@@ -493,11 +494,11 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
       auto originalConnections = theNetwork_->connections();
 
       auto info = conv.appendXmlData(xml->network);
-      size_t startIndex = info.newModuleStartIndex;
+      auto startIndex = info.newModuleStartIndex;
       ModuleCounter modulesDone;
       for (size_t i = startIndex; i < theNetwork_->nmodules(); ++i)
       {
-        ModuleHandle module = theNetwork_->module(i);
+        auto module = theNetwork_->module(i);
         moduleAdded_(module->get_module_name(), module, modulesDone);
       }
 
@@ -505,11 +506,11 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
         auto disable(createDynamicPortSwitch());
         //this is handled by NetworkXMLConverter now--but now the logic is convoluted.
         //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
-        for (const ConnectionDescription& cd : theNetwork_->connections())
+        for (const auto& cd : theNetwork_->connections())
         {
           if (std::find(originalConnections.begin(), originalConnections.end(), cd) == originalConnections.end())
           {
-            ConnectionId id = ConnectionId::create(cd);
+            auto id = ConnectionId::create(cd);
             connectionAdded_(cd);
           }
         }
@@ -526,6 +527,7 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
         xml->moduleTags.tags = remapIdBasedContainer(xml->moduleTags.tags, info.moduleIdMapping);
         serializationManager_->updateModuleTags(xml->moduleTags);
+        //TODO: need disabled here?
       }
       else
         Log::get() << INFO << "module position editor unavailable, module positions at default" << std::endl;
