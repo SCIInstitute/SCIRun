@@ -78,6 +78,23 @@ namespace SCIRun {
       void setupObjectListWidget();
     };
 
+    class LightControlCircle : public QGraphicsView
+    {
+    Q_OBJECT
+    public:
+      explicit LightControlCircle(QGraphicsScene* scene,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        const boost::atomic<bool>& pulling,
+        QWidget* parent = nullptr);
+
+    Q_SIGNALS:
+      void clicked(int x, int y);
+    protected:
+      virtual void mousePressEvent(QMouseEvent* event) override;
+
+      const boost::atomic<bool>& dialogPulling_;
+
+    };
   }
 }
 
