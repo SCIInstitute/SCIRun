@@ -69,6 +69,7 @@ struct ModulePositions;
 struct ModuleNotes;
 struct ConnectionNotes;
 struct ModuleTags;
+struct DisabledComponents;
 /// @todo: rename this
 struct NetworkFile;
 class NetworkGlobalSettings;
@@ -95,11 +96,12 @@ typedef boost::shared_ptr<ModulePositions> ModulePositionsHandle;
 typedef boost::shared_ptr<ModuleNotes> ModuleNotesHandle;
 typedef boost::shared_ptr<ConnectionNotes> ConnectionNotesHandle;
 typedef boost::shared_ptr<ModuleTags> ModuleTagsHandle;
+typedef boost::shared_ptr<DisabledComponents> DisabledComponentsHandle;
 typedef boost::shared_ptr<NetworkFile> NetworkFileHandle;
 
 typedef std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>> ModuleDescriptionMap;
-typedef boost::function<bool(SCIRun::Dataflow::Networks::ModuleHandle)> ModuleFilter;
-typedef boost::function<bool(const SCIRun::Dataflow::Networks::ConnectionDescription&)> ConnectionFilter;
+typedef boost::function<bool(ModuleHandle)> ModuleFilter;
+using ConnectionFilter = boost::function<bool(const ConnectionDescription&)>;
 
 }}}
 

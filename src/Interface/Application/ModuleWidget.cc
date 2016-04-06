@@ -465,7 +465,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   isMini_(globalMiniMode_),
   errored_(false),
   executedOnce_(false),
-  skipExecute_(false),
+  skipExecuteDueToFatalError_(false),
   disabled_(false),
   theModule_(theModule),
   previousModuleState_(UNSET),
@@ -1043,7 +1043,7 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   executedOnce_ = true;
-  if (skipExecute_)
+  if (skipExecuteDueToFatalError_)
     return;
   {
     Q_EMIT signalExecuteButtonIconChangeToStop();
@@ -1051,7 +1051,8 @@ void ModuleWidget::execute()
     //colorLocked_ = true; //TODO
     timer_.restart();
     theModule_->doExecute();
-    Q_EMIT updateProgressBarSignal(1);
+    if (!disabled_)
+      Q_EMIT updateProgressBarSignal(1);
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
@@ -1405,7 +1406,7 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
 
 void ModuleWidget::handleDialogFatalError(const QString& message)
 {
-  skipExecute_ = true;
+  skipExecuteDueToFatalError_ = true;
   qDebug() << "Dialog error: " << message;
   updateBackgroundColor(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored)));
   colorLocked_ = true;

@@ -216,7 +216,7 @@ private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
-  bool isMini_, errored_, executedOnce_, skipExecute_, disabled_;
+  bool isMini_, errored_, executedOnce_, skipExecuteDueToFatalError_, disabled_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
   std::atomic<int> previousModuleState_;

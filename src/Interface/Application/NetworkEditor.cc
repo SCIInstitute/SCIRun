@@ -59,7 +59,7 @@ using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
   boost::shared_ptr<DefaultNotePositionGetter> dnpg,
-  boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
+  boost::shared_ptr<DialogErrorControl> dialogErrorControl,
   PreexecuteFunc preexecuteFunc,
   TagColorFunc tagColor,
   QWidget* parent)
@@ -84,7 +84,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   ModuleWidget::closestPortFinder_.reset(new ClosestPortFinder(scene_));
 
   setScene(scene_);
-  setDragMode(QGraphicsView::RubberBandDrag);
+  setDragMode(RubberBandDrag);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
@@ -157,7 +157,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   Q_EMIT newModule(QString::fromStdString(module->get_id()), module->has_ui());
 }
 
-void NetworkEditor::connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
+void NetworkEditor::connectionAddedQueued(const ConnectionDescription& cd)
 {
   //std::cout << "Received queued connection request: " << ConnectionId::create(cd).id_ << std::endl;
 }
@@ -186,7 +186,7 @@ namespace
           return w;
       }
     }
-    return 0;
+    return nullptr;
   }
 
   ModuleProxyWidget* findFirstByName(const QList<QGraphicsItem*>& list, const std::string& name)
@@ -199,11 +199,11 @@ namespace
           return w;
       }
     }
-    return 0;
+    return nullptr;
   }
 }
 
-void NetworkEditor::duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
+void NetworkEditor::duplicateModule(const ModuleHandle& module)
 {
   auto widget = findById(scene_->items(), module->get_id());
   lastModulePosition_ = widget->scenePos() + QPointF(0, 110);
@@ -414,7 +414,7 @@ ModuleWidget* getModule(QGraphicsItem* item)
   ModuleProxyWidget* proxy = getModuleProxy(item);
   if (proxy)
     return static_cast<ModuleWidget*>(proxy->widget());
-  return 0;
+  return nullptr;
 }
 
 void NetworkEditor::setVisibility(bool visible)
@@ -438,7 +438,7 @@ ModuleWidget* NetworkEditor::selectedModule() const
   {
     return getModule(items.first());
   }
-  return 0;
+  return nullptr;
 }
 
 ModuleProxyWidget* ZLevelManager::selectedModuleProxy() const
@@ -448,7 +448,7 @@ ModuleProxyWidget* ZLevelManager::selectedModuleProxy() const
   {
     return getModuleProxy(items.first());
   }
-  return 0;
+  return nullptr;
 }
 
 ConnectionLine* NetworkEditor::selectedLink() const
@@ -456,7 +456,7 @@ ConnectionLine* NetworkEditor::selectedLink() const
   QList<QGraphicsItem*> items = scene_->selectedItems();
   if (items.count() == 1)
     return dynamic_cast<ConnectionLine*>(items.first());
-  return 0;
+  return nullptr;
 }
 
 NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
@@ -644,7 +644,7 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 
 ConnectionLine* NetworkEditor::getSingleConnectionSelected()
 {
-	ConnectionLine* connectionSelected = 0;
+	ConnectionLine* connectionSelected = nullptr;
 	auto item = scene_->selectedItems();
 	if(item.count() == 1 && (connectionSelected = qgraphicsitem_cast<ConnectionLine*>(item.first())))
 		return connectionSelected;
@@ -685,7 +685,7 @@ void NetworkEditor::unselectConnectionGroup()
 
 ModulePositionsHandle NetworkEditor::dumpModulePositions(ModuleFilter filter) const
 {
-  ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
+  auto positions(boost::make_shared<ModulePositions>());
   fillModulePositionMap(*positions, filter);
   return positions;
 }
@@ -694,7 +694,7 @@ void NetworkEditor::fillModulePositionMap(ModulePositions& positions, ModuleFilt
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
       if (filter(w->getModuleWidget()->getModule()))
         positions.modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
@@ -711,10 +711,10 @@ void NetworkEditor::centerView()
 
 ModuleNotesHandle NetworkEditor::dumpModuleNotes(ModuleFilter filter) const
 {
-  ModuleNotesHandle notes(boost::make_shared<ModuleNotes>());
+  auto notes(boost::make_shared<ModuleNotes>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
       auto note = w->currentNote();
       if (filter(w->getModuleWidget()->getModule()) &&
@@ -735,7 +735,7 @@ namespace
 
 ConnectionNotesHandle NetworkEditor::dumpConnectionNotes(ConnectionFilter filter) const
 {
-  ConnectionNotesHandle notes(boost::make_shared<ConnectionNotes>());
+  auto notes(boost::make_shared<ConnectionNotes>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto conn = dynamic_cast<ConnectionLine*>(item))
@@ -755,7 +755,7 @@ ConnectionNotesHandle NetworkEditor::dumpConnectionNotes(ConnectionFilter filter
 
 ModuleTagsHandle NetworkEditor::dumpModuleTags(ModuleFilter filter) const
 {
-  ModuleTagsHandle tags(boost::make_shared<ModuleTags>());
+  auto tags(boost::make_shared<ModuleTags>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto mod = dynamic_cast<ModuleProxyWidget*>(item))
@@ -767,11 +767,16 @@ ModuleTagsHandle NetworkEditor::dumpModuleTags(ModuleFilter filter) const
   return tags;
 }
 
+DisabledComponentsHandle NetworkEditor::dumpDisabledComponents(ModuleFilter filter) const
+{
+  return nullptr;
+}
+
 void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
       auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
       if (posIter != modulePositions.modulePositions.end())
@@ -787,7 +792,7 @@ void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
       auto noteIter = moduleNotes.notes.find(w->getModuleWidget()->getModuleId());
       if (noteIter != moduleNotes.notes.end())
@@ -804,7 +809,7 @@ void NetworkEditor::updateModuleTags(const ModuleTags& moduleTags)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
       auto tagIter = moduleTags.tags.find(w->getModuleWidget()->getModuleId());
       if (tagIter != moduleTags.tags.end())
@@ -833,6 +838,11 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
   }
 }
 
+void NetworkEditor::updateDisabledComponents(const DisabledComponents& notes)
+{
+  
+}
+
 void NetworkEditor::executeAll()
 {
   preexecute_();
@@ -845,7 +855,7 @@ void NetworkEditor::executeAll()
   Q_EMIT networkExecuted();
 }
 
-void NetworkEditor::executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
+void NetworkEditor::executeModule(const ModuleHandle& module)
 {
   preexecute_();
   // explicit type needed for older Qt and/or clang
@@ -868,7 +878,7 @@ void NetworkEditor::resetNetworkDueToCycle()
   //TODO: ??reset module colors--right now they stay yellow
 }
 
-void NetworkEditor::removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId& id)
+void NetworkEditor::removeModuleWidget(const ModuleId& id)
 {
   auto widget = findById(scene_->items(), id.id_);
   if (widget)
@@ -890,12 +900,12 @@ void NetworkEditor::clear()
   Q_EMIT modified();
 }
 
-SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork() const
+NetworkFileHandle NetworkEditor::saveNetwork() const
 {
   return controller_->saveNetwork();
 }
 
-void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
+void NetworkEditor::loadNetwork(const NetworkFileHandle& xml)
 {
   fileLoading_ = true;
   controller_->loadNetwork(xml);
@@ -912,7 +922,7 @@ void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHan
   setSceneRect(QRectF());
 }
 
-void NetworkEditor::appendToNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
+void NetworkEditor::appendToNetwork(const NetworkFileHandle& xml)
 {
   auto originalItems = scene_->items();
   fileLoading_ = true;
@@ -943,7 +953,7 @@ void NetworkEditor::setConnectionPipelineType(int type)
 
 int NetworkEditor::connectionPipelineType() const
 {
-  return (int) ModuleWidget::connectionFactory_->getType();
+  return static_cast<int>(ModuleWidget::connectionFactory_->getType());
 }
 
 int NetworkEditor::errorCode() const
@@ -961,7 +971,7 @@ ModuleEventProxy::ModuleEventProxy()
   qRegisterMetaType<SCIRun::Dataflow::Engine::ModuleCounter>("SCIRun::Dataflow::Engine::ModuleCounter");
 }
 
-void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle module)
+void ModuleEventProxy::trackModule(ModuleHandle module)
 {
   module->connectExecuteBegins([this](const std::string& id) { moduleExecuteStart(id); });
   module->connectExecuteEnds([this](double t, const std::string& id) { moduleExecuteEnd(t, id); });
@@ -1045,7 +1055,7 @@ void NetworkEditor::wheelEvent(QWheelEvent* event)
 {
   if (event->modifiers() & Qt::ShiftModifier)
   {
-    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    setTransformationAnchor(AnchorUnderMouse);
 
     if (event->delta() > 0)
     {
@@ -1153,7 +1163,7 @@ void NetworkEditor::metadataLayer(bool active)
   }
 }
 
-QColor SCIRun::Gui::defaultTagColor(int tag)
+QColor Gui::defaultTagColor(int tag)
 {
   switch (tag)
   {
@@ -1182,7 +1192,7 @@ QColor SCIRun::Gui::defaultTagColor(int tag)
   }
 }
 
-QString SCIRun::Gui::colorToString(const QColor& color)
+QString Gui::colorToString(const QColor& color)
 {
   return QString("rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
 }
@@ -1253,11 +1263,11 @@ void NetworkEditor::cleanUpNetwork()
 std::atomic<int> ErrorItem::instanceCounter_(0);
 
 ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent) : QGraphicsTextItem(text, parent),
-  showModule_(showModule), counter_(instanceCounter_), rect_(0)
+  showModule_(showModule), counter_(instanceCounter_), rect_(nullptr)
 {
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
   setZValue(10000);
-  instanceCounter_++;
+  ++instanceCounter_;
   setDefaultTextColor(Qt::red);
 
   {
@@ -1270,7 +1280,7 @@ ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGra
 
 ErrorItem::~ErrorItem()
 {
-  instanceCounter_--;
+  --instanceCounter_;
   delete rect_;
 }
 
@@ -1285,7 +1295,7 @@ void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if (rect_)
     {
       scene()->removeItem(rect_);
-      rect_ = 0;
+      rect_ = nullptr;
     }
     scene()->removeItem(this);
   }
@@ -1318,7 +1328,7 @@ void ErrorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     setFont(f);
     setFlags(flags() & ItemIsMovable);
     scene()->removeItem(rect_);
-    rect_ = 0;
+    rect_ = nullptr;
     timeLine_->start();
   }
 
@@ -1336,7 +1346,7 @@ void ErrorItem::animate(qreal val)
 
 void NetworkEditor::displayError(const QString& msg, std::function<void()> showModule)
 {
-  if (Core::Preferences::Instance().showModuleErrorInlineMessages)
+  if (Preferences::Instance().showModuleErrorInlineMessages)
   {
     auto errorItem = new ErrorItem(msg, showModule);
     scene()->addItem(errorItem);
@@ -1374,7 +1384,7 @@ NetworkEditor::~NetworkEditor()
     if (module)
       module->setDeletedFromGui(false);
   }
-  clear();
+  NetworkEditor::clear();
 }
 
 ZLevelManager::ZLevelManager(QGraphicsScene* scene)
