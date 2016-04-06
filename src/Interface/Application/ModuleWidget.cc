@@ -1500,6 +1500,8 @@ void ModuleWidget::incomingConnectionStateChanged(bool disabled)
 
   Q_EMIT moduleDisabled(disabled_);
 
+  theModule_->setDisabled(disabled_);
+
   for (const auto& output : ports().outputs())
   {
     output->setConnectionsDisabled(disabled_ || disabled);

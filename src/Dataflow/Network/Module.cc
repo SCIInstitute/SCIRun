@@ -264,7 +264,8 @@ bool Module::doExecute() NOEXCEPT
 
   try
   {
-    execute();
+    if (!isDisabled())
+      execute();
     returnCode = true;
   }
   catch (const std::bad_alloc&)
@@ -280,14 +281,14 @@ bool Module::doExecute() NOEXCEPT
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    if (Core::Logging::Log::get().verbose())
+    if (Log::get().verbose())
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << std::endl;
       error(ostr.str());
     }
 
-    if (Core::Logging::Log::get().verbose())
+    if (Log::get().verbose())
     {
       std::ostringstream ostrExtra;
       ostrExtra << boost::diagnostic_information(e) << std::endl;
@@ -323,8 +324,13 @@ bool Module::doExecute() NOEXCEPT
   //auto endState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
   auto endState = ModuleExecutionState::Completed;
   executionState_->transitionTo(endState);
-  resetStateChanged();
-  inputsChanged_ = false;
+
+  if (!isDisabled())
+  {
+    resetStateChanged();
+    inputsChanged_ = false;
+  }
+  
   executeEnds_(executionTime, id_);
   return returnCode;
 }
