@@ -598,8 +598,8 @@ void PortWidget::portCachingChanged(bool checked)
 
 void PortWidget::connectNewModule()
 {
-  QAction* action = qobject_cast<QAction*>(sender());
-  QString moduleToAddName = action->text();
+  auto action = qobject_cast<QAction*>(sender());
+  auto moduleToAddName = action->text();
   Q_EMIT connectNewModule(this, moduleToAddName.toStdString());
 }
 

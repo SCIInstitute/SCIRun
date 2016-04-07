@@ -238,7 +238,7 @@ namespace SCIRun
     class ConnectionLineNoteDisplayStrategy : public NoteDisplayStrategy
     {
     public:
-      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const override
+      virtual QPointF relativeNotePosition(QGraphicsItem*, const QGraphicsTextItem*, NotePosition) const override
       {
         return QPointF(0,0);
       }
@@ -289,6 +289,9 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   NeedsScenePositionProvider::setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
 
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
+
+  connect(this, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
+    fromPort_, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
 
   menu_->setStyleSheet(fromPort->styleSheet());
 
@@ -453,7 +456,9 @@ QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& v
 
 void ConnectionLine::insertNewModule()
 {
-  qDebug() << "INSERTING NEW MODULE";
+  auto action = qobject_cast<QAction*>(sender());
+  auto moduleToAddName = action->text();
+  Q_EMIT insertNewModule(fromPort_, moduleToAddName.toStdString(), toPort_);
 }
 
 ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
