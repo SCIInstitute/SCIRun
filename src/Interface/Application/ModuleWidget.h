@@ -241,7 +241,7 @@ private:
   void setupLogging();
   void adjustDockState(bool dockEnabled);
   Qt::DockWidgetArea allowedDockArea() const;
-  void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider) const;
   QMenu* getReplaceWithMenu();
   void setInputPortSpacing(bool highlighted);
   void setOutputPortSpacing(bool highlighted);

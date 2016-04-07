@@ -81,6 +81,7 @@ public Q_SLOTS:
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
   void updateNote(const Note& note);
   void toggleDisabled();
+  void insertNewModule();
 
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);

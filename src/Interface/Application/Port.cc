@@ -55,13 +55,13 @@ namespace SCIRun {
         return std::find_if(module.input_ports_.begin(), module.input_ports_.end(), [&](const InputPortDescription& in) { return in.datatype == portTypeToMatch; }) != module.input_ports_.end();
     }
 
-    QList<QAction*> fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, PortWidget* parent)
+    QList<QAction*> fillConnectToEmptyPortMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, PortWidget* parent)
     {
-      const std::string& portTypeToMatch = parent->get_typename();
-      bool isInput = parent->isInput();
+      auto portTypeToMatch = parent->get_typename();
+      auto isInput = parent->isInput();
       return fillMenuWithFilteredModuleActions(menu, moduleMap,
-        [=](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, isInput, m); },
-        [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); },
+        [portTypeToMatch, isInput](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, isInput, m); },
+        [parent](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); },
         parent);
     }
 
@@ -73,18 +73,20 @@ namespace SCIRun {
       QList<QAction*> allCompatibleActions;
       for (const auto& package : moduleMap)
       {
-        const std::string& packageName = package.first;
+        const auto& packageName = package.first;
 
         QList<QMenu*> packageMenus;
         for (const auto& category : package.second)
         {
-          const std::string& categoryName = category.first;
+          const auto& categoryName = category.first;
           QList<QAction*> actions;
 
           for (const auto& module : category.second)
           {
+            //qDebug() << module.second.lookupInfo_.module_name_.c_str();
             if (modulePred(module.second))
             {
+              //qDebug() << "is compatible";
               const auto& moduleName = module.first;
               auto qname = QString::fromStdString(moduleName);
               auto action = new QAction(qname, menu);
@@ -95,6 +97,7 @@ namespace SCIRun {
           }
           if (!actions.empty())
           {
+            //qDebug() << "action list not empty, adding to submenu" << categoryName.c_str();
             auto m = new QMenu(QString::fromStdString(categoryName), parent);
             m->addActions(actions);
             packageMenus.append(m);
@@ -102,6 +105,7 @@ namespace SCIRun {
         }
         if (!packageMenus.isEmpty())
         {
+          //qDebug() << "package menu not empty, adding to menu" << packageName.c_str();
           auto p = new QMenu(QString::fromStdString(packageName), parent);
           for (auto pm : packageMenus)
             p->addMenu(pm);
@@ -137,7 +141,7 @@ namespace SCIRun {
         auto m = new QMenu("Connect Module", parent);
         faves_ = new QMenu("Favorites", parent);
         m->addMenu(faves_);
-        compatibleModuleActions_ = fillMenu(m, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
+        compatibleModuleActions_ = fillConnectToEmptyPortMenu(m, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
         addMenu(m);
       }
       void filterFavorites()

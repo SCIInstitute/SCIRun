@@ -681,8 +681,8 @@ QMenu* ModuleWidget::getReplaceWithMenu()
 
 void ModuleWidget::replaceModuleWith()
 {
-  QAction* action = qobject_cast<QAction*>(sender());
-  QString moduleToReplace = action->text();
+  auto action = qobject_cast<QAction*>(sender());
+  auto moduleToReplace = action->text();
   Q_EMIT replaceModuleWith(theModule_, moduleToReplace.toStdString());
 }
 
@@ -715,7 +715,7 @@ void ModuleWidget::addPorts(int index)
 
 void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider)
 {
-  const ModuleId moduleId = moduleInfoProvider.get_id();
+  const auto moduleId = moduleInfoProvider.get_id();
   size_t i = 0;
   const auto& inputs = moduleInfoProvider.inputPorts();
   for (const auto& port : inputs)
@@ -753,9 +753,9 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
   }
 }
 
-void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider)
+void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider) const
 {
-  const ModuleId moduleId = moduleInfoProvider.get_id();
+  const auto moduleId = moduleInfoProvider.get_id();
   std::cout << "Module input ports: " << moduleId << std::endl;
   size_t i = 0;
   for (const auto& port : moduleInfoProvider.inputPorts())
