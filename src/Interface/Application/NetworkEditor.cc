@@ -213,20 +213,42 @@ void NetworkEditor::duplicateModule(const ModuleHandle& module)
 
 void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
+  auto prop = sender()->property(addNewModuleActionTypePropertyName());
+  qDebug() << sender();
+  qDebug() << "NetworkEditor SENDER PROPERTY:" << prop;
+  qDebug() << sender()->property("inputPortToConnectPid");
+
   auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
   QPointF increment(0, portToConnect->isInput() ? -110 : 110);
   lastModulePosition_ = widget->scenePos() + increment;
 
+  qDebug() << "PORT CONNS:" << portToConnect->nconnections();
+
+  PortDescriptionInterface* newConnectionInputPort = nullptr;
+  auto q = dynamic_cast<const PortWidget*>(portToConnect);
+  if (q)
+  {
+    for (size_t i = 0; i < q->nconnections(); ++i)
+    {
+      auto cpi = q->connectedPorts()[i];
+      qDebug() << QString::fromStdString(cpi->id().toString());
+      if (QString::fromStdString(cpi->id().toString()) == sender()->property("inputPortToConnectPid"))
+        newConnectionInputPort = cpi;
+    }
+  }
+
+  if (newConnectionInputPort)
+  {
+    qDebug() << "found port object to connect up with:" << newConnectionInputPort;
+  }
+  else
+  {
+    qDebug() << "Didn't find port object to connect up with, or this is just adding a new module, not inserting.";
+  }
+
   controller_->connectNewModule(portToConnect, newModuleName);
-}
 
-void NetworkEditor::insertNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* outputPort, const SCIRun::Dataflow::Networks::PortDescriptionInterface* inputPort, const std::string& newModuleName)
-{
-  auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
-  //QPointF increment(0, portToConnect->isInput() ? -110 : 110);
-  //lastModulePosition_ = widget->scenePos() + increment;
-
-  controller_->insertNewModule(outputPort, inputPort, newModuleName);
+  //requestConnection(..., newConnectionInputPort);
 }
 
 void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const std::string& newModuleName)
@@ -407,7 +429,7 @@ void ZLevelManager::sendToBack()
 
 void ZLevelManager::setZValue(int z)
 {
-  ModuleProxyWidget* node = selectedModuleProxy();
+  auto node = selectedModuleProxy();
   if (node)
   {
     node->setZValue(z);
@@ -421,7 +443,7 @@ ModuleProxyWidget* getModuleProxy(QGraphicsItem* item)
 
 ModuleWidget* getModule(QGraphicsItem* item)
 {
-  ModuleProxyWidget* proxy = getModuleProxy(item);
+  auto proxy = getModuleProxy(item);
   if (proxy)
     return static_cast<ModuleWidget*>(proxy->widget());
   return nullptr;
@@ -443,7 +465,7 @@ void NetworkEditor::setVisibility(bool visible)
 //TODO copy/paste
 ModuleWidget* NetworkEditor::selectedModule() const
 {
-  QList<QGraphicsItem*> items = scene_->selectedItems();
+  auto items = scene_->selectedItems();
   if (items.count() == 1)
   {
     return getModule(items.first());
@@ -453,7 +475,7 @@ ModuleWidget* NetworkEditor::selectedModule() const
 
 ModuleProxyWidget* ZLevelManager::selectedModuleProxy() const
 {
-  QList<QGraphicsItem*> items = scene_->selectedItems();
+  auto items = scene_->selectedItems();
   if (items.count() == 1)
   {
     return getModuleProxy(items.first());
@@ -463,7 +485,7 @@ ModuleProxyWidget* ZLevelManager::selectedModuleProxy() const
 
 ConnectionLine* NetworkEditor::selectedLink() const
 {
-  QList<QGraphicsItem*> items = scene_->selectedItems();
+  auto items = scene_->selectedItems();
   if (items.count() == 1)
     return dynamic_cast<ConnectionLine*>(items.first());
   return nullptr;
@@ -471,11 +493,11 @@ ConnectionLine* NetworkEditor::selectedLink() const
 
 NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
 {
-  QList<QGraphicsItem*> items = scene_->selectedItems();
+  auto items = scene_->selectedItems();
   if (items.count() == 2)
   {
-    ModuleWidget* first = getModule(items.first());
-    ModuleWidget* second = getModule(items.last());
+    auto first = getModule(items.first());
+    auto second = getModule(items.last());
     if (first && second)
 		return ModulePair(first, second);
   }
@@ -484,7 +506,7 @@ NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
 
 void NetworkEditor::del()
 {
-  QList<QGraphicsItem*> items = scene_->selectedItems();
+  auto items = scene_->selectedItems();
   QMutableListIterator<QGraphicsItem*> i(items);
   while (i.hasNext())
   {
@@ -514,7 +536,7 @@ void NetworkEditor::copy()
   {
     for (const auto& item : selected)
     {
-      if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+      if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
       {
         if (w->getModuleWidget()->getModuleId() == mod->get_id().id_)
           return true;
@@ -554,7 +576,7 @@ void NetworkEditor::copy()
 
 void NetworkEditor::paste()
 {
-  QString str = QApplication::clipboard()->text();
+  auto str = QApplication::clipboard()->text();
 
   std::istringstream istr(str.toStdString());
   try
@@ -628,7 +650,7 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 	if (event->button() != Qt::LeftButton)
 		Q_EMIT networkEditorMouseButtonPressed();
 
-  if (ConnectionLine* cL = getSingleConnectionSelected())
+  if (auto cL = getSingleConnectionSelected())
   {
     if (event->buttons() & Qt::LeftButton)
     {
@@ -667,7 +689,7 @@ ConnectionLine* NetworkEditor::getSingleConnectionSelected()
 
 void NetworkEditor::unselectConnectionGroup()
 {
-	QList<QGraphicsItem*> items = scene_->selectedItems();
+  auto items = scene_->selectedItems();
 	if (items.count() == 3)
 	{
 		int hasConnection = 0;
@@ -961,7 +983,7 @@ void NetworkEditor::loadNetwork(const NetworkFileHandle& xml)
 
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
       w->getModuleWidget()->postLoadAction();
     }
@@ -980,7 +1002,7 @@ void NetworkEditor::appendToNetwork(const NetworkFileHandle& xml)
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (!originalItems.contains(item))
-      if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+      if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
       {
         w->getModuleWidget()->postLoadAction();
       }

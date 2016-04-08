@@ -52,7 +52,6 @@ namespace Gui {
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
-    void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* outputPort, const SCIRun::Dataflow::Networks::PortDescriptionInterface* inputPort, const std::string& newModuleName);
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     SCIRun::Dataflow::Networks::NetworkFileHandle serializeNetworkFragment(SCIRun::Dataflow::Networks::ModuleFilter modFilter, SCIRun::Dataflow::Networks::ConnectionFilter connFilter) const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);

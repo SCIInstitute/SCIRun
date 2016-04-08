@@ -313,11 +313,6 @@ void NetworkEditorController::connectNewModule(const PortDescriptionInterface* p
   }
 }
 
-void NetworkEditorController::insertNewModule(const PortDescriptionInterface* outputPort, const PortDescriptionInterface* inputPort, const std::string& newModuleName)
-{
-  std::cout << "TODO nec insertNewModule" << std::endl;
-}
-
 void NetworkEditorController::printNetwork() const
 {
   /// @todo: and make this switchable

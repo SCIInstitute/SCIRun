@@ -460,6 +460,7 @@ void ConnectionLine::insertNewModule()
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToAddName = action->text();
   Q_EMIT insertNewModule(fromPort_, moduleToAddName.toStdString(), toPort_);
+  deleteLater();
 }
 
 ModuleIdPair ConnectionLine::getConnectedToModuleIds() const

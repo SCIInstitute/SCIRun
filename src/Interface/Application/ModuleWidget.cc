@@ -1323,6 +1323,25 @@ void ModuleWidget::connectNewModule(const PortDescriptionInterface* portToConnec
   {
     qDebug() << "Action is not done, need to change a connection.";
   }
+  setProperty(addNewModuleActionTypePropertyName(), prop);
+
+  qDebug() << "PORT CONNS:" << portToConnect->nconnections();
+
+  auto q = dynamic_cast<const PortWidget*>(portToConnect);
+  if (q)
+  {
+    for (size_t i = 0; i < q->nconnections(); ++i)
+    {
+      auto cpi = q->connectedPorts()[i];
+      qDebug() << QString::fromStdString(cpi->id().toString());
+    }
+  }
+
+  qDebug() << "port to connect to:" << sender()->property("inputPortToConnectPid");
+  qDebug() << "port to connect to:" << sender()->property("inputPortToConnectMid");
+  setProperty("inputPortToConnectPid", sender()->property("inputPortToConnectPid"));
+  setProperty("inputPortToConnectMid", sender()->property("inputPortToConnectMid"));
+
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }
 

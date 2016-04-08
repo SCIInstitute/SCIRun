@@ -606,12 +606,15 @@ void PortWidget::connectNewModule()
   Q_EMIT connectNewModule(this, moduleToAddName.toStdString());
 }
 
-void PortWidget::insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* output, const std::string& newModuleName, const SCIRun::Dataflow::Networks::PortDescriptionInterface* input)
+void PortWidget::insertNewModule(const PortDescriptionInterface* output, const std::string& newModuleName, const PortDescriptionInterface* input)
 {
   qDebug() << "NEW SLOT:" << sender();
   //auto action = qobject_cast<QAction*>(sender());
   qDebug() << "PortWidget SENDER PROPERTY:" << sender()->property(addNewModuleActionTypePropertyName());
   setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
+  setProperty("inputPortToConnectPid", QString::fromStdString(input->id().toString()));
+  setProperty("inputPortToConnectMid", QString::fromStdString(input->getUnderlyingModuleId().id_));
+  
   Q_EMIT connectNewModule(output, newModuleName);
 }
 
