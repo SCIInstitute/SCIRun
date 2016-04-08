@@ -61,7 +61,7 @@ namespace SCIRun {
       auto isInput = parent->isInput();
       return fillMenuWithFilteredModuleActions(menu, moduleMap,
         [portTypeToMatch, isInput](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, isInput, m); },
-        [parent](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); },
+        [parent](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); action->setProperty(addNewModuleActionTypePropertyName(), QString("addNew")); },
         parent);
     }
 
@@ -600,7 +600,19 @@ void PortWidget::connectNewModule()
 {
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToAddName = action->text();
+  qDebug() << "OLD SLOT:" << sender();
+  qDebug() << "PortWidget SENDER PROPERTY:" << action->property(addNewModuleActionTypePropertyName());
+  setProperty(addNewModuleActionTypePropertyName(), action->property(addNewModuleActionTypePropertyName()));
   Q_EMIT connectNewModule(this, moduleToAddName.toStdString());
+}
+
+void PortWidget::insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* output, const std::string& newModuleName, const SCIRun::Dataflow::Networks::PortDescriptionInterface* input)
+{
+  qDebug() << "NEW SLOT:" << sender();
+  //auto action = qobject_cast<QAction*>(sender());
+  qDebug() << "PortWidget SENDER PROPERTY:" << sender()->property(addNewModuleActionTypePropertyName());
+  setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
+  Q_EMIT connectNewModule(output, newModuleName);
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,

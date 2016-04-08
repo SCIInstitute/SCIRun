@@ -77,6 +77,8 @@ namespace Gui
   QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup, QWidget* parent);
   bool portTypeMatches(const std::string& portTypeToMatch, bool isInput, const Dataflow::Networks::ModuleDescription& module);
   QPointF findCenterOfNetwork(const Dataflow::Networks::ModulePositions& positions);
+
+  const char* addNewModuleActionTypePropertyName();
 }
 
 }

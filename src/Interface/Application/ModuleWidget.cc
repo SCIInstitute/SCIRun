@@ -1312,6 +1312,17 @@ void ModuleWidget::duplicate()
 
 void ModuleWidget::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
+  auto prop = sender()->property(addNewModuleActionTypePropertyName());
+  qDebug() << sender();
+  qDebug() << "ModuleWidget SENDER PROPERTY:" << prop;
+  if (prop.value<QString>() == "addNew")
+  {
+    qDebug() << "Action is done.";
+  }
+  else
+  {
+    qDebug() << "Action is not done, need to change a connection.";
+  }
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }
 

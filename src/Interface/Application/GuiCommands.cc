@@ -171,6 +171,11 @@ QPointF SCIRun::Gui::findCenterOfNetwork(const ModulePositions& positions)
   return centroidOfPointRange(pointRange.begin(), pointRange.end());
 }
 
+const char* SCIRun::Gui::addNewModuleActionTypePropertyName()
+{
+  return "connectNewModuleSource";
+}
+
 namespace std
 {
 template <typename T1, typename T2>

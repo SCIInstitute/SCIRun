@@ -291,7 +291,8 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
 
   connect(this, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
-    fromPort_, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
+    fromPort_, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
+  setProperty(addNewModuleActionTypePropertyName(), QString("insertModule"));
 
   menu_->setStyleSheet(fromPort->styleSheet());
 
@@ -446,7 +447,7 @@ QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& v
 	//Position drag movement relative to movement in network. Otherwise CL moves relative to modules as though they are the whole scene (faster, CL moves out of modules).
 	if (change == ItemPositionChange && scene())
 	{
-		QPointF newPos = value.toPointF();
+	  auto newPos = value.toPointF();
 		newPos.setX(0);
 		newPos.setY(0);
 		return newPos;

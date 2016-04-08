@@ -570,12 +570,16 @@ void NetworkEditor::paste()
 
 void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
 {
-  auto items = scene_->items(mapToScene(event->pos()));
-  if (items.isEmpty())
+  //TODO: this menu needs to check for certain editing conditions. Disabling for now.
+  if (false)
   {
-    QMenu menu(this);
-    menu.addActions(actions());
-    menu.exec(event->globalPos());
+    auto items = scene_->items(mapToScene(event->pos()));
+    if (items.isEmpty())
+    {
+      QMenu menu(this);
+      menu.addActions(actions());
+      menu.exec(event->globalPos());
+    }
   }
 }
 
