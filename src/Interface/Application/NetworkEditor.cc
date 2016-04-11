@@ -246,7 +246,7 @@ void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, cons
     qDebug() << "Didn't find port object to connect up with, or this is just adding a new module, not inserting.";
   }
 
-  controller_->connectNewModule(portToConnect, newModuleName);
+  controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
 
   //requestConnection(..., newConnectionInputPort);
 }

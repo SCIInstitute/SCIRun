@@ -281,7 +281,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   return newModule;
 }
 
-void NetworkEditorController::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const PortDescriptionInterface* portToConnectUponInsertion)
 {
   auto newMod = addModule(newModuleName);
 
@@ -296,7 +296,11 @@ void NetworkEditorController::connectNewModule(const PortDescriptionInterface* p
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
-        return;
+        if (portToConnectUponInsertion)
+        {
+          std::cout << "I CAN REQUEST ANOTHER CONNECTION HERE: first port is input, second is " << portToConnectUponInsertion->isInput() << std::endl;
+        }
+        return newMod;
       }
     }
   }
@@ -307,7 +311,14 @@ void NetworkEditorController::connectNewModule(const PortDescriptionInterface* p
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
-        return;
+        if (portToConnectUponInsertion)
+        {
+          std::cout << "I CAN REQUEST ANOTHER CONNECTION HERE: first port is output, second is " << portToConnectUponInsertion->isInput() << std::endl;
+          auto fromPort = std::find_if(newMod->outputPorts().begin(), newMod->outputPorts().end(), [portToConnectUponInsertion](OutputPortHandle out) { return out->get_typename() == portToConnectUponInsertion->get_typename(); });
+          if (fromPort != newMod->outputPorts().end())
+            requestConnection(fromPort->get(), portToConnectUponInsertion);
+        }
+        return newMod;
       }
     }
   }
