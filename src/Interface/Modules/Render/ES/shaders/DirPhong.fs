@@ -152,7 +152,8 @@ void main()
     fog_factor = (fp.z-fp.w)/(fp.z-fp.y);
     fog_factor = 1.0 - clamp(fog_factor, 0.0, 1.0);
     fog_factor = 1.0 - exp(-pow(fog_factor*2.5, 2.0));
-    gl_FragColor.xyz = mix(gl_FragColor.xyz, uFogColor.xyz, fog_factor);
+    gl_FragColor.xyz = mix(clamp(gl_FragColor.xyz, 0.0, 1.0),
+      clamp(uFogColor.xyz, 0.0, 1.0), fog_factor);
   }
 }
 

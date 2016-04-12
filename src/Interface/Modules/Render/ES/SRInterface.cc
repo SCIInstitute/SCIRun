@@ -1225,7 +1225,7 @@ namespace SCIRun {
         center /= center.w;
         glm::vec3 c3(center.x, center.y, center.z);
         zdist = glm::length(c3);
-        ddist = mSceneBBox.diagonal().length();
+        ddist = 1.1 * mSceneBBox.diagonal().length();
         start = zdist + (mFogStart - 0.5) * ddist;
         end = zdist + (mFogEnd - 0.5) * ddist;
         uniform.data = glm::vec4(mFogIntensity, start, end, 0.0);

@@ -1325,7 +1325,7 @@ void ViewSceneDialog::setFogColor(const glm::vec4 &color)
 {
   auto spire = mSpire.lock();
   if (spire)
-    spire->setFogColor(color);
+    spire->setFogColor(color/255.0);
 }
 
 //------------------------------------------------------------------------------
