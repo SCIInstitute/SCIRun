@@ -56,6 +56,7 @@ namespace Networks {
     virtual bool isDynamic() const = 0;
     virtual ModuleId getUnderlyingModuleId() const = 0;
     virtual size_t getIndex() const = 0;
+    virtual boost::optional<ConnectionId> firstConnectionId() const = 0;
   };
 
   class SCISHARE PortInterface : public PortDescriptionInterface

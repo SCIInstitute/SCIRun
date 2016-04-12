@@ -84,7 +84,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 #endif
 }
 
-NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
+NetworkEditorController::NetworkEditorController(NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
   : theNetwork_(network), executorFactory_(executorFactory), serializationManager_(nesm),
   signalSwitch_(true)
 {
@@ -314,14 +314,19 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
         if (portToConnectUponInsertion)
         {
           std::cout << "I CAN REQUEST ANOTHER CONNECTION HERE: first port is output, second is " << portToConnectUponInsertion->isInput() << std::endl;
-          auto fromPort = std::find_if(newMod->outputPorts().begin(), newMod->outputPorts().end(), [portToConnectUponInsertion](OutputPortHandle out) { return out->get_typename() == portToConnectUponInsertion->get_typename(); });
-          if (fromPort != newMod->outputPorts().end())
+          auto oports = newMod->outputPorts();
+          auto fromPort = std::find_if(oports.begin(), oports.end(), [portToConnectUponInsertion](OutputPortHandle out) { return out->get_typename() == portToConnectUponInsertion->get_typename(); });
+          if (fromPort != oports.end())
+          {
+            //removeConnection(*portToConnectUponInsertion->firstConnectionId());
             requestConnection(fromPort->get(), portToConnectUponInsertion);
+          }
         }
         return newMod;
       }
     }
   }
+  return newMod;
 }
 
 void NetworkEditorController::printNetwork() const
@@ -349,7 +354,7 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))
   {
-    ConnectionId id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.portId_),
+    auto id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.portId_),
       ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.portId_));
     if (!id.id_.empty())
       connectionAdded_(desc);

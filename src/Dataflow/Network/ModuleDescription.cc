@@ -94,7 +94,7 @@ ModuleId::ModuleId(const std::string& nameIdStr)
   if (!regex_match(id_, what, r))
     THROW_INVALID_ARGUMENT("Invalid Module Id: " + nameIdStr);
   name_ = std::string(what[1]);
-  idNumber_ = boost::lexical_cast<int>((std::string)what[2]);
+  idNumber_ = boost::lexical_cast<int>(static_cast<std::string>(what[2]));
 }
 
 void ModuleId::setIdString()

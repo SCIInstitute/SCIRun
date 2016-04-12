@@ -219,6 +219,12 @@ void PortWidget::turn_on_light()
   lightOn_ = true;
 }
 
+boost::optional<ConnectionId> PortWidget::firstConnectionId() const 
+{
+  auto c = firstConnection();
+  return c ? c->id() : boost::optional<ConnectionId>();
+}
+
 void PortWidgetBase::paintEvent(QPaintEvent* event)
 {
   QSize size = sizeHint();
@@ -534,6 +540,14 @@ void PortWidget::deleteConnections()
 {
   Q_FOREACH (ConnectionLine* c, connections_)
     delete c;
+  connections_.clear();
+  setConnected(false);
+}
+
+void PortWidget::deleteConnectionsLater()
+{
+  Q_FOREACH(ConnectionLine* c, connections_)
+    c->deleteLater();
   connections_.clear();
   setConnected(false);
 }

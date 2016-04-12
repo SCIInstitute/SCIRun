@@ -74,6 +74,8 @@ public:
   virtual size_t getIndex() const override;
   virtual void setIndex(size_t index) override;
 
+  virtual boost::optional<ConnectionId> firstConnectionId() const override;
+
   /// @todo:
   // light interface
 

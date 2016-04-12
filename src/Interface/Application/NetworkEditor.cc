@@ -224,7 +224,7 @@ void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, cons
 
   qDebug() << "PORT CONNS:" << portToConnect->nconnections();
 
-  PortDescriptionInterface* newConnectionInputPort = nullptr;
+  PortWidget* newConnectionInputPort = nullptr;
   auto q = dynamic_cast<const PortWidget*>(portToConnect);
   if (q)
   {
@@ -240,6 +240,7 @@ void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, cons
   if (newConnectionInputPort)
   {
     qDebug() << "found port object to connect up with:" << newConnectionInputPort;
+    newConnectionInputPort->deleteConnectionsLater();
   }
   else
   {
@@ -247,8 +248,6 @@ void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, cons
   }
 
   controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
-
-  //requestConnection(..., newConnectionInputPort);
 }
 
 void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const std::string& newModuleName)

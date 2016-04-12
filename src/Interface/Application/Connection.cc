@@ -318,6 +318,7 @@ void ConnectionLine::destroyConnection()
     drawer_.reset();
     Q_EMIT deleted(id_);
     //GuiLogger::Instance().log("Connection deleted.");
+    qDebug() << "Connection deleted.";
     HasNotes::destroy();
     NoteDisplayHelper::destroy();
     destroyed_ = true;

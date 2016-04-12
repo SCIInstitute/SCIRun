@@ -131,7 +131,7 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
 
 bool Network::disconnect(const ConnectionId& id)
 {
-  Connections::iterator loc = connections_.find(id);
+  auto loc = connections_.find(id);
   if (loc != connections_.end())
   {
     connections_.erase(loc);
