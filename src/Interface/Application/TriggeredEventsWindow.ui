@@ -41,6 +41,11 @@
            <property name="text">
             <string>Pre module add</string>
            </property>
+           <property name="font">
+            <font>
+             <italic>true</italic>
+            </font>
+           </property>
            <property name="flags">
             <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
            </property>
@@ -54,6 +59,11 @@
            <property name="text">
             <string>On network load</string>
            </property>
+           <property name="font">
+            <font>
+             <italic>true</italic>
+            </font>
+           </property>
            <property name="flags">
             <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
            </property>
@@ -61,6 +71,11 @@
           <item>
            <property name="text">
             <string>Pre execute</string>
+           </property>
+           <property name="font">
+            <font>
+             <italic>true</italic>
+            </font>
            </property>
            <property name="flags">
             <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -70,8 +85,18 @@
            <property name="text">
             <string>Post execute</string>
            </property>
+           <property name="font">
+            <font>
+             <italic>true</italic>
+            </font>
+           </property>
            <property name="flags">
             <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Dummy</string>
            </property>
           </item>
          </widget>

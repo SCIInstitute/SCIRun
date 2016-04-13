@@ -33,6 +33,7 @@
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/TagManagerWindow.h>
+#include <Interface/Application/TriggeredEventsWindow.h>
 #include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
@@ -52,6 +53,36 @@ namespace
     for (const auto& path : paths)
       strs << QString::fromStdString(path.string());
     return strs;
+  }
+
+  QStringList valueListAsString(const QList<QVariant>& qvs)
+  {
+    QStringList qsl;
+    for (const auto& qv : qvs)
+    {
+      qsl.append(qv.toString());
+    }
+    return qsl;
+  }
+
+  QMap<QString, QString> toStrMap(const QMap<QString, QVariant>& m)
+  {
+    QMap<QString, QString> ss;
+    for (const auto& sv : m.toStdMap())
+    {
+      ss[sv.first] = sv.second.toString();
+    }
+    return ss;
+  }
+
+  QMap<QString, QVariant> fromStrMap(const QMap<QString, QString>& m)
+  {
+    QMap<QString, QVariant> sv;
+    for (const auto& ss : m.toStdMap())
+    {
+      sv[ss.first] = ss.second;
+    }
+    return sv;
   }
 }
 
@@ -227,6 +258,14 @@ void SCIRunMainWindow::readSettings()
   else
     tagManagerWindow_->setTagColors(QVector<QString>());
 
+  const QString triggeredScripts = "triggeredScripts";
+  if (settings.contains(triggeredScripts))
+  {
+    auto scriptsMap = settings.value(triggeredScripts).toMap();
+    GuiLogger::Instance().logInfo("Setting read: triggeredScripts = " + QStringList(scriptsMap.keys()).join(";") + " -> " + valueListAsString(scriptsMap.values()).join(";"));
+    triggeredEventsWindow_->setScripts(toStrMap(scriptsMap));
+  }
+
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -257,6 +296,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("dataPath", convertPathList(prefs.dataPath()));
   settings.setValue("tagNames", tagManagerWindow_->getTagNames());
   settings.setValue("tagColors", tagManagerWindow_->getTagColors());
+  settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->getScripts()));
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

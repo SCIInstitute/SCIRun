@@ -37,4 +37,30 @@ using namespace SCIRun::Gui;
 TriggeredEventsWindow::TriggeredEventsWindow(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {
   setupUi(this);
+  connect(eventListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
+  connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
+}
+
+const QMap<QString, QString>& TriggeredEventsWindow::getScripts() const
+{
+  return scripts_;
+}
+
+void TriggeredEventsWindow::setScripts(const QMap<QString, QString>& scripts)
+{
+  scripts_ = scripts;
+
+  eventListWidget_->setCurrentItem(eventListWidget_->item(1));
+  scriptPlainTextEdit_->setPlainText(scripts_[eventListWidget_->currentItem()->text()]);
+}
+
+void TriggeredEventsWindow::updateScriptEditor()
+{
+  auto scr = scripts_[eventListWidget_->currentItem()->text()];
+  scriptPlainTextEdit_->setPlainText(scr);
+}
+
+void TriggeredEventsWindow::updateScripts()
+{
+  scripts_[eventListWidget_->currentItem()->text()] = scriptPlainTextEdit_->toPlainText();
 }

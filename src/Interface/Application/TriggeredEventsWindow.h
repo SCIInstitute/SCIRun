@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_TRIGGEREDEVENTSWINDOW_H
 
 #include "ui_TriggeredEventsWindow.h"
+#include <QMap>
 
 #ifndef Q_MOC_RUN
 #include <Dataflow/Network/NetworkFwd.h>
@@ -46,28 +47,17 @@ class TriggeredEventsWindow : public QDockWidget, public Ui::TriggeredEvents
 
 public:
   explicit TriggeredEventsWindow(QWidget* parent = nullptr);
-  //void showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file);
-//public Q_SLOTS:
-//  void clear();
-//  void addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle item);
-//  void undo();
-//  void redo();
-//  void undoAll();
-//  void redoAll();
-//private Q_SLOTS:
-//  void displayInfo(QListWidgetItem* item);
-//Q_SIGNALS:
-//  void modifyingNetwork(bool modifying);
-//  void undoStateChanged(bool enabled);
-//  void redoStateChanged(bool enabled);
-//  void networkModified();
-private:
-  //SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager_;
-  //int lastUndoRow_;
-  //const SCIRun::Dataflow::Engine::ProvenanceManagerHandle::element_type::IOType* networkEditor_;
+  const QMap<QString, QString>& getScripts() const;
 
-  //void setUndoEnabled(bool enable);
-  //void setRedoEnabled(bool enable);
+  void setScripts(const QMap<QString, QString>& scripts);
+
+  //public Q_SLOTS:
+private Q_SLOTS:
+  void updateScriptEditor();
+  void updateScripts();
+//Q_SIGNALS:
+private:
+  QMap<QString, QString> scripts_;
 };
 
 }
