@@ -298,6 +298,7 @@ namespace Gui {
     boost::shared_ptr<ZLevelManager> zLevelManager_;
     std::string latestModuleId_;
     bool fileLoading_;
+    bool insertingNewModuleAlongConnection_ { false };
     PreexecuteFunc preexecute_;
   };
 }

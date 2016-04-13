@@ -240,6 +240,7 @@ void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, cons
   if (newConnectionInputPort)
   {
     qDebug() << "found port object to connect up with:" << newConnectionInputPort;
+    controller_->removeConnection(*newConnectionInputPort->firstConnectionId());
     newConnectionInputPort->deleteConnectionsLater();
   }
   else
@@ -359,11 +360,19 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
   proxy->setZValue(zLevelManager_->get_max());
-  while (!scene_->items(lastModulePosition_.x() - 20, lastModulePosition_.y() - 20, 40, 40).isEmpty())
+
+  if (!insertingNewModuleAlongConnection_)
   {
-    lastModulePosition_ += QPointF(20, -20);
+    while (!scene_->items(lastModulePosition_.x() - 20, lastModulePosition_.y() - 20, 40, 40).isEmpty())
+    {
+      lastModulePosition_ += QPointF(20, -20);
+    }
+    proxy->setPos(lastModulePosition_);
   }
-  proxy->setPos(lastModulePosition_);
+  else
+  {
+    //TODO: find midpoint of two connected modules, set position there
+  }
 
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
