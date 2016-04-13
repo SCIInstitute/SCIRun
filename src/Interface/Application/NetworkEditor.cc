@@ -211,13 +211,19 @@ void NetworkEditor::duplicateModule(const ModuleHandle& module)
   controller_->duplicateModule(module);
 }
 
+namespace
+{
+  QPointF moduleAddIncrement(20, 20);
+}
+
 void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   auto prop = sender()->property(addNewModuleActionTypePropertyName());
 
   auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
-  QPointF increment(0, portToConnect->isInput() ? -110 : 110);
+  QPointF increment(0, portToConnect->isInput() ? -110 : 50);
   lastModulePosition_ = widget->scenePos() + increment;
+  moduleAddIncrement = { 20.0, portToConnect->isInput() ? -20.0 : 20.0 };
 
   PortWidget* newConnectionInputPort = nullptr;
   auto q = dynamic_cast<const PortWidget*>(portToConnect);
@@ -303,11 +309,6 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
   oldModule->deleteLater();
 }
 
-namespace
-{
-  QPointF moduleAddIncrement(20,90);
-}
-
 void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
   auto proxy = new ModuleProxyWidget(module);
@@ -352,7 +353,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   while (!scene_->items(lastModulePosition_.x() - 20, lastModulePosition_.y() - 20, 40, 40).isEmpty())
   {
-    lastModulePosition_ += QPointF(20, -20);
+    lastModulePosition_ += moduleAddIncrement;
   }
   proxy->setPos(lastModulePosition_);
 
