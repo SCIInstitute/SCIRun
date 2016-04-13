@@ -10,6 +10,12 @@
     <height>422</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>725</width>
+    <height>422</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Triggered Events</string>
   </property>
