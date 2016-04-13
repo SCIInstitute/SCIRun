@@ -738,6 +738,12 @@ void ViewSceneDialog::assignBackgroundColor()
     state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
     std::shared_ptr<SRInterface> spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
+    bool useBg = state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool();
+    if (useBg)
+      setFogColor(glm::vec4(bgColor_.red(), bgColor_.green(), bgColor_.blue(), 1.0));
+    else
+      setFogColor(glm::vec4(fogColor_.red(), fogColor_.green(), fogColor_.blue(), 1.0));
+    newGeometryValue();
   }
 }
 
@@ -958,6 +964,11 @@ void ViewSceneDialog::setFogOnVisibleObjects(bool value)
 void ViewSceneDialog::setFogUseBGColor(bool value)
 {
   state_->setValue(Modules::Render::ViewScene::UseBGColor, value);
+  if (value)
+    setFogColor(glm::vec4(bgColor_.red(), bgColor_.green(), bgColor_.blue(), 1.0));
+  else
+    setFogColor(glm::vec4(fogColor_.red(), fogColor_.green(), fogColor_.blue(), 1.0));
+  newGeometryValue();
 }
 
 void ViewSceneDialog::setFogStartValue(double value)
@@ -984,8 +995,12 @@ void ViewSceneDialog::assignFogColor()
     mConfigurationDock->setFogColorLabel(fogColor_);
     state_->setValue(Modules::Render::ViewScene::FogColor, ColorRGB(fogColor_.red(), fogColor_.green(), fogColor_.blue()).toString());
   }
-  setFogColor(glm::vec4(fogColor_.red(), fogColor_.green(), fogColor_.blue(), 1.0));
-  newGeometryValue();
+  bool useBg = state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool();
+  if (!useBg)
+  {
+    setFogColor(glm::vec4(fogColor_.red(), fogColor_.green(), fogColor_.blue(), 1.0));
+    newGeometryValue();
+  }
 }
 
 //------------------------------------------------------------------------------
