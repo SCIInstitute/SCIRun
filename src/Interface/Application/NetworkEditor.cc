@@ -214,15 +214,10 @@ void NetworkEditor::duplicateModule(const ModuleHandle& module)
 void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   auto prop = sender()->property(addNewModuleActionTypePropertyName());
-  qDebug() << sender();
-  qDebug() << "NetworkEditor SENDER PROPERTY:" << prop;
-  qDebug() << sender()->property("inputPortToConnectPid");
 
   auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
   QPointF increment(0, portToConnect->isInput() ? -110 : 110);
   lastModulePosition_ = widget->scenePos() + increment;
-
-  qDebug() << "PORT CONNS:" << portToConnect->nconnections();
 
   PortWidget* newConnectionInputPort = nullptr;
   auto q = dynamic_cast<const PortWidget*>(portToConnect);
@@ -231,21 +226,15 @@ void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, cons
     for (size_t i = 0; i < q->nconnections(); ++i)
     {
       auto cpi = q->connectedPorts()[i];
-      qDebug() << QString::fromStdString(cpi->id().toString());
-      if (QString::fromStdString(cpi->id().toString()) == sender()->property("inputPortToConnectPid"))
+      if (QString::fromStdString(cpi->id().toString()) == sender()->property(insertNewModuleActionTypePropertyName()))
         newConnectionInputPort = cpi;
     }
   }
 
   if (newConnectionInputPort)
   {
-    qDebug() << "found port object to connect up with:" << newConnectionInputPort;
     controller_->removeConnection(*newConnectionInputPort->firstConnectionId());
     newConnectionInputPort->deleteConnectionsLater();
-  }
-  else
-  {
-    qDebug() << "Didn't find port object to connect up with, or this is just adding a new module, not inserting.";
   }
 
   controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
@@ -321,7 +310,7 @@ namespace
 
 void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
-  ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
+  auto proxy = new ModuleProxyWidget(module);
 
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)));
   connect(module, SIGNAL(interrupt(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(interrupt(const SCIRun::Dataflow::Networks::ModuleId&)));
@@ -361,18 +350,11 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   proxy->setZValue(zLevelManager_->get_max());
 
-  if (!insertingNewModuleAlongConnection_)
+  while (!scene_->items(lastModulePosition_.x() - 20, lastModulePosition_.y() - 20, 40, 40).isEmpty())
   {
-    while (!scene_->items(lastModulePosition_.x() - 20, lastModulePosition_.y() - 20, 40, 40).isEmpty())
-    {
-      lastModulePosition_ += QPointF(20, -20);
-    }
-    proxy->setPos(lastModulePosition_);
+    lastModulePosition_ += QPointF(20, -20);
   }
-  else
-  {
-    //TODO: find midpoint of two connected modules, set position there
-  }
+  proxy->setPos(lastModulePosition_);
 
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));

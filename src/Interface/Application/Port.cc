@@ -614,20 +614,14 @@ void PortWidget::connectNewModule()
 {
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToAddName = action->text();
-  qDebug() << "OLD SLOT:" << sender();
-  qDebug() << "PortWidget SENDER PROPERTY:" << action->property(addNewModuleActionTypePropertyName());
   setProperty(addNewModuleActionTypePropertyName(), action->property(addNewModuleActionTypePropertyName()));
   Q_EMIT connectNewModule(this, moduleToAddName.toStdString());
 }
 
 void PortWidget::insertNewModule(const PortDescriptionInterface* output, const std::string& newModuleName, const PortDescriptionInterface* input)
 {
-  qDebug() << "NEW SLOT:" << sender();
-  //auto action = qobject_cast<QAction*>(sender());
-  qDebug() << "PortWidget SENDER PROPERTY:" << sender()->property(addNewModuleActionTypePropertyName());
   setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
-  setProperty("inputPortToConnectPid", QString::fromStdString(input->id().toString()));
-  setProperty("inputPortToConnectMid", QString::fromStdString(input->getUnderlyingModuleId().id_));
+  setProperty(insertNewModuleActionTypePropertyName(), QString::fromStdString(input->id().toString()));
   
   Q_EMIT connectNewModule(output, newModuleName);
 }

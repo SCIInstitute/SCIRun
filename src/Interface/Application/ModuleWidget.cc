@@ -1312,35 +1312,8 @@ void ModuleWidget::duplicate()
 
 void ModuleWidget::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
-  auto prop = sender()->property(addNewModuleActionTypePropertyName());
-  qDebug() << sender();
-  qDebug() << "ModuleWidget SENDER PROPERTY:" << prop;
-  if (prop.value<QString>() == "addNew")
-  {
-    qDebug() << "Action is done.";
-  }
-  else
-  {
-    qDebug() << "Action is not done, need to change a connection.";
-  }
-  setProperty(addNewModuleActionTypePropertyName(), prop);
-
-  qDebug() << "PORT CONNS:" << portToConnect->nconnections();
-
-  auto q = dynamic_cast<const PortWidget*>(portToConnect);
-  if (q)
-  {
-    for (size_t i = 0; i < q->nconnections(); ++i)
-    {
-      auto cpi = q->connectedPorts()[i];
-      qDebug() << QString::fromStdString(cpi->id().toString());
-    }
-  }
-
-  qDebug() << "port to connect to:" << sender()->property("inputPortToConnectPid");
-  qDebug() << "port to connect to:" << sender()->property("inputPortToConnectMid");
-  setProperty("inputPortToConnectPid", sender()->property("inputPortToConnectPid"));
-  setProperty("inputPortToConnectMid", sender()->property("inputPortToConnectMid"));
+  setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
+  setProperty(insertNewModuleActionTypePropertyName(), sender()->property(insertNewModuleActionTypePropertyName()));
 
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }

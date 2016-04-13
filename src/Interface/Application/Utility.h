@@ -79,6 +79,7 @@ namespace Gui
   QPointF findCenterOfNetwork(const Dataflow::Networks::ModulePositions& positions);
 
   const char* addNewModuleActionTypePropertyName();
+  const char* insertNewModuleActionTypePropertyName();
 }
 
 }

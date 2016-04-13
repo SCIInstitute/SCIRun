@@ -296,10 +296,6 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
-        if (portToConnectUponInsertion)
-        {
-          std::cout << "I CAN REQUEST ANOTHER CONNECTION HERE: first port is input, second is " << portToConnectUponInsertion->isInput() << std::endl;
-        }
         return newMod;
       }
     }
@@ -313,12 +309,10 @@ ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInte
         requestConnection(p.get(), portToConnect);
         if (portToConnectUponInsertion)
         {
-          std::cout << "I CAN REQUEST ANOTHER CONNECTION HERE: first port is output, second is " << portToConnectUponInsertion->isInput() << std::endl;
           auto oports = newMod->outputPorts();
           auto fromPort = std::find_if(oports.begin(), oports.end(), [portToConnectUponInsertion](OutputPortHandle out) { return out->get_typename() == portToConnectUponInsertion->get_typename(); });
           if (fromPort != oports.end())
           {
-            //removeConnection(*portToConnectUponInsertion->firstConnectionId());
             requestConnection(fromPort->get(), portToConnectUponInsertion);
           }
         }
