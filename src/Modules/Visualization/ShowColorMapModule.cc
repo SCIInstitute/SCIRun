@@ -189,7 +189,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  GeometryHandle geom(new GeometryObjectSpire(*this, "ShowColorMap"));
+  GeometryHandle geom(new GeometryObjectSpire(*this, "ShowColorMap", false));
 
   geom->mColorMap = cm->getColorMapName();
   geom->mIBOs.push_back(geomIBO);

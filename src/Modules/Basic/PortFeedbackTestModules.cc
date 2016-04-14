@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,17 +26,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Graphics/Datatypes/GeometryImpl.h>
+#include <iostream>
+#include <Modules/Basic/PortFeedbackTestModules.h>
+#include <Core/Datatypes/String.h>
 
-using namespace SCIRun::Core;
-using namespace SCIRun::Graphics::Datatypes;
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable) : 
-GeometryObject(idGenerator, tag),
-mLowestValue(0.0),
-mHighestValue(0.0),
-isVisible(true),
-isClippable_(isClippable)
+const ModuleLookupInfo PortFeedbackSender::staticInfo_("PortFeedbackSender", "Testing", "SCIRun");
+
+PortFeedbackSender::PortFeedbackSender()
+  : Module(staticInfo_, false)
 {
-  
+  INITIALIZE_PORT(Input);
+}
+
+void PortFeedbackSender::execute()
+{
+ 
+}
+
+const ModuleLookupInfo PortFeedbackReceiver::staticInfo_("PortFeedbackReceiver", "Testing", "SCIRun");
+
+PortFeedbackReceiver::PortFeedbackReceiver()
+  : Module(staticInfo_, false)
+{
+  INITIALIZE_PORT(Output);
+
+  getOutputPort(Output)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processFeedback(var); });
+}
+
+void PortFeedbackReceiver::execute()
+{
+
+}
+
+void PortFeedbackReceiver::processFeedback(const ModuleFeedback& var)
+{
 }

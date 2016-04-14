@@ -242,7 +242,7 @@ class BBox {
 
     /// returns true if the ray hit the bbox and returns the hit point
     /// in hitNear
-    SCISHARE bool intersect(const Point& e, const Vector& v, Point& hitNear);
+    SCISHARE bool intersect(const Point& e, const Vector& v, Point& hitNear) const;
 
     friend std::ostream& operator<<(std::ostream& out, const BBox& b);
 

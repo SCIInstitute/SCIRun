@@ -205,7 +205,7 @@ boost::signals2::connection OutputPort::connectConnectionFeedbackListener(const 
   return cxnFeedback_.connect(subscriber);
 }
 
-void OutputPort::sendConnectionFeedback(ModuleFeedback info)
+void OutputPort::sendConnectionFeedback(const ModuleFeedback& info)
 {
   cxnFeedback_(info);
 }

@@ -40,10 +40,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/TextBuilder.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
-#include <Interface/Modules/Render/share.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
-
-#include <glm/glm.hpp>
+#include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
 class QToolBar;
@@ -199,7 +197,7 @@ namespace SCIRun {
 
       // update clipping plane geometries
       void buildGeomClippingPlanes();
-      void buildGeometryClippingPlane(int index, glm::vec4 plane, Core::Geometry::BBox bbox);
+      void buildGeometryClippingPlane(int index, glm::vec4 plane, const Core::Geometry::BBox& bbox);
 
       GLWidget*                             mGLWidget;            ///< GL widget containing context.
       std::weak_ptr<Render::SRInterface>    mSpire;               ///< Instance of Spire.
@@ -233,6 +231,8 @@ namespace SCIRun {
       std::vector<Graphics::Datatypes::GeometryHandle> clippingPlaneGeoms_;
 
       friend class ViewSceneControlsDock;
+
+      std::unique_ptr<Core::GeometryIDGenerator> gid_;
     };
   }
 }

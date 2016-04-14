@@ -257,8 +257,7 @@ namespace SCIRun {
       class SCISHARE GeometryObjectSpire : public Core::Datatypes::GeometryObject
       {
       public:
-        GeometryObjectSpire(const Core::GeometryIDGenerator& idGenerator, const std::string& tag);
-        GeometryObjectSpire(const std::string& tag);
+        GeometryObjectSpire(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
 
         std::list<SpireVBO> mVBOs;  ///< Array of vertex buffer objects.
         std::list<SpireIBO> mIBOs;  ///< Array of index buffer objects.
@@ -273,10 +272,14 @@ namespace SCIRun {
         double mHighestValue;   ///< Highest value a field takes on.
 
         bool isVisible;
-        bool isClippable;
+        bool isClippable() const { return isClippable_; }
+      private:
+        bool isClippable_;
       };
 
       typedef boost::shared_ptr<GeometryObjectSpire> GeometryHandle;
+
+
     }
   }
 }

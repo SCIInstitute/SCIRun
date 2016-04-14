@@ -330,7 +330,7 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
     idname = idname + "_" + state->getValue(ShowFieldModule::FieldName).toString();
   }
 
-  GeometryHandle geom(new GeometryObjectSpire(gid, idname));
+  GeometryHandle geom(new GeometryObjectSpire(gid, idname, true));
 
   /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
