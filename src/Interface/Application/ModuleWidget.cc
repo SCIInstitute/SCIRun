@@ -144,6 +144,8 @@ QColor Gui::to_color(const std::string& str, int alpha)
       result = QColor(122,119,226);
     else if (str == "orange")
       result = QColor(254, 139, 38);
+    else if (str == "brown")
+      result = QColor(165, 42, 42);
     else
       result = Qt::black;
   }
