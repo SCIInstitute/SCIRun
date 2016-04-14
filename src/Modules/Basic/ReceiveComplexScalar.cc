@@ -38,7 +38,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
 ReceiveComplexScalarModule::ReceiveComplexScalarModule()
-  : Module(ModuleLookupInfo("ReceiveComplexScalar", "Math", "SCIRun"), false),
+  : Module(ModuleLookupInfo("ReceiveComplexMatrix", "Math", "SCIRun"), false),
   latestValue_(-1)
 {
   INITIALIZE_PORT(Input);
@@ -46,7 +46,6 @@ ReceiveComplexScalarModule::ReceiveComplexScalarModule()
 
 void ReceiveComplexScalarModule::execute()
 {
-  auto doubleData = getRequiredInput(Input);
-  //latestValue_ = doubleData->value();
-  //get_state()->setValue(ReceivedValue, latestValue_);
+  auto complexData = getRequiredInput(Input);
+  std::cout << *complexData << std::endl;
 }

@@ -198,8 +198,8 @@ void ModuleDescriptionLookup::addTestingModules()
 {
   addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
   addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
-  addModuleDesc<SendComplexScalarModule>("SendComplexScalar", "Testing", "SCIRun", "...", "...");
-  addModuleDesc<ReceiveComplexScalarModule>("ReceiveComplexScalar", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<SendComplexScalarModule>("SendComplexMatrix", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<ReceiveComplexScalarModule>("ReceiveComplexMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");

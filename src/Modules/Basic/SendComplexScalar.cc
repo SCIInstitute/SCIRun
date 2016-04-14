@@ -38,7 +38,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 
 SendComplexScalarModule::SendComplexScalarModule()
-  : Module(ModuleLookupInfo("SendComplexScalar", "Math", "SCIRun"), false),
+  : Module(ModuleLookupInfo("SendComplexMatrix", "Math", "SCIRun"), false),
   data_(-1)
 {
   INITIALIZE_PORT(Scalar);
@@ -48,13 +48,13 @@ void SendComplexScalarModule::execute()
 {
   if (needToExecute())
   {
-    //data_ = get_state()->getValue(SendScalarModule::ValueToSend()).toDouble();
-    //LOG_DEBUG("Executing SendScalar with new value: " << data_);
-    //boost::shared_ptr<Double> output(new Double(data_));
-    //sendOutput(Scalar, output);
+    ComplexDenseMatrix c(2,2);
+    c << Complex(1,2), Complex(3,4), Complex(-1,-2), Complex(-3,-4);
+    auto output(boost::make_shared<ComplexDenseMatrix>(c));
+    sendOutput(Scalar, output);
   }
   else
   {
-    LOG_DEBUG("Executing SendScalar with old value, not sending anything: " << data_);
+    LOG_DEBUG("Executing SendComplexMatrix with old value, not sending anything: " << data_);
   }
 }
