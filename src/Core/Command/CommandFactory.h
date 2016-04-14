@@ -39,14 +39,30 @@ namespace SCIRun
   {
     namespace Commands
     {
-      class SCISHARE GlobalCommandFactory : boost::noncopyable
+      template <typename CommandTypeEnum>
+      class CommandFactory : boost::noncopyable
       {
       public:
-        virtual ~GlobalCommandFactory() {}
-        virtual CommandHandle create(GlobalCommands type) const = 0;
+        virtual ~CommandFactory() {}
+        virtual CommandHandle create(CommandTypeEnum type) const = 0;
+      };
+
+      class SCISHARE GlobalCommandFactory : public CommandFactory<GlobalCommands>
+      {
+      };
+
+      class SCISHARE NetworkEventCommandFactory : public CommandFactory<NetworkEventCommands>
+      {
+      };
+
+      class SCISHARE NullCommandFactory : public NetworkEventCommandFactory
+      {
+      public:
+        virtual CommandHandle create(NetworkEventCommands) const override;
       };
 
       typedef boost::shared_ptr<GlobalCommandFactory> GlobalCommandFactoryHandle;
+      typedef boost::shared_ptr<NetworkEventCommandFactory> NetworkEventCommandFactoryHandle;
     }
   }
 }

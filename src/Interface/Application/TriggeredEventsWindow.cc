@@ -50,6 +50,7 @@ void TriggeredEventsWindow::setScripts(const QMap<QString, QString>& scripts)
 {
   scripts_ = scripts;
 
+  //TODO: hardcode the only enabled entry
   eventListWidget_->setCurrentItem(eventListWidget_->item(1));
   scriptPlainTextEdit_->setPlainText(scripts_[eventListWidget_->currentItem()->text()]);
 }

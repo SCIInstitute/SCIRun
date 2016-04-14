@@ -168,7 +168,8 @@ NetworkEditorControllerHandle Application::controller()
     ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->threadMode()));
     AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
     ReexecuteStrategyFactoryHandle reexFactory(new DynamicReexecutionStrategyFactory(parameters()->reexecuteMode()));
-    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory, private_->cmdFactory_));
+    NetworkEventCommandFactoryHandle eventCmdFactory(new NullCommandFactory);
+    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory, private_->cmdFactory_, eventCmdFactory));
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();

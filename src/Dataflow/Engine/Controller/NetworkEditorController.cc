@@ -64,7 +64,8 @@ using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory,
-  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, GlobalCommandFactoryHandle cmdFactory, NetworkEditorSerializationManager* nesm) :
+  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, GlobalCommandFactoryHandle cmdFactory, 
+  NetworkEventCommandFactoryHandle eventCmdFactory, NetworkEditorSerializationManager* nesm) :
   theNetwork_(new Network(mf, sf, af, reex)),
   moduleFactory_(mf),
   stateFactory_(sf),
@@ -72,6 +73,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   reexFactory_(reex),
   executorFactory_(executorFactory),
   cmdFactory_(cmdFactory),
+  eventCmdFactory_(eventCmdFactory ? eventCmdFactory : boost::make_shared<NullCommandFactory>()),
   serializationManager_(nesm),
   signalSwitch_(true)
 {
@@ -225,12 +227,15 @@ ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
     /*emit*/ moduleAdded_(info.module_name_, realModule, dummy);
   }
   printNetwork();
+
+  eventCmdFactory_->create(NetworkEventCommands::PostModuleAdd)->execute();
+
   return realModule;
 }
 
 ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info)
 {
-  ModuleHandle realModule = theNetwork_->add_module(info);
+  auto realModule = theNetwork_->add_module(info);
   if (realModule) /// @todo: mock network throws here due to null, need to have it return a mock module.
   {
     realModule->addPortConnection(connectPortAdded(boost::bind(&ModuleInterface::portAddedSlot, realModule.get(), _1, _2)));
@@ -258,7 +263,7 @@ void NetworkEditorController::interruptModule(const ModuleId& id)
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
-  ModuleId id(module->get_id());
+  auto id(module->get_id());
   auto newModule = addModuleImpl(module->get_info());
   newModule->set_state(module->get_state()->clone());
   static ModuleCounter dummy;
@@ -446,7 +451,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       ModuleCounter modulesDone;
       for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {
-        ModuleHandle module = theNetwork_->module(i);
+        auto module = theNetwork_->module(i);
         moduleAdded_(module->get_module_name(), module, modulesDone);
         networkDoneLoading_(static_cast<int>(i));
       }
@@ -457,7 +462,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
         for (const ConnectionDescription& cd : theNetwork_->connections())
         {
-          ConnectionId id = ConnectionId::create(cd);
+          auto id = ConnectionId::create(cd);
           connectionAdded_(cd);
         }
       }

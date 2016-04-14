@@ -91,6 +91,7 @@ namespace Engine {
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       Networks::ReexecuteStrategyFactoryHandle reexFactory,
       Core::Commands::GlobalCommandFactoryHandle cmdFactory,
+      Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory,
       Networks::NetworkEditorSerializationManager* nesm = nullptr);
     NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = nullptr);
     ~NetworkEditorController();
@@ -174,6 +175,7 @@ namespace Engine {
     ExecutionStrategyHandle currentExecutor_;
     ExecutionStrategyFactoryHandle executorFactory_;
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
+    Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory_;
     Networks::NetworkEditorSerializationManager* serializationManager_;
 
     ExecutionQueueManager executionManager_;

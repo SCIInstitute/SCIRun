@@ -94,11 +94,6 @@
             <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
            </property>
           </item>
-          <item>
-           <property name="text">
-            <string>Dummy</string>
-           </property>
-          </item>
          </widget>
         </item>
        </layout>
