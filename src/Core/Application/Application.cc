@@ -46,6 +46,7 @@
 #include <Core/Services/ServiceDB.h>
 #include <Core/Services/ServiceManager.h>
 #include <Core/Python/PythonInterpreter.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -160,13 +161,18 @@ namespace
 {
 #ifdef BUILD_WITH_PYTHON
 
+  //TODO: obviously will need a better way to communicate the user-entered script string. 
   class HardCodedPythonTestCommand : public ParameterizedCommand
   {
   public:
     virtual bool execute() override
     {
-      PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
-      PythonInterpreter::Instance().run_string("scirun_set_module_state(scirun_module_ids()[-1], \"FileTypeName\", \"Matlab Matrix (*.mat)\") if scirun_module_ids()[-1].startswith('ReadMatrix') else 'not ReadMatrix'");
+      auto script = Preferences::Instance().postModuleAddScript_temporarySolution.val();
+      if (!script.empty())
+      {
+        PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+        PythonInterpreter::Instance().run_string(script);
+      }
       return true;
     }
   };
