@@ -29,6 +29,7 @@
 #include <QtGui>
 #include <Interface/Application/TriggeredEventsWindow.h>
 #include <Interface/Application/NetworkEditor.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
 //using namespace SCIRun::Dataflow::Networks;
@@ -64,4 +65,5 @@ void TriggeredEventsWindow::updateScriptEditor()
 void TriggeredEventsWindow::updateScripts()
 {
   scripts_[eventListWidget_->currentItem()->text()] = scriptPlainTextEdit_->toPlainText();
+  Core::Preferences::Instance().postModuleAddScript_temporarySolution.setValue(scriptPlainTextEdit_->toPlainText().toStdString());
 }

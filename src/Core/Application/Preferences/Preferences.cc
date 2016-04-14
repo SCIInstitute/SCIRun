@@ -50,7 +50,8 @@ Preferences::Preferences() :
   highlightPorts("highlightPorts", false),
   autoNotes("autoNotes", false),
   modulesAreDockable("modulesAreDockable", true),
-  networkBackgroundColor("backgroundColor", "#808080")
+  networkBackgroundColor("backgroundColor", "#808080"),
+  postModuleAddScript_temporarySolution("postModuleAddScript", "")
 {
 }
 
