@@ -87,7 +87,9 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 }
 
 NetworkEditorController::NetworkEditorController(NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
-  : theNetwork_(network), executorFactory_(executorFactory), serializationManager_(nesm),
+  : theNetwork_(network), executorFactory_(executorFactory), 
+  eventCmdFactory_(new NullCommandFactory),
+  serializationManager_(nesm),
   signalSwitch_(true)
 {
 }
