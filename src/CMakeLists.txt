@@ -34,7 +34,7 @@ ELSE()
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
 ENDIF()
 
-IF(CMAKE_VERSION VERSION_GREATER 3.0)
+IF(POLICY CMP0042)
   # TODO: when support for versions older than 2.8.12 is dropped,
   # enable new policy and get rid of version check
   #
