@@ -263,17 +263,9 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
     }
   }
 
-  const BBox ibox = ifieldhandle->vmesh()->get_bounding_box();
-  Vector mag = ibox.get_max() - ibox.get_min();
-  double max = 0.0;
-  if (mag.x() > max) max = mag.x();
-  if (mag.y() > max) max = mag.y();
-  if (mag.z() > max) max = mag.z();
-
   for (int i = 0; i < numSeeds; i++)
   {
     impl_->pointWidgets_[i]->setScale(scale * impl_->l2norm_ * 0.003);
-    const Point location = impl_->pointWidgets_[i]->position();
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //@cbrightsci: i think this adjusts the point/sphere scale
     TCLInterface::execute(get_id().c_str() + std::string(" set_seed " +
@@ -300,13 +292,13 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   return ofield;
 }
 
-GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle field, double radius, const Core::GeometryIDGenerator& idGenerator)
+GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator)
 {
   GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField", true));
 
   VMesh*  mesh = field->vmesh();
 
-  ColorScheme colorScheme = COLOR_UNIFORM;
+  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
   ColorRGB node_color;  
 
   mesh->synchronize(Mesh::NODES_E);
@@ -319,11 +311,11 @@ GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle 
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
-  ss << radius << num_strips << colorScheme;
+  ss << radius << num_strips << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::TRIANGLES;
+  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;
 
   Graphics::GlyphGeom glyphs;
   while (eiter != eiter_end)

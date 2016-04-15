@@ -175,7 +175,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
 
   // Construct IBO.
 
-  SpireIBO geomIBO(iboName, SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+  SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   RenderState renState;
   renState.set(RenderState::IS_ON, true);
@@ -184,7 +184,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   SpireText text;
 
   SpireSubPass pass(passName, vboName, iboName, shader,
-    COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO, geomIBO, text);
+                    ColorScheme::COLOR_MAP, renState, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, text);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -220,12 +220,11 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
 
   for (double i = 0.; i <= 1.000000001; i += increment)
   {
-    std::stringstream ss;
-    std::string oneline;
+    std::stringstream line;
     sprintf(str2, sd.str().c_str(), (i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift()) * scale);
-    ss << str2 << " " << st->getValue(Units).toString();
+    line << str2 << " " << st->getValue(Units).toString();
     Vector shift = Vector((displaySide == 0) ?
-      (xTrans > 50 ? -(textSize*strlen(ss.str().c_str())) : dash_size) : 0.,
+      (xTrans > 50 ? -(textSize*strlen(line.str().c_str())) : dash_size) : 0.,
       (displaySide == 0) ?
       0. : (yTrans > 50 ? (-textSize - pipe_size / 2.) : pipe_size), i);
     bool ds = displaySide == 0;
@@ -239,8 +238,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       + yTrans / 50.;
     Vector trans(x_trans, y_trans, 0.0);
 
-    oneline = ss.str();
-    textBuilder_.printString(oneline, trans, shift, id, geom);
+    textBuilder_.printString(line.str(), trans, shift, id, geom);
   }
 
   return geom;

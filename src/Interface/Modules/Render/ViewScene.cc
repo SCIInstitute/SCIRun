@@ -1144,7 +1144,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 
   // Construct IBO.
 
-  SpireIBO geomIBO(iboName, SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr);
+  SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::LINES, sizeof(uint32_t), iboBufferSPtr);
 
   RenderState renState;
   renState.set(RenderState::IS_ON, true);
@@ -1156,7 +1156,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   SpireText text;
 
   SpireSubPass pass(passName, vboName, iboName, shader,
-    COLOR_MAP, renState, RENDER_VBO_IBO,
+                    ColorScheme::COLOR_MAP, renState, RenderType::RENDER_VBO_IBO,
     geomVBO, geomIBO, text);
 
   // Add all uniforms generated above to the pass.
@@ -1268,7 +1268,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
     p3.x() << p3.y() << p3.z() <<
     p4.x() << p4.y() << p4.z();
   uniqueNodeID = ss.str();
-  ColorScheme colorScheme(COLOR_UNIFORM);
+  ColorScheme colorScheme(ColorScheme::COLOR_UNIFORM);
   RenderState renState;
   renState.set(RenderState::IS_ON, true);
   renState.set(RenderState::USE_TRANSPARENCY, false);
@@ -1278,8 +1278,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.set(RenderState::IS_WIDGET, true);
   GeometryHandle geom(new GeometryObjectSpire(*gid_, uniqueNodeID, false));
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::TRIANGLES, bbox);
-  //handleGeomObject(geom, 0);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
   Graphics::GlyphGeom glyphs2;
   glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
@@ -1294,7 +1293,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
   GeometryHandle geom2(new GeometryObjectSpire(*gid_, ss.str(), false));
   glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
-    colorScheme, renState, SpireIBO::TRIANGLES, bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
   clippingPlaneGeoms_.push_back(geom);
   clippingPlaneGeoms_.push_back(geom2);
