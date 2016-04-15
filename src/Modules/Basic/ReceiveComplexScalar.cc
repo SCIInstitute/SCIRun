@@ -25,61 +25,27 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Basic/ReceiveScalar.cc
 
-#ifdef None
-#  undef None
-#endif
-#ifdef CursorShape
-#  undef CursorShape
-#endif
-#ifdef Status
-#  undef Status
-#endif
-#ifdef Bool
-#  undef Bool
-#endif
-#ifdef Ok
-#  undef Ok
-#endif
-#ifdef Unsorted
-#  undef Unsorted
-#endif
-#ifdef NoSort
-#  undef NoSort
-#endif
-#ifdef GrayScale
-#  undef GrayScale
-#endif
-#ifdef KeyPress
-#undef KeyPress
-#endif
-#ifdef KeyRelease
-#undef KeyRelease
-#endif
-#ifdef ChildAdded
-#undef ChildAdded
-#endif
-#ifdef ChildPolished
-#undef ChildPolished
-#endif
-#ifdef ChildRemoved
-#undef ChildRemoved
-#endif
-#ifdef FocusIn
-#undef FocusIn
-#endif
-#ifdef FocusOut
-#undef FocusOut
-#endif
-#ifdef Drop
-#undef Drop
-#endif
-#ifdef DragMove
-#undef DragMove
-#endif
-#ifdef FontChange
-#undef FontChange
-#endif
-#ifdef Complex
-#undef Complex 
-#endif
+#include <iostream>
+#include <Modules/Basic/ReceiveComplexScalar.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Scalar.h>
+
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+
+ReceiveComplexScalarModule::ReceiveComplexScalarModule()
+  : Module(ModuleLookupInfo("ReceiveComplexMatrix", "Math", "SCIRun"), false),
+  latestValue_(-1)
+{
+  INITIALIZE_PORT(Input);
+}
+
+void ReceiveComplexScalarModule::execute()
+{
+  auto complexData = getRequiredInput(Input);
+  std::cout << *complexData << std::endl;
+}

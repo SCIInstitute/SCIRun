@@ -26,60 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef None
-#  undef None
-#endif
-#ifdef CursorShape
-#  undef CursorShape
-#endif
-#ifdef Status
-#  undef Status
-#endif
-#ifdef Bool
-#  undef Bool
-#endif
-#ifdef Ok
-#  undef Ok
-#endif
-#ifdef Unsorted
-#  undef Unsorted
-#endif
-#ifdef NoSort
-#  undef NoSort
-#endif
-#ifdef GrayScale
-#  undef GrayScale
-#endif
-#ifdef KeyPress
-#undef KeyPress
-#endif
-#ifdef KeyRelease
-#undef KeyRelease
-#endif
-#ifdef ChildAdded
-#undef ChildAdded
-#endif
-#ifdef ChildPolished
-#undef ChildPolished
-#endif
-#ifdef ChildRemoved
-#undef ChildRemoved
-#endif
-#ifdef FocusIn
-#undef FocusIn
-#endif
-#ifdef FocusOut
-#undef FocusOut
-#endif
-#ifdef Drop
-#undef Drop
-#endif
-#ifdef DragMove
-#undef DragMove
-#endif
-#ifdef FontChange
-#undef FontChange
-#endif
-#ifdef Complex
-#undef Complex 
-#endif
+#include <Core/Datatypes/Scalar.h>
+#include <Modules/Basic/SendComplexScalar.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Logging/Log.h>
+
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
+
+SendComplexScalarModule::SendComplexScalarModule()
+  : Module(ModuleLookupInfo("SendComplexMatrix", "Math", "SCIRun"), false),
+  data_(-1)
+{
+  INITIALIZE_PORT(Scalar);
+}
+
+void SendComplexScalarModule::execute()
+{
+  if (needToExecute())
+  {
+    ComplexDenseMatrix c(2,2);
+    c << Complex(1,2), Complex(3,4), Complex(-1,-2), Complex(-3,-4);
+    auto output(boost::make_shared<ComplexDenseMatrix>(c));
+    sendOutput(Scalar, output);
+  }
+  else
+  {
+    LOG_DEBUG("Executing SendComplexMatrix with old value, not sending anything: " << data_);
+  }
+}

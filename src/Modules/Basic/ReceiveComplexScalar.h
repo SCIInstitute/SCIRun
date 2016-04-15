@@ -26,60 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef None
-#  undef None
-#endif
-#ifdef CursorShape
-#  undef CursorShape
-#endif
-#ifdef Status
-#  undef Status
-#endif
-#ifdef Bool
-#  undef Bool
-#endif
-#ifdef Ok
-#  undef Ok
-#endif
-#ifdef Unsorted
-#  undef Unsorted
-#endif
-#ifdef NoSort
-#  undef NoSort
-#endif
-#ifdef GrayScale
-#  undef GrayScale
-#endif
-#ifdef KeyPress
-#undef KeyPress
-#endif
-#ifdef KeyRelease
-#undef KeyRelease
-#endif
-#ifdef ChildAdded
-#undef ChildAdded
-#endif
-#ifdef ChildPolished
-#undef ChildPolished
-#endif
-#ifdef ChildRemoved
-#undef ChildRemoved
-#endif
-#ifdef FocusIn
-#undef FocusIn
-#endif
-#ifdef FocusOut
-#undef FocusOut
-#endif
-#ifdef Drop
-#undef Drop
-#endif
-#ifdef DragMove
-#undef DragMove
-#endif
-#ifdef FontChange
-#undef FontChange
-#endif
-#ifdef Complex
-#undef Complex 
+#ifndef MODULES_BASIC_RECEIVE_COMPLEX_SCALAR_H
+#define MODULES_BASIC_RECEIVE_COMPLEX_SCALAR_H
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/Basic/share.h>
+
+namespace SCIRun {
+  namespace Modules {
+    namespace Basic {
+
+      class SCISHARE ReceiveComplexScalarModule : public SCIRun::Dataflow::Networks::Module,
+        public Has1InputPort<ComplexDenseMatrixPortTag>,
+        public HasNoOutputPorts
+      {
+      public:
+        ReceiveComplexScalarModule();
+        virtual void execute();
+        virtual void setStateDefaults() {}
+
+        Complex latestReceivedValue() const { return latestValue_; }
+
+        INPUT_PORT(0, Input, ComplexDenseMatrix);
+      private:
+        Complex latestValue_;
+      };
+ }}}
+
 #endif

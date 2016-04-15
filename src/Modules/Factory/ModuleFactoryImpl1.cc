@@ -29,6 +29,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Basic/ReceiveScalar.h>
 #include <Modules/Basic/SendScalar.h>
+#include <Modules/Basic/ReceiveComplexScalar.h>
+#include <Modules/Basic/SendComplexScalar.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/DynamicPortTester.h>
@@ -196,6 +198,8 @@ void ModuleDescriptionLookup::addTestingModules()
 {
   addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
   addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<SendComplexScalarModule>("SendComplexMatrix", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<ReceiveComplexScalarModule>("ReceiveComplexMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
