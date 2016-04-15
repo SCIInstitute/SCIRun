@@ -111,7 +111,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
   connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
   connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
-  connect(scaleBarLineWidthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLineWidth(double)));
+  //connect(scaleBarLineWidthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLineWidth(double)));
   connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
   //-----------Controls Tab-------------------//
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
@@ -198,7 +198,7 @@ void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double
   scaleBarHeightDoubleSpinBox_->setValue(height);
   scaleBarMultiplierDoubleSpinBox_->setValue(multiplier);
   numTicksSpinBox_->setValue(numTicks);
-  scaleBarLineWidthDoubleSpinBox_->setValue(lineWidth);
+  //scaleBarLineWidthDoubleSpinBox_->setValue(lineWidth);
   scaleBarUnitLineEdit_->setText(unit);
 }
 

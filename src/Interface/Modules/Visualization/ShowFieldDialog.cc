@@ -64,6 +64,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addCheckBoxManager(cullTextCheckBox_, ShowFieldModule::CullBackfacingText);
   addCheckBoxManager(textAlwaysVisibleCheckBox_, ShowFieldModule::TextAlwaysVisible);
   addCheckBoxManager(renderIndicesLocationsCheckBox_, ShowFieldModule::RenderAsLocation);
+  addCheckBoxManager(useFaceNormalsCheckBox_, ShowFieldModule::UseFaceNormals);
   addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowFieldModule::FaceTransparencyValue);
   addDoubleSpinBoxManager(nodeTransparencyDoubleSpinBox_, ShowFieldModule::NodeTransparencyValue);
   addDoubleSpinBoxManager(edgeTransparencyDoubleSpinBox_, ShowFieldModule::EdgeTransparencyValue);
@@ -80,6 +81,8 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   connectButtonsToExecuteSignal({ showNodesCheckBox_, showEdgesCheckBox_, showFacesCheckBox_, enableTransparencyNodesCheckBox_,
     enableTransparencyEdgesCheckBox_, enableTransparencyFacesCheckBox_, invertNormalsCheckBox, edgesAsLinesButton_,
     edgesAsCylindersButton_, nodesAsPointsButton_, nodesAsSpheresButton_ });
+
+  connectButtonToExecuteSignal(useFaceNormalsCheckBox_);
 
   createExecuteInteractivelyToggleAction();
 

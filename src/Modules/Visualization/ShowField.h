@@ -100,6 +100,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName TextSize;
         static const Core::Algorithms::AlgorithmParameterName TextPrecision;
         static const Core::Algorithms::AlgorithmParameterName TextColoring;
+        static const Core::Algorithms::AlgorithmParameterName UseFaceNormals;
 
 
         INPUT_PORT(0, Field, LegacyField);
