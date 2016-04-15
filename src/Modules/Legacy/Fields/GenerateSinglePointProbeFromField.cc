@@ -107,45 +107,7 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedback& var)
 {
   auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  //auto xyTr = vsf.info;
-  //std::cout << "EditMeshBoundingBox::processWidgetFeedback, name received from ViewSceneDialog is:\n\t" << xyTr.name() << std::endl;
-  //for (const auto& subVar : xyTr.toVector())
-  //  std::cout << "EditMeshBoundingBox::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << subVar << std::endl;
-  //std::cout << "EditMeshBoundingBox::processWidgetFeedback transfrom from ViewSceneDialog:" << std::endl;
-  vsf.transform.print();
 
-
-
-  //auto xyTr = any_cast_or_default_<Variable>(var);
-  //DenseMatrixHandle transformHandle(new DenseMatrix(4, 4));
-  //int row = 0; 
-  //int col = 0;
-  //int i = 0;
-  //int counter;
-  //for (const auto& subVar : xyTr.toVector())
-  //{
-  //  if (i == 0)
-  //  {
-  //    counter = subVar.toInt();
-  //    if (counter_ != counter)
-  //      counter_ = counter;
-  //    else
-  //      return;
-  //  }
-  //  else
-  //  {
-  //    if (col > 3)
-  //    {
-  //      col = 0;
-  //      ++row;
-  //    }
-  //    (*transformHandle)(row, col) = subVar.toDouble();
-  //    ++col;
-  //  }
-  //  ++i;
-  //}
-
-  //std::cout << "in probe: " << (*transformHandle) << std::endl;
   if (impl_->previousTransform_ != vsf.transform)
   {
     adjustPositionFromTransform(vsf.transform);
@@ -155,7 +117,6 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedba
 
 void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transform& transformMatrix)
 {
-  //std::cout << "GenerateSinglePointProbeFromField::adjustPositionFromTransform\n";
   DenseMatrix center(4, 1);
   auto currLoc = currentLocation();
   center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;

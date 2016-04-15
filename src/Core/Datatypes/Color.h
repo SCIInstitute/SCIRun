@@ -80,8 +80,7 @@ namespace Datatypes {
 
   struct SCISHARE ViewSceneFeedback : ModuleFeedback
   {
-    Algorithms::Variable info;
-    Core::Geometry::Transform transform;
+    Geometry::Transform transform;
   };
 
 }}}

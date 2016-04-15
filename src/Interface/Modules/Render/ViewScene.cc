@@ -1617,53 +1617,21 @@ namespace //TODO: move to appropriate location
 {
   Transform toSciTransform(const glm::mat4& mat)
   {
+    //needs transposing
     Transform t;
     for (int i = 0; i < 4; ++i)
       for (int j = 0; j < 4; ++j)
-        t.set_mat_val(i, j, mat[i][j]);
+        t.set_mat_val(i, j, mat[j][i]);
     return t;
   }
 }
 
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
 {
-  //qDebug() << "sendGeometryFeedbackToState" << x << y;
-  Variable::List geomInfo;
-  //geomInfo.push_back(makeVariable("xClick", x));
-  //geomInfo.push_back(makeVariable("yClick", y));
-  geomInfo.push_back(makeVariable("counter", counter_));
-  counter_ = counter_ < 0 ? 1 : counter_ + 1;
   std::shared_ptr<SRInterface> spire = mSpire.lock();
-  //DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
   glm::mat4 trans = spire->getWidgetTransform().transform;
-
-  geomInfo.push_back(makeVariable("x00", trans[0][0]));
-  geomInfo.push_back(makeVariable("x10", trans[1][0]));
-  geomInfo.push_back(makeVariable("x20", trans[2][0]));
-  geomInfo.push_back(makeVariable("x30", trans[3][0]));
-  geomInfo.push_back(makeVariable("x01", trans[0][1]));
-  geomInfo.push_back(makeVariable("x11", trans[1][1]));
-  geomInfo.push_back(makeVariable("x21", trans[2][1]));
-  geomInfo.push_back(makeVariable("x31", trans[3][1]));
-  geomInfo.push_back(makeVariable("x02", trans[0][2]));
-  geomInfo.push_back(makeVariable("x12", trans[1][2]));
-  geomInfo.push_back(makeVariable("x22", trans[2][2]));
-  geomInfo.push_back(makeVariable("x32", trans[3][2]));
-  geomInfo.push_back(makeVariable("x03", trans[0][3]));
-  geomInfo.push_back(makeVariable("x13", trans[1][3]));
-  geomInfo.push_back(makeVariable("x23", trans[2][3]));
-  geomInfo.push_back(makeVariable("x33", trans[3][3]));
-  /*
-  (*matrixHandle) << trans[0][0], trans[1][0], trans[2][0], trans[3][0]
-                   , trans[0][1], trans[1][1], trans[2][1], trans[3][1]
-                   , trans[0][2], trans[1][2], trans[2][2], trans[3][2]
-                   , trans[0][3], trans[1][3], trans[2][3], trans[3][3];
-  std::cout << "in view scene: " << (*matrixHandle) << std::endl;*/
-  //geomInfo.push_back(Variable(Name("transform"), matrixHandle, Variable::DATATYPE_VARIABLE));
-  auto var = makeVariable("geomInfo", geomInfo);
   
   ViewSceneFeedback vsf;
-  vsf.info = var;
   vsf.transform = toSciTransform(trans);
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 }
