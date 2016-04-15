@@ -500,12 +500,14 @@ void GeometryBuilder::renderFacesLinear(
     //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
     if (withNormals)
     {
+      bool useFaceNormals = state.get(RenderState::USE_FACE_NORMALS) && mesh->has_normals();
       if (useFaceNormals)
       {
         for (size_t i = 0; i < nodes.size(); i++)
         {
           auto norm = normals[i];
           normals[i] = invertNormals ? -norm : norm;
+          mesh->get_normal(normals[i], nodes[i]);
         }
       }
       else
