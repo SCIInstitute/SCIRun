@@ -144,6 +144,8 @@ QColor Gui::to_color(const std::string& str, int alpha)
       result = QColor(122,119,226);
     else if (str == "orange")
       result = QColor(254, 139, 38);
+    else if (str == "brown")
+      result = QColor(160, 82, 45);
     else
       result = Qt::black;
   }
@@ -465,7 +467,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   isMini_(globalMiniMode_),
   errored_(false),
   executedOnce_(false),
-  skipExecute_(false),
+  skipExecuteDueToFatalError_(false),
   disabled_(false),
   theModule_(theModule),
   previousModuleState_(UNSET),
@@ -681,8 +683,8 @@ QMenu* ModuleWidget::getReplaceWithMenu()
 
 void ModuleWidget::replaceModuleWith()
 {
-  QAction* action = qobject_cast<QAction*>(sender());
-  QString moduleToReplace = action->text();
+  auto action = qobject_cast<QAction*>(sender());
+  auto moduleToReplace = action->text();
   Q_EMIT replaceModuleWith(theModule_, moduleToReplace.toStdString());
 }
 
@@ -715,14 +717,14 @@ void ModuleWidget::addPorts(int index)
 
 void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider)
 {
-  const ModuleId moduleId = moduleInfoProvider.get_id();
+  const auto moduleId = moduleInfoProvider.get_id();
   size_t i = 0;
   const auto& inputs = moduleInfoProvider.inputPorts();
   for (const auto& port : inputs)
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
       portAlpha()), type,
       moduleId, port->id(),
       i, port->isDynamic(), connectionFactory_,
@@ -753,9 +755,9 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
   }
 }
 
-void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider)
+void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider) const
 {
-  const ModuleId moduleId = moduleInfoProvider.get_id();
+  const auto moduleId = moduleInfoProvider.get_id();
   std::cout << "Module input ports: " << moduleId << std::endl;
   size_t i = 0;
   for (const auto& port : moduleInfoProvider.inputPorts())
@@ -773,7 +775,7 @@ void ModuleWidget::createOutputPorts(const ModuleInfoProvider& moduleInfoProvide
   for (const auto& port : moduleInfoProvider.outputPorts())
   {
     auto type = port->get_typename();
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
+    auto w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
       type, moduleId, port->id(), i, port->isDynamic(),
       connectionFactory_,
       closestPortFinder_,
@@ -1043,15 +1045,16 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   executedOnce_ = true;
-  if (skipExecute_)
+  if (skipExecuteDueToFatalError_)
     return;
   {
     Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
-    theModule_->do_execute();
-    Q_EMIT updateProgressBarSignal(1);
+    theModule_->doExecute();
+    if (!disabled_)
+      Q_EMIT updateProgressBarSignal(1);
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
@@ -1311,6 +1314,9 @@ void ModuleWidget::duplicate()
 
 void ModuleWidget::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
+  setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
+  setProperty(insertNewModuleActionTypePropertyName(), sender()->property(insertNewModuleActionTypePropertyName()));
+
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }
 
@@ -1405,7 +1411,7 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
 
 void ModuleWidget::handleDialogFatalError(const QString& message)
 {
-  skipExecute_ = true;
+  skipExecuteDueToFatalError_ = true;
   qDebug() << "Dialog error: " << message;
   updateBackgroundColor(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored)));
   colorLocked_ = true;
@@ -1486,19 +1492,34 @@ void ModuleWidget::updateMetadata(bool active)
     setToolTip("");
 }
 
+void ModuleWidget::setExecutionDisabled(bool disabled)
+{
+  disabled_ = disabled;
+
+  Q_EMIT executionDisabled(disabled_);
+
+  theModule_->setExecutionDisabled(disabled_);
+}
+
 void ModuleWidget::incomingConnectionStateChanged(bool disabled)
 {
-  qDebug() << "MODULE connection DISABLED " << getModuleId().c_str() << " called with " << disabled;
+  bool shouldDisable;
   if (disabled)
-    disabled_ = true;
+  {
+    if (isViewScene_)
+      shouldDisable = !std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->firstConnection() && !input->firstConnection()->disabled(); });
+    else // here is where to consider optional ports, see issue #?
+      shouldDisable = true;
+  }
   else
   {
-    //auto port = qobject_cast<PortWidget*>(sender());
-    disabled_ = std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->isConnected() && input->firstConnection()->disabled(); });
+    if (isViewScene_)
+      shouldDisable = !std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->firstConnection() && !input->firstConnection()->disabled(); });
+    else
+      shouldDisable = std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->isConnected() && input->firstConnection()->disabled(); });
   }
-  qDebug() << "MODULE DISABLED SET " << getModuleId().c_str() << " to " << disabled_;
 
-  Q_EMIT moduleDisabled(disabled_);
+  setExecutionDisabled(shouldDisable);
 
   for (const auto& output : ports().outputs())
   {

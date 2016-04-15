@@ -85,6 +85,7 @@ namespace SCIRun
       BooleanVariable autoNotes;
       TrackedVariable<BooleanVariable> modulesAreDockable;
       StringVariable networkBackgroundColor;
+      StringVariable postModuleAddScript_temporarySolution;
 
       std::string dataDirectoryPlaceholder() const;
 

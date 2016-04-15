@@ -51,8 +51,7 @@ TARGET_LINK_LIBRARIES(Core_Application
   Core_Logging
   Core_IEPlugin
   Core_Application_Session
-  Core_Services
-  Core_ICom
+  Core_Application_Preferences
   ${SCI_BOOST_LIBRARY}
 )
 

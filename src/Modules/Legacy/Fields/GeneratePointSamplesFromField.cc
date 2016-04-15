@@ -302,7 +302,7 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 
 GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle field, double radius, const Core::GeometryIDGenerator& idGenerator)
 {
-  GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField"));
+  GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField", true));
 
   VMesh*  mesh = field->vmesh();
 

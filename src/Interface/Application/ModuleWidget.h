@@ -113,6 +113,9 @@ public:
   void setColorSelected();
   void setColorUnselected();
 
+  bool executionDisabled() const { return disabled_; }
+  void setExecutionDisabled(bool disabled);
+
   void highlightPorts();
   void unhighlightPorts();
 
@@ -194,7 +197,7 @@ Q_SIGNALS:
   void disableWidgetDisabling();
   void reenableWidgetDisabling();
   void executeAgain();
-  void moduleDisabled(bool disabled);
+  void executionDisabled(bool disabled);
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
@@ -216,7 +219,7 @@ private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
-  bool isMini_, errored_, executedOnce_, skipExecute_, disabled_;
+  bool isMini_, errored_, executedOnce_, skipExecuteDueToFatalError_, disabled_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
   std::atomic<int> previousModuleState_;
@@ -238,7 +241,7 @@ private:
   void setupLogging();
   void adjustDockState(bool dockEnabled);
   Qt::DockWidgetArea allowedDockArea() const;
-  void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider) const;
   QMenu* getReplaceWithMenu();
   void setInputPortSpacing(bool highlighted);
   void setOutputPortSpacing(bool highlighted);

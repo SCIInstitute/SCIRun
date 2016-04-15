@@ -173,6 +173,9 @@ namespace Gui {
     virtual Dataflow::Networks::ModuleTagsHandle dumpModuleTags(Dataflow::Networks::ModuleFilter filter) const override;
     virtual void updateModuleTags(const Dataflow::Networks::ModuleTags& notes) override;
 
+    virtual Dataflow::Networks::DisabledComponentsHandle dumpDisabledComponents(Dataflow::Networks::ModuleFilter modFilter, Dataflow::Networks::ConnectionFilter connFilter) const override;
+    virtual void updateDisabledComponents(const Dataflow::Networks::DisabledComponents& disabled) override;
+
     size_t numModules() const;
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
@@ -295,6 +298,7 @@ namespace Gui {
     boost::shared_ptr<ZLevelManager> zLevelManager_;
     std::string latestModuleId_;
     bool fileLoading_;
+    bool insertingNewModuleAlongConnection_ { false };
     PreexecuteFunc preexecute_;
   };
 }

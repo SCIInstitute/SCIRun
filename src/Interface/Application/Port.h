@@ -64,6 +64,7 @@ public:
   virtual bool isDynamic() const override = 0;
   virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override = 0;
   virtual size_t getIndex() const override = 0;
+  virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const = 0;
 
   virtual QColor color() const = 0;
   virtual bool isLightOn() const = 0;
@@ -123,6 +124,7 @@ public:
 
   void trackConnections();
   void deleteConnections();
+  void deleteConnectionsLater();
 
   std::vector<PortWidget*> connectedPorts() const;
 
@@ -141,6 +143,8 @@ public:
   SCIRun::Dataflow::Networks::PortDataDescriber getPortDataDescriber() const { return portDataDescriber_; }
 
   const ConnectionLine* firstConnection() const { return !connections_.empty() ? *connections_.cbegin() : nullptr; }
+  
+  virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
 
 protected:
   virtual void moveEvent(QMoveEvent * event) override;
@@ -151,6 +155,7 @@ public Q_SLOTS:
   void portCachingChanged(bool checked);
   void connectNewModule();
   void clearPotentialConnections();
+  void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* output, const std::string& newModuleName, const SCIRun::Dataflow::Networks::PortDescriptionInterface* input);
 Q_SIGNALS:
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
@@ -213,6 +218,7 @@ public:
   virtual bool isDynamic() const override { return false; }
   virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;// { return "<Blank>"; }
   virtual size_t getIndex() const override { return 0; }
+  virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override { return boost::none; }
 
   virtual QColor color() const override;
   virtual bool isLightOn() const override { return false; }

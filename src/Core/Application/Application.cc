@@ -45,6 +45,8 @@
 #include <Core/Services/ServiceLog.h>
 #include <Core/Services/ServiceDB.h>
 #include <Core/Services/ServiceManager.h>
+#include <Core/Python/PythonInterpreter.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -155,6 +157,53 @@ void Application::readCommandLine(int argc, const char* argv[])
   Logging::Log::get().setVerbose(parameters()->verboseMode());
 }
 
+namespace
+{
+#ifdef BUILD_WITH_PYTHON
+
+  //TODO: obviously will need a better way to communicate the user-entered script string. 
+  class HardCodedPythonTestCommand : public ParameterizedCommand
+  {
+  public:
+    virtual bool execute() override
+    {
+      auto script = Preferences::Instance().postModuleAddScript_temporarySolution.val();
+      if (!script.empty())
+      {
+        PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+        PythonInterpreter::Instance().run_string(script);
+      }
+      return true;
+    }
+  };
+
+  class HardCodedPythonFactory : public NetworkEventCommandFactory
+  {
+  public:
+    virtual CommandHandle create(NetworkEventCommands type) const override
+    {
+      switch (type)
+      {
+      case NetworkEventCommands::PostModuleAdd:
+        return boost::make_shared<HardCodedPythonTestCommand>();
+      }
+      return nullptr;
+    }
+  };
+
+
+#endif
+
+  NetworkEventCommandFactoryHandle makeNetworkEventCommandFactory()
+  {
+#ifdef BUILD_WITH_PYTHON
+    return boost::make_shared<HardCodedPythonFactory>();
+#else
+    return boost::make_shared<NullCommandFactory>();
+#endif
+  }
+}
+
 NetworkEditorControllerHandle Application::controller()
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
@@ -168,7 +217,8 @@ NetworkEditorControllerHandle Application::controller()
     ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->threadMode()));
     AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
     ReexecuteStrategyFactoryHandle reexFactory(new DynamicReexecutionStrategyFactory(parameters()->reexecuteMode()));
-    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory, private_->cmdFactory_));
+    auto eventCmdFactory(makeNetworkEventCommandFactory());
+    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory, private_->cmdFactory_, eventCmdFactory));
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();

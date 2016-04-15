@@ -31,14 +31,12 @@
 #include <boost/lambda/lambda.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
-#include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 
 using namespace SCIRun::Gui;
@@ -57,13 +55,13 @@ namespace SCIRun {
         return std::find_if(module.input_ports_.begin(), module.input_ports_.end(), [&](const InputPortDescription& in) { return in.datatype == portTypeToMatch; }) != module.input_ports_.end();
     }
 
-    QList<QAction*> fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, PortWidget* parent)
+    QList<QAction*> fillConnectToEmptyPortMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, PortWidget* parent)
     {
-      const std::string& portTypeToMatch = parent->get_typename();
-      bool isInput = parent->isInput();
+      auto portTypeToMatch = parent->get_typename();
+      auto isInput = parent->isInput();
       return fillMenuWithFilteredModuleActions(menu, moduleMap,
-        [=](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, isInput, m); },
-        [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); },
+        [portTypeToMatch, isInput](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, isInput, m); },
+        [parent](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); action->setProperty(addNewModuleActionTypePropertyName(), QString("addNew")); },
         parent);
     }
 
@@ -75,19 +73,21 @@ namespace SCIRun {
       QList<QAction*> allCompatibleActions;
       for (const auto& package : moduleMap)
       {
-        const std::string& packageName = package.first;
+        const auto& packageName = package.first;
 
         QList<QMenu*> packageMenus;
         for (const auto& category : package.second)
         {
-          const std::string& categoryName = category.first;
+          const auto& categoryName = category.first;
           QList<QAction*> actions;
 
           for (const auto& module : category.second)
           {
+            //qDebug() << module.second.lookupInfo_.module_name_.c_str();
             if (modulePred(module.second))
             {
-              const std::string& moduleName = module.first;
+              //qDebug() << "is compatible";
+              const auto& moduleName = module.first;
               auto qname = QString::fromStdString(moduleName);
               auto action = new QAction(qname, menu);
               hookup(action);
@@ -97,6 +97,7 @@ namespace SCIRun {
           }
           if (!actions.empty())
           {
+            //qDebug() << "action list not empty, adding to submenu" << categoryName.c_str();
             auto m = new QMenu(QString::fromStdString(categoryName), parent);
             m->addActions(actions);
             packageMenus.append(m);
@@ -104,9 +105,10 @@ namespace SCIRun {
         }
         if (!packageMenus.isEmpty())
         {
+          //qDebug() << "package menu not empty, adding to menu" << packageName.c_str();
           auto p = new QMenu(QString::fromStdString(packageName), parent);
-          for (QMenu* menu : packageMenus)
-            p->addMenu(menu);
+          for (auto pm : packageMenus)
+            p->addMenu(pm);
 
           menu->addMenu(p);
           menu->addSeparator();
@@ -139,7 +141,7 @@ namespace SCIRun {
         auto m = new QMenu("Connect Module", parent);
         faves_ = new QMenu("Favorites", parent);
         m->addMenu(faves_);
-        compatibleModuleActions_ = fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
+        compatibleModuleActions_ = fillConnectToEmptyPortMenu(m, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
         addMenu(m);
       }
       void filterFavorites()
@@ -168,7 +170,7 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidgetBase(parent),
-  name_(name), moduleId_(moduleId), portId_(portId), index_(index), color_(color), typename_(datatype), isInput_(isInput), isDynamic_(isDynamic), isConnected_(false), lightOn_(false), currentConnection_(0),
+  name_(name), moduleId_(moduleId), portId_(portId), index_(index), color_(color), typename_(datatype), isInput_(isInput), isDynamic_(isDynamic), isConnected_(false), lightOn_(false), currentConnection_(nullptr),
   connectionFactory_(connectionFactory),
   closestPortFinder_(closestPortFinder),
   menu_(new PortActionsMenu(this)),
@@ -215,6 +217,12 @@ void PortWidget::turn_off_light()
 void PortWidget::turn_on_light()
 {
   lightOn_ = true;
+}
+
+boost::optional<ConnectionId> PortWidget::firstConnectionId() const 
+{
+  auto c = firstConnection();
+  return c ? c->id() : boost::optional<ConnectionId>();
 }
 
 void PortWidgetBase::paintEvent(QPaintEvent* event)
@@ -344,7 +352,7 @@ namespace SCIRun {
 void PortWidget::cancelConnectionsInProgress()
 {
   delete currentConnection_;
-  currentConnection_ = 0;
+  currentConnection_ = nullptr;
 }
 
 void PortWidget::makeConnection(const QPointF& pos)
@@ -389,13 +397,13 @@ void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double thr
   }
 }
 
-void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
+void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
 {
   if (matches(cd))
   {
     auto out = portWidgetMap_[cd.out_.moduleId_][false][cd.out_.portId_];
     auto in = portWidgetMap_[cd.in_.moduleId_][true][cd.in_.portId_];
-    auto id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
+    auto id = ConnectionId::create(cd);
     auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
     connect(c, SIGNAL(noteChanged()), this, SIGNAL(connectionNoteChanged()));
@@ -430,7 +438,7 @@ void PortWidget::moveEvent(QMoveEvent * event)
   Q_EMIT portMoved();
 }
 
-bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const
+bool PortWidget::matches(const ConnectionDescription& cd) const
 {
   return (isInput() && cd.in_.moduleId_ == moduleId_ && cd.in_.portId_ == portId_)
     || (!isInput() && cd.out_.moduleId_ == moduleId_ && cd.out_.portId_ == portId_);
@@ -536,6 +544,14 @@ void PortWidget::deleteConnections()
   setConnected(false);
 }
 
+void PortWidget::deleteConnectionsLater()
+{
+  Q_FOREACH(ConnectionLine* c, connections_)
+    c->deleteLater();
+  connections_.clear();
+  setConnected(false);
+}
+
 void PortWidget::trackConnections()
 {
   Q_FOREACH (ConnectionLine* c, connections_)
@@ -596,9 +612,18 @@ void PortWidget::portCachingChanged(bool checked)
 
 void PortWidget::connectNewModule()
 {
-  QAction* action = qobject_cast<QAction*>(sender());
-  QString moduleToAddName = action->text();
+  auto action = qobject_cast<QAction*>(sender());
+  auto moduleToAddName = action->text();
+  setProperty(addNewModuleActionTypePropertyName(), action->property(addNewModuleActionTypePropertyName()));
   Q_EMIT connectNewModule(this, moduleToAddName.toStdString());
+}
+
+void PortWidget::insertNewModule(const PortDescriptionInterface* output, const std::string& newModuleName, const PortDescriptionInterface* input)
+{
+  setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
+  setProperty(insertNewModuleActionTypePropertyName(), QString::fromStdString(input->id().toString()));
+  
+  Q_EMIT connectNewModule(output, newModuleName);
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,

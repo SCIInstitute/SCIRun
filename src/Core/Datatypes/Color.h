@@ -33,6 +33,9 @@
 
 #include <iosfwd>
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/GeometryPrimitives/Transform.h>
+#include <Core/Algorithms/Base/Variable.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -49,24 +52,24 @@ namespace Datatypes {
     ColorRGB(double r, double g, double b);
     ColorRGB(double r, double g, double b, double a);
     //adjust alpha while copying
-    ColorRGB(const ColorRGB& color, double a);
+    //ColorRGB(const ColorRGB& color, double a);
 
     // These equality operations should use floating point comparisons.
-    inline bool operator==(const ColorRGB& c) const {
+    bool operator==(const ColorRGB& c) const {
       return ((r_==c.r_)&&(g_==c.g_)&&(b_==c.b_)&&(a_==c.a_));
     }
 
-    inline bool operator!=(const ColorRGB& c) const {
+    bool operator!=(const ColorRGB& c) const {
       return !(*this == c);
     }
 
     /// \todo Add normalization function to normalize 0 - 255 to 0 - 1.0.
     ///       useful when reading colors from strings.
 
-    inline double r() const {return r_;}
-    inline double g() const {return g_;}
-    inline double b() const {return b_;}
-    inline double a() const {return a_;}
+    double r() const {return r_;}
+    double g() const {return g_;}
+    double b() const {return b_;}
+    double a() const {return a_;}
 
     std::string toString() const;
   };
@@ -74,6 +77,12 @@ namespace Datatypes {
   typedef boost::shared_ptr<ColorRGB> ColorRGBHandle;
 
   SCISHARE std::ostream& operator<<(std::ostream& out, const ColorRGB& color);
+
+  struct SCISHARE ViewSceneFeedback : ModuleFeedback
+  {
+    Algorithms::Variable info;
+    Core::Geometry::Transform transform;
+  };
 
 }}}
 

@@ -74,6 +74,8 @@ public:
   virtual size_t getIndex() const override;
   virtual void setIndex(size_t index) override;
 
+  virtual boost::optional<ConnectionId> firstConnectionId() const override;
+
   /// @todo:
   // light interface
 
@@ -127,7 +129,7 @@ public:
   virtual void attach(Connection* conn) override;
   virtual PortDataDescriber getPortDataDescriber() const override;
   virtual boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) override;
-  virtual void sendConnectionFeedback(ModuleFeedback info) override;
+  virtual void sendConnectionFeedback(const Core::Datatypes::ModuleFeedback& info) override;
 private:
   DatatypeSourceInterfaceHandle source_;
   ConnectionFeedbackSignalType cxnFeedback_;

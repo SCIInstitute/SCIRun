@@ -70,6 +70,7 @@
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
+#include "TriggeredEventsWindow.h"
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -252,8 +253,9 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
     connect(recentFileActions_[i], SIGNAL(triggered()), this, SLOT(loadRecentNetwork()));
   }
 
+	setupScriptedEventsWindow();
   setupProvenanceWindow();
-  provenanceWindow_->hide();
+
   setupDevConsole();
   setupPythonConsole();
 
@@ -358,6 +360,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   actionConfiguration_->setChecked(!configurationDockWidget_->isHidden());
   actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
+  actionTriggeredEvents_->setChecked(!triggeredEventsWindow_->isHidden());
   actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
 
 	moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
@@ -477,7 +480,7 @@ SCIRunMainWindow::~SCIRunMainWindow()
   Application::Instance().shutdown();
 }
 
-void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller)
+void SCIRunMainWindow::setController(NetworkEditorControllerHandle controller)
 {
   boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
   networkEditor_->setNetworkEditorController(controllerProxy);
@@ -510,12 +513,12 @@ void SCIRunMainWindow::setupNetworkEditor()
 
 void SCIRunMainWindow::executeCommandLineRequests()
 {
-  SCIRun::Core::Application::Instance().executeCommandLineRequests();
+  Application::Instance().executeCommandLineRequests();
 }
 
 void SCIRunMainWindow::preexecute()
 {
-	if (Core::Preferences::Instance().saveBeforeExecute && !Application::Instance().parameters()->isRegressionMode())
+	if (Preferences::Instance().saveBeforeExecute && !Application::Instance().parameters()->isRegressionMode())
 	{
 		saveNetwork();
 	}
@@ -604,7 +607,7 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename)
     }
     else
     {
-      if (Core::Application::Instance().parameters()->isRegressionMode())
+      if (Application::Instance().parameters()->isRegressionMode())
         exit(7);
       //TODO: set error code to non-0 so regression tests fail!
       // probably want to control this with a --regression flag.
@@ -674,7 +677,7 @@ bool SCIRunMainWindow::newNetwork()
 void SCIRunMainWindow::setCurrentFile(const QString& fileName)
 {
   currentFile_ = fileName;
-  SCIRun::Core::setCurrentFileName(currentFile_.toStdString());
+  setCurrentFileName(currentFile_.toStdString());
   setWindowModified(false);
   QString shownName = tr("Untitled");
   if (!currentFile_.isEmpty())
@@ -939,9 +942,17 @@ void SCIRunMainWindow::resetBackgroundColor()
   GuiLogger::Instance().logInfo("Background color set to " + defaultColor.name());
 }
 
+void SCIRunMainWindow::setupScriptedEventsWindow()
+{
+  triggeredEventsWindow_ = new TriggeredEventsWindow(this);
+  connect(actionTriggeredEvents_, SIGNAL(toggled(bool)), triggeredEventsWindow_, SLOT(setVisible(bool)));
+  connect(triggeredEventsWindow_, SIGNAL(visibilityChanged(bool)), actionTriggeredEvents_, SLOT(setChecked(bool)));
+  triggeredEventsWindow_->hide();
+}
+
 void SCIRunMainWindow::setupProvenanceWindow()
 {
-  ProvenanceManagerHandle provenanceManager(new Dataflow::Engine::ProvenanceManager<SCIRun::Dataflow::Networks::NetworkFileHandle>(networkEditor_));
+  ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_));
   provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
   connect(actionProvenance_, SIGNAL(toggled(bool)), provenanceWindow_, SLOT(setVisible(bool)));
   connect(provenanceWindow_, SIGNAL(visibilityChanged(bool)), actionProvenance_, SLOT(setChecked(bool)));
@@ -957,6 +968,8 @@ void SCIRunMainWindow::setupProvenanceWindow()
   commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
 
   connect(commandConverter_.get(), SIGNAL(provenanceItemCreated(SCIRun::Dataflow::Engine::ProvenanceItemHandle)), provenanceWindow_, SLOT(addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle)));
+
+	provenanceWindow_->hide();
 }
 
 void SCIRunMainWindow::filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item)
@@ -1026,8 +1039,8 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
   GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
-  SCIRun::Core::PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
-  SCIRun::Core::PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
+  PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
   statusBar()->showMessage(tr("Script is running."), 2000);
 #else
   GuiLogger::Instance().logInfo("Python not included in this build, cannot run " + scriptFileName);
@@ -1297,7 +1310,7 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
     prefsWindow_->scirunDataLineEdit_->setToolTip(dir);
 
     RemembersFileDialogDirectory::setStartingDir(dir);
-    Core::Preferences::Instance().setDataDirectory(dir.toStdString());
+    Preferences::Instance().setDataDirectory(dir.toStdString());
   }
 }
 
@@ -1308,7 +1321,7 @@ void SCIRunMainWindow::setDataPath(const QString& dirs)
     prefsWindow_->scirunDataPathTextEdit_->setPlainText(dirs);
     prefsWindow_->scirunDataPathTextEdit_->setToolTip(dirs);
 
-		Core::Preferences::Instance().setDataPath(dirs.toStdString());
+		Preferences::Instance().setDataPath(dirs.toStdString());
 	}
 }
 
@@ -1324,7 +1337,7 @@ void SCIRunMainWindow::addToDataDirectory(const QString& dir)
     prefsWindow_->scirunDataPathTextEdit_->setToolTip(prefsWindow_->scirunDataPathTextEdit_->toPlainText());
 
 		RemembersFileDialogDirectory::setStartingDir(dir);
-		Core::Preferences::Instance().addToDataPath(dir.toStdString());
+		Preferences::Instance().addToDataPath(dir.toStdString());
 	}
 }
 
@@ -1342,7 +1355,7 @@ void SCIRunMainWindow::addToPathFromGUI()
 
 bool SCIRunMainWindow::newInterface() const
 {
-  return Core::Application::Instance().parameters()->entireCommandLine().find("--originalGUI") == std::string::npos;
+  return Application::Instance().parameters()->entireCommandLine().find("--originalGUI") == std::string::npos;
 }
 
 void SCIRunMainWindow::printStyleSheet() const

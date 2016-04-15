@@ -30,6 +30,8 @@
 #include <stdexcept>
 #include <QtGui>
 #include <boost/bind.hpp>
+#include <Core/Application/Application.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
@@ -39,12 +41,13 @@
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core;
 using namespace SCIRun::Dataflow::Networks;
 
 class EuclideanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
-  void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
+  virtual void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) override
   {
     QPainterPath path;
 
@@ -70,7 +73,7 @@ public:
 class CubicBezierDrawStrategy : public ConnectionDrawStrategy
 {
 public:
-  void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
+  virtual void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) override
   {
     QPainterPath path;
     QPointF start = from;
@@ -79,7 +82,7 @@ public:
     auto mid = (to - start) / 2 + start;
 
     double qDirXNum = -(to-start).y();
-    double qDirXDenom = ((double)(to-start).x());
+    double qDirXDenom = static_cast<double>((to-start).x());
     if (0 == qDirXDenom)
       qDirXDenom = -0.0001;
     QPointF qDir(qDirXNum / qDirXDenom , 1);
@@ -100,7 +103,7 @@ public:
 class ManhattanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
-  void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
+  virtual void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) override
   {
     QPainterPath path;
     path.moveTo(from);
@@ -181,28 +184,49 @@ namespace SCIRun
   namespace Gui
   {
     const QString deleteAction("Delete");
-    const QString insertModuleAction("Insert Module->*");
+    const QString insertModuleAction("Insert Module");
     const QString disableEnableAction("Disable");
     const QString editNotesAction("Edit Notes...");
+
+    QList<QAction*> fillInsertModuleMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, PortWidget* output, ConnectionLine* conn)
+    {
+      auto portTypeToMatch = output->get_typename();
+
+      return fillMenuWithFilteredModuleActions(menu, moduleMap,
+        [portTypeToMatch](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, true, m) && portTypeMatches(portTypeToMatch, false, m); },
+        [conn](QAction* action) { QObject::connect(action, SIGNAL(triggered()), conn, SLOT(insertNewModule())); },
+        menu);
+    }
 
     class ConnectionMenu : public QMenu
     {
     public:
-      ConnectionMenu(QWidget* parent = 0) : QMenu(parent)
+      explicit ConnectionMenu(ConnectionLine* conn, QWidget* parent = nullptr) : QMenu(parent)
       {
         deleteAction_ = addAction(deleteAction);
         addWidgetToExecutionDisableList(deleteAction_);
-        addAction(insertModuleAction)->setDisabled(true);
+        insertAction_ = addAction(insertModuleAction);
+        addWidgetToExecutionDisableList(insertAction_);
+
+
+        auto insertable = new QMenu;
+        fillInsertModuleMenu(insertable, Application::Instance().controller()->getAllAvailableModuleDescriptions(), conn->connectedPorts().first, conn);
+        insertAction_->setMenu(insertable);
+
         disableAction_ = addAction(disableEnableAction);
+        addWidgetToExecutionDisableList(disableAction_);
         notesAction_ = addAction(editNotesAction);
       }
       ~ConnectionMenu()
       {
         removeWidgetFromExecutionDisableList(deleteAction_);
+        removeWidgetFromExecutionDisableList(insertAction_);
+        removeWidgetFromExecutionDisableList(disableAction_);
       }
       QAction* notesAction_;
       QAction* deleteAction_;
       QAction* disableAction_;
+      QAction* insertAction_;
     };
   }
 }
@@ -214,7 +238,7 @@ namespace SCIRun
     class ConnectionLineNoteDisplayStrategy : public NoteDisplayStrategy
     {
     public:
-      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const
+      virtual QPointF relativeNotePosition(QGraphicsItem*, const QGraphicsTextItem*, NotePosition) const override
       {
         return QPointF(0,0);
       }
@@ -255,16 +279,22 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges | ItemIsFocusable);
 
   setZValue(defaultZValue());
-  setToolTip("Left - Highlight\nDouble-Left - Menu\ni - Datatype info");
+  setToolTip("<font color=\"#000000\" size=2>Left - Highlight\nDouble-Left - Menu\ni - Datatype info");
   setAcceptHoverEvents(true);
 
-  menu_ = new ConnectionMenu();
+  menu_ = new ConnectionMenu(this);
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
 
-  setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
+  NeedsScenePositionProvider::setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
 
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
+
+  connect(this, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
+    fromPort_, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
+  setProperty(addNewModuleActionTypePropertyName(), QString("insertModule"));
+
+  menu_->setStyleSheet(fromPort->styleSheet());
 
   trackNodes();
   GuiLogger::Instance().logInfoStd("Connection made: " + id_.id_);
@@ -302,7 +332,6 @@ void ConnectionLine::toggleDisabled()
 void ConnectionLine::setDisabled(bool disabled)
 {
   disabled_ = disabled;
-  qDebug() << "Disabled set to " << disabled_ << "on" << id_.id_.c_str();
   if (disabled_)
   {
     menu_->disableAction_->setText("Enable");
@@ -339,7 +368,6 @@ void ConnectionLine::trackNodes()
 {
   if (fromPort_ && toPort_)
   {
-    //qDebug() << "trackNodes";
     drawer_->draw(this, fromPort_->position(), toPort_->position());
     updateNotePosition();
     setZValue(defaultZValue());
@@ -419,12 +447,20 @@ QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& v
 	//Position drag movement relative to movement in network. Otherwise CL moves relative to modules as though they are the whole scene (faster, CL moves out of modules).
 	if (change == ItemPositionChange && scene())
 	{
-		QPointF newPos = value.toPointF();
+	  auto newPos = value.toPointF();
 		newPos.setX(0);
 		newPos.setY(0);
 		return newPos;
 	}
 	return QGraphicsItem::itemChange(change, value);
+}
+
+void ConnectionLine::insertNewModule()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  auto moduleToAddName = action->text();
+  Q_EMIT insertNewModule(fromPort_, moduleToAddName.toStdString(), toPort_);
+  deleteLater();
 }
 
 ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
@@ -571,7 +607,7 @@ ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* po
     }
     default:
       std::cerr << "Unknown connection type." << std::endl;
-      return 0;
+      return nullptr;
   }
 }
 
@@ -623,7 +659,7 @@ ConnectionDrawStrategyPtr ConnectionFactory::getCurrentDrawer() const
   }
 }
 
-ConnectionLine* ConnectionFactory::makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const
+ConnectionLine* ConnectionFactory::makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const ConnectionId& id) const
 {
   auto c = new ConnectionLine(fromPort, toPort, id, getCurrentDrawer());
   activate(c);

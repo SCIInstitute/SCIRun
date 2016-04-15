@@ -39,6 +39,7 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Dataflow/Network/DataflowInterfaces.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
@@ -153,11 +154,9 @@ Module::Module(const ModuleLookupInfo& info,
   const std::string& version)
   : info_(info),
   id_(info.module_name_, idGenerator_->makeId(info.module_name_)),
-  inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
   metadata_(state_),
-  threadStopped_(false),
   executionState_(new detail::ModuleExecutionStateImpl)
 {
   iports_.set_module(this);
@@ -244,7 +243,7 @@ namespace //TODO requirements for state metadata reporting
   }
 }
 
-bool Module::do_execute() NOEXCEPT
+bool Module::doExecute() NOEXCEPT
 {
   //Log::get() << INFO << "executing module: " << id_ << std::endl;
   //std::cout << "executing module: " << id_ << std::endl;
@@ -265,7 +264,8 @@ bool Module::do_execute() NOEXCEPT
 
   try
   {
-    execute();
+    if (!executionDisabled())
+      execute();
     returnCode = true;
   }
   catch (const std::bad_alloc&)
@@ -281,14 +281,14 @@ bool Module::do_execute() NOEXCEPT
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    if (Core::Logging::Log::get().verbose())
+    if (Log::get().verbose())
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << std::endl;
       error(ostr.str());
     }
 
-    if (Core::Logging::Log::get().verbose())
+    if (Log::get().verbose())
     {
       std::ostringstream ostrExtra;
       ostrExtra << boost::diagnostic_information(e) << std::endl;
@@ -324,8 +324,13 @@ bool Module::do_execute() NOEXCEPT
   //auto endState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
   auto endState = ModuleExecutionState::Completed;
   executionState_->transitionTo(endState);
-  resetStateChanged();
-  inputsChanged_ = false;
+
+  if (!executionDisabled())
+  {
+    resetStateChanged();
+    inputsChanged_ = false;
+  }
+  
   executeEnds_(executionTime, id_);
   return returnCode;
 }
@@ -931,7 +936,7 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 
 bool Module::isStoppable() const
 {
-  return dynamic_cast<const Core::Thread::Interruptible*>(this) != nullptr;
+  return dynamic_cast<const Interruptible*>(this) != nullptr;
 }
 
 void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback) const

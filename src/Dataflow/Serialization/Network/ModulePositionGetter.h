@@ -57,7 +57,10 @@ namespace Networks {
     virtual void updateConnectionNotes(const ConnectionNotes& notes) = 0;
 
     virtual ModuleTagsHandle dumpModuleTags(ModuleFilter filter) const = 0;
-    virtual void updateModuleTags(const SCIRun::Dataflow::Networks::ModuleTags& notes) = 0;
+    virtual void updateModuleTags(const ModuleTags& notes) = 0;
+
+    virtual DisabledComponentsHandle dumpDisabledComponents(ModuleFilter modFilter, ConnectionFilter connFilter) const = 0;
+    virtual void updateDisabledComponents(const DisabledComponents& disabled) = 0;
   };
 
 }}}

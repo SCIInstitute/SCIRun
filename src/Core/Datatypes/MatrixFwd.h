@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,9 +28,9 @@
 /// @todo Documentation Core/Datatypes/MatrixFwd.h
 
 #ifndef CORE_DATATYPES_MATRIX_FWD_H
-#define CORE_DATATYPES_MATRIX_FWD_H 
+#define CORE_DATATYPES_MATRIX_FWD_H
 
-#include <complex>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
 #include <boost/shared_ptr.hpp>
 
 namespace SCIRun {
@@ -52,7 +52,7 @@ namespace Datatypes {
   class DenseMatrixGeneric;
 
   typedef DenseMatrixGeneric<double> DenseMatrix;
-  using ComplexDenseMatrix = DenseMatrixGeneric<std::complex<double>>;
+  using ComplexDenseMatrix = DenseMatrixGeneric<SCIRun::complex>;
 
   typedef SharedPointer<DenseMatrix> DenseMatrixHandle;
   typedef SharedPointer<const DenseMatrix> DenseMatrixConstHandle;

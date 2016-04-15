@@ -108,7 +108,7 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
   INITIALIZE_PORT(ElementIndex);
 }
 
-void GenerateSinglePointProbeFromField::processWidgetFeedback(ModuleFeedback var)
+void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedback& var)
 {
   auto xyTr = any_cast_or_default_<Variable>(var);
   DenseMatrixHandle transformHandle(new DenseMatrix(4, 4));
@@ -188,7 +188,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
   state->setValue(WidgetMoved, false);
 
-  getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](ModuleFeedback var) { processWidgetFeedback(var); });
+  getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
 #if 0
@@ -531,7 +531,7 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
 
 GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
 {
-  GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField"));
+  GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField", true));
 
   VMesh* mesh = field->vmesh();
 

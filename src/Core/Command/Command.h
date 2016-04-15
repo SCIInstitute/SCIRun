@@ -93,6 +93,18 @@ namespace SCIRun
         QuitCommand
       };
 
+      enum class NetworkEventCommands
+      {
+        PostModuleAdd
+        //TODO: add more based on user request
+      };
+
+      class SCISHARE NullCommand : public ParameterizedCommand
+      {
+      public:
+        virtual bool execute() override { return true; }
+      };
+
       SCISHARE std::string mostRecentFileCode();
     }
   }

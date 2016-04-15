@@ -247,7 +247,7 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   bool showScalars = state->getValue(ShowFieldGlyphs::ShowScalars).toBool();
   bool showTensors = state->getValue(ShowFieldGlyphs::ShowTensors).toBool();
 
-  GeometryHandle geom(new GeometryObjectSpire(idgen, "EntireGlyphField"));
+  GeometryHandle geom(new GeometryObjectSpire(idgen, "EntireGlyphField", true));
 
   FieldInformation finfo(field);
 
