@@ -47,7 +47,7 @@ namespace Basic {
 
     OUTPUT_PORT(0, Scalar, ComplexDenseMatrix);
   private:
-    Complex data_;
+    complex data_;
   };
 
 }}}

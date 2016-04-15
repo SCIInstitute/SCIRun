@@ -45,11 +45,7 @@ namespace SCIRun {
         virtual void execute();
         virtual void setStateDefaults() {}
 
-        Complex latestReceivedValue() const { return latestValue_; }
-
         INPUT_PORT(0, Input, ComplexDenseMatrix);
-      private:
-        Complex latestValue_;
       };
  }}}
 

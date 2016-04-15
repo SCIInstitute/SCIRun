@@ -110,11 +110,11 @@ template<class T, class S> std::string find_type_name( std::pair<T,S> *);
 class IntVector;
 class NrrdData;
 
-using Complex = std::complex<double>;
+using complex = std::complex<double>;
 
 template<> SCISHARE std::string find_type_name(float*);
 template<> SCISHARE std::string find_type_name(double*);
-template<> SCISHARE std::string find_type_name(Complex*);
+template<> SCISHARE std::string find_type_name(complex*);
 template<> SCISHARE std::string find_type_name(long double*);
 template<> SCISHARE std::string find_type_name(short*);
 template<> SCISHARE std::string find_type_name(unsigned short*);

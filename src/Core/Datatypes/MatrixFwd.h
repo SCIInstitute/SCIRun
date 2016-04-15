@@ -52,7 +52,7 @@ namespace Datatypes {
   class DenseMatrixGeneric;
 
   typedef DenseMatrixGeneric<double> DenseMatrix;
-  using ComplexDenseMatrix = DenseMatrixGeneric<SCIRun::Complex>;
+  using ComplexDenseMatrix = DenseMatrixGeneric<SCIRun::complex>;
 
   typedef SharedPointer<DenseMatrix> DenseMatrixHandle;
   typedef SharedPointer<const DenseMatrix> DenseMatrixConstHandle;

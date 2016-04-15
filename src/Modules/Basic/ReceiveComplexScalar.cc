@@ -38,8 +38,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
 ReceiveComplexScalarModule::ReceiveComplexScalarModule()
-  : Module(ModuleLookupInfo("ReceiveComplexMatrix", "Math", "SCIRun"), false),
-  latestValue_(-1)
+  : Module(ModuleLookupInfo("ReceiveComplexMatrix", "Math", "SCIRun"), false)
 {
   INITIALIZE_PORT(Input);
 }
