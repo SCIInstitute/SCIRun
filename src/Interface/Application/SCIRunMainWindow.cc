@@ -348,6 +348,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   prefsWindow_->actionTextIconCheckBox_->setCheckState(Qt::PartiallyChecked);
   adjustExecuteButtonAppearance();
 
+  connect(networkEditor_, SIGNAL(newSubnetworkCopied(const QString&)), this, SLOT(updateClipboardHistory(const QString&)));
+
   connect(openLogFolderButton_, SIGNAL(clicked()), this, SLOT(openLogFolder()));
 
   setupInputWidgets();
@@ -1100,6 +1102,7 @@ namespace {
 
   const QString bullet = "* ";
   const QString favoritesText = bullet + "Favorites";
+  const QString clipboardHistoryText = bullet + "Clipboard History";
 
   void addFavoriteMenu(QTreeWidget* tree)
   {
@@ -1110,17 +1113,27 @@ namespace {
     tree->addTopLevelItem(faves);
   }
 
-  QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree)
+  QTreeWidgetItem* getTreeMenu(QTreeWidget* tree, const QString& text)
   {
     for (int i = 0; i < tree->topLevelItemCount(); ++i)
     {
       auto top = tree->topLevelItem(i);
-      if (top->text(0) == favoritesText)
+      if (top->text(0) == text)
       {
         return top;
       }
     }
     return nullptr;
+  }
+
+  QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree)
+  {
+    return getTreeMenu(tree, favoritesText);
+  }
+
+  QTreeWidgetItem* getClipboardHistoryMenu(QTreeWidget* tree)
+  {
+    return getTreeMenu(tree, clipboardHistoryText);
   }
 
   void addSnippet(const QString& code, QTreeWidgetItem* snips)
@@ -1168,6 +1181,22 @@ namespace {
 	  tree->addTopLevelItem(snips);
 	}
 
+  void addSavedSubnetworkMenu(QTreeWidget* tree)
+  {
+    auto savedSubnetworks = new QTreeWidgetItem();
+    savedSubnetworks->setText(0, bullet + "Saved Subnetworks");
+    savedSubnetworks->setForeground(0, favesColor());
+    tree->addTopLevelItem(savedSubnetworks);
+  }
+
+  void addClipboardHistoryMenu(QTreeWidget* tree)
+  {
+    auto clips = new QTreeWidgetItem();
+    clips->setText(0, clipboardHistoryText);
+    clips->setForeground(0, favesColor());
+    tree->addTopLevelItem(clips);
+  }
+
   void addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
   {
     LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
@@ -1178,7 +1207,7 @@ namespace {
 
   void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
   {
-    QTreeWidgetItem* faves = getFavoriteMenu(tree);
+    auto faves = getFavoriteMenu(tree);
 		for (const auto& package : moduleMap)
     {
       const auto& packageName = package.first;
@@ -1226,7 +1255,7 @@ namespace {
 
   void sortFavorites(QTreeWidget* tree)
   {
-    QTreeWidgetItem* faves = getFavoriteMenu(tree);
+    auto faves = getFavoriteMenu(tree);
     faves->sortChildren(0, Qt::AscendingOrder);
   }
 
@@ -1240,6 +1269,8 @@ void SCIRunMainWindow::fillModuleSelector()
 
   addFavoriteMenu(moduleSelectorTreeWidget_);
 	addSnippetMenu(moduleSelectorTreeWidget_);
+	addSavedSubnetworkMenu(moduleSelectorTreeWidget_);
+	addClipboardHistoryMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
   sortFavorites(moduleSelectorTreeWidget_);
 
@@ -1264,7 +1295,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
   {
     moduleSelectorTreeWidget_->setCurrentItem(item);
 
-    QTreeWidgetItem* faves = getFavoriteMenu(moduleSelectorTreeWidget_);
+    auto faves = getFavoriteMenu(moduleSelectorTreeWidget_);
 
     if (item->checkState(0) == Qt::Checked)
     {
@@ -1686,6 +1717,16 @@ void SCIRunMainWindow::copyVersionToClipboard()
 {
   QApplication::clipboard()->setText(QString::fromStdString(VersionInfo::GIT_VERSION_TAG));
   statusBar()->showMessage("Version string copied to clipboard.", 2000);
+}
+
+void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
+{
+  auto clips = getClipboardHistoryMenu(moduleSelectorTreeWidget_);
+  auto clip = new QTreeWidgetItem();
+  clip->setText(0, "clipboard " + QString::number(clips->childCount()));
+  clip->setToolTip(0, xml);
+  clips->addChild(clip);
+  clips->sortChildren(0, Qt::AscendingOrder);
 }
 
 void SCIRunMainWindow::showSnippetHelp()

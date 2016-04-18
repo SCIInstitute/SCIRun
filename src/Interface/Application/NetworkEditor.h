@@ -64,6 +64,8 @@ namespace Gui {
     virtual ~CurrentModuleSelection() {}
     virtual QString text() const = 0;
     virtual bool isModule() const = 0;
+    virtual QString clipboardXML() const = 0;
+    virtual bool isClipboardXML() const = 0;
   };
 
   //almost just want to pass a boost::function for this one.
@@ -263,6 +265,7 @@ namespace Gui {
     void reenableWidgetDisabling();
     void resetModulesDueToCycle();
     void newModule(const QString& modId, bool hasUI);
+    void newSubnetworkCopied(const QString& xml);
   private Q_SLOTS:
     void cut();
     void copy();
@@ -281,6 +284,7 @@ namespace Gui {
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
+    void pasteImpl(const QString& xml);
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;

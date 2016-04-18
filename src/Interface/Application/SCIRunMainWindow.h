@@ -208,6 +208,7 @@ private Q_SLOTS:
   void loadPythonAPIDoc();
   void showSnippetHelp();
   void copyVersionToClipboard();
+  void updateClipboardHistory(const QString& xml);
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
