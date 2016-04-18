@@ -256,7 +256,12 @@ std::string Application::commandHelpString() const
 
 std::string Application::version() const
 {
-  return VersionInfo::GIT_VERSION_TAG.empty() ? "5.0.0 developer version" : VersionInfo::GIT_VERSION_TAG;
+  auto version = VersionInfo::GIT_VERSION_TAG;
+  if (version.empty())
+    return "5.0.0 developer version";
+  if (version.find("NOTFOUND")) // source zip build most likely
+    return "TODO";
+  return version;
 }
 
 std::string Application::moduleList()
