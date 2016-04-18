@@ -161,7 +161,7 @@ namespace
 {
 #ifdef BUILD_WITH_PYTHON
 
-  //TODO: obviously will need a better way to communicate the user-entered script string. 
+  //TODO: obviously will need a better way to communicate the user-entered script string.
   class HardCodedPythonTestCommand : public ParameterizedCommand
   {
   public:
@@ -259,7 +259,7 @@ std::string Application::version() const
   auto version = VersionInfo::GIT_VERSION_TAG;
   if (version.empty())
     return "5.0.0 developer version";
-  if (version.find("NOTFOUND")) // source zip build most likely
+  if (version.find("NOTFOUND") != std::string::npos) // source zip build most likely
     return "TODO";
   return version;
 }
