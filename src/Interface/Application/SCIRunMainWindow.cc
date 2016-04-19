@@ -1208,6 +1208,8 @@ namespace {
     LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
     auto copy = new QTreeWidgetItem(*module);
     copy->setData(0, Qt::CheckStateRole, QVariant());
+    if (copy->textColor(0) == CLIPBOARD_COLOR)
+      copy->setFlags(copy->flags() | Qt::ItemIsEditable);
     faves->addChild(copy);
   }
 
@@ -1301,7 +1303,8 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
   {
     moduleSelectorTreeWidget_->setCurrentItem(item);
 
-    auto faves = item->text(0).startsWith("clipboard") ? getSavedSubnetworksMenu(moduleSelectorTreeWidget_) : getFavoriteMenu(moduleSelectorTreeWidget_);
+    qDebug() << item->textColor(0) << item->text(0);
+    auto faves = item->textColor(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu(moduleSelectorTreeWidget_) : getFavoriteMenu(moduleSelectorTreeWidget_);
 
     if (item->checkState(0) == Qt::Checked)
     {
@@ -1314,7 +1317,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
     }
     else
     {
-      if (faves)
+      if (faves && item->textColor(0) != CLIPBOARD_COLOR)
       {
         favoriteModuleNames_.removeAll(item->text(0));
         for (int i = 0; i < faves->childCount(); ++i)
@@ -1730,9 +1733,9 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
   auto clips = getClipboardHistoryMenu(moduleSelectorTreeWidget_);
   
   auto clip = new QTreeWidgetItem();
-  static int clipCount = 0;
   clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
   clip->setToolTip(0, xml);
+  clip->setTextColor(0, CLIPBOARD_COLOR);
 
   const int clipMax = 5;
   if (clips->childCount() == clipMax)

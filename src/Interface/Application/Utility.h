@@ -80,6 +80,8 @@ namespace Gui
 
   const char* addNewModuleActionTypePropertyName();
   const char* insertNewModuleActionTypePropertyName();
+
+  const Qt::GlobalColor CLIPBOARD_COLOR = Qt::cyan;
 }
 
 }
