@@ -238,6 +238,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
 
   connect(helpActionPythonAPI_, SIGNAL(triggered()), this, SLOT(loadPythonAPIDoc()));
   connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
+  connect(helpActionClipboard_, SIGNAL(triggered()), this, SLOT(showClipboardHelp()));
 
   connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
 
@@ -1778,12 +1779,22 @@ void SCIRunMainWindow::updateSavedSubnetworks()
 void SCIRunMainWindow::showSnippetHelp()
 {
   QMessageBox::information(this, "Snippets",
-    "Snippets are strings that encode a subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
-    "Currently, only linear subnetworks are supported. "
+    "Snippets are strings that encode a linear subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
     "\n\nThey are available in the module selector and work just like the single module entries there: double-click or drag onto the "
     "network editor to insert the entire snippet. A '*' at the end of the module name will open the UI for that module.\n\nCustom snippets can be created by editing the file snippets.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one snippet per line in the prescribed format, then restart SCIRun for them to appear."
-    "\n\nFeatures coming soon include: hotkeys, support for non-linear snippet graphs, and a snippet designer GUI."
+    "\n\nFeatures coming soon include: hotkeys."
     "\n\nFor feedback, please comment on this issue: https://github.com/SCIInstitute/SCIRun/issues/1263"
+    );
+}
+
+void SCIRunMainWindow::showClipboardHelp()
+{
+  QMessageBox::information(this, "Clipboard",
+    "The network editor clipboard works on arbitrary network selections (modules and connections). A history of five copied items is kept under \"Clipboard History\" in the module selector. "
+    "\n\nTo cut/copy/paste, see the Edit menu and the corresponding hotkeys."
+    "\n\nClipboard history items can be starred like module favorites. When starred, they are saved as fragments under \"Saved Subnetworks,\" which are preserved in application settings. "
+    "\n\nThe user may edit the text of the saved subnetwork items to give them informative names, which are also saved. Hover over them to see a tooltip representation of the saved fragment."
+    "\n\nCurrently there is no way to delete a saved subnetwork in the GUI."
     );
 }
 

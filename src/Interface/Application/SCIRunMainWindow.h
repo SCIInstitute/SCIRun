@@ -208,6 +208,7 @@ private Q_SLOTS:
   void networkTimedOut();
   void loadPythonAPIDoc();
   void showSnippetHelp();
+  void showClipboardHelp();
   void copyVersionToClipboard();
   void updateClipboardHistory(const QString& xml);
   void updateSavedSubnetworks();
