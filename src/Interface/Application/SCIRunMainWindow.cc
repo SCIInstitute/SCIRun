@@ -272,6 +272,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   makePipesEuclidean();
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
+  connect(moduleSelectorTreeWidget_, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(updateSavedSubnetworks()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
 
 #if 0 //TODO: decide on modifiable background color
@@ -1195,6 +1196,21 @@ namespace {
     tree->addTopLevelItem(savedSubnetworks);
   }
 
+  void fillSavedSubnetworkMenu(QTreeWidget* tree, const QMap<QString, QVariant>& savedSubnets)
+  {
+    auto savedSubnetworks = getSavedSubnetworksMenu(tree);
+    
+    for (auto i = savedSubnets.begin(); i != savedSubnets.end(); ++i)
+    {
+      auto subnet = new QTreeWidgetItem();
+      subnet->setText(0, i.key());
+      subnet->setToolTip(0, i.value().toString());
+      subnet->setFlags(subnet->flags() | Qt::ItemIsEditable);
+      subnet->setTextColor(0, CLIPBOARD_COLOR);
+      savedSubnetworks->addChild(subnet);
+    }
+  }
+
   void addClipboardHistoryMenu(QTreeWidget* tree)
   {
     auto clips = new QTreeWidgetItem();
@@ -1278,6 +1294,7 @@ void SCIRunMainWindow::fillModuleSelector()
   addFavoriteMenu(moduleSelectorTreeWidget_);
 	addSnippetMenu(moduleSelectorTreeWidget_);
 	addSavedSubnetworkMenu(moduleSelectorTreeWidget_);
+  fillSavedSubnetworkMenu(moduleSelectorTreeWidget_, savedSubnetworks_);
 	addClipboardHistoryMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
   sortFavorites(moduleSelectorTreeWidget_);
@@ -1303,7 +1320,6 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
   {
     moduleSelectorTreeWidget_->setCurrentItem(item);
 
-    qDebug() << item->textColor(0) << item->text(0);
     auto faves = item->textColor(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu(moduleSelectorTreeWidget_) : getFavoriteMenu(moduleSelectorTreeWidget_);
 
     if (item->checkState(0) == Qt::Checked)
@@ -1312,7 +1328,10 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
       {
         addFavoriteItem(faves, item);
         faves->sortChildren(0, Qt::AscendingOrder);
-        favoriteModuleNames_ << item->text(0);
+        if (item->textColor(0) != CLIPBOARD_COLOR)
+          favoriteModuleNames_ << item->text(0);
+        else
+          savedSubnetworks_[item->text(0)] = item->toolTip(0);
       }
     }
     else
@@ -1743,6 +1762,17 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
   
   clip->setCheckState(0, Qt::Unchecked);
   clips->addChild(clip);
+}
+
+void SCIRunMainWindow::updateSavedSubnetworks()
+{
+  savedSubnetworks_.clear();
+  auto menu = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+  for (auto i = 0; i < menu->childCount(); ++i)
+  {
+    auto item = menu->child(i);
+    savedSubnetworks_[item->text(0)] = item->toolTip(0);
+  }
 }
 
 void SCIRunMainWindow::showSnippetHelp()

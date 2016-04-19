@@ -266,6 +266,14 @@ void SCIRunMainWindow::readSettings()
     triggeredEventsWindow_->setScripts(toStrMap(scriptsMap));
   }
 
+  const QString savedSubnetworks = "savedSubnetworks";
+  if (settings.contains(savedSubnetworks))
+  {
+    auto subnetMap = settings.value(savedSubnetworks).toMap();
+    GuiLogger::Instance().logInfo("Setting read: savedSubnetworks = " + QStringList(subnetMap.keys()).join(";"));
+    savedSubnetworks_ = subnetMap;
+  }
+
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -297,6 +305,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("tagNames", tagManagerWindow_->getTagNames());
   settings.setValue("tagColors", tagManagerWindow_->getTagColors());
   settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->getScripts()));
+  settings.setValue("savedSubnetworks", savedSubnetworks_);
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

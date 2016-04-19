@@ -116,6 +116,7 @@ private:
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
+  QMap<QString, QVariant> savedSubnetworks_;
   QToolButton* executeButton_;
   QByteArray windowState_;
   QPushButton* versionButton_;
@@ -209,6 +210,7 @@ private Q_SLOTS:
   void showSnippetHelp();
   void copyVersionToClipboard();
   void updateClipboardHistory(const QString& xml);
+  void updateSavedSubnetworks();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
