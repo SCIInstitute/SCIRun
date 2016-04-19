@@ -154,6 +154,7 @@
      <addaction name="helpActionToolkitDownloads_"/>
      <addaction name="helpActionNetworkFileImport_"/>
      <addaction name="helpActionNetworkEditorGUI_"/>
+     <addaction name="actionClipboard"/>
     </widget>
     <addaction name="actionShow_Tooltips_"/>
     <addaction name="actionAbout_"/>
@@ -1023,6 +1024,14 @@
    </property>
    <property name="text">
     <string>Triggered Events</string>
+   </property>
+  </action>
+  <action name="actionClipboard">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Clipboard</string>
    </property>
   </action>
  </widget>
