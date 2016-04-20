@@ -49,6 +49,7 @@ GetFieldDataModule::GetFieldDataModule()
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputMatrix);
   INITIALIZE_PORT(OutputNrrd);
+  INITIALIZE_PORT(OutputComplexMatrix);
 }
 
 void GetFieldDataModule::execute()
@@ -57,6 +58,7 @@ void GetFieldDataModule::execute()
 
   bool need_matrix_data = oport_connected(OutputMatrix);
   bool need_nrrd_data = oport_connected(OutputNrrd);
+  bool need_complex_matrix_data = oport_connected(OutputComplexMatrix);
 
   //TODO: need to integrate "output port connection status changed" into needToExecute()
   if (needToExecute() || need_nrrd_data)
@@ -65,10 +67,12 @@ void GetFieldDataModule::execute()
 
     algo().set(Parameters::CalcMatrix, need_matrix_data);
     algo().set(Parameters::CalcNrrd, need_nrrd_data);
+    algo().set(Parameters::CalcComplexMatrix, need_complex_matrix_data);
 
     auto output = algo().run(withInputData((InputField, input)));
 
     sendOutputFromAlgorithm(OutputMatrix, output);
     sendOutputFromAlgorithm(OutputNrrd, output);
+    sendOutputFromAlgorithm(OutputComplexMatrix, output);
   }
 }

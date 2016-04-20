@@ -45,20 +45,19 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 
 
-
 TEST(SetComplexFieldDataTest, LatVolOnNodeScalarMat)
 {
   SetFieldDataAlgo algo;
 
   auto latvol = CreateEmptyLatVol(2,2,3);
 
-  auto matrix = boost::make_shared<ComplexDenseMatrix>(2 * 2 * 3, 1, std::complex<double>(1, 1));
+  auto matrix = boost::make_shared<ComplexDenseMatrix>(2 * 2 * 3, 1, complex(1, 1));
 
   auto result = algo.runImplComplex(latvol, matrix);
   FieldInformation fi(result);
 
   std::cout << "SCIRun's first complex field type: " << fi.get_field_type_id() << std::endl;
-  EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point>>,HexTrilinearLgn<std::complex<double>>,FData3d<std::complex<double>,LatVolMesh<HexTrilinearLgn<Point>>>>", fi.get_field_type_id());
+  EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point>>,HexTrilinearLgn<complex>,FData3d<complex,LatVolMesh<HexTrilinearLgn<Point>>>>", fi.get_field_type_id());
 
   GetFieldDataAlgo algo1;
 
@@ -73,7 +72,7 @@ TEST(SetComplexFieldDataTest, LatVolOnElemScalarMat)
 
   auto latvol = CreateEmptyLatVol(2, 2, 3);
 
-  auto matrix = boost::make_shared<ComplexDenseMatrix>(2, 1, std::complex<double>(1, 1));
+  auto matrix = boost::make_shared<ComplexDenseMatrix>(2, 1, complex(1, 1));
 
   auto result = algo.runImplComplex(latvol, matrix);
 
@@ -90,7 +89,7 @@ TEST(SetComplexFieldDataTest, DISABLED_TetMeshOnNodeScalarMat)
 
   auto tetmesh = LoadTet();
 
-  auto matrix = boost::make_shared<ComplexDenseMatrix>(2, 1, std::complex<double>(1, 1));
+  auto matrix = boost::make_shared<ComplexDenseMatrix>(2, 1, complex(1, 1));
 
   auto result = algo.runImplComplex(tetmesh, matrix);
 
@@ -107,7 +106,7 @@ TEST(SetComplexFieldDataTest, DISABLED_TetMeshOnElemScalarMat)
 
   auto tetmesh = LoadTet();
 
-  auto matrix = boost::make_shared<ComplexDenseMatrix>(2, 1, std::complex<double>(1, 1));
+  auto matrix = boost::make_shared<ComplexDenseMatrix>(2, 1, complex(1, 1));
 
   auto result = algo.runImplComplex(tetmesh, matrix);
 

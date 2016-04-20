@@ -40,12 +40,13 @@ namespace SCIRun {
 
         ALGORITHM_PARAMETER_DECL(CalcMatrix);
         ALGORITHM_PARAMETER_DECL(CalcNrrd);
+        ALGORITHM_PARAMETER_DECL(CalcComplexMatrix);
 
         class SCISHARE GetFieldDataAlgo : public AlgorithmBase
         {
         public:
           GetFieldDataAlgo();
-                
+
           Datatypes::DenseMatrixHandle runMatrix(FieldHandle input) const;
           Datatypes::ComplexDenseMatrixHandle runComplexMatrix(FieldHandle input) const;
           NrrdDataHandle runNrrd(FieldHandle input) const;

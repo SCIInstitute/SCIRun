@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -94,16 +94,16 @@ TypeDescription::register_type()
     (*types)[get_name()] = this;
   }
   typelist->push_back(this);
-  
+
   typelist_lock.unlock();
 }
 
 
-TypeDescription::TypeDescription(const std::string &name, 
+TypeDescription::TypeDescription(const std::string &name,
 				 const std::string &path,
-				 const std::string &namesp, 
-				 category_e c) : 
-  subtype_(nullptr), 
+				 const std::string &namesp,
+				 category_e c) :
+  subtype_(nullptr),
   name_(name),
   h_file_path_(strip_absolute_path(path)),
   namespace_(namesp),
@@ -112,11 +112,11 @@ TypeDescription::TypeDescription(const std::string &name,
   register_type();
 }
 
-TypeDescription::TypeDescription(const std::string &name, 
-				 td_vec* sub, 
+TypeDescription::TypeDescription(const std::string &name,
+				 td_vec* sub,
 				 const std::string &path,
 				 const std::string &namesp,
-				 category_e c) : 
+				 category_e c) :
   subtype_(sub),
   name_(name),
   h_file_path_(strip_absolute_path(path)),
@@ -131,8 +131,8 @@ TypeDescription::~TypeDescription()
   delete subtype_;
 }
 
-std::string 
-TypeDescription::get_name( const std::string & type_sep_start /* = "<"  */, 
+std::string
+TypeDescription::get_name( const std::string & type_sep_start /* = "<"  */,
 			   const std::string & type_sep_end   /* = "> " */ ) const
 {
   const std::string comma(",");
@@ -159,11 +159,11 @@ TypeDescription::get_name( const std::string & type_sep_start /* = "<"  */,
 }
 
 // substitute one of the subtype names with the name provided.
-std::string 
+std::string
 TypeDescription::get_similar_name(const std::string &substitute,
 				  const int pos,
-				  const std::string &type_sep_start, 
-				  const std::string &type_sep_end) const 
+				  const std::string &type_sep_start,
+				  const std::string &type_sep_end) const
 {
   const std::string comma(",");
   bool do_end = true;
@@ -195,7 +195,7 @@ TypeDescription::get_similar_name(const std::string &substitute,
 }
 
 
-std::string 
+std::string
 TypeDescription::get_filename() const
 {
   std::string s = get_name();
@@ -210,7 +210,7 @@ TypeDescription::get_filename() const
   return result;
 }
 
-const TypeDescription* 
+const TypeDescription*
 TypeDescription::lookup_type(const std::string& t)
 {
   if(!types) {
@@ -235,7 +235,7 @@ std::string TypeDescription::cc_to_h(const std::string &dot_cc)
   if (len > 3 && dot_cc.substr(len-3, len) == ".cc") {
     dot_h = dot_cc.substr(0, len-3) + ".h";
   } else {
-    std::cerr << "Warning: TypeDescription::cc_to_h input does not end in .cc" 
+    std::cerr << "Warning: TypeDescription::cc_to_h input does not end in .cc"
 	 << std::endl << "the string: '" << dot_cc << "'" << std::endl;
     dot_h = dot_cc;
   }
@@ -245,7 +245,7 @@ std::string TypeDescription::cc_to_h(const std::string &dot_cc)
 
 std::string TypeDescription::strip_absolute_path(const std::string &path)
 {
-  // prevent absolute paths from being stuffed in include paths 
+  // prevent absolute paths from being stuffed in include paths
   // (that prevents installing a binary SCIRun with dynamic compilation)
   // do this by eliminating everything in front of the Core, Dataflow, or Packages
   std::string newpath = path;
@@ -282,7 +282,7 @@ const TypeDescription* get_type_description(std::complex<double>*)
 {
   static TypeDescription* td = nullptr;
   if (!td){
-    td = new TypeDescription("std::complex<double>", "builtin", "builtin");
+    td = new TypeDescription("complex", "builtin", "builtin");
   }
   return td;
 }
