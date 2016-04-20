@@ -38,6 +38,7 @@ SET(Interface_Modules_Math_FORMS
   EvaluateLinearAlgebraUnary.ui
   GetMatrixSlice.ui
   ReportMatrixInfo.ui
+  ReportComplexMatrixInfo.ui
   SolveLinearSystem.ui
   ConvertMatrixType.ui
   BuildNoiseColumnMatrix.ui
@@ -58,6 +59,7 @@ SET(Interface_Modules_Math_HEADERS
   EvaluateLinearAlgebraUnaryDialog.h
   GetMatrixSliceDialog.h
   ReportMatrixInfoDialog.h
+  ReportComplexMatrixInfoDialog.h
   share.h
   SolveLinearSystemDialog.h
   ConvertMatrixTypeDialog.h
@@ -85,6 +87,7 @@ SET(Interface_Modules_Math_SOURCES
   EvaluateLinearAlgebraUnaryDialog.cc
   GetMatrixSliceDialog.cc
   ReportMatrixInfoDialog.cc
+  ReportComplexMatrixInfoDialog.cc
   SolveLinearSystemDialog.cc
   ConvertMatrixTypeDialog.cc
   BuildNoiseColumnMatrixDialog.cc

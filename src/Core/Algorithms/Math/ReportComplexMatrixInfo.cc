@@ -28,29 +28,35 @@
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Algorithms/Math/ReportComplexMatrixInfo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Datatypes/MatrixMathVisitors.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/DenseColumnMatrix.h>
-#include <iostream>
+#include <Core/Datatypes/MatrixMathVisitors.h>
 
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
-ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::runImpl(const Inputs& input) const
+namespace std
+{
+  bool operator<(const SCIRun::complex& lhs, const SCIRun::complex& rhs)
+  {
+    return norm(lhs) < norm(rhs);
+  }
+}
+
+ReportComplexMatrixInfoAlgo::Outputs ReportComplexMatrixInfoAlgo::runImpl(const Inputs& input) const
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(input, "Null input matrix");
 
   const std::string type = matrixIs::whatType(input);
 
-  NumberOfElements<double> num;
+  NumberOfElements<complex> num;
   input->accept(num);
-  MinimumCoefficient<double> min;
+  MinimumCoefficient<complex> min;
   input->accept(min);
-  MaximumCoefficient<double> max;
+  MaximumCoefficient<complex> max;
   input->accept(max);
 
   return Outputs(type, 
@@ -62,9 +68,9 @@ ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::runImpl(const Inpu
     );
 }
 
-AlgorithmOutput ReportMatrixInfoAlgorithm::run(const AlgorithmInput& input) const
+AlgorithmOutput ReportComplexMatrixInfoAlgo::run(const AlgorithmInput& input) const
 {
-  auto matrix = input.get<Matrix>(Variables::InputMatrix);
+  auto matrix = input.get<ComplexDenseMatrix>(Variables::InputMatrix);
 
   auto outputs = runImpl(matrix);
 
@@ -73,14 +79,14 @@ AlgorithmOutput ReportMatrixInfoAlgorithm::run(const AlgorithmInput& input) cons
   return output;
 }
 
-std::string ReportMatrixInfoAlgorithm::summarize(const Outputs& info)
+std::string ReportComplexMatrixInfoAlgo::summarize(const Outputs& info)
 {
   std::ostringstream ostr;
-  ostr << "Type:\t" << info.get<0>() << "\n"
-    << "# Rows:\t" << info.get<1>() << "\n"
-    << "# Columns:\t" << info.get<2>() << "\n"
-    << "# Elements:\t" << info.get<3>() << "\n"
-    << "Minimum:\t" << info.get<4>() << "\n"
-    << "Maximum:\t" << info.get<5>() << "\n";
+  ostr << "Type:\t\t" << info.get<0>() << "\n"
+    << "# Rows:\t\t" << info.get<1>() << "\n"
+    << "# Columns:\t\t" << info.get<2>() << "\n"
+    << "# Elements:\t\t" << info.get<3>() << "\n"
+    << "Minimum (by norm):\t" << info.get<4>() << "\n"
+    << "Maximum (by norm):\t" << info.get<5>() << "\n";
   return ostr.str();
 }

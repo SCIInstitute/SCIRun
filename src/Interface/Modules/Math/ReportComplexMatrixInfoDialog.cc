@@ -25,33 +25,27 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/ReportMatrixInfo.h
 
-#ifndef MODULES_MATH_REPORTMATRIXINFO_H
-#define MODULES_MATH_REPORTMATRIXINFO_H
+#include <Interface/Modules/Math/ReportComplexMatrixInfoDialog.h>
+#include <Core/Algorithms/Math/ReportComplexMatrixInfo.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Math;
 
-namespace SCIRun {
-namespace Modules {
-namespace Math {
-  
-  class SCISHARE ReportMatrixInfoModule : public Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has3OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag>
-  {
-  public:
-    ReportMatrixInfoModule();
-    virtual void execute() override;
-    virtual void setStateDefaults() override {}
-    INPUT_PORT(0, InputMatrix, Matrix);
-    OUTPUT_PORT(0, NumRows, Int32);
-    OUTPUT_PORT(1, NumCols, Int32);
-    OUTPUT_PORT(2, NumElements, Int32);
+ReportComplexMatrixInfoDialog::ReportComplexMatrixInfoDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+}
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-  };
-}}}
-
-#endif
+void ReportComplexMatrixInfoDialog::pullAndDisplayInfo()
+{
+  auto info = transient_value_cast<ReportComplexMatrixInfoAlgo::Outputs>(state_->getTransientValue("ReportedInfo"));
+  auto str = ReportComplexMatrixInfoAlgo::summarize(info);
+  matrixInfoTextEdit_->setPlainText(QString::fromStdString(str));
+}

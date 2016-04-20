@@ -25,33 +25,40 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/ReportMatrixInfo.h
+/// @todo Documentation Modules/Math/ReportMatrixInfo.cc
 
-#ifndef MODULES_MATH_REPORTMATRIXINFO_H
-#define MODULES_MATH_REPORTMATRIXINFO_H
+#include <Modules/Math/ReportComplexMatrixInfo.h>
+#include <Core/Algorithms/Math/ReportComplexMatrixInfo.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Scalar.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-namespace SCIRun {
-namespace Modules {
-namespace Math {
-  
-  class SCISHARE ReportMatrixInfoModule : public Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has3OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag>
+const ModuleLookupInfo ReportComplexMatrixInfo::staticInfo_("ReportComplexMatrixInfo", "Math", "SCIRun");
+
+ReportComplexMatrixInfo::ReportComplexMatrixInfo() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(NumRows);
+  INITIALIZE_PORT(NumCols);
+  INITIALIZE_PORT(NumElements);
+}
+
+void ReportComplexMatrixInfo::execute()
+{
+  auto matrix = getRequiredInput(InputMatrix);
+
+  if (needToExecute())
   {
-  public:
-    ReportMatrixInfoModule();
-    virtual void execute() override;
-    virtual void setStateDefaults() override {}
-    INPUT_PORT(0, InputMatrix, Matrix);
-    OUTPUT_PORT(0, NumRows, Int32);
-    OUTPUT_PORT(1, NumCols, Int32);
-    OUTPUT_PORT(2, NumElements, Int32);
+    auto output = algo().run(withInputData((InputMatrix, matrix)));
+    get_state()->setTransientValue("ReportedInfo", output.getTransient());
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-  };
-}}}
-
-#endif
+    auto info = transient_value_cast<SCIRun::Core::Algorithms::Math::ReportComplexMatrixInfoAlgo::Outputs>(output.getTransient());
+    /// @todo: requires knowledge of algorithm type
+    sendOutput(NumRows, boost::make_shared<Int32>(info.get<1>()));
+    sendOutput(NumCols, boost::make_shared<Int32>(info.get<2>()));
+    sendOutput(NumElements, boost::make_shared<Int32>(info.get<3>()));
+  }
+}

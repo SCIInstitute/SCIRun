@@ -25,10 +25,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/ReportMatrixInfo.h
 
-#ifndef MODULES_MATH_REPORTMATRIXINFO_H
-#define MODULES_MATH_REPORTMATRIXINFO_H
+#ifndef MODULES_MATH_REPORTCOMPLEXMATRIXINFO_H
+#define MODULES_MATH_REPORTCOMPLEXMATRIXINFO_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Math/share.h>
@@ -37,15 +36,15 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
   
-  class SCISHARE ReportMatrixInfoModule : public Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
+  class SCISHARE ReportComplexMatrixInfo : public Dataflow::Networks::Module,
+    public Has1InputPort<ComplexDenseMatrixPortTag>,
     public Has3OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag>
   {
   public:
-    ReportMatrixInfoModule();
+    ReportComplexMatrixInfo();
     virtual void execute() override;
     virtual void setStateDefaults() override {}
-    INPUT_PORT(0, InputMatrix, Matrix);
+    INPUT_PORT(0, InputMatrix, ComplexDenseMatrix);
     OUTPUT_PORT(0, NumRows, Int32);
     OUTPUT_PORT(1, NumCols, Int32);
     OUTPUT_PORT(2, NumElements, Int32);

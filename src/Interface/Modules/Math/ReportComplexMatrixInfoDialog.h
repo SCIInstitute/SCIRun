@@ -25,33 +25,31 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/ReportMatrixInfo.h
 
-#ifndef MODULES_MATH_REPORTMATRIXINFO_H
-#define MODULES_MATH_REPORTMATRIXINFO_H
+#ifndef INTERFACE_MODULES_REPORT_COMPLEX_MATRIX_INFO_H
+#define INTERFACE_MODULES_REPORT_COMPLEX_MATRIX_INFO_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include "Interface/Modules/Math/ui_ReportComplexMatrixInfo.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
-  
-  class SCISHARE ReportMatrixInfoModule : public Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has3OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag>
-  {
-  public:
-    ReportMatrixInfoModule();
-    virtual void execute() override;
-    virtual void setStateDefaults() override {}
-    INPUT_PORT(0, InputMatrix, Matrix);
-    OUTPUT_PORT(0, NumRows, Int32);
-    OUTPUT_PORT(1, NumCols, Int32);
-    OUTPUT_PORT(2, NumElements, Int32);
+namespace Gui {
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-  };
-}}}
+class SCISHARE ReportComplexMatrixInfoDialog : public ModuleDialogGeneric,
+  public Ui::ReportComplexMatrixInfo
+{
+	Q_OBJECT
+
+public:
+  ReportComplexMatrixInfoDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
+private Q_SLOTS:
+  void pullAndDisplayInfo();
+};
+}
+}
 
 #endif

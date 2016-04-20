@@ -54,41 +54,46 @@ DenseColumnMatrixHandle castMatrix::toColumn(const MatrixHandle& mh)
 
 bool matrixIs::dense(const MatrixHandle& mh)
 {
-  return castMatrix::toDense(mh) != 0;
+  return castMatrix::toDense(mh) != nullptr;
 }
 
 bool matrixIs::sparse(const MatrixHandle& mh)
 {
-  return castMatrix::toSparse(mh) != 0;
+  return castMatrix::toSparse(mh) != nullptr;
 }
 
 bool matrixIs::column(const MatrixHandle& mh)
 {
-  return castMatrix::toColumn(mh) != 0;
+  return castMatrix::toColumn(mh) != nullptr;
 }
 
 std::string matrixIs::whatType(const MatrixHandle& mh)
 {
   if (!mh)
     return "<null>";
-  if (matrixIs::column(mh))
+  if (column(mh))
     return "DenseColumnMatrix";
-  else if (matrixIs::dense(mh))
+  if (dense(mh))
     return "DenseMatrix";
-  else if (matrixIs::sparse(mh))
+  if (sparse(mh))
     return "SparseRowMatrix";
   return typeid(*mh).name();
+}
+
+std::string matrixIs::whatType(const ComplexDenseMatrixHandle&)
+{
+  return "ComplexDenseMatrix";
 }
 
 MatrixTypeCode matrixIs::typeCode(const MatrixHandle& mh)
 {
   if (!mh)
     return NULL_MATRIX;
-  if (matrixIs::column(mh))
+  if (column(mh))
     return COLUMN;
-  else if (matrixIs::dense(mh))
+  if (dense(mh))
     return DENSE;
-  else if (matrixIs::sparse(mh))
+  if (sparse(mh))
     return SPARSE_ROW;
   return UNKNOWN;
 }
