@@ -35,6 +35,7 @@ SET(Modules_Math_SRCS
   ConvertMatrixToScalar.cc
   ConvertScalarToMatrix.cc
   CreateMatrix.cc
+  CreateComplexMatrix.cc
   EvaluateLinearAlgebraUnary.cc
   EvaluateLinearAlgebraBinary.cc
   GetMatrixSlice.cc
@@ -53,6 +54,7 @@ SET(Modules_Math_HEADERS
   ConvertMatrixToScalar.cc
   ConvertScalarToMatrix.h
   CreateMatrix.h
+  CreateComplexMatrix.h
   EvaluateLinearAlgebraUnary.h
   EvaluateLinearAlgebraBinary.h
   GetMatrixSlice.h

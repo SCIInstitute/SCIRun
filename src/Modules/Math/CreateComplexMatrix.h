@@ -25,51 +25,28 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/CreateMatrix.cc
 
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Modules/Math/CreateMatrix.h>
-#include <Core/Datatypes/MatrixIO.h>
+#ifndef MODULES_MATH_CREATECOMPLEXMATRIXMODULE_H
+#define MODULES_MATH_CREATECOMPLEXMATRIXMODULE_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
-const ModuleLookupInfo CreateMatrixModule::staticInfo_("CreateMatrix", "Math", "SCIRun");
-const SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
+namespace SCIRun {
+namespace Modules {
+namespace Math {
 
-CreateMatrixModule::CreateMatrixModule() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(EnteredMatrix);
-}
-
-void CreateMatrixModule::setStateDefaults()
-{
-  auto state = get_state();
-  state->setValue(TextEntry, std::string());
-}
-
-void CreateMatrixModule::execute()
-{
-  if (needToExecute())
+  class SCISHARE CreateComplexMatrix : public Dataflow::Networks::Module,
+    public Has1OutputPort<ComplexDenseMatrixPortTag>,
+    public HasNoInputPorts
   {
-    auto matrix(boost::make_shared<DenseMatrix>());
-    try
-    {
-      auto matrixString = get_state()->getValue(TextEntry).toString();
+  public:
+    CreateComplexMatrix();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+    OUTPUT_PORT(0, EnteredMatrix, ComplexDenseMatrix);
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
+}}}
 
-      if (!matrixString.empty())
-      {
-        matrixString += "\n";
-        std::istringstream reader(matrixString);
-
-        reader >> *matrix;
-      }
-    }
-    catch (...)
-    {
-      THROW_ALGORITHM_INPUT_ERROR("Matrix parsing failed.");
-    }
-    sendOutput(EnteredMatrix, matrix);
-  }
-}
+#endif

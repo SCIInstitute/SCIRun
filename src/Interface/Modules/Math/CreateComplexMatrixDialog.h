@@ -25,51 +25,37 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/CreateMatrix.cc
 
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Modules/Math/CreateMatrix.h>
-#include <Core/Datatypes/MatrixIO.h>
+#ifndef INTERFACE_MODULES_CREATE_COMPLEX_MATRIX_H
+#define INTERFACE_MODULES_CREATE_COMPLEX_MATRIX_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include "Interface/Modules/Math/ui_CreateComplexMatrix.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-const ModuleLookupInfo CreateMatrixModule::staticInfo_("CreateMatrix", "Math", "SCIRun");
-const SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
+namespace SCIRun {
+namespace Gui {
 
-CreateMatrixModule::CreateMatrixModule() : Module(staticInfo_)
+class SCISHARE CreateComplexMatrixDialog : public ModuleDialogGeneric, public Ui::CreateComplexMatrix
 {
-  INITIALIZE_PORT(EnteredMatrix);
+	Q_OBJECT
+
+public:
+  CreateComplexMatrixDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+protected:
+  virtual void pullSpecial() override;
+
+private Q_SLOTS:
+  void pushMatrixToState(int state);
+  void editBoxUnsaved();
+  void editBoxSaved();
+private:
+  bool firstPull_;
+};
+
+}
 }
 
-void CreateMatrixModule::setStateDefaults()
-{
-  auto state = get_state();
-  state->setValue(TextEntry, std::string());
-}
-
-void CreateMatrixModule::execute()
-{
-  if (needToExecute())
-  {
-    auto matrix(boost::make_shared<DenseMatrix>());
-    try
-    {
-      auto matrixString = get_state()->getValue(TextEntry).toString();
-
-      if (!matrixString.empty())
-      {
-        matrixString += "\n";
-        std::istringstream reader(matrixString);
-
-        reader >> *matrix;
-      }
-    }
-    catch (...)
-    {
-      THROW_ALGORITHM_INPUT_ERROR("Matrix parsing failed.");
-    }
-    sendOutput(EnteredMatrix, matrix);
-  }
-}
+#endif

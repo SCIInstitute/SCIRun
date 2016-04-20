@@ -25,38 +25,37 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/CreateMatrix.cc
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Modules/Math/CreateMatrix.h>
+#include <Modules/Math/CreateComplexMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-const ModuleLookupInfo CreateMatrixModule::staticInfo_("CreateMatrix", "Math", "SCIRun");
-const SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
+const ModuleLookupInfo CreateComplexMatrix::staticInfo_("CreateComplexMatrix", "Math", "SCIRun");
 
-CreateMatrixModule::CreateMatrixModule() : Module(staticInfo_)
+CreateComplexMatrix::CreateComplexMatrix() : Module(staticInfo_)
 {
   INITIALIZE_PORT(EnteredMatrix);
 }
 
-void CreateMatrixModule::setStateDefaults()
+void CreateComplexMatrix::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(TextEntry, std::string());
+  state->setValue(CreateMatrixModule::TextEntry, std::string());
 }
 
-void CreateMatrixModule::execute()
+void CreateComplexMatrix::execute()
 {
   if (needToExecute())
   {
-    auto matrix(boost::make_shared<DenseMatrix>());
+    auto matrix(boost::make_shared<ComplexDenseMatrix>());
     try
     {
-      auto matrixString = get_state()->getValue(TextEntry).toString();
+      auto matrixString = get_state()->getValue(CreateMatrixModule::TextEntry).toString();
 
       if (!matrixString.empty())
       {

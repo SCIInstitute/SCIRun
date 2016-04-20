@@ -32,6 +32,7 @@ SET(Interface_Modules_Math_FORMS
   AppendMatrix.ui
   CreateGeometricTransform.ui
   CreateMatrix.ui
+  CreateComplexMatrix.ui
   EvaluateLinearAlgebraBinary.ui
   EvaluateLinearAlgebraGeneral.ui
   EvaluateLinearAlgebraUnary.ui
@@ -51,6 +52,7 @@ SET(Interface_Modules_Math_HEADERS
   AppendMatrixDialog.h
   CreateGeometricTransformDialog.h
   CreateMatrixDialog.h
+  CreateComplexMatrixDialog.h
   EvaluateLinearAlgebraBinaryDialog.h
   EvaluateLinearAlgebraGeneralDialog.h
   EvaluateLinearAlgebraUnaryDialog.h
@@ -77,6 +79,7 @@ SET(Interface_Modules_Math_SOURCES
   AppendMatrixDialog.cc
   CreateGeometricTransformDialog.cc
   CreateMatrixDialog.cc
+  CreateComplexMatrixDialog.cc
   EvaluateLinearAlgebraBinaryDialog.cc
   EvaluateLinearAlgebraGeneralDialog.cc
   EvaluateLinearAlgebraUnaryDialog.cc

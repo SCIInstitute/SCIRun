@@ -40,7 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 const ModuleLookupInfo GetMatrixSlice::staticInfo_("GetMatrixSlice", "Math", "SCIRun");
 
-GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_)
+GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_), playing_(false)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(OutputMatrix);

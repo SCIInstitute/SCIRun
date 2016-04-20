@@ -25,51 +25,55 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/CreateMatrix.cc
 
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Interface/Modules/Math/CreateComplexMatrixDialog.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Modules/Math/CreateMatrix.h>
-#include <Core/Datatypes/MatrixIO.h>
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Math;
 
-const ModuleLookupInfo CreateMatrixModule::staticInfo_("CreateMatrix", "Math", "SCIRun");
-const SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
-
-CreateMatrixModule::CreateMatrixModule() : Module(staticInfo_)
+CreateComplexMatrixDialog::CreateComplexMatrixDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent), firstPull_(true)
 {
-  INITIALIZE_PORT(EnteredMatrix);
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+
+  connect(editCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(pushMatrixToState(int)));
+  connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(editBoxUnsaved()));
 }
 
-void CreateMatrixModule::setStateDefaults()
+void CreateComplexMatrixDialog::pushMatrixToState(int state)
 {
-  auto state = get_state();
-  state->setValue(TextEntry, std::string());
-}
-
-void CreateMatrixModule::execute()
-{
-  if (needToExecute())
+  if (!pulling_)
   {
-    auto matrix(boost::make_shared<DenseMatrix>());
-    try
+    if (0 == state) // matrix is done editing
     {
-      auto matrixString = get_state()->getValue(TextEntry).toString();
-
-      if (!matrixString.empty())
-      {
-        matrixString += "\n";
-        std::istringstream reader(matrixString);
-
-        reader >> *matrix;
-      }
+      state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
+      editBoxSaved();
     }
-    catch (...)
-    {
-      THROW_ALGORITHM_INPUT_ERROR("Matrix parsing failed.");
-    }
-    sendOutput(EnteredMatrix, matrix);
   }
+}
+
+void CreateComplexMatrixDialog::pullSpecial()
+{
+  Pulling p(this);
+  matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).toString()));
+  if (firstPull_)
+    editBoxSaved();
+
+  firstPull_ = false;
+}
+
+void CreateComplexMatrixDialog::editBoxUnsaved()
+{
+  editCheckBox_->setText("Matrix changed--click here to save");
+}
+
+void CreateComplexMatrixDialog::editBoxSaved()
+{
+  editCheckBox_->setText("Edit matrix");
 }
