@@ -493,12 +493,15 @@ AlgorithmOutput SetFieldDataAlgo::run(const AlgorithmInput& input) const
   auto input_field = input.get<Field>(Variables::InputField);
   auto input_matrix = input.get<DenseMatrix>(Variables::InputMatrix);
   auto input_nrrd = input.get<NrrdData>(Variables::InputNrrd);
+  auto input_complex_matrix = input.get<ComplexDenseMatrix>(Variables::InputComplexMatrix);
 
   FieldHandle output_field;
   if (input_matrix)
     output_field = runImpl(input_field, input_matrix);
   else if (input_nrrd)
     runImpl(input_field, input_nrrd, output_field);
+  else if (input_complex_matrix)
+    output_field = runImplComplex(input_field, input_complex_matrix);
 
   AlgorithmOutput output;
   output[Variables::OutputField] = output_field;

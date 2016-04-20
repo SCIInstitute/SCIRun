@@ -64,6 +64,7 @@ INPUT(InputFields)
 INPUT(Source)
 INPUT(Destination)
 INPUT(InputNrrd)
+INPUT(InputComplexMatrix)
 
 OUTPUT(MatrixInfo)
 OUTPUT(Result)

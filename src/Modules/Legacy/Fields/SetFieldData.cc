@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,7 +29,7 @@
 
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 
@@ -47,6 +47,7 @@ SetFieldDataModule::SetFieldDataModule() :  Module(staticInfo_)
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(InputNrrd);
+  INITIALIZE_PORT(InputComplexMatrix);
   INITIALIZE_PORT(OutputField);
 }
 
@@ -60,15 +61,17 @@ void SetFieldDataModule::execute()
   auto input_field = getRequiredInput(InputField);
   auto input_matrix = getOptionalInput(InputMatrix);
   auto input_nrrd = getOptionalInput(InputNrrd);
+  auto input_complex_matrix = getOptionalInput(InputComplexMatrix);
 
   if (needToExecute())
-  {    
+  {
     update_state(Executing);
 
     auto output = algo().run(withInputData(
       (InputField, input_field)
       (InputMatrix, optionalAlgoInput(input_matrix))
       (InputNrrd, optionalAlgoInput(input_nrrd))
+      (InputComplexMatrix, optionalAlgoInput(input_complex_matrix))
       ));
 
     sendOutputFromAlgorithm(OutputField, output);
