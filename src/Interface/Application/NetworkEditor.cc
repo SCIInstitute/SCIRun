@@ -1274,6 +1274,7 @@ QGraphicsEffect* Gui::blurEffect(double radius)
 void NetworkEditor::tagLayer(bool active, int tag)
 {
   tagLayerActive_ = active;
+  QMap<int,QRectF> tagItemRects;
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     item->setData(TagLayerKey, active);
@@ -1284,6 +1285,19 @@ void NetworkEditor::tagLayer(bool active, int tag)
       if (tag == AllTags)
       {
         highlightTaggedItem(item, itemTag);
+        if (itemTag != 0)
+        {
+          auto r = item->boundingRect();
+          r.translate(item->pos());
+          if (!tagItemRects.contains(itemTag))
+          {
+            tagItemRects.insert(itemTag, r);
+          }
+          else
+          {
+            tagItemRects[itemTag] = tagItemRects[itemTag].united(r);
+          }
+        }
       }
       else if (tag != NoTag)
       {
@@ -1297,6 +1311,13 @@ void NetworkEditor::tagLayer(bool active, int tag)
     }
     else
       item->setGraphicsEffect(nullptr);
+  }
+  if (tag == AllTags)
+  {
+    for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
+    {
+      scene_->addRect(rectIter.value().adjusted(-10,-10,10,10), QPen(tagColor_(rectIter.key())));
+    }
   }
 }
 
