@@ -348,6 +348,9 @@ void ViewSceneDialog::newGeometryValue()
     return;
   spire->removeAllGeomObjects();
 
+  int port = 0;
+  std::vector<std::string> objectNames;
+  std::vector<std::string> validObjects;
   // Grab the geomData transient value.
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
@@ -358,15 +361,12 @@ void ViewSceneDialog::newGeometryValue()
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
       return;
     }
-    if (!spire)
-    {
-      LOG_DEBUG("Logical error: Spire lock not acquired.");
-      return;
-    }
+    //if (!spire)
+    //{
+    //  LOG_DEBUG("Logical error: Spire lock not acquired.");
+    //  return;
+    //}
 
-    int port = 0;
-    std::vector<std::string> objectNames;
-    std::vector<std::string> validObjects;
     for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
     {
       auto obj = *it;
@@ -383,37 +383,43 @@ void ViewSceneDialog::newGeometryValue()
         }
       }
     }
-    //add objects of its own
-    //scale bar
-    ++port;
-    if (scaleBar_.visible && scaleBarGeom_)
+  }
+
+  //add objects of its own
+  //scale bar
+  ++port;
+  if (scaleBar_.visible && scaleBarGeom_)
+  {
+    auto name = scaleBarGeom_->uniqueID();
+    auto displayName = QString::fromStdString(name).split('_').at(1);
+    objectNames.push_back(name/*displayName.toStdString()*/);
+    auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(scaleBarGeom_);
+    if (realObj)
     {
-      auto name = scaleBarGeom_->uniqueID();
-      auto displayName = QString::fromStdString(name).split('_').at(1);
-      objectNames.push_back(name/*displayName.toStdString()*/);
-      auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(scaleBarGeom_);
-      if (realObj)
-      {
-        spire->handleGeomObject(realObj, port);
-        validObjects.push_back(name);
-      }
+      spire->handleGeomObject(realObj, port);
+      validObjects.push_back(name);
     }
-    ++port;
-    //clippingplanes
-    for (auto i : clippingPlaneGeoms_)
+  }
+  ++port;
+  //clippingplanes
+  for (auto i : clippingPlaneGeoms_)
+  {
+    auto name = i->uniqueID();
+    auto displayName = QString::fromStdString(name).split('_').at(1);
+    objectNames.push_back(name/*displayName.toStdString()*/);
+    auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(i);
+    if (realObj)
     {
-      auto name = i->uniqueID();
-      auto displayName = QString::fromStdString(name).split('_').at(1);
-      objectNames.push_back(name/*displayName.toStdString()*/);
-      auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(i);
-      if (realObj)
-      {
-        spire->handleGeomObject(realObj, port);
-        validObjects.push_back(name);
-      }
+      spire->handleGeomObject(realObj, port);
+      validObjects.push_back(name);
     }
+  }
+
+  if (!validObjects.empty())
     spire->gcInvalidObjects(validObjects);
 
+  if (!objectNames.empty())
+  {
     sort(objectNames.begin(), objectNames.end());
     if (previousObjectNames_ != objectNames)
     {
@@ -437,13 +443,14 @@ void ViewSceneDialog::newGeometryValue()
       }
       itemValueChanged_ = false;
     }
+
   }
-  else
-  {
-    if (!spire)
-      return;
-    spire->removeAllGeomObjects();
-  }
+  //else
+  //{
+  //  if (!spire)
+  //    return;
+  //  spire->removeAllGeomObjects();
+  //}
 
 #ifdef BUILD_TESTING
   sendScreenshotDownstreamForTesting();
