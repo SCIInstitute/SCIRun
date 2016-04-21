@@ -1232,7 +1232,7 @@ namespace SCIRun {
       }
       else if (uniform.name == "uFogColor")
         uniform.data = mFogColor;
-      uniform.type = Graphics::Datatypes::SpireSubPass::Uniform::UNIFORM_VEC4;
+      uniform.type = Graphics::Datatypes::SpireSubPass::Uniform::UniformType::UNIFORM_VEC4;
     }
 
     //------------------------------------------------------------------------------
