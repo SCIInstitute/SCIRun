@@ -30,6 +30,7 @@
 uniform mat4    uProjIVObject;      // Projection transform * Inverse View
 uniform mat4    uObject;            // Object -> World
 uniform float   uFDToggle;          // Field data toggle
+uniform mat4    uInverseView;       // world -> view
 
 // Attributes
 attribute vec3  aPos;
@@ -41,6 +42,7 @@ attribute vec4  aColorSecondary;
 varying vec3    vNormal;
 varying vec4    vColor;
 varying vec4    vPos;//for clipping plane calc
+varying vec4    vFogCoord;// for fog calculation
 
 void main( void )
 {
@@ -51,4 +53,5 @@ void main( void )
   vec4 colorData = uFDToggle * aColor + (1.0 - uFDToggle) * aColorSecondary;
   vColor = colorData;
   vPos = vec4(aPos, 1.0);
+  vFogCoord = uInverseView * vPos;
 }
