@@ -796,6 +796,12 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
             if (tableItemIter != tableItemMakers.end())
             {
               table->setItem(newRowIndex, i, (*tableItemIter)());
+              //auto tableWidget = boost::get<TableWidgetMaker>(&*tableItemIter);
+              //auto cellWidget = boost::get<WidgetMaker>(&*tableItemIter);
+              //if (tableWidget)
+              //  table->setItem(newRowIndex, i, (*tableWidget)());
+              //else if (cellWidget)
+              //  table->setCellWidget(newRowIndex, i, (*cellWidget)());
               ++tableItemIter;
             }
           }

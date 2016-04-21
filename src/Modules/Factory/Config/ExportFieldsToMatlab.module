@@ -12,7 +12,7 @@
     "header": "N/A"
   },
   "UI": {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "ExportFieldsToMatlabDialog",
+    "header": "Interface/Modules/Matlab/ExportFieldsToMatlabDialog.h"
   }
 }

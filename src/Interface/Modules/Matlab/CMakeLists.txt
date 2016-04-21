@@ -30,17 +30,20 @@
 SET(Interface_Modules_Matlab_FORMS
   ImportDatatypesFromMatlab.ui
   InterfaceWithMatlab.ui
+  ExportFieldsToMatlab.ui
 )
 
 SET(Interface_Modules_Matlab_HEADERS
   ImportDatatypesFromMatlabDialog.h
   InterfaceWithMatlabDialog.h
+  ExportFieldsToMatlabDialog.h
   share.h
 )
 
 SET(Interface_Modules_Matlab_SOURCES
   ImportDatatypesFromMatlabDialog.cc
   InterfaceWithMatlabDialog.cc
+  ExportFieldsToMatlabDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Matlab_FORMS_HEADERS ${Interface_Modules_Matlab_FORMS})

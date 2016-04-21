@@ -37,33 +37,25 @@
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <boost/filesystem/operations.hpp>
 
-//#include <Core/Util/FullFileName.h>
 using namespace SCIRun::Modules::Matlab;
+using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core;
-using namespace SCIRun::Core::Algorithms;
+using namespace Algorithms;
 
 const ModuleLookupInfo ExportFieldsToMatlab::staticInfo_("ExportFieldsToMatlab", "Matlab", "SCIRun");
 
 ExportFieldsToMatlab::ExportFieldsToMatlab() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(Field1);
-  INITIALIZE_PORT(Field2);
-  INITIALIZE_PORT(Field3);
-  INITIALIZE_PORT(Field4);
-  INITIALIZE_PORT(Field5);
-  INITIALIZE_PORT(Field6);
+  INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(Filename);
 }
 
 void ExportFieldsToMatlab::setStateDefaults()
-{
-  //TODO
-}
-
-void ExportFieldsToMatlab::execute()
 {
   //TODO
 }
@@ -140,195 +132,177 @@ ExportFieldsToMatlab::ExportFieldsToMatlab(GuiContext* ctx)
     guioverwrite_(get_ctx()->subVar("overwrite"), 1)
 {
 }
+#endif
 
 void ExportFieldsToMatlab::execute()
 {
-  matlabconverter translate(dynamic_cast<SCIRun::ProgressReporter*>(this));
+  auto filenameInputOption = getOptionalInput(Filename);
+  auto fields = getRequiredDynamicInputs(InputField);
 
-	StringHandle stringH;
-	get_input_handle("Filename",stringH,false);
-	if (stringH.get_rep())
-	{
-		std::string filename = stringH->get();
-		guifilename_.set(filename);
-		get_ctx()->reset();
-	}
-
-  bool porthasdata[NUMPORTS];
-  SCIRun::FieldHandle matrixhandle[NUMPORTS];
-
-  for (int p=0; p<NUMPORTS; p++)
+  if (needToExecute())
   {
-		porthasdata[p] = get_input_handle(p,matrixhandle[p],false);
-  }
+    auto state = get_state();
 
-  // Reorder the TCL input and put them
-  // in orderly STL style vectors.
-
-  // First update the GUI to C++ interface
-  TCLInterface::execute(get_id()+" Synchronise");
-  get_ctx()->reset();
-
-  // Get the contents of the filename entrybox
-  std::string filename = guifilename_.get();
-
-  // If the filename is empty, launch an error
-  if (filename.empty())
-  {
-    error("ExportDatatypesToMatlab: No file name was specified");
-    return;
-  }
-
-  // Make sure we have a .mat extension
-  int filenamesize = filename.size();
-  if (filenamesize < 4)
-  {
-    filename += ".mat";
-  }
-  else
-  {
-    if (filename.substr(filenamesize-4,filenamesize) != ".mat") filename += ".mat";
-  }
-
-	// Make sure the path to the new file exists
-	// If not make it and as well convert filename
-	// to absolute path name
-	FullFileName ffn(filename);
-	if (!(ffn.create_file_path()))
-	{
-		error("Could not generate path to file");
-		return;
-	}
-	filename = ffn.get_abs_filename();
-	guifilename_.set(filename);
-	get_ctx()->reset();
-
-  if (!overwrite()) return;
-
-  update_state(Executing);
-
-  // get all the settings from the GUI
-
-  std::vector<std::string> matrixname = converttcllist(guimatrixname_.get());
-  std::vector<std::string> matrixformat = converttcllist(guimatrixformat_.get());
-
-  // Check the validity of the matrixnames
-
-  for (int p=0;p<static_cast<int>(matrixname.size());p++)
-  {
-    if (porthasdata[p] == false) continue; // Do not check not used ports
-    if (!translate.isvalidmatrixname(matrixname[p]))
+    if (filenameInputOption && *filenameInputOption)
     {
-      error("ExportFieldsToMatlab: The matrix name specified is invalid");
+      auto filename = (*filenameInputOption)->value();
+      state->setValue(Variables::Filename, filename);
+    }
+
+
+    auto filename = state->getValue(Variables::Filename).toFilename();
+
+    // If the filename is empty, launch an error
+    if (filename.empty())
+    {
+      error("ExportDatatypesToMatlab: No file name was specified");
       return;
     }
-    for (int q=0;q<p;q++)
+
+    // Make sure we have a .mat extension
+    if (filename.extension() != ".mat")
+      filename += ".mat";
+
+    // Make sure the path to the new file exists
+    // If not make it and as well convert filename
+    // to absolute path name
+    if (!exists(filename))
     {
-      if (porthasdata[q] == false) continue;
-      if (matrixname[q] == matrixname[p])
+      error("Could not generate path to file");
+      return;
+    }
+    //filename = filename.get_abs_filename();
+    //guifilename_.set(filename);
+    //get_ctx()->reset();
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    if (!overwrite()) return;
+#endif
+
+    update_state(Executing);
+
+    // get all the settings from the GUI
+#if 0
+    std::vector<std::string> matrixname = converttcllist(guimatrixname_.get());
+    std::vector<std::string> matrixformat = converttcllist(guimatrixformat_.get());
+
+    // Check the validity of the matrixnames
+
+    for (int p=0;p<static_cast<int>(matrixname.size());p++)
+    {
+      if (porthasdata[p] == false) continue; // Do not check not used ports
+      if (!translate.isvalidmatrixname(matrixname[p]))
       {
-        error("ExportFieldsToMatlab: A matrix name is used twice");
+        error("ExportFieldsToMatlab: The matrix name specified is invalid");
         return;
       }
+      for (int q=0;q<p;q++)
+      {
+        if (porthasdata[q] == false) continue;
+        if (matrixname[q] == matrixname[p])
+        {
+          error("ExportFieldsToMatlab: A matrix name is used twice");
+          return;
+        }
+      }
     }
-  }
 
-  try
-  {
-    matlabfile mfile;   // matlab file object contains all function for reading and writing matlab arrayd
-    matlabarray ma;		// matlab style formatted array (can be stored in a matlabfile object)
-    mfile.open(filename,"w");   // open file for writing
-
-    // Add an information tag to the data, so the origin of the file is known
-    // There are 116 bytes of free data storage at the header of the file.
-    // Do not start the file with 'SCI ', otherwise the file looks like a
-    // native SCIRun file which uses the same extension.
-
-    mfile.setheadertext("Matlab V5 compatible file generated by SCIRun [module ExportFieldsToMatlab version 1.1]");
-
-    for (int p=0;p<NUMPORTS;p++)
+    try
     {
-      if (porthasdata[p] == false) continue; // if the port is not connected skip to the next one
+      matlabfile mfile;   // matlab file object contains all function for reading and writing matlab arrayd
+      matlabarray ma;		// matlab style formatted array (can be stored in a matlabfile object)
+      mfile.open(filename,"w");   // open file for writing
 
-      // Convert the SCIRun matrixobject to a matlab object
+      // Add an information tag to the data, so the origin of the file is known
+      // There are 116 bytes of free data storage at the header of the file.
+      // Do not start the file with 'SCI ', otherwise the file looks like a
+      // native SCIRun file which uses the same extension.
+      matlabconverter translate(getLogger());
+      mfile.setheadertext("Matlab V5 compatible file generated by SCIRun [module ExportFieldsToMatlab version 1.1]");
 
-      if (matrixformat[p] == "struct array")
+      for (int p=0;p<NUMPORTS;p++)
       {
-        // translate the matrix into a matlab structured array, which
-        // can also store some data from the property manager
-        translate.converttostructmatrix();
+        if (porthasdata[p] == false) continue; // if the port is not connected skip to the next one
+
+        // Convert the SCIRun matrixobject to a matlab object
+
+        if (matrixformat[p] == "struct array")
+        {
+          // translate the matrix into a matlab structured array, which
+          // can also store some data from the property manager
+          translate.converttostructmatrix();
+        }
+
+        if (matrixformat[p] == "numeric array")
+        {
+          // only store the numeric parts of the data
+          translate.converttonumericmatrix();
+        }
+
+        translate.sciFieldTOmlArray(matrixhandle[p],ma);
+
+        if (ma.isempty())
+        {
+          warning("One of the matrices is empty");
+          continue; // Do not write empty matrices
+        }
+        // Every thing seems OK, so proceed and store the matrix in the file
+        mfile.putmatlabarray(ma,matrixname[p]);
       }
 
-      if (matrixformat[p] == "numeric array")
-      {
-        // only store the numeric parts of the data
-        translate.converttonumericmatrix();
-      }
-
-      translate.sciFieldTOmlArray(matrixhandle[p],ma);
-
-      if (ma.isempty())
-      {
-        warning("One of the matrices is empty");
-        continue; // Do not write empty matrices
-      }
-      // Every thing seems OK, so proceed and store the matrix in the file
-      mfile.putmatlabarray(ma,matrixname[p]);
+      mfile.close();
     }
 
-    mfile.close();
-  }
+    // in case something went wrong
 
-  // in case something went wrong
-
-  catch (matlabconverter::matlabconverter_error)
-  {
+    catch (matlabconverter::error_type&)
+    {
       error("ExportFieldsToMatlab: Error in the SCIRun to Matlab converter");
+    }
+    catch (matlabfile::could_not_open_file&)
+    {
+      error("ExportFieldsToMatlab: Could not open file");
+    }
+    catch (matlabfile::invalid_file_format&)
+    {
+      error("ExportFieldsToMatlab: Invalid file format");
+    }
+    catch (matlabfile::io_error&)
+    {   // IO error from ferror
+      error("ExportFieldsToMatlab: IO error");
+    }
+    catch (matlabfile::unknown_type&)
+    {
+      error("ExportFieldsToMatlab: Unknow type encountered");
+    }
+    catch (matlabfile::empty_matlabarray&)
+    {
+      error("ExportFieldsToMatlab: Empty Matlab array encountered");
+    }
+    catch (matlabfile::out_of_range&)
+    {
+      error("ExportFieldsToMatlab: Out of Range error");
+    }
+    catch (matlabfile::invalid_file_access&)
+    {
+      error("ExportFieldsToMatlab: Invalid file access");
+    }
+    catch (matlabfile::compression_error&)
+    {
+      error("ExportFieldsToMatlab: Compression error");
+    }
+    catch (matlabfile::internal_error&)
+    {
+      error("ExportFieldsToMatlab: Internal error");
+    }
+    catch (matlabfile::matfileerror&)
+    {   // All other errors are classified as internal
+      // matfileerrror is the base class on which all
+      // other exceptions are based.
+      error("ExportFieldsToMatlab: Matlab file writer error");
   }
-  catch (matlabfile::could_not_open_file)
-  {
-    error("ExportFieldsToMatlab: Could not open file");
-  }
-  catch (matlabfile::invalid_file_format)
-  {
-    error("ExportFieldsToMatlab: Invalid file format");
-  }
-  catch (matlabfile::io_error)
-  {   // IO error from ferror
-    error("ExportFieldsToMatlab: IO error");
-  }
-  catch (matlabfile::unknown_type)
-  {
-    error("ExportFieldsToMatlab: Unknow type encountered");
-  }
-  catch (matlabfile::empty_matlabarray)
-  {
-    error("ExportFieldsToMatlab: Empty Matlab array encountered");
-  }
-  catch (matlabfile::out_of_range)
-  {
-    error("ExportFieldsToMatlab: Out of Range error");
-  }
-  catch (matlabfile::invalid_file_access)
-  {
-    error("ExportFieldsToMatlab: Invalid file access");
-  }
-  catch (matlabfile::compression_error)
-  {
-    error("ExportFieldsToMatlab: Compression error");
-  }
-  catch (matlabfile::internal_error)
-  {
-    error("ExportFieldsToMatlab: Internal error");
-  }
-  catch (matlabfile::matfileerror)
-  {   // All other errors are classified as internal
-    // matfileerrror is the base class on which all
-    // other exceptions are based.
-    error("ExportFieldsToMatlab: Matlab file writer error");
-  }
-  // No handling of the SCIRun errors here yet, most SCIRun functions used
-  // do not use exceptions yet.
+#endif
+}
 }
 
 // Additional support functions :
@@ -338,7 +312,7 @@ void ExportFieldsToMatlab::execute()
 
 // convertdataformat
 // Convert the string TCL returns into a matlabarray::mitype
-
+#if 0
 matlabarray::mitype ExportFieldsToMatlab::convertdataformat(std::string dataformat)
 {
   matlabarray::mitype type = matlabarray::miUNKNOWN;

@@ -137,7 +137,9 @@ namespace Gui {
     void addSliderManager(QSlider* slider, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void removeManager(const Core::Algorithms::AlgorithmParameterName& stateKey);
 
-    typedef std::vector<std::function<QTableWidgetItem*()>> TableItemMakerList;
+    using TableWidgetMaker = std::function<QTableWidgetItem*()>;
+    using WidgetMaker = std::function<QWidget*()>;
+    typedef std::vector<TableWidgetMaker> TableItemMakerList;
     void syncTableRowsWithDynamicPort(const std::string& portId, const std::string& type,
       QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerList& tableItemMakers);
     static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile);

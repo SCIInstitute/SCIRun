@@ -26,30 +26,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_MATLAB_DATAIO_EXPORTFIELDSTOMATLAB_H
-#define MODULES_LEGACY_MATLAB_DATAIO_EXPORTFIELDSTOMATLAB_H
+#ifndef INTERFACE_MODULES_MATLAB_ExportFieldsToMatlabDialog_H
+#define INTERFACE_MODULES_MATLAB_ExportFieldsToMatlabDialog_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Matlab/DataIO/share.h>
+#include "Interface/Modules/Matlab/ui_ExportFieldsToMatlab.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/Matlab/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Matlab {
+namespace Gui {
 
-  class SCISHARE ExportFieldsToMatlab : public Dataflow::Networks::Module,
-    public Has2InputPorts<DynamicPortTag<FieldPortTag>, StringPortTag>,
-    public HasNoOutputPorts
-  {
-  public:
-    ExportFieldsToMatlab();
-    virtual void execute() override;
-    virtual void setStateDefaults() override;
-    INPUT_PORT_DYNAMIC(0, InputField, LegacyField);
-    INPUT_PORT(1, Filename, String);
-    virtual bool hasDynamicPorts() const override { return true; }
+class SCISHARE ExportFieldsToMatlabDialog : public ModuleDialogGeneric,
+  public Ui::ExportFieldsToMatlab, public RemembersFileDialogDirectory
+{
+	Q_OBJECT
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-  };
-}}}
+public:
+  ExportFieldsToMatlabDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+public Q_SLOTS:
+  virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
+private Q_SLOTS:
+  //void pushMatrixInput();
+  //void pushTable(int,int);
+  //void pushTableRow(int row);
+  //void pushNames();
+  //void pushBoundaryConditions();
+  //void pushInsides();
+  //void pushOutsides();
+private:
+  //int numMatrixPorts_, numFieldPorts_, numStringPorts_;
+  //int totalInputPorts() const { return numMatrixPorts_ + numFieldPorts_ + numStringPorts_; }
+  //QComboBox* makeInputDataTypeComboBoxItem() const;
+  //QComboBox* makeInputArrayTypeComboBoxItem() const;
+};
+
+}
+}
 
 #endif
