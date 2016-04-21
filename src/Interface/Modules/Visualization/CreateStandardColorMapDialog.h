@@ -61,10 +61,10 @@ namespace SCIRun {
       QPointF colorToPoint(double color) const;
       double interpolateAlphaLineValue(const QPointF& leftEndpoint, const QPointF& rightEndpoint, double color) const;
 
-      SCIRun::Dataflow::Networks::ModuleStateHandle state_;
+      Dataflow::Networks::ModuleStateHandle state_;
       std::set<QPointF, SortedByXCoordinate> alphaPoints_;
-      const size_t ALPHA_SAMPLES = 10;
-      const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
+      static const size_t ALPHA_SAMPLES = 10; //TODO cbright: once alpha values are visible, increase this number
+      static const size_t ALPHA_VECTOR_LENGTH = ALPHA_SAMPLES + 2; // 0.5 added on both ends
       const double DEFAULT_ALPHA = 0.5;
       const QPointF defaultStart_;
       const QPointF defaultEnd_;

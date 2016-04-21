@@ -32,15 +32,15 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/algorithm/string/join.hpp>
 #include <boost/timer.hpp>
 #include <atomic>
 
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
-#include <Dataflow/Network/DataflowInterfaces.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <Dataflow/Network/DataflowInterfaces.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
@@ -154,11 +154,9 @@ Module::Module(const ModuleLookupInfo& info,
   const std::string& version)
   : info_(info),
   id_(info.module_name_, idGenerator_->makeId(info.module_name_)),
-  inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
   metadata_(state_),
-  threadStopped_(false),
   executionState_(new detail::ModuleExecutionStateImpl)
 {
   iports_.set_module(this);
@@ -245,7 +243,7 @@ namespace //TODO requirements for state metadata reporting
   }
 }
 
-bool Module::do_execute() NOEXCEPT
+bool Module::doExecute() NOEXCEPT
 {
   //Log::get() << INFO << "executing module: " << id_ << std::endl;
   //std::cout << "executing module: " << id_ << std::endl;
@@ -266,8 +264,8 @@ bool Module::do_execute() NOEXCEPT
 
   try
   {
-    //TODO: could we call needToExecute() here?
-    execute();
+    if (!executionDisabled())
+      execute();
     returnCode = true;
   }
   catch (const std::bad_alloc&)
@@ -283,14 +281,14 @@ bool Module::do_execute() NOEXCEPT
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    if (Core::Logging::Log::get().verbose())
+    if (Log::get().verbose())
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << std::endl;
       error(ostr.str());
     }
 
-    if (Core::Logging::Log::get().verbose())
+    if (Log::get().verbose())
     {
       std::ostringstream ostrExtra;
       ostrExtra << boost::diagnostic_information(e) << std::endl;
@@ -312,8 +310,8 @@ bool Module::do_execute() NOEXCEPT
   }
   threadStopped_ = threadStopValue;
 
+  auto executionTime = executionTimer.elapsed();
   {
-    double executionTime = executionTimer.elapsed();
     std::ostringstream ostr;
     ostr << executionTime;
     metadata_.setMetadata("last execution duration (seconds)", ostr.str());
@@ -326,9 +324,14 @@ bool Module::do_execute() NOEXCEPT
   //auto endState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
   auto endState = ModuleExecutionState::Completed;
   executionState_->transitionTo(endState);
-  resetStateChanged();
-  inputsChanged_ = false;
-  executeEnds_(id_);
+
+  if (!executionDisabled())
+  {
+    resetStateChanged();
+    inputsChanged_ = false;
+  }
+  
+  executeEnds_(executionTime, id_);
   return returnCode;
 }
 
@@ -482,20 +485,21 @@ Module::Builder::Builder()
 Module::Builder::SinkMaker Module::Builder::sink_maker_;
 Module::Builder::SourceMaker Module::Builder::source_maker_;
 
-/*static*/ void Module::Builder::use_sink_type(Module::Builder::SinkMaker func) { sink_maker_ = func; }
-/*static*/ void Module::Builder::use_source_type(Module::Builder::SourceMaker func) { source_maker_ = func; }
+/*static*/ void Module::Builder::use_sink_type(SinkMaker func) { sink_maker_ = func; }
+/*static*/ void Module::Builder::use_source_type(SourceMaker func) { source_maker_ = func; }
 
 class DummyModule : public Module
 {
 public:
   explicit DummyModule(const ModuleLookupInfo& info) : Module(info) {}
-  virtual void execute()
+  virtual void execute() override
   {
     std::ostringstream ostr;
     ostr << "Module " << get_module_name() << " executing for " << 3.14 << " seconds." << std::endl;
     status(ostr.str());
   }
-  virtual void setStateDefaults() {}
+  virtual void setStateDefaults() override
+  {}
 };
 
 Module::Builder& Module::Builder::with_name(const std::string& name)
@@ -536,8 +540,8 @@ Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams&
 
 void Module::Builder::addInputPortImpl(Module& module, const Port::ConstructionParams& params)
 {
-  DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : 0);
-  InputPortHandle port(boost::make_shared<InputPort>(module_.get(), params, sink));
+  DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : nullptr);
+  auto port(boost::make_shared<InputPort>(module_.get(), params, sink));
   port->setIndex(module_->add_input_port(port));
 }
 
@@ -545,8 +549,8 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
 {
   if (module_)
   {
-    DatatypeSourceInterfaceHandle source(source_maker_ ? source_maker_() : 0);
-    OutputPortHandle port(boost::make_shared<OutputPort>(module_.get(), params, source));
+    DatatypeSourceInterfaceHandle source(source_maker_ ? source_maker_() : nullptr);
+    auto port(boost::make_shared<OutputPort>(module_.get(), params, source));
     port->setIndex(module_->add_output_port(port));
   }
   return *this;
@@ -554,7 +558,7 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
 
 PortId Module::Builder::cloneInputPort(ModuleHandle module, const PortId& id)
 {
-  Module* m = dynamic_cast<Module*>(module.get());
+  auto m = dynamic_cast<Module*>(module.get());
   if (m)
   {
     InputPortHandle newPort(m->getInputPort(id)->clone());
@@ -566,7 +570,7 @@ PortId Module::Builder::cloneInputPort(ModuleHandle module, const PortId& id)
 
 void Module::Builder::removeInputPort(ModuleHandle module, const PortId& id)
 {
-  Module* m = dynamic_cast<Module*>(module.get());
+  auto m = dynamic_cast<Module*>(module.get());
   if (m)
   {
     m->removeInputPort(id);
@@ -599,14 +603,14 @@ void Module::setUiVisible(bool visible)
     uiToggleFunc_(visible);
 }
 
-void Module::setLogger(SCIRun::Core::Logging::LoggerHandle log)
+void Module::setLogger(LoggerHandle log)
 {
   log_ = log;
   if (algo_)
     algo_->setLogger(log);
 }
 
-void Module::setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func)
+void Module::setUpdaterFunc(AlgorithmStatusReporter::UpdaterFunc func)
 {
   updaterFunc_ = func;
   if (algo_)
@@ -845,7 +849,7 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
         if (i >= potentialReplacement.input_ports_.size())
           return false;
 
-        const InputPortDescription& input = potentialReplacement.input_ports_[i];
+        const auto& input = potentialReplacement.input_ports_[i];
         if (input.datatype != toMatch->get_typename())
           return false;
       }
@@ -861,7 +865,7 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
         if (i >= potentialReplacement.output_ports_.size())
           return false;
 
-        const OutputPortDescription& output = potentialReplacement.output_ports_[i];
+        const auto& output = potentialReplacement.output_ports_[i];
         if (output.datatype != toMatch->get_typename())
           return false;
       }
@@ -932,12 +936,12 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 
 bool Module::isStoppable() const
 {
-  return dynamic_cast<const Core::Thread::Interruptible*>(this) != nullptr;
+  return dynamic_cast<const Interruptible*>(this) != nullptr;
 }
 
-void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback)
+void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback) const
 {
-  for (auto& inputPort : inputPorts())
+  for (const auto& inputPort : inputPorts())
   {
     if (inputPort->nconnections() > 0)
     {

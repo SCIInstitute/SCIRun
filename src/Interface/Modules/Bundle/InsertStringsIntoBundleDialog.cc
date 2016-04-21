@@ -45,7 +45,7 @@ InsertStringsIntoBundleDialog::InsertStringsIntoBundleDialog(const std::string& 
 
 void InsertStringsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
 {
-  if (type == INITIAL_PORT_CONSTRUCTION)
+  if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;
 
   static const std::string typeName = "Strings";

@@ -55,7 +55,7 @@ namespace SCIRun {
         class GeometryBuilder;
       }
 
-      class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE ShowFieldModule : public Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort<GeometryPortTag>,
         public Core::Thread::Interruptible
@@ -64,6 +64,7 @@ namespace SCIRun {
         ShowFieldModule();
         virtual void execute() override;
 
+        static const Core::Algorithms::AlgorithmParameterName FieldName;
         static const Core::Algorithms::AlgorithmParameterName NodesAvailable;
         static const Core::Algorithms::AlgorithmParameterName EdgesAvailable;
         static const Core::Algorithms::AlgorithmParameterName FacesAvailable;
@@ -109,7 +110,7 @@ namespace SCIRun {
 
         virtual void setStateDefaults() override;
       private:
-        void updateAvailableRenderOptions(SCIRun::FieldHandle field);
+        void updateAvailableRenderOptions(FieldHandle field);
 
         boost::shared_ptr<detail::GeometryBuilder> builder_;
       };

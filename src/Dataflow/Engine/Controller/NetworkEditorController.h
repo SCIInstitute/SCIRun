@@ -91,6 +91,7 @@ namespace Engine {
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       Networks::ReexecuteStrategyFactoryHandle reexFactory,
       Core::Commands::GlobalCommandFactoryHandle cmdFactory,
+      Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory,
       Networks::NetworkEditorSerializationManager* nesm = nullptr);
     NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = nullptr);
     ~NetworkEditorController();
@@ -103,7 +104,7 @@ namespace Engine {
     void interruptModule(const Networks::ModuleId& id);
 
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
-    void connectNewModule(const Networks::ModuleHandle& moduleToConnectTo, const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+    Networks::ModuleHandle connectNewModule(const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const Networks::PortDescriptionInterface* portToConnectUponInsertion);
 
     boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
@@ -174,6 +175,7 @@ namespace Engine {
     ExecutionStrategyHandle currentExecutor_;
     ExecutionStrategyFactoryHandle executorFactory_;
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
+    Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory_;
     Networks::NetworkEditorSerializationManager* serializationManager_;
 
     ExecutionQueueManager executionManager_;

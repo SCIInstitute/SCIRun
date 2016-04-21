@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/MatrixMathVisitors.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -39,105 +40,17 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
-
-struct NumberOfElements : Matrix::Visitor
-{
-  size_t value() const { return value_; }
-  
-  NumberOfElements() : value_(0) {}
-  size_t value_;
-
-  virtual void visit(DenseMatrix& m)
-  {
-    value_ = m.rows() * m.cols();
-  }
-
-  virtual void visit(DenseColumnMatrix& m)
-  {
-    value_ = m.nrows();
-  }
-
-  virtual void visit(SparseRowMatrix& m)
-  {
-    value_ = m.nonZeros();
-  }
-};
-
-struct MinimumCoefficient : Matrix::Visitor
-{
-  double value() const { return value_; }
-
-  MinimumCoefficient() : value_(0) {}
-  double value_;
-
-  virtual void visit(DenseMatrix& m)
-  {
-    if (!m.empty())
-      value_ = m.minCoeff();
-  }
-
-  virtual void visit(DenseColumnMatrix& m)
-  {
-    if (!m.empty())
-      value_ = m.minCoeff();
-  }
-
-  virtual void visit(SparseRowMatrix& m)
-  {
-    if (!m.empty())
-    {
-      auto value = m.valuePtr();
-      if (value)
-        value_ = *std::min_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
-      else
-        value_ = 0;
-    }
-  }
-};
-
-struct MaximumCoefficient : Matrix::Visitor
-{
-  double value() const { return value_; }
-
-  MaximumCoefficient() : value_(0) {}
-  double value_;
-
-  virtual void visit(DenseMatrix& m)
-  {
-    if (!m.empty())
-      value_ = m.maxCoeff();
-  }
-
-  virtual void visit(DenseColumnMatrix& m)
-  {
-     if (!m.empty())
-       value_ = m.maxCoeff();
-  }
-
-  virtual void visit(SparseRowMatrix& m)
-  {
-    if (!m.empty())
-    {
-      auto value = m.valuePtr();
-      if (value)
-        value_ = *std::max_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
-      else
-        value_ = 0;
-    }
-  }
-};
-
-ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input) const
+ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::runImpl(const Inputs& input) const
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(input, "Null input matrix");
 
   const std::string type = matrixIs::whatType(input);
 
-  NumberOfElements num;
+  NumberOfElements<double> num;
   input->accept(num);
-  MinimumCoefficient min;
+  MinimumCoefficient<double> min;
   input->accept(min);
-  MaximumCoefficient max;
+  MaximumCoefficient<double> max;
   input->accept(max);
 
   return Outputs(type, 
@@ -153,7 +66,7 @@ AlgorithmOutput ReportMatrixInfoAlgorithm::run(const AlgorithmInput& input) cons
 {
   auto matrix = input.get<Matrix>(Variables::InputMatrix);
 
-  auto outputs = run(matrix);
+  auto outputs = runImpl(matrix);
 
   AlgorithmOutput output;
   output.setTransient(outputs); 

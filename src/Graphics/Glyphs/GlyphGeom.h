@@ -58,9 +58,9 @@ namespace SCIRun {
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addSphere(const Core::Geometry::Point& p, double radius, double resolution, const Core::Datatypes::ColorRGB& color);
       void addEllipsoid(const Core::Geometry::Point& p, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color);
-      void addCylinder(const Core::Geometry::Point p1, const Core::Geometry::Point& p2, double radius, double resolution,
+      void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
-      void addCone(const Core::Geometry::Point p1, const Core::Geometry::Point& p2, double radius, double resolution,
+      void addCone(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addClippingPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
         const Core::Geometry::Point& p3, const Core::Geometry::Point& p4, double radius, double resolution,
@@ -69,9 +69,9 @@ namespace SCIRun {
         const Core::Geometry::Point& p3, const Core::Geometry::Point& p4,
         const Core::Datatypes::ColorRGB& color1);
 
-      void addLine(const Core::Geometry::Point p1, const Core::Geometry::Point& p2,
+      void addLine(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
-      void addNeedle(const Core::Geometry::Point p1, const Core::Geometry::Point& p2, 
+      void addNeedle(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, 
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addPoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color);
 
@@ -96,12 +96,12 @@ namespace SCIRun {
         int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
       void generateSphere(const Core::Geometry::Point& center, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color,
         int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generateLine(const Core::Geometry::Point p1, const Core::Geometry::Point& p2, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2,
+      void generateLine(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2,
         int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generatePoint(const Core::Geometry::Point p, const Core::Datatypes::ColorRGB& color,
+      void generatePoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color,
         int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generatePlane(const Core::Geometry::Point p1, const Core::Geometry::Point p2, 
-        const Core::Geometry::Point p3, const Core::Geometry::Point p4, const Core::Datatypes::ColorRGB& color,
+      void generatePlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, 
+        const Core::Geometry::Point& p3, const Core::Geometry::Point& p4, const Core::Datatypes::ColorRGB& color,
         int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
 
       //From SCIRun4

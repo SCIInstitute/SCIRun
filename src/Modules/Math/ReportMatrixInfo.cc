@@ -36,7 +36,9 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) 
+const ModuleLookupInfo ReportMatrixInfoModule::staticInfo_("ReportMatrixInfo", "Math", "SCIRun");
+
+ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(NumRows);
@@ -53,7 +55,7 @@ void ReportMatrixInfoModule::execute()
     auto output = algo().run(withInputData((InputMatrix, matrix)));
     get_state()->setTransientValue("ReportedInfo", output.getTransient());
 
-    auto info = transient_value_cast<SCIRun::Core::Algorithms::Math::ReportMatrixInfoAlgorithm::Outputs>(output.getTransient());
+    auto info = transient_value_cast<Core::Algorithms::Math::ReportMatrixInfoAlgorithm::Outputs>(output.getTransient());
     /// @todo: requires knowledge of algorithm type
     sendOutput(NumRows, boost::make_shared<Int32>(info.get<1>()));
     sendOutput(NumCols, boost::make_shared<Int32>(info.get<2>()));

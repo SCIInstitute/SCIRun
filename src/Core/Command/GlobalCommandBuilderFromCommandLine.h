@@ -45,7 +45,7 @@ namespace SCIRun
       {
       public:
         explicit GlobalCommandBuilderFromCommandLine(GlobalCommandFactoryHandle cmdFactory);
-        CommandQueueHandle build(CommandLine::ApplicationParametersHandle params);
+        CommandQueueHandle build(CommandLine::ApplicationParametersHandle params) const;
       private:
         GlobalCommandFactoryHandle cmdFactory_;
       };

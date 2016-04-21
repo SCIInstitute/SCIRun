@@ -39,9 +39,11 @@ std::string TextBuilder::mFSRoot;
 std::string TextBuilder::mFSSeparator;
 
 TextBuilder::TextBuilder()
-  : ftInit_(false),
-  ftValid_(false),
+  : ftLib_(nullptr),
+  ftFace_(nullptr),
   ftSize_(15),
+  ftInit_(false),
+  ftValid_(false),
   color_(1.0, 1.0, 1.0, 1.0)
 {}
 
@@ -62,7 +64,7 @@ void TextBuilder::initFreeType(const std::string &libName, size_t size)
   if (!ftInit_) return;
 
   libName_ = libName;
-  std::string fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + libName;
+  auto fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + libName;
 
   err = FT_New_Face(ftLib_, fontPath.c_str(), 0, &ftFace_);
   if (!err)
@@ -70,8 +72,8 @@ void TextBuilder::initFreeType(const std::string &libName, size_t size)
 
   if (ftValid_)
   {
-    err = FT_Select_Charmap(ftFace_, FT_ENCODING_UNICODE);
-    err = FT_Set_Pixel_Sizes(ftFace_, 0, size);
+    FT_Select_Charmap(ftFace_, FT_ENCODING_UNICODE);
+    FT_Set_Pixel_Sizes(ftFace_, 0, size);
   }
 }
 
@@ -94,7 +96,7 @@ void TextBuilder::loadNewFace(const std::string &libName, size_t size)
   }
 
   libName_ = libName;
-  std::string fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + libName;
+  auto fontPath = mFSRoot + mFSSeparator + "Fonts" + mFSSeparator + libName;
 
   err = FT_New_Face(ftLib_, fontPath.c_str(), 0, &ftFace_);
   if (!err)
@@ -102,8 +104,8 @@ void TextBuilder::loadNewFace(const std::string &libName, size_t size)
 
   if (ftValid_)
   {
-    err = FT_Select_Charmap(ftFace_, FT_ENCODING_UNICODE);
-    err = FT_Set_Pixel_Sizes(ftFace_, 0, size);
+    FT_Select_Charmap(ftFace_, FT_ENCODING_UNICODE);
+    FT_Set_Pixel_Sizes(ftFace_, 0, size);
   }
 }
 
@@ -130,7 +132,7 @@ std::string TextBuilder::getUniqueFontString(const char *p, double x,
   return ss.str();
 }
 
-void TextBuilder::printString(const std::string oneline,
+void TextBuilder::printString(const std::string& oneline,
   const Vector &startNrmSpc, const Vector &shiftPxlSpc,
   const std::string& id, GeometryHandle geom)
 {
@@ -140,7 +142,7 @@ void TextBuilder::printString(const std::string oneline,
   std::vector<Vector> points;
   std::vector<uint32_t> indices;
   std::vector<Vector> txt_coords;
-  Vector pos = shiftPxlSpc;
+  auto pos = shiftPxlSpc;
 
   const char *p;
   for (p = oneline.c_str(); *p; p++)
@@ -151,7 +153,7 @@ void TextBuilder::printString(const std::string oneline,
 
     if (FT_Load_Char(ftFace_, *p, FT_LOAD_RENDER))
       continue;
-    FT_GlyphSlot g = ftFace_->glyph;
+    auto g = ftFace_->glyph;
 
     double x = pos.x() + g->bitmap_left;
     double y = -pos.y() - g->bitmap_top;
@@ -186,11 +188,11 @@ void TextBuilder::printString(const std::string oneline,
 
     pos += Vector(g->advance.x >> 6, g->advance.y >> 6, 0.0);
 
-    int32_t numVBOElements = (uint32_t)points.size();
+    int32_t numVBOElements = static_cast<uint32_t>(points.size());
 
     // IBO/VBOs and sizes
-    uint32_t iboSize = sizeof(uint32_t) * (uint32_t)indices.size();
-    uint32_t vboSize = sizeof(float) * 5 * (uint32_t)points.size();
+    uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
+    uint32_t vboSize = sizeof(float) * 5 * static_cast<uint32_t>(points.size());
 
     std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr2(
       new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
@@ -231,7 +233,7 @@ void TextBuilder::printString(const std::string oneline,
 
     // Construct IBO.
 
-    SpireIBO geomIBO(iboName, SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
+    SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
     geom->mIBOs.push_back(geomIBO);
     RenderState renState;
     renState.set(RenderState::USE_COLORMAP, false);
@@ -241,7 +243,7 @@ void TextBuilder::printString(const std::string oneline,
     SpireText text(c, ftFace_);
 
     SpireSubPass pass2(passName, vboName, iboName, shader,
-      COLOR_MAP, renState, RENDER_VBO_IBO, geomVBO, geomIBO, text);
+                       ColorScheme::COLOR_MAP, renState, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, text);
 
     // Add all uniforms generated above to the pass.
     for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
@@ -250,7 +252,7 @@ void TextBuilder::printString(const std::string oneline,
   }
 }
 
-double TextBuilder::getStringLen(const std::string oneline)
+double TextBuilder::getStringLen(const std::string& oneline)
 {
   if (!ftValid_)
     return 0.0;

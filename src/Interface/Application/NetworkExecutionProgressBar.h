@@ -30,7 +30,11 @@
 #define INTERFACE_APPLICATION_NETWORKEXECUTIONPROGRESSBAR_H
 
 #include <QObject>
+#include <QTextStream>
+#ifndef Q_MOC_RUN
+#include <boost/timer.hpp>
 #include <Core/Thread/Mutex.h>
+#endif
 
 namespace SCIRun {
 namespace Gui {
@@ -45,17 +49,23 @@ public:
 
   public Q_SLOTS:
     void updateTotalModules(size_t count);
-    void incrementModulesDone();
+    void incrementModulesDone(double execTime, const std::string& moduleId);
     void resetModulesDone();
+    void displayTimingInfo();
 
 private:
   class QWidgetAction* barAction_;
   class QProgressBar* progressBar_;
   class QWidgetAction* counterAction_;
   class QLabel* counterLabel_;
+  class QAction* timingAction_;
   size_t numModulesDone_;
   size_t totalModules_;
+  double totalExecutionTime_;
   Core::Thread::Mutex mutex_;
+  boost::timer executionTimer_;
+  QString timingLog_;
+  QTextStream timingStream_;
 
   QString counterLabelString() const;
 };

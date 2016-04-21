@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -49,10 +49,12 @@ using namespace Core::Logging;
 
 ALGORITHM_PARAMETER_DEF(Fields, CalcMatrix);
 ALGORITHM_PARAMETER_DEF(Fields, CalcNrrd);
+ALGORITHM_PARAMETER_DEF(Fields, CalcComplexMatrix);
 
 GetFieldDataAlgo::GetFieldDataAlgo()
 {
   addParameter(Parameters::CalcMatrix, true);
+  addParameter(Parameters::CalcComplexMatrix, false);
   addParameter(Parameters::CalcNrrd, false);
 }
 
@@ -64,11 +66,15 @@ AlgorithmOutput GetFieldDataAlgo::run(const AlgorithmInput& input) const
 
   if (get(Parameters::CalcMatrix).toBool())
   {
-    output[Variables::OutputMatrix] = runMatrix(input_field);;
+    output[Variables::OutputMatrix] = runMatrix(input_field);
   }
   if (get(Parameters::CalcNrrd).toBool())
   {
-    output[Variables::OutputNrrd] = runNrrd(input_field);;
+    output[Variables::OutputNrrd] = runNrrd(input_field);
+  }
+  if (get(Parameters::CalcComplexMatrix).toBool())
+  {
+    output[Variables::OutputComplexMatrix] = runComplexMatrix(input_field);
   }
 
   return output;
@@ -121,7 +127,7 @@ boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImplGeneric(FieldHandle
     if (GetVectorFieldDataV(input_field, mat)) return mat;
   if (vfield1->is_tensor())
     if (GetTensorFieldDataV(input_field, mat)) return mat;
-  
+
   THROW_ALGORITHM_INPUT_ERROR("Unknown field data type!");
   return nullptr;
 }

@@ -32,12 +32,10 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Network/Network.h> /// @todo: need network factory??
 #include <Dataflow/Network/ModuleInterface.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <fstream>
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/serialization/nvp.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <Core/Logging/Log.h>
 
@@ -48,7 +46,7 @@ using namespace SCIRun::Core::Algorithms;
 class ScopedControllerSignalDisabler
 {
 public:
-  ScopedControllerSignalDisabler(NetworkEditorControllerInterface* nec) : nec_(nec)
+  explicit ScopedControllerSignalDisabler(NetworkEditorControllerInterface* nec) : nec_(nec)
   {
     nec_->disableSignals();
   }
@@ -85,7 +83,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
     {
       try
       {
-        ModuleHandle module = controller_->addModule(modPair.second.module);
+        auto module = controller_->addModule(modPair.second.module);
         module->set_id(modPair.first);
         ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
         module->set_state(state);
@@ -102,8 +100,8 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
   std::sort(connectionsSorted.begin(), connectionsSorted.end());
   for (const auto& conn : connectionsSorted)
   {
-    ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
-    ModuleHandle to = network->lookupModule(conn.in_.moduleId_);
+    auto from = network->lookupModule(conn.out_.moduleId_);
+    auto to = network->lookupModule(conn.in_.moduleId_);
 
     if (from && to)
       controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
@@ -132,7 +130,7 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const 
         ++newId;
       }
 
-      ModuleHandle module = controller_->addModule(modPair.second.module);
+      auto module = controller_->addModule(modPair.second.module);
 
       //std::cout << "setting module id to " << newId << std::endl;
       info.moduleIdMapping[modPair.first] = newId;
@@ -142,7 +140,7 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const 
     }
   }
 
-  std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
+  auto connectionsSorted(data.connections);
   std::sort(connectionsSorted.begin(), connectionsSorted.end());
 
   for (const auto& conn : connectionsSorted)
@@ -151,8 +149,8 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const 
     auto modIn = info.moduleIdMapping.find(conn.in_.moduleId_);
     if (modOut != info.moduleIdMapping.end() && modIn != info.moduleIdMapping.end())
     {
-      ModuleHandle from = network->lookupModule(ModuleId(modOut->second));
-      ModuleHandle to = network->lookupModule(ModuleId(modIn->second));
+      auto from = network->lookupModule(ModuleId(modOut->second));
+      auto to = network->lookupModule(ModuleId(modIn->second));
       if (from && to)
         controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
     }
@@ -177,7 +175,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter)
 {
   NetworkXML networkXML;
-  Network::ConnectionDescriptionList conns = network->connections();
+  auto conns = network->connections();
   for (const auto& desc : conns)
   {
     if (connFilter(desc))
@@ -185,16 +183,16 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, Module
   }
   for (size_t i = 0; i < network->nmodules(); ++i)
   {
-    ModuleHandle module = network->module(i);
+    auto module = network->module(i);
     if (modFilter(module))
     {
-      ModuleStateHandle state = module->get_state();
-      boost::shared_ptr<SimpleMapModuleStateXML> stateXML = make_state_xml(state);
+      auto state = module->get_state();
+      auto stateXML = make_state_xml(state);
       networkXML.modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
     }
   }
 
-  NetworkFileHandle file(boost::make_shared<NetworkFile>());
+  auto file(boost::make_shared<NetworkFile>());
   file->network = networkXML;
   if (nesm_)
   {
@@ -202,6 +200,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, Module
     file->moduleNotes = *nesm_->dumpModuleNotes(modFilter);
     file->connectionNotes = *nesm_->dumpConnectionNotes(connFilter);
     file->moduleTags = *nesm_->dumpModuleTags(modFilter);
+    file->disabledComponents = *nesm_->dumpDisabledComponents(modFilter, connFilter);
   }
   return file;
 }

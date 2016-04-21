@@ -160,7 +160,7 @@ TEST(EigenDenseMatrixBinaryOperationTests, CanSubtract)
   EXPECT_EQ(m - m, Zero);
 }
 
-TEST(EigenDenseComplexMatrixTests, ComplexDenseMatrixTests)
+TEST(EigenDenseComplexMatrixTests, CanMultiply)
 {
   ComplexDenseMatrix A, B, C_expect, C_actual;
 
@@ -174,4 +174,30 @@ TEST(EigenDenseComplexMatrixTests, ComplexDenseMatrixTests)
   C_actual = A * B;
 
   ASSERT_TRUE(C_actual.isApprox(C_expect, 1e-6));
+}
+
+namespace std
+{
+  bool operator<(const Complex& lhs, const Complex& rhs)
+  {
+    return norm(lhs) < norm(rhs);
+  }
+}
+
+TEST(EigenDenseComplexMatrixTests, MinMax)
+{
+  ComplexDenseMatrix A, B, C;
+
+  A << Complex(1, 1), Complex(2, 3),
+    Complex(3, 2), Complex(4, 4);
+  B << Complex(4, 4), Complex(3, 2),
+    Complex(2, 3), Complex(-1, -1);
+  C << Complex(0, 0), Complex(1, 0), Complex(-1, 0);
+
+  EXPECT_EQ(Complex(1, 1), A.minCoeff());
+  EXPECT_EQ(Complex(4, 4), A.maxCoeff());
+  EXPECT_EQ(Complex(-1, -1), B.minCoeff());
+  EXPECT_EQ(Complex(4, 4), B.maxCoeff());
+  EXPECT_EQ(Complex(0, 0), C.minCoeff());
+  EXPECT_EQ(Complex(-1, 0), C.maxCoeff());
 }

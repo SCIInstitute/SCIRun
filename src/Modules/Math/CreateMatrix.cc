@@ -27,20 +27,18 @@
 */
 /// @todo Documentation Modules/Math/CreateMatrix.cc
 
-#include <iostream>
-
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Modules/Math/CreateMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
+const ModuleLookupInfo CreateMatrixModule::staticInfo_("CreateMatrix", "Math", "SCIRun");
+const SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
 
-CreateMatrixModule::CreateMatrixModule() : Module(ModuleLookupInfo("CreateMatrix", "Math", "SCIRun")) 
+CreateMatrixModule::CreateMatrixModule() : Module(staticInfo_)
 {
   INITIALIZE_PORT(EnteredMatrix);
 }
@@ -55,10 +53,10 @@ void CreateMatrixModule::execute()
 {
   if (needToExecute())
   {
-    DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>());
+    auto matrix(boost::make_shared<DenseMatrix>());
     try
     {
-      std::string matrixString = get_state()->getValue(TextEntry).toString();
+      auto matrixString = get_state()->getValue(TextEntry).toString();
 
       if (!matrixString.empty())
       {

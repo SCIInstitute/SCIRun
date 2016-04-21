@@ -28,4 +28,9 @@
 
 #include <Core/Command/CommandFactory.h>
 
-//using namespace SCIRun::Core::Commands;
+using namespace SCIRun::Core::Commands;
+
+CommandHandle NullCommandFactory::create(NetworkEventCommands) const 
+{
+  return boost::make_shared<NullCommand>();
+}

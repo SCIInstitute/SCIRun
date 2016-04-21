@@ -64,7 +64,8 @@ using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory,
-  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, GlobalCommandFactoryHandle cmdFactory, NetworkEditorSerializationManager* nesm) :
+  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, GlobalCommandFactoryHandle cmdFactory, 
+  NetworkEventCommandFactoryHandle eventCmdFactory, NetworkEditorSerializationManager* nesm) :
   theNetwork_(new Network(mf, sf, af, reex)),
   moduleFactory_(mf),
   stateFactory_(sf),
@@ -72,6 +73,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   reexFactory_(reex),
   executorFactory_(executorFactory),
   cmdFactory_(cmdFactory),
+  eventCmdFactory_(eventCmdFactory ? eventCmdFactory : boost::make_shared<NullCommandFactory>()),
   serializationManager_(nesm),
   signalSwitch_(true)
 {
@@ -84,8 +86,10 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 #endif
 }
 
-NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
-  : theNetwork_(network), executorFactory_(executorFactory), serializationManager_(nesm),
+NetworkEditorController::NetworkEditorController(NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
+  : theNetwork_(network), executorFactory_(executorFactory), 
+  eventCmdFactory_(new NullCommandFactory),
+  serializationManager_(nesm),
   signalSwitch_(true)
 {
 }
@@ -119,9 +123,17 @@ namespace
       const double moduleHorizontalSpacing = 264;
       const double moduleSpacingOffset = 10;
       static int numSnips = 0;
-      for (const auto& m : modsNeeded)
+      for (auto m : modsNeeded)
       {
+        bool uiVisible = false;
+        if (m.back() == '*')
+        {
+          m = m.substr(0, m.length() - 1);
+          uiVisible = true;
+        }
         auto mod = nec_.addModule(m);
+        if (mod->has_ui())
+          mod->setUiVisible(uiVisible);
         mods_.push_back(mod);
         positions.modulePositions[mod->get_id().id_] = std::make_pair(moduleSpacingOffset + numSnips*moduleHorizontalSpacing, moduleVerticalSpacing * i++ + moduleSpacingOffset);
       }
@@ -217,12 +229,15 @@ ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
     /*emit*/ moduleAdded_(info.module_name_, realModule, dummy);
   }
   printNetwork();
+
+  eventCmdFactory_->create(NetworkEventCommands::PostModuleAdd)->execute();
+
   return realModule;
 }
 
 ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info)
 {
-  ModuleHandle realModule = theNetwork_->add_module(info);
+  auto realModule = theNetwork_->add_module(info);
   if (realModule) /// @todo: mock network throws here due to null, need to have it return a mock module.
   {
     realModule->addPortConnection(connectPortAdded(boost::bind(&ModuleInterface::portAddedSlot, realModule.get(), _1, _2)));
@@ -250,7 +265,7 @@ void NetworkEditorController::interruptModule(const ModuleId& id)
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
-  ModuleId id(module->get_id());
+  auto id(module->get_id());
   auto newModule = addModuleImpl(module->get_info());
   newModule->set_state(module->get_state()->clone());
   static ModuleCounter dummy;
@@ -273,7 +288,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   return newModule;
 }
 
-void NetworkEditorController::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+ModuleHandle NetworkEditorController::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const PortDescriptionInterface* portToConnectUponInsertion)
 {
   auto newMod = addModule(newModuleName);
 
@@ -288,7 +303,7 @@ void NetworkEditorController::connectNewModule(const ModuleHandle& moduleToConne
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
-        return;
+        return newMod;
       }
     }
   }
@@ -299,10 +314,20 @@ void NetworkEditorController::connectNewModule(const ModuleHandle& moduleToConne
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
-        return;
+        if (portToConnectUponInsertion)
+        {
+          auto oports = newMod->outputPorts();
+          auto fromPort = std::find_if(oports.begin(), oports.end(), [portToConnectUponInsertion](OutputPortHandle out) { return out->get_typename() == portToConnectUponInsertion->get_typename(); });
+          if (fromPort != oports.end())
+          {
+            requestConnection(fromPort->get(), portToConnectUponInsertion);
+          }
+        }
+        return newMod;
       }
     }
   }
+  return newMod;
 }
 
 void NetworkEditorController::printNetwork() const
@@ -330,7 +355,7 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))
   {
-    ConnectionId id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.portId_),
+    auto id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.portId_),
       ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.portId_));
     if (!id.id_.empty())
       connectionAdded_(desc);
@@ -428,7 +453,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       ModuleCounter modulesDone;
       for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {
-        ModuleHandle module = theNetwork_->module(i);
+        auto module = theNetwork_->module(i);
         moduleAdded_(module->get_module_name(), module, modulesDone);
         networkDoneLoading_(static_cast<int>(i));
       }
@@ -439,7 +464,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
         for (const ConnectionDescription& cd : theNetwork_->connections())
         {
-          ConnectionId id = ConnectionId::create(cd);
+          auto id = ConnectionId::create(cd);
           connectionAdded_(cd);
         }
       }
@@ -449,6 +474,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         serializationManager_->updateModuleNotes(xml->moduleNotes);
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
         serializationManager_->updateModuleTags(xml->moduleTags);
+        serializationManager_->updateDisabledComponents(xml->disabledComponents);
       }
       else
         Log::get() << INFO <<  "module position editor unavailable, module positions at default" << std::endl;
@@ -465,12 +491,21 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 
 namespace
 {
+  const int xMoveIncrement = 300;
+  int xMoveIndex = 1;
+  int yMoveIndex = 0;
+  const int moveMod = 4;
+  const int yMoveIncrement = 300;
   void shiftAppendedModules(ModulePositions::Data& positions)
   {
     for (auto& pos : positions)
     {
-      pos.second.first += 300;
+      pos.second.first += xMoveIncrement * xMoveIndex;
+      pos.second.second += yMoveIncrement * yMoveIndex;
     }
+    xMoveIndex = (xMoveIndex + 1) % moveMod;
+    if (0 == xMoveIndex)
+      yMoveIndex++;
   }
 }
 
@@ -485,11 +520,11 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
       auto originalConnections = theNetwork_->connections();
 
       auto info = conv.appendXmlData(xml->network);
-      size_t startIndex = info.newModuleStartIndex;
+      auto startIndex = info.newModuleStartIndex;
       ModuleCounter modulesDone;
       for (size_t i = startIndex; i < theNetwork_->nmodules(); ++i)
       {
-        ModuleHandle module = theNetwork_->module(i);
+        auto module = theNetwork_->module(i);
         moduleAdded_(module->get_module_name(), module, modulesDone);
       }
 
@@ -497,11 +532,11 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
         auto disable(createDynamicPortSwitch());
         //this is handled by NetworkXMLConverter now--but now the logic is convoluted.
         //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
-        for (const ConnectionDescription& cd : theNetwork_->connections())
+        for (const auto& cd : theNetwork_->connections())
         {
           if (std::find(originalConnections.begin(), originalConnections.end(), cd) == originalConnections.end())
           {
-            ConnectionId id = ConnectionId::create(cd);
+            auto id = ConnectionId::create(cd);
             connectionAdded_(cd);
           }
         }
@@ -518,6 +553,7 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
         xml->moduleTags.tags = remapIdBasedContainer(xml->moduleTags.tags, info.moduleIdMapping);
         serializationManager_->updateModuleTags(xml->moduleTags);
+        //TODO: need disabled here?
       }
       else
         Log::get() << INFO << "module position editor unavailable, module positions at default" << std::endl;

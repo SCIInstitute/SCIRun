@@ -48,8 +48,11 @@ namespace Gui
 
   QColor defaultTagColor(int tag);
   typedef std::function<QColor(int)> TagColorFunc;
+  using PreexecuteFunc = std::function<void()>;
 
   QString colorToString(const QColor& color);
+
+  QGraphicsEffect* blurEffect(double radius = 2);
 
   inline QAction* separatorAction(QWidget* parent)
   {
@@ -72,7 +75,13 @@ namespace Gui
   typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
   typedef boost::function<void(QAction*)> QActionHookup;
   QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup, QWidget* parent);
+  bool portTypeMatches(const std::string& portTypeToMatch, bool isInput, const Dataflow::Networks::ModuleDescription& module);
   QPointF findCenterOfNetwork(const Dataflow::Networks::ModulePositions& positions);
+
+  const char* addNewModuleActionTypePropertyName();
+  const char* insertNewModuleActionTypePropertyName();
+
+  const Qt::GlobalColor CLIPBOARD_COLOR = Qt::cyan;
 }
 
 }

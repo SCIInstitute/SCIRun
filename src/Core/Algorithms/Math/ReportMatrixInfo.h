@@ -40,13 +40,13 @@ namespace Math {
   class SCISHARE ReportMatrixInfoAlgorithm : public AlgorithmBase
   {
   public:
-    typedef SCIRun::Core::Datatypes::MatrixHandle Inputs;
+    typedef Datatypes::MatrixHandle Inputs;
     typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
 
-    Outputs run(const Inputs& input) const;
+    Outputs runImpl(const Inputs& input) const;
     static std::string summarize(const Outputs& info);
 
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
   };
 
 }}}}

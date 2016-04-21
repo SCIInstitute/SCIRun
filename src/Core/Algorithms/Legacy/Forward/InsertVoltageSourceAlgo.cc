@@ -45,7 +45,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-#include <Dataflow/Network/Module.h>
 #include <vector>
 
 using namespace SCIRun;
@@ -53,19 +52,19 @@ using namespace SCIRun::Core::Algorithms::Forward;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 
-InsertVoltageSourceAlgo::InsertVoltageSourceAlgo() : groundfirst_(false), outside_(false)
+InsertVoltageSourceAlgo::InsertVoltageSourceAlgo() : outside_(false), groundfirst_(false)
 {}
 
-InsertVoltageSourceAlgo::InsertVoltageSourceAlgo(bool groundFirst, bool outside) 
-  : groundfirst_(groundFirst), outside_(outside)
+InsertVoltageSourceAlgo::InsertVoltageSourceAlgo(bool groundFirst, bool outside)
+  : outside_(outside), groundfirst_(groundFirst)
 {}
 
 
 void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, FieldHandle& omeshH, DenseMatrixHandle& odirichletMatrix)
-{ 
+{
   std::vector<Point> sources;
   std::vector<double> vals;
-  
+
   if (groundfirst_)
   {
     Point pnt;
@@ -115,7 +114,6 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
 
   VMesh* vmesh = omeshH->vmesh();
   VMesh::Node::size_type nnodes = vmesh->num_nodes();
-  VMesh::Elem::size_type nelems = vmesh->num_elems();
   vmesh->synchronize(Mesh::LOCATE_E);
 
   VMesh::Node::array_type nbrs;
@@ -125,7 +123,7 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
   std::vector<int> have_some(nnodes);
   //have_some.initialize(0);
   std::vector<VMesh::Node::index_type> bc_nodes;
-  
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   for (size_t di=0; di<dirichlet.size(); di++)
   {

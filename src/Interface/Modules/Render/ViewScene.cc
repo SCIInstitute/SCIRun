@@ -36,26 +36,44 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/Screenshot.h>
-#include <boost/thread.hpp>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Core/GeometryPrimitives/Transform.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Render;
 using namespace SCIRun::Modules::Render;
 
+namespace
+{
+  class DialogIdGenerator : public GeometryIDGenerator
+  {
+  public:
+    explicit DialogIdGenerator(const std::string& name) : moduleName_(name) {}
+    virtual std::string generateGeometryID(const std::string& tag) const override
+    {
+      return moduleName_ + "::" + tag;
+    }
+  private:
+    std::string moduleName_;
+  };
+}
+
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false), itemValueChanged_(true),
   shiftdown_(false), selected_(false),
-  clippingPlaneIndex_(0),screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false)
+  clippingPlaneIndex_(0),screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false),
+  gid_(new DialogIdGenerator(name))
 {
   counter_ = 1;
   setupUi(this);
@@ -97,10 +115,10 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     auto spire = mSpire.lock();
     if (!spire)
       return;
-    if (Core::Preferences::Instance().useNewViewSceneMouseControls)
+    if (Preferences::Instance().useNewViewSceneMouseControls)
     {
       spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
-      spire->setZoomInverted(Core::Preferences::Instance().invertMouseZoom);
+      spire->setZoomInverted(Preferences::Instance().invertMouseZoom);
     }
     else
     {
@@ -129,7 +147,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 
-  std::string filesystemRoot = Core::Application::Instance().executablePath().string();
+  std::string filesystemRoot = Application::Instance().executablePath().string();
   std::string sep;
   sep += boost::filesystem::path::preferred_separator;
   Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
@@ -171,7 +189,7 @@ void ViewSceneDialog::restoreObjColor()
       for (auto it = geomData->begin(); it != geomData->end(); ++it)
       {
         auto obj = *it;
-        auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
+        auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
         if (realObj->uniqueID() == selName)
         {
           //selected_ = true;
@@ -268,12 +286,12 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     }
 
     //getting geom list
-    std::list<Graphics::Datatypes::GeometryHandle> objList;
+    std::list<GeometryHandle> objList;
 
     for (auto it = geomData->begin(); it != geomData->end(); ++it)
     {
       auto obj = *it;
-      auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
+      auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj)
       {
         //filter objs
@@ -375,7 +393,7 @@ void ViewSceneDialog::newGeometryValue()
       objectNames.push_back(displayName.toStdString());
       if (!isObjectUnselected(displayName.toStdString()))
       {
-        auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(obj);
+        auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
         if (realObj)
         {
           spire->handleGeomObject(realObj, port);
@@ -393,7 +411,7 @@ void ViewSceneDialog::newGeometryValue()
     auto name = scaleBarGeom_->uniqueID();
     auto displayName = QString::fromStdString(name).split('_').at(1);
     objectNames.push_back(name/*displayName.toStdString()*/);
-    auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(scaleBarGeom_);
+      auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(scaleBarGeom_);
     if (realObj)
     {
       spire->handleGeomObject(realObj, port);
@@ -407,7 +425,7 @@ void ViewSceneDialog::newGeometryValue()
     auto name = i->uniqueID();
     auto displayName = QString::fromStdString(name).split('_').at(1);
     objectNames.push_back(name/*displayName.toStdString()*/);
-    auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(i);
+      auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(i);
     if (realObj)
     {
       spire->handleGeomObject(realObj, port);
@@ -487,7 +505,7 @@ void ViewSceneDialog::newOwnGeometryValue()
     auto name = scaleBarGeom_->uniqueID();
     auto displayName = QString::fromStdString(name).split('_').at(1);
     objectNames.push_back(displayName.toStdString());
-    auto realObj = boost::dynamic_pointer_cast<Graphics::Datatypes::GeometryObjectSpire>(scaleBarGeom_);
+    auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(scaleBarGeom_);
     if (realObj)
     {
       spire->handleGeomObject(realObj, port);
@@ -508,12 +526,12 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
   if (index == 0)
   {
     spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
-    Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
+    Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
   }
   else
   {
     spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
-    Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
+    Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
   }
   mConfigurationDock->updateZoomOptionVisibility();
 }
@@ -822,7 +840,7 @@ void ViewSceneDialog::invertZoomClicked(bool value)
 {
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   spire->setZoomInverted(value);
-  Core::Preferences::Instance().invertMouseZoom.setValue(value);
+  Preferences::Instance().invertMouseZoom.setValue(value);
 }
 
 //------------------------------------------------------------------------------
@@ -1079,7 +1097,7 @@ void ViewSceneDialog::setScaleBar()
 }
 
 // update scale bar geometries
-SCIRun::Graphics::Datatypes::GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
+GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 {
   const int    numTicks = scaleBar_.numTicks;
   const double mult = scaleBar_.multiplier;
@@ -1097,7 +1115,7 @@ SCIRun::Graphics::Datatypes::GeometryHandle ViewSceneDialog::buildGeometryScaleB
   //text
   std::stringstream ss;
   std::string oneline;
-  ss << scaleBar_.length << " " << scaleBar_.unit;
+  ss << scaleBar_.length * scaleBar_.multiplier << " " << scaleBar_.unit;
   oneline = ss.str();
   double text_len = 0.0;
   if (textBuilder_.isInit() && textBuilder_.isValid())
@@ -1157,17 +1175,17 @@ SCIRun::Graphics::Datatypes::GeometryHandle ViewSceneDialog::buildGeometryScaleB
 
   // Construct VBO.
   std::string shader = "Shaders/HudUniform";
-  std::vector<Graphics::Datatypes::SpireVBO::AttributeData> attribs;
-  attribs.push_back(Graphics::Datatypes::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  std::vector<Graphics::Datatypes::SpireSubPass::Uniform> uniforms;
-  uniforms.push_back(Graphics::Datatypes::SpireSubPass::Uniform("uTrans", shift));
-  uniforms.push_back(Graphics::Datatypes::SpireSubPass::Uniform("uColor", color));
-  Graphics::Datatypes::SpireVBO geomVBO = Graphics::Datatypes::SpireVBO(vboName, attribs, vboBufferSPtr,
+  std::vector<SpireVBO::AttributeData> attribs;
+  attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  std::vector<SpireSubPass::Uniform> uniforms;
+  uniforms.push_back(SpireSubPass::Uniform("uTrans", shift));
+  uniforms.push_back(SpireSubPass::Uniform("uColor", color));
+  SpireVBO geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, BBox(), true);
 
   // Construct IBO.
 
-  Graphics::Datatypes::SpireIBO geomIBO(iboName, Graphics::Datatypes::SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr);
+  SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::LINES, sizeof(uint32_t), iboBufferSPtr);
 
   RenderState renState;
   renState.set(RenderState::IS_ON, true);
@@ -1176,16 +1194,16 @@ SCIRun::Graphics::Datatypes::GeometryHandle ViewSceneDialog::buildGeometryScaleB
   renState.set(RenderState::USE_TRANSPARENCY, false);
   renState.set(RenderState::IS_TEXT, true);
 
-  Graphics::Datatypes::SpireText text;
+  SpireText text;
 
-  Graphics::Datatypes::SpireSubPass pass(passName, vboName, iboName, shader,
-    Graphics::Datatypes::COLOR_MAP, renState, Graphics::Datatypes::RENDER_VBO_IBO,
+  SpireSubPass pass(passName, vboName, iboName, shader,
+                    ColorScheme::COLOR_MAP, renState, RenderType::RENDER_VBO_IBO,
     geomVBO, geomIBO, text);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  Graphics::Datatypes::GeometryHandle geom(new Graphics::Datatypes::GeometryObjectSpire(uniqueNodeID));
+  auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
 
   geom->mIBOs.push_back(geomIBO);
   geom->mVBOs.push_back(geomVBO);
@@ -1250,20 +1268,19 @@ void ViewSceneDialog::buildGeomClippingPlanes()
 }
 
 //
-void ViewSceneDialog::buildGeometryClippingPlane(
-  int index, glm::vec4 plane, SCIRun::Core::Geometry::BBox bbox)
+void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, const BBox& bbox)
 {
-  Core::Geometry::Vector diag(bbox.diagonal());
-  Core::Geometry::Point c(bbox.center());
-  Core::Geometry::Vector n(plane.x, plane.y, plane.z);
+  Vector diag(bbox.diagonal());
+  Point c(bbox.center());
+  Vector n(plane.x, plane.y, plane.z);
   n.normalize();
   //Core::Geometry::Point p(c + (n * diag.length() / 2.0) * (plane.w));
-  Core::Geometry::Point p(c + ((-plane.w) - Core::Geometry::Dot(c, n)) * n);
+  auto p(c + ((-plane.w) - Dot(c, n)) * n);
   //std::cout << "p0" << "\t" << p << "\n";
   if (clippingPlanes_[index].reverseNormal)
     n = -n;
   double w, h; w = h = diag.length() / 2.0;
-  Core::Geometry::Vector axis1, axis2;
+  Vector axis1, axis2;
   Point intersect;
   n.find_orthogonal(axis1, axis2);
   if (bbox.intersect(c, axis1, intersect))
@@ -1275,10 +1292,10 @@ void ViewSceneDialog::buildGeometryClippingPlane(
   //else
   //  p = Core::Geometry::Point(-n * plane.w);
   //std::cout << "pp" << "\t" << p << "\n";
-  Core::Geometry::Point p1 = p - axis1 * w / 2.0 - axis2 * h / 2.0;
-  Core::Geometry::Point p2 = p + axis1 * w / 2.0 - axis2 * h / 2.0;
-  Core::Geometry::Point p3 = p + axis1 * w / 2.0 + axis2 * h / 2.0;
-  Core::Geometry::Point p4 = p - axis1 * w / 2.0 + axis2 * h / 2.0;
+  auto p1 = p - axis1 * w / 2.0 - axis2 * h / 2.0;
+  auto p2 = p + axis1 * w / 2.0 - axis2 * h / 2.0;
+  auto p3 = p + axis1 * w / 2.0 + axis2 * h / 2.0;
+  auto p4 = p - axis1 * w / 2.0 + axis2 * h / 2.0;
 
   std::stringstream ss;
   std::string uniqueNodeID;
@@ -1292,7 +1309,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(
     p3.x() << p3.y() << p3.z() <<
     p4.x() << p4.y() << p4.z();
   uniqueNodeID = ss.str();
-  Graphics::Datatypes::ColorScheme colorScheme(Graphics::Datatypes::ColorScheme::COLOR_UNIFORM);
+  ColorScheme colorScheme(ColorScheme::COLOR_UNIFORM);
   RenderState renState;
   renState.set(RenderState::IS_ON, true);
   renState.set(RenderState::USE_TRANSPARENCY, false);
@@ -1300,11 +1317,9 @@ void ViewSceneDialog::buildGeometryClippingPlane(
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
-  SCIRun::Graphics::Datatypes::GeometryHandle geom(
-    new SCIRun::Graphics::Datatypes::GeometryObjectSpire(uniqueNodeID));
+  GeometryHandle geom(new GeometryObjectSpire(*gid_, uniqueNodeID, false));
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SCIRun::Graphics::Datatypes::SpireIBO::TRIANGLES, bbox);
-  //handleGeomObject(geom, 0);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
   Graphics::GlyphGeom glyphs2;
   glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
@@ -1317,11 +1332,9 @@ void ViewSceneDialog::buildGeometryClippingPlane(
   uniqueNodeID = ss.str();
   renState.set(RenderState::USE_TRANSPARENCY, true);
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
-  SCIRun::Graphics::Datatypes::GeometryHandle geom2(
-    new SCIRun::Graphics::Datatypes::GeometryObjectSpire(ss.str()));
+  GeometryHandle geom2(new GeometryObjectSpire(*gid_, ss.str(), false));
   glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
-    colorScheme, renState, SCIRun::Graphics::Datatypes::SpireIBO::TRIANGLES, bbox);
-  //handleGeomObject(geom2, 0);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
   clippingPlaneGeoms_.push_back(geom);
   clippingPlaneGeoms_.push_back(geom2);
@@ -1664,44 +1677,27 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
   saveScreenshotOnNewGeometry_ = state != 0;
 }
 
+namespace //TODO: move to appropriate location
+{
+  Transform toSciTransform(const glm::mat4& mat)
+  {
+    //needs transposing
+    Transform t;
+    for (int i = 0; i < 4; ++i)
+      for (int j = 0; j < 4; ++j)
+        t.set_mat_val(i, j, mat[j][i]);
+    return t;
+  }
+}
+
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
 {
-  //qDebug() << "sendGeometryFeedbackToState" << x << y;
-  using namespace Core::Algorithms;
-  Variable::List geomInfo;
-  //geomInfo.push_back(makeVariable("xClick", x));
-  //geomInfo.push_back(makeVariable("yClick", y));
-  geomInfo.push_back(makeVariable("counter", counter_));
-  counter_ = counter_ < 0 ? 1 : counter_ + 1;
   std::shared_ptr<SRInterface> spire = mSpire.lock();
-  //DenseMatrixHandle matrixHandle(new DenseMatrix(4, 4));
   glm::mat4 trans = spire->getWidgetTransform().transform;
 
-  geomInfo.push_back(makeVariable("x00", trans[0][0]));
-  geomInfo.push_back(makeVariable("x10", trans[1][0]));
-  geomInfo.push_back(makeVariable("x20", trans[2][0]));
-  geomInfo.push_back(makeVariable("x30", trans[3][0]));
-  geomInfo.push_back(makeVariable("x01", trans[0][1]));
-  geomInfo.push_back(makeVariable("x11", trans[1][1]));
-  geomInfo.push_back(makeVariable("x21", trans[2][1]));
-  geomInfo.push_back(makeVariable("x31", trans[3][1]));
-  geomInfo.push_back(makeVariable("x02", trans[0][2]));
-  geomInfo.push_back(makeVariable("x12", trans[1][2]));
-  geomInfo.push_back(makeVariable("x22", trans[2][2]));
-  geomInfo.push_back(makeVariable("x32", trans[3][2]));
-  geomInfo.push_back(makeVariable("x03", trans[0][3]));
-  geomInfo.push_back(makeVariable("x13", trans[1][3]));
-  geomInfo.push_back(makeVariable("x23", trans[2][3]));
-  geomInfo.push_back(makeVariable("x33", trans[3][3]));
-  /*
-  (*matrixHandle) << trans[0][0], trans[1][0], trans[2][0], trans[3][0]
-                   , trans[0][1], trans[1][1], trans[2][1], trans[3][1]
-                   , trans[0][2], trans[1][2], trans[2][2], trans[3][2]
-                   , trans[0][3], trans[1][3], trans[2][3], trans[3][3];
-  std::cout << "in view scene: " << (*matrixHandle) << std::endl;*/
-  //geomInfo.push_back(Variable(Name("transform"), matrixHandle, Variable::DATATYPE_VARIABLE));
-  auto var = makeVariable("geomInfo", geomInfo);
-  state_->setTransientValue(Parameters::GeometryFeedbackInfo, var);
+  ViewSceneFeedback vsf;
+  vsf.transform = toSciTransform(trans);
+  state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 }
 
 void ViewSceneDialog::takeScreenshot()

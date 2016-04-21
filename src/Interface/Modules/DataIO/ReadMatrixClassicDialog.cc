@@ -60,6 +60,7 @@ ReadMatrixClassicDialog::ReadMatrixClassicDialog(const std::string& name, Module
 void ReadMatrixClassicDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
+  selectedFilter_ = QString::fromStdString(state_->getValue(Variables::FileTypeName).toString());
 }
 
 void ReadMatrixClassicDialog::pushFileNameToState()

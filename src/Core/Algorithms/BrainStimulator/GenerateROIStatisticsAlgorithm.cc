@@ -236,7 +236,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
     AtlasMeshLabels_vector = ConvertInputAtlasStringIntoVector(AtlasMeshLabels); /// cut the atlas ROI labels into pieces (std::vector)
   }
 
-  if (AtlasMeshLabels_vector.size()==0 && number_of_atlas_materials>0)
+  if (AtlasMeshLabels_vector.empty() && number_of_atlas_materials>0)
   {
     AtlasMeshLabels_vector.resize(number_of_atlas_materials);
     for (int i=0; i<number_of_atlas_materials; i++)
@@ -256,26 +256,21 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
       {
         THROW_ALGORITHM_INPUT_ERROR("Number of material Labels in AtlasMesh and AtlasMeshLabels do not match"); 
       }
-    } 
-
-    //TODO: use this example to improve Variable::List syntactical sugar
-    Variable::List elc_vals_in_table;
-    for (int i=0; i<AtlasMeshLabels_vector.size(); i++) /// loop over all materials, format numbers and put it in a Variable structure to be accessible in the GUI
-    {
-      Variable::List tmp;
-      tmp += makeVariable("name", AtlasMeshLabels_vector[i]), //label name
-        makeVariable("col0", formatStatistic((*output)(i,0))), //average
-        makeVariable("col1", formatStatistic((*output)(i,1))), //stddev
-        makeVariable("col2", formatStatistic((*output)(i,2))), //min
-        makeVariable("col3", formatStatistic((*output)(i,3))), //max
-        makeVariable("col4", formatCount((*output)(i,4))); //element count
-
-      elc_vals_in_table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp));
     }
 
-    VariableHandle statistics_table(new Variable(Name("Table"), elc_vals_in_table));
+  auto elc_vals_in_table = makeHomogeneousVariableList([&AtlasMeshLabels_vector, &output](size_t i)
+  {
+    return makeAnonymousVariableList(AtlasMeshLabels_vector[i], //label name
+      formatStatistic((*output)(i, 0)), //average
+      formatStatistic((*output)(i, 1)), //stddev
+      formatStatistic((*output)(i, 2)), //min
+      formatStatistic((*output)(i, 3)), //max
+      formatCount((*output)(i, 4))); //element count
+  }, AtlasMeshLabels_vector.size());
 
-    return boost::make_tuple(output, statistics_table);
+  auto statistics_table(boost::make_shared<Variable>(Name("Table"), elc_vals_in_table));
+
+  return boost::make_tuple(output, statistics_table);
 }
 
 /// this function takes the (x,y,z) location of the user specified ROI and results in a std:vector<bool> that contains trues for ROI mesh elements and false for non-ROI mesh elements

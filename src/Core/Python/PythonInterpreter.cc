@@ -289,6 +289,7 @@ void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, 
   // relative paths
   lib_path_list.push_back(lib_path.parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
   lib_path_list.push_back(lib_path / PYTHONPATH);
+  lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
 
   if (isOSXSCIRunTestExecutable(commandLine))
   {

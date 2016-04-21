@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,9 +29,9 @@
 
 /*
  *@file  TypeName.h
- *@brief template to return name of argument type; 
+ *@brief template to return name of argument type;
  *       used in PIO of templatized types
- *                
+ *
  *@author
  *   Alexei Samsonov
  *   Department of Computer Science
@@ -66,26 +66,26 @@ public:
     return o.str();
   }
 
-  static std::string make_template_id(const std::string& templateName, 
-    const std::string& templateParam1, 
+  static std::string make_template_id(const std::string& templateName,
+    const std::string& templateParam1,
     const std::string& templateParam2)
   {
     std::ostringstream o;
-    o << templateName << leftAngleBracket 
-      << templateParam1 << comma 
+    o << templateName << leftAngleBracket
+      << templateParam1 << comma
       << templateParam2 << rightAngleBracket;
     return o.str();
   }
 
-  static std::string make_template_id(const std::string& templateName, 
-    const std::string& templateParam1, 
+  static std::string make_template_id(const std::string& templateName,
+    const std::string& templateParam1,
     const std::string& templateParam2,
     const std::string& templateParam3)
   {
     std::ostringstream o;
-    o << templateName << leftAngleBracket 
-      << templateParam1 << comma 
-      << templateParam2 << comma 
+    o << templateName << leftAngleBracket
+      << templateParam1 << comma
+      << templateParam2 << comma
       << templateParam3 << rightAngleBracket;
     return o.str();
   }
@@ -110,9 +110,11 @@ template<class T, class S> std::string find_type_name( std::pair<T,S> *);
 class IntVector;
 class NrrdData;
 
+using complex = std::complex<double>;
+
 template<> SCISHARE std::string find_type_name(float*);
 template<> SCISHARE std::string find_type_name(double*);
-template<> SCISHARE std::string find_type_name(std::complex<double>*);
+template<> SCISHARE std::string find_type_name(complex*);
 template<> SCISHARE std::string find_type_name(long double*);
 template<> SCISHARE std::string find_type_name(short*);
 template<> SCISHARE std::string find_type_name(unsigned short*);
@@ -139,7 +141,7 @@ template<> SCISHARE std::string find_type_name(LockingHandle<String> *);
 #endif
 
 //////////
-// Function overloading for templates 
+// Function overloading for templates
 template<class T> class Array1;
 template<class T> class Array2;
 

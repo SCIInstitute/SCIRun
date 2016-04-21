@@ -48,7 +48,7 @@ namespace Gui {
   typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
   typedef GuiStringTranslationMap::value_type StringPair;
 
-  enum DynamicPortChange
+  enum class DynamicPortChange
   {
     INITIAL_PORT_CONSTRUCTION,
     USER_ADDED_PORT_DURING_FILE_LOAD,
@@ -174,6 +174,9 @@ namespace Gui {
   private:
     QWidget* widget_;
   };
+
+  SCISHARE void openUrl(const QString& url, const std::string& name);
+  SCISHARE void openPythonAPIDoc();
 
 }
 }

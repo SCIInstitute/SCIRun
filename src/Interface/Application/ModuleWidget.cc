@@ -144,6 +144,8 @@ QColor Gui::to_color(const std::string& str, int alpha)
       result = QColor(122,119,226);
     else if (str == "orange")
       result = QColor(254, 139, 38);
+    else if (str == "brown")
+      result = QColor(160, 82, 45);
     else
       result = Qt::black;
   }
@@ -465,7 +467,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   isMini_(globalMiniMode_),
   errored_(false),
   executedOnce_(false),
-  skipExecute_(false),
+  skipExecuteDueToFatalError_(false),
+  disabled_(false),
   theModule_(theModule),
   previousModuleState_(UNSET),
   moduleId_(theModule->get_id()),
@@ -542,7 +545,7 @@ void ModuleWidget::setupLogging()
   theModule_->setLogger(logger);
   theModule_->setUpdaterFunc(boost::bind(&ModuleWidget::updateProgressBarSignal, this, _1));
   if (theModule_->has_ui())
-    theModule_->setUiToggleFunc([&](bool b){ dialog_->setVisible(b); });
+    theModule_->setUiToggleFunc([this](bool b){ dockable_->setVisible(b); });
 }
 
 void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name)
@@ -680,8 +683,8 @@ QMenu* ModuleWidget::getReplaceWithMenu()
 
 void ModuleWidget::replaceModuleWith()
 {
-  QAction* action = qobject_cast<QAction*>(sender());
-  QString moduleToReplace = action->text();
+  auto action = qobject_cast<QAction*>(sender());
+  auto moduleToReplace = action->text();
   Q_EMIT replaceModuleWith(theModule_, moduleToReplace.toStdString());
 }
 
@@ -714,14 +717,14 @@ void ModuleWidget::addPorts(int index)
 
 void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider)
 {
-  const ModuleId moduleId = moduleInfoProvider.get_id();
+  const auto moduleId = moduleInfoProvider.get_id();
   size_t i = 0;
   const auto& inputs = moduleInfoProvider.inputPorts();
   for (const auto& port : inputs)
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
       portAlpha()), type,
       moduleId, port->id(),
       i, port->isDynamic(), connectionFactory_,
@@ -730,30 +733,31 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
       this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+    connect(w, SIGNAL(incomingConnectionStateChange(bool)), this, SLOT(incomingConnectionStateChanged(bool)));
     ports_->addPort(w);
     ++i;
     if (dialog_ && port->isDynamic())
     {
-      auto portConstructionType = INITIAL_PORT_CONSTRUCTION;
-      auto nameMatches = [&](const InputPortHandle& in) 
-      { 
+      auto portConstructionType = DynamicPortChange::INITIAL_PORT_CONSTRUCTION;
+      auto nameMatches = [&](const InputPortHandle& in)
+      {
         return in->id().name == port->id().name;
       };
       auto justAddedIndex = i - 1;
       bool isNotLastDynamicPortOfThisName = justAddedIndex < inputs.size() - 1
         && std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.cend();
-      //qDebug() << "UPDATE FROM PORT CHANGE TYPE CHECK:" << isNotLastDynamicPortOfThisName << justAddedIndex << inputs.size() << (justAddedIndex < inputs.size() - 1) 
+      //qDebug() << "UPDATE FROM PORT CHANGE TYPE CHECK:" << isNotLastDynamicPortOfThisName << justAddedIndex << inputs.size() << (justAddedIndex < inputs.size() - 1)
         //<< ((justAddedIndex < inputs.size() - 1) && (std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.end()));
       if (isNotLastDynamicPortOfThisName)
-        portConstructionType = USER_ADDED_PORT_DURING_FILE_LOAD;
+        portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
       dialog_->updateFromPortChange(i, port->id().toString(), portConstructionType);
     }
   }
 }
 
-void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider)
+void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider) const
 {
-  const ModuleId moduleId = moduleInfoProvider.get_id();
+  const auto moduleId = moduleInfoProvider.get_id();
   std::cout << "Module input ports: " << moduleId << std::endl;
   size_t i = 0;
   for (const auto& port : moduleInfoProvider.inputPorts())
@@ -771,7 +775,7 @@ void ModuleWidget::createOutputPorts(const ModuleInfoProvider& moduleInfoProvide
   for (const auto& port : moduleInfoProvider.outputPorts())
   {
     auto type = port->get_typename();
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
+    auto w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
       type, moduleId, port->id(), i, port->isDynamic(),
       connectionFactory_,
       closestPortFinder_,
@@ -895,6 +899,14 @@ void PortWidgetManager::addPort(InputPortWidget* port)
   inputPorts_.push_back(port);
 }
 
+void PortWidgetManager::insertPort(int index, InputPortWidget* port)
+{
+  if (index > inputPorts_.size())
+    inputPorts_.push_back(port);
+  else
+    inputPorts_.insert(inputPorts_.begin() + index, port);
+}
+
 void PortWidgetManager::setHighlightPorts(bool on)
 {
   for (auto& port : getAllPorts())
@@ -914,9 +926,13 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, PortDataDescriber(), this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    ports_->addPort(w);
+
+    const int newPortIndex = port->getIndex();
+
+    ports_->insertPort(newPortIndex, w);
     ports_->reindexInputs();
-    inputPortLayout_->addWidget(w);
+
+    inputPortLayout_->insertWidget(newPortIndex, w);
 
     Q_EMIT dynamicPortChanged(pid.toString(), true);
   }
@@ -924,7 +940,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 
 void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
 {
-  if (mid.id_ == moduleId_ && !deleting_)
+  if (mid.id_ == moduleId_ && !deleting_ && !networkBeingCleared_)
   {
     if (ports_->removeDynamicPort(pid, inputPortLayout_))
     {
@@ -961,8 +977,22 @@ void ModuleWidget::printPortPositions() const
   std::cout << std::endl;
 }
 
+bool ModuleWidget::networkBeingCleared_(false);
+
+ModuleWidget::NetworkClearingScope::NetworkClearingScope()
+{
+  networkBeingCleared_ = true;
+}
+
+ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
+{
+  networkBeingCleared_ = false;
+}
+
 ModuleWidget::~ModuleWidget()
 {
+  disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
+
   if (!theModule_->isStoppable())
   {
     removeWidgetFromExecutionDisableList(miniWidgetDisplay_->getExecuteButton());
@@ -1015,15 +1045,16 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   executedOnce_ = true;
-  if (skipExecute_)
+  if (skipExecuteDueToFatalError_)
     return;
   {
     Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
-    theModule_->do_execute();
-    Q_EMIT updateProgressBarSignal(1);
+    theModule_->doExecute();
+    if (!disabled_)
+      Q_EMIT updateProgressBarSignal(1);
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
@@ -1169,8 +1200,8 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
-  if (dialog_)
-    dialog_->updateFromPortChange(numInputPorts(), portId, adding ? USER_ADDED_PORT : USER_REMOVED_PORT);
+  if (dialog_ && !deleting_ && !networkBeingCleared_)
+    dialog_->updateFromPortChange(numInputPorts(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
@@ -1185,18 +1216,13 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
     dockable_->setAllowedAreas(allowedDockArea());
   }
 
-  if (dockEnabled)
-  {
-
-  }
-  else
+  if (!dockEnabled)
   {
     if (dockable_ && !dockable_->isHidden())
     {
       dockable_->setFloating(true);
     }
   }
-
 }
 
 boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;
@@ -1249,12 +1275,7 @@ void ModuleWidget::updateModuleTime()
 void ModuleWidget::launchDocumentation()
 {
   //TODO: push this help url construction to module layer
-  std::string url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + getModule()->get_module_name();
-
-  QUrl qurl(QString::fromStdString(url), QUrl::TolerantMode);
-
-  if (!QDesktopServices::openUrl(qurl))
-    GuiLogger::Instance().logError("Failed to open help page: " + qurl.toString());
+  openUrl("http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + QString::fromStdString(getModule()->get_module_name()), "module help page");
 }
 
 void ModuleWidget::setStartupNote(const QString& text)
@@ -1293,6 +1314,9 @@ void ModuleWidget::duplicate()
 
 void ModuleWidget::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
+  setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
+  setProperty(insertNewModuleActionTypePropertyName(), sender()->property(insertNewModuleActionTypePropertyName()));
+
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }
 
@@ -1387,7 +1411,7 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
 
 void ModuleWidget::handleDialogFatalError(const QString& message)
 {
-  skipExecute_ = true;
+  skipExecuteDueToFatalError_ = true;
   qDebug() << "Dialog error: " << message;
   updateBackgroundColor(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored)));
   colorLocked_ = true;
@@ -1466,4 +1490,39 @@ void ModuleWidget::updateMetadata(bool active)
   }
   else
     setToolTip("");
+}
+
+void ModuleWidget::setExecutionDisabled(bool disabled)
+{
+  disabled_ = disabled;
+
+  Q_EMIT executionDisabled(disabled_);
+
+  theModule_->setExecutionDisabled(disabled_);
+}
+
+void ModuleWidget::incomingConnectionStateChanged(bool disabled)
+{
+  bool shouldDisable;
+  if (disabled)
+  {
+    if (isViewScene_)
+      shouldDisable = !std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->firstConnection() && !input->firstConnection()->disabled(); });
+    else // here is where to consider optional ports, see issue #?
+      shouldDisable = true;
+  }
+  else
+  {
+    if (isViewScene_)
+      shouldDisable = !std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->firstConnection() && !input->firstConnection()->disabled(); });
+    else
+      shouldDisable = std::any_of(ports().inputs().cbegin(), ports().inputs().cend(), [](const PortWidget* input) { return input->isConnected() && input->firstConnection()->disabled(); });
+  }
+
+  setExecutionDisabled(shouldDisable);
+
+  for (const auto& output : ports().outputs())
+  {
+    output->setConnectionsDisabled(disabled_ || disabled);
+  }
 }

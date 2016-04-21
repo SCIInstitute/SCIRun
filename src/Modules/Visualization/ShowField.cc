@@ -34,7 +34,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
-#include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
@@ -42,7 +41,7 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun;
 using namespace Modules::Visualization;
 using namespace Core;
-using namespace Core::Datatypes;
+using namespace Datatypes;
 using namespace Thread;
 using namespace Dataflow::Networks;
 using namespace Algorithms;
@@ -263,7 +262,7 @@ RenderState GeometryBuilder::getEdgeRenderState(
                                 renState.defaultColor.b() / 255.)
                             :   renState.defaultColor;
 
-  edgeTransparencyValue_ = (float)(state->getValue(ShowFieldModule::EdgeTransparencyValue).toDouble());
+  edgeTransparencyValue_ = static_cast<float>(state->getValue(ShowFieldModule::EdgeTransparencyValue).toDouble());
 
   if (colorMap)
   {
@@ -296,7 +295,7 @@ RenderState GeometryBuilder::getFaceRenderState(
                                 renState.defaultColor.b() / 255.)
                             :   renState.defaultColor;
 
-  faceTransparencyValue_ = (float)(state->getValue(ShowFieldModule::FaceTransparencyValue).toDouble());
+  faceTransparencyValue_ = static_cast<float>(state->getValue(ShowFieldModule::FaceTransparencyValue).toDouble());
 
   if (colorMap)
   {
@@ -323,7 +322,14 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
   // Resultant geometry type (representing a spire object and a number of passes).
-  GeometryHandle geom(new GeometryObjectSpire(gid, "EntireField"));
+
+  std::string idname = "EntireField";
+  if (state->getValue(ShowFieldModule::FieldName).toString() != "")
+  {
+    idname = idname + "_" + state->getValue(ShowFieldModule::FieldName).toString();
+  }
+
+  GeometryHandle geom(new GeometryObjectSpire(gid, idname, true));
 
   /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
@@ -419,7 +425,7 @@ void GeometryBuilder::renderFacesLinear(
   if (withNormals) { mesh->synchronize(Mesh::NORMALS_E); }
 
   bool invertNormals = moduleState->getValue(ShowFieldModule::FaceInvertNormals).toBool();
-  ColorScheme colorScheme = COLOR_UNIFORM;
+  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
   std::vector<double> svals;
   std::vector<Vector> vvals;
   std::vector<Tensor> tvals;
@@ -427,15 +433,15 @@ void GeometryBuilder::renderFacesLinear(
 
   if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
   {
-    colorScheme = COLOR_UNIFORM;
+    colorScheme = ColorScheme::COLOR_UNIFORM;
   }
   else if (state.get(RenderState::USE_COLORMAP))
   {
-    colorScheme = COLOR_MAP;
+    colorScheme = ColorScheme::COLOR_MAP;
   }
   else // if (fld->basis_order() >= 0)
   {
-    colorScheme = COLOR_IN_SITU;
+    colorScheme = ColorScheme::COLOR_IN_SITU;
   }
 
   // Three 32 bit ints to index into the VBO
@@ -530,7 +536,7 @@ void GeometryBuilder::renderFacesLinear(
     }
 
     // Default color single face no matter the element data.
-    if (colorScheme == COLOR_UNIFORM)
+    if (colorScheme == ColorScheme::COLOR_UNIFORM)
     {
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
         colorScheme, face_colors, state);
@@ -679,7 +685,7 @@ void GeometryBuilder::renderFacesLinear(
   }
 
   std::stringstream ss;
-  ss << invertNormals << colorScheme << faceTransparencyValue_;
+  ss << invertNormals << static_cast<int>(colorScheme) << faceTransparencyValue_;
 
   std::string uniqueNodeID = id + "face" + ss.str();
   std::string vboName = uniqueNodeID + "VBO";
@@ -702,7 +708,7 @@ void GeometryBuilder::renderFacesLinear(
   if (state.get(RenderState::USE_TRANSPARENCY))
     uniforms.push_back(SpireSubPass::Uniform("uTransparency", faceTransparencyValue_));
 
-  if (colorScheme == COLOR_MAP)
+  if (colorScheme == ColorScheme::COLOR_MAP)
   {
     attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
 
@@ -745,7 +751,7 @@ void GeometryBuilder::renderFacesLinear(
       }
     }
   }
-  else if (colorScheme == COLOR_IN_SITU)
+  else if (colorScheme == ColorScheme::COLOR_IN_SITU)
   {
     attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float), true));
 
@@ -786,7 +792,7 @@ void GeometryBuilder::renderFacesLinear(
       }
     }
   }
-  else if (colorScheme == COLOR_UNIFORM)
+  else if (colorScheme == ColorScheme::COLOR_UNIFORM)
   {
     ColorRGB defaultColor = state.defaultColor;
 
@@ -809,22 +815,21 @@ void GeometryBuilder::renderFacesLinear(
     }
   }
 
-  SpireVBO geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr,
+  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, mesh->get_bounding_box(), true);
 
   geom->mVBOs.push_back(geomVBO);
 
   // Construct IBO.
 
-  SpireIBO geomIBO = SpireIBO(iboName,
-                SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+  SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   geom->mIBOs.push_back(geomIBO);
 
   SpireText text;
 
   SpireSubPass pass(passName, vboName, iboName, shader,
-    colorScheme, state, RENDER_VBO_IBO, geomVBO, geomIBO, text);
+    colorScheme, state, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, text);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -880,7 +885,7 @@ void GeometryBuilder::addFaceGeom(
 
   bool doubleSided = state.get(RenderState::IS_DOUBLE_SIDED);
 
-  if (colorScheme == COLOR_UNIFORM)
+  if (colorScheme == ColorScheme::COLOR_UNIFORM)
   {
     if (points.size() == 4)
     {
@@ -949,7 +954,7 @@ void GeometryBuilder::addFaceGeom(
       iboIndex += points.size();
     }
   }
-  else if (colorScheme == COLOR_MAP)
+  else if (colorScheme == ColorScheme::COLOR_MAP)
   {
     if (points.size() == 4)
     {
@@ -1055,7 +1060,7 @@ void GeometryBuilder::addFaceGeom(
       iboIndex += points.size();
     }
   }
-  else if (colorScheme == COLOR_IN_SITU)
+  else if (colorScheme == ColorScheme::COLOR_IN_SITU)
   {
     if (points.size() == 4)
     {
@@ -1178,11 +1183,11 @@ void GeometryBuilder::renderNodes(
   ColorRGB node_color;
 
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
-    colorScheme = COLOR_UNIFORM;
+    colorScheme = ColorScheme::COLOR_UNIFORM;
   else if (state.get(RenderState::USE_COLORMAP))
-    colorScheme = COLOR_MAP;
+    colorScheme = ColorScheme::COLOR_MAP;
   else
-    colorScheme = COLOR_IN_SITU;
+    colorScheme = ColorScheme::COLOR_IN_SITU;
 
   mesh->synchronize(Mesh::NODES_E);
 
@@ -1195,16 +1200,16 @@ void GeometryBuilder::renderNodes(
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
-  ss << state.get(RenderState::USE_SPHERE) << radius << num_strips << colorScheme;
+  ss << state.get(RenderState::USE_SPHERE) << radius << num_strips << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "node" + ss.str();
 
   nodeTransparencyValue_ = static_cast<float>(moduleState->getValue(ShowFieldModule::NodeTransparencyValue).toDouble());
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::POINTS;
+  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::POINTS;
   // Use spheres...
   if (state.get(RenderState::USE_SPHERE))
-    primIn = SpireIBO::TRIANGLES;
+    primIn = SpireIBO::PRIMITIVE::TRIANGLES;
 
   GlyphGeom glyphs;
   while (eiter != eiter_end)
@@ -1214,7 +1219,7 @@ void GeometryBuilder::renderNodes(
     Point p;
     mesh->get_point(p, *eiter);
     //coloring options
-    if (colorScheme != COLOR_UNIFORM)
+    if (colorScheme != ColorScheme::COLOR_UNIFORM)
     {
       ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
@@ -1273,11 +1278,11 @@ void GeometryBuilder::renderEdges(
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
     state.get(RenderState::USE_DEFAULT_COLOR))
-    colorScheme = COLOR_UNIFORM;
+    colorScheme = ColorScheme::COLOR_UNIFORM;
   else if (state.get(RenderState::USE_COLORMAP))
-    colorScheme = COLOR_MAP;
+    colorScheme = ColorScheme::COLOR_MAP;
   else
-    colorScheme = COLOR_IN_SITU;
+    colorScheme = ColorScheme::COLOR_IN_SITU;
 
   mesh->synchronize(Mesh::EDGES_E);
 
@@ -1291,14 +1296,14 @@ void GeometryBuilder::renderEdges(
   if (radius < 0) radius = 1.;
 
   std::stringstream ss;
-  ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius << colorScheme;
+  ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "edge" + ss.str();
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::LINES;
+  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::LINES;
   // Use cylinders...
   if (state.get(RenderState::USE_CYLINDER))
-    primIn = SpireIBO::TRIANGLES;
+    primIn = SpireIBO::PRIMITIVE::TRIANGLES;
 
   GlyphGeom glyphs;
   while (eiter != eiter_end)
@@ -1312,7 +1317,7 @@ void GeometryBuilder::renderEdges(
     mesh->get_point(p0, nodes[0]);
     mesh->get_point(p1, nodes[1]);
     //coloring options
-    if (colorScheme != COLOR_UNIFORM)
+    if (colorScheme != ColorScheme::COLOR_UNIFORM)
     {
       ColorMapHandle map = colorMap.get();
       if (fld->is_scalar())
@@ -1415,6 +1420,7 @@ void ShowFieldModule::updateAvailableRenderOptions(FieldHandle field)
   }
 }
 
+const AlgorithmParameterName ShowFieldModule::FieldName("FieldName");
 const AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");
 const AlgorithmParameterName ShowFieldModule::ShowEdges("ShowEdges");
 const AlgorithmParameterName ShowFieldModule::ShowFaces("ShowFaces");

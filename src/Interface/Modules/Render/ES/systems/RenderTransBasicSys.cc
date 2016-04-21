@@ -258,7 +258,7 @@ private:
       return;
     }
 
-    bool drawLines = (ibo.front().primMode == SpireIBO::LINES);
+    bool drawLines = (ibo.front().primMode == static_cast<int>(SpireIBO::PRIMITIVE::LINES));
     GLuint iboID = ibo.front().glid;
 
     Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],
@@ -293,7 +293,7 @@ private:
           }
 
           Core::Geometry::Vector diff = sortedObjects[index].prevDir - dir;
-          double distance = sqrtf(Core::Geometry::Dot(diff, diff));
+          double distance = sqrtf(Dot(diff, diff));
           if (distance >= 1.23 || sortedObjects[index].mSortedID == 0)
           {
             if (sortedObjects[index].mSortedID != 0)

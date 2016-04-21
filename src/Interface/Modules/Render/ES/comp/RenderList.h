@@ -16,7 +16,7 @@ struct RenderList
   int64_t numElements;
 
   // -- Functions --
-  RenderList() : renderType(Graphics::Datatypes::RENDER_VBO_IBO), numElements(0) {}
+  RenderList() : renderType(Graphics::Datatypes::RenderType::RENDER_VBO_IBO), numElements(0) {}
 
   static const char* getName() {return "RenderList";}
 
