@@ -54,12 +54,16 @@ namespace SCIRun {
         const boost::atomic<bool>& pulling, QRectF sceneRect,
         QWidget* parent = nullptr);
 
+      void setMovable(bool canMove);
+      QPointF getLightPosition();
+
     Q_SIGNALS:
       void clicked(int x, int y);
     protected:
       virtual void mousePressEvent(QMouseEvent* event) override;
       virtual void mouseMoveEvent(QMouseEvent* event) override;
 
+    private:
       int previousX, previousY;
       QGraphicsItem* boundingCircle_;
       QGraphicsItem* lightPosition_;
@@ -84,6 +88,7 @@ namespace SCIRun {
       void updateZoomOptionVisibility();
       void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
       void updatePlaneControlDisplay(double x, double y, double z, double d);
+      QPointF getLightPosition(int index);
 
     public Q_SLOTS:
       void addItem(const QString& name, bool checked); 
@@ -95,9 +100,11 @@ namespace SCIRun {
     private Q_SLOTS:
       void slotChanged(QListWidgetItem* item);
 
-    private:      
-      std::vector<QListWidgetItem*> items_;
+    private:
       void setupObjectListWidget();
+      void setupLightControlCircle(QFrame* frame, const boost::atomic<bool>& pulling, bool moveable);
+
+      std::vector<QListWidgetItem*> items_;
       std::vector<LightControlCircle*> lightControls_;
     };
   }

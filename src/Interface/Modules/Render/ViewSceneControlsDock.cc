@@ -131,21 +131,10 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   WidgetStyleMixin::tabStyle(tabWidget);
 
-  auto scene = new QGraphicsScene(headlightFrame_);
-  auto lightcontrol = new LightControlCircle(scene, parent->pulling_, headlightFrame_->rect(), headlightFrame_);
-  lightControls_.push_back(lightcontrol);
-
-  auto scene1 = new QGraphicsScene(light1Frame_);
-  auto lightcontrol1 = new LightControlCircle(scene1, parent->pulling_, light1Frame_->rect(), light1Frame_);
-  lightControls_.push_back(lightcontrol1);
-
-  auto scene2 = new QGraphicsScene(light2Frame_);
-  auto lightcontrol2 = new LightControlCircle(scene2, parent->pulling_, light2Frame_->rect(), light2Frame_);
-  lightControls_.push_back(lightcontrol2);
-
-  auto scene3 = new QGraphicsScene(light3Frame_);
-  auto lightcontrol3 = new LightControlCircle(scene3, parent->pulling_, light3Frame_->rect(), light3Frame_);
-  lightControls_.push_back(lightcontrol3);
+  setupLightControlCircle(headlightFrame_, parent->pulling_, false);
+  setupLightControlCircle(light1Frame_, parent->pulling_, true);
+  setupLightControlCircle(light2Frame_, parent->pulling_, true);
+  setupLightControlCircle(light3Frame_, parent->pulling_, true);
 
   /////Set unused widgets to be not visible
   ////Clipping tab
@@ -301,6 +290,11 @@ void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double
   dValueHorizontalSlider_->setSliderPosition(d * 100);
 }
 
+QPointF ViewSceneControlsDock::getLightPosition(int index)
+{
+  return lightControls_[index]->getLightPosition();
+}
+
 void ViewSceneControlsDock::addItem(const QString& name, bool checked)
 {
   auto items = objectListWidget_->findItems(name, Qt::MatchExactly);
@@ -367,6 +361,15 @@ void ViewSceneControlsDock::setupObjectListWidget()
   objectListWidget_->setItemDelegate(new FixMacCheckBoxes);
 }
 
+
+void ViewSceneControlsDock::setupLightControlCircle(QFrame* frame, const boost::atomic<bool>& pulling, bool moveable)
+{
+  auto scene = new QGraphicsScene(frame);
+  auto lightcontrol = new LightControlCircle(scene, pulling, frame->rect(), frame);
+  lightcontrol->setMovable(moveable);
+  lightControls_.push_back(lightcontrol);
+}
+
 LightControlCircle::LightControlCircle(QGraphicsScene* scene,  //ModuleStateHandle state,
   const boost::atomic<bool>& pulling, QRectF sceneRect,
   QWidget* parent)
@@ -389,6 +392,16 @@ LightControlCircle::LightControlCircle(QGraphicsScene* scene,  //ModuleStateHand
   lightPosition_->setFlag(QGraphicsItem::ItemIsMovable, true);
 }
 
+void LightControlCircle::setMovable(bool canMove)
+{
+  lightPosition_->setFlag(QGraphicsItem::ItemIsMovable, canMove);
+}
+
+QPointF LightControlCircle::getLightPosition()
+{
+  return lightPosition_->pos();
+}
+
 void LightControlCircle::mousePressEvent(QMouseEvent* event)
 {
   QGraphicsView::mousePressEvent(event);
@@ -396,11 +409,11 @@ void LightControlCircle::mousePressEvent(QMouseEvent* event)
   {
     if (lightPosition_->isUnderMouse())
     {
-      std::cout << "small dot clicked" << std::endl;
+      //std::cout << "small dot clicked" << std::endl;
     }
     else if (boundingCircle_->contains(event->pos()))
     {
-      std::cout << "bounding circle clicked!" << std::endl;
+      //std::cout << "bounding circle clicked!" << std::endl;
     }
   }
 }
