@@ -73,10 +73,7 @@ void ExportFieldsToMatlabDialog::updateFromPortChange(int numPorts, const std::s
 
   static const std::string typeName = "Field";
   const int lineEditColumn = 1;
-  syncTableRowsWithDynamicPort(portName, typeName, tableWidget, lineEditColumn, type, {
-    
-      [&](){ return new QTableWidgetItem("[unknown, populated upon execute]"); }
-  });
+  syncTableRowsWithDynamicPort(portName, typeName, tableWidget, lineEditColumn, type, {}, {});
 }
 
 

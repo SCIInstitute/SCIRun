@@ -139,9 +139,10 @@ namespace Gui {
 
     using TableWidgetMaker = std::function<QTableWidgetItem*()>;
     using WidgetMaker = std::function<QWidget*()>;
-    typedef std::vector<TableWidgetMaker> TableItemMakerList;
+    typedef std::map<int, TableWidgetMaker> TableItemMakerMap;
+    typedef std::map<int, WidgetMaker> WidgetItemMakerMap;
     void syncTableRowsWithDynamicPort(const std::string& portId, const std::string& type,
-      QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerList& tableItemMakers);
+      QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerMap& tableItems, const WidgetItemMakerMap& widgetItems = {});
     static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile);
 
     void createExecuteInteractivelyToggleAction();

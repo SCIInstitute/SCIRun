@@ -117,7 +117,7 @@ void InterfaceWithPythonDialog::handleInputTableWidgetRowChange(const std::strin
 {
   const int lineEditColumn = 2;
   syncTableRowsWithDynamicPort(portId, type, inputVariableNamesTableWidget_, lineEditColumn, portChangeType, 
-    { [&](){ return new QTableWidgetItem(QString::fromStdString(type)); }});
+    { { 1, [&](){ return new QTableWidgetItem(QString::fromStdString(type)); } } });
 }
 
 void InterfaceWithPythonDialog::loadAPIDocumentation()

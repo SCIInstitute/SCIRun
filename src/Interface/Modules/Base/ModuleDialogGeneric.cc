@@ -745,7 +745,7 @@ std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(cons
 }
 
 void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId, const std::string& type,
-  QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerList& tableItemMakers)
+  QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerMap& tableItems, const WidgetItemMakerMap& widgetItems)
 {
   ScopedWidgetSignalBlocker swsb(table);
   if (portId.find(type) != std::string::npos)
@@ -788,21 +788,22 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
         table->setCellWidget(newRowIndex, lineEditIndex, lineEdit);
         //qDebug() << "row added with " << lineEditText;
 
-        auto tableItemIter = tableItemMakers.begin();
         for (int i = 1; i < table->columnCount(); ++i)
         {
           if (i != lineEditIndex)
           {
-            if (tableItemIter != tableItemMakers.end())
+            auto itemMakerIter = tableItems.find(i);
+            if (itemMakerIter != tableItems.end())
             {
-              table->setItem(newRowIndex, i, (*tableItemIter)());
-              //auto tableWidget = boost::get<TableWidgetMaker>(&*tableItemIter);
-              //auto cellWidget = boost::get<WidgetMaker>(&*tableItemIter);
-              //if (tableWidget)
-              //  table->setItem(newRowIndex, i, (*tableWidget)());
-              //else if (cellWidget)
-              //  table->setCellWidget(newRowIndex, i, (*cellWidget)());
-              ++tableItemIter;
+              table->setItem(newRowIndex, i, itemMakerIter->second());
+            }
+            else
+            {
+              auto widgetItemMaker = widgetItems.find(i);
+              if (widgetItemMaker != widgetItems.end())
+              {
+                table->setCellWidget(newRowIndex, i, widgetItemMaker->second());
+              }
             }
           }
         }

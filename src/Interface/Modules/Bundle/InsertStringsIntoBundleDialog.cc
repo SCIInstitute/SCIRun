@@ -50,14 +50,15 @@ void InsertStringsIntoBundleDialog::updateFromPortChange(int numPorts, const std
 
   static const std::string typeName = "Strings";
   const int lineEditColumn = 1;
-  syncTableRowsWithDynamicPort(portId, typeName, tableWidget, lineEditColumn, type, {
-    [&]()
-    {
-      auto check = new QTableWidgetItem();
-      check->setCheckState(Qt::Checked);
-      check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
-      return check;
-    },
-      [&](){ return new QTableWidgetItem("[unknown, populated upon execute]"); }
-  });
+  syncTableRowsWithDynamicPort(portId, typeName, tableWidget, lineEditColumn, type, 
+  { { 2,
+  [&]()
+  {
+    auto check = new QTableWidgetItem();
+    check->setCheckState(Qt::Checked);
+    check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
+    return check;
+  } },
+  { 3,
+  [&](){ return new QTableWidgetItem("[unknown, populated upon execute]"); } } });
 }
