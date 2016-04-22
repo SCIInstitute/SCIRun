@@ -50,17 +50,9 @@ public Q_SLOTS:
   virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
 private Q_SLOTS:
   void pushArrayType();
-  //void pushMatrixInput();
-  //void pushTable(int,int);
-  //void pushTableRow(int row);
-  //void pushNames();
-  //void pushBoundaryConditions();
-  //void pushInsides();
-  //void pushOutsides();
+  void saveFile();
+  void pushFileNameToState();
 private:
-  //int numMatrixPorts_, numFieldPorts_, numStringPorts_;
-  //int totalInputPorts() const { return numMatrixPorts_ + numFieldPorts_ + numStringPorts_; }
-  //QComboBox* makeInputDataTypeComboBoxItem() const;
   QComboBox* makeInputArrayTypeComboBoxItem() const;
 };
 

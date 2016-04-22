@@ -178,6 +178,7 @@ void ExportFieldsToMatlab::execute()
     if (filename.extension() != ".mat")
       filename += ".mat";
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // Make sure the path to the new file exists
     // If not make it and as well convert filename
     // to absolute path name
@@ -190,7 +191,7 @@ void ExportFieldsToMatlab::execute()
     //guifilename_.set(filename);
     //get_ctx()->reset();
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     if (!overwrite()) return;
 #endif
 

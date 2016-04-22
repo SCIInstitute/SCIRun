@@ -104,8 +104,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/TransientOutput/fields.mat</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>InputField:0</name>

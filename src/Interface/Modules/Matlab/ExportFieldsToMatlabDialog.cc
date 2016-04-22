@@ -36,36 +36,24 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Matlab;
+using namespace SCIRun::Core::Algorithms::Matlab;
 
 ExportFieldsToMatlabDialog::ExportFieldsToMatlabDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
-  //,
-  //numMatrixPorts_(0), numFieldPorts_(0), numStringPorts_(0)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
-  //addTextEditManager(matlabCodeTextEdit_, Variables::FunctionString);
-  //addLineEditManager(matlabPathLineEdit_, Parameters::MatlabPath);
+  addLineEditManager(fileNameLineEdit_, Variables::Filename);
+  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
+  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
+  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
 }
-//
-//namespace TableColumns
-//{
-//  const int MinColumn = 0;
-//
-//  const int InputPortID = 0;
-//  const int InputName = 1;
-//  const int InputDataType = 2;
-//  const int InputArrayType = 3;
-//
-//  const int MaxColumn = InputArrayType + 1;
-//}
-//
-void ExportFieldsToMatlabDialog::updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type)
+
+void ExportFieldsToMatlabDialog::updateFromPortChange(int, const std::string& portName, DynamicPortChange type)
 {
   if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;
@@ -78,20 +66,6 @@ void ExportFieldsToMatlabDialog::updateFromPortChange(int numPorts, const std::s
   });
 }
 
-
-//
-//QComboBox* InterfaceWithMatlabDialog::makeInputDataTypeComboBoxItem() const
-//{
-//  QStringList bcList;
-//  bcList << "same as data" << "double" << "etc"; //TODO complete list
-//  QComboBox* bcBox = new QComboBox();
-//  bcBox->addItems(bcList);
-//  bcBox->setCurrentIndex(0);
-//  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushMatrixInput()));
-//  return bcBox;
-//}
-//
-//
 QComboBox* ExportFieldsToMatlabDialog::makeInputArrayTypeComboBoxItem() const
 {
   QStringList bcList;
@@ -105,27 +79,22 @@ QComboBox* ExportFieldsToMatlabDialog::makeInputArrayTypeComboBoxItem() const
 
 void ExportFieldsToMatlabDialog::pushArrayType()
 {
-  qDebug() << "pushArrayType";
+  auto types = makeHomogeneousVariableList([this](size_t i) { return tableWidget->item(i, 2)->text().toStdString(); }, tableWidget->rowCount());
+  state_->setValue(Parameters::FieldFormats, types);
 }
 
-//void InterfaceWithMatlabDialog::pushTableRow(int row)
-//{
-//  using namespace TableColumns;
-//  for (int col = MinColumn; col < MaxColumn; ++col)
-//    pushTable(row, col);
-//}
-//
-//void InterfaceWithMatlabDialog::pushTable(int row, int col)
-//{
-//  qDebug() << "pushTable";
-//  using namespace TableColumns;
-///*  if (FieldName == col)
-//    pushNames();
-//  else if (BoundaryCondition == col)
-//    pushBoundaryConditions();
-//  else if (InsideConductivity == col)
-//    pushInsides();
-//  else if (OutsideConductivity == col)
-//    pushOutsides();
-//    */
-//}
+void ExportFieldsToMatlabDialog::saveFile()
+{
+  auto file = QFileDialog::getSaveFileName(this, "Save Matlab File", dialogDirectory(), "*.mat");
+  if (file.length() > 0)
+  {
+    fileNameLineEdit_->setText(file);
+    updateRecentFile(file);
+    pushFileNameToState();
+  }
+}
+
+void ExportFieldsToMatlabDialog::pushFileNameToState()
+{
+  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+}
