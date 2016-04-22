@@ -491,12 +491,21 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 
 namespace
 {
+  const int xMoveIncrement = 300;
+  int xMoveIndex = 1;
+  int yMoveIndex = 0;
+  const int moveMod = 4;
+  const int yMoveIncrement = 300;
   void shiftAppendedModules(ModulePositions::Data& positions)
   {
     for (auto& pos : positions)
     {
-      pos.second.first += 300;
+      pos.second.first += xMoveIncrement * xMoveIndex;
+      pos.second.second += yMoveIncrement * yMoveIndex;
     }
+    xMoveIndex = (xMoveIndex + 1) % moveMod;
+    if (0 == xMoveIndex)
+      yMoveIndex++;
   }
 }
 

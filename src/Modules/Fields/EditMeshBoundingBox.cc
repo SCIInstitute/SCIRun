@@ -165,13 +165,9 @@ EditMeshBoundingBox::EditMeshBoundingBox()
   INITIALIZE_PORT(Transformation_Matrix);
 }
 
-void EditMeshBoundingBox::processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var)
+void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 {
   auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  auto xyTr = vsf.info;
-  std::cout << "EditMeshBoundingBox::processWidgetFeedback, name received from ViewSceneDialog is:\n\t" << xyTr.name() << std::endl;
-  for (const auto& subVar : xyTr.toVector())
-    std::cout << "EditMeshBoundingBox::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << subVar << std::endl;
   std::cout << "EditMeshBoundingBox::processWidgetFeedback transfrom from ViewSceneDialog:" << std::endl;
   vsf.transform.print();
 }
@@ -290,7 +286,7 @@ bool EditMeshBoundingBox::isBoxEmpty() const
 
 GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
 {
-  ColorScheme colorScheme(COLOR_UNIFORM);
+  ColorScheme colorScheme(ColorScheme::COLOR_UNIFORM);
   std::vector<std::pair<Point,Point>> bounding_edges;
   //get all the bbox edges
   Point c,r,d,b;
@@ -350,7 +346,7 @@ GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
   GeometryHandle geom(new GeometryObjectSpire(*this, "BoundingBox", true));
 
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::TRIANGLES, bbox_);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox_);
 
   return geom;
 }

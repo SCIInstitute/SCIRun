@@ -238,6 +238,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
 
   connect(helpActionPythonAPI_, SIGNAL(triggered()), this, SLOT(loadPythonAPIDoc()));
   connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
+  connect(helpActionClipboard_, SIGNAL(triggered()), this, SLOT(showClipboardHelp()));
 
   connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
 
@@ -272,6 +273,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   makePipesEuclidean();
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
+  connect(moduleSelectorTreeWidget_, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(updateSavedSubnetworks()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
 
 #if 0 //TODO: decide on modifiable background color
@@ -347,6 +349,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   connect(prefsWindow_->actionTextIconCheckBox_, SIGNAL(clicked()), this, SLOT(adjustExecuteButtonAppearance()));
   prefsWindow_->actionTextIconCheckBox_->setCheckState(Qt::PartiallyChecked);
   adjustExecuteButtonAppearance();
+
+  connect(networkEditor_, SIGNAL(newSubnetworkCopied(const QString&)), this, SLOT(updateClipboardHistory(const QString&)));
 
   connect(openLogFolderButton_, SIGNAL(clicked()), this, SLOT(openLogFolder()));
 
@@ -1100,6 +1104,8 @@ namespace {
 
   const QString bullet = "* ";
   const QString favoritesText = bullet + "Favorites";
+  const QString clipboardHistoryText = bullet + "Clipboard History";
+  const QString savedSubsText = bullet + "Saved Subnetworks";
 
   void addFavoriteMenu(QTreeWidget* tree)
   {
@@ -1110,17 +1116,32 @@ namespace {
     tree->addTopLevelItem(faves);
   }
 
-  QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree)
+  QTreeWidgetItem* getTreeMenu(QTreeWidget* tree, const QString& text)
   {
     for (int i = 0; i < tree->topLevelItemCount(); ++i)
     {
       auto top = tree->topLevelItem(i);
-      if (top->text(0) == favoritesText)
+      if (top->text(0) == text)
       {
         return top;
       }
     }
     return nullptr;
+  }
+
+  QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree)
+  {
+    return getTreeMenu(tree, favoritesText);
+  }
+
+  QTreeWidgetItem* getClipboardHistoryMenu(QTreeWidget* tree)
+  {
+    return getTreeMenu(tree, clipboardHistoryText);
+  }
+
+  QTreeWidgetItem* getSavedSubnetworksMenu(QTreeWidget* tree)
+  {
+    return getTreeMenu(tree, savedSubsText);
   }
 
   void addSnippet(const QString& code, QTreeWidgetItem* snips)
@@ -1168,17 +1189,50 @@ namespace {
 	  tree->addTopLevelItem(snips);
 	}
 
+  void addSavedSubnetworkMenu(QTreeWidget* tree)
+  {
+    auto savedSubnetworks = new QTreeWidgetItem();
+    savedSubnetworks->setText(0, savedSubsText);
+    savedSubnetworks->setForeground(0, favesColor());
+    tree->addTopLevelItem(savedSubnetworks);
+  }
+
+  void fillSavedSubnetworkMenu(QTreeWidget* tree, const QMap<QString, QVariant>& savedSubnets)
+  {
+    auto savedSubnetworks = getSavedSubnetworksMenu(tree);
+    
+    for (auto i = savedSubnets.begin(); i != savedSubnets.end(); ++i)
+    {
+      auto subnet = new QTreeWidgetItem();
+      subnet->setText(0, i.key());
+      subnet->setToolTip(0, i.value().toString());
+      subnet->setFlags(subnet->flags() | Qt::ItemIsEditable);
+      subnet->setTextColor(0, CLIPBOARD_COLOR);
+      savedSubnetworks->addChild(subnet);
+    }
+  }
+
+  void addClipboardHistoryMenu(QTreeWidget* tree)
+  {
+    auto clips = new QTreeWidgetItem();
+    clips->setText(0, clipboardHistoryText);
+    clips->setForeground(0, favesColor());
+    tree->addTopLevelItem(clips);
+  }
+
   void addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
   {
     LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
     auto copy = new QTreeWidgetItem(*module);
     copy->setData(0, Qt::CheckStateRole, QVariant());
+    if (copy->textColor(0) == CLIPBOARD_COLOR)
+      copy->setFlags(copy->flags() | Qt::ItemIsEditable);
     faves->addChild(copy);
   }
 
   void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
   {
-    QTreeWidgetItem* faves = getFavoriteMenu(tree);
+    auto faves = getFavoriteMenu(tree);
 		for (const auto& package : moduleMap)
     {
       const auto& packageName = package.first;
@@ -1226,7 +1280,7 @@ namespace {
 
   void sortFavorites(QTreeWidget* tree)
   {
-    QTreeWidgetItem* faves = getFavoriteMenu(tree);
+    auto faves = getFavoriteMenu(tree);
     faves->sortChildren(0, Qt::AscendingOrder);
   }
 
@@ -1240,6 +1294,9 @@ void SCIRunMainWindow::fillModuleSelector()
 
   addFavoriteMenu(moduleSelectorTreeWidget_);
 	addSnippetMenu(moduleSelectorTreeWidget_);
+	addSavedSubnetworkMenu(moduleSelectorTreeWidget_);
+  fillSavedSubnetworkMenu(moduleSelectorTreeWidget_, savedSubnetworks_);
+	addClipboardHistoryMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
   sortFavorites(moduleSelectorTreeWidget_);
 
@@ -1264,7 +1321,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
   {
     moduleSelectorTreeWidget_->setCurrentItem(item);
 
-    QTreeWidgetItem* faves = getFavoriteMenu(moduleSelectorTreeWidget_);
+    auto faves = item->textColor(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu(moduleSelectorTreeWidget_) : getFavoriteMenu(moduleSelectorTreeWidget_);
 
     if (item->checkState(0) == Qt::Checked)
     {
@@ -1272,12 +1329,15 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
       {
         addFavoriteItem(faves, item);
         faves->sortChildren(0, Qt::AscendingOrder);
-        favoriteModuleNames_ << item->text(0);
+        if (item->textColor(0) != CLIPBOARD_COLOR)
+          favoriteModuleNames_ << item->text(0);
+        else
+          savedSubnetworks_[item->text(0)] = item->toolTip(0);
       }
     }
     else
     {
-      if (faves)
+      if (faves && item->textColor(0) != CLIPBOARD_COLOR)
       {
         favoriteModuleNames_.removeAll(item->text(0));
         for (int i = 0; i < faves->childCount(); ++i)
@@ -1688,15 +1748,53 @@ void SCIRunMainWindow::copyVersionToClipboard()
   statusBar()->showMessage("Version string copied to clipboard.", 2000);
 }
 
+void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
+{
+  auto clips = getClipboardHistoryMenu(moduleSelectorTreeWidget_);
+  
+  auto clip = new QTreeWidgetItem();
+  clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
+  clip->setToolTip(0, xml);
+  clip->setTextColor(0, CLIPBOARD_COLOR);
+
+  const int clipMax = 5;
+  if (clips->childCount() == clipMax)
+    clips->removeChild(clips->child(0));
+  
+  clip->setCheckState(0, Qt::Unchecked);
+  clips->addChild(clip);
+}
+
+void SCIRunMainWindow::updateSavedSubnetworks()
+{
+  savedSubnetworks_.clear();
+  auto menu = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+  for (auto i = 0; i < menu->childCount(); ++i)
+  {
+    auto item = menu->child(i);
+    savedSubnetworks_[item->text(0)] = item->toolTip(0);
+  }
+}
+
 void SCIRunMainWindow::showSnippetHelp()
 {
   QMessageBox::information(this, "Snippets",
-    "Snippets are strings that encode a subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
-    "Currently, only linear subnetworks are supported. "
+    "Snippets are strings that encode a linear subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
     "\n\nThey are available in the module selector and work just like the single module entries there: double-click or drag onto the "
     "network editor to insert the entire snippet. A '*' at the end of the module name will open the UI for that module.\n\nCustom snippets can be created by editing the file snippets.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one snippet per line in the prescribed format, then restart SCIRun for them to appear."
-    "\n\nFeatures coming soon include: hotkeys, support for non-linear snippet graphs, and a snippet designer GUI."
+    "\n\nFeatures coming soon include: hotkeys."
     "\n\nFor feedback, please comment on this issue: https://github.com/SCIInstitute/SCIRun/issues/1263"
+    );
+}
+
+void SCIRunMainWindow::showClipboardHelp()
+{
+  QMessageBox::information(this, "Clipboard",
+    "The network editor clipboard works on arbitrary network selections (modules and connections). A history of five copied items is kept under \"Clipboard History\" in the module selector. "
+    "\n\nTo cut/copy/paste, see the Edit menu and the corresponding hotkeys."
+    "\n\nClipboard history items can be starred like module favorites. When starred, they are saved as fragments under \"Saved Subnetworks,\" which are preserved in application settings. "
+    "\n\nThe user may edit the text of the saved subnetwork items to give them informative names, which are also saved. Hover over them to see a tooltip representation of the saved fragment."
+    "\n\nCurrently there is no way to delete a saved subnetwork in the GUI."
     );
 }
 

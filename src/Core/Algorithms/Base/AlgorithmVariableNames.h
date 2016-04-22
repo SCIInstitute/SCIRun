@@ -53,7 +53,7 @@ public:
   static const AlgorithmParameterName FileTypeName;
   static const AlgorithmParameterName FormatString;
 	static const AlgorithmParameterName FunctionString;
-  static const AlgorithmParameterName ObjectInfo; 
+  static const AlgorithmParameterName ObjectInfo;
   static const AlgorithmParameterName ScriptEnvironmentVariable;
 
   static const AlgorithmInputName InputMatrix;
@@ -69,6 +69,7 @@ public:
   static const AlgorithmInputName Source;
   static const AlgorithmInputName Destination;
   static const AlgorithmInputName InputNrrd;
+  static const AlgorithmInputName InputComplexMatrix;
 
   static const AlgorithmOutputName MatrixInfo;
   static const AlgorithmOutputName Result;
@@ -77,6 +78,7 @@ public:
   static const AlgorithmOutputName Solution;
   static const AlgorithmOutputName OutputField;
   static const AlgorithmOutputName OutputMatrix;
+  static const AlgorithmOutputName OutputComplexMatrix;
   static const AlgorithmOutputName OutputNrrd;
   static const AlgorithmOutputName ListOfOutputFields;
 };

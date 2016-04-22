@@ -523,7 +523,7 @@ void NetworkEditor::cut()
 void NetworkEditor::copy()
 {
   auto selected = scene_->selectedItems();
-  auto modSelected = [=](ModuleHandle mod)
+  auto modSelected = [&selected](ModuleHandle mod)
   {
     for (const auto& item : selected)
     {
@@ -535,7 +535,7 @@ void NetworkEditor::copy()
     }
     return false;
   };
-  auto connSelected = [=](const ConnectionDescription& conn)
+  auto connSelected = [&selected](const ConnectionDescription& conn)
   {
     for (const auto& item : selected)
     {
@@ -548,7 +548,7 @@ void NetworkEditor::copy()
     return false;
   };
 
-  NetworkFileHandle file = controller_->serializeNetworkFragment(modSelected, connSelected);
+  auto file = controller_->serializeNetworkFragment(modSelected, connSelected);
 
   if (file)
   {
@@ -558,6 +558,7 @@ void NetworkEditor::copy()
     auto xml = QString::fromStdString(ostr.str());
 
     QApplication::clipboard()->setText(xml);
+    Q_EMIT newSubnetworkCopied(xml);
   }
   else
   {
@@ -567,17 +568,19 @@ void NetworkEditor::copy()
 
 void NetworkEditor::paste()
 {
-  auto str = QApplication::clipboard()->text();
+  pasteImpl(QApplication::clipboard()->text());
+}
 
-  std::istringstream istr(str.toStdString());
+void NetworkEditor::pasteImpl(const QString& xml)
+{
+  std::istringstream istr(xml.toStdString());
   try
   {
-    auto xml = XMLSerializer::load_xml<NetworkFile>(istr);
-    appendToNetwork(xml);
+    appendToNetwork(XMLSerializer::load_xml<NetworkFile>(istr));
   }
   catch (...)
   {
-    QMessageBox::critical(this, "Paste error", "Invalid clipboard contents: " + str);
+    QMessageBox::critical(this, "Paste error", "Invalid clipboard contents: " + xml);
   }
 }
 
@@ -603,6 +606,8 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   {
     addNewModuleAtPosition(mapToScene(event->pos()));
   }
+  else if (moduleSelectionGetter_->isClipboardXML())
+    pasteImpl(moduleSelectionGetter_->clipboardXML());
 }
 
 void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
@@ -619,6 +624,8 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
     auto upperLeft = mapToScene(viewport()->geometry()).boundingRect().center();
     addNewModuleAtPosition(upperLeft);
   }
+  else if (moduleSelectionGetter_->isClipboardXML())
+    pasteImpl(moduleSelectionGetter_->clipboardXML());
 }
 
 void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
@@ -1187,7 +1194,6 @@ bool NetworkEditor::containsViewScene() const
 void NetworkEditor::moduleWindowAction()
 {
   auto action = qobject_cast<QAction*>(sender());
-  //qDebug() << "moduleWindowAction: " << action->text();
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
@@ -1258,7 +1264,7 @@ QString Gui::colorToString(const QColor& color)
   return QString("rgb(%1, %2, %3)").arg(color.red()).arg(color.green()).arg(color.blue());
 }
 
-QGraphicsEffect* SCIRun::Gui::blurEffect(double radius)
+QGraphicsEffect* Gui::blurEffect(double radius)
 {
   auto blur = new QGraphicsBlurEffect;
   blur->setBlurRadius(radius);
@@ -1268,6 +1274,7 @@ QGraphicsEffect* SCIRun::Gui::blurEffect(double radius)
 void NetworkEditor::tagLayer(bool active, int tag)
 {
   tagLayerActive_ = active;
+  QMap<int,QRectF> tagItemRects;
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     item->setData(TagLayerKey, active);
@@ -1278,6 +1285,19 @@ void NetworkEditor::tagLayer(bool active, int tag)
       if (tag == AllTags)
       {
         highlightTaggedItem(item, itemTag);
+        if (itemTag != 0)
+        {
+          auto r = item->boundingRect();
+          r.translate(item->pos());
+          if (!tagItemRects.contains(itemTag))
+          {
+            tagItemRects.insert(itemTag, r);
+          }
+          else
+          {
+            tagItemRects[itemTag] = tagItemRects[itemTag].united(r);
+          }
+        }
       }
       else if (tag != NoTag)
       {
@@ -1291,6 +1311,13 @@ void NetworkEditor::tagLayer(bool active, int tag)
     }
     else
       item->setGraphicsEffect(nullptr);
+  }
+  if (tag == AllTags)
+  {
+    for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
+    {
+      scene_->addRect(rectIter.value().adjusted(-10,-10,10,10), QPen(tagColor_(rectIter.key())));
+    }
   }
 }
 

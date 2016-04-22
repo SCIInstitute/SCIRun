@@ -307,31 +307,31 @@ void GlyphBuilder::renderVectors(
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
-  ColorScheme colorScheme = COLOR_UNIFORM;
+  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
   ColorRGB node_color;  
 
   if (fld->basis_order() < 0 || renState.get(RenderState::USE_DEFAULT_COLOR))
   {
-    colorScheme = COLOR_UNIFORM;
+    colorScheme = ColorScheme::COLOR_UNIFORM;
   }
   else if (renState.get(RenderState::USE_COLORMAP))
   {
-    colorScheme = COLOR_MAP;
+    colorScheme = ColorScheme::COLOR_MAP;
   }
   else
   {
-    colorScheme = COLOR_IN_SITU;
+    colorScheme = ColorScheme::COLOR_IN_SITU;
   }
 
   mesh->synchronize(Mesh::EDGES_E);
 
   bool useLines = renState.mGlyphType == RenderState::GlyphType::LINE_GLYPH || renState.mGlyphType == RenderState::GlyphType::NEEDLE_GLYPH;
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::TRIANGLES;;
+  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;;
   // Use Lines
   if (useLines)
   {
-    primIn = SpireIBO::LINES;
+    primIn = SpireIBO::PRIMITIVE::LINES;
   }
 
   double scale = state->getValue(ShowFieldGlyphs::VectorsScale).toDouble();
@@ -359,14 +359,14 @@ void GlyphBuilder::renderVectors(
       Point p2 = p1 + v;
       //std::cout << "center: " << p1 << " end: " << p2 << std::endl;
       //std::cout << "radius: " << radius << std::endl;
-      if (colorScheme != COLOR_UNIFORM)
+      if (colorScheme != ColorScheme::COLOR_UNIFORM)
       {
-        if (colorScheme == COLOR_MAP)
+        if (colorScheme == ColorScheme::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(inputVector);
         }
-        if (colorScheme == COLOR_IN_SITU)
+        if (colorScheme == ColorScheme::COLOR_IN_SITU)
         {
           Vector colorVector = inputVector.normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -417,7 +417,7 @@ void GlyphBuilder::renderVectors(
 
     if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
     {
-      colorScheme = COLOR_UNIFORM;
+      colorScheme = ColorScheme::COLOR_UNIFORM;
     }
 
     for (const auto& node : facade->nodes())
@@ -432,14 +432,14 @@ void GlyphBuilder::renderVectors(
       //std::cout << "center: " << p1 << " end: " << p2 << std::endl;
       //std::cout << "radius: " << radius << std::endl;
       //std::cout << "resolution: " << resolution << std::endl;
-      if (colorScheme != COLOR_UNIFORM)
+      if (colorScheme != ColorScheme::COLOR_UNIFORM)
       {
-        if (colorScheme == COLOR_MAP)
+        if (colorScheme == ColorScheme::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(inputVector);
         }
-        if (colorScheme == COLOR_IN_SITU)
+        if (colorScheme == ColorScheme::COLOR_IN_SITU)
         {
           Vector colorVector = inputVector.normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -496,7 +496,7 @@ void GlyphBuilder::renderVectors(
   }
  
   std::stringstream ss;
-  ss << renState.mGlyphType << resolution << scale << colorScheme;
+  ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
 
@@ -518,20 +518,20 @@ void GlyphBuilder::renderScalars(
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
-  ColorScheme colorScheme = COLOR_UNIFORM;
+  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
   ColorRGB node_color;
 
   if (fld->basis_order() < 0 || renState.get(RenderState::USE_DEFAULT_COLOR))
   {
-    colorScheme = COLOR_UNIFORM;
+    colorScheme = ColorScheme::COLOR_UNIFORM;
   }
   else if (renState.get(RenderState::USE_COLORMAP))
   {
-    colorScheme = COLOR_MAP;
+    colorScheme = ColorScheme::COLOR_MAP;
   }
   else
   {
-    colorScheme = COLOR_IN_SITU;
+    colorScheme = ColorScheme::COLOR_IN_SITU;
   }
 
   mesh->synchronize(Mesh::NODES_E);
@@ -543,11 +543,11 @@ void GlyphBuilder::renderScalars(
     
   bool usePoints = renState.mGlyphType == RenderState::GlyphType::POINT_GLYPH;
    
-  SpireIBO::PRIMITIVE primIn = SpireIBO::TRIANGLES;;
+  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;;
   // Use Points
   if (usePoints)
   {
-    primIn = SpireIBO::POINTS;
+    primIn = SpireIBO::PRIMITIVE::POINTS;
   }
 
   GlyphGeom glyphs;
@@ -565,14 +565,14 @@ void GlyphBuilder::renderScalars(
       Point p = cell.center();
       double radius = std::abs(v) * scale;
 
-      if (colorScheme != COLOR_UNIFORM)
+      if (colorScheme != ColorScheme::COLOR_UNIFORM)
       {
-        if (colorScheme == COLOR_MAP)
+        if (colorScheme == ColorScheme::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(v);
         }
-        if (colorScheme == COLOR_IN_SITU)
+        if (colorScheme == ColorScheme::COLOR_IN_SITU)
         {
           Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -608,7 +608,7 @@ void GlyphBuilder::renderScalars(
   {
     if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
     {
-      colorScheme = COLOR_UNIFORM;
+      colorScheme = ColorScheme::COLOR_UNIFORM;
     }
 
     for (const auto& node : facade->nodes())
@@ -619,14 +619,14 @@ void GlyphBuilder::renderScalars(
       Point p = node.point();
       double radius = std::abs(v) * scale;
 
-      if (colorScheme != COLOR_UNIFORM)
+      if (colorScheme != ColorScheme::COLOR_UNIFORM)
       {
-        if (colorScheme == COLOR_MAP)
+        if (colorScheme == ColorScheme::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(v);
         }
-        if (colorScheme == COLOR_IN_SITU)
+        if (colorScheme == ColorScheme::COLOR_IN_SITU)
         {
           Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -658,7 +658,7 @@ void GlyphBuilder::renderScalars(
   }
 
   std::stringstream ss;
-  ss << renState.mGlyphType << resolution << scale << colorScheme;
+  ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "scalar_glyphs" + ss.str();
 
@@ -680,20 +680,20 @@ void GlyphBuilder::renderTensors(
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
-  ColorScheme colorScheme = COLOR_UNIFORM;
+  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
   ColorRGB node_color;
 
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || renState.get(RenderState::USE_DEFAULT_COLOR))
   {
-    colorScheme = COLOR_UNIFORM;
+    colorScheme = ColorScheme::COLOR_UNIFORM;
   }
   else if (renState.get(RenderState::USE_COLORMAP))
   {
-    colorScheme = COLOR_MAP;
+    colorScheme = ColorScheme::COLOR_MAP;
   }
   else
   {
-    colorScheme = COLOR_IN_SITU;
+    colorScheme = ColorScheme::COLOR_IN_SITU;
   }
 
   mesh->synchronize(Mesh::NODES_E);
@@ -704,11 +704,11 @@ void GlyphBuilder::renderTensors(
   if (resolution < 3) resolution = 5;
 
   std::stringstream ss;
-  ss << renState.mGlyphType << resolution << radius << colorScheme;
+  ss << renState.mGlyphType << resolution << radius << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "tensor_glyphs" + ss.str();
   
-  SpireIBO::PRIMITIVE primIn = SpireIBO::TRIANGLES;;
+  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;;
  
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
@@ -724,14 +724,14 @@ void GlyphBuilder::renderTensors(
       double eigen1, eigen2, eigen3;
       t.get_eigenvalues(eigen1, eigen2, eigen3);
 
-      if (colorScheme != COLOR_UNIFORM)
+      if (colorScheme != ColorScheme::COLOR_UNIFORM)
       {
-        if (colorScheme == COLOR_MAP)
+        if (colorScheme == ColorScheme::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(t);
         }
-        if (colorScheme == COLOR_IN_SITU)
+        if (colorScheme == ColorScheme::COLOR_IN_SITU)
         {
           Vector colorVector = t.get_eigenvector1().normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
@@ -763,14 +763,14 @@ void GlyphBuilder::renderTensors(
       double eigen1, eigen2, eigen3;
       t.get_eigenvalues(eigen1, eigen2, eigen3);
 
-      if (colorScheme != COLOR_UNIFORM)
+      if (colorScheme != ColorScheme::COLOR_UNIFORM)
       {
-        if (colorScheme == COLOR_MAP)
+        if (colorScheme == ColorScheme::COLOR_MAP)
         {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(t);
         }
-        if (colorScheme == COLOR_IN_SITU)
+        if (colorScheme == ColorScheme::COLOR_IN_SITU)
         {
           Vector colorVector = t.get_eigenvector1().normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));

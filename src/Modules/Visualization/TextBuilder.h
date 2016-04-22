@@ -33,11 +33,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Modules/Visualization/share.h>
-#include <glm/glm.hpp>
-#include <string>
 
 namespace SCIRun {
   namespace Modules {
@@ -52,11 +49,11 @@ namespace SCIRun {
         void initFreeType(const std::string &libName, size_t size);
         void loadNewFace(const std::string &libName, size_t size);
         void setFaceSize(size_t size);
-        size_t getFaceSize() { return ftSize_; }
+        size_t getFaceSize() const { return ftSize_; }
         void setColor(const glm::vec4 &color) { color_ = color; }
 
-        bool isInit() { return ftInit_; }
-        bool isValid() { return ftValid_; }
+        bool isInit() const { return ftInit_; }
+        bool isValid() const { return ftValid_; }
 
         static void setFSStrings(std::string &root, std::string &separator);
 
@@ -65,14 +62,14 @@ namespace SCIRun {
 
         //startNrmSpc: start position in normalized space [[0, 2][0, 2]], origin at lower left corner
         //shiftPxlSpc: shift from start position in pixel space
-        void printString(const std::string oneline,
+        void printString(const std::string& oneline,
           const Core::Geometry::Vector &startNrmSpc,
           const Core::Geometry::Vector &shiftPxlSpc,
           const std::string& id,
           Graphics::Datatypes::GeometryHandle geom);
         //get string length based on current settings
         //return value in pixels
-        double getStringLen(const std::string oneline);
+        double getStringLen(const std::string& oneline);
 
       private:
         std::string libName_;

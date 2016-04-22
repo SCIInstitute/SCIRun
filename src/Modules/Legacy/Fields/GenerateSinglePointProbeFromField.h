@@ -80,11 +80,11 @@ namespace SCIRun {
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
-        int counter_;
+        //int counter_;
         boost::shared_ptr<class GenerateSinglePointProbeFromFieldImpl> impl_;
         Core::Geometry::Point currentLocation() const;
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
-        void adjustPositionFromTransform(const Core::Datatypes::DenseMatrixHandle& transformMatrix);
+        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix);
         
         FieldHandle GenerateOutputField(boost::optional<FieldHandle> ifieldOption);
         index_type GenerateIndex();        

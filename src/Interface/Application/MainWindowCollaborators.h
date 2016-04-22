@@ -58,12 +58,12 @@ namespace Gui {
 
     void log(const QString& message) const;
 
-    virtual void error(const std::string& msg) const;
-    virtual void warning(const std::string& msg) const;
-    virtual void remark(const std::string& msg) const;
-    virtual void status(const std::string& msg) const;
+    virtual void error(const std::string& msg) const override;
+    virtual void warning(const std::string& msg) const override;
+    virtual void remark(const std::string& msg) const override;
+    virtual void status(const std::string& msg) const override;
 
-    virtual void log4(const std::string& message) const;
+    virtual void log4(const std::string& message) const override;
   private:
     QTextEdit* text_;
     mutable QMutex mutex_;
@@ -74,8 +74,10 @@ namespace Gui {
   {
   public:
     explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
-    virtual QString text() const;
-    virtual bool isModule() const;
+    virtual QString text() const override;
+    virtual QString clipboardXML() const override;
+    virtual bool isModule() const override;
+    virtual bool isClipboardXML() const override;
   private:
     QTreeWidget& tree_;
   };
@@ -84,7 +86,7 @@ namespace Gui {
   {
   public:
     explicit ComboBoxDefaultNotePositionGetter(QComboBox& combo) : combo_(combo) {}
-    virtual NotePosition position() const;
+    virtual NotePosition position() const override;
   private:
     QComboBox& combo_;
   };

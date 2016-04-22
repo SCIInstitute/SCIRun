@@ -65,6 +65,7 @@ namespace Datatypes {
     static bool sparse(const MatrixHandle& mh);
     static bool column(const MatrixHandle& mh);
     static std::string whatType(const MatrixHandle& mh);
+    static std::string whatType(const ComplexDenseMatrixHandle& mh);
     static MatrixTypeCode typeCode(const MatrixHandle& mh);
     
     matrixIs() = delete;

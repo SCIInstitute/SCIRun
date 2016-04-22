@@ -39,11 +39,6 @@
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-//
-//#include <Core/Thread/CrowdMonitor.h>
-//
-//#include <Dataflow/Widgets/PointWidget.h>
-
 using namespace SCIRun;
 using namespace Core;
 using namespace Core::Algorithms;
@@ -95,13 +90,14 @@ namespace SCIRun
         bool color_changed_;
         GeometryHandle buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator);
         RenderState getWidgetRenderState(ModuleStateHandle state);
+        Transform previousTransform_;
       };
     }}}
 
 GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
   : GeometryGeneratingModule(staticInfo_), impl_(new GenerateSinglePointProbeFromFieldImpl)
 {
-  counter_ = -1;
+  //counter_ = -1;
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeneratedWidget);
   INITIALIZE_PORT(GeneratedPoint);
@@ -110,51 +106,25 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 
 void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedback& var)
 {
-  auto xyTr = any_cast_or_default_<Variable>(var);
-  DenseMatrixHandle transformHandle(new DenseMatrix(4, 4));
-  int row = 0; 
-  int col = 0;
-  int i = 0;
-  int counter;
-  for (const auto& subVar : xyTr.toVector())
+  auto vsf = static_cast<const ViewSceneFeedback&>(var);
+
+  if (impl_->previousTransform_ != vsf.transform)
   {
-    if (i == 0)
-    {
-      counter = subVar.toInt();
-      if (counter_ != counter)
-        counter_ = counter;
-      else
-        return;
-    }
-    else
-    {
-      if (col > 3)
-      {
-        col = 0;
-        ++row;
-      }
-      (*transformHandle)(row, col) = subVar.toDouble();
-      ++col;
-    }
-    ++i;
+    adjustPositionFromTransform(vsf.transform);
   }
-  
-  //std::cout << "in probe: " << (*transformHandle) << std::endl;
-  adjustPositionFromTransform(transformHandle);
 }
 
 
-void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseMatrixHandle& transformMatrix)
+void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transform& transformMatrix)
 {
-  //std::cout << "GenerateSinglePointProbeFromField::adjustPositionFromTransform\n";
-  DenseMatrixHandle centerHandle(new DenseMatrix(4, 1));
-  (*centerHandle) << currentLocation().x(), currentLocation().y(), currentLocation().z(), 1;
-  //(*centerHandle) << 0, 0, 0, 1;
-  DenseMatrix newTransform((*transformMatrix) * (*centerHandle));
+  DenseMatrix center(4, 1);
+  auto currLoc = currentLocation();
+  center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;
+  DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
 
-  Point newLocation(newTransform.get(0, 0) / newTransform.get(3, 0),
-                    newTransform.get(1, 0) / newTransform.get(3, 0),
-                    newTransform.get(2, 0) / newTransform.get(3, 0));
+  Point newLocation(newTransform(0, 0) / newTransform(3, 0),
+                    newTransform(1, 0) / newTransform(3, 0),
+                    newTransform(2, 0) / newTransform(3, 0));
 
   auto state = get_state();
   using namespace Parameters;
@@ -166,7 +136,7 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const DenseM
   //TODO: Communicate with dialog to Q_EMIT executeActionTriggered();
   state->setValue(WidgetMoved, true);
   state->setValue(MoveMethod, std::string(oldMoveMethod));
- 
+  impl_->previousTransform_ = transformMatrix;
 }
 
 void GenerateSinglePointProbeFromField::setStateDefaults()
@@ -225,10 +195,10 @@ void GenerateSinglePointProbeFromField::execute()
   auto ifieldOption = getOptionalInput(InputField);
   if (needToExecute())
   {
-    FieldHandle field = GenerateOutputField(ifieldOption);
+    auto field = GenerateOutputField(ifieldOption);
     sendOutput(GeneratedPoint, field);
 
-    index_type index = GenerateIndex();
+    auto index = GenerateIndex();
     sendOutput(ElementIndex, boost::make_shared<Int32>(static_cast<int>(index)));
 
     auto geom = impl_->buildWidgetObject(field, get_state(), *this);
@@ -264,8 +234,8 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 
   if (!bbox.is_similar_to(impl_->last_bounds_))
   {
-    Point bmin = bbox.get_min();
-    Point bmax = bbox.get_max();
+    auto bmin = bbox.get_min();
+    auto bmax = bbox.get_max();
 
     // Fix degenerate boxes.
     const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
@@ -285,12 +255,12 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
       bmax.z(bmax.z() + size_estimate);
     }
 
-    Point center = bmin + Vector(bmax - bmin) * 0.5;
+    auto center = bmin + Vector(bmax - bmin) * 0.5;
     impl_->l2norm_ = (bmax - bmin).length();
 
     // If the current location looks reasonable, use that instead
     // of the center.
-    Point curloc = currentLocation();
+    auto curloc = currentLocation();
 
     // Invalidate current position if it's outside of our field.
     // Leave it alone if there was no field, as our bbox is arbitrary anyway.
@@ -323,18 +293,18 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
   widget_->SetLabel(gui_label_.get());
 #endif
 
-  const std::string moveto = state->getValue(MoveMethod).toString();
+  const auto moveto = state->getValue(MoveMethod).toString();
   bool moved_p = false;
   if (moveto == "Location")
   {
-    const Point newloc = currentLocation();
+    const auto newloc = currentLocation();
     impl_->widget_->setPosition(newloc);
     moved_p = true;
   }
   else if (moveto == "Center")
   {
-    Point bmin = bbox.get_min();
-    Point bmax = bbox.get_max();
+    auto bmin = bbox.get_min();
+    auto bmax = bbox.get_max();
 
     // Fix degenerate boxes.
     const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
@@ -399,10 +369,10 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 #endif
   }
 
-  const Point location = impl_->widget_->position();
+  const auto location = impl_->widget_->position();
 
   FieldInformation fi("PointCloudMesh", 0, "double");
-  MeshHandle mesh = CreateMesh(fi);
+  auto mesh = CreateMesh(fi);
   mesh->vmesh()->add_point(location);
 
   FieldHandle ofield;
@@ -429,8 +399,8 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
   }
 
   std::ostringstream valstr;
-  VField* vfield = 0;
-  VMesh* vmesh = 0;
+  VField* vfield = nullptr;
+  VMesh* vmesh = nullptr;
   if (ifield)
   {
     vfield = ifield->vfield();
@@ -535,7 +505,7 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
 
   VMesh* mesh = field->vmesh();
 
-  ColorScheme colorScheme = COLOR_UNIFORM;
+  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
   ColorRGB node_color;
 
   mesh->synchronize(Mesh::NODES_E);
@@ -550,11 +520,11 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
-  ss << radius << num_strips << colorScheme;
+  ss << radius << num_strips << static_cast<int>(colorScheme);
 
-  std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
+  auto uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
 
-  SpireIBO::PRIMITIVE primIn = SpireIBO::TRIANGLES;
+  auto primIn = SpireIBO::PRIMITIVE::TRIANGLES;
 
   Graphics::GlyphGeom glyphs;
   while (eiter != eiter_end)
@@ -569,7 +539,7 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
     ++eiter;
   }
 
-  RenderState renState = getWidgetRenderState(state);
+  auto renState = getWidgetRenderState(state);
 
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, primIn, mesh->get_bounding_box());

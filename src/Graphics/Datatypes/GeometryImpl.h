@@ -49,7 +49,7 @@ namespace SCIRun {
 
       // Schemes individually describing how the data is to be colored.
       // This enumeration may belong in Core/Algorithms/Visualization.
-      enum ColorScheme
+      enum class ColorScheme
       {
         COLOR_UNIFORM = 0,
         COLOR_MAP,
@@ -60,7 +60,7 @@ namespace SCIRun {
       /// This really just boils down to instanced rendering. Once tesselation
       /// and geometry shaders are supported, we can speed up instanced rendering
       /// in OpenGL.
-      enum RenderType
+      enum class RenderType
       {
         RENDER_VBO_IBO,
         RENDER_RLIST_SPHERE,
@@ -105,14 +105,14 @@ namespace SCIRun {
 
       struct SpireIBO
       {
-        enum PRIMITIVE
+        enum class PRIMITIVE
         {
           POINTS,
           LINES,
           TRIANGLES,
         };
 
-        SpireIBO() : indexSize(0), prim(POINTS) {}
+        SpireIBO() : indexSize(0), prim(PRIMITIVE::POINTS) {}
         SpireIBO(const std::string& iboName, PRIMITIVE primIn, size_t iboIndexSize,
           std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboData) :
           name(iboName),
@@ -151,7 +151,7 @@ namespace SCIRun {
       /// Defines a Spire object 'pass'.
       struct SpireSubPass
       {
-        SpireSubPass() : renderType(RENDER_VBO_IBO), scalar(0), mColorScheme(COLOR_UNIFORM) {}
+        SpireSubPass() : renderType(RenderType::RENDER_VBO_IBO), scalar(0), mColorScheme(ColorScheme::COLOR_UNIFORM) {}
         SpireSubPass(const std::string& name, const std::string& vboName,
           const std::string& iboName, const std::string& program,
           ColorScheme scheme, const RenderState& state,
@@ -191,22 +191,22 @@ namespace SCIRun {
 
         struct Uniform
         {
-          enum UniformType
+          enum class UniformType
           {
             UNIFORM_SCALAR,
             UNIFORM_VEC4
           };
 
-          Uniform() : type(UNIFORM_SCALAR) {}
+          Uniform() : type(UniformType::UNIFORM_SCALAR) {}
           Uniform(const std::string& nameIn, float d) :
             name(nameIn),
-            type(UNIFORM_SCALAR),
+            type(UniformType::UNIFORM_SCALAR),
             data(d, 0.0f, 0.0f, 0.0f)
           {}
 
           Uniform(const std::string& nameIn, const glm::vec4& vec) :
             name(nameIn),
-            type(UNIFORM_VEC4),
+            type(UniformType::UNIFORM_VEC4),
             data(vec)
           {}
 
@@ -223,7 +223,7 @@ namespace SCIRun {
           bool existed = false;
           for (auto& i : mUniforms)
           {
-            if (i.name == name && i.type == Uniform::UNIFORM_SCALAR)
+            if (i.name == name && i.type == Uniform::UniformType::UNIFORM_SCALAR)
             {
               i.data.x = scalar;
               existed = true;
@@ -238,7 +238,7 @@ namespace SCIRun {
           bool existed = false;
           for (auto& i : mUniforms)
           {
-            if (i.name == name && i.type == Uniform::UNIFORM_VEC4)
+            if (i.name == name && i.type == Uniform::UniformType::UNIFORM_VEC4)
             {
               i.data = vector;
               existed = true;

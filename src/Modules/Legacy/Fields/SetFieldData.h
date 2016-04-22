@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace Fields {
 
       class SCISHARE SetFieldDataModule : public Dataflow::Networks::Module,
-        public Has3InputPorts<FieldPortTag,MatrixPortTag,NrrdPortTag>,
+        public Has4InputPorts<FieldPortTag,MatrixPortTag,NrrdPortTag,ComplexDenseMatrixPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:
@@ -48,6 +48,7 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, InputMatrix, Matrix);
         INPUT_PORT(2, InputNrrd, NrrdDataType);
+        INPUT_PORT(3, InputComplexMatrix, ComplexDenseMatrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };

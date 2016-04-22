@@ -32,11 +32,13 @@ SET(Interface_Modules_Math_FORMS
   AppendMatrix.ui
   CreateGeometricTransform.ui
   CreateMatrix.ui
+  CreateComplexMatrix.ui
   EvaluateLinearAlgebraBinary.ui
   EvaluateLinearAlgebraGeneral.ui
   EvaluateLinearAlgebraUnary.ui
   GetMatrixSlice.ui
   ReportMatrixInfo.ui
+  ReportComplexMatrixInfo.ui
   SolveLinearSystem.ui
   ConvertMatrixType.ui
   BuildNoiseColumnMatrix.ui
@@ -51,11 +53,13 @@ SET(Interface_Modules_Math_HEADERS
   AppendMatrixDialog.h
   CreateGeometricTransformDialog.h
   CreateMatrixDialog.h
+  CreateComplexMatrixDialog.h
   EvaluateLinearAlgebraBinaryDialog.h
   EvaluateLinearAlgebraGeneralDialog.h
   EvaluateLinearAlgebraUnaryDialog.h
   GetMatrixSliceDialog.h
   ReportMatrixInfoDialog.h
+  ReportComplexMatrixInfoDialog.h
   share.h
   SolveLinearSystemDialog.h
   ConvertMatrixTypeDialog.h
@@ -77,11 +81,13 @@ SET(Interface_Modules_Math_SOURCES
   AppendMatrixDialog.cc
   CreateGeometricTransformDialog.cc
   CreateMatrixDialog.cc
+  CreateComplexMatrixDialog.cc
   EvaluateLinearAlgebraBinaryDialog.cc
   EvaluateLinearAlgebraGeneralDialog.cc
   EvaluateLinearAlgebraUnaryDialog.cc
   GetMatrixSliceDialog.cc
   ReportMatrixInfoDialog.cc
+  ReportComplexMatrixInfoDialog.cc
   SolveLinearSystemDialog.cc
   ConvertMatrixTypeDialog.cc
   BuildNoiseColumnMatrixDialog.cc
