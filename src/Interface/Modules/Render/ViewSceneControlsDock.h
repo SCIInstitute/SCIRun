@@ -44,6 +44,26 @@ DEALINGS IN THE SOFTWARE.
 namespace SCIRun {
   namespace Gui {
     class ViewSceneDialog;
+    
+    class LightControlCircle : public QGraphicsView
+    {
+      Q_OBJECT
+    public:
+      explicit LightControlCircle(QGraphicsScene* scene,
+        //SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        const boost::atomic<bool>& pulling, QRectF sceneRect,
+        QWidget* parent = nullptr);
+
+    Q_SIGNALS:
+      void clicked(int x, int y);
+    protected:
+      virtual void mousePressEvent(QMouseEvent* event) override;
+
+      QGraphicsItem* boundingCircle_;
+      QGraphicsItem* lightPosition_;
+      const boost::atomic<bool>& dialogPulling_;
+
+    };
 
     class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls
     {
@@ -76,24 +96,7 @@ namespace SCIRun {
     private:      
       std::vector<QListWidgetItem*> items_;
       void setupObjectListWidget();
-    };
-
-    class LightControlCircle : public QGraphicsView
-    {
-    Q_OBJECT
-    public:
-      explicit LightControlCircle(QGraphicsScene* scene,
-        SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        const boost::atomic<bool>& pulling,
-        QWidget* parent = nullptr);
-
-    Q_SIGNALS:
-      void clicked(int x, int y);
-    protected:
-      virtual void mousePressEvent(QMouseEvent* event) override;
-
-      const boost::atomic<bool>& dialogPulling_;
-
+      std::vector<LightControlCircle*> lightControls_;
     };
   }
 }

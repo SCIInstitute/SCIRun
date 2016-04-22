@@ -131,6 +131,21 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   WidgetStyleMixin::tabStyle(tabWidget);
 
+  auto scene = new QGraphicsScene(headlightFrame_);
+  auto lightcontrol = new LightControlCircle(scene, parent->pulling_, headlightFrame_->rect(), headlightFrame_);
+  lightControls_.push_back(lightcontrol);
+
+  auto scene1 = new QGraphicsScene(light1Frame_);
+  auto lightcontrol1 = new LightControlCircle(scene1, parent->pulling_, light1Frame_->rect(), light1Frame_);
+  lightControls_.push_back(lightcontrol1);
+
+  auto scene2 = new QGraphicsScene(light2Frame_);
+  auto lightcontrol2 = new LightControlCircle(scene2, parent->pulling_, light2Frame_->rect(), light2Frame_);
+  lightControls_.push_back(lightcontrol2);
+
+  auto scene3 = new QGraphicsScene(light3Frame_);
+  auto lightcontrol3 = new LightControlCircle(scene3, parent->pulling_, light3Frame_->rect(), light3Frame_);
+  lightControls_.push_back(lightcontrol3);
 
   /////Set unused widgets to be not visible
   ////Clipping tab
@@ -350,4 +365,31 @@ public:
 void ViewSceneControlsDock::setupObjectListWidget()
 {
   objectListWidget_->setItemDelegate(new FixMacCheckBoxes);
+}
+
+LightControlCircle::LightControlCircle(QGraphicsScene* scene,  //ModuleStateHandle state,
+  const boost::atomic<bool>& pulling, QRectF sceneRect,
+  QWidget* parent)
+  : QGraphicsView(scene, parent), 
+  dialogPulling_(pulling)
+{
+  setSceneRect(sceneRect);
+  static QPen pointPen(Qt::white, 1);
+  qreal x = (sceneRect.width()/2) - (sceneRect.height()/2);
+  qreal y = 0;
+  boundingCircle_ = scene->addEllipse(x, y, sceneRect.height() - 2, sceneRect.height() - 2, pointPen, QBrush(Qt::transparent));
+}
+
+void LightControlCircle::mousePressEvent(QMouseEvent* event)
+{
+  QGraphicsView::mousePressEvent(event);
+  if (event->buttons() & Qt::LeftButton)
+  {
+    auto center = mapToScene(event->pos());
+    //addPoint(center);
+  }
+
+  //TODO: remove point if event & RightMouseButton
+
+  //TODO: points are movable!
 }
