@@ -28,6 +28,7 @@
 
 // Uniforms
 uniform mat4  uProjIVObject;      // Projection * Inverse View * World XForm
+uniform mat4  uInverseView;       // world -> view
 
 // Attributes
 attribute vec3  aPos;
@@ -36,10 +37,12 @@ attribute vec4  aColor;
 // Outputs to the fragment shader.
 varying vec4    fColor;
 varying vec4    vPos;//for clipping plane calc
+varying vec4    vFogCoord;// for fog calculation
 
 void main( void )
 {
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
   fColor  = aColor;
   vPos = vec4(aPos, 1.0);
+  vFogCoord = uInverseView * vPos;
 }

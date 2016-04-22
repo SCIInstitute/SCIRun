@@ -49,11 +49,16 @@ uniform vec4    uClippingPlaneCtrl3;// clipping plane 3 control (visible, showFr
 uniform vec4    uClippingPlaneCtrl4;// clipping plane 4 control (visible, showFrame, reverseNormal, 0)
 uniform vec4    uClippingPlaneCtrl5;// clipping plane 5 control (visible, showFrame, reverseNormal, 0)
 
+//fog
+uniform vec4    uFogSettings;       // fog settings (intensity, start, end, 0.0)
+uniform vec4    uFogColor;          // fog color
+
 // are dealing with point lights. Since we are only dealing with directional
 // lights we light in world space.
 varying vec3  vNormal;
 varying vec4  vColor; 
 varying vec4    vPos;//for clipping plane calc
+varying vec4    vFogCoord;// for fog calculation
 
 void main()
 {
@@ -126,5 +131,22 @@ void main()
 
    spec              = pow(spec, uSpecularPower);
    gl_FragColor      = vec4((diffuse * spec * uSpecularColor + diffuse * diffuseColor + uAmbientColor).rgb, uTransparency);
+                       
+  //calculate fog
+  if (uFogSettings.x > 0.0)
+  {
+    vec4 fp;
+    fp.x = uFogSettings.x;
+    fp.y = uFogSettings.y;
+    fp.z = uFogSettings.z;
+    fp.w = abs(vFogCoord.z/vFogCoord.w);
+    
+    float fog_factor;
+    fog_factor = (fp.z-fp.w)/(fp.z-fp.y);
+    fog_factor = 1.0 - clamp(fog_factor, 0.0, 1.0);
+    fog_factor = 1.0 - exp(-pow(fog_factor*2.5, 2.0));
+    gl_FragColor.xyz = mix(clamp(gl_FragColor.xyz, 0.0, 1.0),
+      clamp(uFogColor.xyz, 0.0, 1.0), fog_factor);
+  }
 }
 

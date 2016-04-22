@@ -90,6 +90,21 @@ namespace SCIRun {
         MOUSE_NEWSCIRUN
       };
 
+      enum MatFactor
+      {
+        MAT_AMBIENT,
+        MAT_DIFFUSE,
+        MAT_SPECULAR,
+        MAT_SHINE
+      };
+
+      enum FogFactor
+      {
+        FOG_INTENSITY,
+        FOG_START,
+        FOG_END
+      };
+
       struct ClippingPlane {
         bool visible, showFrame, reverseNormal;
         double x, y, z, d;
@@ -170,6 +185,13 @@ namespace SCIRun {
       void setClippingPlaneY(double value);
       void setClippingPlaneZ(double value);
       void setClippingPlaneD(double value);
+
+      //set material factors
+      void setMaterialFactor(MatFactor factor, double value);
+
+      //set fog
+      void setFog(FogFactor factor, double value);
+      void setFogColor(const glm::vec4 &color);
 
       //camera matrices
       const glm::mat4& getWorldToProjection() const;
@@ -293,6 +315,12 @@ namespace SCIRun {
       // Apply uniform.
       void applyUniform(uint64_t entityID, const Graphics::Datatypes::SpireSubPass::Uniform& uniform);
 
+      //apply material factors
+      void applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
+
+      //apply fog
+      void applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
+
       // search for a widget at mouse position
       bool foundWidget(const glm::ivec2& pos);
 
@@ -337,15 +365,23 @@ namespace SCIRun {
       std::vector<ClippingPlane>        clippingPlanes_;
       int                               clippingPlaneIndex_;
 
-      //ScaleBar                          scaleBar_;
-
       ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
       ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
       RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
 
-      //Modules::Visualization::TextBuilder textBuilder_;     ///
+      //material settings
+      double                            mMatAmbient;
+      double                            mMatDiffuse;
+      double                            mMatSpecular;
+      double                            mMatShine;
+
+      //fog settings
+      double                            mFogIntensity;
+      double                            mFogStart;
+      double                            mFogEnd;
+      glm::vec4                         mFogColor;
     };
 
   } // namespace Render
