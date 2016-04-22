@@ -33,6 +33,19 @@
 #include <Modules/Legacy/Matlab/DataIO/share.h>
 
 namespace SCIRun {
+
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Matlab
+      {
+        ALGORITHM_PARAMETER_DECL(FieldNames);
+        ALGORITHM_PARAMETER_DECL(FieldFormats);
+      }
+    }
+  }
+
 namespace Modules {
 namespace Matlab {
 

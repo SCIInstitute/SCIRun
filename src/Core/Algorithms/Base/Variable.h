@@ -125,6 +125,17 @@ namespace Algorithms {
     return vars;
   }
 
+  template <typename T>
+  std::vector<T> toTypedVector(const Variable::List& list, std::function<T(const Variable&)> convert)
+  {
+    std::vector<T> ts;
+    std::transform(list.begin(), list.end(), std::back_inserter(ts), convert);
+    return ts;
+  }
+
+  SCISHARE std::vector<std::string> toStringVector(const Variable::List& list);
+  SCISHARE std::vector<double> toDoubleVector(const Variable::List& list);
+
   typedef Variable AlgorithmParameter;
   typedef Variable::List VariableList;
   typedef Datatypes::SharedPointer<Variable> VariableHandle;

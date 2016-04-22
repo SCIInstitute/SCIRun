@@ -104,7 +104,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -118,13 +118,25 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>InputField:1</name>
+								</first>
+								<second>
+									<name>InputField:1</name>
+									<value>
+										<which>2</which>
+										<value>f2</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>1</count>
+			<count>2</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
@@ -138,6 +150,18 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ExportFieldsToMatlab:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>1</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
@@ -146,8 +170,8 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>4.95000000000000000e+001</first>
-				<second>1.45000000000000000e+001</second>
+				<first>7.60000000000000000e+001</first>
+				<second>-1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>

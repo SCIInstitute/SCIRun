@@ -67,13 +67,15 @@ ExportFieldsToMatlabDialog::ExportFieldsToMatlabDialog(const std::string& name, 
 //
 void ExportFieldsToMatlabDialog::updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type)
 {
-  qDebug() << "FOO";
   if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
     return;
 
   static const std::string typeName = "Field";
   const int lineEditColumn = 1;
-  syncTableRowsWithDynamicPort(portName, typeName, tableWidget, lineEditColumn, type, {}, {});
+  syncTableRowsWithDynamicPort(portName, typeName, tableWidget, lineEditColumn, type, {}, 
+  {
+    { 2, [this]() { return makeInputArrayTypeComboBoxItem(); } }
+  });
 }
 
 
@@ -90,22 +92,22 @@ void ExportFieldsToMatlabDialog::updateFromPortChange(int numPorts, const std::s
 //}
 //
 //
-//QComboBox* InterfaceWithMatlabDialog::makeInputArrayTypeComboBoxItem() const
-//{
-//  QStringList bcList;
-//  bcList << "numeric array" << "struct array";
-//  QComboBox* bcBox = new QComboBox();
-//  bcBox->addItems(bcList);
-//  bcBox->setCurrentIndex(0);
-//  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushMatrixInput()));
-//  return bcBox;
-//}
-//
-//void InterfaceWithMatlabDialog::pushMatrixInput()
-//{
-//  qDebug() << "pushMatrixInput";
-//}
-//
+QComboBox* ExportFieldsToMatlabDialog::makeInputArrayTypeComboBoxItem() const
+{
+  QStringList bcList;
+  bcList << "numeric array" << "struct array";
+  auto bcBox = new QComboBox();
+  bcBox->addItems(bcList);
+  bcBox->setCurrentIndex(1);
+  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushArrayType()));
+  return bcBox;
+}
+
+void ExportFieldsToMatlabDialog::pushArrayType()
+{
+  qDebug() << "pushArrayType";
+}
+
 //void InterfaceWithMatlabDialog::pushTableRow(int row)
 //{
 //  using namespace TableColumns;
