@@ -58,7 +58,9 @@ namespace SCIRun {
       void clicked(int x, int y);
     protected:
       virtual void mousePressEvent(QMouseEvent* event) override;
+      virtual void mouseMoveEvent(QMouseEvent* event) override;
 
+      int previousX, previousY;
       QGraphicsItem* boundingCircle_;
       QGraphicsItem* lightPosition_;
       const boost::atomic<bool>& dialogPulling_;

@@ -375,9 +375,18 @@ LightControlCircle::LightControlCircle(QGraphicsScene* scene,  //ModuleStateHand
 {
   setSceneRect(sceneRect);
   static QPen pointPen(Qt::white, 1);
-  qreal x = (sceneRect.width()/2) - (sceneRect.height()/2);
-  qreal y = 0;
-  boundingCircle_ = scene->addEllipse(x, y, sceneRect.height() - 2, sceneRect.height() - 2, pointPen, QBrush(Qt::transparent));
+  qreal x = (sceneRect.width()/2) - (sceneRect.height()/2) + 6;
+  qreal y = 6;
+  qreal radius = sceneRect.height() - 12;
+  boundingCircle_ = scene->addEllipse(x, y, radius, radius, pointPen, QBrush(Qt::transparent));
+
+  const int lightCircleRadius = 8;
+  qreal circleX = (sceneRect.width() / 2) - (lightCircleRadius / 2);
+  qreal circleY = (sceneRect.height() / 2) - (lightCircleRadius / 2);
+  lightPosition_ = scene->addEllipse(circleX, circleY, lightCircleRadius, lightCircleRadius, pointPen, QBrush(Qt::white));
+  previousX = circleX;
+  previousY = circleY;
+  lightPosition_->setFlag(QGraphicsItem::ItemIsMovable, true);
 }
 
 void LightControlCircle::mousePressEvent(QMouseEvent* event)
@@ -385,11 +394,30 @@ void LightControlCircle::mousePressEvent(QMouseEvent* event)
   QGraphicsView::mousePressEvent(event);
   if (event->buttons() & Qt::LeftButton)
   {
-    auto center = mapToScene(event->pos());
-    //addPoint(center);
+    if (lightPosition_->isUnderMouse())
+    {
+      std::cout << "small dot clicked" << std::endl;
+    }
+    else if (boundingCircle_->contains(event->pos()))
+    {
+      std::cout << "bounding circle clicked!" << std::endl;
+    }
   }
+}
 
-  //TODO: remove point if event & RightMouseButton
-
-  //TODO: points are movable!
+void LightControlCircle::mouseMoveEvent(QMouseEvent* event)
+{
+  QGraphicsView::mouseMoveEvent(event);
+  if (lightPosition_->isUnderMouse())
+  {
+    if (lightPosition_->collidesWithItem(boundingCircle_))
+    {
+      previousX = lightPosition_->pos().x();
+      previousY = lightPosition_->pos().y();
+    }
+    else
+    {
+      lightPosition_->setPos(previousX, previousY);
+    }
+  }
 }

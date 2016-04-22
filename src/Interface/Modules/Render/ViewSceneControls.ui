@@ -777,14 +777,17 @@
         <item row="1" column="0">
          <widget class="QCheckBox" name="headlightCheckBox_">
           <property name="text">
-           <string>on/off</string>
+           <string>Headlight: on/off</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
          <widget class="QCheckBox" name="light1CheckBox_">
           <property name="text">
-           <string>on/off</string>
+           <string>Light1: on/off</string>
           </property>
          </widget>
         </item>
@@ -823,14 +826,14 @@
         <item row="3" column="0">
          <widget class="QCheckBox" name="light2CheckBox_">
           <property name="text">
-           <string>on/off</string>
+           <string>Light2: on/off</string>
           </property>
          </widget>
         </item>
         <item row="3" column="1">
          <widget class="QCheckBox" name="light3CheckBox_">
           <property name="text">
-           <string>on/off</string>
+           <string>Light3: on/off</string>
           </property>
          </widget>
         </item>
@@ -1802,7 +1805,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="planeButtonGroup_"/>
   <buttongroup name="shadingButtonGroup_"/>
+  <buttongroup name="planeButtonGroup_"/>
  </buttongroups>
 </ui>
