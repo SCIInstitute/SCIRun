@@ -42,9 +42,6 @@
 #include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
 #include <Core/Application/Version.h>
-#include <Core/Services/ServiceLog.h>
-#include <Core/Services/ServiceDB.h>
-#include <Core/Services/ServiceManager.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Application/Preferences/Preferences.h>
 
@@ -71,7 +68,7 @@ namespace SCIRun
       ApplicationParametersHandle parameters_;
       NetworkEditorControllerHandle controller_;
       GlobalCommandFactoryHandle cmdFactory_;
-      void start_eai();
+      //void start_eai();
     };
   }
 }
@@ -348,7 +345,7 @@ std::string Application::GetAbout()
 }
 */
 
-
+#if 0 //shouldn't need this anymore
 // Services start up...
 void ApplicationPrivate::start_eai()
 {
@@ -437,3 +434,4 @@ void ApplicationPrivate::start_eai()
   t_ext->detach();
 #endif
 }
+#endif
