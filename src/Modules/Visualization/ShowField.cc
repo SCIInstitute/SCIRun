@@ -188,6 +188,9 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(TextPrecision, 3);
   state->setValue(TextColoring, 0);
 
+  state->setValue(UseFaceNormals, false);
+  state->setValue(FaceInvertNormals, false);
+
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
   // is more up in the air.
@@ -283,7 +286,8 @@ RenderState GeometryBuilder::getFaceRenderState(
   RenderState renState;
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowFaces).toBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool());
+  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool()); 
+  renState.set(RenderState::USE_FACE_NORMALS, state->getValue(ShowFieldModule::UseFaceNormals).toBool());
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
@@ -495,46 +499,58 @@ void GeometryBuilder::renderFacesLinear(
     //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
     if (withNormals)
     {
-      /// Fix normal of Quads
-      if (points.size() == 4)
+      bool useFaceNormals = state.get(RenderState::USE_FACE_NORMALS) && mesh->has_normals();
+      if (useFaceNormals)
       {
-        Vector edge1 = points[1] - points[0];
-        Vector edge2 = points[2] - points[1];
-        Vector edge3 = points[3] - points[2];
-        Vector edge4 = points[0] - points[3];
-
-        Vector norm = Cross(edge1, edge2) + Cross(edge2, edge3) + Cross(edge3, edge4) + Cross(edge4, edge1);
-
-        norm.normalize();
-
         for (size_t i = 0; i < nodes.size(); i++)
         {
-          normals[i] = invertNormals?-norm:norm;
+          auto norm = normals[i];
+          normals[i] = invertNormals ? -norm : norm;
+          mesh->get_normal(normals[i], nodes[i]);
         }
       }
-      /// Fix Normals of Tris
       else
       {
-        Vector edge1 = points[1] - points[0];
-        Vector edge2 = points[2] - points[1];
-        Vector norm = Cross(edge1, edge2);
-
-        norm.normalize();
-
-        for (size_t i = 0; i < nodes.size(); i++)
+        /// Fix normal of Quads
+        if (points.size() == 4)
         {
-          normals[i] = invertNormals?-norm:norm;
+          Vector edge1 = points[1] - points[0];
+          Vector edge2 = points[2] - points[1];
+          Vector edge3 = points[3] - points[2];
+          Vector edge4 = points[0] - points[3];
+
+          Vector norm = Cross(edge1, edge2) + Cross(edge2, edge3) + Cross(edge3, edge4) + Cross(edge4, edge1);
+
+          norm.normalize();
+
+          for (size_t i = 0; i < nodes.size(); i++)
+          {
+            normals[i] = invertNormals ? -norm : norm;
+          }
         }
-        //For future reference for a try at smoother rendering
-        /*
-        for (size_t i = 0; i < nodes.size(); i++)
+        /// Fix Normals of Tris
+        else
         {
-        mesh->get_normal(normals[i], nodes[i]);
+          Vector edge1 = points[1] - points[0];
+          Vector edge2 = points[2] - points[1];
+          Vector norm = Cross(edge1, edge2);
+
+          norm.normalize();
+
+          for (size_t i = 0; i < nodes.size(); i++)
+          {
+            normals[i] = invertNormals ? -norm : norm;
+          }
+          //For future reference for a try at smoother rendering
+          /*
+          for (size_t i = 0; i < nodes.size(); i++)
+          {
+          mesh->get_normal(normals[i], nodes[i]);
+          }
+          */
         }
-        */
       }
     }
-
     // Default color single face no matter the element data.
     if (colorScheme == ColorScheme::COLOR_UNIFORM)
     {
@@ -1456,3 +1472,4 @@ const AlgorithmParameterName ShowFieldModule::RenderAsLocation("RenderAsLocation
 const AlgorithmParameterName ShowFieldModule::TextSize("TextSize");
 const AlgorithmParameterName ShowFieldModule::TextPrecision("TextPrecision");
 const AlgorithmParameterName ShowFieldModule::TextColoring("TextColoring");
+const AlgorithmParameterName ShowFieldModule::UseFaceNormals("UseFaceNormals");

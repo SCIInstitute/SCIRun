@@ -538,9 +538,9 @@
            </widget>
           </item>
           <item row="4" column="0">
-           <widget class="QCheckBox" name="checkBox">
+           <widget class="QCheckBox" name="useFaceNormalsCheckBox_">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Use Face Normals</string>

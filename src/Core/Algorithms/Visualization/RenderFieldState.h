@@ -67,6 +67,7 @@ public:
 
     // Face flags
     USE_NORMALS,
+    USE_FACE_NORMALS,
     USE_TEXTURE,
     IS_DOUBLE_SIDED,
 
