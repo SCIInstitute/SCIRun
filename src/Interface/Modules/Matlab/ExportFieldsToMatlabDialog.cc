@@ -71,15 +71,15 @@ QComboBox* ExportFieldsToMatlabDialog::makeInputArrayTypeComboBoxItem() const
   QStringList bcList;
   bcList << "numeric array" << "struct array";
   auto bcBox = new QComboBox();
-  bcBox->addItems(bcList);
-  bcBox->setCurrentIndex(1);
+  bcBox->addItems(bcList); 
+  bcBox->setCurrentIndex(bcBox->findText(QString::fromStdString(toStringVector(state_->getValue(Parameters::FieldFormats).toVector())[tableWidget->rowCount() - 1])));
   connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushArrayType()));
   return bcBox;
 }
 
 void ExportFieldsToMatlabDialog::pushArrayType()
 {
-  auto types = makeHomogeneousVariableList([this](size_t i) { return tableWidget->item(i, 2)->text().toStdString(); }, tableWidget->rowCount());
+  auto types = makeHomogeneousVariableList([this](size_t i) { return qobject_cast<QComboBox*>(tableWidget->cellWidget(i, 2))->currentText().toStdString(); }, tableWidget->rowCount());
   state_->setValue(Parameters::FieldFormats, types);
 }
 

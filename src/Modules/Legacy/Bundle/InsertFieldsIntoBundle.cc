@@ -102,7 +102,6 @@ void InsertFieldsIntoBundle::execute()
       auto stateName = state->getValue(Name((*fieldPortNameIterator++)->id().toString())).toString();
       if (field)
       {
-        
         auto name = !stateName.empty() ? stateName : ("field" + boost::lexical_cast<std::string>(i));
         auto replaceField = i < replace.size() ? replace[i].toBool() : true;
         if (replaceField || !bundle->isField(name))

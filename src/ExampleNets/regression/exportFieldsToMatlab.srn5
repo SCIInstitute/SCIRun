@@ -104,8 +104,37 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>4</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FieldFormats</name>
+								</first>
+								<second>
+									<name>FieldFormats</name>
+									<value>
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name></name>
+												<value>
+													<which>2</which>
+													<value>struct array</value>
+												</value>
+											</item>
+											<item>
+												<name></name>
+												<value>
+													<which>2</which>
+													<value>numeric array</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>Filename</name>
@@ -147,12 +176,12 @@
 				</second>
 			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
+		<connections class_id="13" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
+			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
+				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
@@ -176,12 +205,12 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
+	<modulePositions class_id="16" tracking_level="0" version="0">
 		<count>2</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
+		<item class_id="17" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
-			<second class_id="17" tracking_level="0" version="0">
+			<second class_id="18" tracking_level="0" version="0">
 				<first>7.60000000000000000e+001</first>
 				<second>-1.52000000000000000e+002</second>
 			</second>
@@ -194,7 +223,7 @@
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
+	<moduleNotes class_id="19" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleNotes>
@@ -202,10 +231,10 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="19" tracking_level="0" version="0">
+	<moduleTags class_id="20" tracking_level="0" version="0">
 		<count>2</count>
 		<item_version>0</item_version>
-		<item class_id="20" tracking_level="0" version="0">
+		<item class_id="21" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
 			<second>0</second>
 		</item>
@@ -214,7 +243,7 @@
 			<second>0</second>
 		</item>
 	</moduleTags>
-	<disabledModules class_id="21" tracking_level="0" version="0">
+	<disabledModules class_id="22" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledModules>
