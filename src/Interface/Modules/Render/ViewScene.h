@@ -199,6 +199,13 @@ namespace SCIRun {
       void buildGeomClippingPlanes();
       void buildGeometryClippingPlane(int index, glm::vec4 plane, const Core::Geometry::BBox& bbox);
 
+      //set material
+      void setMaterialFactor(int factor, double value);
+
+      //set fog
+      void setFog(int factor, double value);
+      void setFogColor(const glm::vec4 &color);
+
       GLWidget*                             mGLWidget;            ///< GL widget containing context.
       std::weak_ptr<Render::SRInterface>    mSpire;               ///< Instance of Spire.
       QToolBar*                             mToolBar;             ///< Tool bar.
