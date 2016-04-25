@@ -60,7 +60,7 @@ void ExportFieldsToMatlabDialog::updateFromPortChange(int, const std::string& po
 
   static const std::string typeName = "Field";
   const int lineEditColumn = 1;
-  syncTableRowsWithDynamicPort(portName, typeName, tableWidget, lineEditColumn, type, {}, 
+  syncTableRowsWithDynamicPort(portName, typeName, tableWidget, lineEditColumn, type, TableItemMakerMap(), 
   {
     { 2, [this]() { return makeInputArrayTypeComboBoxItem(); } }
   });
@@ -71,7 +71,7 @@ QComboBox* ExportFieldsToMatlabDialog::makeInputArrayTypeComboBoxItem() const
   QStringList bcList;
   bcList << "numeric array" << "struct array";
   auto bcBox = new QComboBox();
-  bcBox->addItems(bcList); 
+  bcBox->addItems(bcList);
   bcBox->setCurrentIndex(bcBox->findText(QString::fromStdString(toStringVector(state_->getValue(Parameters::FieldFormats).toVector())[tableWidget->rowCount() - 1])));
   connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushArrayType()));
   return bcBox;
