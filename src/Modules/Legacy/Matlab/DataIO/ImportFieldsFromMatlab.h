@@ -52,6 +52,7 @@ namespace Matlab {
     OUTPUT_PORT(4, Field5, LegacyField);
     OUTPUT_PORT(5, Field6, LegacyField);
     OUTPUT_PORT(6, FilenameOut, String);
+    enum { NUMPORTS = 6 };
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };

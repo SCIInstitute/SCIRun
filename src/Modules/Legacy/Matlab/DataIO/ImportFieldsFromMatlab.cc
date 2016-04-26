@@ -49,6 +49,7 @@ using namespace SCIRun::Modules::Matlab;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core;
+using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Algorithms;
 
 const ModuleLookupInfo ImportFieldsFromMatlab::staticInfo_("ImportFieldsFromMatlab", "Matlab", "SCIRun");
@@ -70,40 +71,14 @@ void ImportFieldsFromMatlab::setStateDefaults()
   //TODO
 }
 
-void ImportFieldsFromMatlab::execute()
-{
-  //TODO
-}
-
 #if 0
 
-namespace MatlabIO {
-
-using namespace SCIRun;
 
 class ImportFieldsFromMatlab : public Module
 {
 
   public:
-
-    // Constructor
-    ImportFieldsFromMatlab(GuiContext*);
-
-    // Destructor
-    virtual ~ImportFieldsFromMatlab();
-
-    // Std functions for each module
-    // execute():
-    //   Execute the module and put data on the output port
-    //
-    // tcl_command():
-    //   Handles call-backs from the TCL code
-
-    virtual void execute();
-    virtual void tcl_command(GuiArgs&, void*);
-
-    virtual void post_read();
-
+    
   private:
 
     // indexmatlabfile():
@@ -120,16 +95,10 @@ class ImportFieldsFromMatlab : public Module
     //   file and returns an object containing the full matrix
 
     matlabarray readmatlabarray(int p);
-
-    // displayerror()
-    //   Relay an error during the matrixselection process directly to
-    //   the user
-
-    void displayerror(std::string str);
-
+    
   private:
 
-    enum { NUMPORTS = 6};
+    
 
     // GUI variables
     GuiFilename			guifilename_;		// .mat filename (import from GUI)
@@ -140,7 +109,6 @@ class ImportFieldsFromMatlab : public Module
 
 };
 
-DECLARE_MAKER(ImportFieldsFromMatlab)
 
 // Constructor:
 // Initialise all the variables shared between TCL and SCIRun
@@ -159,34 +127,24 @@ ImportFieldsFromMatlab::ImportFieldsFromMatlab(GuiContext* ctx)
   indexmatlabfile(false);
 }
 
-// Destructor:
-// All my objects have descrutors and hence nothing needs
-// explicit descruction
-ImportFieldsFromMatlab::~ImportFieldsFromMatlab()
-{
-}
-
-
 void
 ImportFieldsFromMatlab::post_read()
 {
   FullFileName ffn(guifilename_.get());
   guifilename_.set(ffn.get_abs_filename());
 }
+#endif
 
 // Execute:
 // Inner workings of this module
 void ImportFieldsFromMatlab::execute()
 {
-	StringHandle stringH;
-	get_input_handle("Filename",stringH,false);
-	if (stringH.get_rep())
+  auto stringH = getOptionalInput(Filename);
+	if (stringH && *stringH)
 	{
-		std::string filename = stringH->get();
+	  auto filename = (*stringH)->value();
 		guifilename_.set(filename);
-		get_ctx()->reset();
     indexmatlabfile(true);
-		get_ctx()->reset();
 	}
 
   // Get the filename from TCL.
@@ -227,53 +185,49 @@ void ImportFieldsFromMatlab::execute()
       // The data is still in matlab format and the next function
       // creates a SCIRun matrix object
 
-      SCIRun::FieldHandle mh;
-      matlabconverter translate(dynamic_cast<SCIRun::ProgressReporter *>(this));
+      FieldHandle mh;
+      matlabconverter translate(getLogger());
       translate.mlArrayTOsciField(ma,mh);
 
       // Put the SCIRun matrix in the hands of the scheduler
 			send_output_handle(p,mh,true);
     }
 
-    SCIRun::StringHandle filenameH = new String(filename);
-    send_output_handle("Filename",filenameH,true);
-
+    StringHandle filenameH(new String(filename));
+    sendOutput(Filename, filenameH);
   }
-
-  // in case something went wrong
-
-  catch (matlabfile::could_not_open_file)
+  catch (matlabfile::could_not_open_file&)
   {
     error("ImportFieldsFromMatlab: Could not open file");
   }
-  catch (matlabfile::invalid_file_format)
+  catch (matlabfile::invalid_file_format&)
   {
     error("ImportFieldsFromMatlab: Invalid file format");
   }
-  catch (matlabfile::io_error)
+  catch (matlabfile::io_error&)
   {
     error("ImportFieldsFromMatlab: IO error");
   }
-  catch (matlabfile::out_of_range)
+  catch (matlabfile::out_of_range&)
   {
     error("ImportFieldsFromMatlab: Out of range");
   }
-  catch (matlabfile::invalid_file_access)
+  catch (matlabfile::invalid_file_access&)
   {
     error("ImportFieldsFromMatlab: Invalid file access");
   }
-  catch (matlabfile::empty_matlabarray)
+  catch (matlabfile::empty_matlabarray&)
   {
     error("ImportFieldsFromMatlab: Empty matlab array");
   }
-  catch (matlabfile::matfileerror)
+  catch (matlabfile::matfileerror&)
   {
     error("ImportFieldsFromMatlab: Internal error in reader");
   }
 }
 
 
-
+#if 0
 void ImportFieldsFromMatlab::tcl_command(GuiArgs& args, void* userdata)
 {
   if(args.count() < 2)
@@ -492,12 +446,4 @@ void ImportFieldsFromMatlab::indexmatlabfile(bool postmsg)
 }
 
 
-void ImportFieldsFromMatlab::displayerror(std::string str)
-{
-  // Explicit call to TCL
-  TCLInterface::execute("tk_messageBox -icon error -type ok -title {ERROR} -message {" + str + "}");
-}
-
-
-} // End namespace MatlabIO
 #endif

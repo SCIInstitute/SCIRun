@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/Matlab/ImportFieldsFromMatlabDialog.h>
 // #include <Modules/DataIO/ReadField.h>
-// #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+ #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 // #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 // #include <Core/ImportExport/GenericIEPlugin.h>
 // #include <iostream>
@@ -46,4 +46,10 @@ ImportFieldsFromMatlabDialog::ImportFieldsFromMatlabDialog(const std::string& na
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+
+  WidgetStyleMixin::tableHeaderStyle(tableWidget);
+  addLineEditManager(fileNameLineEdit_, Variables::Filename);
+  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
+  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
+  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
 }
