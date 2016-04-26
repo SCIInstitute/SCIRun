@@ -86,6 +86,8 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(yValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneY(int)));
   connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
   connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
+  //-----------Lights Tab-----------------//
+  
   //-----------Materials Tab-----------------//
   connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
   connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
@@ -109,7 +111,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(scaleBarHeightDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarHeight(double)));
   connect(numTicksSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarNumTicks(int)));
   connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
-  connect(scaleBarLineWidthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLineWidth(double)));
+  //connect(scaleBarLineWidthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLineWidth(double)));
   connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
   //-----------Controls Tab-------------------//
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
@@ -129,6 +131,10 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   WidgetStyleMixin::tabStyle(tabWidget);
 
+  setupLightControlCircle(headlightFrame_, parent->pulling_, false);
+  setupLightControlCircle(light1Frame_, parent->pulling_, true);
+  setupLightControlCircle(light2Frame_, parent->pulling_, true);
+  setupLightControlCircle(light3Frame_, parent->pulling_, true);
 
   /////Set unused widgets to be not visible
   ////Clipping tab
@@ -143,8 +149,8 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   renderSliderFrame_->setEnabled(false);
 
   ///Materials Tab
-  materialsFrame_->setEnabled(false);
-  fogGroupBox_->setEnabled(false);
+  //materialsFrame_->setEnabled(false);
+  //fogGroupBox_->setEnabled(false);
 
   ////View Tab
   autoRotateGroupBox_->setEnabled(false);
@@ -196,7 +202,7 @@ void ViewSceneControlsDock::setScaleBarValues(bool visible, int fontSize, double
   scaleBarHeightDoubleSpinBox_->setValue(height);
   scaleBarMultiplierDoubleSpinBox_->setValue(multiplier);
   numTicksSpinBox_->setValue(numTicks);
-  scaleBarLineWidthDoubleSpinBox_->setValue(lineWidth);
+  //scaleBarLineWidthDoubleSpinBox_->setValue(lineWidth);
   scaleBarUnitLineEdit_->setText(unit);
 }
 
@@ -284,6 +290,11 @@ void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double
   dValueHorizontalSlider_->setSliderPosition(d * 100);
 }
 
+QPointF ViewSceneControlsDock::getLightPosition(int index)
+{
+  return lightControls_[index]->getLightPosition();
+}
+
 void ViewSceneControlsDock::addItem(const QString& name, bool checked)
 {
   auto items = objectListWidget_->findItems(name, Qt::MatchExactly);
@@ -348,4 +359,78 @@ public:
 void ViewSceneControlsDock::setupObjectListWidget()
 {
   objectListWidget_->setItemDelegate(new FixMacCheckBoxes);
+}
+
+
+void ViewSceneControlsDock::setupLightControlCircle(QFrame* frame, const boost::atomic<bool>& pulling, bool moveable)
+{
+  auto scene = new QGraphicsScene(frame);
+  auto lightcontrol = new LightControlCircle(scene, pulling, frame->rect(), frame);
+  lightcontrol->setMovable(moveable);
+  lightControls_.push_back(lightcontrol);
+}
+
+LightControlCircle::LightControlCircle(QGraphicsScene* scene,  //ModuleStateHandle state,
+  const boost::atomic<bool>& pulling, QRectF sceneRect,
+  QWidget* parent)
+  : QGraphicsView(scene, parent), 
+  dialogPulling_(pulling)
+{
+  setSceneRect(sceneRect);
+  static QPen pointPen(Qt::white, 1);
+  qreal x = (sceneRect.width()/2) - (sceneRect.height()/2) + 6;
+  qreal y = 6;
+  qreal radius = sceneRect.height() - 12;
+  boundingCircle_ = scene->addEllipse(x, y, radius, radius, pointPen, QBrush(Qt::transparent));
+
+  const int lightCircleRadius = 8;
+  qreal circleX = (sceneRect.width() / 2) - (lightCircleRadius / 2);
+  qreal circleY = (sceneRect.height() / 2) - (lightCircleRadius / 2);
+  lightPosition_ = scene->addEllipse(circleX, circleY, lightCircleRadius, lightCircleRadius, pointPen, QBrush(Qt::white));
+  previousX = circleX;
+  previousY = circleY;
+  lightPosition_->setFlag(QGraphicsItem::ItemIsMovable, true);
+}
+
+void LightControlCircle::setMovable(bool canMove)
+{
+  lightPosition_->setFlag(QGraphicsItem::ItemIsMovable, canMove);
+}
+
+QPointF LightControlCircle::getLightPosition()
+{
+  return lightPosition_->pos();
+}
+
+void LightControlCircle::mousePressEvent(QMouseEvent* event)
+{
+  QGraphicsView::mousePressEvent(event);
+  if (event->buttons() & Qt::LeftButton)
+  {
+    if (lightPosition_->isUnderMouse())
+    {
+      //std::cout << "small dot clicked" << std::endl;
+    }
+    else if (boundingCircle_->contains(event->pos()))
+    {
+      //std::cout << "bounding circle clicked!" << std::endl;
+    }
+  }
+}
+
+void LightControlCircle::mouseMoveEvent(QMouseEvent* event)
+{
+  QGraphicsView::mouseMoveEvent(event);
+  if (lightPosition_->isUnderMouse())
+  {
+    if (lightPosition_->collidesWithItem(boundingCircle_))
+    {
+      previousX = lightPosition_->pos().x();
+      previousY = lightPosition_->pos().y();
+    }
+    else
+    {
+      lightPosition_->setPos(previousX, previousY);
+    }
+  }
 }
