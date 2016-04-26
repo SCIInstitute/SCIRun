@@ -29,17 +29,20 @@
 
 SET(Interface_Modules_Matlab_FORMS
   ImportDatatypesFromMatlab.ui
+  ImportFieldsFromMatlab.ui
   ExportFieldsToMatlab.ui
 )
 
 SET(Interface_Modules_Matlab_HEADERS
   ImportDatatypesFromMatlabDialog.h
+  ImportFieldsFromMatlabDialog.h
   ExportFieldsToMatlabDialog.h
   share.h
 )
 
 SET(Interface_Modules_Matlab_SOURCES
   ImportDatatypesFromMatlabDialog.cc
+  ImportFieldsFromMatlabDialog.cc
   ExportFieldsToMatlabDialog.cc
 )
 
