@@ -68,8 +68,6 @@ protected:
 
   virtual std::string defaultFileTypeName() const = 0;
 
-  //GuiFilename filename_;
-  //GuiString   filetype_;
   //GuiInt      confirm_;
   //GuiInt			confirm_once_;
   
@@ -83,8 +81,6 @@ protected:
 template <class HType, class PortTag>
 GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std::string &cat, const std::string &pack, const std::string& stateFilename)
   : SCIRun::Dataflow::Networks::Module(SCIRun::Dataflow::Networks::ModuleLookupInfo(name, cat, pack)),
-    //filename_(get_ctx()->subVar("filename"), ""),
-    //filetype_(get_ctx()->subVar("filetype"), "Binary"),
     //confirm_(get_ctx()->subVar("confirm"), sci_getenv_p("SCIRUN_CONFIRM_OVERWRITE")),
 		//confirm_once_(get_ctx()->subVar("confirm-once"),0),
     stateFilename_(stateFilename),

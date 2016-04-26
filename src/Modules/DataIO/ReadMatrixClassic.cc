@@ -84,7 +84,7 @@ ReadMatrix::execute()
 bool ReadMatrix::useCustomImporter(const std::string& filename) const
 {
   auto filetypename = get_state()->getValue(Variables::FileTypeName).toString();
-  return !(filetypename.empty() || filetypename == "SCIRun Matrix File");
+  return !(filetypename.empty() || filetypename == "SCIRun Matrix File" || filetypename == "SCIRun Matrix File (*.mat)");
 }
 
 std::string ReadMatrix::defaultFileTypeName() const

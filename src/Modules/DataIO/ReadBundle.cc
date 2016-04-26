@@ -47,11 +47,6 @@ ReadBundleModule::ReadBundleModule()
 
 void ReadBundleModule::execute()
 {
-  /*
-  const std::string ftpre = guiFileType_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-*/
   my_base::execute();
 }
 
