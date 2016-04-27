@@ -660,7 +660,7 @@ std::string PythonImpl::importNetwork(const std::string& filename)
 
 std::string PythonImpl::quit(bool force)
 {
-  CommandHandle quitCmd(cmdFactory_->create(force ? GlobalCommands::QuitCommand : GlobalCommands::SetupQuitAfterExecute));
+  auto quitCmd(cmdFactory_->create(force ? GlobalCommands::QuitCommand : GlobalCommands::SetupQuitAfterExecute));
   quitCmd->set(Name("RunningPython"), true);
   quitCmd->execute();
   return "Quit after execute enabled.";

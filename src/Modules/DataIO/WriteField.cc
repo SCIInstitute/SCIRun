@@ -113,7 +113,7 @@ void WriteFieldModule::execute()
    if (gui_increment_.get())
     filename_.set(oldfilename);
 #endif
-
+   std::cout << "WRITE FIELD EXECUTION DONE" << std::endl;
 }
 
 bool WriteFieldModule::useCustomExporter(const std::string& filename) const 

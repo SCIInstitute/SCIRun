@@ -45,6 +45,7 @@ namespace SCIRun {
         {
         public:
           MOCK_METHOD0(execute, void());
+          MOCK_METHOD0(executeWithSignals, void());
           MOCK_METHOD0(doExecute, bool());
           MOCK_METHOD0(get_state, ModuleStateHandle());
           MOCK_CONST_METHOD0(get_state, const ModuleStateHandle());

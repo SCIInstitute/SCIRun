@@ -88,20 +88,32 @@ bool SaveFileCommandConsole::execute()
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
   std::cout << "ExecuteCurrentNetworkCommandConsole::execute()" << std::endl;
-  Application::Instance().controller()->executeAll(0);
+  Application::Instance().controller()->executeAll(nullptr);
   std::cout << "execution done" << std::endl;
   return true;
+}
+
+QuitAfterExecuteCommandConsole::QuitAfterExecuteCommandConsole()
+{
+  addParameter(Name("RunningPython"), false);
 }
 
 bool QuitAfterExecuteCommandConsole::execute()
 {
   std::cout << "Goodbye!" << std::endl;
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ exit(code); });
   //SCIRunMainWindow::Instance()->setupQuitAfterExecute();
   return true;
 }
 
+QuitCommandConsole::QuitCommandConsole()
+{
+  addParameter(Name("RunningPython"), false);
+}
+
 bool QuitCommandConsole::execute()
 {
+  std::cout << "Exiting!" << std::endl;
   exit(0);
   return true;
 }
@@ -133,8 +145,15 @@ bool RunPythonScriptCommandConsole::execute()
     std::cout << "RUNNING PYTHON SCRIPT: " << *script << std::endl;;
 
     Application::Instance().controller()->clear();
-    SCIRun::Core::PythonInterpreter::Instance().run_file(script->string());
+    PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+    PythonInterpreter::Instance().run_file(script->string());
 
+    //TODO: not sure what else to do here.
+    while (true)
+    {
+      std::cout << "Running Python script." << std::endl;  
+      boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+    }
     std::cout << "Done running Python script." << std::endl;
     return true;
 #else

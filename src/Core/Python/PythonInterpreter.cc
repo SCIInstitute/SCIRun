@@ -636,6 +636,10 @@ void PythonInterpreter::run_file( const std::string& file_name )
   {
     PyRun_SimpleFile(fp2, file);
   }
+  else
+  {
+    this->error_signal_("Could not load python file: " + file_name);
+  }
 }
 
 void PythonInterpreter::interrupt()
