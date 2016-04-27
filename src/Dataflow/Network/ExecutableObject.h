@@ -46,7 +46,7 @@ namespace Networks {
   {
   public:
     virtual ~ExecutableObject() {}
-    virtual void execute() = 0;
+    virtual void executeWithSignals() = 0;
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) = 0;
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) = 0;

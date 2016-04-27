@@ -54,7 +54,7 @@ namespace
         ExecutableObject* obj = lookup_.lookupExecutable(id);
         if (obj)
         {
-          obj->execute();
+          obj->executeWithSignals();
         }
       }
       bounds_.executeFinishes_(lookup_.errorCode());

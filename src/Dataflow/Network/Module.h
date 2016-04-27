@@ -55,7 +55,7 @@ namespace Networks {
   class SCISHARE Module : public ModuleInterface, public Core::Logging::LegacyLoggerInterface, public StateChangeObserver, boost::noncopyable
   {
   public:
-    Module(const ModuleLookupInfo& info,
+    explicit Module(const ModuleLookupInfo& info,
       bool hasUi = true,
       Core::Algorithms::AlgorithmFactoryHandle algoFactory = defaultAlgoFactory_,
       ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
@@ -66,7 +66,7 @@ namespace Networks {
     virtual std::string get_module_name() const override final { return info_.module_name_; }
     std::string get_categoryname() const { return info_.category_name_; }
     std::string get_packagename() const { return info_.package_name_; }
-    ModuleId get_id() const { return id_; }
+    ModuleId get_id() const override { return id_; }
 
     //for serialization
     virtual const ModuleLookupInfo& get_info() const override final { return info_; }
@@ -75,8 +75,8 @@ namespace Networks {
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();
 
-    bool has_ui() const { return has_ui_; }
-    void setUiVisible(bool visible);
+    bool has_ui() const override { return has_ui_; }
+    void setUiVisible(bool visible) override;
     virtual size_t num_input_ports() const override final;
     virtual size_t num_output_ports() const override final;
 
@@ -89,8 +89,8 @@ namespace Networks {
     virtual std::vector<InputPortHandle> inputPorts() const override final;
     virtual std::vector<OutputPortHandle> outputPorts() const override final;
 
-    /// @todo: execute signal here.
     virtual bool doExecute() NOEXCEPT override final; //--C++11--will throw nothing
+    virtual void executeWithSignals() override final { doExecute(); }; 
     virtual ModuleStateHandle get_state() override final;
     virtual const ModuleStateHandle get_state() const override final;
     virtual void set_state(ModuleStateHandle state) override final;
