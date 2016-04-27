@@ -30,8 +30,11 @@
 #include <numeric>
 
 #include <Core/Thread/Parallel.h>
+#include <boost/filesystem/path.hpp>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::TestUtils;
 
 TEST(ParallelTests, CanDoubleNumberInParallel)
 {
@@ -67,3 +70,51 @@ TEST(ParallelTests, CanDoubleNumberWithParallelForEach)
   //EXPECT_TRUE(false);
 }
 #endif
+
+namespace
+{
+  boost::filesystem::path procInfoTest;
+
+  int legacyNumProcessors()
+  {
+    static int np = 0;
+
+    if (np == 0) {
+#ifdef __APPLE__
+      size_t len = sizeof(np);
+      int mib[2];
+      mib[0] = CTL_HW;
+      mib[1] = HW_NCPU;
+      sysctl(mib, 2, &np, &len, NULL, 0);
+#else
+      // Linux
+      std::ifstream cpuinfo(procInfoTest.string());//"/proc/cpuinfo");
+      if (cpuinfo) {
+        int count = 0;
+        while (!cpuinfo.eof())
+        {
+          std::string str;
+          cpuinfo >> str;
+          if (str == "processor") {
+            ++count;
+          }
+        }
+        np = count;
+      }
+#endif
+      if (np <= 0) np = 1;
+    }
+    return np;
+  }
+}
+
+TEST(NumCoresTest, CompareToV4Linux)
+{
+  procInfoTest = TestResources::rootDir() / "Other" / "cpuinfo_mtblanc";
+
+  std::cout << "mtblanc: " << legacyNumProcessors() << std::endl;
+
+  procInfoTest = TestResources::rootDir() / "Other" / "cpuinfo_zugspitze";
+
+  std::cout << "zugspitze: " << legacyNumProcessors() << std::endl;
+}

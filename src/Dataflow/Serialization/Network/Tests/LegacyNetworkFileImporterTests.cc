@@ -29,31 +29,16 @@
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Serialization/Network/ModuleDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Dataflow/Network/Network.h>
-#include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixComparison.h>
-#include <Core/Datatypes/MatrixIO.h>
 #include <Modules/Basic/SendTestMatrix.h>
-#include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
-#include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Dataflow/Network/Tests/MockModuleState.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Dataflow/Serialization/Network/XMLSerializer.h>
-#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
@@ -70,7 +55,6 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
 
 #include <stdexcept>
-#include <fstream>
 #include <boost/assign.hpp>
 
 using namespace SCIRun::Dataflow::Networks;
