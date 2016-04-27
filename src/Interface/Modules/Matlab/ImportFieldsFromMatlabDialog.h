@@ -44,8 +44,13 @@ namespace SCIRun {
 
     public:
       ImportFieldsFromMatlabDialog(const std::string& name,
-        SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        QWidget* parent = 0);
+        Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = nullptr);
+    protected:
+      virtual void pullSpecial() override;
+    private Q_SLOTS:
+      void openFile();
+      void pushFileNameToState();
     };
 
   }

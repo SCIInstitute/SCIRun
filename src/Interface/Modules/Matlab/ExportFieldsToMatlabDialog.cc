@@ -29,9 +29,6 @@
 #include <Interface/Modules/Matlab/ExportFieldsToMatlabDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
-#include <QFileDialog>
-#include <boost/regex.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

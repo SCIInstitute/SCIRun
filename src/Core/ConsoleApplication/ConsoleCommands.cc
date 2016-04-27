@@ -88,7 +88,7 @@ bool SaveFileCommandConsole::execute()
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
   std::cout << "ExecuteCurrentNetworkCommandConsole::execute()" << std::endl;
-  Application::Instance().controller()->executeAll(0);
+  Application::Instance().controller()->executeAll(nullptr);
   std::cout << "execution done" << std::endl;
   return true;
 }

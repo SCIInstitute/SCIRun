@@ -32,6 +32,7 @@
  */
 
 #include <Modules/Legacy/Matlab/DataIO/ImportFieldsFromMatlab.h>
+#include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -42,6 +43,7 @@
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 //#include <Core/Util/FullFileName.h>
 
@@ -51,6 +53,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core;
 using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Matlab;
+
+ALGORITHM_PARAMETER_DEF(Matlab, FieldInfoStrings);
 
 const ModuleLookupInfo ImportFieldsFromMatlab::staticInfo_("ImportFieldsFromMatlab", "Matlab", "SCIRun");
 
@@ -70,6 +75,55 @@ void ImportFieldsFromMatlab::setStateDefaults()
 {
   //TODO
 }
+
+namespace
+{
+  matlabarray readmatlabarray(int p)
+  {
+    matlabarray marray;
+    return marray;
+#if 0
+    std::string filename = guifilename_.get();
+    std::string guimatrixname = guimatrixname_.get();
+    std::string matrixname = "";
+
+    // guimatrixname is a list with the name of the matrices per port
+    // use the TCL command lindex to select the proper string from the list
+
+    std::ostringstream oss;
+    oss << "lindex {" << guimatrixname << "} " << p;
+
+    TCLInterface::eval(oss.str(),matrixname);
+
+    if (matrixname == "")
+    {
+      // return an empty array
+      return(marray);
+    }
+
+    if (matrixname == "<none>")
+    {
+      // return an empty array
+      return(marray);
+    }
+
+    // this block contains the file IO
+    // The change of errors is reasonable
+    // hence errors are generated as exceptions
+
+    // having a local matfile object here ensures
+    // the file will be closed (destructor of the object).
+
+    matlabfile  mfile;
+    mfile.open(filename,"r");
+    marray = mfile.getmatlabarray(matrixname);
+    mfile.close();
+
+    return(marray);
+#endif
+  }
+}
+
 
 #if 0
 
@@ -94,7 +148,7 @@ class ImportFieldsFromMatlab : public Module
     //   retrieves the current filename and the matrix selected in this
     //   file and returns an object containing the full matrix
 
-    matlabarray readmatlabarray(int p);
+
     
   private:
 
@@ -139,29 +193,29 @@ ImportFieldsFromMatlab::post_read()
 // Inner workings of this module
 void ImportFieldsFromMatlab::execute()
 {
-  auto stringH = getOptionalInput(Filename);
-	if (stringH && *stringH)
+  auto fileOption = getOptionalInput(Filename);
+  auto state = get_state();
+  if (fileOption && *fileOption)
 	{
-	  auto filename = (*stringH)->value();
-		guifilename_.set(filename);
-    indexmatlabfile(true);
+    state->setValue(Variables::Filename, (*fileOption)->value());
 	}
+ 
 
-  // Get the filename from TCL.
-  std::string filename = guifilename_.get();
+  auto filename = state->getValue(Variables::Filename).toFilename().string();
 
-  // If the filename is empty, launch an error
-  if (filename == "")
+  if (filename.empty())
   {
     error("ImportFieldsFromMatlab: No file name was specified");
     return;
   }
 
+  indexmatlabfile();
+
   update_state(Executing);
 
   try
   {
-    for (int p=0;p<NUMPORTS;p++)
+    for (int p=0; p < NUMPORTS; ++p)
     {
       // Now read the matrix from file
       // The next function will open, read, and close the file
@@ -170,7 +224,7 @@ void ImportFieldsFromMatlab::execute()
       // which carries the definitions of the exceptions. These
       // definitions are inherited by all other "matlab classes"
 
-      matlabarray ma = readmatlabarray(p);
+      auto ma = readmatlabarray(p);
 
       // An empty array means something must have gone wrong
       // Or there is no data to put on this port.
@@ -190,7 +244,7 @@ void ImportFieldsFromMatlab::execute()
       translate.mlArrayTOsciField(ma,mh);
 
       // Put the SCIRun matrix in the hands of the scheduler
-			send_output_handle(p,mh,true);
+			//sendOutput(p, mh);
     }
 
     StringHandle filenameH(new String(filename));
@@ -256,90 +310,45 @@ void ImportFieldsFromMatlab::tcl_command(GuiArgs& args, void* userdata)
   }
 }
 
+#endif
 
-matlabarray ImportFieldsFromMatlab::readmatlabarray(int p)
+void ImportFieldsFromMatlab::indexmatlabfile()
 {
-  matlabarray marray;
-  std::string filename = guifilename_.get();
-  std::string guimatrixname = guimatrixname_.get();
-  std::string matrixname = "";
-
-  // guimatrixname is a list with the name of the matrices per port
-  // use the TCL command lindex to select the proper string from the list
-
-  std::ostringstream oss;
-  oss << "lindex {" << guimatrixname << "} " << p;
-
-  TCLInterface::eval(oss.str(),matrixname);
-
-  if (matrixname == "")
-  {
-    // return an empty array
-    return(marray);
-  }
-
-  if (matrixname == "<none>")
-  {
-    // return an empty array
-    return(marray);
-  }
-
-  // this block contains the file IO
-  // The change of errors is reasonable
-  // hence errors are generated as exceptions
-
-  // having a local matfile object here ensures
-  // the file will be closed (destructor of the object).
-
-  matlabfile  mfile;
-  mfile.open(filename,"r");
-  marray = mfile.getmatlabarray(matrixname);
-  mfile.close();
-
-  return(marray);
-}
-
-
-
-void ImportFieldsFromMatlab::indexmatlabfile(bool postmsg)
-{
-
-  std::string filename = "";
-  std::string matrixinfotexts = "";
-  std::string matrixnames = "";
+  Variable::List matrixinfotexts;
+  Variable::List matrixnames;
   std::string newmatrixname = "";
   std::string matrixname = "";
 
-  guimatrixinfotexts_.set(matrixinfotexts);
-  guimatrixnames_.set(matrixnames);
+  auto state = get_state();
 
-  SCIRun::ProgressReporter* pr = 0;
-  if (postmsg) pr = dynamic_cast<SCIRun::ProgressReporter* >(this);
-  matlabconverter translate(pr);
+  state->setValue(Parameters::FieldNames, matrixnames);
+  state->setTransientValue(Parameters::FieldInfoStrings, matrixinfotexts);
 
-  filename = guifilename_.get();
+  matlabconverter translate(getLogger());
+  
+  auto filename = state->getValue(Variables::Filename).toFilename().string();
 
-  if (filename == "")
-  {
-    // No file has been loaded, so reset the
-    // matrix name variable
-    guimatrixname_.set(newmatrixname);
-    return;
-  }
+  //if (filename == "")
+  //{
+  //  // No file has been loaded, so reset the
+  //  // matrix name variable
+  //  guimatrixname_.set(newmatrixname);
+  //  return;
+  //}
 
-  matrixname = guimatrixname_.get();
+  //matrixname = guimatrixname_.get();
 
   std::vector<std::string> matrixnamelist(NUMPORTS);
-  bool foundmatrixname[NUMPORTS];
+  //bool foundmatrixname[NUMPORTS];
 
-  for (int p=0;p<NUMPORTS;p++)
-  {
-    // TCL Dependent code
-    std::ostringstream oss;
-    oss << "lindex { " << matrixname << " } " << p;
-    TCLInterface::eval(oss.str(),matrixnamelist[p]);
-    foundmatrixname[p] = false;
-  }
+  //for (int p=0;p<NUMPORTS;p++)
+  //{
+  //  // TCL Dependent code
+  //  std::ostringstream oss;
+  //  oss << "lindex { " << matrixname << " } " << p;
+  //  TCLInterface::eval(oss.str(),matrixnamelist[p]);
+  //  foundmatrixname[p] = false;
+  //}
 
   try
   {
@@ -358,92 +367,92 @@ void ImportFieldsFromMatlab::indexmatlabfile(bool postmsg)
     // Scan the file and see which matrices are compatible
     // Only those will be shown (you cannot select incompatible matrices).
 
-    std::string infotext;
+    
 
     for (int p=0;p<mfile.getnummatlabarrays();p++)
     {
       ma = mfile.getmatlabarrayinfo(p); // do not load all the data fields
+      std::string infotext;
       if ((cindex = translate.sciFieldCompatible(ma,infotext)))
       {
         // in case we need to propose a matrix to load, select
         // the one that is most compatible with the data
-        if (cindex > maxindex) { maxindex = cindex; newmatrixname = ma.getname();}
+        if (cindex > maxindex) 
+        { 
+          maxindex = cindex;
+        }
 
         // create tcl style list to use in the array selection process
 
-        matrixinfotexts += std::string("{" + infotext + "} ");
-        matrixnames += std::string("{" + ma.getname() + "} ");
-        for (int q=0;q<NUMPORTS;q++)
-        {
-          if (ma.getname() == matrixnamelist[q]) foundmatrixname[q] = true;
-        }
+        matrixinfotexts.emplace_back(Name(ma.getname()), infotext);
+        matrixnames.emplace_back(Name("port" + boost::lexical_cast<std::string>(p)), ma.getname());
+        //for (int q=0;q<NUMPORTS;q++)
+        //{
+        //  if (ma.getname() == matrixnamelist[q]) foundmatrixname[q] = true;
+        //}
       }
     }
 
-    matrixinfotexts += "{none} ";
-    matrixnames += "{<none>} ";
+    matrixinfotexts.emplace_back(Name("end"), std::string("{none} "));
+    matrixnames.emplace_back(Name("end"), std::string("{<none>} "));
 
     mfile.close();
 
     // automatically select a matrix if the current matrix name
     // cannot be found or if no matrixname has been specified
 
-    matrixname = "";
-    for (int p=0;p<NUMPORTS;p++)
-    {
-      if (foundmatrixname[p] == false)
-      {
-        if (p==0)
-        {
-          matrixnamelist[p] = newmatrixname;
-        }
-        else
-        {
-          matrixnamelist[p] = "<none>";
-        }
-      }
-      matrixname += "{" + matrixnamelist[p] + "} ";
-    }
+    //matrixname = "";
+    //for (int p=0;p<NUMPORTS;p++)
+    //{
+    //  if (foundmatrixname[p] == false)
+    //  {
+    //    if (p==0)
+    //    {
+    //      matrixnamelist[p] = newmatrixname;
+    //    }
+    //    else
+    //    {
+    //      matrixnamelist[p] = "<none>";
+    //    }
+    //  }
+    //  matrixname += "{" + matrixnamelist[p] + "} ";
+    //}
 
     // Update TCL on the contents of this matrix
-    guimatrixname_.set(matrixname);
-    guimatrixinfotexts_.set(matrixinfotexts);
-    guimatrixnames_.set(matrixnames);
+    //guimatrixname_.set(matrixname);
+    state->setValue(Parameters::FieldNames, matrixnames);
+    state->setTransientValue(Parameters::FieldInfoStrings, matrixinfotexts);
   }
 
   // in case something went wrong
   // close the file and then dermine the problem
 
-  catch (matlabfile::could_not_open_file)
+  catch (matlabfile::could_not_open_file&)
   {
-    displayerror("ImportFieldsFromMatlab: Could not open file");
+    warning("ImportFieldsFromMatlab: Could not open file");
   }
-  catch (matlabfile::invalid_file_format)
+  catch (matlabfile::invalid_file_format&)
   {
-    displayerror("ImportFieldsFromMatlab: Invalid file format");
+    warning("ImportFieldsFromMatlab: Invalid file format");
   }
-  catch (matlabfile::io_error)
+  catch (matlabfile::io_error&)
   {
-    displayerror("ImportFieldsFromMatlab: IO error");
+    warning("ImportFieldsFromMatlab: IO error");
   }
-  catch (matlabfile::out_of_range)
+  catch (matlabfile::out_of_range&)
   {
-    displayerror("ImportFieldsFromMatlab: Out of range");
+    warning("ImportFieldsFromMatlab: Out of range");
   }
-  catch (matlabfile::invalid_file_access)
+  catch (matlabfile::invalid_file_access&)
   {
-    displayerror("ImportFieldsFromMatlab: Invalid file access");
+    warning("ImportFieldsFromMatlab: Invalid file access");
   }
-  catch (matlabfile::empty_matlabarray)
+  catch (matlabfile::empty_matlabarray&)
   {
-    displayerror("ImportFieldsFromMatlab: Empty matlab array");
+    warning("ImportFieldsFromMatlab: Empty matlab array");
   }
-  catch (matlabfile::matfileerror)
+  catch (matlabfile::matfileerror&)
   {
-    displayerror("ImportFieldsFromMatlab: Internal error in reader");
+    warning("ImportFieldsFromMatlab: Internal error in reader");
   }
-  return;
 }
-
-
-#endif

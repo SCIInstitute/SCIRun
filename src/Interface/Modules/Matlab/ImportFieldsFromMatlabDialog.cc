@@ -27,17 +27,14 @@
 */
 
 #include <Interface/Modules/Matlab/ImportFieldsFromMatlabDialog.h>
-// #include <Modules/DataIO/ReadField.h>
- #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-// #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-// #include <Core/ImportExport/GenericIEPlugin.h>
-// #include <iostream>
-// #include <boost/filesystem.hpp>
-// #include <QFileDialog>
+#include <Modules/Legacy/Matlab/DataIO/ImportFieldsFromMatlab.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Matlab;
 
 ImportFieldsFromMatlabDialog::ImportFieldsFromMatlabDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -52,4 +49,30 @@ ImportFieldsFromMatlabDialog::ImportFieldsFromMatlabDialog(const std::string& na
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+}
+
+void ImportFieldsFromMatlabDialog::openFile()
+{
+  auto file = QFileDialog::getOpenFileName(this, "Open Matlab File", dialogDirectory(), "*.mat");
+  if (file.length() > 0)
+  {
+    fileNameLineEdit_->setText(file);
+    updateRecentFile(file);
+    pushFileNameToState();
+  }
+}
+
+void ImportFieldsFromMatlabDialog::pushFileNameToState()
+{
+  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+}
+
+void ImportFieldsFromMatlabDialog::pullSpecial()
+{
+  qDebug() << "foo";
+
+  auto names = toStringVector(state_->getValue(Parameters::FieldNames).toVector());
+  auto infos = toStringVector(transient_value_cast<Variable::List>(state_->getTransientValue(Parameters::FieldInfoStrings)));
+  qDebug() << "names: " << QVector<std::string>::fromStdVector(names);
+  qDebug() << "infos: " << QVector<std::string>::fromStdVector(infos);
 }

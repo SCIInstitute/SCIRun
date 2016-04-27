@@ -77,7 +77,7 @@ namespace
 
   int legacyNumProcessors()
   {
-    static int np = 0;
+    int np = 0;
 
     if (np == 0) {
 #ifdef __APPLE__
@@ -91,6 +91,7 @@ namespace
       std::ifstream cpuinfo(procInfoTest.string());//"/proc/cpuinfo");
       if (cpuinfo) {
         int count = 0;
+        std::cout << "count = 0" << std::endl;
         while (!cpuinfo.eof())
         {
           std::string str;
@@ -112,9 +113,9 @@ TEST(NumCoresTest, CompareToV4Linux)
 {
   procInfoTest = TestResources::rootDir() / "Other" / "cpuinfo_mtblanc";
 
-  std::cout << "mtblanc: " << legacyNumProcessors() << std::endl;
+  std::cout << procInfoTest << "\nmtblanc: " << legacyNumProcessors() << std::endl;
 
   procInfoTest = TestResources::rootDir() / "Other" / "cpuinfo_zugspitze";
 
-  std::cout << "zugspitze: " << legacyNumProcessors() << std::endl;
+  std::cout << procInfoTest << "\nzugspitze: " << legacyNumProcessors() << std::endl;
 }

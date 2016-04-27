@@ -181,6 +181,7 @@ namespace Gui {
   SCISHARE void openUrl(const QString& url, const std::string& name);
   SCISHARE void openPythonAPIDoc();
 
+  inline QDebug& operator<<(QDebug& qdebug, const std::string& str) { return qdebug << QString::fromStdString(str); }
 }
 }
 
