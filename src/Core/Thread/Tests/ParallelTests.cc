@@ -28,6 +28,7 @@
 
 #include <gtest/gtest.h>
 #include <numeric>
+#include <fstream>
 
 #include <Core/Thread/Parallel.h>
 #include <boost/filesystem/path.hpp>
@@ -42,7 +43,7 @@ TEST(ParallelTests, CanDoubleNumberInParallel)
   std::vector<int> nums(size);
   int i = 0;
   std::generate(nums.begin(), nums.end(), [&]() {return i++;});
-  
+
   int expectedSum = size * (size-1) / 2;
   EXPECT_EQ(expectedSum, std::accumulate(nums.begin(), nums.end(), 0, std::plus<int>()));
 
@@ -80,13 +81,7 @@ namespace
     int np = 0;
 
     if (np == 0) {
-#ifdef __APPLE__
-      size_t len = sizeof(np);
-      int mib[2];
-      mib[0] = CTL_HW;
-      mib[1] = HW_NCPU;
-      sysctl(mib, 2, &np, &len, NULL, 0);
-#else
+
       // Linux
       std::ifstream cpuinfo(procInfoTest.string());//"/proc/cpuinfo");
       if (cpuinfo) {
@@ -102,7 +97,7 @@ namespace
         }
         np = count;
       }
-#endif
+
       if (np <= 0) np = 1;
     }
     return np;
