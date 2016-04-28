@@ -240,13 +240,15 @@ PythonInterpreter::~PythonInterpreter()
 	//Py_Finalize();
 }
 
-//#define PRINT_PY_INIT_DEBUG(n) std::cout << "ev_" << (n) << std::endl;
+//#define PRINT_PY_INIT_DEBUG(n) std::cout << "ev " << (n) << std::endl;
 #define PRINT_PY_INIT_DEBUG(n)
 
 bool isOSXSCIRunTestExecutable(const std::string& commandLine)
 {
   const std::string TEST_EXECUTABLE_NAME = "SCIRun_test";
-  return commandLine.find(TEST_EXECUTABLE_NAME) != std::string::npos;
+  const std::string UNIT_TEST_EXECUTABLE_NAME = "Engine_Python_Tests";
+  return commandLine.find(TEST_EXECUTABLE_NAME) != std::string::npos
+    || commandLine.find(UNIT_TEST_EXECUTABLE_NAME) != std::string::npos;
   //TODO: this version is bugged if the test network name starts with a relative path: stem() returns the network name, not the executable name.
   //the full command line isn't normally a valid path object anyway.
   //  return 0 == boost::filesystem::path(commandLine).stem().string().compare(0, TEST_EXECUTABLE_NAME.size(), TEST_EXECUTABLE_NAME);
@@ -287,9 +289,14 @@ void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, 
   boost::filesystem::path lib_path = libPath.parent_path();
   std::vector<boost::filesystem::path> lib_path_list;
   // relative paths
+  PRINT_PY_INIT_DEBUG(lib_path);
+  PRINT_PY_INIT_DEBUG(boost::filesystem::path(PYTHONPATH));
   lib_path_list.push_back(lib_path.parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
+  PRINT_PY_INIT_DEBUG(lib_path_list.back());
   lib_path_list.push_back(lib_path / PYTHONPATH);
+  PRINT_PY_INIT_DEBUG(lib_path_list.back());
   lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
+  PRINT_PY_INIT_DEBUG(lib_path_list.back());
 
   if (isOSXSCIRunTestExecutable(commandLine))
   {

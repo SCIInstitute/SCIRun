@@ -33,6 +33,7 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Python/PythonInterpreter.h>
+#include <boost/filesystem.hpp>
 
 using namespace SCIRun;
 using namespace Core;
@@ -51,7 +52,7 @@ class PythonControllerFunctionalTests : public ModuleTest
 public:
   PythonControllerFunctionalTests()
   {
-    PythonInterpreter::Instance().initialize(false, "", "");
+    PythonInterpreter::Instance().initialize(false, "Engine_Python_Tests", boost::filesystem::current_path().string());
     PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   }
 };
