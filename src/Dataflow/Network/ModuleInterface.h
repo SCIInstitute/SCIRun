@@ -135,7 +135,6 @@ namespace Networks {
     virtual const ModuleStateHandle get_state() const = 0;
 
     virtual void execute() = 0;
-    virtual bool doExecute() = 0;
 
     typedef boost::signals2::signal<void()> ExecutionSelfRequestSignalType;
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;

@@ -89,8 +89,7 @@ namespace Networks {
     virtual std::vector<InputPortHandle> inputPorts() const override final;
     virtual std::vector<OutputPortHandle> outputPorts() const override final;
 
-    virtual bool doExecute() NOEXCEPT override final; //--C++11--will throw nothing
-    virtual void executeWithSignals() override final { doExecute(); }; 
+    virtual bool executeWithSignals() NOEXCEPT override final;
     virtual ModuleStateHandle get_state() override final;
     virtual const ModuleStateHandle get_state() const override final;
     virtual void set_state(ModuleStateHandle state) override final;

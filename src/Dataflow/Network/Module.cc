@@ -243,7 +243,7 @@ namespace //TODO requirements for state metadata reporting
   }
 }
 
-bool Module::doExecute() NOEXCEPT
+bool Module::executeWithSignals() NOEXCEPT
 {
   //Log::get() << INFO << "executing module: " << id_ << std::endl;
   //std::cout << "executing module: " << id_ << std::endl;

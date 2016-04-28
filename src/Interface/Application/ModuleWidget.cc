@@ -1042,22 +1042,23 @@ void ModuleWidget::trackConnections()
     p->trackConnections();
 }
 
-void ModuleWidget::executeWithSignals()
+bool ModuleWidget::executeWithSignals()
 {
   executedOnce_ = true;
   if (skipExecuteDueToFatalError_)
-    return;
+    return false;
   {
     Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
-    theModule_->doExecute();
+    theModule_->executeWithSignals();
     if (!disabled_)
       Q_EMIT updateProgressBarSignal(1);
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
+  return errored_;
 }
 
 boost::signals2::connection ModuleWidget::connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber)

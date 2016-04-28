@@ -146,7 +146,7 @@ public:
   };
 
 public Q_SLOTS:
-  virtual void executeWithSignals() override;
+  virtual bool executeWithSignals() override;
   void toggleOptionsDialog();
   void setLogButtonColor(const QColor& color);
   void resetLogButtonColor();

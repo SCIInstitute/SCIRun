@@ -618,9 +618,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);
     //std::cout << "EXECUTION 1 1 1 1 1 1 1" << std::endl;
-    send->doExecute();
-    process->doExecute();
-    receive->doExecute();
+    send->executeWithSignals();
+    process->executeWithSignals();
+    receive->executeWithSignals();
 
     EXPECT_TRUE(evalModule->executeCalled_);
     EXPECT_EQ(evalModule->expensiveComputationDone_, initialNeedToExecute);
@@ -632,9 +632,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
       //inputs haven't changed.
       evalModule->resetFlags();
       //std::cout << "EXECUTION 2 2 2 2 2 2 2" << std::endl;
-      send->doExecute();
-      process->doExecute();
-      receive->doExecute();
+      send->executeWithSignals();
+      process->executeWithSignals();
+      receive->executeWithSignals();
       EXPECT_FALSE(realNeedToExecuteWithPartialMocks->needToExecute());
 
       EXPECT_TRUE(evalModule->executeCalled_);
@@ -647,9 +647,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
       //std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
       //inputs have changed
       evalModule->resetFlags();
-      send->doExecute();
-      process->doExecute();
-      receive->doExecute();
+      send->executeWithSignals();
+      process->executeWithSignals();
+      receive->executeWithSignals();
 
       EXPECT_TRUE(evalModule->executeCalled_);
       EXPECT_TRUE(evalModule->expensiveComputationDone_);
@@ -705,9 +705,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);
     //std::cout << "EXECUTION 1 1 1 1 1 1 1" << std::endl;
-    send->doExecute();
-    process->doExecute();
-    receive->doExecute();
+    send->executeWithSignals();
+    process->executeWithSignals();
+    receive->executeWithSignals();
 
     EXPECT_TRUE(evalModule->executeCalled_);
     EXPECT_EQ(evalModule->expensiveComputationDone_, initialNeedToExecute);
@@ -718,9 +718,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
       //state hasn't changed.
       evalModule->resetFlags();
       //std::cout << "EXECUTION 2 2 2 2 2 2 2" << std::endl;
-      send->doExecute();
-      process->doExecute();
-      receive->doExecute();
+      send->executeWithSignals();
+      process->executeWithSignals();
+      receive->executeWithSignals();
       EXPECT_FALSE(realNeedToExecuteWithPartialMocks->needToExecute());
 
       EXPECT_TRUE(evalModule->executeCalled_);
@@ -731,9 +731,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
       //std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
       //state has changed
       evalModule->resetFlags();
-      send->doExecute();
-      process->doExecute();
-      receive->doExecute();
+      send->executeWithSignals();
+      process->executeWithSignals();
+      receive->executeWithSignals();
 
       EXPECT_TRUE(evalModule->executeCalled_);
       EXPECT_TRUE(evalModule->expensiveComputationDone_);
@@ -791,9 +791,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);
     //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1 1" << std::endl;
-    send->doExecute();
-    process->doExecute();
-    receive->doExecute();
+    send->executeWithSignals();
+    process->executeWithSignals();
+    receive->executeWithSignals();
 
     EXPECT_TRUE(evalModule->executeCalled_);
     EXPECT_EQ(evalModule->expensiveComputationDone_, initialNeedToExecute);
@@ -802,9 +802,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
     ASSERT_TRUE(evalModule->expensiveComputationDone_);
     evalModule->resetFlags();
     //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2 2 2" << std::endl;
-    send->doExecute();
-    process->doExecute();
-    receive->doExecute();
+    send->executeWithSignals();
+    process->executeWithSignals();
+    receive->executeWithSignals();
     EXPECT_FALSE(realNeedToExecuteWithPartialMocks->needToExecute());
 
     EXPECT_TRUE(evalModule->executeCalled_);
@@ -819,9 +819,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
     //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
 
     evalModule->resetFlags();
-    EXPECT_TRUE(send->doExecute());
-    EXPECT_TRUE(process->doExecute());
-    EXPECT_TRUE(receive->doExecute());
+    EXPECT_TRUE(send->executeWithSignals());
+    EXPECT_TRUE(process->executeWithSignals());
+    EXPECT_TRUE(receive->executeWithSignals());
 
     EXPECT_TRUE(evalModule->executeCalled_);
     EXPECT_FALSE(evalModule->expensiveComputationDone_);
@@ -832,9 +832,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
     //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 4 4 4 4 4 4" << std::endl;
 
     evalModule->resetFlags();
-    send->doExecute();
-    process->doExecute();
-    receive->doExecute();
+    send->executeWithSignals();
+    process->executeWithSignals();
+    receive->executeWithSignals();
 
     EXPECT_TRUE(evalModule->executeCalled_);
     EXPECT_TRUE(evalModule->expensiveComputationDone_);
@@ -870,9 +870,9 @@ TEST(PortCachingFunctionalTest, TestSourceSinkInputsChanged)
   EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
 std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1" << std::endl;
-  send->doExecute();
-  process->doExecute();
-  receive->doExecute();
+  send->executeWithSignals();
+  process->executeWithSignals();
+  receive->executeWithSignals();
 
   EXPECT_TRUE(evalModule->executeCalled_);
   EXPECT_TRUE(evalModule->expensiveComputationDone_);
@@ -880,9 +880,9 @@ std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1" << std::endl;
   evalModule->resetFlags();
 
 std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2" << std::endl;
-  send->doExecute();
-  process->doExecute();
-  receive->doExecute();
+  send->executeWithSignals();
+  process->executeWithSignals();
+  receive->executeWithSignals();
 
   EXPECT_TRUE(evalModule->executeCalled_);
   EXPECT_FALSE(evalModule->expensiveComputationDone_);
@@ -890,9 +890,9 @@ std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2" << std::endl;
   evalModule->resetFlags();
 
   std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
-  send->doExecute();
-  process->doExecute();
-  receive->doExecute();
+  send->executeWithSignals();
+  process->executeWithSignals();
+  receive->executeWithSignals();
 
   EXPECT_TRUE(evalModule->executeCalled_);
   EXPECT_FALSE(evalModule->expensiveComputationDone_);
