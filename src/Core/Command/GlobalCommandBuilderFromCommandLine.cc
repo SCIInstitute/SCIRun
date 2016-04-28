@@ -111,5 +111,8 @@ using namespace SCIRun::Core::Algorithms;
       q->enqueue(cmdFactory_->create(GlobalCommands::RunPythonScript));
     }
 
+    if (params->interactiveMode())
+      q->enqueue(cmdFactory_->create(GlobalCommands::InteractiveMode));
+
     return q;
   }

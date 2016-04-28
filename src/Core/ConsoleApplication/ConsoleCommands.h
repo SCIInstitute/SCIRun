@@ -86,6 +86,12 @@ namespace Console {
     virtual bool execute() override;
   };
 
+  class SCISHARE InteractiveModeCommandConsole : public Core::Commands::ConsoleCommand
+  {
+  public:
+    virtual bool execute() override;
+  };
+
   class SCISHARE PrintVersionCommand : public Core::Commands::ConsoleCommand
   {
   public:

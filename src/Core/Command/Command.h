@@ -89,6 +89,7 @@ namespace SCIRun
         RunPythonScript,
         SetupDataDirectory,
         ExecuteCurrentNetwork,
+        InteractiveMode,
         SetupQuitAfterExecute,
         QuitCommand
       };

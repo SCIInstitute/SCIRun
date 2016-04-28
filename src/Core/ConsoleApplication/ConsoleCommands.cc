@@ -87,9 +87,7 @@ bool SaveFileCommandConsole::execute()
 
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
-  std::cout << "ExecuteCurrentNetworkCommandConsole::execute()" << std::endl;
   Application::Instance().controller()->executeAll(nullptr);
-  std::cout << "execution done" << std::endl;
   return true;
 }
 
@@ -136,6 +134,20 @@ bool PrintModulesCommand::execute()
   return true;
 }
 
+bool InteractiveModeCommandConsole::execute()
+{
+  PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  std::string x;
+  while (x.find("quit") == std::string::npos)
+  {
+    std::cout << "scirun5> ";
+    std::getline(std::cin, x);
+    //std::cout << "x is: " << x << std::endl;
+    PythonInterpreter::Instance().run_string(x);
+  }
+  return true;
+}
+
 bool RunPythonScriptCommandConsole::execute()
 {
   auto script = Application::Instance().parameters()->pythonScriptFile();
@@ -148,11 +160,14 @@ bool RunPythonScriptCommandConsole::execute()
     PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
     PythonInterpreter::Instance().run_file(script->string());
 
-    //TODO: not sure what else to do here.
-    while (true)
+    //TODO: not sure what else to do here. Probably wait on a condition variable, or just loop forever
+    if (!Application::Instance().parameters()->interactiveMode())
     {
-      std::cout << "Running Python script." << std::endl;  
-      boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+      while (true)
+      {
+        std::cout << "Running Python script." << std::endl;
+        boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+      }
     }
     std::cout << "Done running Python script." << std::endl;
     return true;
