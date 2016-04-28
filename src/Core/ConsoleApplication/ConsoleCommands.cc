@@ -145,6 +145,7 @@ bool InteractiveModeCommandConsole::execute()
     //std::cout << "x is: " << x << std::endl;
     PythonInterpreter::Instance().run_string(x);
   }
+  exit(0);
   return true;
 }
 
