@@ -668,9 +668,9 @@ void ModuleWidget::fillReplaceWithMenu()
   auto menu = getReplaceWithMenu();
   menu->clear();
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
-  auto replacements = Core::Application::Instance().controller()->possibleReplacements(this->theModule_);
+  auto replacements = Application::Instance().controller()->possibleReplacements(this->theModule_);
   auto isReplacement = [&](const ModuleDescription& md) { return replacements.find(md.lookupInfo_) != replacements.end(); };
-  fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
+  fillMenuWithFilteredModuleActions(menu, Application::Instance().controller()->getAllAvailableModuleDescriptions(),
     isReplacement,
     [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); },
     currentDisplay_->getModuleActionButton());
@@ -1042,7 +1042,7 @@ void ModuleWidget::trackConnections()
     p->trackConnections();
 }
 
-void ModuleWidget::execute()
+void ModuleWidget::executeWithSignals()
 {
   executedOnce_ = true;
   if (skipExecuteDueToFatalError_)
