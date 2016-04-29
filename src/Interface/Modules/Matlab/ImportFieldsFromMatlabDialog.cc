@@ -30,7 +30,9 @@
 #include <Modules/Legacy/Matlab/DataIO/ImportFieldsFromMatlab.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
+#ifndef Q_MOC_RUN
 #include <Core/Utils/StringUtil.h>
+#endif
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
