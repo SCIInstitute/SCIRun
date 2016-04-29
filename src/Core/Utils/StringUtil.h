@@ -37,8 +37,10 @@
 #include <iterator>
 #include <boost/shared_ptr.hpp>
 #include <boost/atomic.hpp>
+#ifndef Q_MOC_RUN
 #include <boost/iterator/zip_iterator.hpp>
 #include <boost/range.hpp>
+#endif
 #include <Core/Utils/share.h>
 
 namespace SCIRun
