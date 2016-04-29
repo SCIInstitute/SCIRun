@@ -30,8 +30,10 @@
 #include <Modules/Legacy/Matlab/DataIO/ImportFieldsFromMatlab.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Modules/Legacy/Matlab/DataIO/ExportFieldsToMatlab.h>
+#include <Core/Utils/StringUtil.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Matlab;
@@ -42,7 +44,7 @@ ImportFieldsFromMatlabDialog::ImportFieldsFromMatlabDialog(const std::string& na
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  fixSize();
+  //fixSize();
 
   WidgetStyleMixin::tableHeaderStyle(tableWidget);
   addLineEditManager(fileNameLineEdit_, Variables::Filename);
@@ -69,10 +71,28 @@ void ImportFieldsFromMatlabDialog::pushFileNameToState()
 
 void ImportFieldsFromMatlabDialog::pullSpecial()
 {
-  qDebug() << "foo";
+  auto infos = toStringVector(state_->getValue(Parameters::FieldInfoStrings).toVector());
+  tableWidget->setRowCount(infos.size());
+  int row = 0;
+  QStringList portList;
+  portList << "None" << "Port 1" << "Port 2"  << "Port 3"  << "Port 4"  << "Port 5"  << "Port 6";
+  auto choices = toStringVector(state_->getValue(Parameters::PortChoices).toVector());
+  for (const auto& info : infos)
+  {
+    tableWidget->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(info)));
+    auto portBox = new QComboBox();
+    portBox->addItems(portList);
+    if (!choices.empty())
+      portBox->setCurrentIndex(portBox->findText(QString::fromStdString(choices[tableWidget->rowCount() - 1])));
+    connect(portBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushPortChoices()));
+    tableWidget->setCellWidget(row, 1, portBox);
+    ++row;
+  }
+  tableWidget->resizeColumnsToContents();
+}
 
-  auto names = toStringVector(state_->getValue(Parameters::FieldNames).toVector());
-  auto infos = toStringVector(transient_value_cast<Variable::List>(state_->getTransientValue(Parameters::FieldInfoStrings)));
-  qDebug() << "names: " << QVector<std::string>::fromStdVector(names);
-  qDebug() << "infos: " << QVector<std::string>::fromStdVector(infos);
+void ImportFieldsFromMatlabDialog::pushPortChoices()
+{
+  auto portChoices = makeHomogeneousVariableList([this](size_t i) { return qobject_cast<QComboBox*>(tableWidget->cellWidget(i, 1))->currentText().toStdString(); }, tableWidget->rowCount());
+  state_->setValue(Parameters::PortChoices, portChoices);
 }

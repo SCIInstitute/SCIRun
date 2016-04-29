@@ -40,6 +40,7 @@ namespace SCIRun {
       namespace Matlab
       {
         ALGORITHM_PARAMETER_DECL(FieldInfoStrings);
+        ALGORITHM_PARAMETER_DECL(PortChoices);
       }
     }
   }

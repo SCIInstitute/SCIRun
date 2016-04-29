@@ -51,6 +51,7 @@ namespace SCIRun {
     private Q_SLOTS:
       void openFile();
       void pushFileNameToState();
+      void pushPortChoices();
     };
 
   }

@@ -56,6 +56,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Matlab;
 
 ALGORITHM_PARAMETER_DEF(Matlab, FieldInfoStrings);
+ALGORITHM_PARAMETER_DEF(Matlab, PortChoices);
 
 const ModuleLookupInfo ImportFieldsFromMatlab::staticInfo_("ImportFieldsFromMatlab", "Matlab", "SCIRun");
 
@@ -132,7 +133,7 @@ class ImportFieldsFromMatlab : public Module
 {
 
   public:
-    
+
   private:
 
     // indexmatlabfile():
@@ -149,10 +150,10 @@ class ImportFieldsFromMatlab : public Module
     //   file and returns an object containing the full matrix
 
 
-    
+
   private:
 
-    
+
 
     // GUI variables
     GuiFilename			guifilename_;		// .mat filename (import from GUI)
@@ -199,7 +200,6 @@ void ImportFieldsFromMatlab::execute()
 	{
     state->setValue(Variables::Filename, (*fileOption)->value());
 	}
- 
 
   auto filename = state->getValue(Variables::Filename).toFilename().string();
 
@@ -321,11 +321,11 @@ void ImportFieldsFromMatlab::indexmatlabfile()
 
   auto state = get_state();
 
-  state->setValue(Parameters::FieldNames, matrixnames);
-  state->setTransientValue(Parameters::FieldInfoStrings, matrixinfotexts);
+  //state->setValue(Parameters::FieldNames, matrixnames);
+  state->setValue(Parameters::FieldInfoStrings, matrixinfotexts);
 
   matlabconverter translate(getLogger());
-  
+
   auto filename = state->getValue(Variables::Filename).toFilename().string();
 
   //if (filename == "")
@@ -367,7 +367,7 @@ void ImportFieldsFromMatlab::indexmatlabfile()
     // Scan the file and see which matrices are compatible
     // Only those will be shown (you cannot select incompatible matrices).
 
-    
+
 
     for (int p=0;p<mfile.getnummatlabarrays();p++)
     {
@@ -377,24 +377,21 @@ void ImportFieldsFromMatlab::indexmatlabfile()
       {
         // in case we need to propose a matrix to load, select
         // the one that is most compatible with the data
-        if (cindex > maxindex) 
-        { 
+        if (cindex > maxindex)
+        {
           maxindex = cindex;
         }
 
         // create tcl style list to use in the array selection process
 
         matrixinfotexts.emplace_back(Name(ma.getname()), infotext);
-        matrixnames.emplace_back(Name("port" + boost::lexical_cast<std::string>(p)), ma.getname());
+
         //for (int q=0;q<NUMPORTS;q++)
         //{
         //  if (ma.getname() == matrixnamelist[q]) foundmatrixname[q] = true;
         //}
       }
     }
-
-    matrixinfotexts.emplace_back(Name("end"), std::string("{none} "));
-    matrixnames.emplace_back(Name("end"), std::string("{<none>} "));
 
     mfile.close();
 
@@ -420,8 +417,8 @@ void ImportFieldsFromMatlab::indexmatlabfile()
 
     // Update TCL on the contents of this matrix
     //guimatrixname_.set(matrixname);
-    state->setValue(Parameters::FieldNames, matrixnames);
-    state->setTransientValue(Parameters::FieldInfoStrings, matrixinfotexts);
+    //state->setValue(Parameters::FieldNames, matrixnames);
+    state->setValue(Parameters::FieldInfoStrings, matrixinfotexts);
   }
 
   // in case something went wrong
