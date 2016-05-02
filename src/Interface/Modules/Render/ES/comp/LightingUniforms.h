@@ -12,19 +12,20 @@ namespace Render {
 
 // Static world light. We may have multiple world lights inside this structure
 // eventually.
+#define LIGHT_NUM 4
 struct LightingUniforms
 {
   // -- Data --
-  bool hasLightUniform;
-  GLint uniformLocation;
+  bool hasLightUniform[LIGHT_NUM];
+  GLint uniformLocation[LIGHT_NUM];
 
   // -- Functions --
-  LightingUniforms() : hasLightUniform(false), uniformLocation(0) { }
+  LightingUniforms();
 
   static const char* getName() {return "LightingUniforms";}
 
   void checkUniformArray(GLuint shaderID);
-  void applyUniform(const glm::vec3& lightDir) const;
+  void applyUniform(const std::vector<glm::vec3>& lightDirs) const;
 
   bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
   {

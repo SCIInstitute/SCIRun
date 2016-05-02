@@ -217,7 +217,11 @@ public:
     // Apply vector uniforms (if any).
     for (const ren::VecUniform& unif : vecUniforms) {unif.applyUniform();}
     if (lightUniforms.size() > 0)
-      lightUniforms.front().applyUniform(worldLight.front().lightDir);
+    {
+      std::vector<glm::vec3> lightDir(worldLight.front().lightDir,
+        worldLight.front().lightDir + LIGHT_NUM);
+      lightUniforms.front().applyUniform(lightDir);
+    }
     if (clippingPlaneUniforms.size() > 0)
     {
       glm::mat4 transform = trafo.front().transform;

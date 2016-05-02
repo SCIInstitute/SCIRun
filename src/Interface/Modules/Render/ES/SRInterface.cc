@@ -1373,7 +1373,7 @@ namespace SCIRun {
       {
         glm::vec3 viewDir = viewToWorld[2].xyz();
         viewDir = -viewDir; // Cameras look down -Z.
-        light->lightDir = viewDir;
+        light->lightDir[0] = viewDir;
       }
     }
 
