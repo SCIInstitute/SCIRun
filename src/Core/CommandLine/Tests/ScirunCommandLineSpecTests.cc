@@ -46,7 +46,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -r [ --regression ] arg regression test a network\n"
     "  -l [ --logfile ] arg    add output messages to a logfile--TODO\n"
     "  -1 [ --most-recent ]    load the most recently used file\n"
-    "  -i [ --interactive ]    interactive mode--TODO\n"
+    "  -i [ --interactive ]    interactive mode\n"
     "  -x [ --headless ]       disable GUI (Qt still needed, for now)\n"
     "  --input-file arg        SCIRun Network Input File\n"
     "  -s [ --script ] arg     SCIRun Python Script\n"
