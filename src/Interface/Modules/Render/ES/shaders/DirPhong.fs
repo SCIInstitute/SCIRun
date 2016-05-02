@@ -43,6 +43,10 @@ uniform vec3    uLightDirWorld0;     // Directional light (world space).
 uniform vec3    uLightDirWorld1;     // Directional light (world space).
 uniform vec3    uLightDirWorld2;     // Directional light (world space).
 uniform vec3    uLightDirWorld3;     // Directional light (world space).
+uniform vec3    uLightColor0;        // color of light 0
+uniform vec3    uLightColor1;        // color of light 0
+uniform vec3    uLightColor2;        // color of light 0
+uniform vec3    uLightColor3;        // color of light 0
 uniform float   uTransparency;
 
 //clipping planes
@@ -71,7 +75,7 @@ varying vec3    vNormal;
 varying vec4    vPos;//for clipping plane calc
 varying vec4    vFogCoord;// for fog calculation
 
-vec4 calculate_lighting(vec3 lightDirWorld)
+vec4 calculate_lighting(vec3 lightDirWorld, vec3 lightColor)
 {
   // Remember to always negate the light direction for these lighting
   // calculations. The dot product takes on its greatest values when the angle
@@ -95,7 +99,7 @@ vec4 calculate_lighting(vec3 lightDirWorld)
   float spec        = max(0.0, dot(reflection, uCamViewVec));
 
   spec              = pow(spec, uSpecularPower);
-  return vec4((diffuse * spec * uSpecularColor + 
+  return vec4(lightColor, 1.0) * vec4((diffuse * spec * uSpecularColor + 
       diffuse * uDiffuseColor + uAmbientColor).rgb, uTransparency);
 }
 
@@ -147,13 +151,13 @@ void main()
 
   gl_FragColor = vec4(0.0);
   if (length(uLightDirWorld0) > 0.0)
-    gl_FragColor += calculate_lighting(uLightDirWorld0);
+    gl_FragColor += calculate_lighting(uLightDirWorld0, uLightColor0);
   if (length(uLightDirWorld1) > 0.0)
-    gl_FragColor += calculate_lighting(uLightDirWorld1);
+    gl_FragColor += calculate_lighting(uLightDirWorld1, uLightColor1);
   if (length(uLightDirWorld2) > 0.0)
-    gl_FragColor += calculate_lighting(uLightDirWorld2);
+    gl_FragColor += calculate_lighting(uLightDirWorld2, uLightColor2);
   if (length(uLightDirWorld3) > 0.0)
-    gl_FragColor += calculate_lighting(uLightDirWorld3);
+    gl_FragColor += calculate_lighting(uLightDirWorld3, uLightColor3);
   if (gl_FragColor == vec4(0.0))
     gl_FragColor = vec4(uAmbientColor.rgb, uTransparency);
 

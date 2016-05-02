@@ -18,6 +18,8 @@ struct LightingUniforms
   // -- Data --
   bool hasLightUniform[LIGHT_NUM];
   GLint uniformLocation[LIGHT_NUM];
+  bool hasLightColorUniform[LIGHT_NUM];
+  GLint colorUnifLocation[LIGHT_NUM];
 
   // -- Functions --
   LightingUniforms();
@@ -25,7 +27,8 @@ struct LightingUniforms
   static const char* getName() {return "LightingUniforms";}
 
   void checkUniformArray(GLuint shaderID);
-  void applyUniform(const std::vector<glm::vec3>& lightDirs) const;
+  void applyUniform(const std::vector<glm::vec3>& lightDirs,
+    const std::vector<glm::vec3>& lightColors) const;
 
   bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
   {

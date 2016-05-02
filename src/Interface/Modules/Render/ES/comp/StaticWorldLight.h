@@ -17,27 +17,24 @@ struct StaticWorldLight
 {
   // -- Data --
   glm::vec3 lightDir[LIGHT_NUM];
+  glm::vec3 lightColor[LIGHT_NUM];
 
   // -- Functions --
   StaticWorldLight()
   {
     lightDir[0] = glm::vec3(1.0f, 0.0f, 0.0f);
+    for (int i = 0; i < LIGHT_NUM; ++i)
+      lightColor[i] = glm::vec3(1.0f);
   }
 
   static const char* getName() {return "StaticWorldLight";}
-
-  std::vector<glm::vec3> getLightDir()
-  {
-    std::vector<glm::vec3> lights;
-    for (int i = 0; i < LIGHT_NUM; ++i)
-      lights.push_back(lightDir[i]);
-    return lights;
-  }
 
   bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
   {
     for (int i = 0; i < LIGHT_NUM; ++i)
       s.serialize("dir", lightDir[i]);
+    for (int i = 0; i < LIGHT_NUM; ++i)
+      s.serialize("color", lightColor[i]);
     return true;
   }
 };

@@ -231,7 +231,9 @@ public:
     {
       std::vector<glm::vec3> lightDir(worldLight.front().lightDir,
         worldLight.front().lightDir + LIGHT_NUM);
-      lightUniforms.front().applyUniform(lightDir);
+      std::vector<glm::vec3> lightColor(worldLight.front().lightColor,
+        worldLight.front().lightColor + LIGHT_NUM);
+      lightUniforms.front().applyUniform(lightDir, lightColor);
     }
     if (clippingPlaneUniforms.size() > 0)
     {
