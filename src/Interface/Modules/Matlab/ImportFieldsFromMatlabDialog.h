@@ -52,6 +52,7 @@ namespace SCIRun {
       void openFile();
       void pushFileNameToState();
       void pushPortChoices();
+      void portItemClicked(QListWidgetItem* item);
     };
 
   }

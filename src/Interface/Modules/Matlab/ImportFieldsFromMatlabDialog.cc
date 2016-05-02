@@ -53,6 +53,7 @@ ImportFieldsFromMatlabDialog::ImportFieldsFromMatlabDialog(const std::string& na
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+  connect(portListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(portItemClicked(QListWidgetItem*)));
 }
 
 void ImportFieldsFromMatlabDialog::openFile()
@@ -75,13 +76,15 @@ void ImportFieldsFromMatlabDialog::pullSpecial()
 {
   auto infos = toStringVector(state_->getValue(Parameters::FieldInfoStrings).toVector());
   tableWidget->setRowCount(infos.size());
+  matlabObjectListWidget_->clear();
   int row = 0;
   QStringList portList;
   portList << "None" << "Port 1" << "Port 2"  << "Port 3"  << "Port 4"  << "Port 5"  << "Port 6";
   auto choices = toStringVector(state_->getValue(Parameters::PortChoices).toVector());
   for (const auto& info : infos)
   {
-    tableWidget->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(info)));
+    auto qinfo = QString::fromStdString(info);
+    tableWidget->setItem(row, 0, new QTableWidgetItem(qinfo));
     auto portBox = new QComboBox();
     portBox->addItems(portList);
     if (!choices.empty())
@@ -89,7 +92,9 @@ void ImportFieldsFromMatlabDialog::pullSpecial()
     connect(portBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushPortChoices()));
     tableWidget->setCellWidget(row, 1, portBox);
     ++row;
+    matlabObjectListWidget_->addItem(qinfo);
   }
+  matlabObjectListWidget_->addItem("None");
   tableWidget->resizeColumnsToContents();
 }
 
@@ -97,4 +102,9 @@ void ImportFieldsFromMatlabDialog::pushPortChoices()
 {
   auto portChoices = makeHomogeneousVariableList([this](size_t i) { return qobject_cast<QComboBox*>(tableWidget->cellWidget(i, 1))->currentText().toStdString(); }, tableWidget->rowCount());
   state_->setValue(Parameters::PortChoices, portChoices);
+}
+
+void ImportFieldsFromMatlabDialog::portItemClicked(QListWidgetItem* item)
+{
+  qDebug() << "Port item clicked:" << item->text();
 }

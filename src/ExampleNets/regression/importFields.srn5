@@ -105,7 +105,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/dwhite/Downloads/electrodes.mat</value>
+										<value>E:/git/SCIRunTestData/Fields/tdcs/electrodes.mat</value>
 									</value>
 								</second>
 							</item>
@@ -125,8 +125,8 @@
 		<item class_id="15" tracking_level="0" version="0">
 			<first>ImportFieldsFromMatlab:0</first>
 			<second class_id="16" tracking_level="0" version="0">
-				<first>4.95000000000000000e+01</first>
-				<second>1.40000000000000000e+01</second>
+				<first>4.95000000000000000e+001</first>
+				<second>1.40000000000000000e+001</second>
 			</second>
 		</item>
 	</modulePositions>
