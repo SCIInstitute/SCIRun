@@ -27,57 +27,8 @@
 									<value class_id="11" tracking_level="0" version="0">
 										<which>5</which>
 										<value class_id="12" tracking_level="0" version="0">
-											<count>7</count>
+											<count>0</count>
 											<item_version>0</item_version>
-											<item>
-												<name>one</name>
-												<value>
-													<which>2</which>
-													<value>one                  [TriSurfMesh&lt;TriLinearLgn&gt; - Scalar&lt;ConstantBasis&gt; - 277 NODES 500 ELEMENTS]</value>
-												</value>
-											</item>
-											<item>
-												<name>two</name>
-												<value>
-													<which>2</which>
-													<value>two                  [TriSurfMesh&lt;TriLinearLgn&gt; - Scalar&lt;ConstantBasis&gt; - 233 NODES 392 ELEMENTS]</value>
-												</value>
-											</item>
-											<item>
-												<name>three</name>
-												<value>
-													<which>2</which>
-													<value>three                [TriSurfMesh&lt;TriLinearLgn&gt; - Scalar&lt;ConstantBasis&gt; - 277 NODES 500 ELEMENTS]</value>
-												</value>
-											</item>
-											<item>
-												<name>four</name>
-												<value>
-													<which>2</which>
-													<value>four                 [TriSurfMesh&lt;TriLinearLgn&gt; - Scalar&lt;ConstantBasis&gt; - 277 NODES 498 ELEMENTS]</value>
-												</value>
-											</item>
-											<item>
-												<name>five</name>
-												<value>
-													<which>2</which>
-													<value>five                 [TriSurfMesh&lt;TriLinearLgn&gt; - Scalar&lt;ConstantBasis&gt; - 233 NODES 392 ELEMENTS]</value>
-												</value>
-											</item>
-											<item>
-												<name>six</name>
-												<value>
-													<which>2</which>
-													<value>six                  [TriSurfMesh&lt;TriLinearLgn&gt; - Scalar&lt;ConstantBasis&gt; - 233 NODES 392 ELEMENTS]</value>
-												</value>
-											</item>
-											<item>
-												<name>ref</name>
-												<value>
-													<which>2</which>
-													<value>ref                  [TriSurfMesh&lt;TriLinearLgn&gt; - Scalar&lt;ConstantBasis&gt; - 492 NODES 928 ELEMENTS]</value>
-												</value>
-											</item>
 										</value>
 									</value>
 								</second>
@@ -105,7 +56,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/git/SCIRunTestData/Fields/tdcs/electrodes.mat</value>
+										<value>%SCIRUNDATADIR%/Fields/tdcs/electrodes.mat</value>
 									</value>
 								</second>
 							</item>

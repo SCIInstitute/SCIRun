@@ -74,7 +74,8 @@ ImportFieldsFromMatlab::ImportFieldsFromMatlab() : Module(staticInfo_)
 
 void ImportFieldsFromMatlab::setStateDefaults()
 {
-  //TODO
+  auto nones = makeHomogeneousVariableList([](size_t) { return std::string("<none>"); }, NUMPORTS);
+  get_state()->setValue(Parameters::PortChoices, nones);
 }
 
 namespace
@@ -315,7 +316,7 @@ void ImportFieldsFromMatlab::tcl_command(GuiArgs& args, void* userdata)
 void ImportFieldsFromMatlab::indexmatlabfile()
 {
   Variable::List matrixinfotexts;
-  Variable::List matrixnames;
+  //Variable::List matrixnames;
   std::string newmatrixname = "";
   std::string matrixname = "";
 
@@ -338,7 +339,7 @@ void ImportFieldsFromMatlab::indexmatlabfile()
 
   //matrixname = guimatrixname_.get();
 
-  std::vector<std::string> matrixnamelist(NUMPORTS);
+  //std::vector<std::string> matrixnamelist(NUMPORTS);
   //bool foundmatrixname[NUMPORTS];
 
   //for (int p=0;p<NUMPORTS;p++)
@@ -417,8 +418,7 @@ void ImportFieldsFromMatlab::indexmatlabfile()
 
     // Update TCL on the contents of this matrix
     //guimatrixname_.set(matrixname);
-    //state->setValue(Parameters::FieldNames, matrixnames);
-    state->setValue(Parameters::FieldInfoStrings, matrixinfotexts);
+    state->setTransientValue(Parameters::FieldInfoStrings, matrixinfotexts);
   }
 
   // in case something went wrong

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>540</width>
-    <height>799</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -138,20 +138,6 @@
        </item>
       </layout>
      </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTableWidget" name="tableWidget">
-     <column>
-      <property name="text">
-       <string>Name/Type</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Port</string>
-      </property>
-     </column>
     </widget>
    </item>
   </layout>

@@ -48,12 +48,12 @@ ImportFieldsFromMatlabDialog::ImportFieldsFromMatlabDialog(const std::string& na
   setWindowTitle(QString::fromStdString(name));
   //fixSize();
 
-  WidgetStyleMixin::tableHeaderStyle(tableWidget);
   addLineEditManager(fileNameLineEdit_, Variables::Filename);
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
-  connect(portListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(portItemClicked(QListWidgetItem*)));
+  connect(portListWidget_, SIGNAL(currentRowChanged(int)), this, SLOT(portItemClicked(int)));
+  connect(matlabObjectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(matlabItemClicked(QListWidgetItem*)));
 }
 
 void ImportFieldsFromMatlabDialog::openFile()
@@ -74,37 +74,30 @@ void ImportFieldsFromMatlabDialog::pushFileNameToState()
 
 void ImportFieldsFromMatlabDialog::pullSpecial()
 {
-  auto infos = toStringVector(state_->getValue(Parameters::FieldInfoStrings).toVector());
-  tableWidget->setRowCount(infos.size());
+  auto infos = toStringVector(transient_value_cast<VariableList>(state_->getTransientValue(Parameters::FieldInfoStrings)));
+  auto names = toStringVector(transient_value_cast<VariableList>(state_->getTransientValue(Parameters::FieldNames)));
   matlabObjectListWidget_->clear();
-  int row = 0;
-  QStringList portList;
-  portList << "None" << "Port 1" << "Port 2"  << "Port 3"  << "Port 4"  << "Port 5"  << "Port 6";
   auto choices = toStringVector(state_->getValue(Parameters::PortChoices).toVector());
   for (const auto& info : infos)
   {
     auto qinfo = QString::fromStdString(info);
-    tableWidget->setItem(row, 0, new QTableWidgetItem(qinfo));
-    auto portBox = new QComboBox();
-    portBox->addItems(portList);
-    if (!choices.empty())
-      portBox->setCurrentIndex(portBox->findText(QString::fromStdString(choices[tableWidget->rowCount() - 1])));
-    connect(portBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushPortChoices()));
-    tableWidget->setCellWidget(row, 1, portBox);
-    ++row;
     matlabObjectListWidget_->addItem(qinfo);
   }
-  matlabObjectListWidget_->addItem("None");
-  tableWidget->resizeColumnsToContents();
+  matlabObjectListWidget_->addItem("<none>");
 }
 
 void ImportFieldsFromMatlabDialog::pushPortChoices()
 {
-  auto portChoices = makeHomogeneousVariableList([this](size_t i) { return qobject_cast<QComboBox*>(tableWidget->cellWidget(i, 1))->currentText().toStdString(); }, tableWidget->rowCount());
-  state_->setValue(Parameters::PortChoices, portChoices);
+  //auto portChoices = makeHomogeneousVariableList([this](size_t i) { return qobject_cast<QComboBox*>(tableWidget->cellWidget(i, 1))->currentText().toStdString(); }, tableWidget->rowCount());
+  //state_->setValue(Parameters::PortChoices, portChoices);
 }
 
-void ImportFieldsFromMatlabDialog::portItemClicked(QListWidgetItem* item)
+void ImportFieldsFromMatlabDialog::portItemClicked(int row)
 {
-  qDebug() << "Port item clicked:" << item->text();
+  qDebug() << "Port item clicked:" << row;
+}
+
+void ImportFieldsFromMatlabDialog::matlabItemClicked(QListWidgetItem* item)
+{
+  qDebug() << "Matlab item clicked:" << item->text();
 }
