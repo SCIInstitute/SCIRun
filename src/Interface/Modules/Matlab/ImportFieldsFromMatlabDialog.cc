@@ -89,7 +89,6 @@ void ImportFieldsFromMatlabDialog::pullSpecial()
       boost::tie(info, name) = infoTup;
       auto qinfo = QString::fromStdString(info);
       matlabObjectListWidget_->addItem(qinfo);
-      //qDebug() << name << qinfo;
     }
 
     auto choices = toStringVector(state_->getValue(Parameters::PortChoices).toVector());
@@ -118,7 +117,6 @@ void ImportFieldsFromMatlabDialog::pushPortChoices()
 
 void ImportFieldsFromMatlabDialog::portItemClicked(int row)
 {
-  qDebug() << "Port item clicked:" << row << "choice:" << portChoices_[row];
   auto choice = portChoices_[row];
   if (NONE_CHOICE == choice)
     choice = matlabObjectListWidget_->count() - 1;
@@ -129,7 +127,6 @@ void ImportFieldsFromMatlabDialog::portItemClicked(int row)
 
 void ImportFieldsFromMatlabDialog::matlabItemClicked(int row)
 {
-  qDebug() << "Matlab item clicked:" << row;
   auto currentRow = portListWidget_->currentRow();
   if (currentRow >= 0)
     portChoices_[currentRow] = row;
