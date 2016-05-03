@@ -53,7 +53,11 @@ namespace SCIRun {
       void pushFileNameToState();
       void pushPortChoices();
       void portItemClicked(int index);
-      void matlabItemClicked(QListWidgetItem* item);
+      void matlabItemClicked(int row);
+    private:
+      enum { NONE_CHOICE = -1 };
+      std::vector<int> portChoices_;
+      std::vector<std::string> fieldNames_;
     };
 
   }
