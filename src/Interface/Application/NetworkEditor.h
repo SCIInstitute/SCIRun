@@ -247,6 +247,7 @@ namespace Gui {
     void resetNetworkDueToCycle();
     void moduleWindowAction();
     void cleanUpNetwork();
+    void redrawTagGroups();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);

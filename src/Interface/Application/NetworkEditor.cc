@@ -99,6 +99,8 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setExecutionContext(this);
 #endif
+
+  connect(this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SLOT(redrawTagGroups()));
 }
 
 void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
@@ -1316,7 +1318,8 @@ void NetworkEditor::tagLayer(bool active, int tag)
   {
     for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
     {
-      scene_->addRect(rectIter.value().adjusted(-10,-10,10,10), QPen(tagColor_(rectIter.key())));
+      auto rect = scene_->addRect(rectIter.value().adjusted(-10,-10,10,10), QPen(tagColor_(rectIter.key())));
+      rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
     }
   }
   if (HideGroups == tag)
@@ -1327,6 +1330,11 @@ void NetworkEditor::tagLayer(bool active, int tag)
         delete rect;
     }
   }
+}
+
+void NetworkEditor::redrawTagGroups()
+{
+  qDebug() << "TODO";
 }
 
 void NetworkEditor::highlightTaggedItem(int tagValue)
