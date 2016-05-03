@@ -1200,7 +1200,7 @@ namespace {
   void fillSavedSubnetworkMenu(QTreeWidget* tree, const QMap<QString, QVariant>& savedSubnets)
   {
     auto savedSubnetworks = getSavedSubnetworksMenu(tree);
-    
+
     for (auto i = savedSubnets.begin(); i != savedSubnets.end(); ++i)
     {
       auto subnet = new QTreeWidgetItem();
@@ -1572,6 +1572,28 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
     	}
 		}
 	}
+	else if (event->key() == Qt::Key_G)
+	{
+		if (!actionToggleTagLayer_->isChecked())
+		{
+    	if (networkEditor_->tagLayerActive())
+    	{
+      	networkEditor_->tagLayer(true, ShowGroups);
+				showStatusMessage("Tag layer active: Groups shown");
+    	}
+		}
+	}
+	else if (event->key() == Qt::Key_H)
+	{
+		if (!actionToggleTagLayer_->isChecked())
+		{
+    	if (networkEditor_->tagLayerActive())
+    	{
+      	networkEditor_->tagLayer(true, HideGroups);
+				showStatusMessage("Tag layer active: Groups hidden");
+    	}
+		}
+	}
   else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
   {
 		if (!actionToggleTagLayer_->isChecked())
@@ -1751,7 +1773,7 @@ void SCIRunMainWindow::copyVersionToClipboard()
 void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
 {
   auto clips = getClipboardHistoryMenu(moduleSelectorTreeWidget_);
-  
+
   auto clip = new QTreeWidgetItem();
   clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
   clip->setToolTip(0, xml);
@@ -1760,7 +1782,7 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
   const int clipMax = 5;
   if (clips->childCount() == clipMax)
     clips->removeChild(clips->child(0));
-  
+
   clip->setCheckState(0, Qt::Unchecked);
   clips->addChild(clip);
 }

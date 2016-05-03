@@ -1282,7 +1282,7 @@ void NetworkEditor::tagLayer(bool active, int tag)
     if (active)
     {
       const auto itemTag = item->data(TagDataKey).toInt();
-      if (tag == AllTags)
+      if (AllTags == tag || ShowGroups == tag)
       {
         highlightTaggedItem(item, itemTag);
         if (itemTag != 0)
@@ -1312,11 +1312,19 @@ void NetworkEditor::tagLayer(bool active, int tag)
     else
       item->setGraphicsEffect(nullptr);
   }
-  if (tag == AllTags)
+  if (ShowGroups == tag)
   {
     for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
     {
       scene_->addRect(rectIter.value().adjusted(-10,-10,10,10), QPen(tagColor_(rectIter.key())));
+    }
+  }
+  if (HideGroups == tag)
+  {
+    Q_FOREACH(QGraphicsItem* item, scene_->items())
+    {
+      if (auto rect = dynamic_cast<QGraphicsRectItem*>(item))
+        delete rect;
     }
   }
 }
