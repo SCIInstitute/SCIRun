@@ -35,6 +35,7 @@
 #include <vector>
 
 // ReSharper disable once CppUnusedIncludeDirective
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/String.h>
 
 #include <Core/Matlab/matlabfile.h>
