@@ -1274,20 +1274,21 @@ namespace {
 
 }
 
-void SCIRunMainWindow::fillSavedSubnetworkMenu(const QMap<QString, QVariant>& savedSubnets)
+void SCIRunMainWindow::fillSavedSubnetworkMenu()
 {
 	auto savedSubnetworks = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
-qDebug() << "map:" << savedSubnets;
-	for (auto i = savedSubnets.begin(); i != savedSubnets.end(); ++i)
+//qDebug() << "map:" << savedSubnets;
+  for (auto i = savedSubnetworks_.begin(); i != savedSubnetworks_.end(); ++i)
 	{
 		auto subnet = new QTreeWidgetItem();
+    qDebug() << i.key() << i.value() << i.value().toString();
 		subnet->setText(0, i.key());
 		subnet->setToolTip(0, i.value().toString());
 		subnet->setFlags(subnet->flags() | Qt::ItemIsEditable);
 		subnet->setTextColor(0, CLIPBOARD_COLOR);
 		savedSubnetworks->addChild(subnet);
 		//TODO: crashes
-		//setupSubnetItem(subnet);
+		setupSubnetItem(subnet);
 	}
 }
 
@@ -1300,7 +1301,7 @@ void SCIRunMainWindow::fillModuleSelector()
   addFavoriteMenu(moduleSelectorTreeWidget_);
 	addSnippetMenu(moduleSelectorTreeWidget_);
 	addSavedSubnetworkMenu(moduleSelectorTreeWidget_);
-  fillSavedSubnetworkMenu(savedSubnetworks_);
+  fillSavedSubnetworkMenu();
 	addClipboardHistoryMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
   sortFavorites(moduleSelectorTreeWidget_);

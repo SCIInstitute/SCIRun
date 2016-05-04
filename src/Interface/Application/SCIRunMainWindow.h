@@ -139,7 +139,7 @@ private:
   void setupTagManagerWindow();
   void setupPythonConsole();
   void fillModuleSelector();
-  void fillSavedSubnetworkMenu(const QMap<QString, QVariant>& savedSubnets);
+  void fillSavedSubnetworkMenu();
   void setupInputWidgets();
   void setupVersionButton();
   void printStyleSheet() const;
