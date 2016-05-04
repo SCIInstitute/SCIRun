@@ -1343,15 +1343,17 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
           //delButton->setText("Delete");
           delButton->setIcon(QPixmap(":/general/Resources/delete_red.png"));
           delButton->setToolTip("Delete");
+          connect(delButton, SIGNAL(clicked()), this, SLOT(removeSavedSubnetwork()));
           auto renButton = new QToolButton();
           renButton->setIcon(QPixmap(":/general/Resources/rename.ico"));
+          renButton->setToolTip("Rename");
           auto name = new QLabel(fave->text(0));
           name->setStyleSheet("QLabel { color : " + fave->textColor(0).name() + "; }"); 
           hLayout->addWidget(name);
           hLayout->addWidget(delButton);
           hLayout->addWidget(renButton);
           dualPushButtons->setLayout(hLayout);
-          dualPushButtons->setMaximumHeight(25);
+          dualPushButtons->setMaximumHeight(28);
 
           moduleSelectorTreeWidget_->setItemWidget(fave, 0, dualPushButtons);
         }
@@ -1371,6 +1373,11 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
       }
     }
   }
+}
+
+void SCIRunMainWindow::removeSavedSubnetwork()
+{
+  qDebug() << "TODO removesavedsubnet";
 }
 
 bool SCIRunMainWindow::isInFavorites(const QString& module) const

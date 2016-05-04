@@ -194,6 +194,7 @@ private Q_SLOTS:
   void setDataDirectoryFromGUI();
   void toolkitDownload();
   void addToPathFromGUI();
+  void removeSavedSubnetwork();
   void displayAcknowledgement();
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();
