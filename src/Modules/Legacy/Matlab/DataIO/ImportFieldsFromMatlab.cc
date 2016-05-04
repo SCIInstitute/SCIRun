@@ -43,15 +43,13 @@
 #include <Core/Matlab/matlabconverter.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-//#include <Core/Util/FullFileName.h>
-
 using namespace SCIRun::Modules::Matlab;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core;
 using namespace SCIRun::MatlabIO;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Matlab;
+using namespace Algorithms;
+using namespace Matlab;
 
 ALGORITHM_PARAMETER_DEF(Matlab, FieldInfoStrings);
 ALGORITHM_PARAMETER_DEF(Matlab, PortChoices);
@@ -79,7 +77,20 @@ void ImportFieldsFromMatlab::setStateDefaults()
 
 namespace
 {
-  matlabarray readmatlabarray(const std::string& filename, const std::string& matlabName)
+  struct ScopedMatlabFileReader
+  {
+    explicit ScopedMatlabFileReader(const std::string& filename)
+    {
+      mfile.open(filename, "r");
+    }
+    ~ScopedMatlabFileReader()
+    {
+      mfile.close();
+    }
+    matlabfile mfile;
+  };
+
+  matlabarray readmatlabarray(matlabfile& mfile, const std::string& matlabName)
   {
     matlabarray marray;
 
@@ -94,20 +105,8 @@ namespace
       // return an empty array
       return(marray);
     }
-
-    // this block contains the file IO
-    // The change of errors is reasonable
-    // hence errors are generated as exceptions
-
-    // having a local matfile object here ensures
-    // the file will be closed (destructor of the object).
-
-    matlabfile  mfile;
-    mfile.open(filename,"r");
-    marray = mfile.getmatlabarray(matlabName);
-    mfile.close();
-
-    return(marray);
+    
+    return mfile.getmatlabarray(matlabName);
   }
 }
 
@@ -141,6 +140,7 @@ void ImportFieldsFromMatlab::execute()
 
   try
   {
+    ScopedMatlabFileReader smfr(filename);
     for (int p=0; p < NUMPORTS; ++p)
     {
       // Now read the matrix from file
@@ -150,7 +150,7 @@ void ImportFieldsFromMatlab::execute()
       // which carries the definitions of the exceptions. These
       // definitions are inherited by all other "matlab classes"
 
-      auto ma = readmatlabarray(filename, choices[p]);
+      auto ma = readmatlabarray(smfr.mfile, choices[p]);
 
       // An empty array means something must have gone wrong
       // Or there is no data to put on this port.
