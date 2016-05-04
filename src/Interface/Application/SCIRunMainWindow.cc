@@ -1226,7 +1226,7 @@ namespace {
     if (copy->textColor(0) == CLIPBOARD_COLOR)
     {
       copy->setFlags(copy->flags() | Qt::ItemIsEditable);
-      
+
     }
     faves->addChild(copy);
     return copy;
@@ -1343,18 +1343,30 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
           //delButton->setText("Delete");
           delButton->setIcon(QPixmap(":/general/Resources/delete_red.png"));
           delButton->setToolTip("Delete");
+
+					QString addressString;
+					QTextStream addressStream(&addressString);
+					addressStream << static_cast<const void*>(fave);
+					addressStream.flush();
+
+					delButton->setProperty("ID", addressString);
           connect(delButton, SIGNAL(clicked()), this, SLOT(removeSavedSubnetwork()));
           auto renButton = new QToolButton();
           renButton->setIcon(QPixmap(":/general/Resources/rename.ico"));
           renButton->setToolTip("Rename");
           auto name = new QLabel(fave->text(0));
-          name->setStyleSheet("QLabel { color : " + fave->textColor(0).name() + "; }"); 
+          name->setStyleSheet("QLabel { color : " + fave->textColor(0).name() + "; }");
           hLayout->addWidget(name);
           hLayout->addWidget(delButton);
           hLayout->addWidget(renButton);
           dualPushButtons->setLayout(hLayout);
-          dualPushButtons->setMaximumHeight(28);
-
+#ifdef WIN32
+	int subnetHeight = 28;
+#else
+	int subnetHeight = 35;
+#endif
+          dualPushButtons->setMaximumHeight(subnetHeight);
+					fave->setData(0, Qt::UserRole, addressString);
           moduleSelectorTreeWidget_->setItemWidget(fave, 0, dualPushButtons);
         }
       }
@@ -1377,7 +1389,19 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
 
 void SCIRunMainWindow::removeSavedSubnetwork()
 {
-  qDebug() << "TODO removesavedsubnet";
+  qDebug() << "TODO removesavedsubnet. ID:" << sender()->property("ID").toString();
+	auto toDelete = sender()->property("ID").toString();
+	auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+	for (int i = 0; i < tree->childCount(); ++i)
+	{
+		auto subnet = tree->child(i);
+		qDebug() << subnet << subnet->text(0) << toDelete << subnet->data(0, Qt::UserRole);
+		if (toDelete == subnet->data(0, Qt::UserRole).toString())
+		{
+			delete tree->takeChild(i);
+			break;
+		}
+	}
 }
 
 bool SCIRunMainWindow::isInFavorites(const QString& module) const
