@@ -139,10 +139,12 @@ private:
   void setupTagManagerWindow();
   void setupPythonConsole();
   void fillModuleSelector();
+  void fillSavedSubnetworkMenu(const QMap<QString, QVariant>& savedSubnets);
   void setupInputWidgets();
   void setupVersionButton();
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
+  void setupSubnetItem(QTreeWidgetItem* fave);
   void showStatusMessage(const QString& str);
   void showStatusMessage(const QString& str, int timeInMsec);
 

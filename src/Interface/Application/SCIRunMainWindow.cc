@@ -1195,20 +1195,7 @@ namespace {
     tree->addTopLevelItem(savedSubnetworks);
   }
 
-  void fillSavedSubnetworkMenu(QTreeWidget* tree, const QMap<QString, QVariant>& savedSubnets)
-  {
-    auto savedSubnetworks = getSavedSubnetworksMenu(tree);
 
-    for (auto i = savedSubnets.begin(); i != savedSubnets.end(); ++i)
-    {
-      auto subnet = new QTreeWidgetItem();
-      subnet->setText(0, i.key());
-      subnet->setToolTip(0, i.value().toString());
-      subnet->setFlags(subnet->flags() | Qt::ItemIsEditable);
-      subnet->setTextColor(0, CLIPBOARD_COLOR);
-      savedSubnetworks->addChild(subnet);
-    }
-  }
 
   void addClipboardHistoryMenu(QTreeWidget* tree)
   {
@@ -1226,7 +1213,6 @@ namespace {
     if (copy->textColor(0) == CLIPBOARD_COLOR)
     {
       copy->setFlags(copy->flags() | Qt::ItemIsEditable);
-
     }
     faves->addChild(copy);
     return copy;
@@ -1288,6 +1274,23 @@ namespace {
 
 }
 
+void SCIRunMainWindow::fillSavedSubnetworkMenu(const QMap<QString, QVariant>& savedSubnets)
+{
+	auto savedSubnetworks = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+qDebug() << "map:" << savedSubnets;
+	for (auto i = savedSubnets.begin(); i != savedSubnets.end(); ++i)
+	{
+		auto subnet = new QTreeWidgetItem();
+		subnet->setText(0, i.key());
+		subnet->setToolTip(0, i.value().toString());
+		subnet->setFlags(subnet->flags() | Qt::ItemIsEditable);
+		subnet->setTextColor(0, CLIPBOARD_COLOR);
+		savedSubnetworks->addChild(subnet);
+		//TODO: crashes
+		//setupSubnetItem(subnet);
+	}
+}
+
 void SCIRunMainWindow::fillModuleSelector()
 {
   moduleSelectorTreeWidget_->clear();
@@ -1297,7 +1300,7 @@ void SCIRunMainWindow::fillModuleSelector()
   addFavoriteMenu(moduleSelectorTreeWidget_);
 	addSnippetMenu(moduleSelectorTreeWidget_);
 	addSavedSubnetworkMenu(moduleSelectorTreeWidget_);
-  fillSavedSubnetworkMenu(moduleSelectorTreeWidget_, savedSubnetworks_);
+  fillSavedSubnetworkMenu(savedSubnetworks_);
 	addClipboardHistoryMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
   sortFavorites(moduleSelectorTreeWidget_);
@@ -1315,6 +1318,45 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->setStyleSheet(
     "QTreeWidget::indicator:unchecked {image: url(:/general/Resources/faveNo.png);}"
     "QTreeWidget::indicator:checked {image: url(:/general/Resources/faveYes.png);}");
+}
+
+void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave)
+{
+  auto dualPushButtons = new QWidget();
+  auto hLayout = new QHBoxLayout();
+  auto delButton = new QToolButton();
+
+  delButton->setIcon(QPixmap(":/general/Resources/delete_red.png"));
+  delButton->setToolTip("Delete");
+qDebug() << 1;
+	QString addressString;
+	QTextStream addressStream(&addressString);
+	addressStream << static_cast<const void*>(fave);
+	addressStream.flush();
+qDebug() << 2;
+	delButton->setProperty("ID", addressString);
+  connect(delButton, SIGNAL(clicked()), this, SLOT(removeSavedSubnetwork()));
+  auto renButton = new QToolButton();
+  renButton->setIcon(QPixmap(":/general/Resources/rename.ico"));
+  renButton->setToolTip("Rename");
+  auto name = new QLabel(fave->text(0));
+  name->setStyleSheet("QLabel { color : " + fave->textColor(0).name() + "; }");
+  hLayout->addWidget(name);
+  hLayout->addWidget(delButton);
+  hLayout->addWidget(renButton);
+  dualPushButtons->setLayout(hLayout);
+	qDebug() << 3 << fave->text(0);
+#ifdef WIN32
+int subnetHeight = 28;
+#else
+int subnetHeight = 35;
+#endif
+  dualPushButtons->setMaximumHeight(subnetHeight);
+	qDebug() << 3.1;
+	fave->setData(0, Qt::UserRole, addressString);
+	qDebug() << 3.2;
+  moduleSelectorTreeWidget_->setItemWidget(fave, 0, dualPushButtons);
+	qDebug() << 4;
 }
 
 void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int column)
@@ -1336,38 +1378,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
         else
         {
           savedSubnetworks_[item->text(0)] = item->toolTip(0);
-
-          auto dualPushButtons = new QWidget();
-          auto hLayout = new QHBoxLayout();
-          auto delButton = new QToolButton();
-          //delButton->setText("Delete");
-          delButton->setIcon(QPixmap(":/general/Resources/delete_red.png"));
-          delButton->setToolTip("Delete");
-
-					QString addressString;
-					QTextStream addressStream(&addressString);
-					addressStream << static_cast<const void*>(fave);
-					addressStream.flush();
-
-					delButton->setProperty("ID", addressString);
-          connect(delButton, SIGNAL(clicked()), this, SLOT(removeSavedSubnetwork()));
-          auto renButton = new QToolButton();
-          renButton->setIcon(QPixmap(":/general/Resources/rename.ico"));
-          renButton->setToolTip("Rename");
-          auto name = new QLabel(fave->text(0));
-          name->setStyleSheet("QLabel { color : " + fave->textColor(0).name() + "; }");
-          hLayout->addWidget(name);
-          hLayout->addWidget(delButton);
-          hLayout->addWidget(renButton);
-          dualPushButtons->setLayout(hLayout);
-#ifdef WIN32
-	int subnetHeight = 28;
-#else
-	int subnetHeight = 35;
-#endif
-          dualPushButtons->setMaximumHeight(subnetHeight);
-					fave->setData(0, Qt::UserRole, addressString);
-          moduleSelectorTreeWidget_->setItemWidget(fave, 0, dualPushButtons);
+					setupSubnetItem(fave);
         }
       }
     }
@@ -1389,13 +1400,11 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
 
 void SCIRunMainWindow::removeSavedSubnetwork()
 {
-  qDebug() << "TODO removesavedsubnet. ID:" << sender()->property("ID").toString();
 	auto toDelete = sender()->property("ID").toString();
 	auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
 	for (int i = 0; i < tree->childCount(); ++i)
 	{
 		auto subnet = tree->child(i);
-		qDebug() << subnet << subnet->text(0) << toDelete << subnet->data(0, Qt::UserRole);
 		if (toDelete == subnet->data(0, Qt::UserRole).toString())
 		{
 			delete tree->takeChild(i);
