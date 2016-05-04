@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+#ifdef BUILD_WITH_PYTHON
 #include <Modules/Python/PythonObjectForwarder.h>
 
 
@@ -61,3 +61,4 @@ void PythonObjectForwarder::execute()
   impl.waitForOutputFromTransientState(Parameters::PythonObject.name(), PythonString, PythonMatrix, PythonField);
 }
 
+#endif

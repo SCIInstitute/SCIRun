@@ -134,6 +134,7 @@ namespace Algorithms {
   }
 
   SCISHARE std::vector<std::string> toStringVector(const Variable::List& list);
+  SCISHARE std::vector<std::string> toNameVector(const Variable::List& list);
   SCISHARE std::vector<double> toDoubleVector(const Variable::List& list);
 
   typedef Variable AlgorithmParameter;
