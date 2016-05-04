@@ -132,7 +132,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
 
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
-  QWidgetAction* moduleSearchAction = new QWidgetAction(this);
+  auto moduleSearchAction = new QWidgetAction(this);
   moduleSearchAction->setDefaultWidget(new QLineEdit(this));
 
 #if 0
@@ -154,7 +154,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
 
   setActionIcons();
 
-  QToolBar* standardBar = addToolBar("Standard");
+  auto standardBar = addToolBar("Standard");
 	WidgetStyleMixin::toolbarStyle(standardBar);
   standardBar->setObjectName("StandardToolBar");
   standardBar->addAction(actionNew_);
@@ -179,7 +179,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   standardBar->addAction(actionToggleTagLayer_);
   //setUnifiedTitleAndToolBarOnMac(true);
 
-  QToolBar* executeBar = addToolBar(tr("&Execute"));
+  auto executeBar = addToolBar(tr("&Execute"));
   executeBar->setObjectName("ExecuteToolBar");
 
 	executeButton_ = new QToolButton;
@@ -1181,8 +1181,6 @@ namespace {
     addSnippet("[ReadField*->ReportFieldInfo]", snips);
     addSnippet("[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]", snips);
     addSnippet("[GetFieldBoundary->FairMesh->ShowField]", snips);
-    //TODO coming later, with grammar
-		//addSnippet("[CreateLatVol->(CreateStandardColorMap->RescaleColorMap->ShowField)->ViewScene]", snips);
 
 	  readCustomSnippets(snips);
 
@@ -1220,14 +1218,18 @@ namespace {
     tree->addTopLevelItem(clips);
   }
 
-  void addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
+  QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
   {
     LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
     auto copy = new QTreeWidgetItem(*module);
     copy->setData(0, Qt::CheckStateRole, QVariant());
     if (copy->textColor(0) == CLIPBOARD_COLOR)
+    {
       copy->setFlags(copy->flags() | Qt::ItemIsEditable);
+      
+    }
     faves->addChild(copy);
+    return copy;
   }
 
   void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
@@ -1327,12 +1329,32 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
     {
       if (faves)
       {
-        addFavoriteItem(faves, item);
+        auto fave = addFavoriteItem(faves, item);
         faves->sortChildren(0, Qt::AscendingOrder);
         if (item->textColor(0) != CLIPBOARD_COLOR)
           favoriteModuleNames_ << item->text(0);
         else
+        {
           savedSubnetworks_[item->text(0)] = item->toolTip(0);
+
+          auto dualPushButtons = new QWidget();
+          auto hLayout = new QHBoxLayout();
+          auto delButton = new QToolButton();
+          //delButton->setText("Delete");
+          delButton->setIcon(QPixmap(":/general/Resources/delete_red.png"));
+          delButton->setToolTip("Delete");
+          auto renButton = new QToolButton();
+          renButton->setIcon(QPixmap(":/general/Resources/rename.ico"));
+          auto name = new QLabel(fave->text(0));
+          name->setStyleSheet("QLabel { color : " + fave->textColor(0).name() + "; }"); 
+          hLayout->addWidget(name);
+          hLayout->addWidget(delButton);
+          hLayout->addWidget(renButton);
+          dualPushButtons->setLayout(hLayout);
+          dualPushButtons->setMaximumHeight(25);
+
+          moduleSelectorTreeWidget_->setItemWidget(fave, 0, dualPushButtons);
+        }
       }
     }
     else
