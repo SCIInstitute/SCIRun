@@ -14,6 +14,8 @@ For more information on how to write a good [bug report](https://github.com/atom
 
 For Mac crash bugs, please *DO NOT* paste an entire MacOS crash report here. Edit it down to just the stack trace of the thread that crashed, along with the general system info on the top.
 
+**In all bug cases, some combination of screenshots, sample network(s), and input data should be attached. You can use any cloud storage links you want for networks and data.**
+
 ### Steps to Reproduce
 
 1. [First Step]
