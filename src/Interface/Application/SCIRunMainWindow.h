@@ -145,7 +145,7 @@ private:
   void setupVersionButton();
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
-  void setupSubnetItem(QTreeWidgetItem* fave);
+  void setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, const QString& idFromMap);
   void showStatusMessage(const QString& str);
   void showStatusMessage(const QString& str, int timeInMsec);
 
