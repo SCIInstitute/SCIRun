@@ -116,7 +116,8 @@ private:
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
-  QMap<QString, QVariant> savedSubnetworks_;
+  QMap<QString, QVariant> savedSubnetworksXml_;
+  QMap<QString, QVariant> savedSubnetworksNames_;
   QToolButton* executeButton_;
   QByteArray windowState_;
   QPushButton* versionButton_;
