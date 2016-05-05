@@ -45,13 +45,3 @@ InsertVoltageSourceDialog::InsertVoltageSourceDialog(const std::string& name, Mo
   addCheckBoxManager(outsideCheckBox_, Parameters::InterpolateOutside);
   addCheckBoxManager(groundfirstCheckBox_, Parameters::GroundFirst);
 }
-
-void InsertVoltageSourceDialog::updateFromPortChange(int numPorts, const std::string&)
-{
-
-}
-
-void InsertVoltageSourceDialog::pullSpecial()
-{
-
-}

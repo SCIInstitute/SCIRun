@@ -31,7 +31,6 @@
 #include <boost/thread.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/foreach.hpp>
@@ -73,7 +72,7 @@ namespace
 
 Variable::Variable(const Name& name, const Value& value) : name_(name)
 {
-  setValue(value);
+  Variable::setValue(value);
 }
 
 void Variable::setValue(const Value& val)
@@ -87,7 +86,7 @@ void Variable::setValue(const Value& val)
       {
         // TODO #787
         // loop through all paths in path list, checking if file in each dir; if one found replace and return
-        if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDir().string(), AlgorithmParameterHelper::dataDirPlaceholder()))
+        if (replaceSubstring(stringPath, AlgorithmParameterHelper::dataDir().string(), AlgorithmParameterHelper::dataDirPlaceholder()))
         {
           value_ = stringPath;
           return;
@@ -95,7 +94,7 @@ void Variable::setValue(const Value& val)
 
         for (const auto& path : AlgorithmParameterHelper::dataPath())
         {
-          if (SCIRun::Core::replaceSubstring(stringPath, path.string(), AlgorithmParameterHelper::dataDirPlaceholder()))
+          if (replaceSubstring(stringPath, path.string(), AlgorithmParameterHelper::dataDirPlaceholder()))
           {
             value_ = stringPath;
             return;
@@ -120,7 +119,7 @@ void Variable::setValue(const Value& val)
 
 int AlgorithmParameter::toInt() const
 {
-  const int* v = boost::get<int>(&value_);
+  auto v = boost::get<int>(&value_);
   return v ? *v : 0;
 }
 
@@ -130,19 +129,13 @@ double AlgorithmParameter::toDouble() const
   if (nanString == stringValue)
     return std::numeric_limits<double>::quiet_NaN();
 
-  const double* v = boost::get<double>(&value_);
+  auto v = boost::get<double>(&value_);
   return v ? *v : toInt();
-}
-
-std::vector<double> AlgorithmParameter::toDoubleVector() const
-{
-  const std::vector<double>* v = boost::get<std::vector<double>>(&value_);
-  return v ? *v : std::vector<double>();
 }
 
 std::string AlgorithmParameter::toString() const
 {
-  const std::string* v = boost::get<std::string>(&value_);
+  auto v = boost::get<std::string>(&value_);
   return v ? *v : "";
 }
 
@@ -185,19 +178,19 @@ boost::filesystem::path AlgorithmParameter::toFilename() const
 
 bool AlgorithmParameter::toBool() const
 {
-  const bool* v = boost::get<bool>(&value_);
+  auto v = boost::get<bool>(&value_);
   return v ? *v : (toInt() != 0);
 }
 
 AlgoOption AlgorithmParameter::toOption() const
 {
-  const AlgoOption* opt = boost::get<AlgoOption>(&value_);
+  auto opt = boost::get<AlgoOption>(&value_);
   return opt ? *opt : AlgoOption();
 }
 
 std::vector<Variable> AlgorithmParameter::toVector() const
 {
-  const std::vector<Variable>* v = boost::get<std::vector<Variable>>(&value_);
+  auto v = boost::get<std::vector<Variable>>(&value_);
   return v ? *v : std::vector<Variable>();
 }
 
@@ -327,27 +320,27 @@ ScopedAlgorithmStatusReporter::~ScopedAlgorithmStatusReporter()
 
 DatatypeHandle& AlgorithmData::operator[](const Name& name)
 {
-  std::vector<DatatypeHandle>& vec = data_[name];
+  auto& vec = data_[name];
   if (vec.empty())
     vec.resize(1);
   return vec[0];
 }
 
-void AlgorithmParameterList::add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)
+void AlgorithmParameterList::addOption(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)
 {
   std::set<std::string> opts;
   boost::split(opts, options, boost::is_any_of("|"));
   parameters_[key] = AlgorithmParameter(key, AlgoOption(defval, opts));
 }
 
-bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const std::string& value)
+bool AlgorithmParameterList::setOption(const AlgorithmParameterName& key, const std::string& value)
 {
   auto paramIt = parameters_.find(key);
 
   if (paramIt == parameters_.end())
     return keyNotFoundPolicy(key);
 
-  AlgoOption param = paramIt->second.toOption();
+  auto param = paramIt->second.toOption();
 
   if (param.options_.find(value) == param.options_.end())
     BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("parameter \"" + key.name_ + "\" has no option \"" + value + "\""));
@@ -360,9 +353,10 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
 bool AlgorithmParameterList::keyNotFoundPolicy(const AlgorithmParameterName& key) const
 {
   BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("Algorithm has no parameter/option with name " + key.name_));
+  return false;
 }
 
-bool AlgorithmParameterList::get_option(const AlgorithmParameterName& key, std::string& value) const
+bool AlgorithmParameterList::getOption(const AlgorithmParameterName& key, std::string& value) const
 {
   auto paramIt = parameters_.find(key);
 
@@ -373,17 +367,17 @@ bool AlgorithmParameterList::get_option(const AlgorithmParameterName& key, std::
   return true;
 }
 
-std::string AlgorithmParameterList::get_option(const AlgorithmParameterName& key) const
+std::string AlgorithmParameterList::getOption(const AlgorithmParameterName& key) const
 {
   std::string value;
-  get_option(key, value);
+  getOption(key, value);
   return value;
 }
 
-bool AlgorithmParameterList::check_option(const AlgorithmParameterName& key, const std::string& value) const
+bool AlgorithmParameterList::checkOption(const AlgorithmParameterName& key, const std::string& value) const
 {
   std::string currentValue;
-  get_option(key, currentValue);
+  getOption(key, currentValue);
   return boost::iequals(value, currentValue);
 }
 
@@ -414,7 +408,7 @@ AlgoInputBuilder::AlgoInputBuilder() {}
 
 AlgoInputBuilder& AlgoInputBuilder::operator()(const std::string& name, DatatypeHandle d)
 {
-  std::vector<DatatypeHandle>& vec = map_[Name(name)];
+  auto& vec = map_[Name(name)];
   if (vec.empty())
     vec.push_back(d);
   else
@@ -458,3 +452,13 @@ std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Vari
 }
 
 AlgorithmCollaborator::~AlgorithmCollaborator() {}
+
+std::vector<std::string> Core::Algorithms::toStringVector(const Variable::List& list)
+{
+  return toTypedVector<std::string>(list, [](const Variable& v) { return v.toString(); });
+}
+
+std::vector<double> Core::Algorithms::toDoubleVector(const Variable::List& list)
+{
+  return toTypedVector<double>(list, [](const Variable& v) { return v.toDouble(); });
+}

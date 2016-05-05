@@ -28,7 +28,6 @@
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Dataflow/Network/Network.h>
-#include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
 
 #include <Modules/Factory/HardCodedModuleFactory.h>
@@ -44,6 +43,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
+#include <Dataflow/Network/SimpleSourceSink.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -63,30 +63,36 @@ class StubbedDatatypeSink : public DatatypeSinkInterface
 {
 public:
   virtual bool hasData() const { return true; }
-  virtual void setHasData(bool dataPresent) {}
-  virtual void waitForData() {}
+  virtual void setHasData(bool) {}
+  virtual void waitForData() override {}
 
-  virtual DatatypeHandleOption receive() { return data_; }
-  virtual DatatypeSinkInterface* clone() const { return new StubbedDatatypeSink; }
-  virtual bool hasChanged() const { return true; }
+  virtual DatatypeHandleOption receive() override { return data_; }
+  virtual DatatypeSinkInterface* clone() const override { return new StubbedDatatypeSink; }
+  virtual bool hasChanged() const override { return true; }
 
   void setData(DatatypeHandleOption data) { data_ = data; }
-  virtual void invalidateProvider() {}
+  virtual void invalidateProvider() override {}
 
-  virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber) { return boost::signals2::connection(); }
+  virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type&) override { return {}; }
 private:
   DatatypeHandleOption data_;
+};
+
+class TestSimpleSource : public SimpleSource
+{
+public:
+  DatatypeHandle getDataForTesting() const { return data_; }
 };
 
 class MockAlgorithmFactory : public AlgorithmFactory
 {
 public:
   explicit MockAlgorithmFactory(bool verbose) : verbose_(verbose) {}
-  virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const
+  virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator*) const override
   {
     if (verbose_)
       std::cout << "Creating mock algorithm named: " << name << std::endl;
-    return AlgorithmHandle(new NiceMock<MockAlgorithm>);
+    return boost::make_shared<NiceMock<MockAlgorithm>>();
   }
 private:
   bool verbose_;
@@ -100,6 +106,7 @@ ModuleTestBase::ModuleTestBase() : factory_(new HardCodedModuleFactory)
 void ModuleTestBase::initModuleParameters(bool verbose)
 {
   Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
+  Module::Builder::use_source_type(boost::factory<TestSimpleSource*>());
   Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory(verbose));
   DefaultValue<AlgorithmParameterName>::Set(AlgorithmParameterName());
   DefaultValue<AlgorithmParameter>::Set(AlgorithmParameter());
@@ -120,8 +127,8 @@ void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, 
   {
     auto iport = module->inputPorts()[portNum];
     if (iport->nconnections() > 0)
-      iport->detach(0);
-    iport->attach(0);
+      iport->detach(nullptr);
+    iport->attach(nullptr);
     if (iport->isDynamic())
     {
       Module::Builder builder;
@@ -137,10 +144,9 @@ DatatypeHandle ModuleTestBase::getDataOnThisOutputPort(ModuleHandle module, size
   if (portNum < module->num_output_ports())
   {
     auto oport = module->outputPorts()[portNum];
-    //TODO: need a way to grab output values
-   // return dynamic_cast<StubbedDatatypeSink*>(oport->source().get())->getData();
+    return boost::dynamic_pointer_cast<TestSimpleSource>(oport->source())->getDataForTesting();
   }
-  return DatatypeHandle();
+  return nullptr;
 }
 
 void ModuleTestBase::connectDummyOutputConnection(Dataflow::Networks::ModuleHandle module, size_t portNum)
@@ -148,26 +154,8 @@ void ModuleTestBase::connectDummyOutputConnection(Dataflow::Networks::ModuleHand
   if (portNum < module->num_output_ports())
   {
     auto oport = module->outputPorts()[portNum];
-    oport->attach(0);
+    oport->attach(nullptr);
   }
-}
-
-FieldHandle SCIRun::Testing::CreateEmptyLatVol()
-{
-  size_type sizex = 3, sizey = 4, sizez = 5;
-  return CreateEmptyLatVol(sizex, sizey, sizez);
-}
-
-FieldHandle SCIRun::Testing::CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez)
-{
-  FieldInformation lfi("LatVolMesh", 1, "double");
-
-  Point minb(-1.0, -1.0, -1.0);
-  Point maxb(1.0, 1.0, 1.0);
-  MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
-  FieldHandle ofh = CreateField(lfi, mesh);
-  ofh->vfield()->clear_all_values();
-  return ofh;
 }
 
 UseRealAlgorithmFactory::UseRealAlgorithmFactory()

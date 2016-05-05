@@ -66,12 +66,14 @@ namespace Gui {
   class QuitAfterExecuteCommandGui : public Core::Commands::GuiCommand
   {
   public:
+    QuitAfterExecuteCommandGui();
     virtual bool execute() override;
   };
 
   class QuitCommandGui : public Core::Commands::GuiCommand
   {
   public:
+    QuitCommandGui();
     virtual bool execute() override;
   };
 

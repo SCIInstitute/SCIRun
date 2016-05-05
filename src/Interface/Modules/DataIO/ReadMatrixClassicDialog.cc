@@ -50,11 +50,17 @@ ReadMatrixClassicDialog::ReadMatrixClassicDialog(const std::string& name, Module
   //addLineEditManager() TODO: investigate these other signals with lineedit.
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+  WidgetStyleMixin::setStateVarTooltipWithStyle(fileNameLineEdit_, Variables::Filename.name());
+  WidgetStyleMixin::setStateVarTooltipWithStyle(this, Variables::FileTypeName.name());
+  WidgetStyleMixin::setStateVarTooltipWithStyle(openFileButton_, Variables::FileTypeName.name());
+  WidgetStyleMixin::tabStyle(tabWidget);
+  addLineEditManager(scriptInputLineEdit_, Variables::ScriptEnvironmentVariable);
 }
 
 void ReadMatrixClassicDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
+  selectedFilter_ = QString::fromStdString(state_->getValue(Variables::FileTypeName).toString());
 }
 
 void ReadMatrixClassicDialog::pushFileNameToState()

@@ -60,7 +60,7 @@ namespace Math {
 
     Outputs run(const Inputs& inputs, const Parameters& params) const;
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
   };
 
 }}}}

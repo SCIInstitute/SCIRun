@@ -240,13 +240,18 @@ PythonInterpreter::~PythonInterpreter()
 	//Py_Finalize();
 }
 
-//#define PRINT_PY_INIT_DEBUG(n) std::cout << "ev_" << (n) << std::endl;
+//#define PRINT_PY_INIT_DEBUG(n) std::cout << "ev " << (n) << std::endl;
 #define PRINT_PY_INIT_DEBUG(n)
 
 bool isOSXSCIRunTestExecutable(const std::string& commandLine)
 {
   const std::string TEST_EXECUTABLE_NAME = "SCIRun_test";
-  return 0 == boost::filesystem::path(commandLine).stem().string().compare(0, TEST_EXECUTABLE_NAME.size(), TEST_EXECUTABLE_NAME);
+  const std::string UNIT_TEST_EXECUTABLE_NAME = "Engine_Python_Tests";
+  return commandLine.find(TEST_EXECUTABLE_NAME) != std::string::npos
+    || commandLine.find(UNIT_TEST_EXECUTABLE_NAME) != std::string::npos;
+  //TODO: this version is bugged if the test network name starts with a relative path: stem() returns the network name, not the executable name.
+  //the full command line isn't normally a valid path object anyway.
+  //  return 0 == boost::filesystem::path(commandLine).stem().string().compare(0, TEST_EXECUTABLE_NAME.size(), TEST_EXECUTABLE_NAME);
 }
 
 void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, const boost::filesystem::path& libPath)
@@ -284,8 +289,14 @@ void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, 
   boost::filesystem::path lib_path = libPath.parent_path();
   std::vector<boost::filesystem::path> lib_path_list;
   // relative paths
+  PRINT_PY_INIT_DEBUG(lib_path);
+  PRINT_PY_INIT_DEBUG(boost::filesystem::path(PYTHONPATH));
   lib_path_list.push_back(lib_path.parent_path() / boost::filesystem::path("Frameworks") / PYTHONPATH);
+  PRINT_PY_INIT_DEBUG(lib_path_list.back());
   lib_path_list.push_back(lib_path / PYTHONPATH);
+  PRINT_PY_INIT_DEBUG(lib_path_list.back());
+  lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
+  PRINT_PY_INIT_DEBUG(lib_path_list.back());
 
   if (isOSXSCIRunTestExecutable(commandLine))
   {
@@ -418,7 +429,11 @@ void PythonInterpreter::initialize(bool needProgramName, const std::string& comm
   initialize_eventhandler(commandLine, libPath);
 
   {
-    auto out = [](const std::string& s) { std::cout << "[PYTHON] " << s << std::endl; };
+    auto out = [](const std::string& s)
+    {
+      if (!std::all_of(s.begin(), s.end(), isspace))
+        std::cout << "[PYTHON] " << s << std::endl;
+    };
     auto error = [](const std::string& s) { std::cerr << "[PYTHON ERROR] " << s << std::endl; };
     output_signal_.connect(out);
     error_signal_.connect(error);
@@ -427,8 +442,6 @@ void PythonInterpreter::initialize(bool needProgramName, const std::string& comm
   //this->private_->thread_condition_variable_.wait( lock );
   this->private_->initialized_ = true;
   //std::cerr << "Python initialized." << std::endl;
-
-  std::cerr << "Python initialized." << std::endl;
 }
 
 void PythonInterpreter::print_banner()
@@ -553,7 +566,7 @@ void PythonInterpreter::run_script( const std::string& script )
 	//}
 
 	// Output the script to the console
-	this->output_signal_( "Running script ...\n" );
+	//this->output_signal_( "Running script ...\n" );
 
 	// Clear any previous Python errors.
 	PyErr_Clear();
@@ -629,6 +642,10 @@ void PythonInterpreter::run_file( const std::string& file_name )
   if (fp2)
   {
     PyRun_SimpleFile(fp2, file);
+  }
+  else
+  {
+    this->error_signal_("Could not load python file: " + file_name);
   }
 }
 

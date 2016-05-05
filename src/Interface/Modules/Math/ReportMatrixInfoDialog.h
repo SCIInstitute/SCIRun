@@ -43,9 +43,9 @@ class SCISHARE ReportMatrixInfoDialog : public ModuleDialogGeneric,
 
 public:
   ReportMatrixInfoDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void moduleExecuted() { pullAndDisplayInfo(); }
+    Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
 private Q_SLOTS:
   void pullAndDisplayInfo();
 };

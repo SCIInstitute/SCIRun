@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Inverse;
 
 typedef SCIRun::Modules::Inverse::SolveInverseProblemWithTikhonov SolveInverseProblemWithTikhonovModule;
 
@@ -60,8 +61,8 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaSliderValue);
 
   addRadioButtonGroupManager({ autoRadioButton_, underRadioButton_, overRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovCase);
-  addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovSolutionSubcase);
-  addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovResidualSubcase);
+  addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, Parameters::TikhonovSolutionSubcase);
+  addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, Parameters::TikhonovResidualSubcase);
 
   addComboBoxManager(lambdaMethodComboBox_, SolveInverseProblemWithTikhonovModule::RegularizationMethod, lambdaMethod_);
   addTextEditManager(lCurveTextEdit_, SolveInverseProblemWithTikhonovModule::LCurveText);

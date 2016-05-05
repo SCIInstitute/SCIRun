@@ -45,7 +45,7 @@ class SCISHARE BuildMappingMatrixAlgo : public AlgorithmBase
     BuildMappingMatrixAlgo();
 
     bool runImpl(FieldHandle source, FieldHandle destination, Datatypes::MatrixHandle& output) const;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 
     static const AlgorithmOutputName Mapping;
 };

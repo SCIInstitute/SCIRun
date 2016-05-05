@@ -58,7 +58,7 @@ bool WriteMatrixModule::call_exporter(const std::string& filename)
 {
   ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   MatrixIEPluginManager mgr;
-  MatrixIEPlugin *pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).toString());
+  auto pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).toString());
   if (pl)
   {
     return pl->writeFile(handle_, filename, getLogger());
@@ -112,4 +112,10 @@ bool WriteMatrixModule::useCustomExporter(const std::string& filename) const
   return !(ft == "" ||
     ft == "SCIRun Matrix Binary" ||
     ft == "SCIRun Matrix ASCII");
+}
+
+std::string WriteMatrixModule::defaultFileTypeName() const
+{
+  MatrixIEPluginManager mgr;
+  return defaultImportTypeForFile(&mgr);
 }

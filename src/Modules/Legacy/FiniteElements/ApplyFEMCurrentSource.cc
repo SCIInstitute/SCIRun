@@ -341,7 +341,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle fi
 
   double* rhs_data = rhs->data();
 
-  if (!mapping || !matrix_is::sparse(mapping))
+  if (!mapping || !matrixIs::sparse(mapping))
   {
     if (sourceNode >= nsize || sinkNode >= nsize)
     {
@@ -354,7 +354,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle fi
     return (true);
   }
 
-  SparseRowMatrixHandle sparseMapping = matrix_cast::as_sparse(mapping);
+  SparseRowMatrixHandle sparseMapping = castMatrix::toSparse(mapping);
 
   if (!source)
   {
@@ -418,7 +418,7 @@ void ApplyFEMCurrentSource::execute()
   DenseColumnMatrixHandle RHS;
   auto RHSoption = getOptionalInput(Input_RHS);
   if (RHSoption)
-    RHS = matrix_cast::as_column(*RHSoption);
+    RHS = castMatrix::toColumn(*RHSoption);
 
   if (needToExecute())
   {

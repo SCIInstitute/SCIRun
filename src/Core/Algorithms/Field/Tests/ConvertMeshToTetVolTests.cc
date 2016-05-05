@@ -70,10 +70,10 @@ TEST_F(ConvertMeshToTetVolTest, ConvertLatVolToTetVol_ScalarDataDefinedOnNodes)
   FieldHandle latVol = CreateEmptyLatVol(size, size, size, INT_E);
 
   ConvertMeshToTetVolMeshAlgo algo;
- 
+
   FieldHandle output;
   algo.run(latVol,output);
-  
+
   EXPECT_EQ(output->vmesh()->num_nodes(),1000);
   EXPECT_EQ(output->vmesh()->num_elems(),3645);
   EXPECT_EQ(output->vfield()->num_values(),1000);
@@ -84,18 +84,18 @@ TEST_F(ConvertMeshToTetVolTest, ConvertLatVolToTetVol_ScalarDataDefinedOnElement
 
   auto size=10;
   FieldHandle latVol = CreateEmptyLatVol(size, size, size, INT_E);
-  
+
   MapFieldDataFromNodeToElemAlgo algo1;
 
-  algo1.set_option(MapFieldDataFromNodeToElemAlgo::Method, "Min");
+  algo1.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Min");
 
-  FieldHandle latVol_data_on_ele = algo1.run(latVol);
+  FieldHandle latVol_data_on_ele = algo1.runImpl(latVol);
 
   ConvertMeshToTetVolMeshAlgo algo2;
- 
+
   FieldHandle output;
   algo2.run(latVol_data_on_ele,output);
-  
+
   EXPECT_EQ(output->vmesh()->num_nodes(),1000);
   EXPECT_EQ(output->vmesh()->num_elems(),3645);
   EXPECT_EQ(output->vfield()->num_values(),3645);

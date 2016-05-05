@@ -202,7 +202,7 @@ CollectMatrices::execute()
 boost::shared_ptr<CollectMatricesAlgorithmBase>
 CollectMatricesImpl::create_algo(MatrixHandle aH, MatrixHandle bH) const
 {
-  if (matrix_is::sparse(aH) && matrix_is::sparse(bH))
+  if (matrixIs::sparse(aH) && matrixIs::sparse(bH))
     return boost::make_shared<CollectSparseRowMatricesAlgorithm>();
   else
     return boost::make_shared<CollectDenseMatricesAlgorithm>();

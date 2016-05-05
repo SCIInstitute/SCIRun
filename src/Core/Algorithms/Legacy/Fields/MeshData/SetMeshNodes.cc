@@ -106,7 +106,7 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
 AlgorithmInputName SetMeshNodesAlgo::MatrixNodes("MatrixNodes");
 AlgorithmOutputName SetMeshNodesAlgo::OutputField("OutputField");
 
-AlgorithmOutput SetMeshNodesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetMeshNodesAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
   auto nodes = input.get<DenseMatrix>(MatrixNodes);

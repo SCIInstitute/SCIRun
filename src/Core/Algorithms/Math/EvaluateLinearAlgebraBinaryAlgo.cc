@@ -89,7 +89,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   {
     // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result. 
     // There's no way to know ahead of time, so I'll just throw an error here and require the user to do this type of math elsewhere.
-    if (matrix_is::sparse(lhs) || matrix_is::sparse(rhs))
+    if (matrixIs::sparse(lhs) || matrixIs::sparse(rhs))
     {
       if ((lhs->nrows() * lhs->ncols() > 10000) || (rhs->nrows() * rhs->ncols() > 10000))
         THROW_ALGORITHM_INPUT_ERROR("ArrayMathEngine needs overhaul to be used with large sparse inputs. See https://github.com/SCIInstitute/SCIRun/issues/482");
@@ -111,14 +111,14 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
 
     //bad API: how does it know what type/size the output matrix should be? Here are my guesses:
     MatrixHandle omatrix;
-    if (matrix_is::sparse(lhs))
+    if (matrixIs::sparse(lhs))
       omatrix.reset(lhs->clone());
-    else if (matrix_is::sparse(rhs))
+    else if (matrixIs::sparse(rhs))
       omatrix.reset(rhs->clone());
-    else if (matrix_is::dense(lhs) && matrix_is::dense(rhs))
+    else if (matrixIs::dense(lhs) && matrixIs::dense(rhs))
       omatrix.reset(lhs->clone());
     else
-      omatrix = matrix_convert::to_sparse(lhs);
+      omatrix = convertMatrix::toSparse(lhs);
 
     if (!(engine.add_output_fullmatrix("RESULT", omatrix)))
       THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
@@ -135,7 +135,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   return result;
 }
 
-AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run(const AlgorithmInput& input) const
 {
   auto LHS = input.get<Matrix>(Variables::LHS);
   auto RHS = input.get<Matrix>(Variables::RHS);

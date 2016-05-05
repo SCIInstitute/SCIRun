@@ -89,7 +89,7 @@ bool ParallelLinearAlgebra::add_vector(DenseColumnMatrixHandle mat, ParallelVect
   if (!mat) { return (false); }
   if (mat->ncols() != 1)  { return (false); }
   if (mat->nrows() != size_) { return (false); }
-  if (matrix_is::sparse(mat)) { return (false); }
+  if (matrixIs::sparse(mat)) { return (false); }
 
   V.data_ = mat->data();
   V.size_ = size_;

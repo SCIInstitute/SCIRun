@@ -32,7 +32,6 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 
@@ -45,7 +44,7 @@ namespace
 {
   DenseMatrixHandle matrix1Dense()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3, 4));
+    auto m(boost::make_shared<DenseMatrix>(3, 4));
     for (int i = 0; i < m->rows(); ++ i)
       for (int j = 0; j < m->cols(); ++ j)
         (*m)(i, j) = 3.0 * i + j - 5;
@@ -53,7 +52,7 @@ namespace
   }
   SparseRowMatrixHandle matrix1Sparse() 
   {
-    SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(5,5));
+    auto m(boost::make_shared<SparseRowMatrix>(5,5));
     m->insert(0,0) = 1;
     m->insert(1,2) = -1;
     m->insert(4,4) = 2;
@@ -63,7 +62,7 @@ namespace
   }
   DenseColumnMatrixHandle matrix1DenseColumn()
   {
-    DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(4));
+    auto m(boost::make_shared<DenseColumnMatrix>(4));
     m -> setZero();
     *m << 1,2,3,4; 
     return m;
@@ -75,13 +74,13 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsMatrixType)
   ReportMatrixInfoAlgorithm algo;
 
   MatrixHandle m(matrix1Dense());
-  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+  auto result = algo.runImpl(m);
   EXPECT_EQ("DenseMatrix", result.get<0>());
   m = matrix1Sparse();
-  result = algo.run(m);
+  result = algo.runImpl(m);
   EXPECT_EQ("SparseRowMatrix", result.get<0>());
   m = matrix1DenseColumn(); 
-  result = algo.run(m);
+  result = algo.runImpl(m);
   EXPECT_EQ("DenseColumnMatrix", result.get<0>());
 }
 
@@ -90,7 +89,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsRowAndColumnCount)
   ReportMatrixInfoAlgorithm algo;
 
   MatrixHandle m(matrix1Dense());
-  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+  auto result = algo.runImpl(m);
   EXPECT_EQ(3, result.get<1>());
   EXPECT_EQ(4, result.get<2>());
 }
@@ -100,7 +99,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsNumberOfElements)
   ReportMatrixInfoAlgorithm algo;
 
   MatrixHandle m(matrix1Dense());
-  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+  auto result = algo.runImpl(m);
   
   EXPECT_EQ(12, result.get<3>());
 }
@@ -110,7 +109,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsNumberOfNonzeroElementsForSparse)
   ReportMatrixInfoAlgorithm algo;
 
   MatrixHandle m(matrix1Sparse());
-  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+  auto result = algo.runImpl(m);
 
   EXPECT_EQ(3, result.get<3>());
 }
@@ -120,11 +119,11 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsMinimumAndMaximum)
   ReportMatrixInfoAlgorithm algo;
 
   MatrixHandle m(matrix1Dense());
-  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+  auto result = algo.runImpl(m);
   EXPECT_EQ(-5, result.get<4>());
   EXPECT_EQ(4, result.get<5>());
   m = matrix1Sparse();
-  result = algo.run(m);
+  result = algo.runImpl(m);
   EXPECT_EQ(-1, result.get<4>());
   EXPECT_EQ(2, result.get<5>());
 }
@@ -133,15 +132,15 @@ TEST(ReportMatrixInfoAlgorithmTests, NullInputThrows)
 {
   ReportMatrixInfoAlgorithm algo;
 
-  EXPECT_THROW(algo.run(DenseMatrixHandle()), AlgorithmInputException);
+  EXPECT_THROW(algo.runImpl(DenseMatrixHandle()), AlgorithmInputException);
 }
 
 TEST(ReportMatrixInfoAlgorithmTests, EmptyInputDoesNotThrow)
 {
   ReportMatrixInfoAlgorithm algo;
-  DenseMatrixHandle empty(boost::make_shared<DenseMatrix>());
+  auto empty(boost::make_shared<DenseMatrix>());
 
-  auto result = algo.run(empty);
+  auto result = algo.runImpl(empty);
   EXPECT_EQ(0, result.get<1>());
   EXPECT_EQ(0, result.get<2>());
   EXPECT_EQ(0, result.get<3>());

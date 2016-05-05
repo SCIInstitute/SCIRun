@@ -37,7 +37,7 @@ class ReadNrrdTests : public ModuleTest
 {
 };
 
-TEST_F(ReadNrrdTests, CanCreate)
+TEST_F(ReadNrrdTests, DISABLED_CanCreate)
 {
   auto rn = makeModule("ReadNrrd");
 

@@ -48,6 +48,8 @@ namespace SCIRun {
         virtual bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, FieldToWrite, LegacyField);
+      protected:
+        virtual std::string defaultFileTypeName() const override;
       };
 
     }}}

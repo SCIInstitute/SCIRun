@@ -40,7 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-ModuleLookupInfo FairMesh::staticInfo_("FairMesh", "NewField", "SCIRun");
+const ModuleLookupInfo FairMesh::staticInfo_("FairMesh", "NewField", "SCIRun");
 
 FairMesh::FairMesh() : 
   Module(staticInfo_)
@@ -63,11 +63,6 @@ void FairMesh::execute()
 {
   auto input = getRequiredInput(Input_Mesh);
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (inputs_changed_ || iterations_.changed() ||
-      method_.changed() || lambda_.changed() ||
-      mu_.changed() || !oport_cached("Faired Mesh"))
-#endif
   if (needToExecute())
   {
     update_state(Executing);
@@ -77,7 +72,7 @@ void FairMesh::execute()
     setAlgoDoubleFromState(Parameters::FilterCutoff);
     setAlgoOptionFromState(Parameters::FairMeshMethod);
 
-    auto output = algo().run_generic(withInputData((Input_Mesh, input)));
+    auto output = algo().run(withInputData((Input_Mesh, input)));
 
     sendOutputFromAlgorithm(Faired_Mesh, output);
   }

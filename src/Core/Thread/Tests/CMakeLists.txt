@@ -36,6 +36,7 @@ SCIRUN_ADD_UNIT_TEST(Core_Thread_Tests
 
 TARGET_LINK_LIBRARIES(Core_Thread_Tests
   Core_Thread
+  Testing_Utils
   gtest_main
   gtest
   gmock

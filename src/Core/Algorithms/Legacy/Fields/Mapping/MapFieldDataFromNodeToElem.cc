@@ -57,7 +57,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
   /// Get the method the user selected.
   /// Since we do a check of valid entries when then user sets the
   /// algorithm, we can assume it is one of the specified ones
-   std::string method = algo->get_option(MapFieldDataFromNodeToElemAlgo::Method);
+   std::string method = algo->getOption(MapFieldDataFromNodeToElemAlgo::Method);
   /// Get pointers to the virtual interfaces of the fields
   /// We need these to obtain the data values
 
@@ -219,17 +219,17 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
 
 MapFieldDataFromNodeToElemAlgo::MapFieldDataFromNodeToElemAlgo()
 {
-  add_option(Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
+  addOption(Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
 }
 
 AlgorithmParameterName MapFieldDataFromNodeToElemAlgo::Method("Method");
 
-AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
 
   FieldHandle output_field;
-  output_field = run(input_field);
+  output_field = runImpl(input_field);
 
   AlgorithmOutput output;
   output[Variables::OutputField] = output_field;
@@ -237,7 +237,7 @@ AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run_generic(const AlgorithmInput
   return output;
 }
 
-FieldHandle MapFieldDataFromNodeToElemAlgo::run(FieldHandle input_field) const
+FieldHandle MapFieldDataFromNodeToElemAlgo::runImpl(FieldHandle input_field) const
 {
   FieldHandle output;
 

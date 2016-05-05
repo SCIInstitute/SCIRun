@@ -87,21 +87,31 @@ bool SaveFileCommandConsole::execute()
 
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
-  std::cout << "ExecuteCurrentNetworkCommandConsole::execute()" << std::endl;
-  Application::Instance().controller()->executeAll(0);
-  std::cout << "execution done" << std::endl;
+  Application::Instance().controller()->executeAll(nullptr);
   return true;
+}
+
+QuitAfterExecuteCommandConsole::QuitAfterExecuteCommandConsole()
+{
+  addParameter(Name("RunningPython"), false);
 }
 
 bool QuitAfterExecuteCommandConsole::execute()
 {
   std::cout << "Goodbye!" << std::endl;
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ exit(code); });
   //SCIRunMainWindow::Instance()->setupQuitAfterExecute();
   return true;
 }
 
+QuitCommandConsole::QuitCommandConsole()
+{
+  addParameter(Name("RunningPython"), false);
+}
+
 bool QuitCommandConsole::execute()
 {
+  std::cout << "Exiting!" << std::endl;
   exit(0);
   return true;
 }
@@ -124,6 +134,21 @@ bool PrintModulesCommand::execute()
   return true;
 }
 
+bool InteractiveModeCommandConsole::execute()
+{
+  PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  std::string x;
+  while (x.find("quit") == std::string::npos)
+  {
+    std::cout << "scirun5> ";
+    std::getline(std::cin, x);
+    //std::cout << "x is: " << x << std::endl;
+    PythonInterpreter::Instance().run_string(x);
+  }
+  exit(0);
+  return true;
+}
+
 bool RunPythonScriptCommandConsole::execute()
 {
   auto script = Application::Instance().parameters()->pythonScriptFile();
@@ -133,8 +158,18 @@ bool RunPythonScriptCommandConsole::execute()
     std::cout << "RUNNING PYTHON SCRIPT: " << *script << std::endl;;
 
     Application::Instance().controller()->clear();
-    SCIRun::Core::PythonInterpreter::Instance().run_file(script->string());
+    PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+    PythonInterpreter::Instance().run_file(script->string());
 
+    //TODO: not sure what else to do here. Probably wait on a condition variable, or just loop forever
+    if (!Application::Instance().parameters()->interactiveMode())
+    {
+      while (true)
+      {
+        std::cout << "Running Python script." << std::endl;
+        boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+      }
+    }
     std::cout << "Done running Python script." << std::endl;
     return true;
 #else

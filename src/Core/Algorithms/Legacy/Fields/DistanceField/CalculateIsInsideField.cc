@@ -50,15 +50,15 @@ CalculateIsInsideFieldAlgo::CalculateIsInsideFieldAlgo()
 {
   // How many samples inside the elements to test for being inside the
   // object field
-  add_option(Parameters::SamplingScheme, "regular2", "regular1|regular2|regular3|regular4|regular5");
+  addOption(Parameters::SamplingScheme, "regular2", "regular1|regular2|regular3|regular4|regular5");
   // Value for inside elements
   addParameter(Parameters::InsideFieldValue, 1.0);
   // Value for outside elements
   addParameter(Parameters::OutsideFieldValue, 0.0);
   // Output type of the algorithm
-  add_option(Parameters::FieldOutputType, "same as input", "same as input|char|unsigned char|short|unsigned short|int|unsigned int|float|double");
+  addOption(Parameters::FieldOutputType, "same as input", "same as input|char|unsigned char|short|unsigned short|int|unsigned int|float|double");
   // How many nodes need to be inside to call it inside
-  add_option(Parameters::CalcInsideMethod, "all", "one|most|all");
+  addOption(Parameters::CalcInsideMethod, "all", "one|most|all");
 }
 
 bool
@@ -90,7 +90,7 @@ CalculateIsInsideFieldAlgo::runImpl(FieldHandle input, FieldHandle objfield, Fie
     return (false);
   }
 
-  std::string output_type = get_option(Parameters::FieldOutputType);
+  std::string output_type = getOption(Parameters::FieldOutputType);
 
   if (output_type != "same as input")
   {
@@ -138,14 +138,14 @@ CalculateIsInsideFieldAlgo::runImpl(FieldHandle input, FieldHandle objfield, Fie
   std::vector<VMesh::coords_type> coords;
   std::vector<double> weights;
 
-  std::string sampling_scheme = get_option(Parameters::SamplingScheme);
+  std::string sampling_scheme = getOption(Parameters::SamplingScheme);
   if (sampling_scheme == "regular1") omesh->get_regular_scheme(coords,weights,1);
   else if (sampling_scheme == "regular2") omesh->get_regular_scheme(coords,weights,2);
   else if (sampling_scheme == "regular3") omesh->get_regular_scheme(coords,weights,3);
   else if (sampling_scheme == "regular4") omesh->get_regular_scheme(coords,weights,4);
   else if (sampling_scheme == "regular5") omesh->get_regular_scheme(coords,weights,5);
 
-  std::string method = get_option(Parameters::CalcInsideMethod);
+  std::string method = getOption(Parameters::CalcInsideMethod);
 
   if (method == "one")
   {
@@ -238,7 +238,7 @@ CalculateIsInsideFieldAlgo::runImpl(FieldHandle input, FieldHandle objfield, Fie
   return (true);
 }
 
-AlgorithmOutput CalculateIsInsideFieldAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput CalculateIsInsideFieldAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
   auto objectField = input.get<Field>(Variables::ObjectField);

@@ -59,7 +59,8 @@ public:
     }
     if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock()) {
         // Load shader we will use with the coordinate axes.
-        shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/DirPhong");
+      shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/DirPhong");
+      shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/DirPhongNoClipping");
     }
 
     // Note: We don't need to strictly store the coordinate axes entity.

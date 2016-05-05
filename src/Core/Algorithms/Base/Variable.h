@@ -34,6 +34,9 @@
 #include <iosfwd>
 #include <boost/variant.hpp>
 #include <boost/filesystem/path.hpp>
+#ifndef Q_MOC_RUN
+#include <boost/iterator/counting_iterator.hpp>
+#endif
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/Name.h>
 #include <Core/Algorithms/Base/Option.h>
@@ -54,7 +57,6 @@ namespace Algorithms {
       std::string,
       bool,
       AlgoOption,
-      std::vector<double>,
       List
     > Value;
 
@@ -74,7 +76,6 @@ namespace Algorithms {
     std::string toString() const;
     boost::filesystem::path toFilename() const;
     bool toBool() const;
-    std::vector<double> toDoubleVector() const;
     List toVector() const;
     AlgoOption toOption() const;
 
@@ -94,9 +95,50 @@ namespace Algorithms {
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   SCISHARE Variable makeVariable(const std::string& name, const Variable::Value& value);
 
+  template <typename ... Ts>
+  Variable::List makeAnonymousVariableList(Ts&&... params)
+  {
+    std::vector<Variable::Value> values{params...};
+    Variable::List vars;
+    std::transform(values.begin(), values.end(), std::back_inserter(vars),
+      [](const Variable::Value& val) { return makeVariable("listElement", val); });
+    return vars;
+  }
+
+  template <typename ... Ts, size_t N>
+  Variable::List makeNamedVariableList(const Name (&namesList)[N], Ts&&... params)
+  {
+    std::vector<Variable::Value> values{ params... };
+    
+    auto namesIter = &namesList[0];
+    Variable::List vars;
+    std::transform(values.begin(), values.end(), std::back_inserter(vars),
+      [&namesIter](const Variable::Value& val) { return Variable(*namesIter++, val); });
+    return vars;
+  }
+
+  template <typename Func>
+  Variable::List makeHomogeneousVariableList(Func valueGenerator, size_t num)
+  {
+    Variable::List vars;
+    std::transform(boost::counting_iterator<size_t>(0), boost::counting_iterator<size_t>(num), std::back_inserter(vars), [valueGenerator](size_t i) { return makeVariable("", valueGenerator(i)); });
+    return vars;
+  }
+
+  template <typename T>
+  std::vector<T> toTypedVector(const Variable::List& list, std::function<T(const Variable&)> convert)
+  {
+    std::vector<T> ts;
+    std::transform(list.begin(), list.end(), std::back_inserter(ts), convert);
+    return ts;
+  }
+
+  SCISHARE std::vector<std::string> toStringVector(const Variable::List& list);
+  SCISHARE std::vector<double> toDoubleVector(const Variable::List& list);
+
   typedef Variable AlgorithmParameter;
   typedef Variable::List VariableList;
-  typedef boost::shared_ptr<Variable> VariableHandle;
+  typedef Datatypes::SharedPointer<Variable> VariableHandle;
 
 }
 

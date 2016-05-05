@@ -85,7 +85,7 @@ void ScaleFieldMeshAndData::execute()
     setAlgoDoubleFromState(Parameters::data_scale);
     setAlgoDoubleFromState(Parameters::mesh_scale);
     setAlgoBoolFromState(Parameters::scale_from_center);
-    auto output = algo().run_generic(withInputData((InputField, input)));
+    auto output = algo().run(withInputData((InputField, input)));
     sendOutputFromAlgorithm(OutputField, output);
   }
 }

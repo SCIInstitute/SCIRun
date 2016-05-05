@@ -48,8 +48,8 @@ ALGORITHM_PARAMETER_DEF(Fields, Value);
 SetFieldDataToConstantValueAlgo::SetFieldDataToConstantValueAlgo()
 {
   //! keep scalar type defines whether we convert to double or not
-  add_option(DataType, "same as input", "char|unsigned char|short|unsigned short|int|unsigned int|float|double|same as input");
-  add_option(BasisOrder, "same as input", "nodata|constant|linear|quadratic|same as input");
+  addOption(DataType, "same as input", "char|unsigned char|short|unsigned short|int|unsigned int|float|double|same as input");
+  addOption(BasisOrder, "same as input", "nodata|constant|linear|quadratic|same as input");
   addParameter(Value, 0.0);
 }
 
@@ -65,7 +65,7 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
 
   FieldInformation fi(input);
 
-  std::string data_type = get_option(DataType);
+  std::string data_type = getOption(DataType);
   if (data_type != "same as input")
   {
     fi.set_data_type_by_string(data_type);
@@ -75,7 +75,7 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
     fi.make_double();
   }
 
-  std::string basis_order = get_option(BasisOrder);
+  std::string basis_order = getOption(BasisOrder);
   if (basis_order != "same as input")
   {
     fi.set_basis_type(basis_order);
@@ -97,7 +97,7 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
   return (true);
 }
 
-AlgorithmOutput SetFieldDataToConstantValueAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetFieldDataToConstantValueAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

@@ -57,7 +57,7 @@ class SCISHARE ReportMatrixSliceMeasureAlgo : public AlgorithmBase
 
   public:
     ReportMatrixSliceMeasureAlgo();
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
 
     // Apply an operation on a row by row basis
     bool ApplyRowOperation(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int operation) const;

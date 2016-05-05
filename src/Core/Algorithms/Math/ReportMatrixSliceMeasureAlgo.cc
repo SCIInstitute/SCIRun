@@ -44,19 +44,19 @@ ReportMatrixSliceMeasureAlgo::ReportMatrixSliceMeasureAlgo()
 }
 
 
-AlgorithmOutput ReportMatrixSliceMeasureAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ReportMatrixSliceMeasureAlgo::run(const AlgorithmInput& input) const
 {
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
   AlgorithmOutput output;
   
-  if (!matrix_is::dense(input_matrix))
+  if (!matrixIs::dense(input_matrix))
   {
     //TODO implement something with sparse
     error("ReportMatrixSliceMeasure: Currently only works with dense matrices");
     output[Variables::OutputMatrix] = 0;
     return output;
   }
-  auto mat  = matrix_cast::as_dense (input_matrix);
+  auto mat  = castMatrix::toDense (input_matrix);
   
   DenseMatrixHandle return_matrix;
   
@@ -107,7 +107,7 @@ ReportMatrixSliceMeasureAlgo::ApplyRowOperation(DenseMatrixHandle input, DenseMa
   
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
  //for sparse matrices
-  if (matrix_is::sparse(input))
+  if (matrixIs::sparse(input))
   {
     index_type *rows = input->sparse()->get_rows();
     double *vals = input->sparse()->get_vals();

@@ -50,7 +50,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -171,7 +171,7 @@
 									<name>field1-name</name>
 									<value>
 										<which>2</which>
-										<value>field0</value>
+										<value>fieldsInput1</value>
 									</value>
 								</second>
 							</item>
@@ -259,7 +259,7 @@
 									<name>matrix1-name</name>
 									<value>
 										<which>2</which>
-										<value>Matrix0</value>
+										<value>matricesInput1</value>
 									</value>
 								</second>
 							</item>
@@ -347,7 +347,7 @@
 									<name>string1-name</name>
 									<value>
 										<which>2</which>
-										<value>String0</value>
+										<value>stringsInput1</value>
 									</value>
 								</second>
 							</item>
@@ -425,8 +425,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>1</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputFields:0</name>
+								</first>
+								<second>
+									<name>InputFields:0</name>
+									<value>
+										<which>2</which>
+										<value>fieldsInput1</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -441,8 +453,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>1</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputMatrices:0</name>
+								</first>
+								<second>
+									<name>InputMatrices:0</name>
+									<value>
+										<which>2</which>
+										<value>matricesInput1</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -457,8 +481,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>1</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputStrings:0</name>
+								</first>
+								<second>
+									<name>InputStrings:0</name>
+									<value>
+										<which>2</which>
+										<value>stringsInput1</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -683,92 +719,92 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-3.34000000000000000e+002</first>
-				<second>-4.60000000000000000e+002</second>
+				<first>-3.34000000000000000e+02</first>
+				<second>-4.60000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:0</first>
 			<second>
-				<first>-6.00000000000000000e+001</first>
-				<second>-4.16000000000000000e+002</second>
+				<first>-6.00000000000000000e+01</first>
+				<second>-4.16000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateString:0</first>
 			<second>
-				<first>1.52000000000000000e+002</first>
-				<second>-3.04000000000000000e+002</second>
+				<first>1.52000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldsFromBundle:1</first>
 			<second>
-				<first>-4.10000000000000000e+002</first>
-				<second>2.67000000000000000e+002</second>
+				<first>-4.10000000000000000e+02</first>
+				<second>2.67000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatricesFromBundle:1</first>
 			<second>
-				<first>-3.40000000000000000e+001</first>
-				<second>2.75000000000000000e+002</second>
+				<first>-3.40000000000000000e+01</first>
+				<second>2.75000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetStringsFromBundle:1</first>
 			<second>
-				<first>3.35000000000000000e+002</first>
-				<second>2.71000000000000000e+002</second>
+				<first>3.35000000000000000e+02</first>
+				<second>2.71000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>InsertFieldsIntoBundle:0</first>
 			<second>
-				<first>-3.80000000000000000e+002</first>
-				<second>-3.04000000000000000e+002</second>
+				<first>-3.80000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>InsertMatricesIntoBundle:0</first>
 			<second>
-				<first>0.00000000000000000e+000</first>
-				<second>-1.52000000000000000e+002</second>
+				<first>0.00000000000000000e+00</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>InsertStringsIntoBundle:0</first>
 			<second>
-				<first>-1.35000000000000000e+002</first>
-				<second>-6.20000000000000000e+001</second>
+				<first>-1.35000000000000000e+02</first>
+				<second>-6.20000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportBundleInfo:0</first>
 			<second>
-				<first>-1.11000000000000000e+002</first>
-				<second>1.48000000000000000e+002</second>
+				<first>-1.11000000000000000e+02</first>
+				<second>1.48000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:0</first>
 			<second>
-				<first>-3.84000000000000000e+002</first>
-				<second>4.11000000000000000e+002</second>
+				<first>-3.84000000000000000e+02</first>
+				<second>4.11000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:0</first>
 			<second>
-				<first>-1.80000000000000000e+001</first>
-				<second>3.99000000000000000e+002</second>
+				<first>-1.80000000000000000e+01</first>
+				<second>3.99000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportStringInfo:0</first>
 			<second>
-				<first>3.65000000000000000e+002</first>
-				<second>4.00000000000000000e+002</second>
+				<first>3.65000000000000000e+02</first>
+				<second>4.00000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>

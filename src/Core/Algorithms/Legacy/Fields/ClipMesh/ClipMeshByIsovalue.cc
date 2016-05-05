@@ -1447,7 +1447,7 @@ AlgorithmOutputName ClipMeshByIsovalueAlgo::OutputField("OutputField");
 AlgorithmParameterName ClipMeshByIsovalueAlgo::LessThanIsoValue("LessThanIsoValue");
 AlgorithmParameterName ClipMeshByIsovalueAlgo::ScalarIsoValue("ScalarIsoValue");
 
-AlgorithmOutput ClipMeshByIsovalueAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ClipMeshByIsovalueAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(InputField);
   

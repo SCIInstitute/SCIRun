@@ -41,9 +41,19 @@ namespace SCIRun
     {
       namespace Python
       {
-        //ALGORITHM_PARAMETER_DECL(PollingIntervalMilliseconds);
-        //ALGORITHM_PARAMETER_DECL(NumberOfRetries);
         ALGORITHM_PARAMETER_DECL(PythonCode);
+        ALGORITHM_PARAMETER_DECL(PythonInputStringNames);
+        ALGORITHM_PARAMETER_DECL(PythonInputMatrixNames);
+        ALGORITHM_PARAMETER_DECL(PythonInputFieldNames);
+        ALGORITHM_PARAMETER_DECL(PythonOutputString1Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputString2Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputString3Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputMatrix1Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputMatrix2Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputMatrix3Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputField1Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputField2Name);
+        ALGORITHM_PARAMETER_DECL(PythonOutputField3Name);
       }
     }
   }
@@ -54,7 +64,7 @@ namespace SCIRun
     {
       class SCISHARE InterfaceWithPython : public SCIRun::Dataflow::Networks::Module,
         public Has3InputPorts<DynamicPortTag<MatrixPortTag>, DynamicPortTag<FieldPortTag>, DynamicPortTag<StringPortTag>>,
-        public Has3OutputPorts<MatrixPortTag, FieldPortTag, StringPortTag>
+        public Has9OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, FieldPortTag, FieldPortTag, FieldPortTag, StringPortTag, StringPortTag, StringPortTag>
       {
       public:
         InterfaceWithPython();
@@ -64,13 +74,23 @@ namespace SCIRun
         INPUT_PORT_DYNAMIC(0, InputMatrix, Matrix);
         INPUT_PORT_DYNAMIC(1, InputField, LegacyField);
         INPUT_PORT_DYNAMIC(2, InputString, String);
-        OUTPUT_PORT(0, PythonMatrix, Matrix);
-        OUTPUT_PORT(1, PythonField, LegacyField);
-        OUTPUT_PORT(2, PythonString, String);
+        OUTPUT_PORT(0, PythonMatrix1, Matrix);
+        OUTPUT_PORT(1, PythonMatrix2, Matrix);
+        OUTPUT_PORT(2, PythonMatrix3, Matrix);
+        OUTPUT_PORT(3, PythonField1, LegacyField);
+        OUTPUT_PORT(4, PythonField2, LegacyField);
+        OUTPUT_PORT(5, PythonField3, LegacyField);
+        OUTPUT_PORT(6, PythonString1, String);
+        OUTPUT_PORT(7, PythonString2, String);
+        OUTPUT_PORT(8, PythonString3, String);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static std::vector<Core::Algorithms::AlgorithmParameterName> inputNameParameters();
+        static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
       private:
         static Core::Thread::Mutex lock_;
+        std::string convertInputSyntax(const std::string& code) const;
+        std::string convertOutputSyntax(const std::string& code) const;
       };
 
     }

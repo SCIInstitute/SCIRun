@@ -64,6 +64,8 @@ namespace Gui {
     virtual ~CurrentModuleSelection() {}
     virtual QString text() const = 0;
     virtual bool isModule() const = 0;
+    virtual QString clipboardXML() const = 0;
+    virtual bool isClipboardXML() const = 0;
   };
 
   //almost just want to pass a boost::function for this one.
@@ -110,7 +112,7 @@ namespace Gui {
     void trackModule(SCIRun::Dataflow::Networks::ModuleHandle module);
   Q_SIGNALS:
     void moduleExecuteStart(const std::string& id);
-    void moduleExecuteEnd(const std::string& id);
+    void moduleExecuteEnd(double execTime, const std::string& id);
   };
 
   class ModuleProxyWidget;
@@ -148,8 +150,9 @@ namespace Gui {
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
 				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
+        PreexecuteFunc preexecuteFunc,
         TagColorFunc tagColor = defaultTagColor,
-        QWidget* parent = 0);
+        QWidget* parent = nullptr);
     ~NetworkEditor();
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
@@ -171,6 +174,9 @@ namespace Gui {
 
     virtual Dataflow::Networks::ModuleTagsHandle dumpModuleTags(Dataflow::Networks::ModuleFilter filter) const override;
     virtual void updateModuleTags(const Dataflow::Networks::ModuleTags& notes) override;
+
+    virtual Dataflow::Networks::DisabledComponentsHandle dumpDisabledComponents(Dataflow::Networks::ModuleFilter modFilter, Dataflow::Networks::ConnectionFilter connFilter) const override;
+    virtual void updateDisabledComponents(const Dataflow::Networks::DisabledComponents& disabled) override;
 
     size_t numModules() const;
 
@@ -259,6 +265,7 @@ namespace Gui {
     void reenableWidgetDisabling();
     void resetModulesDueToCycle();
     void newModule(const QString& modId, bool hasUI);
+    void newSubnetworkCopied(const QString& xml);
   private Q_SLOTS:
     void cut();
     void copy();
@@ -277,6 +284,7 @@ namespace Gui {
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
+    void pasteImpl(const QString& xml);
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
@@ -294,6 +302,8 @@ namespace Gui {
     boost::shared_ptr<ZLevelManager> zLevelManager_;
     std::string latestModuleId_;
     bool fileLoading_;
+    bool insertingNewModuleAlongConnection_ { false };
+    PreexecuteFunc preexecute_;
   };
 }
 }

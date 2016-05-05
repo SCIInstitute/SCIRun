@@ -35,11 +35,9 @@
 #define DATAFLOW_NETWORK_PORT_INTERFACE_H
 
 #include <string>
-#include <vector>
 #include <boost/signals2/signal.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Algorithms/Base/Variable.h>
+#include <Core/Datatypes/Geometry.h> //TODO
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
@@ -58,6 +56,7 @@ namespace Networks {
     virtual bool isDynamic() const = 0;
     virtual ModuleId getUnderlyingModuleId() const = 0;
     virtual size_t getIndex() const = 0;
+    virtual boost::optional<ConnectionId> firstConnectionId() const = 0;
   };
 
   class SCISHARE PortInterface : public PortDescriptionInterface
@@ -68,10 +67,12 @@ namespace Networks {
     virtual void detach(Connection* conn) = 0;
     virtual const Connection* connection(size_t) const = 0;
     virtual void setIndex(size_t index) = 0;
+    void incrementIndex() { setIndex(getIndex() + 1); }
+    void decrementIndex() { setIndex(getIndex() - 1); }
     virtual void setId(const PortId& id) = 0;
   };
 
-  typedef boost::signals2::signal<void(const PortId&, SCIRun::Core::Datatypes::DatatypeHandle)> DataOnPortHasChangedSignalType;
+  typedef boost::signals2::signal<void(const PortId&, Core::Datatypes::DatatypeHandle)> DataOnPortHasChangedSignalType;
   typedef boost::function<std::string()> PortDataDescriber;
 
   class SCISHARE InputPortInterface : virtual public PortInterface
@@ -85,7 +86,7 @@ namespace Networks {
     virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) = 0;
   };
 
-  typedef boost::signals2::signal<void(SCIRun::Core::Algorithms::VariableHandle)> ConnectionFeedbackSignalType;
+  typedef boost::signals2::signal<void(const Core::Datatypes::ModuleFeedback&)> ConnectionFeedbackSignalType;
 
   class SCISHARE OutputPortInterface : virtual public PortInterface
   {
@@ -93,16 +94,17 @@ namespace Networks {
     virtual ~OutputPortInterface();
     virtual void sendData(Core::Datatypes::DatatypeHandle data) = 0;
     virtual bool hasData() const = 0;
+    virtual DatatypeSourceInterfaceHandle source() const = 0;
     virtual OutputPortInterface* clone() const { return nullptr; } // TODO
     virtual PortDataDescriber getPortDataDescriber() const = 0;
     virtual boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) = 0;
-    virtual void sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info) = 0;
+    virtual void sendConnectionFeedback(const Core::Datatypes::ModuleFeedback& info) = 0;
   };
 
   class SCISHARE PortConnectionDeterminer
   {
   public:
-    bool canBeConnected(const SCIRun::Dataflow::Networks::PortDescriptionInterface& port1, const SCIRun::Dataflow::Networks::PortDescriptionInterface& port2) const;
+    bool canBeConnected(const PortDescriptionInterface& port1, const PortDescriptionInterface& port2) const;
   };
 
 }}}

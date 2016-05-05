@@ -55,7 +55,7 @@ class SCISHARE ConvertToNrrdAlgo : public AlgorithmBase
     bool runImpl(FieldHandle input, NrrdDataHandle& points,
              NrrdDataHandle& connections,NrrdDataHandle& data) const;
 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
     static const AlgorithmOutputName Data;
     static const AlgorithmOutputName Points;
     static const AlgorithmOutputName Connections;

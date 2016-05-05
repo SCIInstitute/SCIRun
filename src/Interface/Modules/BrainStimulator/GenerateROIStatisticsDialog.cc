@@ -109,14 +109,12 @@ void GenerateROIStatisticsDialog::pullSpecial()
     /// get the result data from the algorithm and put it in the GUI table
     for (int i=0; i<all_elc_values.size(); i++)
     {
-      auto col = (all_elc_values[i]).toVector();
+      auto row = (all_elc_values[i]).toVector();
 
       int j = 0;
-      for (const AlgorithmParameter& ap : col)
+      for (const auto& ap : row)
       {
-        auto tmpstr = ap.toString();
-
-        auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
+        auto item = new QTableWidgetItem(QString::fromStdString(ap.toString()));
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
         StatisticsOutput_tableWidget->setItem(i, j, item);
         ++j;

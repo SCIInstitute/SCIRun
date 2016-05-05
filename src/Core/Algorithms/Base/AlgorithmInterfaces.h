@@ -52,7 +52,7 @@ namespace Algorithms {
       Output: tuple of Datatypes, possibly delay-executed
     */
 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const = 0;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const = 0;
   };
 
   class SCISHARE AlgorithmParameterInterface

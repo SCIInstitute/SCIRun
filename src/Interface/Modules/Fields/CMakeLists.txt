@@ -67,7 +67,10 @@ SET(Interface_Modules_Fields_FORMS
   ClipVolumeByIsovalue.ui
   ChooseInput.ui
   convertfielddatatype.ui
-  scalefieldmeshanddata.ui
+  scalefieldmeshanddata.ui #TODO: fix case
+  ConvertMatricesToMesh.ui
+  ReportFieldGeometryMeasures.ui
+  RefineTetMeshLocally.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -111,6 +114,9 @@ SET(Interface_Modules_Fields_HEADERS
   ChooseInputDialog.h
   ScaleFieldMeshAndDataDialog.h
   ConvertFieldDataTypeDialog.h
+  ConvertMatricesToMeshDialog.h
+  ReportFieldGeometryMeasuresDialog.h
+  RefineTetMeshLocallyDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -153,6 +159,9 @@ SET(Interface_Modules_Fields_SOURCES
   ChooseInputDialog.cc
   ScaleFieldMeshAndDataDialog.cc
   ConvertFieldDataTypeDialog.cc
+  ConvertMatricesToMeshDialog.cc
+  ReportFieldGeometryMeasuresDialog.cc
+  RefineTetMeshLocallyDialog.cc
 )
 
 IF(WITH_TETGEN)

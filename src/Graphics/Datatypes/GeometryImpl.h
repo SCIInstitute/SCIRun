@@ -33,6 +33,10 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 
+//freetype
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 // CPM modules
 #include <glm/glm.hpp>
 #include <var-buffer/VarBuffer.hpp>
@@ -45,7 +49,7 @@ namespace SCIRun {
 
       // Schemes individually describing how the data is to be colored.
       // This enumeration may belong in Core/Algorithms/Visualization.
-      enum ColorScheme
+      enum class ColorScheme
       {
         COLOR_UNIFORM = 0,
         COLOR_MAP,
@@ -56,7 +60,7 @@ namespace SCIRun {
       /// This really just boils down to instanced rendering. Once tesselation
       /// and geometry shaders are supported, we can speed up instanced rendering
       /// in OpenGL.
-      enum RenderType
+      enum class RenderType
       {
         RENDER_VBO_IBO,
         RENDER_RLIST_SPHERE,
@@ -101,14 +105,14 @@ namespace SCIRun {
 
       struct SpireIBO
       {
-        enum PRIMITIVE
+        enum class PRIMITIVE
         {
           POINTS,
           LINES,
           TRIANGLES,
         };
 
-        SpireIBO() : indexSize(0), prim(POINTS) {}
+        SpireIBO() : indexSize(0), prim(PRIMITIVE::POINTS) {}
         SpireIBO(const std::string& iboName, PRIMITIVE primIn, size_t iboIndexSize,
           std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboData) :
           name(iboName),
@@ -123,15 +127,36 @@ namespace SCIRun {
         std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
       };
 
+      struct SpireText
+      {
+        SpireText() : name(""), width(0), height(0) {}
+        SpireText(const char* c, FT_Face f) :
+          name(c)
+        {
+          width = f->glyph->bitmap.width;
+          height = f->glyph->bitmap.rows;
+          size_t s = width*height;
+          bitmap.resize(s);
+          std::copy(f->glyph->bitmap.buffer,
+            f->glyph->bitmap.buffer + s, bitmap.begin());
+          //for (auto i = 0; i < width*height; ++i)
+          //  bitmap.push_back(f->glyph->bitmap.buffer[i]);
+        }
+        std::string                           name;
+        size_t                                width;
+        size_t                                height;
+        std::vector<uint8_t>                  bitmap;
+      };
 
       /// Defines a Spire object 'pass'.
       struct SpireSubPass
       {
-        SpireSubPass() : renderType(RENDER_VBO_IBO), scalar(0), mColorScheme(COLOR_UNIFORM) {}
+        SpireSubPass() : renderType(RenderType::RENDER_VBO_IBO), scalar(0), mColorScheme(ColorScheme::COLOR_UNIFORM) {}
         SpireSubPass(const std::string& name, const std::string& vboName,
           const std::string& iboName, const std::string& program,
           ColorScheme scheme, const RenderState& state,
-          RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo) :
+          RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo,
+          const SpireText& text) :
           passName(name),
           vboName(vboName),
           iboName(iboName),
@@ -140,6 +165,7 @@ namespace SCIRun {
           renderType(renType),
           vbo(vbo),
           ibo(ibo),
+          text(text),
           scalar(1.0),
           mColorScheme(scheme)
         {}
@@ -160,26 +186,27 @@ namespace SCIRun {
         RenderType    renderType;
         SpireVBO			vbo;
         SpireIBO			ibo;
+        SpireText     text;//draw a string (usually single character) on geometry
         double        scalar;
 
         struct Uniform
         {
-          enum UniformType
+          enum class UniformType
           {
             UNIFORM_SCALAR,
             UNIFORM_VEC4
           };
 
-          Uniform() : type(UNIFORM_SCALAR) {}
+          Uniform() : type(UniformType::UNIFORM_SCALAR) {}
           Uniform(const std::string& nameIn, float d) :
             name(nameIn),
-            type(UNIFORM_SCALAR),
+            type(UniformType::UNIFORM_SCALAR),
             data(d, 0.0f, 0.0f, 0.0f)
           {}
 
           Uniform(const std::string& nameIn, const glm::vec4& vec) :
             name(nameIn),
-            type(UNIFORM_VEC4),
+            type(UniformType::UNIFORM_VEC4),
             data(vec)
           {}
 
@@ -196,7 +223,7 @@ namespace SCIRun {
           bool existed = false;
           for (auto& i : mUniforms)
           {
-            if (i.name == name && i.type == Uniform::UNIFORM_SCALAR)
+            if (i.name == name && i.type == Uniform::UniformType::UNIFORM_SCALAR)
             {
               i.data.x = scalar;
               existed = true;
@@ -211,7 +238,7 @@ namespace SCIRun {
           bool existed = false;
           for (auto& i : mUniforms)
           {
-            if (i.name == name && i.type == Uniform::UNIFORM_VEC4)
+            if (i.name == name && i.type == Uniform::UniformType::UNIFORM_VEC4)
             {
               i.data = vector;
               existed = true;
@@ -230,7 +257,7 @@ namespace SCIRun {
       class SCISHARE GeometryObjectSpire : public Core::Datatypes::GeometryObject
       {
       public:
-        GeometryObjectSpire(const Core::GeometryIDGenerator& idGenerator, const std::string& tag);
+        GeometryObjectSpire(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
 
         std::list<SpireVBO> mVBOs;  ///< Array of vertex buffer objects.
         std::list<SpireIBO> mIBOs;  ///< Array of index buffer objects.
@@ -245,9 +272,14 @@ namespace SCIRun {
         double mHighestValue;   ///< Highest value a field takes on.
 
         bool isVisible;
+        bool isClippable() const { return isClippable_; }
+      private:
+        bool isClippable_;
       };
 
       typedef boost::shared_ptr<GeometryObjectSpire> GeometryHandle;
+
+
     }
   }
 }

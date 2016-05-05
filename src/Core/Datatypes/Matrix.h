@@ -55,7 +55,7 @@ namespace Datatypes {
   public:
     // Persistent representation.
     MatrixIOBase() : separate_raw_(false) {}
-    virtual std::string dynamic_type_name() const { return "MatrixIOBase"; }
+    virtual std::string dynamic_type_name() const override { return "MatrixIOBase"; }
     virtual void io(Piostream&);
     static PersistentTypeID type_id;
   protected:
@@ -64,14 +64,14 @@ namespace Datatypes {
   };
 
   template <typename T>
-  class MatrixBase : public MatrixIOBase, public Core::Datatypes::HasPropertyManager
+  class MatrixBase : public MatrixIOBase, public HasPropertyManager
   {
   public:
     virtual size_t nrows() const = 0;
     virtual size_t ncols() const = 0;
     size_t get_dense_size() const { return nrows() * ncols(); }
 
-    typedef MatrixVisitorGeneric<T> Visitor;
+    using Visitor = MatrixVisitorGeneric<T>;
     virtual void accept(Visitor& visitor) = 0;
 
     bool empty() const { return 0 == nrows() && 0 == ncols(); }
@@ -95,7 +95,7 @@ namespace Datatypes {
   };
 
   template <typename T>
-  PersistentTypeID MatrixBase<T>::type_id("MatrixBase", "MatrixIOBase", 0);
+  PersistentTypeID MatrixBase<T>::type_id("MatrixBase", "MatrixIOBase", nullptr);
 
   enum SCISHARE MatrixTypeCode
   {

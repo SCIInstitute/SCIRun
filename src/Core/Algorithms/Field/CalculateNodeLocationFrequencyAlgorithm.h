@@ -40,7 +40,7 @@ namespace Fields {
   class SCISHARE CalculateNodeLocationFrequencyAlgo : public AlgorithmBase
   {
   public:
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
     FieldHandle runImpl(FieldHandle input) const;
   };
 

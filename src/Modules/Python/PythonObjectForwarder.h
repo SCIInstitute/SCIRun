@@ -33,6 +33,8 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Python/PythonDatatypeConverter.h>
 #include <boost/thread.hpp>
 #include <Modules/Python/share.h>
 
@@ -53,21 +55,27 @@ namespace SCIRun
         class PythonObjectForwarderImpl
         {
         public:
-          PythonObjectForwarderImpl(PythonModule& module, int maxTries, int waitTime) : module_(module), maxTries_(maxTries), waitTime_(waitTime) {}
+          explicit PythonObjectForwarderImpl(PythonModule& module) : module_(module)
+          {
+            auto state = module.get_state();
+            maxTries_ = state->getValue(Parameters::NumberOfRetries).toInt();
+            waitTime_ = state->getValue(Parameters::PollingIntervalMilliseconds).toInt();
+          }
 
-          void waitForOutputFromTransientState()
+          template <class StringPort, class MatrixPort, class FieldPort>
+          void waitForOutputFromTransientState(const std::string& transientKey, const StringPort& stringPort, const MatrixPort& matrixPort, const FieldPort& fieldPort)
           {
             int tries = 0;
             auto state = module_.get_state();
-            auto valueOption = state->getTransientValue(Parameters::PythonObject);
+            auto valueOption = state->getTransientValue(transientKey);
 
             while (tries < maxTries_ && !valueOption)
             {
               std::ostringstream ostr;
-              ostr << "PythonObjectForwarder looking up value attempt #" << (tries + 1) << "/" << maxTries_;
+              ostr << module_.get_id() << " looking up value for " << transientKey << "; attempt #" << (tries + 1) << "/" << maxTries_;
               module_.remark(ostr.str());
 
-              valueOption = state->getTransientValue(Parameters::PythonObject);
+              valueOption = state->getTransientValue(transientKey);
 
               tries++;
               boost::this_thread::sleep(boost::posix_time::milliseconds(waitTime_));
@@ -80,21 +88,27 @@ namespace SCIRun
               {
                 auto valueStr = var.toString();
                 if (!valueStr.empty())
-                  module_.sendOutput(module_.PythonString, boost::make_shared<Core::Datatypes::String>(valueStr));
+                  module_.sendOutput(stringPort, boost::make_shared<Core::Datatypes::String>(valueStr));
                 else
-                  module_.sendOutput(module_.PythonString, boost::make_shared<Core::Datatypes::String>("Empty string or non-string received"));
+                  module_.sendOutput(stringPort, boost::make_shared<Core::Datatypes::String>("Empty string or non-string received"));
               }
-              else if (var.name().name() == "dense matrix")
+              else if (var.name().name() == Core::Python::pyDenseMatrixLabel())
               {
                 auto dense = boost::dynamic_pointer_cast<Core::Datatypes::DenseMatrix>(var.getDatatype());
                 if (dense)
-                  module_.sendOutput(module_.PythonMatrix, dense);
+                  module_.sendOutput(matrixPort, dense);
               }
-              else if (var.name().name() == "sparse matrix")
+              else if (var.name().name() == Core::Python::pySparseRowMatrixLabel())
               {
                 auto sparse = boost::dynamic_pointer_cast<Core::Datatypes::SparseRowMatrix>(var.getDatatype());
                 if (sparse)
-                  module_.sendOutput(module_.PythonMatrix, sparse);
+                  module_.sendOutput(matrixPort, sparse);
+              }
+              else if (var.name().name() == Core::Python::pyFieldLabel())
+              {
+                auto field = boost::dynamic_pointer_cast<Core::Datatypes::LegacyField>(var.getDatatype());
+                if (field)
+                  module_.sendOutput(fieldPort, field);
               }
             }
 

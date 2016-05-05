@@ -51,7 +51,7 @@ void CalculateVectorMagnitudesModule::execute()
   {
     update_state(Executing);
 
-    auto output = algo().run_generic(withInputData((VectorField, input)));
+    auto output = algo().run(withInputData((VectorField, input)));
 
     sendOutputFromAlgorithm(ScalarField, output);
   }

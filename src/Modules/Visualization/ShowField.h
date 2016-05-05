@@ -55,7 +55,7 @@ namespace SCIRun {
         class GeometryBuilder;
       }
 
-      class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE ShowFieldModule : public Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort<GeometryPortTag>,
         public Core::Thread::Interruptible
@@ -64,6 +64,7 @@ namespace SCIRun {
         ShowFieldModule();
         virtual void execute() override;
 
+        static const Core::Algorithms::AlgorithmParameterName FieldName;
         static const Core::Algorithms::AlgorithmParameterName NodesAvailable;
         static const Core::Algorithms::AlgorithmParameterName EdgesAvailable;
         static const Core::Algorithms::AlgorithmParameterName FacesAvailable;
@@ -86,6 +87,21 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName CylinderResolution;
         static const Core::Algorithms::AlgorithmParameterName SphereResolution;
         static const Core::Algorithms::AlgorithmParameterName CylinderRadius;
+        static const Core::Algorithms::AlgorithmParameterName DefaultTextColor;
+        static const Core::Algorithms::AlgorithmParameterName ShowText;
+        static const Core::Algorithms::AlgorithmParameterName ShowDataValues;
+        static const Core::Algorithms::AlgorithmParameterName ShowNodeIndices;
+        static const Core::Algorithms::AlgorithmParameterName ShowEdgeIndices;
+        static const Core::Algorithms::AlgorithmParameterName ShowFaceIndices;
+        static const Core::Algorithms::AlgorithmParameterName ShowCellIndices;
+        static const Core::Algorithms::AlgorithmParameterName CullBackfacingText;
+        static const Core::Algorithms::AlgorithmParameterName TextAlwaysVisible;
+        static const Core::Algorithms::AlgorithmParameterName RenderAsLocation;
+        static const Core::Algorithms::AlgorithmParameterName TextSize;
+        static const Core::Algorithms::AlgorithmParameterName TextPrecision;
+        static const Core::Algorithms::AlgorithmParameterName TextColoring;
+        static const Core::Algorithms::AlgorithmParameterName UseFaceNormals;
+
 
         INPUT_PORT(0, Field, LegacyField);
         INPUT_PORT(1, ColorMapObject, ColorMap);
@@ -95,7 +111,7 @@ namespace SCIRun {
 
         virtual void setStateDefaults() override;
       private:
-        void updateAvailableRenderOptions(SCIRun::FieldHandle field);
+        void updateAvailableRenderOptions(FieldHandle field);
 
         boost::shared_ptr<detail::GeometryBuilder> builder_;
       };

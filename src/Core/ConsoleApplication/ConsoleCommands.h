@@ -69,16 +69,24 @@ namespace Console {
   class SCISHARE QuitAfterExecuteCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
+    QuitAfterExecuteCommandConsole();
     virtual bool execute() override;
   };
 
   class SCISHARE QuitCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
+    QuitCommandConsole();
     virtual bool execute() override;
   };
 
   class SCISHARE PrintHelpCommand : public Core::Commands::ConsoleCommand
+  {
+  public:
+    virtual bool execute() override;
+  };
+
+  class SCISHARE InteractiveModeCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute() override;

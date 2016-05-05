@@ -31,13 +31,16 @@ SET(Modules_Math_SRCS
   #SelectSubMatrix.cc
   #GetSubmatrix.cc 
   AppendMatrix.cc
+  CreateGeometricTransform.cc
   ConvertMatrixToScalar.cc
   ConvertScalarToMatrix.cc
   CreateMatrix.cc
+  CreateComplexMatrix.cc
   EvaluateLinearAlgebraUnary.cc
   EvaluateLinearAlgebraBinary.cc
   GetMatrixSlice.cc
   ReportMatrixInfo.cc
+  ReportComplexMatrixInfo.cc
   ReportMatrixSliceMeasure.cc
   SolveLinearSystem.cc
   ComputePCA.cc
@@ -48,13 +51,16 @@ SET(Modules_Math_HEADERS
   #SelectSubMatrix.h
   #GetSubmatrix.h
   AppendMatrix.h
+  CreateGeometricTransform.h
   ConvertMatrixToScalar.cc
   ConvertScalarToMatrix.h
   CreateMatrix.h
+  CreateComplexMatrix.h
   EvaluateLinearAlgebraUnary.h
   EvaluateLinearAlgebraBinary.h
   GetMatrixSlice.h
   ReportMatrixInfo.h
+  ReportComplexMatrixInfo.h
   ReportMatrixSliceMeasure.h
   share.h
   SolveLinearSystem.h

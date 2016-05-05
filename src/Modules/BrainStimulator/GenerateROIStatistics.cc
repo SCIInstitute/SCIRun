@@ -75,7 +75,7 @@ void GenerateROIStatisticsModule::execute()
   if (roiSpec)
     input[GenerateROIStatisticsAlgorithm::SpecifyROI] = roiSpec;
   
-  auto output = algo().run_generic(input); /// call run generic 
+  auto output = algo().run(input); /// call run generic 
 
   auto table = output.additionalAlgoOutput(); /// get the two outputs, the upper table (as DenseMatrix) and the container that establishes data transfer between GUI/Algo via state  
   get_state()->setTransientValue(Parameters::StatisticsTableValues, table);

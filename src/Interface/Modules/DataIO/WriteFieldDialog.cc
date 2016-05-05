@@ -50,7 +50,9 @@ WriteFieldDialog::WriteFieldDialog(const std::string& name, ModuleStateHandle st
   connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
-  buttonBox->setVisible(false);
+  WidgetStyleMixin::setStateVarTooltipWithStyle(fileNameLineEdit_, Variables::Filename.name());
+  WidgetStyleMixin::setStateVarTooltipWithStyle(this, Variables::FileTypeName.name());
+  WidgetStyleMixin::setStateVarTooltipWithStyle(saveFileButton_, Variables::FileTypeName.name());
 }
 
 void WriteFieldDialog::pullSpecial()

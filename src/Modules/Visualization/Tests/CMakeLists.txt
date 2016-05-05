@@ -52,6 +52,7 @@ TARGET_LINK_LIBRARIES(Modules_Visualization_Tests
   Dataflow_Network
   Dataflow_State
   Testing_ModuleTestBase
+  Testing_Utils
   gtest_main
   gtest
   gmock

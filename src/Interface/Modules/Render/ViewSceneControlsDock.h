@@ -44,6 +44,32 @@ DEALINGS IN THE SOFTWARE.
 namespace SCIRun {
   namespace Gui {
     class ViewSceneDialog;
+    
+    class LightControlCircle : public QGraphicsView
+    {
+      Q_OBJECT
+    public:
+      explicit LightControlCircle(QGraphicsScene* scene,
+        //SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        const boost::atomic<bool>& pulling, QRectF sceneRect,
+        QWidget* parent = nullptr);
+
+      void setMovable(bool canMove);
+      QPointF getLightPosition();
+
+    Q_SIGNALS:
+      void clicked(int x, int y);
+    protected:
+      virtual void mousePressEvent(QMouseEvent* event) override;
+      virtual void mouseMoveEvent(QMouseEvent* event) override;
+
+    private:
+      int previousX, previousY;
+      QGraphicsItem* boundingCircle_;
+      QGraphicsItem* lightPosition_;
+      const boost::atomic<bool>& dialogPulling_;
+
+    };
 
     class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls
     {
@@ -52,7 +78,17 @@ namespace SCIRun {
     public:
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
       void setSampleColor(const QColor& color);
+      void setFogColorLabel(const QColor& color);
+      void setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
+        bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
+      void setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
+        double numTicks, double lineWidth, const QString& unit);
+      void setRenderTabValues(bool lighting, bool bbox, bool useClip, bool backCull, bool displayList, bool stereo,
+        double stereoFusion, double polygonOffset, double textOffset, int fov);
       void updateZoomOptionVisibility();
+      void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
+      void updatePlaneControlDisplay(double x, double y, double z, double d);
+      QPointF getLightPosition(int index);
 
     public Q_SLOTS:
       void addItem(const QString& name, bool checked); 
@@ -65,10 +101,12 @@ namespace SCIRun {
       void slotChanged(QListWidgetItem* item);
 
     private:
-      std::vector<QListWidgetItem*> items_;
       void setupObjectListWidget();
-    };
+      void setupLightControlCircle(QFrame* frame, const boost::atomic<bool>& pulling, bool moveable);
 
+      std::vector<QListWidgetItem*> items_;
+      std::vector<LightControlCircle*> lightControls_;
+    };
   }
 }
 

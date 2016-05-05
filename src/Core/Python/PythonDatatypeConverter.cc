@@ -38,11 +38,13 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Python;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::MatlabIO;
 
@@ -88,7 +90,7 @@ namespace
   }
 }
 
-boost::python::object SCIRun::Core::Python::convertFieldToPython(FieldHandle field)
+boost::python::dict SCIRun::Core::Python::convertFieldToPython(FieldHandle field)
 {
   matlabarray ma;
   matlabconverter mc(nullptr);
@@ -99,6 +101,7 @@ boost::python::object SCIRun::Core::Python::convertFieldToPython(FieldHandle fie
   for (const auto& fieldName : ma.getfieldnames())
   {
     auto subField = ma.getfield(0, fieldName);
+    // std::cout << "Field: " << fieldName << std::endl;
     switch (subField.gettype())
     {
     case matfilebase::miUINT8:
@@ -107,9 +110,9 @@ boost::python::object SCIRun::Core::Python::convertFieldToPython(FieldHandle fie
       matlabStructure[fieldName] = str;
       break;
     }
-    case matfilebase::miDOUBLE:
+    case matfilebase::miUINT32:
     {
-      std::vector<double> v;
+      std::vector<unsigned int> v;
       subField.getnumericarray(v);
       if (1 != subField.getm() && 1 != subField.getn())
         matlabStructure[fieldName] = toPythonListOfLists(v, subField.getn(), subField.getm());
@@ -117,15 +120,28 @@ boost::python::object SCIRun::Core::Python::convertFieldToPython(FieldHandle fie
         matlabStructure[fieldName] = toPythonList(v);
       break;
     }
+    case matfilebase::miDOUBLE:
+    {
+      std::vector<double> v;
+      subField.getnumericarray(v);
+      // std::cout << "miDOUBLE " << subField.getm() << "x" << subField.getn() << "\n";
+      // std::copy(v.begin(), v.end(), std::ostream_iterator<double>(std::cout, " "));
+      // std::cout << "\n...\n";
+      if (1 != subField.getm() && 1 != subField.getn())
+        matlabStructure[fieldName] = toPythonListOfLists(v, subField.getn(), subField.getm());
+      else
+        matlabStructure[fieldName] = toPythonList(v);
+      break;
+    }
     default:
-      std::cout << "some other array: " << std::endl;
+      std::cout << "some other array: " << fieldName << " of type " << subField.gettype() << std::endl;
       break;
     }
   }
   return matlabStructure;
 }
 
-boost::python::object SCIRun::Core::Python::convertMatrixToPython(DenseMatrixHandle matrix)
+boost::python::list SCIRun::Core::Python::convertMatrixToPython(DenseMatrixHandle matrix)
 {
   if (matrix)
     return ::toPythonList(*matrix);
@@ -149,7 +165,275 @@ boost::python::object SCIRun::Core::Python::convertStringToPython(StringHandle s
   return {};
 }
 
+bool DenseMatrixExtractor::check() const
+{
+  boost::python::extract<boost::python::list> e(object_);
+  if (!e.check())
+    return false;
 
+  auto list = e();
+  auto length = len(list);
+  if (length > 0)
+  {
+    boost::python::extract<boost::python::list> firstRow(list[0]);
+    return firstRow.check();
+  }
+  return false;
+}
 
+DatatypeHandle DenseMatrixExtractor::operator()() const
+{
+  DenseMatrixHandle dense;
+  boost::python::extract<boost::python::list> e(object_);
+  if (e.check())
+  {
+    auto list = e();
+    auto length = len(list);
+    bool copyValues = false;
+
+    if (length > 0)
+    {
+      boost::python::extract<boost::python::list> firstRow(list[0]);
+      if (firstRow.check())
+      {
+        copyValues = true;
+        dense.reset(new DenseMatrix(length, len(firstRow)));
+      }
+    }
+    else
+    {
+      dense.reset(new DenseMatrix(0, 0));
+    }
+    if (copyValues)
+    {
+      for (int i = 0; i < length; ++i)
+      {
+        boost::python::extract<boost::python::list> rowList(list[i]);
+        if (rowList.check())
+        {
+          auto row = rowList();
+          if (len(row) != dense->ncols())
+            throw std::invalid_argument("Attempted to convert into dense matrix but row lengths are not all equal.");
+          for (int j = 0; j < len(row); ++j)
+          {
+            (*dense)(i, j) = boost::python::extract<double>(row[j]);
+          }
+        }
+      }
+    }
+  }
+  return dense;
+}
+
+bool SparseRowMatrixExtractor::check() const
+{
+  return false;
+}
+
+DatatypeHandle SparseRowMatrixExtractor::operator()() const
+{
+  return nullptr;
+}
+
+bool FieldExtractor::check() const
+{
+  boost::python::extract<boost::python::dict> e(object_);
+  if (!e.check())
+    return false;
+
+  auto dict = e();
+  auto length = len(dict);
+  if (0 == length)
+    return false;
+
+  auto keys = dict.keys();
+  auto values = dict.values();
+
+  for (int i = 0; i < length; ++i)
+  {
+    boost::python::extract<std::string> key_i(keys[i]);
+    if (!key_i.check())
+      return false;
+
+    boost::python::extract<std::string> value_i_string(values[i]);
+    boost::python::extract<boost::python::list> value_i_list(values[i]);
+    if (!value_i_string.check() && !value_i_list.check())
+      return false;
+  }
+
+  return true;
+}
+
+namespace
+{
+  matlabarray getPythonFieldDictionaryValue(const boost::python::extract<std::string>& strExtract, const boost::python::extract<boost::python::list>& listExtract)
+  {
+    matlabarray value;
+    if (strExtract.check())
+    {
+      value.createstringarray();
+      auto strData = strExtract();
+      //std::cout << "\tsetting string field: " << strData << std::endl;
+      value.setstring(strData);
+    }
+    else if (listExtract.check())
+    {
+      auto list = listExtract();
+      //std::cout << "\tTODO: convert inner lists: " << len(list) << std::endl;
+      if (1 == len(list))
+      {
+        boost::python::extract<double> e(list[0]);
+        if (e.check())
+          value.createdoublescalar(e());
+        else
+          std::cerr << "scalar value not readable as double" << std::endl;
+      }
+      else if (len(list) > 1)
+      {
+        boost::python::extract<boost::python::list> twoDlistExtract(list[0]);
+        if (twoDlistExtract.check())
+        {
+          std::vector<int> dims = { static_cast<int>(len(list[0])), static_cast<int>(len(list)) };
+          auto vectorOfLists = to_std_vector<boost::python::list>(list);
+          std::vector<std::vector<double>> vv;
+          std::transform(vectorOfLists.begin(), vectorOfLists.end(), std::back_inserter(vv), [](const boost::python::list& inner) { return to_std_vector<double>(inner); });
+          std::vector<double> flattenedValues(dims[0] * dims[1]);  //TODO: fill from py list-of-lists
+          flatten(vv.begin(), vv.end(), flattenedValues.begin());
+          value.createdoublematrix(flattenedValues, dims);
+        }
+        else // 1-D list
+        {
+          value.createdoublevector(to_std_vector<double>(list));
+        }
+      }
+    }
+    return value;
+  }
+}
+
+DatatypeHandle FieldExtractor::operator()() const
+{
+  matlabarray ma;
+  matlabconverter mc(nullptr);
+  mc.converttostructmatrix();
+
+  boost::python::extract<boost::python::dict> e(object_);
+  auto pyMatlabDict = e();
+
+  auto length = len(pyMatlabDict);
+
+  auto keys = pyMatlabDict.keys();
+  auto values = pyMatlabDict.values();
+  ma.createstructarray();
+
+  for (int i = 0; i < length; ++i)
+  {
+    boost::python::extract<std::string> key_i(keys[i]);
+
+    boost::python::extract<std::string> value_i_string(values[i]);
+    boost::python::extract<boost::python::list> value_i_list(values[i]);
+    auto fieldName = key_i();
+    //std::cout << "setting field " << fieldName << std::endl;
+    ma.setfield(0, fieldName, getPythonFieldDictionaryValue(value_i_string, value_i_list));
+  }
+
+  FieldHandle field;
+  mc.mlArrayTOsciField(ma, field);
+  return field;
+}
+
+namespace
+{
+  Variable makeDatatypeVariable(const DatatypePythonExtractor& extractor)
+  {
+    return Variable(Name(extractor.label()), extractor(), Variable::DATATYPE_VARIABLE);
+  }
+}
+
+Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python::object& object)
+{
+  /// @todo: yucky
+  {
+    boost::python::extract<int> e(object);
+    if (e.check())
+    {
+      return makeVariable("int", e());
+    }
+  }
+  {
+    boost::python::extract<double> e(object);
+    if (e.check())
+    {
+      return makeVariable("double", e());
+    }
+  }
+  {
+    boost::python::extract<std::string> e(object);
+    if (e.check())
+    {
+      return makeVariable("string", e());
+    }
+  }
+  {
+    boost::python::extract<bool> e(object);
+    if (e.check())
+    {
+      return makeVariable("bool", e());
+    }
+  }
+  {
+    DenseMatrixExtractor e(object);
+    if (e.check())
+    {
+      return makeDatatypeVariable(e);
+    }
+  }
+  //{
+  //  detail::SparseRowMatrixExtractor e(object);
+  //  if (e.check())
+  //  {
+  //    return makeDatatypeVariable(e);
+  //  }
+  //}
+  //{
+  //  detail::DenseColumnMatrixExtractor e(object);
+  //  if (e.check())
+  //  {
+  //    return makeDatatypeVariable(e);
+  //  }
+  //}
+  {
+    FieldExtractor e(object);
+    if (e.check())
+    {
+      return makeDatatypeVariable(e);
+    }
+  }
+  std::cerr << "No known conversion from python object to C++ object" << std::endl;
+  return Variable();
+}
+
+template <class Extractor>
+std::string getLabel()
+{
+  boost::python::object empty;
+  Extractor dmc(empty);
+  return dmc.label();
+}
+
+std::string Core::Python::pyDenseMatrixLabel()
+{
+  return getLabel<DenseMatrixExtractor>();
+}
+
+std::string Core::Python::pySparseRowMatrixLabel()
+{
+  return getLabel<SparseRowMatrixExtractor>();
+}
+
+std::string Core::Python::pyFieldLabel()
+{
+  return getLabel<FieldExtractor>();
+}
 
 #endif

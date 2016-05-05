@@ -45,7 +45,7 @@ AppendFieldsAlgorithm::AppendFieldsAlgorithm()
   //addParameter(Variables::RowsOrColumns, 0);
 }
 
-AlgorithmOutput AppendFieldsAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput AppendFieldsAlgorithm::run(const AlgorithmInput& input) const
 {
 /*  auto inputFields = input.getList<Field>(Variables::InputFields);
 

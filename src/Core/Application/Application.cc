@@ -42,9 +42,8 @@
 #include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
 #include <Core/Application/Version.h>
-#include <Core/Services/ServiceLog.h>
-#include <Core/Services/ServiceDB.h>
-#include <Core/Services/ServiceManager.h>
+#include <Core/Python/PythonInterpreter.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -69,7 +68,7 @@ namespace SCIRun
       ApplicationParametersHandle parameters_;
       NetworkEditorControllerHandle controller_;
       GlobalCommandFactoryHandle cmdFactory_;
-      void start_eai();
+      //void start_eai();
     };
   }
 }
@@ -155,6 +154,53 @@ void Application::readCommandLine(int argc, const char* argv[])
   Logging::Log::get().setVerbose(parameters()->verboseMode());
 }
 
+namespace
+{
+#ifdef BUILD_WITH_PYTHON
+
+  //TODO: obviously will need a better way to communicate the user-entered script string.
+  class HardCodedPythonTestCommand : public ParameterizedCommand
+  {
+  public:
+    virtual bool execute() override
+    {
+      auto script = Preferences::Instance().postModuleAddScript_temporarySolution.val();
+      if (!script.empty())
+      {
+        PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+        PythonInterpreter::Instance().run_string(script);
+      }
+      return true;
+    }
+  };
+
+  class HardCodedPythonFactory : public NetworkEventCommandFactory
+  {
+  public:
+    virtual CommandHandle create(NetworkEventCommands type) const override
+    {
+      switch (type)
+      {
+      case NetworkEventCommands::PostModuleAdd:
+        return boost::make_shared<HardCodedPythonTestCommand>();
+      }
+      return nullptr;
+    }
+  };
+
+
+#endif
+
+  NetworkEventCommandFactoryHandle makeNetworkEventCommandFactory()
+  {
+#ifdef BUILD_WITH_PYTHON
+    return boost::make_shared<HardCodedPythonFactory>();
+#else
+    return boost::make_shared<NullCommandFactory>();
+#endif
+  }
+}
+
 NetworkEditorControllerHandle Application::controller()
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
@@ -168,7 +214,8 @@ NetworkEditorControllerHandle Application::controller()
     ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->threadMode()));
     AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
     ReexecuteStrategyFactoryHandle reexFactory(new DynamicReexecutionStrategyFactory(parameters()->reexecuteMode()));
-    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory, private_->cmdFactory_));
+    auto eventCmdFactory(makeNetworkEventCommandFactory());
+    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory, private_->cmdFactory_, eventCmdFactory));
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();
@@ -206,7 +253,12 @@ std::string Application::commandHelpString() const
 
 std::string Application::version() const
 {
-  return VersionInfo::GIT_VERSION_TAG.empty() ? "5.0.0 developer version" : VersionInfo::GIT_VERSION_TAG;
+  auto version = VersionInfo::GIT_VERSION_TAG;
+  if (version.empty())
+    return "5.0.0 developer version";
+  if (version.find("NOTFOUND") != std::string::npos) // source zip build most likely
+    return "TODO";
+  return version;
 }
 
 std::string Application::moduleList()
@@ -293,7 +345,7 @@ std::string Application::GetAbout()
 }
 */
 
-
+#if 0 //shouldn't need this anymore
 // Services start up...
 void ApplicationPrivate::start_eai()
 {
@@ -382,3 +434,4 @@ void ApplicationPrivate::start_eai()
   t_ext->detach();
 #endif
 }
+#endif

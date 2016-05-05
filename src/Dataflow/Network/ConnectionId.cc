@@ -77,6 +77,10 @@ bool SCIRun::Dataflow::Networks::operator!=(const ConnectionDescription& lhs, co
   return !(lhs == rhs);
 }
 
+std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ConnectionId& cid)
+{
+  return o << cid.id_;
+}
 
 /*static*/ ConnectionId ConnectionId::create(const ConnectionDescription& desc)
 {

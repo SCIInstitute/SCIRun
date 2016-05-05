@@ -42,7 +42,7 @@ ALGORITHM_PARAMETER_DEF(Fields, FieldDatatype);
 
 ConvertFieldDataTypeAlgo::ConvertFieldDataTypeAlgo()
 {
-  add_option(Parameters::FieldDatatype, "double", "char|unsigned char|short|unsigned short|int|unsigned int|float|double|Vector|Tensor");
+  addOption(Parameters::FieldDatatype, "double", "char|unsigned char|short|unsigned short|int|unsigned int|float|double|Vector|Tensor");
 }
 
 bool ConvertFieldDataTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
@@ -58,7 +58,7 @@ bool ConvertFieldDataTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) c
   /// Get the information of the input field
   FieldInformation fo(input);
   
-  std::string datatype = get_option(Parameters::FieldDatatype);
+  std::string datatype = getOption(Parameters::FieldDatatype);
   
   fo.set_data_type(datatype);
   
@@ -86,7 +86,7 @@ bool ConvertFieldDataTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) c
   return (true);
 }
 
-AlgorithmOutput ConvertFieldDataTypeAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertFieldDataTypeAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

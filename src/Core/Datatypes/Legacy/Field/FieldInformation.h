@@ -199,9 +199,7 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     std::string get_container_type() const;
     void        set_container_type(const std::string&);
 
-    std::string get_field_name() const;
     std::string get_field_type_id() const;
-    std::string get_field_filename() const;
       
     bool        make_nodata();
     bool        make_constantdata();

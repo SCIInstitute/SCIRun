@@ -175,7 +175,7 @@ bool SCIRun::SimpleTextFileMatrix_writer(LoggerHandle pr, MatrixHandle matrix, c
   std::ofstream outputfile;
   outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
 
-  DenseMatrixHandle dense = matrix_convert::to_dense(matrix);
+  DenseMatrixHandle dense = convertMatrix::toDense(matrix);
   
   if (!dense)
   {

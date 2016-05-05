@@ -69,7 +69,7 @@ ConvertMeshToPointCloud::execute()
     
     setAlgoOptionFromState(ConvertMeshToPointCloudMeshAlgo::Location);
     
-    auto output = algo().run_generic(input);
+    auto output = algo().run(input);
     
     auto pointcloud = output.get<Field>(Variables::OutputField);
     sendOutput(PointCloud,pointcloud);

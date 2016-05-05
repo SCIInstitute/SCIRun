@@ -28,6 +28,7 @@
 
 # Headers of Core/Algorithms/Legacy/FiniteElements classes
 SET(Core_Algorithms_Legacy_FiniteElements_HEADERS
+  ApplyFEM/ApplyFEMVoltageSourceAlgo.h
   BuildMatrix/BuildTDCSMatrix.h
   BuildMatrix/BuildFEMatrix.h
   BuildRHS/BuildFEVolRHS.h
@@ -38,6 +39,7 @@ SET(Core_Algorithms_Legacy_FiniteElements_HEADERS
 # Sources of Core/Algorithms/Legacy/FiniteElements classes
 SET(Core_Algorithms_Legacy_FiniteElements_SRCS
   #Periodic/DefinePeriodicBoundaries.cc
+  ApplyFEM/ApplyFEMVoltageSourceAlgo.cc
   Mapping/BuildFEGridMapping.cc
   Mapping/BuildNodeLink.cc
   BuildMatrix/BuildFEMatrix.cc

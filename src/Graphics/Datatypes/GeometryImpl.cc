@@ -31,11 +31,12 @@
 using namespace SCIRun::Core;
 using namespace SCIRun::Graphics::Datatypes;
 
-GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator, const std::string& tag) : 
+GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable) : 
 GeometryObject(idGenerator, tag),
 mLowestValue(0.0),
 mHighestValue(0.0),
-isVisible(true)
+isVisible(true),
+isClippable_(isClippable)
 {
   
 }

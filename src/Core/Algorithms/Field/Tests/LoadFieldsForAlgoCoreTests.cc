@@ -102,7 +102,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/vector/tri_vector_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -110,7 +110,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -118,7 +118,7 @@
   {
    /*ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string())); */
+   auto mat = castMatrix::toDense(algo.run(path.string())); */
    return DenseMatrixHandle();
   }
 
@@ -126,7 +126,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -134,7 +134,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -142,7 +142,7 @@
   {
    /*ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string())); */
+   auto mat = castMatrix::toDense(algo.run(path.string())); */
    return DenseMatrixHandle();
   }
 
@@ -150,7 +150,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -158,7 +158,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -166,7 +166,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -174,7 +174,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_elem/tensor/tet_tensor_on_elem.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -182,7 +182,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -190,7 +190,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -198,7 +198,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/point_cloud/scalar/pts_scalar.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -206,7 +206,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/point_cloud/vector/pts_vector.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 
@@ -214,7 +214,7 @@
   {
    ReadMatrixAlgorithm algo;
    auto path = TestResources::rootDir() / "Fields/point_cloud/tensor/pts_tensor.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
+   auto mat = castMatrix::toDense(algo.run(path.string()));
    return mat;
   }
 

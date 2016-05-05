@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SetSubmatrix",
+    "namespace": "Math",
+    "status": "Ported module",
+    "description": "TODO",
+    "header": "Modules/Legacy/Math/SetSubmatrix.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "SetSubmatrixDialog",
+    "header": "Interface/Modules/Math/SetSubmatrixDialog.h"
+  }
+}

@@ -344,11 +344,11 @@ bool get_scalar_m(ArrayMathProgramCode& pc)
   
   // We store the matrix pointer so we can get other properties as well
   auto matrix = pc.get_matrix(1);
-  if (!matrix_is::dense(matrix))
+  if (!matrixIs::dense(matrix))
     return false;
   
   // One virtual call to get the data
-  double* data1 = matrix_cast::as_dense(matrix)->data();
+  double* data1 = castMatrix::toDense(matrix)->data();
 
   if (!data0 || !data1)
   {
@@ -452,10 +452,10 @@ bool get_vector_m(ArrayMathProgramCode& pc)
   
   // We store the matrix pointer so we can get other properties as well
   auto matrix = pc.get_matrix(1);
-  if (!matrix_is::dense(matrix))
+  if (!matrixIs::dense(matrix))
     return false;
   // One virtual call to get the data
-  double* data1 = matrix_cast::as_dense(matrix)->data();
+  double* data1 = castMatrix::toDense(matrix)->data();
 
   if (!data0 || !data1)
   {
@@ -486,10 +486,10 @@ bool get_tensor_m(ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   // We store the matrix pointer so we can get other properties as well
   auto matrix = pc.get_matrix(1);
-  if (!matrix_is::dense(matrix))
+  if (!matrixIs::dense(matrix))
     return false;
   // One virtual call to get the data
-  double* data1 = matrix_cast::as_dense(matrix)->data();
+  double* data1 = castMatrix::toDense(matrix)->data();
 
   if (!data0 || !data1)
   {
@@ -643,10 +643,10 @@ bool to_matrix_s(ArrayMathProgramCode& pc)
 { 
   // Get the pointer to the matrix object where we need to store the data
   auto matrix = pc.get_matrix(0);
-  if (!matrix_is::dense(matrix))
+  if (!matrixIs::dense(matrix))
     return false;
   
-  double* data0 = matrix_cast::as_dense(matrix)->data();
+  double* data0 = castMatrix::toDense(matrix)->data();
   double* data1 = pc.get_variable(1); 
 
   if (!data0 || !data1)
@@ -673,9 +673,9 @@ bool to_matrix_v(ArrayMathProgramCode& pc)
 { 
   // Get the pointer to the matrix object where we need to store the data
   auto matrix = pc.get_matrix(0);
-  if (!matrix_is::dense(matrix))
+  if (!matrixIs::dense(matrix))
     return false;
-  double* data0 = matrix_cast::as_dense(matrix)->data();
+  double* data0 = castMatrix::toDense(matrix)->data();
   double* data1 = pc.get_variable(1);
 
   if (!data0 || !data1)
@@ -704,9 +704,9 @@ bool to_matrix_t(ArrayMathProgramCode& pc)
 { 
   // Get the pointer to the matrix object where we need to store the data
   auto matrix = pc.get_matrix(0);
-  if (!matrix_is::dense(matrix))
+  if (!matrixIs::dense(matrix))
     return false;
-  double* data0 = matrix_cast::as_dense(matrix)->data();
+  double* data0 = castMatrix::toDense(matrix)->data();
   double* data1 = pc.get_variable(1);
 
   if (!data0 || !data1)
@@ -830,7 +830,7 @@ bool set_matrix_element_s(ArrayMathProgramCode& pc)
   if (m > 0)
   {
     std::unique_ptr<Guard> guard;
-    if (matrix_is::sparse(data0))
+    if (matrixIs::sparse(data0))
       guard.reset(new Guard(sparseAccessMutex.get()));
     
     while (data1 != data1_end) 

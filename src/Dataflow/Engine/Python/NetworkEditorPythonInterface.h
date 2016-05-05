@@ -79,12 +79,12 @@ namespace SCIRun
   public:
     virtual ~PyPort() {}
     virtual std::string name() const = 0;
+    virtual std::string id() const = 0;
     virtual std::string type() const = 0;
     virtual bool isInput() const = 0;
     virtual void connect(const PyPort& other) const = 0;
     virtual std::string dataTypeName() const = 0; //TODO: precursor to getting actual data off of port
     virtual boost::shared_ptr<PyDatatype> data() const = 0;
-    virtual void setData(const boost::python::object& obj) = 0;
   };
 
   class SCISHARE PyConnection
@@ -132,6 +132,8 @@ namespace SCIRun
     virtual std::string importNetwork(const std::string& filename) = 0;
     virtual std::string quit(bool force) = 0;
     virtual void setUnlockFunc(boost::function<void()> unlock) = 0;
+    virtual void setModuleContext(bool inModule) = 0;
+    virtual bool isModuleContext() const = 0;
   };
 }
 

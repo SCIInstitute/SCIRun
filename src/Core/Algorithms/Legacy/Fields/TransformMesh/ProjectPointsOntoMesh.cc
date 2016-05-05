@@ -47,7 +47,7 @@ ALGORITHM_PARAMETER_DEF(Fields, ProjectMethod);
 ProjectPointsOntoMeshAlgo::ProjectPointsOntoMeshAlgo()
 {
   // Are we projecting points on the nodes or on the elements
-  add_option(Parameters::ProjectMethod, "nodes", "elements|nodes");
+  addOption(Parameters::ProjectMethod, "nodes", "elements|nodes");
 }
 
 bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, FieldHandle& output) const
@@ -73,7 +73,7 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
   if (fi.is_quad_element()) fo.make_quadsurfmesh();
   if (fi.is_hex_element()) fo.make_hexvolmesh();
   
-  std::string method = get_option(Parameters::ProjectMethod);
+  std::string method = getOption(Parameters::ProjectMethod);
 
   if ((!(fobj.is_surface()||fobj.is_volume()||fobj.is_curve()))&&(method=="elements"))
   {
@@ -217,7 +217,7 @@ bool ProjectPointsOntoMeshAlgo::runImpl(FieldHandle input, FieldHandle object, F
   return (true); 
 }
 
-AlgorithmOutput ProjectPointsOntoMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ProjectPointsOntoMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
   auto objectField = input.get<Field>(Variables::ObjectField);

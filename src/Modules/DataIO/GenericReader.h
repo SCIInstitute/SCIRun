@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -42,13 +42,14 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Utils/Legacy/Environment.h>
 #include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-template <class HType, class PortTag> 
+template <class HType, class PortTag>
 class GenericReader : public SCIRun::Dataflow::Networks::Module,
   public Has1InputPort<StringPortTag>,
   public Has2OutputPorts<PortTag, StringPortTag>
@@ -56,7 +57,7 @@ class GenericReader : public SCIRun::Dataflow::Networks::Module,
 public:
   GenericReader(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
 
-  virtual void setStateDefaults() override;
+  virtual void setStateDefaults() override final;
   virtual void execute() override;
   INPUT_PORT(0, Filename, String);
   //OUTPUT_PORT(0, Object, PortType);
@@ -65,6 +66,7 @@ public:
 protected:
   std::string filename_;
   StaticPortName<typename HType::element_type, 0> objectPortName_;
+  virtual std::string defaultFileTypeName() const = 0;
   //GuiFilename gui_filename_;
   //GuiString gui_from_env_;
 
@@ -78,7 +80,7 @@ protected:
 };
 
 
-template <class HType, class PortTag> 
+template <class HType, class PortTag>
 GenericReader<HType, PortTag>::GenericReader(const std::string &name,
 				    const std::string &cat, const std::string &pack, const std::string& objectPortName)
   : SCIRun::Dataflow::Networks::Module(SCIRun::Dataflow::Networks::ModuleLookupInfo(name, cat, pack)),
@@ -94,13 +96,16 @@ GenericReader<HType, PortTag>::GenericReader(const std::string &name,
 template <class HType, class PortTag>
 void GenericReader<HType, PortTag>::setStateDefaults()
 {
-  get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, std::string());
+  auto state = get_state();
+  state->setValue(SCIRun::Core::Algorithms::Variables::Filename, std::string());
+  state->setValue(SCIRun::Core::Algorithms::Variables::FileTypeName, defaultFileTypeName());
+  state->setValue(SCIRun::Core::Algorithms::Variables::ScriptEnvironmentVariable, std::string());
 }
 
-template <class HType, class PortTag> 
+template <class HType, class PortTag>
 Core::Thread::Mutex GenericReader<HType,PortTag>::fileCheckMutex_("GenericReader");
 
-template <class HType, class PortTag> 
+template <class HType, class PortTag>
 bool
   GenericReader<HType, PortTag>::file_exists(const std::string & filename)
 {
@@ -109,44 +114,45 @@ bool
   return boost::filesystem::exists(filename);
 }
 
-template <class HType, class PortTag> 
+template <class HType, class PortTag>
 void
 GenericReader<HType, PortTag>::execute()
 {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  bool filename_changed = gui_filename_.changed();
-  
-  if (gui_from_env_.get() != "")
+  auto state = get_state();
+  auto environmentVariable = state->getValue(Core::Algorithms::Variables::ScriptEnvironmentVariable).toString();
+  if (!environmentVariable.empty())
   {
-    std::string filename_from_env = gui_from_env_.get(); 
-    if (sci_getenv(filename_from_env))
+    if (sci_getenv(environmentVariable))
     {
-      std::string envfilename = sci_getenv(filename_from_env);
-      gui_filename_.set(envfilename);
-      get_ctx()->reset();
-      filename_changed = true;
+      std::string envfilename(sci_getenv(environmentVariable));
+      state->setValue(SCIRun::Core::Algorithms::Variables::Filename, envfilename);
+    }
+    else
+    {
+      warning("No filename found under environment variable " + environmentVariable + ", reverting to GUI input.");
     }
   }
-#endif
-
-  // If there is an optional input string set the filename to it in the GUI.
-  /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
-  auto fileOption = getOptionalInput(Filename);
-  if (fileOption && *fileOption)
+  else
   {
-    get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
+    // If there is an optional input string set the filename to it in the GUI.
+    /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
+    auto fileOption = getOptionalInput(Filename);
+    if (fileOption && *fileOption)
+    {
+      state->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
+    }
   }
-  filename_ = get_state()->getValue(SCIRun::Core::Algorithms::Variables::Filename).toFilename().string();
+  filename_ = state->getValue(SCIRun::Core::Algorithms::Variables::Filename).toFilename().string();
 
-  
+
   // Read the status of this file so we can compare modification timestamps
 
-  if (filename_.empty()) 
+  if (filename_.empty())
   {
     error("No file has been selected.  Please choose a file.");
     return;
-  } 
-  else if (!file_exists(filename_)) 
+  }
+  else if (!file_exists(filename_))
   {
     if (!useCustomImporter(filename_))
     {
@@ -159,7 +165,7 @@ GenericReader<HType, PortTag>::execute()
     }
   }
 
-  // If we haven't read yet, or if it's a new filename, 
+  // If we haven't read yet, or if it's a new filename,
   //  or if the datestamp has changed -- then read...
 
   time_t new_filemodification = boost::filesystem::last_write_time(filename_);
@@ -169,17 +175,17 @@ GenericReader<HType, PortTag>::execute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     || filename_changed ||
       !oport_cached(0) ||
-      !oport_cached("Filename") 
+      !oport_cached("Filename")
 #endif
       )
   {
-    update_state(Executing);  
+    update_state(Executing);
     old_filemodification_ = new_filemodification;
 
     HType handle;
 
     remark("loading file " +filename_);
-    
+
     if (useCustomImporter(filename_))
     {
       if (!call_importer(filename_, handle))
@@ -196,7 +202,7 @@ GenericReader<HType, PortTag>::execute()
         error("Error reading file '" + filename_ + "'.");
         return;
       }
-    
+
       // Read the file
       Pio(*stream, handle);
 

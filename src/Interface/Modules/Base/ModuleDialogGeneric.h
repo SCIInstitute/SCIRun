@@ -48,6 +48,14 @@ namespace Gui {
   typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
   typedef GuiStringTranslationMap::value_type StringPair;
 
+  enum class DynamicPortChange
+  {
+    INITIAL_PORT_CONSTRUCTION,
+    USER_ADDED_PORT_DURING_FILE_LOAD,
+    USER_ADDED_PORT,
+    USER_REMOVED_PORT
+  };
+
   //TODO: pull into separate header; figure out how to automatically style child widgets of these types
   class SCISHARE WidgetStyleMixin
   {
@@ -55,6 +63,7 @@ namespace Gui {
     static void tabStyle(QTabWidget* tabs);
     static void tableHeaderStyle(QTableWidget* tableHeader);
     static void toolbarStyle(QToolBar* toolbar);
+    static void setStateVarTooltipWithStyle(QWidget* widget, const std::string& stateVarName);
   };
 
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
@@ -80,7 +89,7 @@ namespace Gui {
     virtual void pull() final;
     void moduleSelected(bool selected);
     void toggleCollapse();
-    virtual void updateFromPortChange(int numPorts, const std::string& portName) {}
+    virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) {}
   Q_SIGNALS:
     void pullSignal();
     void executionTimeChanged(int time);
@@ -91,7 +100,7 @@ namespace Gui {
     void executionLoopStarted();
     void executionLoopHalted();
   protected:
-    explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
+    explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
     virtual void contextMenuEvent(QContextMenuEvent* e) override;
     void fixSize();
     void connectButtonToExecuteSignal(QAbstractButton* button);
@@ -126,6 +135,15 @@ namespace Gui {
     void addDynamicLabelManager(QLabel* label, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addSliderManager(QSlider* slider, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void removeManager(const Core::Algorithms::AlgorithmParameterName& stateKey);
+
+    using TableWidgetMaker = std::function<QTableWidgetItem*()>;
+    using WidgetMaker = std::function<QWidget*()>;
+    typedef std::map<int, TableWidgetMaker> TableItemMakerMap;
+    typedef std::map<int, WidgetMaker> WidgetItemMakerMap;
+    void syncTableRowsWithDynamicPort(const std::string& portId, const std::string& type,
+      QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerMap& tableItems, const WidgetItemMakerMap& widgetItems = WidgetItemMakerMap());
+    static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile);
 
     void createExecuteInteractivelyToggleAction();
   private Q_SLOTS:
@@ -151,7 +169,20 @@ namespace Gui {
     static ExecutionDisablingServiceFunction disablerRemove_;
   };
 
+  class SCISHARE ScopedWidgetSignalBlocker
+  {
+  public:
+    explicit ScopedWidgetSignalBlocker(QWidget* widget);
+    ~ScopedWidgetSignalBlocker();
+  private:
+    QWidget* widget_;
+  };
+
+  SCISHARE void openUrl(const QString& url, const std::string& name);
+  SCISHARE void openPythonAPIDoc();
 }
 }
+
+inline QDebug& operator<<(QDebug& qdebug, const std::string& str) { return qdebug << QString::fromStdString(str); }
 
 #endif

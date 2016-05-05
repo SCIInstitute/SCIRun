@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
+#include <Core/Datatypes/Color.h>
 
 using namespace SCIRun;
 using namespace Modules::Fields;
@@ -164,9 +165,11 @@ EditMeshBoundingBox::EditMeshBoundingBox()
   INITIALIZE_PORT(Transformation_Matrix);
 }
 
-void EditMeshBoundingBox::processWidgetFeedback(VariableHandle var)
+void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 {
-  std::cout << "EditMeshBoundingBox::processWidgetFeedback, value received from ViewSceneDialog is:\n\t" << var->value() << std::endl;
+  auto vsf = static_cast<const ViewSceneFeedback&>(var);
+  std::cout << "EditMeshBoundingBox::processWidgetFeedback transfrom from ViewSceneDialog:" << std::endl;
+  vsf.transform.print();
 }
 
 void EditMeshBoundingBox::createBoxWidget()
@@ -200,7 +203,7 @@ void EditMeshBoundingBox::setStateDefaults()
   createBoxWidget();
   setBoxRestrictions();
 
-  getOutputPort(Transformation_Widget)->connectConnectionFeedbackListener([this](VariableHandle var) { processWidgetFeedback(var); });
+  getOutputPort(Transformation_Widget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
 void EditMeshBoundingBox::execute()
@@ -283,7 +286,7 @@ bool EditMeshBoundingBox::isBoxEmpty() const
 
 GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
 {
-  ColorScheme colorScheme(COLOR_UNIFORM);
+  ColorScheme colorScheme(ColorScheme::COLOR_UNIFORM);
   std::vector<std::pair<Point,Point>> bounding_edges;
   //get all the bbox edges
   Point c,r,d,b;
@@ -319,7 +322,7 @@ GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
     glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], scale, num_strips, ColorRGB(), ColorRGB());
   }
   //generate triangles for the spheres
-  for (auto a : points)
+  for (const auto& a : points)
   {
     glyphs.addSphere(a, scale, num_strips, ColorRGB(1, 0, 0));
   }
@@ -340,10 +343,10 @@ GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
 
-  GeometryHandle geom(new GeometryObjectSpire(*this, "BoundingBox"));
+  GeometryHandle geom(new GeometryObjectSpire(*this, "BoundingBox", true));
 
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::TRIANGLES, bbox_);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox_);
 
   return geom;
 }
@@ -476,7 +479,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
     Point in(center + sizez / 2.);
 
     Transform r;
-    Point unused;
     impl_->field_initial_transform_.load_identity();
 
     double sx = (right - center).length();

@@ -53,7 +53,7 @@ class SCISHARE GenerateStreamLinesAlgo : public AlgorithmBase
     GenerateStreamLinesAlgo();
     bool runImpl(FieldHandle input, FieldHandle seeds, FieldHandle& output) const;
 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 
     static const AlgorithmInputName VectorField;
     static const AlgorithmInputName Seeds;

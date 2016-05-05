@@ -57,6 +57,11 @@ namespace Datatypes
     const std::string objectName_;     ///< Name of this object. Should be unique across all modules in the network.
   };
 
+  struct SCISHARE ModuleFeedback
+  {
+    // tag class
+  };
+
 }}}
 
 

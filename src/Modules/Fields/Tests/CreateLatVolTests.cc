@@ -28,6 +28,7 @@
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 
 using namespace SCIRun;
@@ -54,4 +55,24 @@ TEST_F(CreateLatVolModuleTests, ThrowsForNullInput)
   stubPortNWithThisData(clv, 1, nullField);
 
   EXPECT_THROW(clv->execute(), NullHandleOnPortException);
+}
+
+TEST_F(CreateLatVolModuleTests, DefaultLatVolCreation)
+{
+  auto clv = makeModule("CreateLatVol");
+
+  clv->execute();
+  auto output = getDataOnThisOutputPort(clv, 0);
+  ASSERT_TRUE(output != nullptr);
+
+  auto latvol = boost::dynamic_pointer_cast<Field>(output);
+  ASSERT_TRUE(latvol != nullptr);
+  FieldInformation info(latvol);
+  EXPECT_TRUE(info.is_latvolmesh());
+  EXPECT_TRUE(info.is_double());
+  EXPECT_TRUE(info.is_scalar());
+  EXPECT_TRUE(info.is_linear());
+  EXPECT_EQ("LatVolMesh<HexTrilinearLgn<Point>>", info.get_mesh_type_id());
+  EXPECT_EQ("LatVolMesh", info.get_mesh_type());
+  EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point>>,HexTrilinearLgn<double>,FData3d<double,LatVolMesh<HexTrilinearLgn<Point>>>>", info.get_field_type_id());
 }

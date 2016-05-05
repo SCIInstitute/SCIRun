@@ -868,7 +868,7 @@ DenseMatrixHandle BuildFEVolRHSAlgo::run(FieldHandle input) const
  return output;
 }
 
-AlgorithmOutput BuildFEVolRHSAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput BuildFEVolRHSAlgo::run(const AlgorithmInput& input) const
 {
   auto mesh = input.get<Field>(Mesh);
 

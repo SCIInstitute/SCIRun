@@ -71,7 +71,7 @@ namespace BrainStimulator {
   {
   public:
     ElectrodeCoilSetupAlgorithm();
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
     static const AlgorithmOutputName FINAL_ELECTRODES_FIELD;
     static const AlgorithmOutputName MOVED_ELECTRODES_FIELD;
     static const AlgorithmInputName SCALP_SURF; 

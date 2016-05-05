@@ -55,7 +55,7 @@ void ReportFieldInfoModule::execute()
 {
   auto field = getRequiredInput(InputField);
 
-  auto output = algo().run_generic(withInputData((InputField, field)));
+  auto output = algo().run(withInputData((InputField, field)));
 
   get_state()->setTransientValue("ReportedInfo", output.getTransient());
 

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -243,7 +243,7 @@ BinaryPiostream::~BinaryPiostream()
 }
 
 void
-BinaryPiostream::reset_post_header() 
+BinaryPiostream::reset_post_header()
 {
   if (! reading()) return;
 
@@ -252,7 +252,7 @@ BinaryPiostream::reset_post_header()
   if (version() == 1)
   {
     // Old versions had headers of size 12.
-    char hdr[12];    
+    char hdr[12];
     // read header
     fread(hdr, 1, 12, fp_);
   }
@@ -260,7 +260,7 @@ BinaryPiostream::reset_post_header()
   {
     // Versions > 1 have size of 16 to account for endianness in
     // header (LIT | BIG).
-    char hdr[16];    
+    char hdr[16];
     // read header
     fread(hdr, 1, 16, fp_);
   }
@@ -530,7 +530,7 @@ BinaryPiostream::io(std::string& data)
       if (buf_size)
       {
         char* buf = new char[buf_size];
-	
+
         // Read in data plus padding.
         if (!fread(buf, sizeof(char), buf_size, fp_))
         {
@@ -538,7 +538,7 @@ BinaryPiostream::io(std::string& data)
           delete [] buf;
           return;
         }
-	
+
         // Only use actual size of string.
         for (unsigned int i=0; i<chars; i++)
           data += buf[i];
@@ -576,7 +576,7 @@ BinaryPiostream::block_io(void *data, size_t s, size_t nmemb)
     {
       err = true;
       reporter_->error("BinaryPiostream error writing block io.");
-    }      
+    }
   }
   return true;
 }
@@ -889,8 +889,8 @@ TextPiostream::~TextPiostream()
 }
 
 void
-TextPiostream::reset_post_header() 
-{  
+TextPiostream::reset_post_header()
+{
   if (! reading()) return;
   istr->seekg(0, std::ios::beg);
 
@@ -907,7 +907,7 @@ TextPiostream::reset_post_header()
 }
 
 void
-TextPiostream::io(int do_quotes, std::string& str)
+TextPiostream::ioString(bool do_quotes, std::string& str)
 {
   if (do_quotes)
   {
@@ -972,7 +972,7 @@ TextPiostream::peek_class()
   else
   {
     expect('{');
-    io(0, peekname_);
+    ioString(false, peekname_);
     have_peekname_ = true;
     return peekname_;
   }
@@ -989,7 +989,7 @@ TextPiostream::begin_class(const std::string& classname, int current_version)
   {
     gname=classname;
     *ostr << '{';
-    io(0, gname);
+    ioString(false, gname);
   }
   else if (dir==Read && have_peekname_)
   {
@@ -998,10 +998,10 @@ TextPiostream::begin_class(const std::string& classname, int current_version)
   else
   {
     expect('{');
-    io(0, gname);
+    ioString(false, gname);
   }
   have_peekname_ = false;
-  
+
   if (dir==Read)
   {
 
@@ -1403,7 +1403,7 @@ void airToLower(char* p)
 {
   for ( ; *p; ++p) *p = tolower(*p);
 }
-  
+
 void
 TextPiostream::io(double& data)
 {
@@ -1500,7 +1500,7 @@ TextPiostream::io(float& data)
         if (strcmp(ibuf,"-inf")==0)
         {
           data = -std::numeric_limits<float>::infinity();
-        }  	  	
+        }
         else
         {
           char buf[100];
@@ -1575,12 +1575,12 @@ TextPiostream::io(std::string& data)
 }
 
 
-void 
+void
 TextPiostream::next_entry()
 {
    if (err) return;
    std::istream& in=*istr;
-   
+
    if (!in)
   {
     reporter_->error("Read in expect failed (before read).");
@@ -1605,23 +1605,23 @@ TextPiostream::next_entry()
     in.getline(buf, 100);
     reporter_->error(std::string("Rest of line is: ") + buf);
     reporter_->error("Object is not intact.");
-    return;    
+    return;
   }
-  
+
   while ((c == ' ')||(c == '\t')||(c == '\n')||(c == '\r'))
   {
-    in.get(c); 
+    in.get(c);
   }
-  
+
   if ((c == ',')||(c == ';'))
   {
     in.get(c);
     while ((c == ' ')||(c == '\t')||(c == '\n')||(c == '\r'))
     {
-      in.get(c); 
-    }    
+      in.get(c);
+    }
   }
-  
+
   in.unget();
 }
 
@@ -1721,7 +1721,7 @@ TextPiostream::eof() {
   in.peek();
   return in.eof();
 }
-    
+
 
 
 // FastPiostream is a non portable binary output.
@@ -1810,7 +1810,7 @@ fp_(0)
     size_t chars_read = fread(hdr, sizeof(char), 12, fp_);
     if (chars_read != 12)
     {
-      reporter_->error("Error reading header from socket: " + 
+      reporter_->error("Error reading header from socket: " +
         to_string(fd) + ".");
       err = true;
       return;
@@ -1869,7 +1869,7 @@ FastPiostream::~FastPiostream()
 
 
 void
-FastPiostream::reset_post_header() 
+FastPiostream::reset_post_header()
 {
   if (! reading()) return;
 
@@ -2055,12 +2055,10 @@ FastPiostream::block_io(void *data, size_t s, size_t nmemb)
     {
       err = true;
       reporter_->error("FastPiostream error writing block io.");
-    }      
+    }
   }
   return true;
 }
 
 
 } // End namespace SCIRun
-
-

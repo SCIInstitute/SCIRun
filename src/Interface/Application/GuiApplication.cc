@@ -42,7 +42,7 @@ int GuiApplication::run(int argc, const char* argv[])
 
   try
   {
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+    auto mainWin = SCIRunMainWindow::Instance();
 
     Core::Application::Instance().setCommandFactory(boost::make_shared<GuiGlobalCommandFactory>());
     mainWin->setController(Core::Application::Instance().controller());
