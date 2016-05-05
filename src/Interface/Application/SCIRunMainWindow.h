@@ -198,6 +198,7 @@ private Q_SLOTS:
   void toolkitDownload();
   void addToPathFromGUI();
   void removeSavedSubnetwork();
+  void renameSavedSubnetwork();
   void displayAcknowledgement();
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();

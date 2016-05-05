@@ -1283,7 +1283,7 @@ void SCIRunMainWindow::fillSavedSubnetworkMenu()
     qDebug() << "invalid subnet saved settings: sizes don't match" << savedSubnetworksNames_.size() << "," << savedSubnetworksXml_.size() << ',' << savedSubnetworksNames_.keys().size() << savedSubnetworksNames_.keys();
     return;
   }
-  auto keys = savedSubnetworksNames_.keys();
+  auto keys = savedSubnetworksNames_.keys(); // don't inline this into the zip call! temporary containers don't work with zip.
   for (auto&& tup : zip(savedSubnetworksNames_, savedSubnetworksXml_, keys))
   {
     auto subnet = new QTreeWidgetItem();
@@ -1345,11 +1345,11 @@ void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, con
 
   delButton->setIcon(QPixmap(":/general/Resources/delete_red.png"));
   delButton->setToolTip("Delete");
-  
   connect(delButton, SIGNAL(clicked()), this, SLOT(removeSavedSubnetwork()));
   auto renButton = new QToolButton();
   renButton->setIcon(QPixmap(":/general/Resources/rename.ico"));
   renButton->setToolTip("Rename");
+  connect(renButton, SIGNAL(clicked()), this, SLOT(renameSavedSubnetwork()));
   auto name = new QLabel(fave->text(0));
   name->setStyleSheet("QLabel { color : " + fave->textColor(0).name() + "; }");
   hLayout->addWidget(name);
@@ -1366,6 +1366,7 @@ int subnetHeight = 35;
   moduleSelectorTreeWidget_->setItemWidget(fave, 0, dualPushButtons);
   auto id = addToMap ? idFromPointer(fave) + "::" + fave->text(0) : idFromMap;
   delButton->setProperty("ID", id);
+  renButton->setProperty("ID", id);
   fave->setData(0, Qt::UserRole, id);
 
   if (addToMap)
@@ -1397,7 +1398,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
 					setupSubnetItem(fave, true, "");
         }
       }
-    }
+    } 
     else
     {
       if (faves && item->textColor(0) != CLIPBOARD_COLOR)
@@ -1431,6 +1432,32 @@ void SCIRunMainWindow::removeSavedSubnetwork()
 			break;
 		}
 	}
+}
+
+void SCIRunMainWindow::renameSavedSubnetwork()
+{
+  auto toRename = sender()->property("ID").toString();
+  qDebug() << "renaming subnet : " << toRename << savedSubnetworksNames_;
+
+  bool ok;
+  auto text = QInputDialog::getText(this, tr("Rename subnet"), tr("Enter new subnet name:"), QLineEdit::Normal, savedSubnetworksNames_[toRename].toString(), &ok);
+  if (ok && !text.isEmpty())
+  {
+    qDebug() << "new name:" << text;
+    savedSubnetworksNames_[toRename] = text;
+    auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+    for (int i = 0; i < tree->childCount(); ++i)
+    {
+      auto subnet = tree->child(i);
+      if (toRename == subnet->data(0, Qt::UserRole).toString())
+      {
+        auto widget = moduleSelectorTreeWidget_->itemWidget(subnet, 0);
+        qDebug() << widget;
+        //qobject_cast<QLabel*>(widget->layout()->children()[0])->setText(text);
+        break;
+      }
+    }
+  }
 }
 
 bool SCIRunMainWindow::isInFavorites(const QString& module) const
