@@ -313,7 +313,11 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("tagNames", tagManagerWindow_->getTagNames());
   settings.setValue("tagColors", tagManagerWindow_->getTagColors());
   settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->getScripts()));
+  //qDebug() << "writing names: " << savedSubnetworksNames_;
   settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
+  //settings.setValue("savedSubnetworksNames", QMap<QString, QVariant>());
+  //qDebug() << "writing xml: " << savedSubnetworksXml_;
+  //settings.setValue("savedSubnetworksXml", QMap<QString, QVariant>());
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
 
   settings.setValue("geometry", saveGeometry());
