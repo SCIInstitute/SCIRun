@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Core/ConsoleApplication/ConsoleCommands.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -42,18 +43,28 @@ using namespace Algorithms;
 LoadFileCommandConsole::LoadFileCommandConsole()
 {
   addParameter(Name("FileNum"), 0);
+  addParameter(Variables::Filename, std::string());
 }
 
 bool LoadFileCommandConsole::execute()
 {
   auto inputFiles = Application::Instance().parameters()->inputFiles();
+  std::string filename;
   if (!inputFiles.empty())
+    filename = inputFiles[0];
+  else
   {
-    auto filename = inputFiles[index_];
+    filename = get(Variables::Filename).toFilename().string();
+  }
 
+  {
     /// @todo: real logger
     std::cout << "Attempting load of " << filename << std::endl;
-
+    if (!boost::filesystem::exists(filename))
+    {
+      std::cout << "File does not exist: " << filename << std::endl;
+      return false;
+    }
     try
     {
       auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename);
@@ -138,10 +149,12 @@ bool InteractiveModeCommandConsole::execute()
 {
   PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   std::string x;
-  while (x.find("quit") == std::string::npos)
+  while (true)
   {
     std::cout << "scirun5> ";
     std::getline(std::cin, x);
+    if (x.find("quit") != std::string::npos || (!x.empty() && x[0] == '\004'))
+      break;
     //std::cout << "x is: " << x << std::endl;
     PythonInterpreter::Instance().run_string(x);
   }
