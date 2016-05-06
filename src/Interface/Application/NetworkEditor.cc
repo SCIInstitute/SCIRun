@@ -1217,6 +1217,36 @@ void NetworkEditor::moduleWindowAction()
   }
 }
 
+void NetworkEditor::adjustModuleWidth(int delta)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+    {
+      module->adjustWidth(delta);
+      auto proxy = getModuleProxy(item);
+      proxy->setMaximumWidth(module->width());
+      qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
+    }
+  }
+}
+
+void NetworkEditor::adjustModuleHeight(int delta)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+    {
+      module->adjustHeight(delta);
+      auto proxy = getModuleProxy(item);
+      proxy->setMaximumHeight(module->height());
+      qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
+    }
+  }
+}
+
 void NetworkEditor::setModuleMini(bool mini)
 {
   ModuleWidget::setGlobalMiniMode(mini);

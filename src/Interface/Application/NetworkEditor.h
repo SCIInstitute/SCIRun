@@ -249,6 +249,8 @@ namespace Gui {
     void moduleWindowAction();
     void cleanUpNetwork();
     void redrawTagGroups();
+    void adjustModuleWidth(int delta);
+    void adjustModuleHeight(int delta);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
