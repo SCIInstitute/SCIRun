@@ -1344,7 +1344,6 @@ void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, con
   auto dualPushButtons = new QWidget();
   auto hLayout = new QHBoxLayout();
   auto delButton = new QToolButton();
-
   delButton->setIcon(QPixmap(":/general/Resources/delete_red.png"));
   delButton->setToolTip("Delete");
   connect(delButton, SIGNAL(clicked()), this, SLOT(removeSavedSubnetwork()));
@@ -1359,9 +1358,9 @@ void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, con
   hLayout->addWidget(renButton);
   dualPushButtons->setLayout(hLayout);
 #ifdef WIN32
-int subnetHeight = 30;
+int subnetHeight = 40;
 #else
-int subnetHeight = 35;
+int subnetHeight = 45;
 #endif
   dualPushButtons->setMaximumHeight(subnetHeight);
   
