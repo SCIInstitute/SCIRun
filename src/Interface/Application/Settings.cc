@@ -317,8 +317,8 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
   //settings.setValue("savedSubnetworksNames", QMap<QString, QVariant>());
   //qDebug() << "writing xml: " << savedSubnetworksXml_;
-  //settings.setValue("savedSubnetworksXml", QMap<QString, QVariant>());
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
+  //settings.setValue("savedSubnetworksXml", QMap<QString, QVariant>());
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

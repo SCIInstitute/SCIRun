@@ -273,7 +273,6 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   makePipesEuclidean();
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
-  connect(moduleSelectorTreeWidget_, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(updateSavedSubnetworks()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
 
 #if 0 //TODO: decide on modifiable background color
@@ -351,6 +350,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   adjustExecuteButtonAppearance();
 
   connect(networkEditor_, SIGNAL(newSubnetworkCopied(const QString&)), this, SLOT(updateClipboardHistory(const QString&)));
+  connect(networkEditor_, SIGNAL(middleMouseClicked()), this, SLOT(switchMouseMode()));
 
   connect(openLogFolderButton_, SIGNAL(clicked()), this, SLOT(openLogFolder()));
 
@@ -877,14 +877,7 @@ void SCIRunMainWindow::setDragMode(bool toggle)
     networkEditor_->setMouseAsDragMode();
     statusBar()->showMessage("Mouse in drag mode", 2000);
   }
-  if (actionDragMode_->isChecked())
-  {
-    actionSelectMode_->setChecked(false);
-  }
-  else
-  {
-    actionSelectMode_->setChecked(true);
-  }
+  actionSelectMode_->setChecked(!actionDragMode_->isChecked());
 }
 
 void SCIRunMainWindow::setSelectMode(bool toggle)
@@ -894,12 +887,19 @@ void SCIRunMainWindow::setSelectMode(bool toggle)
     networkEditor_->setMouseAsSelectMode();
     statusBar()->showMessage("Mouse in select mode", 2000);
   }
-  if (actionSelectMode_->isChecked())
+  actionDragMode_->setChecked(!actionSelectMode_->isChecked());
+}
+
+void SCIRunMainWindow::switchMouseMode()
+{
+  if (actionDragMode_->isChecked())
   {
-    actionDragMode_->setChecked(false);
+    setSelectMode(true);
+    actionSelectMode_->setChecked(true);
   }
-  else
+  else // select->drag
   {
+    setDragMode(true);
     actionDragMode_->setChecked(true);
   }
 }
@@ -1283,7 +1283,7 @@ void SCIRunMainWindow::fillSavedSubnetworkMenu()
     qDebug() << "invalid subnet saved settings: sizes don't match" << savedSubnetworksNames_.size() << "," << savedSubnetworksXml_.size() << ',' << savedSubnetworksNames_.keys().size() << savedSubnetworksNames_.keys();
     return;
   }
-  auto keys = savedSubnetworksNames_.keys();
+  auto keys = savedSubnetworksNames_.keys(); // don't inline this into the zip call! temporary containers don't work with zip.
   for (auto&& tup : zip(savedSubnetworksNames_, savedSubnetworksXml_, keys))
   {
     auto subnet = new QTreeWidgetItem();
@@ -1345,11 +1345,11 @@ void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, con
 
   delButton->setIcon(QPixmap(":/general/Resources/delete_red.png"));
   delButton->setToolTip("Delete");
-  
   connect(delButton, SIGNAL(clicked()), this, SLOT(removeSavedSubnetwork()));
   auto renButton = new QToolButton();
   renButton->setIcon(QPixmap(":/general/Resources/rename.ico"));
   renButton->setToolTip("Rename");
+  connect(renButton, SIGNAL(clicked()), this, SLOT(renameSavedSubnetwork()));
   auto name = new QLabel(fave->text(0));
   name->setStyleSheet("QLabel { color : " + fave->textColor(0).name() + "; }");
   hLayout->addWidget(name);
@@ -1366,6 +1366,7 @@ int subnetHeight = 35;
   moduleSelectorTreeWidget_->setItemWidget(fave, 0, dualPushButtons);
   auto id = addToMap ? idFromPointer(fave) + "::" + fave->text(0) : idFromMap;
   delButton->setProperty("ID", id);
+  renButton->setProperty("ID", id);
   fave->setData(0, Qt::UserRole, id);
 
   if (addToMap)
@@ -1397,7 +1398,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
 					setupSubnetItem(fave, true, "");
         }
       }
-    }
+    } 
     else
     {
       if (faves && item->textColor(0) != CLIPBOARD_COLOR)
@@ -1417,10 +1418,8 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
 void SCIRunMainWindow::removeSavedSubnetwork()
 {
 	auto toDelete = sender()->property("ID").toString();
-  //qDebug() << "removing from subnet maps: " << toDelete << savedSubnetworksNames_.size() << savedSubnetworksXml_.size();
   savedSubnetworksNames_.remove(toDelete);
   savedSubnetworksXml_.remove(toDelete);
-  //qDebug() << "done removing from subnet maps: " << toDelete << savedSubnetworksNames_.size() << savedSubnetworksXml_.size();
 	auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
 	for (int i = 0; i < tree->childCount(); ++i)
 	{
@@ -1431,6 +1430,28 @@ void SCIRunMainWindow::removeSavedSubnetwork()
 			break;
 		}
 	}
+}
+
+void SCIRunMainWindow::renameSavedSubnetwork()
+{
+  auto toRename = sender()->property("ID").toString();
+  bool ok;
+  auto text = QInputDialog::getText(this, tr("Rename subnet"), tr("Enter new subnet name:"), QLineEdit::Normal, savedSubnetworksNames_[toRename].toString(), &ok);
+  if (ok && !text.isEmpty())
+  {
+    savedSubnetworksNames_[toRename] = text;
+    auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+    for (int i = 0; i < tree->childCount(); ++i)
+    {
+      auto subnet = tree->child(i);
+      if (toRename == subnet->data(0, Qt::UserRole).toString())
+      {
+        auto widget = moduleSelectorTreeWidget_->itemWidget(subnet, 0);
+        qobject_cast<QLabel*>(widget->layout()->itemAt(0)->widget())->setText(text);
+        break;
+      }
+    }
+  }
 }
 
 bool SCIRunMainWindow::isInFavorites(const QString& module) const
@@ -1867,18 +1888,6 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
 
   clip->setCheckState(0, Qt::Unchecked);
   clips->addChild(clip);
-}
-
-void SCIRunMainWindow::updateSavedSubnetworks()
-{
-  //qDebug() << "TODO rewrite: updateSavedSubnetworks";
-  //savedSubnetworks_.clear();
-  //auto menu = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
-  //for (auto i = 0; i < menu->childCount(); ++i)
-  //{
-  //  auto item = menu->child(i);
-  //  savedSubnetworks_[item->text(0)] = item->toolTip(0);
-  //}
 }
 
 void SCIRunMainWindow::showSnippetHelp()

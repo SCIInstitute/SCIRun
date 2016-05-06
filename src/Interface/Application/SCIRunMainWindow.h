@@ -177,6 +177,7 @@ private Q_SLOTS:
   void runScript();
   void importLegacyNetwork();
   void networkModified();
+  void switchMouseMode();
   void filterModuleNamesInTreeView(const QString& start);
   void makePipesEuclidean();
   void makePipesCubicBezier();
@@ -198,6 +199,7 @@ private Q_SLOTS:
   void toolkitDownload();
   void addToPathFromGUI();
   void removeSavedSubnetwork();
+  void renameSavedSubnetwork();
   void displayAcknowledgement();
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();
@@ -215,7 +217,6 @@ private Q_SLOTS:
   void showClipboardHelp();
   void copyVersionToClipboard();
   void updateClipboardHistory(const QString& xml);
-  void updateSavedSubnetworks();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();

@@ -667,6 +667,13 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
   QGraphicsView::mouseMoveEvent(event);
 }
 
+void NetworkEditor::mousePressEvent(QMouseEvent *event)
+{
+  if (event->button() == Qt::MiddleButton)
+    Q_EMIT middleMouseClicked();
+  QGraphicsView::mousePressEvent(event);
+}
+
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
   if (modulesSelectedByCL_)
