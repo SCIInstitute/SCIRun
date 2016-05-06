@@ -131,10 +131,32 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   connect(module, SIGNAL(executionDisabled(bool)), this, SLOT(disableModuleGUI(bool)));
 
   stackDepth_ = 0;
+
+  originalSize_ = size();
+  //qDebug() << "MPW1" << size();
+  //adjustHeight(-15);
+  //originalSize_ = size();
+  //qDebug() << "MPW2" << size();
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+}
+
+void ModuleProxyWidget::adjustHeight(int delta)
+{
+  auto p = pos();
+  module_->setFixedHeight(originalSize_.height() + delta);
+  setMaximumHeight(originalSize_.height() + delta);
+  setPos(p);
+}
+
+void ModuleProxyWidget::adjustWidth(int delta)
+{
+  auto p = pos();
+  module_->setFixedWidth(originalSize_.width() + delta);
+  setMaximumWidth(originalSize_.width() + delta);
+  setPos(p);
 }
 
 void ModuleProxyWidget::createStartupNote()

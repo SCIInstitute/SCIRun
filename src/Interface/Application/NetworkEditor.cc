@@ -1221,13 +1221,11 @@ void NetworkEditor::adjustModuleWidth(int delta)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    auto module = getModule(item);
-    if (module)
+    auto proxy = getModuleProxy(item);
+    if (proxy)
     {
-      module->adjustWidth(delta);
-      auto proxy = getModuleProxy(item);
-      proxy->setMaximumWidth(module->width());
-      qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
+      proxy->adjustWidth(delta);
+      //qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
     }
   }
 }
@@ -1236,13 +1234,11 @@ void NetworkEditor::adjustModuleHeight(int delta)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    auto module = getModule(item);
-    if (module)
+    auto proxy = getModuleProxy(item);
+    if (proxy)
     {
-      module->adjustHeight(delta);
-      auto proxy = getModuleProxy(item);
-      proxy->setMaximumHeight(module->height());
-      qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
+      proxy->adjustHeight(delta);
+      //qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
     }
   }
 }
