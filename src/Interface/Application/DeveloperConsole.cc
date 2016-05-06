@@ -39,6 +39,8 @@ DeveloperConsole::DeveloperConsole(QWidget* parent /* = 0 */) : QDockWidget(pare
   connect(parallelExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
   connect(improvedParallelExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
   connect(globalPortCacheButton_, SIGNAL(stateChanged(int)), this, SLOT(globalPortCacheButtonClicked()));
+  connect(moduleWidgetHeightSpinBox_, SIGNAL(valueChanged(int)), this, SIGNAL(moduleHeightAdjusted(int)));
+  connect(moduleWidgetWidthSpinBox_, SIGNAL(valueChanged(int)), this, SIGNAL(moduleWidthAdjusted(int)));
 }
 
 void DeveloperConsole::executorButtonClicked()

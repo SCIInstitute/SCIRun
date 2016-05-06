@@ -993,6 +993,8 @@ void SCIRunMainWindow::setupDevConsole()
   actionDevConsole_->setShortcut(QKeySequence("`"));
   connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
   connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
+  connect(devConsole_, SIGNAL(moduleHeightAdjusted(int)), networkEditor_, SLOT(adjustModuleHeight(int)));
+  connect(devConsole_, SIGNAL(moduleWidthAdjusted(int)), networkEditor_, SLOT(adjustModuleWidth(int)));
 }
 
 void SCIRunMainWindow::setExecutor(int type)
