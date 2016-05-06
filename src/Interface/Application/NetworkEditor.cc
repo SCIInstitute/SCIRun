@@ -667,6 +667,13 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
   QGraphicsView::mouseMoveEvent(event);
 }
 
+void NetworkEditor::mousePressEvent(QMouseEvent *event)
+{
+  if (event->button() == Qt::MiddleButton)
+    Q_EMIT middleMouseClicked();
+  QGraphicsView::mousePressEvent(event);
+}
+
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
   if (modulesSelectedByCL_)
@@ -1206,6 +1213,36 @@ void NetworkEditor::moduleWindowAction()
       else
         module->showUI();
       break;
+    }
+  }
+}
+
+void NetworkEditor::adjustModuleWidth(int delta)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+    {
+      module->adjustWidth(delta);
+      auto proxy = getModuleProxy(item);
+      proxy->setMaximumWidth(module->width());
+      qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
+    }
+  }
+}
+
+void NetworkEditor::adjustModuleHeight(int delta)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+    {
+      module->adjustHeight(delta);
+      auto proxy = getModuleProxy(item);
+      proxy->setMaximumHeight(module->height());
+      qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
     }
   }
 }

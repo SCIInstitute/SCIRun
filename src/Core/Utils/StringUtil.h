@@ -112,7 +112,6 @@ private:
 
 SCISHARE bool replaceSubstring(std::string& str, const std::string& from, const std::string& to);
 
-//TODO: move to utility header, can be used elsewhere
 template <typename... T>
 auto zip(const T&... containers) -> boost::iterator_range<boost::zip_iterator<decltype(boost::make_tuple(std::begin(containers)...))>>
 {
@@ -122,6 +121,10 @@ auto zip(const T&... containers) -> boost::iterator_range<boost::zip_iterator<de
 }
 
 }}
+
+
+template <typename T>
+class TypeDeterminer;
 
 namespace std
 {

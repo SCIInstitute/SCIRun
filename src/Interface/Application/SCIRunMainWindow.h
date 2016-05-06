@@ -116,7 +116,8 @@ private:
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
-  QMap<QString, QVariant> savedSubnetworks_;
+  QMap<QString, QVariant> savedSubnetworksXml_;
+  QMap<QString, QVariant> savedSubnetworksNames_;
   QToolButton* executeButton_;
   QByteArray windowState_;
   QPushButton* versionButton_;
@@ -139,12 +140,12 @@ private:
   void setupTagManagerWindow();
   void setupPythonConsole();
   void fillModuleSelector();
-  void fillSavedSubnetworkMenu(const QMap<QString, QVariant>& savedSubnets);
+  void fillSavedSubnetworkMenu();
   void setupInputWidgets();
   void setupVersionButton();
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
-  void setupSubnetItem(QTreeWidgetItem* fave);
+  void setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, const QString& idFromMap);
   void showStatusMessage(const QString& str);
   void showStatusMessage(const QString& str, int timeInMsec);
 
@@ -176,6 +177,7 @@ private Q_SLOTS:
   void runScript();
   void importLegacyNetwork();
   void networkModified();
+  void switchMouseMode();
   void filterModuleNamesInTreeView(const QString& start);
   void makePipesEuclidean();
   void makePipesCubicBezier();
@@ -197,6 +199,7 @@ private Q_SLOTS:
   void toolkitDownload();
   void addToPathFromGUI();
   void removeSavedSubnetwork();
+  void renameSavedSubnetwork();
   void displayAcknowledgement();
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();
@@ -214,7 +217,6 @@ private Q_SLOTS:
   void showClipboardHelp();
   void copyVersionToClipboard();
   void updateClipboardHistory(const QString& xml);
-  void updateSavedSubnetworks();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
