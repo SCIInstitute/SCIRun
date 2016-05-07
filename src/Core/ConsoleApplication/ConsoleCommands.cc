@@ -48,8 +48,20 @@ LoadFileCommandConsole::LoadFileCommandConsole()
   addParameter(Variables::Filename, std::string());
 }
 
+//TODO: find a better place for this function
+namespace
+{
+  void quietModulesIfNotVerbose()
+  {
+    if (!Application::Instance().parameters()->verboseMode())
+      SCIRun::Dataflow::Networks::Module::defaultLogger_.reset(new SCIRun::Core::Logging::NullLogger);
+  }
+}
+
 bool LoadFileCommandConsole::execute()
 {
+  quietModulesIfNotVerbose();
+
   auto inputFiles = Application::Instance().parameters()->inputFiles();
   std::string filename;
   if (!inputFiles.empty())
@@ -149,7 +161,8 @@ bool PrintModulesCommand::execute()
 
 bool InteractiveModeCommandConsole::execute()
 {
-  SCIRun::Dataflow::Networks::Module::defaultLogger_.reset(new SCIRun::Core::Logging::NullLogger);
+  quietModulesIfNotVerbose();
+
   PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   std::string line;
   while (true)
@@ -167,6 +180,8 @@ bool InteractiveModeCommandConsole::execute()
 
 bool RunPythonScriptCommandConsole::execute()
 {
+  quietModulesIfNotVerbose();
+
   auto script = Application::Instance().parameters()->pythonScriptFile();
   if (script)
   {
