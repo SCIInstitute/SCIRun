@@ -99,6 +99,8 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setExecutionContext(this);
 #endif
+
+  connect(this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SLOT(redrawTagGroups()));
 }
 
 void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
@@ -665,6 +667,13 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
   QGraphicsView::mouseMoveEvent(event);
 }
 
+void NetworkEditor::mousePressEvent(QMouseEvent *event)
+{
+  if (event->button() == Qt::MiddleButton)
+    Q_EMIT middleMouseClicked();
+  QGraphicsView::mousePressEvent(event);
+}
+
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
   if (modulesSelectedByCL_)
@@ -1208,6 +1217,36 @@ void NetworkEditor::moduleWindowAction()
   }
 }
 
+void NetworkEditor::adjustModuleWidth(int delta)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+    {
+      module->adjustWidth(delta);
+      auto proxy = getModuleProxy(item);
+      proxy->setMaximumWidth(module->width());
+      qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
+    }
+  }
+}
+
+void NetworkEditor::adjustModuleHeight(int delta)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+    {
+      module->adjustHeight(delta);
+      auto proxy = getModuleProxy(item);
+      proxy->setMaximumHeight(module->height());
+      qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
+    }
+  }
+}
+
 void NetworkEditor::setModuleMini(bool mini)
 {
   ModuleWidget::setGlobalMiniMode(mini);
@@ -1282,7 +1321,7 @@ void NetworkEditor::tagLayer(bool active, int tag)
     if (active)
     {
       const auto itemTag = item->data(TagDataKey).toInt();
-      if (tag == AllTags)
+      if (AllTags == tag || ShowGroups == tag)
       {
         highlightTaggedItem(item, itemTag);
         if (itemTag != 0)
@@ -1312,13 +1351,27 @@ void NetworkEditor::tagLayer(bool active, int tag)
     else
       item->setGraphicsEffect(nullptr);
   }
-  if (tag == AllTags)
+  if (ShowGroups == tag)
   {
     for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
     {
-      scene_->addRect(rectIter.value().adjusted(-10,-10,10,10), QPen(tagColor_(rectIter.key())));
+      auto rect = scene_->addRect(rectIter.value().adjusted(-10,-10,10,10), QPen(tagColor_(rectIter.key())));
+      rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
     }
   }
+  if (HideGroups == tag)
+  {
+    Q_FOREACH(QGraphicsItem* item, scene_->items())
+    {
+      if (auto rect = dynamic_cast<QGraphicsRectItem*>(item))
+        delete rect;
+    }
+  }
+}
+
+void NetworkEditor::redrawTagGroups()
+{
+  qDebug() << "TODO";
 }
 
 void NetworkEditor::highlightTaggedItem(int tagValue)

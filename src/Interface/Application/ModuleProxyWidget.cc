@@ -261,12 +261,12 @@ void ModuleProxyWidget::snapToGrid()
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
+  stackDepth_++;
+  if (auto p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     auto conn = p->doMouseMove(event->buttons(), mapToScene(event->pos()));
     if (conn)
     {
-      stackDepth_++;
       if (stackDepth_ > 1)
         return;
       ensureItemVisible(conn);
@@ -278,6 +278,8 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
     return;
   }
+  if (stackDepth_ > 1)
+    return;
   if (stackDepth_ == 0)
     ensureThisVisible();
   QGraphicsItem::mouseMoveEvent(event);

@@ -266,12 +266,20 @@ void SCIRunMainWindow::readSettings()
     triggeredEventsWindow_->setScripts(toStrMap(scriptsMap));
   }
 
-  const QString savedSubnetworks = "savedSubnetworks";
-  if (settings.contains(savedSubnetworks))
+  const QString savedSubnetworksNames = "savedSubnetworksNames";
+  if (settings.contains(savedSubnetworksNames))
   {
-    auto subnetMap = settings.value(savedSubnetworks).toMap();
-    GuiLogger::Instance().logInfo("Setting read: savedSubnetworks = " + QStringList(subnetMap.keys()).join(";"));
-    savedSubnetworks_ = subnetMap;
+    auto subnetMap = settings.value(savedSubnetworksNames).toMap();
+    GuiLogger::Instance().logInfo("Setting read: savedSubnetworksNames = " + QString::number(subnetMap.size()));
+    savedSubnetworksNames_ = subnetMap;
+  }
+
+  const QString savedSubnetworksXml = "savedSubnetworksXml";
+  if (settings.contains(savedSubnetworksXml))
+  {
+    auto subnetMap = settings.value(savedSubnetworksXml).toMap();
+    GuiLogger::Instance().logInfo("Setting read: savedSubnetworksXml = " + QString::number(subnetMap.size()));
+    savedSubnetworksXml_ = subnetMap;
   }
 
   restoreGeometry(settings.value("geometry").toByteArray());
@@ -305,7 +313,12 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("tagNames", tagManagerWindow_->getTagNames());
   settings.setValue("tagColors", tagManagerWindow_->getTagColors());
   settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->getScripts()));
-  settings.setValue("savedSubnetworks", savedSubnetworks_);
+  //qDebug() << "writing names: " << savedSubnetworksNames_;
+  settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
+  //settings.setValue("savedSubnetworksNames", QMap<QString, QVariant>());
+  //qDebug() << "writing xml: " << savedSubnetworksXml_;
+  settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
+  //settings.setValue("savedSubnetworksXml", QMap<QString, QVariant>());
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>ImportFieldsFromMatlab</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
@@ -72,17 +72,72 @@
     </widget>
    </item>
    <item>
-    <widget class="QTableWidget" name="tableWidget">
-     <column>
-      <property name="text">
-       <string>Name/Type</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Port</string>
-      </property>
-     </column>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Port</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="portListWidget_">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>Port 1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Port 2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Port 3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Port 4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Port 5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Port 6</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Matlab object</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListWidget" name="matlabObjectListWidget_"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
