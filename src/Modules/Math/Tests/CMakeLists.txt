@@ -40,6 +40,7 @@ SET(Modules_Math_Tests_SRCS
   PortCachingUnitTest.cc
   ComputePCAtest.cc
   ComputeSVDtest.cc
+  ConvertRealToComplexMatrixTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS
