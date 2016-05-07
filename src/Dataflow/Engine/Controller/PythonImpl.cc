@@ -604,7 +604,7 @@ boost::shared_ptr<PyModule> PythonImpl::findModule(const std::string& id) const
 std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
 {
   nec_.executeAll(lookup);
-  return "Execution started.";
+  return "Execution started."; //TODO: attach log for execution ended event.
 }
 
 std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
