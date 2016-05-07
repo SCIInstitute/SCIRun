@@ -48,8 +48,10 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <Core/Python/PythonDatatypeConverter.h>
+#include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
@@ -658,6 +660,12 @@ std::string PythonImpl::importNetwork(const std::string& filename)
   import->set(Variables::Filename, filename);
   return import->execute() ? (filename + " imported") : "Import failed";
   //TODO: provide more informative python return value string
+}
+
+std::string PythonImpl::runScript(const std::string& filename)
+{
+  PythonInterpreter::Instance().run_script("exec(open('" + filename + "').read())");
+  return filename + " executed.";
 }
 
 std::string PythonImpl::quit(bool force)
