@@ -48,6 +48,7 @@ public:
   QStringList getTagNames() const { return tagNames_.toList(); }
   QStringList getTagColors() const;
   QColor tagColor(int tag) const;
+	static void showHelp(QWidget* parent);
 public Q_SLOTS:
 	void editTagColor();
   void updateTagName(const QString& name);

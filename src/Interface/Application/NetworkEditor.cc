@@ -1370,12 +1370,18 @@ void NetworkEditor::drawTagGroups()
   for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
   {
     QPen pen(tagColor_(rectIter.key()));
-    pen.setStyle(Qt::DashLine);
-    pen.setWidth(6);
+    //pen.setStyle(Qt::DotLine);
+    pen.setWidth(3);
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::RoundJoin);
     auto rect = scene_->addRect(rectIter.value().adjusted(-10,-10,10,10), pen);
     rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
+
+    auto fill = new QGraphicsRectItem(rectIter.value().adjusted(-10,-10,10,10));
+    auto c = pen.color();
+    c.setAlphaF(0.15);
+    fill->setBrush(c);
+    scene_->addItem(fill);
   }
 }
 

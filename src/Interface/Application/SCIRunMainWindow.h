@@ -215,6 +215,7 @@ private Q_SLOTS:
   void loadPythonAPIDoc();
   void showSnippetHelp();
   void showClipboardHelp();
+  void showTagHelp();
   void copyVersionToClipboard();
   void updateClipboardHistory(const QString& xml);
   void changeExecuteActionIconToStop();
