@@ -361,6 +361,7 @@ namespace
         input_ = boost::make_shared<PyPortsImpl>(module_, true, nec_);
         output_ = boost::make_shared<PyPortsImpl>(module_, false, nec_);
       }
+      creationTime_ = boost::posix_time::second_clock::local_time();
     }
 
     virtual std::string id() const override
@@ -503,10 +504,16 @@ namespace
       return input_;
     }
 
+    virtual boost::posix_time::ptime creationTime() const override
+    {
+      return creationTime_;
+    }
+
   private:
     ModuleHandle module_;
     NetworkEditorController& nec_;
     boost::shared_ptr<PyPortsImpl> input_, output_;
+    boost::posix_time::ptime creationTime_;
   };
 }
 
@@ -592,6 +599,7 @@ std::vector<boost::shared_ptr<PyModule>> PythonImpl::moduleList() const
 {
   std::vector<boost::shared_ptr<PyModule>> modules;
   boost::copy(modules_ | boost::adaptors::map_values, std::back_inserter(modules));
+  std::sort(modules.begin(), modules.end(), [](const boost::shared_ptr<PyModule> lhs, const boost::shared_ptr<PyModule> rhs) { return lhs->creationTime() < rhs->creationTime(); });
   return modules;
 }
 
