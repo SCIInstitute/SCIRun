@@ -66,7 +66,7 @@ namespace SCIRun
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
       void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
       void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
-      QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+      QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
       virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:
       void updateNote(const Note& note);
@@ -92,6 +92,8 @@ namespace SCIRun
     static const int CurrentTagKey = 101;
     static const int NoTag = -1;
     static const int AllTags = -50;
+    static const int ShowGroups = -100;
+    static const int HideGroups = -101;
   }
 }
 

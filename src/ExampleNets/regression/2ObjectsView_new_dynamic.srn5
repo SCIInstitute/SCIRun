@@ -629,7 +629,7 @@
 			<item>
 				<moduleId1_>ViewScene:5</moduleId1_>
 				<port1_>
-					<name>ScreenshotData</name>
+					<name>ScreenshotDataRed</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportMatrixInfo:0</moduleId2_>
@@ -641,7 +641,7 @@
 			<item>
 				<moduleId1_>ViewScene:6</moduleId1_>
 				<port1_>
-					<name>ScreenshotData</name>
+					<name>ScreenshotDataRed</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
@@ -653,7 +653,7 @@
 			<item>
 				<moduleId1_>ViewScene:7</moduleId1_>
 				<port1_>
-					<name>ScreenshotData</name>
+					<name>ScreenshotDataRed</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportMatrixInfo:1</moduleId2_>
@@ -818,4 +818,3 @@ p, li { white-space: pre-wrap; }
 	</moduleTags>
 </networkFile>
 </boost_serialization>
-

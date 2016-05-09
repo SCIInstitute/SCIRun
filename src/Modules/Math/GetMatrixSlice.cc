@@ -85,8 +85,7 @@ void GetMatrixSlice::execute()
       throw;
     }
     
-
-    auto playMode = transient_value_cast<int>(state->getTransientValue(Parameters::PlayModeActive));
+    auto playMode = transient_value_cast_with_variable_check<int>(state->getTransientValue(Parameters::PlayModeActive));
     if (playMode == GetMatrixSliceAlgo::PLAY)
     {
       auto sliceIncrement = state->getValue(Parameters::SliceIncrement).toInt();

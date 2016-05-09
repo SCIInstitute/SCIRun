@@ -434,6 +434,8 @@ namespace
             return boost::python::object(transient_value_cast<double>(v));
           if (transient_value_check<bool>(v))
             return boost::python::object(transient_value_cast<bool>(v));
+          if (transient_value_check<Variable>(v))
+            return boost::python::object(convertVariableToPythonObject(transient_value_cast<Variable>(v)));
 
           return boost::python::object();
         }

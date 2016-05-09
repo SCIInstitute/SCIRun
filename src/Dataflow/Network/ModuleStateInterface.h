@@ -123,6 +123,33 @@ namespace Networks {
     }
   }
 
+  template <class T>
+  T convertVariable(const Core::Algorithms::Variable&)
+  {
+    return {};
+  }
+
+  template <>
+  inline int convertVariable<int>(const Core::Algorithms::Variable& var)
+  {
+    return var.toInt();
+  }
+
+  template <class T>
+  T transient_value_cast_with_variable_check(const ModuleStateInterface::TransientValueOption& x)
+  {
+    if (!x)
+      return{};
+
+    if (transient_value_check<T>(x))
+      return any_cast_or_default_<T>(*x);
+
+    if (transient_value_check<Core::Algorithms::Variable>(x))
+      return convertVariable<T>(any_cast_or_default_<Core::Algorithms::Variable>(*x));
+
+    return {};
+  }
+
   class SCISHARE StateChangeObserver
   {
   public:
