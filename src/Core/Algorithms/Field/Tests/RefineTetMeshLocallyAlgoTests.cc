@@ -224,14 +224,6 @@ TEST(RefineTetMeshLocallyAlgoTests, Test5MoreTheoreticalCutCases)
 {
  double epsilon=1e-8;
  RefineTetMeshLocallyAlgorithm algo; 
- /*
- FieldList input_files=LoadAllCasesInputField();
- FieldHandle input=input_files[56],Casefld, case_exp_result; /// use a random tet input to check theoretical cases that can only be achieved by splitting tet neighbours
- VMesh* input_vmesh=input->vmesh();
- DenseMatrixHandle output_nodes,exp_result_nodes;
- GetMeshNodesAlgo getfieldnodes_algo;
- VMesh *case_vmesh, *case_exp_vmesh;
- */
  VMesh::Node::array_type onodes1(4),onodes2(4);
  DenseMatrixHandle output_nodes,exp_result_nodes;
  FieldList input_list=LoadAllCasesInputField();
