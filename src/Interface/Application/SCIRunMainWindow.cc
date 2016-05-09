@@ -1677,6 +1677,17 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
     	}
 		}
 	}
+  else if (event->key() == Qt::Key_G && (event->modifiers() & Qt::ShiftModifier))
+  {
+    if (!actionToggleTagLayer_->isChecked())
+    {
+      if (networkEditor_->tagLayerActive())
+      {
+        networkEditor_->tagLayer(true, HideGroups);
+        showStatusMessage("Tag layer active: Groups hidden");
+      }
+    }
+  }
 	else if (event->key() == Qt::Key_G)
 	{
 		if (!actionToggleTagLayer_->isChecked())
@@ -1685,17 +1696,6 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
     	{
       	networkEditor_->tagLayer(true, ShowGroups);
 				showStatusMessage("Tag layer active: Groups shown");
-    	}
-		}
-	}
-	else if (event->key() == Qt::Key_H)
-	{
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	if (networkEditor_->tagLayerActive())
-    	{
-      	networkEditor_->tagLayer(true, HideGroups);
-				showStatusMessage("Tag layer active: Groups hidden");
     	}
 		}
 	}
