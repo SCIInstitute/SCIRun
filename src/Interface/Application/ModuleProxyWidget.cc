@@ -27,7 +27,6 @@
 */
 
 #include <QtGui>
-#include <iostream>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/ModuleWidget.h>
@@ -52,7 +51,7 @@ namespace SCIRun
     class ModuleWidgetNoteDisplayStrategy : public NoteDisplayStrategy
     {
     public:
-      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const
+      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const override
       {
         const int noteMargin = 2;
         auto noteRect = note->boundingRect();
@@ -133,10 +132,6 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   stackDepth_ = 0;
 
   originalSize_ = size();
-  //qDebug() << "MPW1" << size();
-  //adjustHeight(-15);
-  //originalSize_ = size();
-  //qDebug() << "MPW2" << size();
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
@@ -216,7 +211,7 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
   updatePressedSubWidget(event);
 
-  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
+  if (auto p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     p->doMousePress(event->button(), mapToScene(event->pos()));
     return;
@@ -240,7 +235,7 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 static int snapTo(int oldPos)
 {
-  using namespace SCIRun::Core::Math;
+  using namespace Math;
   const int strip = 76; // size of new background grid png
   const int shift = oldPos % strip;
 
@@ -254,7 +249,7 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   if (taggingOn)
     return;
 
-  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
+  if (auto p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     p->doMouseRelease(event->button(), mapToScene(event->pos()), event->modifiers());
     return;
