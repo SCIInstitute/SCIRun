@@ -130,6 +130,13 @@ QColor TagManagerWindow::tagColor(int tag) const
   return QColor(r, g, b);
 }
 
+QString TagManagerWindow::tagName(int tag) const
+{
+  if (0 <= tag && tag < NumberOfTags)
+    return tagNames_[tag];
+  return "[No tag]";
+}
+
 void TagManagerWindow::showHelp(QWidget* parent)
 {
   QMessageBox::information(parent,

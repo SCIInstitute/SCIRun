@@ -62,12 +62,14 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   boost::shared_ptr<DialogErrorControl> dialogErrorControl,
   PreexecuteFunc preexecuteFunc,
   TagColorFunc tagColor,
+  TagNameFunc tagName,
   QWidget* parent)
   : QGraphicsView(parent),
   modulesSelectedByCL_(false),
   currentScale_(1),
   tagLayerActive_(false),
   tagColor_(tagColor),
+  tagName_(tagName),
   scene_(new QGraphicsScene(parent)),
   visibleItems_(true),
   lastModulePosition_(0,0),
@@ -1369,19 +1371,26 @@ void NetworkEditor::drawTagGroups()
 
   for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
   {
+    auto rectBounds = rectIter.value().adjusted(-10, -10, 10, 10);
     QPen pen(tagColor_(rectIter.key()));
-    //pen.setStyle(Qt::DotLine);
     pen.setWidth(3);
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::RoundJoin);
-    auto rect = scene_->addRect(rectIter.value().adjusted(-10,-10,10,10), pen);
+    auto rect = scene_->addRect(rectBounds, pen);
     rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
 
-    auto fill = new QGraphicsRectItem(rectIter.value().adjusted(-10,-10,10,10));
+    auto fill = new QGraphicsRectItem(rectBounds);
     auto c = pen.color();
     c.setAlphaF(0.15);
     fill->setBrush(c);
     scene_->addItem(fill);
+
+    static const QFont labelFont("Courier", 20, QFont::Bold);
+    auto label = scene_->addSimpleText(tagName_(rectIter.key()), labelFont);
+    label->setBrush(pen.color());
+    static const QFontMetrics fm(labelFont);
+    auto textWidthInPixels = fm.width(label->text());
+    label->setPos((rect->rect().topLeft() + rect->rect().topRight()) / 2 + QPointF(-textWidthInPixels/2, -30));
   }
 }
 
@@ -1389,8 +1398,10 @@ void NetworkEditor::removeTagGroups()
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    if (auto rect = dynamic_cast<QGraphicsRectItem*>(item))
-      delete rect;
+    if (dynamic_cast<QGraphicsRectItem*>(item) || dynamic_cast<QGraphicsSimpleTextItem*>(item))
+    {
+      delete item;
+    }
   }
 }
 
