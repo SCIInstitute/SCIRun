@@ -216,7 +216,7 @@ namespace
   const int ModuleWidgetDisplayBase::smushFactor = 15;
   const int ModuleWidgetDisplayBase::titleFontSize = 8;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
-  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -30;
+  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
 #else
   const int ModuleWidgetDisplayBase::moduleWidthThreshold = 80;
   const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
