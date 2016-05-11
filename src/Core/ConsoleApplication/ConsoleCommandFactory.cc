@@ -54,6 +54,8 @@ CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
     return boost::make_shared<PrintVersionCommand>();
   case GlobalCommands::LoadNetworkFile:
     return boost::make_shared<LoadFileCommandConsole>();
+  case GlobalCommands::PrintModules:
+    return boost::make_shared<PrintModulesCommand>();
   case GlobalCommands::SaveNetworkFile:
     return boost::make_shared<SaveFileCommandConsole>();
   case GlobalCommands::RunPythonScript:

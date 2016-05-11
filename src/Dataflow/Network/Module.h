@@ -231,6 +231,7 @@ namespace Networks {
     static ModuleStateFactoryHandle defaultStateFactory_;
     static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
     static ReexecuteStrategyFactoryHandle defaultReexFactory_;
+    static Core::Logging::LoggerHandle defaultLogger_;
 
   protected:
     const ModuleLookupInfo info_;
@@ -307,7 +308,6 @@ namespace Networks {
     Core::Logging::LoggerHandle log_;
     Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
     UiToggleFunc uiToggleFunc_;
-    static Core::Logging::LoggerHandle defaultLogger_;
     static ModuleIdGeneratorHandle idGenerator_;
     friend class UseGlobalInstanceCountIdGenerator;
   };

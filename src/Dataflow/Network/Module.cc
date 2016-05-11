@@ -330,7 +330,7 @@ bool Module::executeWithSignals() NOEXCEPT
     resetStateChanged();
     inputsChanged_ = false;
   }
-  
+
   executeEnds_(executionTime, id_);
   return returnCode;
 }

@@ -62,12 +62,14 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   boost::shared_ptr<DialogErrorControl> dialogErrorControl,
   PreexecuteFunc preexecuteFunc,
   TagColorFunc tagColor,
+  TagNameFunc tagName,
   QWidget* parent)
   : QGraphicsView(parent),
   modulesSelectedByCL_(false),
   currentScale_(1),
   tagLayerActive_(false),
   tagColor_(tagColor),
+  tagName_(tagName),
   scene_(new QGraphicsScene(parent)),
   visibleItems_(true),
   lastModulePosition_(0,0),
@@ -1221,13 +1223,11 @@ void NetworkEditor::adjustModuleWidth(int delta)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    auto module = getModule(item);
-    if (module)
+    auto proxy = getModuleProxy(item);
+    if (proxy)
     {
-      module->adjustWidth(delta);
-      auto proxy = getModuleProxy(item);
-      proxy->setMaximumWidth(module->width());
-      qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
+      proxy->adjustWidth(delta);
+      //qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
     }
   }
 }
@@ -1236,13 +1236,11 @@ void NetworkEditor::adjustModuleHeight(int delta)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    auto module = getModule(item);
-    if (module)
+    auto proxy = getModuleProxy(item);
+    if (proxy)
     {
-      module->adjustHeight(delta);
-      auto proxy = getModuleProxy(item);
-      proxy->setMaximumHeight(module->height());
-      qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
+      proxy->adjustHeight(delta);
+      //qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
     }
   }
 }
@@ -1313,7 +1311,7 @@ QGraphicsEffect* Gui::blurEffect(double radius)
 void NetworkEditor::tagLayer(bool active, int tag)
 {
   tagLayerActive_ = active;
-  QMap<int,QRectF> tagItemRects;
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     item->setData(TagLayerKey, active);
@@ -1324,19 +1322,6 @@ void NetworkEditor::tagLayer(bool active, int tag)
       if (AllTags == tag || ShowGroups == tag)
       {
         highlightTaggedItem(item, itemTag);
-        if (itemTag != 0)
-        {
-          auto r = item->boundingRect();
-          r.translate(item->pos());
-          if (!tagItemRects.contains(itemTag))
-          {
-            tagItemRects.insert(itemTag, r);
-          }
-          else
-          {
-            tagItemRects[itemTag] = tagItemRects[itemTag].united(r);
-          }
-        }
       }
       else if (tag != NoTag)
       {
@@ -1353,25 +1338,77 @@ void NetworkEditor::tagLayer(bool active, int tag)
   }
   if (ShowGroups == tag)
   {
-    for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
-    {
-      auto rect = scene_->addRect(rectIter.value().adjusted(-10,-10,10,10), QPen(tagColor_(rectIter.key())));
-      rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
-    }
+    redrawTagGroups();
   }
   if (HideGroups == tag)
   {
-    Q_FOREACH(QGraphicsItem* item, scene_->items())
+    removeTagGroups();
+  }
+}
+
+void NetworkEditor::drawTagGroups()
+{
+  QMap<int,QRectF> tagItemRects;
+
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    const auto itemTag = item->data(TagDataKey).toInt();
+
+    if (itemTag != 0)
     {
-      if (auto rect = dynamic_cast<QGraphicsRectItem*>(item))
-        delete rect;
+      auto r = item->boundingRect();
+      r.translate(item->pos());
+      if (!tagItemRects.contains(itemTag))
+      {
+        tagItemRects.insert(itemTag, r);
+      }
+      else
+      {
+        tagItemRects[itemTag] = tagItemRects[itemTag].united(r);
+      }
+    }
+  }
+
+  for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
+  {
+    auto rectBounds = rectIter.value().adjusted(-10, -10, 10, 10);
+    QPen pen(tagColor_(rectIter.key()));
+    pen.setWidth(3);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::RoundJoin);
+    auto rect = scene_->addRect(rectBounds, pen);
+    rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
+
+    auto fill = new QGraphicsRectItem(rectBounds);
+    auto c = pen.color();
+    c.setAlphaF(0.15);
+    fill->setBrush(c);
+    scene_->addItem(fill);
+
+    static const QFont labelFont("Courier", 20, QFont::Bold);
+    auto label = scene_->addSimpleText(tagName_(rectIter.key()), labelFont);
+    label->setBrush(pen.color());
+    static const QFontMetrics fm(labelFont);
+    auto textWidthInPixels = fm.width(label->text());
+    label->setPos((rect->rect().topLeft() + rect->rect().topRight()) / 2 + QPointF(-textWidthInPixels/2, -30));
+  }
+}
+
+void NetworkEditor::removeTagGroups()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (dynamic_cast<QGraphicsRectItem*>(item) || dynamic_cast<QGraphicsSimpleTextItem*>(item))
+    {
+      delete item;
     }
   }
 }
 
 void NetworkEditor::redrawTagGroups()
 {
-  qDebug() << "TODO";
+  removeTagGroups();
+  drawTagGroups();
 }
 
 void NetworkEditor::highlightTaggedItem(int tagValue)

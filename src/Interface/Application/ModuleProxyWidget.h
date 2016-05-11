@@ -48,6 +48,8 @@ namespace SCIRun
       ~ModuleProxyWidget();
       ModuleWidget* getModuleWidget();
       void createStartupNote();
+      void adjustHeight(int delta);
+      void adjustWidth(int delta);
 
     public Q_SLOTS:
       void highlightIfSelected();
@@ -84,6 +86,7 @@ namespace SCIRun
       QPointF cachedPosition_;
       bool doHighlight_;
       int stackDepth_;
+      QSizeF originalSize_;
     };
 
     // arbitrary values

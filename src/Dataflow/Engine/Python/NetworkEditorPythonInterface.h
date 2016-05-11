@@ -34,6 +34,7 @@
 #include <boost/python.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <Dataflow/Engine/Python/share.h>
 
 namespace SCIRun
@@ -64,6 +65,9 @@ namespace SCIRun
     //ports
     virtual boost::shared_ptr<class PyPorts> output() = 0;
     virtual boost::shared_ptr<class PyPorts> input() = 0;
+
+    //time added to network, for id sorting
+    virtual boost::posix_time::ptime creationTime() const = 0;
   };
 
   class SCISHARE PyDatatype
@@ -130,6 +134,7 @@ namespace SCIRun
     virtual std::string saveNetwork(const std::string& filename) = 0;
     virtual std::string loadNetwork(const std::string& filename) = 0;
     virtual std::string importNetwork(const std::string& filename) = 0;
+    virtual std::string runScript(const std::string& filename) = 0;
     virtual std::string quit(bool force) = 0;
     virtual void setUnlockFunc(boost::function<void()> unlock) = 0;
     virtual void setModuleContext(bool inModule) = 0;

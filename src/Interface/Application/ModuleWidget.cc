@@ -216,6 +216,7 @@ namespace
   const int ModuleWidgetDisplayBase::smushFactor = 15;
   const int ModuleWidgetDisplayBase::titleFontSize = 8;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
+  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
 #else
   const int ModuleWidgetDisplayBase::moduleWidthThreshold = 80;
   const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
@@ -223,6 +224,7 @@ namespace
   const int ModuleWidgetDisplayBase::smushFactor = 15;
   const int ModuleWidgetDisplayBase::titleFontSize = 12;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = 1;
+  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -20;
 #endif
 
 class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
@@ -510,7 +512,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
-  qDebug() << width() << height();
+  //qDebug() << width() << height() << currentWidget()->size();
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -581,22 +583,9 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
     //std::cout << "\tNew width: " << width() << std::endl;
   }
   display->adjustLayout(frame->layout());
-  frame->resize(frame->width(), frame->height() + ModuleWidgetDisplayBase::widgetHeightAdjust);
-  originalSize_ = size();
-}
-
-void ModuleWidget::adjustHeight(int delta)
-{
-  auto frame = widget(fullIndex_);
-  frame->setFixedHeight(originalSize_.height() + delta);
-  resize(currentWidget()->size());
-}
-
-void ModuleWidget::adjustWidth(int delta)
-{
-  auto frame = widget(fullIndex_);
-  frame->setFixedWidth(originalSize_.width() + delta);
-  resize(currentWidget()->size());
+  //qDebug() << size() << frame->size();
+  frame->resize(frame->width() + ModuleWidgetDisplayBase::widgetWidthAdjust, frame->height() + ModuleWidgetDisplayBase::widgetHeightAdjust);
+  //qDebug() << size() << frame->size();
 }
 
 void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
