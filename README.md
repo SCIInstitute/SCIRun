@@ -65,6 +65,9 @@ For documentation, please see: http://sciinstitute.github.io/SCIRun/
 * Build Superbuild first (src/Superbuild), then subsequently, SCIRun can be built by itself (src/).
 * Included `build.sh` takes care of all this for you.
 
+### Tagging releases
+On an OSX system, run script `release.sh` in the `src` directory with the release name in format `alpha.XX` as a parameter.
+
 ### Questions and Answers
 For help, email the testing mailing list at scirun5-testers@sci.utah.edu.
 
