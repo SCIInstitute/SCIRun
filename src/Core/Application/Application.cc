@@ -162,9 +162,10 @@ namespace
   class HardCodedPythonTestCommand : public ParameterizedCommand
   {
   public:
+    //explicit HardCodedPythonTestCommand(const std::string& key)
     virtual bool execute() override
     {
-      auto script = Preferences::Instance().postModuleAddScript_temporarySolution.val();
+      auto script = std::string();// Preferences::Instance().postModuleAddScript_temporarySolution.val();
       if (!script.empty())
       {
         PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");

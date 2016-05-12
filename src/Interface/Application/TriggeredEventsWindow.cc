@@ -40,6 +40,7 @@ TriggeredEventsWindow::TriggeredEventsWindow(QWidget* parent /* = 0 */) : QDockW
   setupUi(this);
   connect(eventListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
   connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
+  connect(enabledCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(enableStateChanged(int)));
 }
 
 const QMap<QString, QString>& TriggeredEventsWindow::getScripts() const
@@ -51,19 +52,51 @@ void TriggeredEventsWindow::setScripts(const QMap<QString, QString>& scripts)
 {
   scripts_ = scripts;
 
-  //TODO: hardcode the only enabled entry
   eventListWidget_->setCurrentItem(eventListWidget_->item(1));
-  scriptPlainTextEdit_->setPlainText(scripts_[eventListWidget_->currentItem()->text()]);
+  updateScriptEditor();
+}
+
+const QMap<QString, bool>& TriggeredEventsWindow::getScriptEnabledFlags() const
+{
+  return scriptEnabledFlags_;
+}
+
+void TriggeredEventsWindow::setScriptEnabledFlags(const QMap<QString, bool>& scriptsEnabled)
+{
+  scriptEnabledFlags_ = scriptsEnabled;
+
+  eventListWidget_->setCurrentItem(eventListWidget_->item(1));
+  updateScriptEditor();
+}
+
+namespace
+{
+  const QString defaultScript = "# Insert Python API calls here.\n"
+    "\n"
+    "# Examples:\n"
+    "\n"
+    "# With the \"Post module add\" event, this snippet will change the initial filetype for a specific type of input module :\n"
+    "# scirun_set_module_state(scirun_module_ids()[-1], 'FileTypeName', 'Matlab Matrix (*.mat)') if scirun_module_ids()[-1].startswith('ReadMatrix') else pass\n"
+    "\n"
+    "# With the \"On network load\" event, this snippet will open the UIs for all the ViewScenes in the network :\n"
+    "# TODO\n";
 }
 
 void TriggeredEventsWindow::updateScriptEditor()
 {
-  auto scr = scripts_[eventListWidget_->currentItem()->text()];
-  scriptPlainTextEdit_->setPlainText(scr);
+  auto key = eventListWidget_->currentItem()->text();
+  auto scr = scripts_[key];
+  scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
+  enabledCheckBox_->setChecked(scriptEnabledFlags_[key]);
 }
 
 void TriggeredEventsWindow::updateScripts()
 {
   scripts_[eventListWidget_->currentItem()->text()] = scriptPlainTextEdit_->toPlainText();
-  Core::Preferences::Instance().postModuleAddScript_temporarySolution.setValue(scriptPlainTextEdit_->toPlainText().toStdString());
+  //Core::Preferences::Instance().postModuleAddScript_temporarySolution.setValue(scriptPlainTextEdit_->toPlainText().toStdString());
+}
+
+void TriggeredEventsWindow::enableStateChanged(int state)
+{
+  scriptEnabledFlags_[eventListWidget_->currentItem()->text()] = state == Qt::Checked;
 }
