@@ -76,7 +76,7 @@ namespace
     "# Examples:\n"
     "\n"
     "# With the \"Post module add\" event, this snippet will change the initial filetype for a specific type of input module :\n"
-    "# scirun_set_module_state(scirun_module_ids()[-1], 'FileTypeName', 'Matlab Matrix (*.mat)') if scirun_module_ids()[-1].startswith('ReadMatrix') else pass\n"
+    "# scirun_set_module_state(scirun_module_ids()[-1], 'FileTypeName', 'Matlab Matrix (*.mat)') if scirun_module_ids()[-1].startswith('ReadMatrix') else None\n"
     "\n"
     "# With the \"On network load\" event, this snippet will open the UIs for all the ViewScenes in the network :\n"
     "# TODO\n";
@@ -88,15 +88,43 @@ void TriggeredEventsWindow::updateScriptEditor()
   auto scr = scripts_[key];
   scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
   enabledCheckBox_->setChecked(scriptEnabledFlags_[key]);
+  push();
 }
 
 void TriggeredEventsWindow::updateScripts()
 {
-  scripts_[eventListWidget_->currentItem()->text()] = scriptPlainTextEdit_->toPlainText();
-  //Core::Preferences::Instance().postModuleAddScript_temporarySolution.setValue(scriptPlainTextEdit_->toPlainText().toStdString());
+  auto key = eventListWidget_->currentItem()->text();
+  auto script = scriptPlainTextEdit_->toPlainText();
+  scripts_[key] = script;
+
+  //TODO: waiting on implementation of #41, see ModuleDialogGeneric.h comment
+  push();
 }
 
 void TriggeredEventsWindow::enableStateChanged(int state)
 {
-  scriptEnabledFlags_[eventListWidget_->currentItem()->text()] = state == Qt::Checked;
+  auto key = eventListWidget_->currentItem()->text();
+  auto enabled = state == Qt::Checked;
+  scriptEnabledFlags_[key] = enabled;
+
+  //TODO: waiting on implementation of #41, see ModuleDialogGeneric.h comment
+  push();
+}
+
+void TriggeredEventsWindow::push()
+{
+  for (int i = 0; i < eventListWidget_->count(); ++i)
+  {
+    auto key = eventListWidget_->item(i)->text();
+    if (key == "Post module add")
+    {
+      Core::Preferences::Instance().postModuleAddScript_temporarySolution.setValue(scripts_[key].toStdString());
+      Core::Preferences::Instance().postModuleAddScriptEnabled_temporarySolution.setValue(scriptEnabledFlags_[key]);
+    }
+    else if (key == "On network load")
+    {
+      Core::Preferences::Instance().onNetworkLoadScript_temporarySolution.setValue(scripts_[key].toStdString());
+      Core::Preferences::Instance().onNetworkLoadScriptEnabled_temporarySolution.setValue(scriptEnabledFlags_[key]);
+    }
+  }
 }

@@ -162,17 +162,22 @@ namespace
   class HardCodedPythonTestCommand : public ParameterizedCommand
   {
   public:
-    //explicit HardCodedPythonTestCommand(const std::string& key)
+    HardCodedPythonTestCommand(const std::string& script, bool enabled) : script_(script), enabled_(enabled) {}
     virtual bool execute() override
     {
-      auto script = std::string();// Preferences::Instance().postModuleAddScript_temporarySolution.val();
-      if (!script.empty())
+      if (!enabled_)
+        return false;
+
+      if (!script_.empty())
       {
         PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
-        PythonInterpreter::Instance().run_string(script);
+        PythonInterpreter::Instance().run_string(script_);
       }
       return true;
     }
+  private:
+    std::string script_;
+    bool enabled_;
   };
 
   class HardCodedPythonFactory : public NetworkEventCommandFactory
@@ -180,10 +185,13 @@ namespace
   public:
     virtual CommandHandle create(NetworkEventCommands type) const override
     {
+      const auto& prefs = Preferences::Instance();
       switch (type)
       {
       case NetworkEventCommands::PostModuleAdd:
-        return boost::make_shared<HardCodedPythonTestCommand>();
+        return boost::make_shared<HardCodedPythonTestCommand>(prefs.postModuleAddScript_temporarySolution.val(), prefs.postModuleAddScriptEnabled_temporarySolution.val());
+      case NetworkEventCommands::OnNetworkLoad:
+        return boost::make_shared<HardCodedPythonTestCommand>(prefs.onNetworkLoadScript_temporarySolution.val(), prefs.onNetworkLoadScriptEnabled_temporarySolution.val());
       }
       return nullptr;
     }
@@ -298,141 +306,3 @@ bool Application::get_user_name( std::string& user_name ) const
 {
   return applicationHelper.get_user_name(user_name);
 }
-
-/*
-int Application::GetMajorVersion()
-{
-	return CORE_APPLICATION_MAJOR_VERSION;
-}
-
-int Application::GetMinorVersion()
-{
-	return CORE_APPLICATION_MINOR_VERSION;
-}
-
-int Application::GetPatchVersion()
-{
-	return CORE_APPLICATION_PATCH_VERSION;
-}
-
-bool Application::Is64Bit()
-{
-	return ( sizeof(void *) == 8 );
-}
-
-bool Application::Is32Bit()
-{
-	return ( sizeof(void *) == 4 );
-}
-
-std::string Application::GetApplicationName()
-{
-	return CORE_APPLICATION_NAME;
-}
-
-std::string Application::GetReleaseName()
-{
-	return CORE_APPLICATION_RELEASE;
-}
-
-std::string Application::GetApplicationNameAndVersion()
-{
-	return GetApplicationName() + " " + GetReleaseName() + " " + GetVersion();
-}
-
-std::string Application::GetAbout()
-{
-	return CORE_APPLICATION_ABOUT;
-}
-*/
-
-#if 0 //shouldn't need this anymore
-// Services start up...
-void ApplicationPrivate::start_eai()
-{
-  // Create a database of all available services. The next piece of code
-  // scans both the SCIRun as well as the Packages directories to find
-  // services that need to be started. Services allow communication with
-  // thirdparty software and are Threads that run asychronously with
-  // with the rest of SCIRun. Since the thirdparty software may be running
-  // on a different platform it allows for connecting to remote machines
-  // and running the service on a different machine
-  ServiceDBHandle servicedb(new ServiceDB);
-  // load all services and find all makers
-  servicedb->loadpackages();
-  // activate all services
-  servicedb->activateall();
-
-  // Services are started and created by the ServiceManager,
-  // which will be launched here
-  // Two competing managers will be started,
-  // one for purely internal usage and one that
-  // communicates over a socket.
-  // The latter will only be created if a port is set.
-  // If the current instance of SCIRun should not provide any services
-  // to other instances of SCIRun over the internet,
-  // the second manager will not be launched
-
-  IComAddressHandle internaladdress(new IComAddress("internal","servicemanager"));
-
-// Only build log file if needed for debugging
-#ifdef DEBUG
-  const char *chome = sci_getenv("HOME");
-  std::string scidir("");
-  if (chome)
-    scidir = chome+std::string("/SCIRun/");
-
-  // A log file is not necessary but handy for debugging purposes
-  ServiceLogHandle internallogfile(new ServiceLog(scidir+"scirun_internal_servicemanager.log"));
-
-  ServiceManagerHandle internal_service_manager(new ServiceManager(servicedb, internaladdress, internallogfile));
-#else
-  ServiceManager internal_service_manager(servicedb, internaladdress);
-#endif
-
-  boost::thread t_int(internal_service_manager);
-  t_int.detach();
-
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  // Use the following environment setting to switch on IPv6 support
-  // Most machines should be running a dual-host stack for the internet
-  // connections, so it should not hurt to run in IPv6 mode. In most case
-  // ipv4 address will work as well.
-  // It might be useful
-  std::string ipstr(sci_getenv_p("SCIRUN_SERVICE_IPV6")?"ipv6":"");
-
-  // Start an external service as well
-  const char *serviceport_str = sci_getenv("SCIRUN_SERVICE_PORT");
-  // If its not set in the env, we're done
-  if (!serviceport_str) return;
-
-  // The protocol for conencting has been called "scirun"
-  // In the near future this should be replaced with "sciruns" for
-  // a secure version which will run over ssl.
-
-  // A log file is not necessary but handy for debugging purposes
-
-  IComAddress externaladdress("scirun","",serviceport_str,ipstr);
-
-#ifdef DEBUG
-  ServiceLogHandle externallogfile =
-    new ServiceLog(scidir+"scirun_external_servicemanager.log");
-
-  ServiceManager* external_service_manager =
-    new ServiceManager(servicedb,externaladdress,externallogfile);
-#else
-  ServiceManager* external_service_manager =
-    new ServiceManager(servicedb,externaladdress);
-
-#endif
-
-  Thread* t_ext =
-    new Thread(external_service_manager,"external service manager",
-		  0, Thread::NotActivated);
-  t_ext->setStackSize(1024*20);
-  t_ext->activate(false);
-  t_ext->detach();
-#endif
-}
-#endif

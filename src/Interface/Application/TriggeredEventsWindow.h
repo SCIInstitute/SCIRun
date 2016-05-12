@@ -58,6 +58,7 @@ private Q_SLOTS:
   void updateScripts();
   void enableStateChanged(int state);
 private:
+  void push();
   QMap<QString, QString> scripts_;
   QMap<QString, bool> scriptEnabledFlags_;
 };

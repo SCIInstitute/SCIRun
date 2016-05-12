@@ -75,7 +75,8 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   cmdFactory_(cmdFactory),
   eventCmdFactory_(eventCmdFactory ? eventCmdFactory : boost::make_shared<NullCommandFactory>()),
   serializationManager_(nesm),
-  signalSwitch_(true)
+  signalSwitch_(true),
+  loadingContext_(false)
 {
   dynamicPortManager_.reset(new DynamicPortManager(connectionAdded_, connectionRemoved_, this));
 
@@ -230,7 +231,8 @@ ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
   }
   printNetwork();
 
-  eventCmdFactory_->create(NetworkEventCommands::PostModuleAdd)->execute();
+  if (!loadingContext_)
+    eventCmdFactory_->create(NetworkEventCommands::PostModuleAdd)->execute();
 
   return realModule;
 }
@@ -438,12 +440,23 @@ NetworkFileHandle NetworkEditorController::saveNetwork() const
   return conv.to_xml_data(theNetwork_);
 }
 
+NetworkEditorController::LoadingContext::LoadingContext(bool& load) : load_(load)
+{
+  load_ = true;
+}
+
+NetworkEditorController::LoadingContext::~LoadingContext()
+{
+  load_ = false;
+}
+
 ////////
 // TODO: refactor the next two functions into one
 ///////
 
 void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
+  LoadingContext ctx(loadingContext_);
   if (xml)
   {
     try
@@ -462,7 +475,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         auto disable(createDynamicPortSwitch());
         //this is handled by NetworkXMLConverter now--but now the logic is convoluted.
         //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
-        for (const ConnectionDescription& cd : theNetwork_->connections())
+        for (const auto& cd : theNetwork_->connections())
         {
           auto id = ConnectionId::create(cd);
           connectionAdded_(cd);
@@ -486,6 +499,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       theNetwork_->clear();
       throw;
     }
+    eventCmdFactory_->create(NetworkEventCommands::OnNetworkLoad)->execute();
   }
 }
 
