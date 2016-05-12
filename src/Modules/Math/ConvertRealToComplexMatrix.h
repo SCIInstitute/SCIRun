@@ -26,41 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_TAGMANAGERWINDOW_H
-#define INTERFACE_APPLICATION_TAGMANAGERWINDOW_H
+#ifndef MODULES_MATH_ConvertRealToComplexMatrix_H
+#define MODULES_MATH_ConvertRealToComplexMatrix_H
 
-#include "ui_TagManager.h"
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Modules {
+namespace Math {
 
-class TagManagerWindow : public QDockWidget, public Ui::TagManager
-{
-	Q_OBJECT
+  class SCISHARE ConvertRealToComplexMatrix : public Dataflow::Networks::Module,
+    public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
+    public Has1OutputPort<ComplexDenseMatrixPortTag>
+  {
+  public:
+    ConvertRealToComplexMatrix();
+    virtual void execute();
+    virtual void setStateDefaults() {};
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
-public:
-  explicit TagManagerWindow(QWidget* parent = nullptr);
-  enum { NumberOfTags = 10 };
-  void setTagNames(const QVector<QString>& names);
-  void setTagColors(const QVector<QString>& colors);
-  QStringList getTagNames() const { return tagNames_.toList(); }
-  QStringList getTagColors() const;
-  QColor tagColor(int tag) const;
-  QString tagName(int tag) const;
-	static void showHelp(QWidget* parent);
-public Q_SLOTS:
-	void editTagColor();
-  void updateTagName(const QString& name);
-private Q_SLOTS:
-  void helpButtonClicked();
-private:
-  std::vector<QLineEdit*> tagLineEdits_;
-  std::vector<QPushButton*> tagButtons_;
-  QVector<QString> tagNames_;
-  std::vector<std::string> tagColors_;
-};
-
-}
-}
+    INPUT_PORT(0, RealPartMatrix, Matrix);
+    INPUT_PORT(1, ComplexPartMatrix, Matrix);
+    OUTPUT_PORT(0, Output, ComplexDenseMatrix);
+  };
+}}}
 
 #endif

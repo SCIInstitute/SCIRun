@@ -230,6 +230,21 @@ std::string NetworkEditorPythonAPI::importNetwork(const std::string& filename)
   }
 }
 
+std::string NetworkEditorPythonAPI::runScript(const std::string& filename)
+{
+  Guard g(pythonLock_.get());
+
+  if (impl_ && impl_->isModuleContext())
+    return "In module context--function not available";
+
+  if (impl_)
+    return impl_->runScript(filename);
+  else
+  {
+    return "Null implementation: NetworkEditorPythonAPI::runScript()";
+  }
+}
+
 std::string NetworkEditorPythonAPI::quit(bool force)
 {
   Guard g(pythonLock_.get());

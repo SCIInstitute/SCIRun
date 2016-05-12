@@ -239,6 +239,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   connect(helpActionPythonAPI_, SIGNAL(triggered()), this, SLOT(loadPythonAPIDoc()));
   connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
   connect(helpActionClipboard_, SIGNAL(triggered()), this, SLOT(showClipboardHelp()));
+	connect(helpActionTagLayer_, SIGNAL(triggered()), this, SLOT(showTagHelp()));
 
   connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
 
@@ -504,9 +505,10 @@ void SCIRunMainWindow::setupNetworkEditor()
   //Log::get("Modules").addCustomAppender(moduleLog);
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*prefsWindow_->defaultNotePositionComboBox_));
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
+  auto tagNameFunc = [this](int tag) { return tagManagerWindow_->tagName(tag); };
 	auto preexecuteFunc = [this]() { preexecute(); };
   networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
-		tagColorFunc, scrollAreaWidgetContents_);
+    tagColorFunc, tagNameFunc, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   //networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -1363,7 +1365,7 @@ int subnetHeight = 40;
 int subnetHeight = 45;
 #endif
   dualPushButtons->setMaximumHeight(subnetHeight);
-  
+
   moduleSelectorTreeWidget_->setItemWidget(fave, 0, dualPushButtons);
   auto id = addToMap ? idFromPointer(fave) + "::" + fave->text(0) : idFromMap;
   delButton->setProperty("ID", id);
@@ -1399,7 +1401,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
 					setupSubnetItem(fave, true, "");
         }
       }
-    } 
+    }
     else
     {
       if (faves && item->textColor(0) != CLIPBOARD_COLOR)
@@ -1676,6 +1678,17 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
     	}
 		}
 	}
+  else if (event->key() == Qt::Key_G && (event->modifiers() & Qt::ShiftModifier))
+  {
+    if (!actionToggleTagLayer_->isChecked())
+    {
+      if (networkEditor_->tagLayerActive())
+      {
+        networkEditor_->tagLayer(true, HideGroups);
+        showStatusMessage("Tag layer active: Groups hidden");
+      }
+    }
+  }
 	else if (event->key() == Qt::Key_G)
 	{
 		if (!actionToggleTagLayer_->isChecked())
@@ -1684,17 +1697,6 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
     	{
       	networkEditor_->tagLayer(true, ShowGroups);
 				showStatusMessage("Tag layer active: Groups shown");
-    	}
-		}
-	}
-	else if (event->key() == Qt::Key_H)
-	{
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	if (networkEditor_->tagLayerActive())
-    	{
-      	networkEditor_->tagLayer(true, HideGroups);
-				showStatusMessage("Tag layer active: Groups hidden");
     	}
 		}
 	}
@@ -1810,6 +1812,11 @@ void SCIRunMainWindow::setupTagManagerWindow()
   tagManagerWindow_ = new TagManagerWindow(this);
   connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
   connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
+}
+
+void SCIRunMainWindow::showTagHelp()
+{
+	TagManagerWindow::showHelp(this);
 }
 
 void SCIRunMainWindow::toggleTagLayer(bool toggle)

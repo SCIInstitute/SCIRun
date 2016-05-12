@@ -633,7 +633,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
     algo.algo_ = this;
 
     auto task_i = [&algo,this](int i) { algo.parallel(i); };
-    Parallel::RunTasks(task_i, Parallel::NumCores());
+    Parallel::RunTasks(task_i, np);
   }
   else if(method == "singledestination")
   {
@@ -649,7 +649,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
     algo.algo_ = this;
 
     auto task_i = [&algo,this](int i) { algo.parallel(i); };
-    Parallel::RunTasks(task_i, Parallel::NumCores());
+    Parallel::RunTasks(task_i, np);
   }
   else if (method == "interpolateddata")
   { 
@@ -666,7 +666,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
     algo.algo_ = this;
 
     auto task_i = [&algo,this](int i) { algo.parallel(i); };
-    Parallel::RunTasks(task_i, Parallel::NumCores());
+    Parallel::RunTasks(task_i, np);
   }
 
   output.reset(new SparseRowMatrix(m,n,rr,cc,vv,nnz));

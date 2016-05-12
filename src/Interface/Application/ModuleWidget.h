@@ -88,6 +88,7 @@ public:
   static const int smushFactor;
   static const int titleFontSize;
   static const int widgetHeightAdjust;
+  static const int widgetWidthAdjust;
 };
 
 typedef boost::shared_ptr<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
@@ -177,8 +178,6 @@ public Q_SLOTS:
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
   void replaceMe();
-  void adjustHeight(int delta);
-  void adjustWidth(int delta);
   static void setGlobalMiniMode(bool mini);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
@@ -233,7 +232,6 @@ private:
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
   std::atomic<int> previousModuleState_;
-  QSize originalSize_;
   void addPorts(int index);
   void createPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);

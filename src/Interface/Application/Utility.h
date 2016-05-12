@@ -47,8 +47,10 @@ namespace Gui
   QColor to_color(const std::string& str, int alpha = 255);
 
   QColor defaultTagColor(int tag);
-  typedef std::function<QColor(int)> TagColorFunc;
+
+  using TagColorFunc = std::function<QColor(int)>;
   using PreexecuteFunc = std::function<void()>;
+  using TagNameFunc = std::function<QString(int)>;
 
   QString colorToString(const QColor& color);
 

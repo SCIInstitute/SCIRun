@@ -151,7 +151,8 @@ namespace Gui {
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
 				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
         PreexecuteFunc preexecuteFunc,
-        TagColorFunc tagColor = defaultTagColor,
+        TagColorFunc tagColor,
+        TagNameFunc tagName,
         QWidget* parent = nullptr);
     ~NetworkEditor();
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -290,10 +291,13 @@ namespace Gui {
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
     void pasteImpl(const QString& xml);
+    void drawTagGroups();
+    void removeTagGroups();
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
     TagColorFunc tagColor_;
+    TagNameFunc tagName_;
 
     QGraphicsScene* scene_;
 

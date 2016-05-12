@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,26 +28,34 @@
 /// @todo Documentation Core/Logging/ConsoleLogger.h
 
 #ifndef CORE_LOGGING_CONSOLELOGGER_H
-#define CORE_LOGGING_CONSOLELOGGER_H 
+#define CORE_LOGGING_CONSOLELOGGER_H
 
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Logging/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
     namespace Logging
     {
-      class SCISHARE ConsoleLogger : public LegacyLoggerInterface 
+      class SCISHARE ConsoleLogger : public LegacyLoggerInterface
       {
       public:
-        virtual void error(const std::string& msg) const;
-        virtual void warning(const std::string& msg) const;
-        virtual void remark(const std::string& msg) const;
-        virtual void status(const std::string& msg) const;
+        virtual void error(const std::string& msg) const override;
+        virtual void warning(const std::string& msg) const override;
+        virtual void remark(const std::string& msg) const override;
+        virtual void status(const std::string& msg) const override;
       };
 
+      class SCISHARE NullLogger : public LegacyLoggerInterface
+      {
+      public:
+        virtual void error(const std::string& msg) const override {}
+        virtual void warning(const std::string& msg) const override {}
+        virtual void remark(const std::string& msg) const override {}
+        virtual void status(const std::string& msg) const override {}
+      };
     }
   }
 }
