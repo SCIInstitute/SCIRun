@@ -40,6 +40,10 @@ namespace SCIRun {
 		namespace Algorithms {
 			namespace FiniteElements {
 
+        using value_type = double;
+        using matrix_type = Datatypes::SparseRowMatrixGeneric<value_type>;
+        using matrix_pointer_type = boost::shared_ptr<matrix_type>;
+
 class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
 {
   public:
@@ -63,13 +67,13 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
 
     bool run(FieldHandle input,
              Datatypes::DenseMatrixHandle ctable,
-             Datatypes::SparseRowMatrixHandle& output) const;
+             matrix_pointer_type& output) const;
   
-    virtual AlgorithmOutput run(const AlgorithmInput &) const;
+    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
 private:
   mutable int generation_;
-  mutable std::vector<std::vector<double> > basis_values_;
-  mutable Datatypes::SparseRowMatrixHandle basis_fematrix_;
+  mutable std::vector<std::vector<value_type> > basis_values_;
+  mutable matrix_pointer_type basis_fematrix_;
 };
 
 }}}}

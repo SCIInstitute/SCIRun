@@ -63,7 +63,7 @@ namespace {
 class FEMBuilder
 {
 public:
-  FEMBuilder(const AlgorithmBase* algo) :
+  explicit FEMBuilder(const AlgorithmBase* algo) :
     algo_(algo), numprocessors_(Parallel::NumCores()),
     barrier_("FEMBuilder Barrier", numprocessors_),
     mesh_(nullptr), field_(nullptr),
@@ -77,12 +77,13 @@ public:
     global_dimension(0), use_tensor_(false), use_scalars_(false)
   {
   }
-  
-  // Local entry function for none pure function.
+
   bool build_matrix(FieldHandle input, 
                     DenseMatrixHandle ctable,
-                    SparseRowMatrixHandle& output);
+                    matrix_pointer_type& output);
   
+
+
 private:
   const AlgorithmBase* algo_;
   int numprocessors_;
@@ -91,7 +92,7 @@ private:
   VMesh* mesh_;
   VField *field_;
   
-  SparseRowMatrixHandle fematrix_;
+  matrix_pointer_type fematrix_;
   
   std::vector<bool> success_;
   
@@ -116,37 +117,33 @@ private:
   std::vector<std::pair<std::string, Tensor> > tensors_;
   
   bool use_scalars_;
-  std::vector<std::pair<std::string, double> > scalars_;
+  std::vector<std::pair<std::string, value_type> > scalars_;
   
   // Entry point for the parallel version
   void parallel(int proc);
-  
-private:
-  
-  inline void add_lcl_gbl(index_type row, const std::vector<index_type> &cols, const std::vector<double> &lcl_a)
+
+  void add_lcl_gbl(index_type row, const std::vector<index_type> &cols, const std::vector<value_type> &lcl_a)
   {
     for (size_t i = 0; i < lcl_a.size(); i++)
       fematrix_->coeffRef(row, cols[i]) += lcl_a[i];
   }
   
-private:
-  
   void create_numerical_integration(std::vector<VMesh::coords_type > &p,
-                                    std::vector<double> &w,
-                                    std::vector<std::vector<double> > &d);
+                                    std::vector<value_type> &w,
+                                    std::vector<std::vector<value_type> > &d);
   bool build_local_matrix(VMesh::Elem::index_type c_ind,
                           index_type row, 
-                          std::vector<double> &l_stiff,
+                          std::vector<value_type> &l_stiff,
                           std::vector<VMesh::coords_type> &p,
-                          std::vector<double> &w,
-                          std::vector<std::vector<double> >  &d);
+                          std::vector<value_type> &w,
+                          std::vector<std::vector<value_type> >  &d);
   bool build_local_matrix_regular(VMesh::Elem::index_type c_ind,
                                   index_type row, 
-                                  std::vector<double> &l_stiff,
+                                  std::vector<value_type> &l_stiff,
                                   std::vector<VMesh::coords_type> &p,
-                                  std::vector<double> &w,
-                                  std::vector<std::vector<double> >  &d, 
-                                  std::vector<std::vector<double> > &precompute);
+                                  std::vector<value_type> &w,
+                                  std::vector<std::vector<value_type> >  &d, 
+                                  std::vector<std::vector<value_type> > &precompute);
   bool setup();
   
 };
@@ -155,7 +152,7 @@ private:
 bool
 FEMBuilder::build_matrix(FieldHandle input, 
                          DenseMatrixHandle ctable,
-                         SparseRowMatrixHandle& output)
+                         matrix_pointer_type& output)
 {
   // Get virtual interface to data
   field_ = input->vfield();
@@ -258,8 +255,8 @@ FEMBuilder::build_matrix(FieldHandle input,
   {
     // Make sure the matrix is fully symmetric, this compensates for round off
     // errors
-    SparseRowMatrix transpose = fematrix_->transpose();
-    output.reset(new SparseRowMatrix(0.5*(transpose + *fematrix_)));
+    matrix_type transpose = fematrix_->transpose();
+    output.reset(new matrix_type(0.5*(transpose + *fematrix_)));
   }
   else
   {
@@ -274,8 +271,8 @@ FEMBuilder::build_matrix(FieldHandle input,
 
 void 
 FEMBuilder::create_numerical_integration(std::vector<VMesh::coords_type> &p,
-                                         std::vector<double> &w,
-                                         std::vector<std::vector<double> > &d)
+                                         std::vector<value_type> &w,
+                                         std::vector<std::vector<value_type> > &d)
 {
   //ScopedTimeLogger s1("FEMBuilder::create_numerical_integration");
   int int_basis = 1;
@@ -304,10 +301,10 @@ FEMBuilder::create_numerical_integration(std::vector<VMesh::coords_type> &p,
 bool
 FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
                                index_type row,
-                               std::vector<double> &l_stiff,
+                               std::vector<value_type> &l_stiff,
                                std::vector<VMesh::coords_type > &p,
-                               std::vector<double> &w,
-                               std::vector<std::vector<double> >  &d)
+                               std::vector<value_type> &w,
+                               std::vector<std::vector<value_type> >  &d)
 {
   //ScopedTimeLogger s0("FEMBuilder::build_local_matrix");
   Tensor T;
@@ -357,7 +354,7 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
     }
     for (size_t i = 0; i < d.size(); i++)
     {
-      double Ji[9];
+      value_type Ji[9];
       // Call to virtual interface, this should be one internal call
       auto detJ = mesh_->inverse_jacobian(p[i],c_ind,Ji);   
       
@@ -375,9 +372,9 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
       // Build local stiffness matrix
       // Get the local derivatives of the basis functions in the basis element
       // They are all the same and are thus precomputed in matrix d
-      const double *Nxi = &d[i][0];
-      const double *Nyi = &d[i][local_dimension];
-      const double *Nzi = &d[i][local_dimension2];
+      const value_type *Nxi = &d[i][0];
+      const value_type *Nyi = &d[i][local_dimension];
+      const value_type *Nzi = &d[i][local_dimension2];
       // Gradients associated with the node we are calculating
       const auto& Nxip = Nxi[row];
       const auto &Nyip = Nyi[row];
@@ -419,11 +416,11 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
 bool 
 FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
                                        index_type row,
-                                       std::vector<double> &l_stiff,
+                                       std::vector<value_type> &l_stiff,
                                        std::vector<VMesh::coords_type> &p,
-                                       std::vector<double> &w,
-                                       std::vector<std::vector<double> >  &d,
-                                       std::vector<std::vector<double> > &precompute)
+                                       std::vector<value_type> &w,
+                                       std::vector<std::vector<value_type> >  &d,
+                                       std::vector<std::vector<value_type> > &precompute)
 {
   //ScopedTimeLogger s0("FEMBuilder::build_local_matrix_regular");
   Tensor T;
@@ -478,7 +475,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
       {
         auto& pc = precompute[i];
         
-        double Ji[9];
+        value_type Ji[9];
         auto detJ = mesh_->inverse_jacobian(p[i], c_ind, Ji);
         
         // Volume elements can return negative determinants if the order of elements
@@ -508,9 +505,9 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         // Build local stiffness matrix
         // Get the local derivatives of the basis functions in the basis element
         // They are all the same and are thus precomputed in matrix d
-        const double *Nxi = &d[i][0];
-        const double *Nyi = &d[i][local_dimension];
-        const double *Nzi = &d[i][local_dimension2];
+        const value_type *Nxi = &d[i][0];
+        const value_type *Nyi = &d[i][local_dimension];
+        const value_type *Nzi = &d[i][local_dimension2];
         // Gradients associated with the node we are calculating
         const auto &Nxip = Nxi[row];
         const auto &Nyip = Nyi[row];
@@ -553,14 +550,14 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
       
       for (size_t i = 0; i < d.size(); i++)
       {
-        std::vector<double>& pc = precompute[i];
+        auto& pc = precompute[i];
         
         // Build local stiffness matrix
         // Get the local derivatives of the basis functions in the basis element
         // They are all the same and are thus precomputed in matrix d
-        const double *Nxi = &d[i][0];
-        const double *Nyi = &d[i][local_dimension];
-        const double *Nzi = &d[i][local_dimension2];
+        const value_type *Nxi = &d[i][0];
+        const value_type *Nyi = &d[i][local_dimension];
+        const value_type *Nzi = &d[i][local_dimension2];
         // Gradients associated with the node we are calculating
         const auto &Nxip = Nxi[row];
         const auto &Nyip = Nyi[row];
@@ -811,7 +808,7 @@ FEMBuilder::parallel(int proc_num)
     }
   }
   
-  std::vector<std::vector<double> > precompute;		
+  std::vector<std::vector<value_type> > precompute;		
   index_type st = 0;
   
   if (proc_num == 0)
@@ -890,7 +887,7 @@ FEMBuilder::parallel(int proc_num)
     {
       rows_[global_dimension] = st;
       algo_->remark("Creating fematrix on main thread.");
-      fematrix_ = boost::make_shared<SparseRowMatrix>(global_dimension, global_dimension, rows_.get(), allcols_.get(), st);
+      fematrix_ = boost::make_shared<matrix_type>(global_dimension, global_dimension, rows_.get(), allcols_.get(), st);
       rows_.reset();
       allcols_.reset();
     }
@@ -921,12 +918,12 @@ FEMBuilder::parallel(int proc_num)
     while (a<ae) *a++=0.0;
     
     std::vector<VMesh::coords_type > ni_points;
-    std::vector<double> ni_weights;
-    std::vector<std::vector<double> > ni_derivatives;
+    std::vector<value_type> ni_weights;
+    std::vector<std::vector<value_type> > ni_derivatives;
     
     create_numerical_integration(ni_points, ni_weights, ni_derivatives);
     
-    std::vector<double> lsml; ///< line of local stiffnes matrix
+    std::vector<value_type> lsml; ///< line of local stiffnes matrix
     lsml.resize(local_dimension);
     
     /// loop over system dofs for this thread
@@ -1056,7 +1053,7 @@ const AlgorithmParameterName BuildFEMatrixAlgo::ForceSymmetry("ForceSymmetry");
 const AlgorithmParameterName BuildFEMatrixAlgo::GenerateBasis("GenerateBasis");
 
 bool 
-BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMatrixHandle& output) const
+BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, matrix_pointer_type& output) const
 {
   ScopedAlgorithmStatusReporter s(this, "BuildFEMatrix");
   
@@ -1138,7 +1135,7 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
         basis_values_.resize(nconds);
         for (size_type i=0; i < nconds; i++)
         {
-          SparseRowMatrixHandle stiffness;
+          matrix_pointer_type stiffness;
           /// @todo: can initialize array using std::fill
           data[i] = 1.0;
           
@@ -1217,7 +1214,7 @@ AlgorithmOutput BuildFEMatrixAlgo::run(const AlgorithmInput& input) const
   auto field = input.get<Field>(Variables::InputField);
   auto ctable = input.get<DenseMatrix>(Conductivity_Table);
 
-  SparseRowMatrixHandle stiffness;
+  matrix_pointer_type stiffness;
   if (!run(field, ctable, stiffness))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
