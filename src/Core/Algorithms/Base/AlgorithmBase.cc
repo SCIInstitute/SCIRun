@@ -458,6 +458,11 @@ std::vector<std::string> Core::Algorithms::toStringVector(const Variable::List& 
   return toTypedVector<std::string>(list, [](const Variable& v) { return v.toString(); });
 }
 
+std::vector<std::string> Core::Algorithms::toNameVector(const Variable::List& list)
+{
+  return toTypedVector<std::string>(list, [](const Variable& v) { return v.name().name(); });
+}
+
 std::vector<double> Core::Algorithms::toDoubleVector(const Variable::List& list)
 {
   return toTypedVector<double>(list, [](const Variable& v) { return v.toDouble(); });

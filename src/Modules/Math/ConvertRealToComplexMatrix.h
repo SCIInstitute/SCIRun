@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2016 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -25,40 +25,31 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-#ifdef BUILD_WITH_PYTHON
-#include <Modules/Python/PythonObjectForwarder.h>
 
+#ifndef MODULES_MATH_ConvertRealToComplexMatrix_H
+#define MODULES_MATH_ConvertRealToComplexMatrix_H
 
-using namespace SCIRun::Modules::Python;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Python;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
-ALGORITHM_PARAMETER_DEF(Python, PollingIntervalMilliseconds);
-ALGORITHM_PARAMETER_DEF(Python, NumberOfRetries);
-ALGORITHM_PARAMETER_DEF(Python, PythonObject);
+namespace SCIRun {
+namespace Modules {
+namespace Math {
 
-const ModuleLookupInfo PythonObjectForwarder::staticInfo_("PythonObjectForwarder", "Python", "SCIRun");
+  class SCISHARE ConvertRealToComplexMatrix : public Dataflow::Networks::Module,
+    public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
+    public Has1OutputPort<ComplexDenseMatrixPortTag>
+  {
+  public:
+    ConvertRealToComplexMatrix();
+    virtual void execute();
+    virtual void setStateDefaults() {};
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
-PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_) 
-{
-  INITIALIZE_PORT(PythonMatrix);
-  INITIALIZE_PORT(PythonField);
-  INITIALIZE_PORT(PythonString);
-}
-
-void PythonObjectForwarder::setStateDefaults()
-{
-  auto state = get_state();
-  state->setValue(Parameters::PollingIntervalMilliseconds, 200);
-  state->setValue(Parameters::NumberOfRetries, 50);
-}
-
-void PythonObjectForwarder::execute()
-{
-  PythonObjectForwarderImpl<PythonObjectForwarder> impl(*this);
-  impl.waitForOutputFromTransientState(Parameters::PythonObject.name(), PythonString, PythonMatrix, PythonField);
-}
+    INPUT_PORT(0, RealPartMatrix, Matrix);
+    INPUT_PORT(1, ComplexPartMatrix, Matrix);
+    OUTPUT_PORT(0, Output, ComplexDenseMatrix);
+  };
+}}}
 
 #endif

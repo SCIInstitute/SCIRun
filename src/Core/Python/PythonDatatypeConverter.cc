@@ -413,6 +413,27 @@ Variable SCIRun::Core::Python::convertPythonObjectToVariable(const boost::python
   return Variable();
 }
 
+boost::python::object SCIRun::Core::Python::convertVariableToPythonObject(const Variable& var)
+{
+  if (var.name().name() == "string")
+  {
+    return boost::python::object { var.toString() };
+  }
+  if (var.name().name() == "int")
+  {
+    return boost::python::object { var.toInt() };
+  }
+  if (var.name().name() == "double")
+  {
+    return boost::python::object { var.toDouble() };
+  }
+  if (var.name().name() == "bool")
+  {
+    return boost::python::object { var.toBool() };
+  }
+  return {};
+}
+
 template <class Extractor>
 std::string getLabel()
 {

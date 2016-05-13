@@ -27,7 +27,6 @@
 */
 
 #include <QtGui>
-#include <iostream>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/ModuleWidget.h>
@@ -52,7 +51,7 @@ namespace SCIRun
     class ModuleWidgetNoteDisplayStrategy : public NoteDisplayStrategy
     {
     public:
-      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const
+      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const override
       {
         const int noteMargin = 2;
         auto noteRect = note->boundingRect();
@@ -131,10 +130,28 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   connect(module, SIGNAL(executionDisabled(bool)), this, SLOT(disableModuleGUI(bool)));
 
   stackDepth_ = 0;
+
+  originalSize_ = size();
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+}
+
+void ModuleProxyWidget::adjustHeight(int delta)
+{
+  auto p = pos();
+  module_->setFixedHeight(originalSize_.height() + delta);
+  setMaximumHeight(originalSize_.height() + delta);
+  setPos(p);
+}
+
+void ModuleProxyWidget::adjustWidth(int delta)
+{
+  auto p = pos();
+  module_->setFixedWidth(originalSize_.width() + delta);
+  setMaximumWidth(originalSize_.width() + delta);
+  setPos(p);
 }
 
 void ModuleProxyWidget::createStartupNote()
@@ -194,7 +211,7 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
   updatePressedSubWidget(event);
 
-  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
+  if (auto p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     p->doMousePress(event->button(), mapToScene(event->pos()));
     return;
@@ -218,7 +235,7 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 static int snapTo(int oldPos)
 {
-  using namespace SCIRun::Core::Math;
+  using namespace Math;
   const int strip = 76; // size of new background grid png
   const int shift = oldPos % strip;
 
@@ -232,7 +249,7 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   if (taggingOn)
     return;
 
-  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
+  if (auto p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     p->doMouseRelease(event->button(), mapToScene(event->pos()), event->modifiers());
     return;
@@ -261,12 +278,12 @@ void ModuleProxyWidget::snapToGrid()
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
+  stackDepth_++;
+  if (auto p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     auto conn = p->doMouseMove(event->buttons(), mapToScene(event->pos()));
     if (conn)
     {
-      stackDepth_++;
       if (stackDepth_ > 1)
         return;
       ensureItemVisible(conn);
@@ -278,6 +295,8 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
     return;
   }
+  if (stackDepth_ > 1)
+    return;
   if (stackDepth_ == 0)
     ensureThisVisible();
   QGraphicsItem::mouseMoveEvent(event);

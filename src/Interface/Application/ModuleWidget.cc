@@ -39,7 +39,6 @@
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PositionProvider.h>
-#include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/ModuleLogWindow.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Interface/Application/Utility.h>
@@ -210,24 +209,23 @@ namespace
   }
 }
 
-namespace
-{
 #ifdef WIN32
-  const int moduleWidthThreshold = 110;
-  const int extraModuleWidth = 5;
-  const int extraWidthThreshold = 5;
-  const int smushFactor = 15;
-  const int titleFontSize = 8;
-  const int widgetHeightAdjust = -20;
+  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 110;
+  const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
+  const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
+  const int ModuleWidgetDisplayBase::smushFactor = 15;
+  const int ModuleWidgetDisplayBase::titleFontSize = 8;
+  const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
+  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
 #else
-  const int moduleWidthThreshold = 80;
-  const int extraModuleWidth = 5;
-  const int extraWidthThreshold = 5;
-  const int smushFactor = 15;
-  const int titleFontSize = 12;
-  const int widgetHeightAdjust = 1;
+  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 80;
+  const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
+  const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
+  const int ModuleWidgetDisplayBase::smushFactor = 15;
+  const int ModuleWidgetDisplayBase::titleFontSize = 12;
+  const int ModuleWidgetDisplayBase::widgetHeightAdjust = 1;
+  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -20;
 #endif
-}
 
 class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
 {
@@ -514,6 +512,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
+  //qDebug() << width() << height() << currentWidget()->size();
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -569,22 +568,24 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
   int pixelWidth = display->getTitleWidth();
   //std::cout << titleLabel_->text().toStdString() << std::endl;
   //std::cout << "\tPixelwidth = " << pixelWidth << std::endl;
-  int extraWidth = pixelWidth - moduleWidthThreshold;
+  int extraWidth = pixelWidth - ModuleWidgetDisplayBase::moduleWidthThreshold;
   //std::cout << "\textraWidth = " << extraWidth << std::endl;
-  if (extraWidth > extraWidthThreshold)
+  if (extraWidth > ModuleWidgetDisplayBase::extraWidthThreshold)
   {
     //std::cout << "\tGROWING MODULE Current width: " << width() << std::endl;
-    frame->resize(frame->width() + extraWidth + extraModuleWidth, frame->height());
+    frame->resize(frame->width() + extraWidth + ModuleWidgetDisplayBase::extraModuleWidth, frame->height());
     //std::cout << "\tNew width: " << width() << std::endl;
   }
   else
   {
     //std::cout << "\tSHRINKING MODULE Current width: " << width() << std::endl;
-    frame->resize(frame->width() - smushFactor, frame->height());
+    frame->resize(frame->width() - ModuleWidgetDisplayBase::smushFactor, frame->height());
     //std::cout << "\tNew width: " << width() << std::endl;
   }
   display->adjustLayout(frame->layout());
-  frame->resize(frame->width(), frame->height() + widgetHeightAdjust);
+  //qDebug() << size() << frame->size();
+  frame->resize(frame->width() + ModuleWidgetDisplayBase::widgetWidthAdjust, frame->height() + ModuleWidgetDisplayBase::widgetHeightAdjust);
+  //qDebug() << size() << frame->size();
 }
 
 void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)

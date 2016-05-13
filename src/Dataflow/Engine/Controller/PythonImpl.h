@@ -60,6 +60,7 @@ namespace Engine {
     virtual std::string saveNetwork(const std::string& filename) override;
     virtual std::string loadNetwork(const std::string& filename) override;
     virtual std::string importNetwork(const std::string& filename) override;
+    virtual std::string runScript(const std::string& filename) override;
     virtual std::string quit(bool force) override;
     virtual void setUnlockFunc(boost::function<void()> unlock) override;
     virtual void setModuleContext(bool inModule) override { inModule_ = inModule; }

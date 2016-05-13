@@ -48,8 +48,10 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <Core/Python/PythonDatatypeConverter.h>
+#include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
@@ -359,6 +361,7 @@ namespace
         input_ = boost::make_shared<PyPortsImpl>(module_, true, nec_);
         output_ = boost::make_shared<PyPortsImpl>(module_, false, nec_);
       }
+      creationTime_ = boost::posix_time::second_clock::local_time();
     }
 
     virtual std::string id() const override
@@ -434,6 +437,8 @@ namespace
             return boost::python::object(transient_value_cast<double>(v));
           if (transient_value_check<bool>(v))
             return boost::python::object(transient_value_cast<bool>(v));
+          if (transient_value_check<Variable>(v))
+            return boost::python::object(convertVariableToPythonObject(transient_value_cast<Variable>(v)));
 
           return boost::python::object();
         }
@@ -499,10 +504,16 @@ namespace
       return input_;
     }
 
+    virtual boost::posix_time::ptime creationTime() const override
+    {
+      return creationTime_;
+    }
+
   private:
     ModuleHandle module_;
     NetworkEditorController& nec_;
     boost::shared_ptr<PyPortsImpl> input_, output_;
+    boost::posix_time::ptime creationTime_;
   };
 }
 
@@ -588,6 +599,7 @@ std::vector<boost::shared_ptr<PyModule>> PythonImpl::moduleList() const
 {
   std::vector<boost::shared_ptr<PyModule>> modules;
   boost::copy(modules_ | boost::adaptors::map_values, std::back_inserter(modules));
+  std::sort(modules.begin(), modules.end(), [](const boost::shared_ptr<PyModule> lhs, const boost::shared_ptr<PyModule> rhs) { return lhs->creationTime() < rhs->creationTime(); });
   return modules;
 }
 
@@ -600,7 +612,7 @@ boost::shared_ptr<PyModule> PythonImpl::findModule(const std::string& id) const
 std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
 {
   nec_.executeAll(lookup);
-  return "Execution started.";
+  return "Execution started."; //TODO: attach log for execution ended event.
 }
 
 std::string PythonImpl::connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex)
@@ -656,6 +668,12 @@ std::string PythonImpl::importNetwork(const std::string& filename)
   import->set(Variables::Filename, filename);
   return import->execute() ? (filename + " imported") : "Import failed";
   //TODO: provide more informative python return value string
+}
+
+std::string PythonImpl::runScript(const std::string& filename)
+{
+  PythonInterpreter::Instance().run_script("exec(open('" + filename + "').read())");
+  return filename + " executed.";
 }
 
 std::string PythonImpl::quit(bool force)

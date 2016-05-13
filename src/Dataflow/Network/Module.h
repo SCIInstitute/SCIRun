@@ -108,8 +108,8 @@ namespace Networks {
   private:
     virtual Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
     virtual std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
+  protected:
     virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
-
   public:
     virtual void setLogger(Core::Logging::LoggerHandle log) override final;
     virtual Core::Logging::LoggerHandle getLogger() const override final;
@@ -231,6 +231,7 @@ namespace Networks {
     static ModuleStateFactoryHandle defaultStateFactory_;
     static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
     static ReexecuteStrategyFactoryHandle defaultReexFactory_;
+    static Core::Logging::LoggerHandle defaultLogger_;
 
   protected:
     const ModuleLookupInfo info_;
@@ -307,7 +308,6 @@ namespace Networks {
     Core::Logging::LoggerHandle log_;
     Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
     UiToggleFunc uiToggleFunc_;
-    static Core::Logging::LoggerHandle defaultLogger_;
     static ModuleIdGeneratorHandle idGenerator_;
     friend class UseGlobalInstanceCountIdGenerator;
   };

@@ -7,38 +7,72 @@
 			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ReadField:0</first>
+				<first>ConvertRealToComplexMatrix:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadField</module_name_>
+						<category_name_>Converters</category_name_>
+						<module_name_>ConvertRealToComplexMatrix</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>2</count>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>FileTypeName</name>
+									<name>TextEntry</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>FileTypeName</name>
+									<name>TextEntry</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>SCIRun Field File</value>
+										<value>1 2
+3 4</value>
 									</value>
 								</second>
 							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>Filename</name>
+									<name>TextEntry</name>
 								</first>
 								<second>
-									<name>Filename</name>
+									<name>TextEntry</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/aneurysm-mra-lowres.lvs.fld</value>
+										<value>-1 -2
+-3 -4</value>
 									</value>
 								</second>
 							</item>
@@ -47,44 +81,12 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportNrrdInfo:0</first>
+				<first>ReportComplexMatrixInfo:0</first>
 				<second>
 					<module>
-						<package_name_>Teem</package_name_>
-						<category_name_>Misc</category_name_>
-						<module_name_>ReportNrrdInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportNrrdInfo:1</first>
-				<second>
-					<module>
-						<package_name_>Teem</package_name_>
-						<category_name_>Misc</category_name_>
-						<module_name_>ReportNrrdInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>SplitFieldIntoNrrdData:0</first>
-				<second>
-					<module>
-						<package_name_>Teem</package_name_>
-						<category_name_>Converters</category_name_>
-						<module_name_>SplitFieldIntoNrrdData</module_name_>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportComplexMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -99,38 +101,38 @@
 			<count>3</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ReadField:0</moduleId1_>
+				<moduleId1_>ConvertRealToComplexMatrix:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
-					<name>Field</name>
+					<name>Output</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SplitFieldIntoNrrdData:0</moduleId2_>
+				<moduleId2_>ReportComplexMatrixInfo:0</moduleId2_>
 				<port2_>
-					<name>InputField</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SplitFieldIntoNrrdData:0</moduleId1_>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
 				<port1_>
-					<name>Data</name>
+					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportNrrdInfo:0</moduleId2_>
+				<moduleId2_>ConvertRealToComplexMatrix:0</moduleId2_>
 				<port2_>
-					<name>Query_Nrrd</name>
+					<name>RealPartMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SplitFieldIntoNrrdData:0</moduleId1_>
+				<moduleId1_>CreateMatrix:1</moduleId1_>
 				<port1_>
-					<name>Points</name>
+					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportNrrdInfo:1</moduleId2_>
+				<moduleId2_>ConvertRealToComplexMatrix:0</moduleId2_>
 				<port2_>
-					<name>Query_Nrrd</name>
+					<name>ComplexPartMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -140,31 +142,31 @@
 		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
-			<first>ReadField:0</first>
+			<first>ConvertRealToComplexMatrix:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>1.50000000000000000e+01</first>
-				<second>1.50000000000000000e+01</second>
+				<first>7.60000000000000000e+01</first>
+				<second>-7.40000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportNrrdInfo:0</first>
+			<first>CreateMatrix:0</first>
 			<second>
-				<first>1.50000000000000000e+01</first>
-				<second>2.53500000000000000e+02</second>
+				<first>-1.52000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportNrrdInfo:1</first>
+			<first>CreateMatrix:1</first>
 			<second>
-				<first>3.60000000000000000e+01</first>
-				<second>3.61500000000000000e+02</second>
+				<first>2.28000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>SplitFieldIntoNrrdData:0</first>
+			<first>ReportComplexMatrixInfo:0</first>
 			<second>
-				<first>1.50000000000000000e+01</first>
-				<second>1.35000000000000000e+02</second>
+				<first>7.60000000000000000e+01</first>
+				<second>7.60000000000000000e+01</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -180,19 +182,19 @@
 		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
-			<first>ReadField:0</first>
+			<first>ConvertRealToComplexMatrix:0</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>ReportNrrdInfo:0</first>
+			<first>CreateMatrix:0</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>ReportNrrdInfo:1</first>
+			<first>CreateMatrix:1</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>SplitFieldIntoNrrdData:0</first>
+			<first>ReportComplexMatrixInfo:0</first>
 			<second>0</second>
 		</item>
 	</moduleTags>

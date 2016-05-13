@@ -106,6 +106,11 @@ git_describe(VERSION_TAG --tag)
 git_describe(VERSION_BRANCH --all)
 get_git_head_revision(VERSION_REFSPEC VERSION_HASHVAR)
 
+IF(VERSION_TAG MATCHES "HEAD-HASH-NOTFOUND")
+  FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/LATEST_TAG.txt VERSION_TAG)
+  MESSAGE(STATUS "Found tag file for version info: " "${VERSION_TAG}")
+ENDIF()
+
 MESSAGE(STATUS "Git version tag: " "${VERSION_TAG}")
 MESSAGE(STATUS "Git version branch: " "${VERSION_BRANCH}")
 MESSAGE(STATUS "Git version commit hash: " "${VERSION_HASHVAR}")

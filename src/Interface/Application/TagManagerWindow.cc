@@ -35,7 +35,7 @@
 
 using namespace SCIRun::Gui;
 
-namespace 
+namespace
 {
   const char* tagIndexProperty = "tagIndex";
 }
@@ -90,7 +90,7 @@ void TagManagerWindow::updateTagName(const QString& name)
 }
 
 void TagManagerWindow::setTagColors(const QVector<QString>& colors)
-{ 
+{
   for (int i = 0; i < NumberOfTags; ++i)
   {
     if (i >= colors.size() || colors[i].isEmpty())
@@ -124,19 +124,31 @@ QColor TagManagerWindow::tagColor(int tag) const
   }
   catch (...)
   {
-    //error results in gray 
+    //error results in gray
     r = g = b = 155;
   }
   return QColor(r, g, b);
 }
 
-void TagManagerWindow::helpButtonClicked()
+QString TagManagerWindow::tagName(int tag) const
 {
-  QMessageBox::information(this, 
-    "Module Tag Layer Guide", 
+  if (0 <= tag && tag < NumberOfTags)
+    return tagNames_[tag];
+  return "[No tag]";
+}
+
+void TagManagerWindow::showHelp(QWidget* parent)
+{
+  QMessageBox::information(parent,
+    "Module Tag Layer Guide",
     "This layer allows the user to group modules in a network file by tag number. Ten tags are available, labeled 0 - 9. "
     "Each tag's color can be chosen in the Tag Manager window, as well as a descriptive label. Tag colors are a global setting, while module tags are saved in the network file. \n\n"
     "To use, while in the Network Editor, hold down the Alt / Option key. Then press A to see all module tag groups(each module will be colorized "
     "according to the chosen colors). Or press 0 - 9 keys to see each tag group individually; other modules will be slightly blurred out. While in "
     "the single - tag view, you can click a module to toggle it as tagged. There is also a button in the toolbar to view all tagged modules.");
+}
+
+void TagManagerWindow::helpButtonClicked()
+{
+  showHelp(this);
 }
