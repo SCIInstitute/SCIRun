@@ -1920,11 +1920,9 @@ void SCIRunMainWindow::loadPythonAPIDoc()
 void SCIRunMainWindow::showTriggerHelp()
 {
 	QMessageBox::information(this, "Triggered Scripts",
-    "TODO"
-    // "\n\nTo cut/copy/paste, see the Edit menu and the corresponding hotkeys."
-    // "\n\nClipboard history items can be starred like module favorites. When starred, they are saved as fragments under \"Saved Subnetworks,\" which are preserved in application settings. "
-    // "\n\nThe user may edit the text of the saved subnetwork items to give them informative names, which are also saved. Hover over them to see a tooltip representation of the saved fragment."
-    // "\n\nCurrently there is no way to delete a saved subnetwork in the GUI."
+    "The triggered scripts interface allows the user to inject Python code that executes whenever a specific event happens. Currently the available events are post-module-add (manually, not "
+    "via network loading), and post-network-load (after user loads a file)."
+    "\n\nExamples can be found in the GUI when you first load the dialog. The scripts are saved at the application level and can be enabled/disabled."
      );
 }
 
