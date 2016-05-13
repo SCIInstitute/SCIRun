@@ -4,29 +4,293 @@
 <networkFile class_id="0" tracking_level="0" version="4">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>5</count>
+			<count>18</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ConvertMeshToPointCloud:0</first>
+				<first>ApplyMappingMatrix:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
-						<category_name_>ChangeMesh</category_name_>
-						<module_name_>ConvertMeshToPointCloud</module_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>ApplyMappingMatrix</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>1</count>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>BuildMappingMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>BuildMappingMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>Location</name>
+									<name>MappingMethod</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>Location</name>
+									<name>MappingMethod</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>data</value>
+										<value>interpolateddata</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxDistance</name>
+								</first>
+								<second>
+									<name>MaxDistance</name>
+									<value>
+										<which>1</which>
+										<value>-1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CalculateFieldData:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CalculateFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = X*X+Y*Y+Z*Z;</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CalculateFieldData:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CalculateFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = DATA1-DATA2;</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ConvertFieldBasis:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>ConvertFieldBasis</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputFieldName</name>
+								</first>
+								<second>
+									<name>InputFieldName</name>
+									<value>
+										<which>2</which>
+										<value>--- no name ---</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputType</name>
+								</first>
+								<second>
+									<name>InputType</name>
+									<value>
+										<which>2</which>
+										<value>LinearData</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputType</name>
+								</first>
+								<second>
+									<name>OutputType</name>
+									<value>
+										<which>2</which>
+										<value>Linear</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateFieldData:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CreateFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>BasisString</name>
+								</first>
+								<second>
+									<name>BasisString</name>
+									<value>
+										<which>2</which>
+										<value>Linear</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = select(INDEX==(0),1,0);</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateFieldData:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CreateFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>BasisString</name>
+								</first>
+								<second>
+									<name>BasisString</name>
+									<value>
+										<which>2</which>
+										<value>Linear</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = X*X+Y*Y+Z*Z;</value>
 									</value>
 								</second>
 							</item>
@@ -78,7 +342,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -123,23 +387,126 @@
 				</second>
 			</item>
 			<item>
-				<first>ShowField:0</first>
+				<first>CreateLatVol:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>CreateLatVol</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>6</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DataAtLocation</name>
+								</first>
+								<second>
+									<name>DataAtLocation</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ElementSizeNormalized</name>
+								</first>
+								<second>
+									<name>ElementSizeNormalized</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PadPercent</name>
+								</first>
+								<second>
+									<name>PadPercent</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XSize</name>
+								</first>
+								<second>
+									<name>XSize</name>
+									<value>
+										<which>0</which>
+										<value>3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YSize</name>
+								</first>
+								<second>
+									<name>YSize</name>
+									<value>
+										<which>0</which>
+										<value>3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ZSize</name>
+								</first>
+								<second>
+									<name>ZSize</name>
+									<value>
+										<which>0</which>
+										<value>3</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateStandardColorMap:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>Visualization</category_name_>
-						<module_name_>ShowField</module_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>33</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>CullBackfacingText</name>
+									<name>AlphaUserPointsVector</name>
 								</first>
 								<second>
-									<name>CullBackfacingText</name>
+									<name>AlphaUserPointsVector</name>
+									<value>
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>0</count>
+											<item_version>0</item_version>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapInvert</name>
+								</first>
+								<second>
+									<name>ColorMapInvert</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
@@ -148,334 +515,322 @@
 							</item>
 							<item>
 								<first>
-									<name>CylinderRadius</name>
+									<name>ColorMapName</name>
 								</first>
 								<second>
-									<name>CylinderRadius</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000006e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CylinderResolution</name>
-								</first>
-								<second>
-									<name>CylinderResolution</name>
-									<value>
-										<which>0</which>
-										<value>5</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultMeshColor</name>
-								</first>
-								<second>
-									<name>DefaultMeshColor</name>
+									<name>ColorMapName</name>
 									<value>
 										<which>2</which>
-										<value>Color(0.5,0.5,0.5)</value>
+										<value>Rainbow</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>DefaultTextColor</name>
+									<name>ColorMapResolution</name>
 								</first>
 								<second>
-									<name>DefaultTextColor</name>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ExtractSimpleIsosurface:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>ExtractSimpleIsosurface</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>IsovalueChoice</name>
+								</first>
+								<second>
+									<name>IsovalueChoice</name>
 									<value>
 										<which>2</which>
-										<value>Color(1,1,1)</value>
+										<value>Single</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>EdgeTransparency</name>
+									<name>ListOfIsovalues</name>
 								</first>
 								<second>
-									<name>EdgeTransparency</name>
+									<name>ListOfIsovalues</name>
 									<value>
-										<which>3</which>
-										<value>0</value>
+										<which>2</which>
+										<value></value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>EdgeTransparencyValue</name>
+									<name>QuantityOfIsovalues</name>
 								</first>
 								<second>
-									<name>EdgeTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>EdgesAsCylinders</name>
-								</first>
-								<second>
-									<name>EdgesAsCylinders</name>
+									<name>QuantityOfIsovalues</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>EdgesAvailable</name>
-								</first>
-								<second>
-									<name>EdgesAvailable</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FaceInvertNormals</name>
-								</first>
-								<second>
-									<name>FaceInvertNormals</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FaceTransparency</name>
-								</first>
-								<second>
-									<name>FaceTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FaceTransparencyValue</name>
-								</first>
-								<second>
-									<name>FaceTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FacesAvailable</name>
-								</first>
-								<second>
-									<name>FacesAvailable</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeAsSpheres</name>
-								</first>
-								<second>
-									<name>NodeAsSpheres</name>
-									<value>
-										<which>0</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparency</name>
-								</first>
-								<second>
-									<name>NodeTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparencyValue</name>
-								</first>
-								<second>
-									<name>NodeTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodesAvailable</name>
-								</first>
-								<second>
-									<name>NodesAvailable</name>
-									<value>
-										<which>3</which>
 										<value>1</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>RenderAsLocation</name>
+									<name>SingleIsoValue</name>
 								</first>
 								<second>
-									<name>RenderAsLocation</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowCellIndices</name>
-								</first>
-								<second>
-									<name>ShowCellIndices</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowDataValues</name>
-								</first>
-								<second>
-									<name>ShowDataValues</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowEdgeIndices</name>
-								</first>
-								<second>
-									<name>ShowEdgeIndices</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowEdges</name>
-								</first>
-								<second>
-									<name>ShowEdges</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowFaceIndices</name>
-								</first>
-								<second>
-									<name>ShowFaceIndices</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowFaces</name>
-								</first>
-								<second>
-									<name>ShowFaces</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowNodeIndices</name>
-								</first>
-								<second>
-									<name>ShowNodeIndices</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowNodes</name>
-								</first>
-								<second>
-									<name>ShowNodes</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowText</name>
-								</first>
-								<second>
-									<name>ShowText</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>SphereScaleValue</name>
-								</first>
-								<second>
-									<name>SphereScaleValue</name>
+									<name>SingleIsoValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999989e-02</value>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ExtractSimpleIsosurface:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>ExtractSimpleIsosurface</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>IsovalueChoice</name>
+								</first>
+								<second>
+									<name>IsovalueChoice</name>
+									<value>
+										<which>2</which>
+										<value>Single</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>TextAlwaysVisible</name>
+									<name>ListOfIsovalues</name>
 								</first>
 								<second>
-									<name>TextAlwaysVisible</name>
+									<name>ListOfIsovalues</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>QuantityOfIsovalues</name>
+								</first>
+								<second>
+									<name>QuantityOfIsovalues</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SingleIsoValue</name>
+								</first>
+								<second>
+									<name>SingleIsoValue</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>MapFieldDataFromSourceToDestination:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>MapFieldDataFromSourceToDestination</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultValue</name>
+								</first>
+								<second>
+									<name>DefaultValue</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MappingMethod</name>
+								</first>
+								<second>
+									<name>MappingMethod</name>
+									<value>
+										<which>2</which>
+										<value>interpolateddata</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxDistance</name>
+								</first>
+								<second>
+									<name>MaxDistance</name>
+									<value>
+										<which>1</which>
+										<value>-1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>RescaleColorMap:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowColorMap:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>13</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AddExtraSpace</name>
+								</first>
+								<second>
+									<name>AddExtraSpace</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
@@ -484,10 +839,10 @@
 							</item>
 							<item>
 								<first>
-									<name>TextColoring</name>
+									<name>DisplayLength</name>
 								</first>
 								<second>
-									<name>TextColoring</name>
+									<name>DisplayLength</name>
 									<value>
 										<which>0</which>
 										<value>0</value>
@@ -496,13 +851,85 @@
 							</item>
 							<item>
 								<first>
-									<name>TextPrecision</name>
+									<name>DisplaySide</name>
 								</first>
 								<second>
-									<name>TextPrecision</name>
+									<name>DisplaySide</name>
 									<value>
 										<which>0</which>
-										<value>3</value>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Labels</name>
+								</first>
+								<second>
+									<name>Labels</name>
+									<value>
+										<which>0</which>
+										<value>10</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Scale</name>
+								</first>
+								<second>
+									<name>Scale</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SignificantDigits</name>
+								</first>
+								<second>
+									<name>SignificantDigits</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextBlue</name>
+								</first>
+								<second>
+									<name>TextBlue</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextGreen</name>
+								</first>
+								<second>
+									<name>TextGreen</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextRed</name>
+								</first>
+								<second>
+									<name>TextRed</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -520,12 +947,36 @@
 							</item>
 							<item>
 								<first>
-									<name>UseFaceNormals</name>
+									<name>Units</name>
 								</first>
 								<second>
-									<name>UseFaceNormals</name>
+									<name>Units</name>
 									<value>
-										<which>3</which>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XTranslation</name>
+								</first>
+								<second>
+									<name>XTranslation</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YTranslation</name>
+								</first>
+								<second>
+									<name>YTranslation</name>
+									<value>
+										<which>0</which>
 										<value>0</value>
 									</value>
 								</second>
@@ -566,7 +1017,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -626,7 +1077,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -686,7 +1137,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -734,7 +1185,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -806,7 +1257,7 @@
 									<name>ShowEdges</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -878,7 +1329,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999989e-02</value>
+										<value>2.99999999999999990e-002</value>
 									</value>
 								</second>
 							</item>
@@ -947,7 +1398,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ViewScene:0</first>
+				<first>ViewScene:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -966,7 +1417,7 @@
 									<name>Ambient</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000011e-01</value>
+										<value>2.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1002,7 +1453,7 @@
 									<name>Diffuse</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1026,7 +1477,7 @@
 									<name>Emission</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1062,7 +1513,7 @@
 									<name>FogEnd</name>
 									<value>
 										<which>1</which>
-										<value>7.09999999999999964e-01</value>
+										<value>7.09999999999999960e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1086,7 +1537,7 @@
 									<name>FogStart</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1122,7 +1573,7 @@
 									<name>PolygonOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1146,7 +1597,7 @@
 									<name>ScaleBarHeight</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1158,7 +1609,7 @@
 									<name>ScaleBarLength</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1170,7 +1621,7 @@
 									<name>ScaleBarLineWidth</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1182,7 +1633,7 @@
 									<name>ScaleBarMultiplier</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1218,7 +1669,7 @@
 									<name>Shine</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1254,7 +1705,7 @@
 									<name>Specular</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000022e-01</value>
+										<value>4.00000000000000020e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1278,7 +1729,7 @@
 									<name>StereoFusion</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000022e-01</value>
+										<value>4.00000000000000020e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1290,7 +1741,7 @@
 									<name>TextOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1323,37 +1774,25 @@
 				</second>
 			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+		<connections class_id="13" tracking_level="0" version="0">
+			<count>23</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ConvertMeshToPointCloud:0</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
-					<name>PointCloud</name>
+			<item class_id="14" tracking_level="0" version="0">
+				<moduleId1_>ApplyMappingMatrix:0</moduleId1_>
+				<port1_ class_id="15" tracking_level="0" version="0">
+					<name>Output</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:0</moduleId2_>
+				<moduleId2_>CalculateFieldData:2</moduleId2_>
 				<port2_>
-					<name>Field</name>
+					<name>InputFields</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<moduleId1_>ApplyMappingMatrix:0</moduleId1_>
 				<port1_>
-					<name>OutputField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ConvertMeshToPointCloud:0</moduleId2_>
-				<port2_>
-					<name>Mesh</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateLatVol:0</moduleId1_>
-				<port1_>
-					<name>OutputField</name>
+					<name>Output</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:1</moduleId2_>
@@ -1363,12 +1802,240 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ShowField:0</moduleId1_>
+				<moduleId1_>BuildMappingMatrix:0</moduleId1_>
 				<port1_>
-					<name>SceneGraph</name>
+					<name>Mapping</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ApplyMappingMatrix:0</moduleId2_>
+				<port2_>
+					<name>Mapping</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CalculateFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ExtractSimpleIsosurface:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CalculateFieldData:2</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:2</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertFieldBasis:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ApplyMappingMatrix:0</moduleId2_>
+				<port2_>
+					<name>Destination</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertFieldBasis:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildMappingMatrix:0</moduleId2_>
+				<port2_>
+					<name>Destination</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertFieldBasis:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>MapFieldDataFromSourceToDestination:0</moduleId2_>
+				<port2_>
+					<name>Destination</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ApplyMappingMatrix:0</moduleId2_>
+				<port2_>
+					<name>Source</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildMappingMatrix:0</moduleId2_>
+				<port2_>
+					<name>Source</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>MapFieldDataFromSourceToDestination:0</moduleId2_>
+				<port2_>
+					<name>Source</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateFieldData:2</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ExtractSimpleIsosurface:2</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CalculateFieldData:0</moduleId2_>
+				<port2_>
+					<name>InputFields</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:1</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CreateFieldData:2</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ExtractSimpleIsosurface:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ConvertFieldBasis:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ExtractSimpleIsosurface:2</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CreateFieldData:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>MapFieldDataFromSourceToDestination:0</moduleId1_>
+				<port1_>
+					<name>Remapped_Destination</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CalculateFieldData:2</moduleId2_>
+				<port2_>
+					<name>InputFields</name>
+					<id>1</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowColorMap:0</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:1</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowColorMap:0</moduleId1_>
+				<port1_>
+					<name>GeometryOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>1</id>
@@ -1380,7 +2047,7 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>0</id>
@@ -1388,46 +2055,137 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>5</count>
+	<modulePositions class_id="16" tracking_level="0" version="0">
+		<count>18</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
-			<first>ConvertMeshToPointCloud:0</first>
-			<second class_id="17" tracking_level="0" version="0">
-				<first>-4.00000000000000000e+00</first>
-				<second>1.21000000000000000e+02</second>
+		<item class_id="17" tracking_level="0" version="0">
+			<first>ApplyMappingMatrix:0</first>
+			<second class_id="18" tracking_level="0" version="0">
+				<first>-7.58000000000000000e+002</first>
+				<second>4.08000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>BuildMappingMatrix:0</first>
+			<second>
+				<first>-8.42000000000000000e+002</first>
+				<second>2.50000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>CalculateFieldData:0</first>
+			<second>
+				<first>-4.57000000000000000e+002</first>
+				<second>-2.04000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>CalculateFieldData:2</first>
+			<second>
+				<first>3.79000000000000000e+002</first>
+				<second>6.19000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ConvertFieldBasis:0</first>
+			<second>
+				<first>-4.09000000000000000e+002</first>
+				<second>5.60000000000000000e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateFieldData:0</first>
+			<second>
+				<first>-7.93000000000000000e+002</first>
+				<second>3.10000000000000000e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateFieldData:2</first>
+			<second>
+				<first>-8.42000000000000000e+002</first>
+				<second>-2.82000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-6.70000000000000000e+01</first>
-				<second>-7.80000000000000000e+01</second>
+				<first>-4.98000000000000000e+002</first>
+				<second>-4.78000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>ShowField:0</first>
+			<first>CreateLatVol:1</first>
 			<second>
-				<first>3.20000000000000000e+01</first>
-				<second>2.70000000000000000e+02</second>
+				<first>-9.24000000000000000e+002</first>
+				<second>-3.99000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:0</first>
+			<second>
+				<first>3.50000000000000000e+001</first>
+				<second>1.16000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ExtractSimpleIsosurface:0</first>
+			<second>
+				<first>-3.67000000000000000e+002</first>
+				<second>-5.20000000000000000e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>ExtractSimpleIsosurface:2</first>
+			<second>
+				<first>-8.21000000000000000e+002</first>
+				<second>-1.55000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>MapFieldDataFromSourceToDestination:0</first>
+			<second>
+				<first>-3.38000000000000000e+002</first>
+				<second>2.50000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:2</first>
+			<second>
+				<first>3.71000000000000000e+002</first>
+				<second>7.27000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:0</first>
+			<second>
+				<first>-2.33000000000000000e+002</first>
+				<second>4.89000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowColorMap:0</first>
+			<second>
+				<first>-3.90000000000000000e+001</first>
+				<second>7.98000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-2.28000000000000000e+02</first>
-				<second>2.28000000000000000e+02</second>
+				<first>-3.62000000000000000e+002</first>
+				<second>6.40000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>ViewScene:0</first>
+			<first>ViewScene:1</first>
 			<second>
-				<first>-5.30000000000000000e+01</first>
-				<second>3.82000000000000000e+02</second>
+				<first>-5.32000000000000000e+002</first>
+				<second>9.12000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
+	<moduleNotes class_id="19" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleNotes>
@@ -1435,11 +2193,35 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>5</count>
+	<moduleTags class_id="20" tracking_level="0" version="0">
+		<count>18</count>
 		<item_version>0</item_version>
-		<item class_id="20" tracking_level="0" version="0">
-			<first>ConvertMeshToPointCloud:0</first>
+		<item class_id="21" tracking_level="0" version="0">
+			<first>ApplyMappingMatrix:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>BuildMappingMatrix:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CalculateFieldData:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CalculateFieldData:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ConvertFieldBasis:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateFieldData:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateFieldData:2</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -1447,7 +2229,35 @@
 			<second>0</second>
 		</item>
 		<item>
-			<first>ShowField:0</first>
+			<first>CreateLatVol:1</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ExtractSimpleIsosurface:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ExtractSimpleIsosurface:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>MapFieldDataFromSourceToDestination:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:2</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>ShowColorMap:0</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -1455,11 +2265,11 @@
 			<second>0</second>
 		</item>
 		<item>
-			<first>ViewScene:0</first>
+			<first>ViewScene:1</first>
 			<second>0</second>
 		</item>
 	</moduleTags>
-	<disabledModules class_id="21" tracking_level="0" version="0">
+	<disabledModules class_id="22" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledModules>

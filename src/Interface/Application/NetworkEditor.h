@@ -151,7 +151,8 @@ namespace Gui {
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
 				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
         PreexecuteFunc preexecuteFunc,
-        TagColorFunc tagColor = defaultTagColor,
+        TagColorFunc tagColor,
+        TagNameFunc tagName,
         QWidget* parent = nullptr);
     ~NetworkEditor();
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -215,6 +216,7 @@ namespace Gui {
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void wheelEvent(QWheelEvent* event) override;
     virtual void contextMenuEvent(QContextMenuEvent *event) override;
+    virtual void mousePressEvent(QMouseEvent *event) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
@@ -247,6 +249,9 @@ namespace Gui {
     void resetNetworkDueToCycle();
     void moduleWindowAction();
     void cleanUpNetwork();
+    void redrawTagGroups();
+    void adjustModuleWidth(int delta);
+    void adjustModuleHeight(int delta);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -255,6 +260,7 @@ namespace Gui {
     void networkExecuted();
     void networkExecutionFinished();
     void networkEditorMouseButtonPressed();
+    void middleMouseClicked();
     void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     void defaultNotePositionChanged(NotePosition position);
     void sceneChanged(const QList<QRectF>& region);
@@ -285,10 +291,13 @@ namespace Gui {
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
     void pasteImpl(const QString& xml);
+    void drawTagGroups();
+    void removeTagGroups();
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
     TagColorFunc tagColor_;
+    TagNameFunc tagName_;
 
     QGraphicsScene* scene_;
 

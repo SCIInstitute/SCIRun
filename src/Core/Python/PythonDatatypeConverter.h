@@ -93,6 +93,7 @@ namespace SCIRun
       SCISHARE boost::python::object convertStringToPython(Datatypes::StringHandle str);
 
       SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object);
+      SCISHARE boost::python::object convertVariableToPythonObject(const Algorithms::Variable& object);
 
       class SCISHARE DatatypePythonExtractor
       {

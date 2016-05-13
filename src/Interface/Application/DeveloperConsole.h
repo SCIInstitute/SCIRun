@@ -48,6 +48,8 @@ public Q_SLOTS:
 Q_SIGNALS:
   void executorChosen(int type);
   void globalPortCachingChanged(bool enable);
+  void moduleHeightAdjusted(int delta);
+  void moduleWidthAdjusted(int delta);
 };
 
 }

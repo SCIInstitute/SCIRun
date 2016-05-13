@@ -96,14 +96,13 @@ namespace Datatypes {
           index_type column = columnCounter[j];
           if (column >= ncols)
             THROW_INVALID_ARGUMENT("Invalid sparse row matrix array: column index out of bounds.");
-          triplets.push_back(Triplet(i, columnCounter[j], 0));
+          triplets.push_back(Triplet(i, columnCounter[j], data[j]));
           j++;
         }
         i++;
       }
       this->setFromTriplets(triplets.begin(), triplets.end());
       this->reserve(nnz);
-      std::copy(data, data + nnz, this->valuePtr());
       this->makeCompressed();
     }
 

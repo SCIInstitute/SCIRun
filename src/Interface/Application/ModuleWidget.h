@@ -80,6 +80,15 @@ public:
   virtual int getTitleWidth() const = 0;
 
   virtual void adjustLayout(QLayout* layout) = 0;
+
+  //The following have platform-specific values
+  static const int moduleWidthThreshold;
+  static const int extraModuleWidth;
+  static const int extraWidthThreshold;
+  static const int smushFactor;
+  static const int titleFontSize;
+  static const int widgetHeightAdjust;
+  static const int widgetWidthAdjust;
 };
 
 typedef boost::shared_ptr<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
@@ -133,9 +142,9 @@ public:
   int portSpacing() const;
   void setPortSpacing(bool highlighted);
 
-  virtual boost::signals2::connection connectExecuteBegins(const SCIRun::Dataflow::Networks::ExecuteBeginsSignalType::slot_type& subscriber) override;
-  virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber) override;
-  virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber) override;
+  virtual boost::signals2::connection connectExecuteBegins(const SCIRun::Dataflow::Networks::ExecuteBeginsSignalType::slot_type& subscriber) override final;
+  virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber) override final;
+  virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber) override final;
 
   void updateNoteFromFile(const Note& note);
 
@@ -223,7 +232,6 @@ private:
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
   std::atomic<int> previousModuleState_;
-
   void addPorts(int index);
   void createPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
