@@ -79,7 +79,7 @@ namespace
     "# scirun_set_module_state(scirun_module_ids()[-1], 'FileTypeName', 'Matlab Matrix (*.mat)') if scirun_module_ids()[-1].startswith('ReadMatrix') else None\n"
     "\n"
     "# With the \"On network load\" event, this snippet will open the UIs for all the ViewScenes in the network :\n"
-    "# TODO\n";
+    "# [scirun_set_module_state(id, '__UI__', True) for id in scirun_module_ids() if id.startswith('ViewScene')]\n";
 }
 
 void TriggeredEventsWindow::updateScriptEditor()
