@@ -154,7 +154,6 @@ private:
   QStringList recentFiles_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
-  bool firstTimePythonShown_;
   int returnCode_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
   QMap<QString, QAction*> currentModuleActions_;
@@ -190,7 +189,6 @@ private Q_SLOTS:
   void setGlobalPortCaching(bool enable);
   void readDefaultNotePosition(int index);
   void updateMiniView();
-  void showPythonWarning(bool visible);
   void makeModulesLargeSize();
   void makeModulesSmallSize();
   void alertForNetworkCycles(int code);
@@ -216,6 +214,7 @@ private Q_SLOTS:
   void showSnippetHelp();
   void showClipboardHelp();
   void showTagHelp();
+  void showTriggerHelp();
   void copyVersionToClipboard();
   void updateClipboardHistory(const QString& xml);
   void changeExecuteActionIconToStop();
