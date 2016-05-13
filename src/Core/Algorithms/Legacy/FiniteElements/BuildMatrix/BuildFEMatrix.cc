@@ -41,14 +41,12 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Logging/ScopedTimeRemarker.h>
 #include <Core/Logging/Log.h>
 
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <boost/shared_array.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -68,7 +66,7 @@ public:
   FEMBuilder(const AlgorithmBase* algo) :
     algo_(algo), numprocessors_(Parallel::NumCores()),
     barrier_("FEMBuilder Barrier", numprocessors_),
-    mesh_(0), field_(0),
+    mesh_(nullptr), field_(nullptr),
     domain_dimension(0), local_dimension_nodes(0),
     local_dimension_add_nodes(0),
     local_dimension_derivatives(0),
@@ -159,20 +157,11 @@ FEMBuilder::build_matrix(FieldHandle input,
                          DenseMatrixHandle ctable,
                          SparseRowMatrixHandle& output)
 {
-  ScopedTimeLogger s1("FEMBuilder::build_matrix");
   // Get virtual interface to data
   field_ = input->vfield();
   mesh_  = input->vmesh();
   
-  // Determine the number of processors to use:
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  int numproc = algo_->get_int("num_processors");
-  if (numproc > 0)
-  {
-    numprocessors_ = numproc;
-  }
-
-  
   // If we have the Conductivity property use it, if not we assume the values on
   // the data to be the actual tensors.
   field_->get_property("conductivity_table",tensors_);
@@ -182,13 +171,12 @@ FEMBuilder::build_matrix(FieldHandle input,
   // Convert that matrix into the conductivity table
   if (ctable)
   {
-    ScopedTimeLogger s2("FEMBuilder::build_matrix if(ctable)");
     tensors_.clear();
-    DenseMatrixHandle mat = ctable;
+    auto mat = ctable;
     // Only if we can convert it into a dense matrix, otherwise skip it
     if (mat)
     {
-      double* data = mat->data();
+      auto data = mat->data();
       size_type m = mat->nrows();
       size_type n = mat->ncols();
       Tensor tensor; 
@@ -268,7 +256,6 @@ FEMBuilder::build_matrix(FieldHandle input,
   // Make sure it is symmetric
   if (algo_->get(BuildFEMatrixAlgo::ForceSymmetry).toBool())
   {
-    ScopedTimeLogger s3("FEMBuilder::build_matrix make symmetric");
     // Make sure the matrix is fully symmetric, this compensates for round off
     // errors
     SparseRowMatrix transpose = fematrix_->transpose();
@@ -336,12 +323,12 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
     T = tensors_[tensor_index].second;
   }
   
-  double Ca = T.val(0,0);
-  double Cb = T.val(0,1);
-  double Cc = T.val(0,2);
-  double Cd = T.val(1,1);
-  double Ce = T.val(1,2);
-  double Cf = T.val(2,2);
+  auto Ca = T.val(0,0);
+  auto Cb = T.val(0,1);
+  auto Cc = T.val(0,2);
+  auto Cd = T.val(1,1);
+  auto Ce = T.val(1,2);
+  auto Cf = T.val(2,2);
   
   if ( (Ca==0) && (Cb==0) && (Cc==0) && (Cd==0) && (Ce==0) && (Cf==0) )
   {
@@ -360,7 +347,7 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
     
     // These calls are direct lookups in the base of the VMesh
     // The compiler should optimize these well
-    double vol = mesh_->get_element_size();
+    auto vol = mesh_->get_element_size();
     const int dim = mesh_->dimensionality();
     
     if (dim < 1 || dim > 3)
@@ -372,7 +359,7 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
     {
       double Ji[9];
       // Call to virtual interface, this should be one internal call
-      double detJ = mesh_->inverse_jacobian(p[i],c_ind,Ji);   
+      auto detJ = mesh_->inverse_jacobian(p[i],c_ind,Ji);   
       
       // If Jacobian is negative there is a problem with the mesh
       if (detJ <= 0.0)
@@ -392,17 +379,17 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
       const double *Nyi = &d[i][local_dimension];
       const double *Nzi = &d[i][local_dimension2];
       // Gradients associated with the node we are calculating
-      const double &Nxip = Nxi[row];
-      const double &Nyip = Nyi[row];
-      const double &Nzip = Nzi[row];
+      const auto& Nxip = Nxi[row];
+      const auto &Nyip = Nyi[row];
+      const auto &Nzip = Nzi[row];
       // Calculating gradient shape function * inverse Jacobian * volume scaling factor
-      const double uxp = detJ*(Nxip*Ji[0]+Nyip*Ji[1]+Nzip*Ji[2]);
-      const double uyp = detJ*(Nxip*Ji[3]+Nyip*Ji[4]+Nzip*Ji[5]);
-      const double uzp = detJ*(Nxip*Ji[6]+Nyip*Ji[7]+Nzip*Ji[8]);
+      const auto uxp = detJ*(Nxip*Ji[0] + Nyip*Ji[1] + Nzip*Ji[2]);
+      const auto uyp = detJ*(Nxip*Ji[3] + Nyip*Ji[4] + Nzip*Ji[5]);
+      const auto uzp = detJ*(Nxip*Ji[6] + Nyip*Ji[7] + Nzip*Ji[8]);
       // Matrix multiplication with conductivity tensor :
-      const double uxyzpabc = uxp*Ca+uyp*Cb+uzp*Cc;
-      const double uxyzpbde = uxp*Cb+uyp*Cd+uzp*Ce;
-      const double uxyzpcef = uxp*Cc+uyp*Ce+uzp*Cf;
+      const auto uxyzpabc = uxp*Ca + uyp*Cb + uzp*Cc;
+      const auto uxyzpbde = uxp*Cb + uyp*Cd + uzp*Ce;
+      const auto uxyzpcef = uxp*Cc + uyp*Ce + uzp*Cf;
       
       // The above is constant for this node. Now multiply with the weight function
       // We assume the weight factors are the same as the local gradients 
@@ -410,14 +397,14 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
       
       for (int j = 0; j<local_dimension; j++)
       {
-        const double &Nxj = Nxi[j];
-        const double &Nyj = Nyi[j];
-        const double &Nzj = Nzi[j];
+        const auto &Nxj = Nxi[j];
+        const auto &Nyj = Nyi[j];
+        const auto &Nzj = Nzi[j];
         
         // Matrix multiplication Gradient with inverse Jacobian:
-        const double ux = Nxj*Ji[0]+Nyj*Ji[1]+Nzj*Ji[2];
-        const double uy = Nxj*Ji[3]+Nyj*Ji[4]+Nzj*Ji[5];
-        const double uz = Nxj*Ji[6]+Nyj*Ji[7]+Nzj*Ji[8];
+        const auto ux = Nxj*Ji[0] + Nyj*Ji[1] + Nzj*Ji[2];
+        const auto uy = Nxj*Ji[3] + Nyj*Ji[4] + Nzj*Ji[5];
+        const auto uz = Nxj*Ji[6] + Nyj*Ji[7] + Nzj*Ji[8];
         
         // Add everything together into one coefficient of the matrix
         l_stiff[j] += ux*uxyzpabc+uy*uxyzpbde+uz*uxyzpcef;
@@ -455,12 +442,12 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
     T = tensors_[tensor_index].second;
   }
   
-  double Ca = T.val(0,0);
-  double Cb = T.val(0,1);
-  double Cc = T.val(0,2);
-  double Cd = T.val(1,1);
-  double Ce = T.val(1,2);
-  double Cf = T.val(2,2);
+  auto Ca = T.val(0,0);
+  auto Cb = T.val(0,1);
+  auto Cc = T.val(0,2);
+  auto Cd = T.val(1,1);
+  auto Ce = T.val(1,2);
+  auto Cf = T.val(2,2);
   
   if ( (Ca==0) && (Cb==0) && (Cc==0) && (Cd==0) && (Ce==0) && (Cf==0) )
   {
@@ -484,15 +471,15 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         l_stiff[i] = 0.0;
       
       auto local_dimension2=2*local_dimension;
-      
-      double vol = mesh_->get_element_size();
+
+      auto vol = mesh_->get_element_size();
       
       for (size_t i = 0; i < d.size(); i++)
       {
-        std::vector<double>& pc = precompute[i];
+        auto& pc = precompute[i];
         
         double Ji[9];
-        double detJ = mesh_->inverse_jacobian(p[i],c_ind,Ji);           
+        auto detJ = mesh_->inverse_jacobian(p[i], c_ind, Ji);
         
         // Volume elements can return negative determinants if the order of elements
         // is put in a different order
@@ -525,17 +512,17 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         const double *Nyi = &d[i][local_dimension];
         const double *Nzi = &d[i][local_dimension2];
         // Gradients associated with the node we are calculating
-        const double &Nxip = Nxi[row];
-        const double &Nyip = Nyi[row];
-        const double &Nzip = Nzi[row];
+        const auto &Nxip = Nxi[row];
+        const auto &Nyip = Nyi[row];
+        const auto &Nzip = Nzi[row];
         // Calculating gradient shape function * inverse Jacobian * volume scaling factor
-        const double uxp = pc[9]*(Nxip*pc[0]+Nyip*pc[1]+Nzip*pc[2]);
-        const double uyp = pc[9]*(Nxip*pc[3]+Nyip*pc[4]+Nzip*pc[5]);
-        const double uzp = pc[9]*(Nxip*pc[6]+Nyip*pc[7]+Nzip*pc[8]);
+        const auto uxp = pc[9]*(Nxip*pc[0]+Nyip*pc[1]+Nzip*pc[2]);
+        const auto uyp = pc[9]*(Nxip*pc[3]+Nyip*pc[4]+Nzip*pc[5]);
+        const auto uzp = pc[9]*(Nxip*pc[6]+Nyip*pc[7]+Nzip*pc[8]);
         // Matrix multiplication with conductivity tensor :
-        const double uxyzpabc = uxp*Ca+uyp*Cb+uzp*Cc;
-        const double uxyzpbde = uxp*Cb+uyp*Cd+uzp*Ce;
-        const double uxyzpcef = uxp*Cc+uyp*Ce+uzp*Cf;
+        const auto uxyzpabc = uxp*Ca+uyp*Cb+uzp*Cc;
+        const auto uxyzpbde = uxp*Cb+uyp*Cd+uzp*Ce;
+        const auto uxyzpcef = uxp*Cc+uyp*Ce+uzp*Cf;
         
         // The above is constant for this node. Now multiply with the weight function
         // We assume the weight factors are the same as the local gradients 
@@ -543,14 +530,14 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         
         for (int j = 0; j<local_dimension; j++)
         {
-          const double &Nxj = Nxi[j];
-          const double &Nyj = Nyi[j];
-          const double &Nzj = Nzi[j];
+          const auto &Nxj = Nxi[j];
+          const auto &Nyj = Nyi[j];
+          const auto &Nzj = Nzi[j];
           
           // Matrix multiplication Gradient with inverse Jacobian:
-          const double ux = Nxj*pc[0]+Nyj*pc[1]+Nzj*pc[2];
-          const double uy = Nxj*pc[3]+Nyj*pc[4]+Nzj*pc[5];
-          const double uz = Nxj*pc[6]+Nyj*pc[7]+Nzj*pc[8];
+          const auto ux = Nxj*pc[0]+Nyj*pc[1]+Nzj*pc[2];
+          const auto uy = Nxj*pc[3]+Nyj*pc[4]+Nzj*pc[5];
+          const auto uz = Nxj*pc[6]+Nyj*pc[7]+Nzj*pc[8];
           
           // Add everything together into one coefficient of the matrix
           l_stiff[j] += ux*uxyzpabc+uy*uxyzpbde+uz*uxyzpcef;
@@ -575,17 +562,17 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         const double *Nyi = &d[i][local_dimension];
         const double *Nzi = &d[i][local_dimension2];
         // Gradients associated with the node we are calculating
-        const double &Nxip = Nxi[row];
-        const double &Nyip = Nyi[row];
-        const double &Nzip = Nzi[row];
+        const auto &Nxip = Nxi[row];
+        const auto &Nyip = Nyi[row];
+        const auto &Nzip = Nzi[row];
         // Calculating gradient shape function * inverse Jacobian * volume scaling factor
-        const double uxp = pc[9]*(Nxip*pc[0]+Nyip*pc[1]+Nzip*pc[2]);
-        const double uyp = pc[9]*(Nxip*pc[3]+Nyip*pc[4]+Nzip*pc[5]);
-        const double uzp = pc[9]*(Nxip*pc[6]+Nyip*pc[7]+Nzip*pc[8]);
+        const auto uxp = pc[9]*(Nxip*pc[0]+Nyip*pc[1]+Nzip*pc[2]);
+        const auto uyp = pc[9]*(Nxip*pc[3]+Nyip*pc[4]+Nzip*pc[5]);
+        const auto uzp = pc[9]*(Nxip*pc[6]+Nyip*pc[7]+Nzip*pc[8]);
         // Matrix multiplication with conductivity tensor :
-        const double uxyzpabc = uxp*Ca+uyp*Cb+uzp*Cc;
-        const double uxyzpbde = uxp*Cb+uyp*Cd+uzp*Ce;
-        const double uxyzpcef = uxp*Cc+uyp*Ce+uzp*Cf;
+        const auto uxyzpabc = uxp*Ca+uyp*Cb+uzp*Cc;
+        const auto uxyzpbde = uxp*Cb+uyp*Cd+uzp*Ce;
+        const auto uxyzpcef = uxp*Cc+uyp*Ce+uzp*Cf;
         
         // The above is constant for this node. Now multiply with the weight function
         // We assume the weight factors are the same as the local gradients 
@@ -593,14 +580,14 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         
         for (int j = 0; j<local_dimension; j++)
         {
-          const double &Nxj = Nxi[j];
-          const double &Nyj = Nyi[j];
-          const double &Nzj = Nzi[j];
+          const auto &Nxj = Nxi[j];
+          const auto &Nyj = Nyi[j];
+          const auto &Nzj = Nzi[j];
           
           // Matrix multiplication Gradient with inverse Jacobian:
-          const double ux = Nxj*pc[0]+Nyj*pc[1]+Nzj*pc[2];
-          const double uy = Nxj*pc[3]+Nyj*pc[4]+Nzj*pc[5];
-          const double uz = Nxj*pc[6]+Nyj*pc[7]+Nzj*pc[8];
+          const auto ux = Nxj*pc[0]+Nyj*pc[1]+Nzj*pc[2];
+          const auto uy = Nxj*pc[3]+Nyj*pc[4]+Nzj*pc[5];
+          const auto uz = Nxj*pc[6]+Nyj*pc[7]+Nzj*pc[8];
           
           // Add everything together into one coefficient of the matrix
           l_stiff[j] += ux*uxyzpabc+uy*uxyzpbde+uz*uxyzpcef;
@@ -616,7 +603,6 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
 bool
 FEMBuilder::setup()
 {	
-  ScopedTimeLogger s0("FEMBuilder::setup");
   // The domain dimension
   domain_dimension = mesh_->dimensionality();
   if (domain_dimension < 1) 
@@ -689,7 +675,6 @@ FEMBuilder::setup()
 void 
 FEMBuilder::parallel(int proc_num)
 {
-  ScopedTimeLogger s1("FEMBuilder::parallel", proc_num == 0);
   success_[proc_num] = true;
   
   if (proc_num == 0)
@@ -737,10 +722,9 @@ FEMBuilder::parallel(int proc_num)
   auto updateFrequency = 2*size_gd / 100;
   try
   {
-    ScopedTimeLogger loop1("FEMBuilder::parallel loop 1", proc_num == 0);
     mycols.reserve((end_gd - start_gd)*local_dimension*8);  //<! rough estimate
     
-    for (VMesh::Node::index_type i = start_gd; i<end_gd; i++)
+    for (VMesh::Node::index_type i = start_gd; i<end_gd; ++i)
     {
       rows_[i] = mycols.size();
       
@@ -802,7 +786,6 @@ FEMBuilder::parallel(int proc_num)
         {
           cnt = 0;
           algo_->update_progress_max(i,2*size_gd);
-          Log::get() << DEBUG_LOG << "Updating progress 1 to: " << i << " / " << 2*size_gd;
         }
       }    
     }
@@ -846,10 +829,7 @@ FEMBuilder::parallel(int proc_num)
       }
       
       colidx_[numprocessors_] = st;
-      {
-        ScopedTimeLogger ss("Allocating buffer for nonzero column indices of size: " + boost::lexical_cast<std::string>(st));
-        allcols_.reset(new index_type[st]);
-      }
+      allcols_.reset(new index_type[st]);
     }
     success_[proc_num] = true;
   }
@@ -897,7 +877,7 @@ FEMBuilder::parallel(int proc_num)
   barrier_.wait();
   
   // Bail out if one of the processes failed
-  for (int q=0; q<numprocessors_; q++)
+  for (auto q=0; q<numprocessors_; q++)
   {
     if (!success_[q])
       return;
@@ -908,10 +888,9 @@ FEMBuilder::parallel(int proc_num)
     /// the main thread makes the matrix
     if (proc_num == 0)
     {
-      ScopedTimeLogger s0("FEMBuilder::parallel 0 creating matrix");
       rows_[global_dimension] = st;
       algo_->remark("Creating fematrix on main thread.");
-      fematrix_.reset(new SparseRowMatrix(global_dimension, global_dimension, rows_.get(), allcols_.get(), st));
+      fematrix_ = boost::make_shared<SparseRowMatrix>(global_dimension, global_dimension, rows_.get(), allcols_.get(), st);
       rows_.reset();
       allcols_.reset();
     }
@@ -927,7 +906,7 @@ FEMBuilder::parallel(int proc_num)
   barrier_.wait();
   
   // Bail out if one of the processes failed
-  for (int q=0; q<numprocessors_;q++)
+  for (auto q=0; q<numprocessors_;q++)
   {
     if (!success_[q])
       return;
@@ -936,9 +915,9 @@ FEMBuilder::parallel(int proc_num)
   try
   {
     /// zeroing in parallel
-    const index_type ns = colidx_[proc_num];
-    const index_type ne = colidx_[proc_num+1];
-    double* a = &(fematrix_->valuePtr()[ns]), *ae=&(fematrix_->valuePtr()[ne]);
+    const auto ns = colidx_[proc_num];
+    const auto ne = colidx_[proc_num+1];
+    auto a = &(fematrix_->valuePtr()[ns]), ae=&(fematrix_->valuePtr()[ne]);
     while (a<ae) *a++=0.0;
     
     std::vector<VMesh::coords_type > ni_points;
@@ -952,9 +931,8 @@ FEMBuilder::parallel(int proc_num)
     
     /// loop over system dofs for this thread
     cnt = 0;
-    ScopedTimeLogger loop1("FEMBuilder::parallel loop 2", proc_num == 0);
     size_gd = end_gd-start_gd;
-    for (VMesh::Node::index_type i = start_gd; i<end_gd; i++)
+    for (VMesh::Node::index_type i = start_gd; i<end_gd; ++i)
     {
       if (i < global_dimension_nodes)
       {
@@ -1074,15 +1052,13 @@ FEMBuilder::parallel(int proc_num)
 }
 }
 
-AlgorithmParameterName BuildFEMatrixAlgo::NumProcessors("NumProcessors");
-AlgorithmParameterName BuildFEMatrixAlgo::ForceSymmetry("ForceSymmetry");
-AlgorithmParameterName BuildFEMatrixAlgo::GenerateBasis("GenerateBasis");
+const AlgorithmParameterName BuildFEMatrixAlgo::ForceSymmetry("ForceSymmetry");
+const AlgorithmParameterName BuildFEMatrixAlgo::GenerateBasis("GenerateBasis");
 
 bool 
 BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMatrixHandle& output) const
 {
   ScopedAlgorithmStatusReporter s(this, "BuildFEMatrix");
-  ScopedTimeLogger s1("BuildFEMatrixAlgo::run");
   
   if (!input)
   {
@@ -1120,10 +1096,8 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
   
   if (get(GenerateBasis).toBool())
   {
-    ScopedTimeLogger s2("BuildFEMatrixAlgo::run GenerateBasis");
     if (!ctable)
     {
-      ScopedTimeLogger s3("BuildFEMatrixAlgo::run GenerateBasis !ctable");
       std::vector<std::pair<std::string,Tensor> > tens;
       
       input->properties().get_property("conductivity_table",tens);
@@ -1131,10 +1105,10 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
       if (!tens.empty())
       {
         ctable.reset(new DenseMatrix(tens.size(), 1));
-        double* data = ctable->data();
+        auto data = ctable->data();
         for (size_t i=0; i<tens.size();i++)
         {
-          double t = tens[i].second.val(0,0);
+          auto t = tens[i].second.val(0,0);
           data[i] = t;
         }
       }
@@ -1142,13 +1116,12 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
     
     if (ctable)
     {
-      ScopedTimeLogger s4("BuildFEMatrixAlgo::run GenerateBasis ctable");
-      size_type nconds = ctable->nrows();
+      auto nconds = ctable->nrows();
       if ( (input->vmesh()->generation() != generation_) ||
           (!basis_fematrix_) )
       {
-        DenseMatrixHandle con(new DenseMatrix(nconds, 1, 0.0));
-        double* data = con->data();
+        auto con = boost::make_shared<DenseMatrix>(nconds, 1, 0.0);
+        auto data = con->data();
         
         if (! builder.build_matrix(input, con, basis_fematrix_) )
         {
@@ -1165,26 +1138,26 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
         basis_values_.resize(nconds);
         for (size_type i=0; i < nconds; i++)
         {
-          SparseRowMatrixHandle temp;
+          SparseRowMatrixHandle stiffness;
           /// @todo: can initialize array using std::fill
           data[i] = 1.0;
           
-          if (! builder.build_matrix(input, con, temp) )
+          if (! builder.build_matrix(input, con, stiffness) )
           {
             error("Build matrix method failed for one of the tissue types");
             return false;
           }
           
-          if (!temp)
+          if (!stiffness)
           {
             error("Failed to build FEMatrix component for one of the tissue types");
             return false;
           }
           
-          basis_values_[i].resize(temp->nonZeros());
-          for (size_type p=0; p< temp->nonZeros(); p++)
+          basis_values_[i].resize(stiffness->nonZeros());
+          for (size_type p=0; p< stiffness->nonZeros(); p++)
           {
-            basis_values_[i][p] = temp->valuePtr()[p];
+            basis_values_[i][p] = stiffness->valuePtr()[p];
           }
           data[i] = 0.0;
         }
@@ -1193,10 +1166,10 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
       }
       
       output.reset(basis_fematrix_->clone());
-      
-      double *sum = output->valuePtr();
-      double *cdata = ctable->data();
-      size_type n = ctable->ncols();
+
+      auto sum = output->valuePtr();
+      auto cdata = ctable->data();
+      auto n = ctable->ncols();
       
       if (!basis_values_.empty())
       {
@@ -1204,9 +1177,9 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
           sum[p] = 0.0;
       }
       
-      for (int i=0; i<nconds; i++)
+      for (auto i=0; i<nconds; i++)
       {
-        double weight = cdata[i*n];
+        auto weight = cdata[i*n];
         for (size_t p=0; p < basis_values_[i].size(); p++)
         {
           sum[p] += weight * basis_values_[i][p];
@@ -1236,8 +1209,8 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
   return true;
 }
 
-AlgorithmInputName BuildFEMatrixAlgo::Conductivity_Table("Conductivity_Table");
-AlgorithmOutputName BuildFEMatrixAlgo::Stiffness_Matrix("Stiffness_Matrix");
+const AlgorithmInputName BuildFEMatrixAlgo::Conductivity_Table("Conductivity_Table");
+const AlgorithmOutputName BuildFEMatrixAlgo::Stiffness_Matrix("Stiffness_Matrix");
 
 AlgorithmOutput BuildFEMatrixAlgo::run(const AlgorithmInput& input) const
 {

@@ -43,20 +43,14 @@ namespace SCIRun {
 class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
 {
   public:
-    enum { AUTO = -1 };
-  
-    static AlgorithmParameterName NumProcessors;
-    static AlgorithmParameterName ForceSymmetry;
-    static AlgorithmParameterName GenerateBasis;
+    static const AlgorithmParameterName ForceSymmetry;
+    static const AlgorithmParameterName GenerateBasis;
 
-    static AlgorithmInputName Conductivity_Table;
-    static AlgorithmOutputName Stiffness_Matrix;
+    static const AlgorithmInputName Conductivity_Table;
+    static const AlgorithmOutputName Stiffness_Matrix;
 
     BuildFEMatrixAlgo() : generation_(0)
     {
-      // Number of processors to use
-      addParameter(NumProcessors, AUTO);
-      
       // Whether to force strict symmetry of the matrix
       // Averages symmetric components
       addParameter(ForceSymmetry, false);
