@@ -275,6 +275,15 @@ std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& m
   auto module = impl_->findModule(moduleId);
   if (module)
   {
+    if (stateVariable == "__UI__")
+    {
+      boost::python::extract<bool> e(value);
+      if (e.check())
+      {
+        e() ? module->showUI() : module->hideUI();
+        return "UI adjusted";
+      }
+    }
     module->setattr(stateVariable, value, false);
     return "Value set";
   }

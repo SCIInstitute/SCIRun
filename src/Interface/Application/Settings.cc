@@ -64,17 +64,7 @@ namespace
     }
     return qsl;
   }
-
-  QList<bool> valueListAsBool(const QList<QVariant>& qvs)
-  {
-    QList<bool> bs;
-    for (const auto& qv : qvs)
-    {
-      bs.append(qv.toBool());
-    }
-    return bs;
-  }
-
+  
   QMap<QString, QString> toStrMap(const QMap<QString, QVariant>& m)
   {
     QMap<QString, QString> ss;
@@ -238,7 +228,7 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().logInfo("Setting read: newViewSceneMouseControls = " + QString::number(mode));
     Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(mode);
   }
-  
+
   const QString invertMouseZoom = "invertMouseZoom";
   if (settings.contains(invertMouseZoom))
   {
@@ -301,7 +291,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(triggeredScriptEnableFlags))
   {
     auto scriptsMap = settings.value(triggeredScriptEnableFlags).toMap();
-    GuiLogger::Instance().logInfo("Setting read: triggeredScriptEnableFlags = " + scriptsMap.size());
+    GuiLogger::Instance().logInfo("Setting read: triggeredScriptEnableFlags = " + QString::number(scriptsMap.size()));
     triggeredEventsWindow_->setScriptEnabledFlags(toBoolMap(scriptsMap));
   }
 
