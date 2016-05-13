@@ -121,6 +121,12 @@ namespace Gui {
       ~Pulling() { m_->pulling_ = false; }
       ModuleDialogGeneric* m_;
     };
+
+    //////////////////////
+    // BIG TODO: extract the widget manager apparatus as a general purpose class so that other main window frames/dialogs can use it to manage state.
+    // Potential name: GlobalStateManagerItem, see #41
+    //////////////////////
+
     //TODO: highlight this section in code and documentation
 		void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap);

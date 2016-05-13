@@ -64,7 +64,7 @@ namespace
     }
     return qsl;
   }
-
+  
   QMap<QString, QString> toStrMap(const QMap<QString, QVariant>& m)
   {
     QMap<QString, QString> ss;
@@ -75,7 +75,8 @@ namespace
     return ss;
   }
 
-  QMap<QString, QVariant> fromStrMap(const QMap<QString, QString>& m)
+  template <typename T>
+  QMap<QString, QVariant> fromTypedMap(const QMap<QString, T>& m)
   {
     QMap<QString, QVariant> sv;
     for (const auto& ss : m.toStdMap())
@@ -83,6 +84,26 @@ namespace
       sv[ss.first] = ss.second;
     }
     return sv;
+  }
+
+  QMap<QString, QVariant> fromStrMap(const QMap<QString, QString>& m)
+  {
+    return fromTypedMap(m);
+  }
+
+  QMap<QString, bool> toBoolMap(const QMap<QString, QVariant>& m)
+  {
+    QMap<QString, bool> ss;
+    for (const auto& sv : m.toStdMap())
+    {
+      ss[sv.first] = sv.second.toBool();
+    }
+    return ss;
+  }
+
+  QMap<QString, QVariant> fromBoolMap(const QMap<QString, bool>& m)
+  {
+    return fromTypedMap(m);
   }
 }
 
@@ -207,7 +228,7 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().logInfo("Setting read: newViewSceneMouseControls = " + QString::number(mode));
     Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(mode);
   }
-  
+
   const QString invertMouseZoom = "invertMouseZoom";
   if (settings.contains(invertMouseZoom))
   {
@@ -266,6 +287,14 @@ void SCIRunMainWindow::readSettings()
     triggeredEventsWindow_->setScripts(toStrMap(scriptsMap));
   }
 
+  const QString triggeredScriptEnableFlags = "triggeredScriptEnableFlags";
+  if (settings.contains(triggeredScriptEnableFlags))
+  {
+    auto scriptsMap = settings.value(triggeredScriptEnableFlags).toMap();
+    GuiLogger::Instance().logInfo("Setting read: triggeredScriptEnableFlags = " + QString::number(scriptsMap.size()));
+    triggeredEventsWindow_->setScriptEnabledFlags(toBoolMap(scriptsMap));
+  }
+
   const QString savedSubnetworksNames = "savedSubnetworksNames";
   if (settings.contains(savedSubnetworksNames))
   {
@@ -313,12 +342,9 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("tagNames", tagManagerWindow_->getTagNames());
   settings.setValue("tagColors", tagManagerWindow_->getTagColors());
   settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->getScripts()));
-  //qDebug() << "writing names: " << savedSubnetworksNames_;
+  settings.setValue("triggeredScriptEnableFlags", fromBoolMap(triggeredEventsWindow_->getScriptEnabledFlags()));
   settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
-  //settings.setValue("savedSubnetworksNames", QMap<QString, QVariant>());
-  //qDebug() << "writing xml: " << savedSubnetworksXml_;
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
-  //settings.setValue("savedSubnetworksXml", QMap<QString, QVariant>());
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

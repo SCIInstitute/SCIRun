@@ -48,16 +48,19 @@ class TriggeredEventsWindow : public QDockWidget, public Ui::TriggeredEvents
 public:
   explicit TriggeredEventsWindow(QWidget* parent = nullptr);
   const QMap<QString, QString>& getScripts() const;
+  const QMap<QString, bool>& getScriptEnabledFlags() const;
 
   void setScripts(const QMap<QString, QString>& scripts);
+  void setScriptEnabledFlags(const QMap<QString, bool>& scriptsEnabled);
 
-  //public Q_SLOTS:
 private Q_SLOTS:
   void updateScriptEditor();
   void updateScripts();
-//Q_SIGNALS:
+  void enableStateChanged(int state);
 private:
+  void push();
   QMap<QString, QString> scripts_;
+  QMap<QString, bool> scriptEnabledFlags_;
 };
 
 }
