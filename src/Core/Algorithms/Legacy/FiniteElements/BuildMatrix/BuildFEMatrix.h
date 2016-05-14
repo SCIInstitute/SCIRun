@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,17 +32,12 @@
 
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <vector>
 #include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
 namespace SCIRun {
 	namespace Core {
 		namespace Algorithms {
 			namespace FiniteElements {
-
-        using value_type = double;
-        using matrix_type = Datatypes::SparseRowMatrixGeneric<value_type>;
-        using matrix_pointer_type = boost::shared_ptr<matrix_type>;
 
 class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
 {
@@ -53,7 +48,7 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
     static const AlgorithmInputName Conductivity_Table;
     static const AlgorithmOutputName Stiffness_Matrix;
 
-    BuildFEMatrixAlgo() : generation_(0)
+    BuildFEMatrixAlgo()
     {
       // Whether to force strict symmetry of the matrix
       // Averages symmetric components
@@ -65,17 +60,9 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
       addParameter(GenerateBasis, false);
     }
 
-    bool run(FieldHandle input,
-             Datatypes::DenseMatrixHandle ctable,
-             matrix_pointer_type& output) const;
-  
     virtual AlgorithmOutput run(const AlgorithmInput &) const override;
-private:
-  mutable int generation_;
-  mutable std::vector<std::vector<value_type> > basis_values_;
-  mutable matrix_pointer_type basis_fematrix_;
 };
 
 }}}}
 
-#endif 
+#endif
