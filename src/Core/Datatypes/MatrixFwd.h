@@ -41,12 +41,15 @@ namespace Datatypes {
   class MatrixBase;
 
   typedef MatrixBase<double> Matrix;
+  using ComplexMatrix = MatrixBase<complex>;
 
   template <typename T>
   using SharedPointer = boost::shared_ptr<T>;
 
   typedef SharedPointer<Matrix> MatrixHandle;
   typedef SharedPointer<const Matrix> MatrixConstHandle;
+
+  typedef SharedPointer<ComplexMatrix> ComplexMatrixHandle;
 
   template <typename T>
   class DenseMatrixGeneric;
@@ -70,9 +73,12 @@ namespace Datatypes {
   class SparseRowMatrixGeneric;
 
   typedef SparseRowMatrixGeneric<double> SparseRowMatrix;
+  using ComplexSparseRowMatrix = SparseRowMatrixGeneric<SCIRun::complex>;
 
   typedef SharedPointer<SparseRowMatrix> SparseRowMatrixHandle;
   typedef SharedPointer<const SparseRowMatrix> SparseRowMatrixConstHandle;
+
+  typedef SharedPointer<ComplexSparseRowMatrix> ComplexSparseRowMatrixHandle;
 
 }}}
 

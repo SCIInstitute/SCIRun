@@ -35,9 +35,9 @@
 namespace SCIRun {
 namespace Modules {
 namespace Math {
-  
+
   class SCISHARE ReportComplexMatrixInfo : public Dataflow::Networks::Module,
-    public Has1InputPort<ComplexDenseMatrixPortTag>,
+    public Has1InputPort<ComplexMatrixPortTag>,
     public Has3OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag>
   {
   public:

@@ -1217,18 +1217,32 @@ BuildFEMatrixAlgoImpl<T>::run(FieldHandle input, DenseMatrixHandle ctable, matri
 
 const AlgorithmInputName BuildFEMatrixAlgo::Conductivity_Table("Conductivity_Table");
 const AlgorithmOutputName BuildFEMatrixAlgo::Stiffness_Matrix("Stiffness_Matrix");
+const AlgorithmOutputName BuildFEMatrixAlgo::Stiffness_Matrix_Complex("Stiffness_Matrix_Complex");
 
 AlgorithmOutput BuildFEMatrixAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
   auto ctable = input.get<DenseMatrix>(Conductivity_Table);
 
-  matrix_pointer_type<double> stiffness;
-  BuildFEMatrixAlgoImpl<double> impl(this);
-  if (!impl.run(field, ctable, stiffness))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+	AlgorithmOutput output;
+  if (field->vfield()->is_complex_double())
+	{
+		// matrix_pointer_type<complex> stiffness;
+	  // BuildFEMatrixAlgoImpl<complex> impl(this);
+	  // if (!impl.run(field, ctable, stiffness))
+	    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.--complex detected");
+			//output[Stiffness_Matrix_Complex] = stiffness;
+	}
+	else
+	{
+		matrix_pointer_type<double> stiffness;
+	  BuildFEMatrixAlgoImpl<double> impl(this);
+	  if (!impl.run(field, ctable, stiffness))
+	    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+		output[Stiffness_Matrix] = stiffness;
+	}
 
-  AlgorithmOutput output;
-  output[Stiffness_Matrix] = stiffness;
+
+
   return output;
 }

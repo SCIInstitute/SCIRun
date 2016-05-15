@@ -47,6 +47,7 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
 
     static const AlgorithmInputName Conductivity_Table;
     static const AlgorithmOutputName Stiffness_Matrix;
+		static const AlgorithmOutputName Stiffness_Matrix_Complex;
 
     BuildFEMatrixAlgo()
     {

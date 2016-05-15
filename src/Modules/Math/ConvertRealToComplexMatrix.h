@@ -38,7 +38,7 @@ namespace Math {
 
   class SCISHARE ConvertRealToComplexMatrix : public Dataflow::Networks::Module,
     public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
-    public Has1OutputPort<ComplexDenseMatrixPortTag>
+    public Has1OutputPort<ComplexMatrixPortTag>
   {
   public:
     ConvertRealToComplexMatrix();

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -47,13 +47,14 @@ BuildFEMatrix::BuildFEMatrix()
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(Conductivity_Table);
   INITIALIZE_PORT(Stiffness_Matrix);
+  INITIALIZE_PORT(Stiffness_Matrix_Complex);
 }
 
 void BuildFEMatrix::execute()
 {
   auto field = getRequiredInput(InputField);
   auto conductivity = getOptionalInput(Conductivity_Table);
-  
+
   if (needToExecute())
   {
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
@@ -63,9 +64,10 @@ void BuildFEMatrix::execute()
 //    algo().set(GenerateBasis, true);
 //    algo().set(ForceSymmetry, true);
 #endif
-    
+
     auto output = algo().run(withInputData((InputField, field)(Conductivity_Table, optionalAlgoInput(conductivity))));
 
     sendOutputFromAlgorithm(Stiffness_Matrix, output);
+    sendOutputFromAlgorithm(Stiffness_Matrix_Complex, output);
   }
 }
