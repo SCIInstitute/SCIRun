@@ -49,7 +49,7 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, Conductivity_Table, Matrix);
         OUTPUT_PORT(0, Stiffness_Matrix, Matrix);
-        OUTPUT_PORT(1, Stiffness_Matrix_Complex, ComplexMatrix);
+        OUTPUT_PORT(1, Stiffness_Matrix_Complex, ComplexSparseRowMatrix);
 
       };
 

@@ -44,7 +44,7 @@ namespace Math {
     ReportComplexMatrixInfo();
     virtual void execute() override;
     virtual void setStateDefaults() override {}
-    INPUT_PORT(0, InputMatrix, ComplexDenseMatrix);
+    INPUT_PORT(0, InputMatrix, ComplexMatrix);
     OUTPUT_PORT(0, NumRows, Int32);
     OUTPUT_PORT(1, NumCols, Int32);
     OUTPUT_PORT(2, NumElements, Int32);

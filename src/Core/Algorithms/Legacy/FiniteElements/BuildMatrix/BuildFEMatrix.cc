@@ -145,20 +145,20 @@ private:
   }
 
   void create_numerical_integration(std::vector<VMesh::coords_type>& p,
-                                    std::vector<T>& w,
-                                    std::vector<std::vector<T>>& d);
+                                    std::vector<double>& w,
+                                    std::vector<std::vector<double>>& d);
   bool build_local_matrix(VMesh::Elem::index_type c_ind,
                           index_type row,
                           std::vector<T>& l_stiff,
                           std::vector<VMesh::coords_type>& p,
-                          std::vector<T>& w,
-                          std::vector<std::vector<T>>& d);
+                          std::vector<double>& w,
+                          std::vector<std::vector<double>>& d);
   bool build_local_matrix_regular(VMesh::Elem::index_type c_ind,
                                   index_type row,
                                   std::vector<T>& l_stiff,
                                   std::vector<VMesh::coords_type>& p,
-                                  std::vector<T>& w,
-                                  std::vector<std::vector<T>>& d,
+                                  std::vector<double>& w,
+                                  std::vector<std::vector<double>>& d,
                                   std::vector<std::vector<T>>& precompute);
   bool setup();
 
@@ -287,8 +287,8 @@ FEMBuilder<T>::build_matrix(FieldHandle input,
 template <typename T>
 void
 FEMBuilder<T>::create_numerical_integration(std::vector<VMesh::coords_type> &p,
-                                         std::vector<T> &w,
-                                         std::vector<std::vector<T> > &d)
+                                         std::vector<double> &w,
+                                         std::vector<std::vector<double> > &d)
 {
   //ScopedTimeLogger s1("FEMBuilder::create_numerical_integration");
   int int_basis = 1;
@@ -318,8 +318,8 @@ FEMBuilder<T>::build_local_matrix(VMesh::Elem::index_type c_ind,
                                index_type row,
                                std::vector<T> &l_stiff,
                                std::vector<VMesh::coords_type> &p,
-                               std::vector<T> &w,
-                               std::vector<std::vector<T>>  &d)
+                               std::vector<double> &w,
+                               std::vector<std::vector<double>>  &d)
 {
   Tensor tensor;
 
@@ -368,8 +368,7 @@ FEMBuilder<T>::build_local_matrix(VMesh::Elem::index_type c_ind,
     }
     for (size_t i = 0; i < d.size(); i++)
     {
-      T Ji[9];
-      // Call to virtual interface, this should be one internal call
+      double Ji[9];
       auto detJ = mesh_->inverse_jacobian(p[i],c_ind,Ji);
 
       // If Jacobian is negative there is a problem with the mesh
@@ -386,9 +385,9 @@ FEMBuilder<T>::build_local_matrix(VMesh::Elem::index_type c_ind,
       // Build local stiffness matrix
       // Get the local derivatives of the basis functions in the basis element
       // They are all the same and are thus precomputed in matrix d
-      const T *Nxi = &d[i][0];
-      const T *Nyi = &d[i][local_dimension];
-      const T *Nzi = &d[i][local_dimension2];
+      auto Nxi = &d[i][0];
+      auto Nyi = &d[i][local_dimension];
+      auto Nzi = &d[i][local_dimension2];
       // Gradients associated with the node we are calculating
       const auto& Nxip = Nxi[row];
       const auto &Nyip = Nyi[row];
@@ -431,8 +430,8 @@ FEMBuilder<T>::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
                                        index_type row,
                                        std::vector<T> &l_stiff,
                                        std::vector<VMesh::coords_type> &p,
-                                       std::vector<T> &w,
-                                       std::vector<std::vector<T>> &d,
+                                       std::vector<double> &w,
+                                       std::vector<std::vector<double>> &d,
                                        std::vector<std::vector<T>> &precompute)
 {
   Tensor tensor;
@@ -487,7 +486,7 @@ FEMBuilder<T>::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
       {
         auto& pc = precompute[i];
 
-        T Ji[9];
+        double Ji[9];
         auto detJ = mesh_->inverse_jacobian(p[i], c_ind, Ji);
 
         // Volume elements can return negative determinants if the order of elements
@@ -517,9 +516,9 @@ FEMBuilder<T>::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         // Build local stiffness matrix
         // Get the local derivatives of the basis functions in the basis element
         // They are all the same and are thus precomputed in matrix d
-        const T *Nxi = &d[i][0];
-        const T *Nyi = &d[i][local_dimension];
-        const T *Nzi = &d[i][local_dimension2];
+        auto Nxi = &d[i][0];
+        auto Nyi = &d[i][local_dimension];
+        auto Nzi = &d[i][local_dimension2];
         // Gradients associated with the node we are calculating
         const auto &Nxip = Nxi[row];
         const auto &Nyip = Nyi[row];
@@ -567,9 +566,9 @@ FEMBuilder<T>::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         // Build local stiffness matrix
         // Get the local derivatives of the basis functions in the basis element
         // They are all the same and are thus precomputed in matrix d
-        const T *Nxi = &d[i][0];
-        const T *Nyi = &d[i][local_dimension];
-        const T *Nzi = &d[i][local_dimension2];
+        auto Nxi = &d[i][0];
+        auto Nyi = &d[i][local_dimension];
+        auto Nzi = &d[i][local_dimension2];
         // Gradients associated with the node we are calculating
         const auto &Nxip = Nxi[row];
         const auto &Nyip = Nyi[row];
@@ -926,9 +925,9 @@ FEMBuilder<T>::parallel(int proc_num)
     auto a = &(fematrix_->valuePtr()[ns]), ae=&(fematrix_->valuePtr()[ne]);
     while (a<ae) *a++=0.0;
 
-    std::vector<VMesh::coords_type > ni_points;
-    std::vector<T> ni_weights;
-    std::vector<std::vector<T> > ni_derivatives;
+    std::vector<VMesh::coords_type> ni_points;
+    std::vector<double> ni_weights;
+    std::vector<std::vector<double>> ni_derivatives;
 
     create_numerical_integration(ni_points, ni_weights, ni_derivatives);
 
@@ -1034,7 +1033,6 @@ FEMBuilder<T>::parallel(int proc_num)
         if (cnt == updateFrequency)
         {
           cnt = 0;
-          Log::get() << DEBUG_LOG << "Updating progress 2 to: " << i+size_gd << " / " << 2*size_gd;
           algo_->update_progress_max(i+size_gd,2*size_gd);
         }
       }
@@ -1227,11 +1225,11 @@ AlgorithmOutput BuildFEMatrixAlgo::run(const AlgorithmInput& input) const
 	AlgorithmOutput output;
   if (field->vfield()->is_complex_double())
 	{
-		// matrix_pointer_type<complex> stiffness;
-	  // BuildFEMatrixAlgoImpl<complex> impl(this);
-	  // if (!impl.run(field, ctable, stiffness))
-	    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.--complex detected");
-			//output[Stiffness_Matrix_Complex] = stiffness;
+		matrix_pointer_type<complex> stiffness;
+	  BuildFEMatrixAlgoImpl<complex> impl(this);
+	  if (!impl.run(field, ctable, stiffness))
+	    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.--complex detected	");
+		output[Stiffness_Matrix_Complex] = stiffness;
 	}
 	else
 	{

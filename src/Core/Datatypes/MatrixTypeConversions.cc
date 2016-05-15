@@ -80,9 +80,17 @@ std::string matrixIs::whatType(const MatrixHandle& mh)
   return typeid(*mh).name();
 }
 
-std::string matrixIs::whatType(const ComplexDenseMatrixHandle&)
+std::string matrixIs::whatType(const ComplexMatrixHandle& cmh)
 {
-  return "ComplexDenseMatrix";
+  if (!cmh)
+    return "<null>";
+  // if (column(mh))
+  //   return "DenseColumnMatrix";
+  if (boost::dynamic_pointer_cast<ComplexDenseMatrix>(cmh))
+    return "ComplexDenseMatrix";
+  if (boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(cmh))
+    return "ComplexSparseRowMatrix";
+  return typeid(*cmh).name();
 }
 
 MatrixTypeCode matrixIs::typeCode(const MatrixHandle& mh)
