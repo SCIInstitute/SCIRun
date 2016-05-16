@@ -79,7 +79,6 @@ TEST(BuildFEMatrixAlgorithmTests, ThrowsForNullMesh)
 {
   using namespace FEInputData;
   BuildFEMatrixAlgo algo;
-  SparseRowMatrixHandle output;
 
   EXPECT_THROW(algo.run(withInputData((Variables::InputField, nullptr))), AlgorithmProcessingException);
 }

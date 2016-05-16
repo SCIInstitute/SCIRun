@@ -1223,7 +1223,7 @@ AlgorithmOutput BuildFEMatrixAlgo::run(const AlgorithmInput& input) const
   auto ctable = input.get<DenseMatrix>(Conductivity_Table);
 
 	AlgorithmOutput output;
-  if (field->vfield()->is_complex_double())
+  if (field && field->vfield() && field->vfield()->is_complex_double())
 	{
 		matrix_pointer_type<complex> stiffness;
 	  BuildFEMatrixAlgoImpl<complex> impl(this);
