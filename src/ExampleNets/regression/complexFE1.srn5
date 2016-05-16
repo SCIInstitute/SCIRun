@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="4">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>13</count>
+			<count>15</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>BuildFEMatrix:0</first>
@@ -39,6 +39,34 @@
 				</second>
 			</item>
 			<item>
+				<first>ChooseInput:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Flow Control</category_name_>
+						<module_name_>ChooseInput</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>PortIndex</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>PortIndex</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ConvertRealToComplexMatrix:0</first>
 				<second>
 					<module>
@@ -66,17 +94,47 @@
 						<stateMap>
 							<count>1</count>
 							<item_version>0</item_version>
-							<item class_id="8" tracking_level="0" version="0">
-								<first class_id="9" tracking_level="0" version="0">
+							<item>
+								<first>
 									<name>TextEntry</name>
 								</first>
-								<second class_id="10" tracking_level="0" version="0">
+								<second>
 									<name>TextEntry</name>
-									<value class_id="11" tracking_level="0" version="0">
+									<value>
 										<which>2</which>
 										<value>0
 0
 0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value>1
+1
+1</value>
 									</value>
 								</second>
 							</item>
@@ -278,7 +336,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>13</count>
+			<count>15</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>BuildFEMatrix:0</moduleId1_>
@@ -301,6 +359,18 @@
 				<moduleId2_>ReportMatrixInfo:1</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ChooseInput:0</moduleId1_>
+				<port1_>
+					<name>Output</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ConvertRealToComplexMatrix:0</moduleId2_>
+				<port2_>
+					<name>ComplexPartMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -334,10 +404,22 @@
 					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ConvertRealToComplexMatrix:0</moduleId2_>
+				<moduleId2_>ChooseInput:0</moduleId2_>
 				<port2_>
-					<name>ComplexPartMatrix</name>
+					<name>Input</name>
 					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:1</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ChooseInput:0</moduleId2_>
+				<port2_>
+					<name>Input</name>
+					<id>1</id>
 				</port2_>
 			</item>
 			<item>
@@ -439,7 +521,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>13</count>
+		<count>15</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>BuildFEMatrix:0</first>
@@ -456,6 +538,13 @@
 			</second>
 		</item>
 		<item>
+			<first>ChooseInput:0</first>
+			<second>
+				<first>3.04000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
 			<first>ConvertRealToComplexMatrix:0</first>
 			<second>
 				<first>-7.60000000000000000e+01</first>
@@ -466,7 +555,14 @@
 			<first>CreateMatrix:0</first>
 			<second>
 				<first>2.28000000000000000e+02</first>
-				<second>-2.28000000000000000e+02</second>
+				<second>-3.80000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateMatrix:1</first>
+			<second>
+				<first>4.56000000000000000e+02</first>
+				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -542,7 +638,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>13</count>
+		<count>15</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>BuildFEMatrix:0</first>
@@ -553,11 +649,19 @@
 			<second>0</second>
 		</item>
 		<item>
+			<first>ChooseInput:0</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>ConvertRealToComplexMatrix:0</first>
 			<second>0</second>
 		</item>
 		<item>
 			<first>CreateMatrix:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateMatrix:1</first>
 			<second>0</second>
 		</item>
 		<item>
