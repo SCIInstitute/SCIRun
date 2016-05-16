@@ -74,6 +74,7 @@ namespace SCIRun {
     static std::string loadNetwork(const std::string& filename);
     static std::string importNetwork(const std::string& filename);
     static std::string runScript(const std::string& filename);
+    static std::string currentNetworkFile();
 
     static std::string quit(bool force);
 
