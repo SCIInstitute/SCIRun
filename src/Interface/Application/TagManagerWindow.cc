@@ -129,7 +129,7 @@ QColor TagManagerWindow::tagColor(int tag) const
       //error results in gray
     }
   }
-  return QColor(r, g, b); 
+  return QColor(r, g, b);
 }
 
 QString TagManagerWindow::tagName(int tag) const
@@ -148,7 +148,7 @@ void TagManagerWindow::showHelp(QWidget* parent)
     "To use, while in the Network Editor, hold down the Alt / Option key. Then press A to see all module tag groups(each module will be colorized "
     "according to the chosen colors). Or press 0 - 9 keys to see each tag group individually; other modules will be slightly blurred out. While in "
     "the single - tag view, you can click a module to toggle it as tagged. There is also a button in the toolbar to view all tagged modules."
-    "\n\Once tags are being used, tag groups can be toggled using Alt-G (show) and Alt-Shift-G (hide). Boxes of the tag color, labelled with the tag's text, will be displayed overlaying the network."
+    "\n\nOnce tags are being used, tag groups can be toggled using Alt-G (show) and Alt-Shift-G (hide). Boxes of the tag color, labelled with the tag's text, will be displayed overlaying the network."
     "\n\nComing soon: tag names saved in the network file to override application-level names, as well as an option to display tag groups on network load."
     );
 }

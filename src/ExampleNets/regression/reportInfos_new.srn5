@@ -579,8 +579,8 @@
 		<item>
 			<first>PrintDatatype:12</first>
 			<second>
-				<first>-6.77000000000000000e+02</first>
-				<second>-3.40000000000000000e+01</second>
+				<first>-6.08000000000000000e+02</first>
+				<second>0.00000000000000000e+00</second>
 			</second>
 		</item>
 		<item>
@@ -607,8 +607,8 @@
 		<item>
 			<first>PrintDatatype:7</first>
 			<second>
-				<first>-1.42100000000000000e+03</first>
-				<second>-9.40000000000000000e+01</second>
+				<first>-1.52000000000000000e+03</first>
+				<second>-7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
@@ -653,7 +653,7 @@
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
-			<second>0</second>
+			<second>2</second>
 		</item>
 		<item>
 			<first>CreateMatrix:1</first>
@@ -661,19 +661,19 @@
 		</item>
 		<item>
 			<first>PrintDatatype:10</first>
-			<second>0</second>
+			<second>-1</second>
 		</item>
 		<item>
 			<first>PrintDatatype:11</first>
-			<second>0</second>
+			<second>-1</second>
 		</item>
 		<item>
 			<first>PrintDatatype:12</first>
-			<second>0</second>
+			<second>2</second>
 		</item>
 		<item>
 			<first>PrintDatatype:4</first>
-			<second>0</second>
+			<second>-1</second>
 		</item>
 		<item>
 			<first>PrintDatatype:5</first>
@@ -681,7 +681,7 @@
 		</item>
 		<item>
 			<first>PrintDatatype:6</first>
-			<second>0</second>
+			<second>-1</second>
 		</item>
 		<item>
 			<first>PrintDatatype:7</first>
@@ -689,19 +689,19 @@
 		</item>
 		<item>
 			<first>PrintDatatype:8</first>
-			<second>0</second>
+			<second>-1</second>
 		</item>
 		<item>
 			<first>PrintDatatype:9</first>
-			<second>0</second>
+			<second>1</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:3</first>
-			<second>0</second>
+			<second>-1</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:2</first>
-			<second>0</second>
+			<second>2</second>
 		</item>
 	</moduleTags>
 	<disabledModules class_id="21" tracking_level="0" version="0">
