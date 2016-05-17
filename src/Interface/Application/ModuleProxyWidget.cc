@@ -123,6 +123,7 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
   setAcceptDrops(true);
+  setData(TagDataKey, NoTag);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
   connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureThisVisible()));
