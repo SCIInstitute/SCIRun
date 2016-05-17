@@ -27,8 +27,8 @@
 */
 /// @todo Documentation Modules/Fields/ReportFieldInfo.cc
 
-#include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -43,12 +43,16 @@ const ModuleLookupInfo ReportFieldInfoModule::staticInfo_("ReportFieldInfo", "Mi
 ReportFieldInfoModule::ReportFieldInfoModule() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(FieldType);
+  //INITIALIZE_PORT(FieldType);
   INITIALIZE_PORT(NumNodes);
   INITIALIZE_PORT(NumElements);
   INITIALIZE_PORT(NumData);
   INITIALIZE_PORT(DataMin);
   INITIALIZE_PORT(DataMax);
+  INITIALIZE_PORT(FieldSize);
+  INITIALIZE_PORT(FieldCenter);
+  INITIALIZE_PORT(Dimensions);
+  INITIALIZE_PORT(GeomSize);
 }
 
 void ReportFieldInfoModule::execute()
@@ -61,10 +65,14 @@ void ReportFieldInfoModule::execute()
 
   auto info = transient_value_cast<SCIRun::Core::Algorithms::Fields::ReportFieldInfoAlgorithm::Outputs>(output.getTransient());
   /// @todo: requires knowledge of algorithm type
-  sendOutput(FieldType, boost::make_shared<String>(info.type));
+  //sendOutput(FieldType, boost::make_shared<String>(info.type));
   sendOutput(NumNodes, boost::make_shared<Int32>(info.numnodes_));
   sendOutput(NumElements, boost::make_shared<Int32>(info.numelements_));
   sendOutput(NumData, boost::make_shared<Int32>(info.numdata_));
   sendOutput(DataMin, boost::make_shared<Double>(info.dataMin));
   sendOutput(DataMax, boost::make_shared<Double>(info.dataMax));
+  sendOutput(FieldSize, boost::make_shared<DenseMatrix>(DenseMatrix::fromPoint(info.size)));
+  sendOutput(FieldCenter, boost::make_shared<DenseMatrix>(DenseMatrix::fromPoint(info.center)));
+  sendOutput(Dimensions, boost::make_shared<DenseMatrix>(DenseMatrix::fromPoint(info.dims)));
+  sendOutput(GeomSize, boost::make_shared<Double>(info.geometricSize));
 }
