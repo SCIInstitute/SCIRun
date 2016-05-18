@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +28,7 @@
 /// @todo Documentation Core/Datatypes/MatrixTypeConversion.h
 
 #ifndef CORE_DATATYPES_MATRIX_TYPE_CONVERSIONS_H
-#define CORE_DATATYPES_MATRIX_TYPE_CONVERSIONS_H 
+#define CORE_DATATYPES_MATRIX_TYPE_CONVERSIONS_H
 
 #include <Core/Datatypes/Matrix.h>
 #include <boost/type_traits.hpp>
@@ -65,12 +65,12 @@ namespace Datatypes {
     static bool sparse(const MatrixHandle& mh);
     static bool column(const MatrixHandle& mh);
     static std::string whatType(const MatrixHandle& mh);
-    static std::string whatType(const ComplexDenseMatrixHandle& mh);
+    static std::string whatType(const ComplexMatrixHandle& mh);
     static MatrixTypeCode typeCode(const MatrixHandle& mh);
-    
+
     matrixIs() = delete;
   };
- 
+
   /// @todo: move
   class SCISHARE convertMatrix
   {

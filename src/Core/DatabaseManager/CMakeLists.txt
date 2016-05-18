@@ -42,7 +42,7 @@ SCIRUN_ADD_LIBRARY(Core_DatabaseManager
 )
             
 TARGET_LINK_LIBRARIES(Core_DatabaseManager
-                      sqlite
+                      ${SCI_SQLITE_LIBRARY}
                       ${SCI_BOOST_LIBRARY})
 					  
 IF(BUILD_SHARED_LIBS)

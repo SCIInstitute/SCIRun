@@ -200,6 +200,18 @@ std::string NetworkEditorPythonAPI::saveNetwork(const std::string& filename)
   }
 }
 
+std::string NetworkEditorPythonAPI::currentNetworkFile()
+{
+  Guard g(pythonLock_.get());
+
+  if (impl_)
+    return impl_->currentNetworkFile();
+  else
+  {
+    return "Null implementation: NetworkEditorPythonAPI::currentNetworkFile()";
+  }
+}
+
 std::string NetworkEditorPythonAPI::loadNetwork(const std::string& filename)
 {
   Guard g(pythonLock_.get());

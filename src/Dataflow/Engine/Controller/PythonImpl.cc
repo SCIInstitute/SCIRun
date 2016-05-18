@@ -44,6 +44,7 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Matlab/matlabfile.h>
+#include <Core/Utils/CurrentFileName.h>
 
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
@@ -660,6 +661,11 @@ std::string PythonImpl::loadNetwork(const std::string& filename)
   load->set(Variables::Filename, filename);
   return load->execute() ? (filename + " loaded") : "Load failed";
   //TODO: provide more informative python return value string
+}
+
+std::string PythonImpl::currentNetworkFile() const
+{
+  return SCIRun::Core::getCurrentFileName();
 }
 
 std::string PythonImpl::importNetwork(const std::string& filename)

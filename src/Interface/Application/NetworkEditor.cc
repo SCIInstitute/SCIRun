@@ -1352,19 +1352,22 @@ void NetworkEditor::drawTagGroups()
 
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    const auto itemTag = item->data(TagDataKey).toInt();
-
-    if (itemTag != 0)
+    if (dynamic_cast<ModuleProxyWidget*>(item))
     {
-      auto r = item->boundingRect();
-      r.translate(item->pos());
-      if (!tagItemRects.contains(itemTag))
+      const auto itemTag = item->data(TagDataKey).toInt();
+
+      if (itemTag != NoTag)
       {
-        tagItemRects.insert(itemTag, r);
-      }
-      else
-      {
-        tagItemRects[itemTag] = tagItemRects[itemTag].united(r);
+        auto r = item->boundingRect();
+        r.translate(item->pos());
+        if (!tagItemRects.contains(itemTag))
+        {
+          tagItemRects.insert(itemTag, r);
+        }
+        else
+        {
+          tagItemRects[itemTag] = tagItemRects[itemTag].united(r);
+        }
       }
     }
   }

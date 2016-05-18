@@ -135,6 +135,7 @@ namespace SCIRun
     virtual std::string loadNetwork(const std::string& filename) = 0;
     virtual std::string importNetwork(const std::string& filename) = 0;
     virtual std::string runScript(const std::string& filename) = 0;
+    virtual std::string currentNetworkFile() const = 0;
     virtual std::string quit(bool force) = 0;
     virtual void setUnlockFunc(boost::function<void()> unlock) = 0;
     virtual void setModuleContext(bool inModule) = 0;
