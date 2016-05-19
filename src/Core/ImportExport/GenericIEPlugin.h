@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -106,7 +106,7 @@ private:
 
 template <class Data>
 class PluginMap
-{ 
+{
 public:
   PluginMap() : lock_("IE plugin map"), pluginTable_(nullptr) {}
   Core::Thread::Mutex& getLock();
@@ -174,7 +174,7 @@ size_t PluginMap<Data>::numPlugins() const
 template <class Data>
 void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& results) const
 {
-  if (0 == map_.numPlugins()) 
+  if (0 == map_.numPlugins())
   {
     return;
   }
@@ -190,7 +190,7 @@ void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& r
 template <class Data>
 void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& results) const
 {
-  if (0 == map_.numPlugins()) 
+  if (0 == map_.numPlugins())
   {
     return;
   }
@@ -339,23 +339,27 @@ SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<NrrdD
 SCISHARE std::string fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter);
 
 template <class Data>
+std::string dialogBoxFilterFromFileTypeDescription(const GenericIEPluginManager<Data>& mgr, const std::string& name)
+{
+  if (name.find("*") != std::string::npos) // user has set state variable with full filter string
+    return name;
+  std::ostringstream filter;
+  auto pl = mgr.get_plugin(name);
+  auto ext = pl ? pl->fileExtension() : std::string();
+  filter << name << " (" << (!ext.empty() ? ext : "*.*") << ")";
+  return filter.str();
+}
+
+template <class Data>
 std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>& mgr, const std::string& defaultType, const std::vector<std::string>& pluginNames)
 {
   std::ostringstream types;
   types << defaultType;
 
+  // Qt dialog-specific formatting
   for (const auto& name : pluginNames)
   {
-    auto pl = mgr.get_plugin(name);
-    types << ";;" << name;
-    if (!pl->fileExtension().empty())
-    {
-      types << " (" << pl->fileExtension() << ")";
-    }
-    else
-    {
-      types << " (*.*)";
-    }
+    types << ";;" << dialogBoxFilterFromFileTypeDescription(mgr, name);
   }
   return types.str();
 }
@@ -370,7 +374,7 @@ std::string makeGuiTypesListForImport(const GenericIEPluginManager<Data>& mgr)
 }
 
 template <class Data>
-std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
+std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = nullptr)
 {
   return "";
 }
