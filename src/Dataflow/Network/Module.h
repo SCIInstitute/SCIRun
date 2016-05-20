@@ -108,8 +108,8 @@ namespace Networks {
   private:
     virtual Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
     virtual std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
+  protected:
     virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
-
   public:
     virtual void setLogger(Core::Logging::LoggerHandle log) override final;
     virtual Core::Logging::LoggerHandle getLogger() const override final;
@@ -231,6 +231,7 @@ namespace Networks {
     static ModuleStateFactoryHandle defaultStateFactory_;
     static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
     static ReexecuteStrategyFactoryHandle defaultReexFactory_;
+    static Core::Logging::LoggerHandle defaultLogger_;
 
   protected:
     const ModuleLookupInfo info_;
@@ -307,7 +308,6 @@ namespace Networks {
     Core::Logging::LoggerHandle log_;
     Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
     UiToggleFunc uiToggleFunc_;
-    static Core::Logging::LoggerHandle defaultLogger_;
     static ModuleIdGeneratorHandle idGenerator_;
     friend class UseGlobalInstanceCountIdGenerator;
   };
@@ -537,7 +537,7 @@ namespace Networks {
 namespace Modules
 {
   struct SCISHARE MatrixPortTag {};
-  struct SCISHARE ComplexDenseMatrixPortTag {};
+  struct SCISHARE ComplexMatrixPortTag {};
   struct SCISHARE ScalarPortTag {};
   struct SCISHARE StringPortTag {};
   struct SCISHARE FieldPortTag {};
@@ -812,7 +812,7 @@ namespace Modules
   PORT_SPEC(ColorMap);
   PORT_SPEC(Bundle);
   PORT_SPEC(Nrrd);
-  PORT_SPEC(ComplexDenseMatrix);
+  PORT_SPEC(ComplexMatrix);
   PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type

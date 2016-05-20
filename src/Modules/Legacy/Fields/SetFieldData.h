@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace Fields {
 
       class SCISHARE SetFieldDataModule : public Dataflow::Networks::Module,
-        public Has4InputPorts<FieldPortTag,MatrixPortTag,NrrdPortTag,ComplexDenseMatrixPortTag>,
+        public Has4InputPorts<FieldPortTag,MatrixPortTag,NrrdPortTag,ComplexMatrixPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:

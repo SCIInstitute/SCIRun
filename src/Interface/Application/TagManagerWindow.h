@@ -31,8 +31,6 @@
 
 #include "ui_TagManager.h"
 
-#include <Dataflow/Network/NetworkFwd.h>
-
 namespace SCIRun {
 namespace Gui {
 
@@ -41,13 +39,15 @@ class TagManagerWindow : public QDockWidget, public Ui::TagManager
 	Q_OBJECT
 
 public:
-  explicit TagManagerWindow(QWidget* parent = 0);
+  explicit TagManagerWindow(QWidget* parent = nullptr);
   enum { NumberOfTags = 10 };
   void setTagNames(const QVector<QString>& names);
   void setTagColors(const QVector<QString>& colors);
   QStringList getTagNames() const { return tagNames_.toList(); }
   QStringList getTagColors() const;
   QColor tagColor(int tag) const;
+  QString tagName(int tag) const;
+	static void showHelp(QWidget* parent);
 public Q_SLOTS:
 	void editTagColor();
   void updateTagName(const QString& name);

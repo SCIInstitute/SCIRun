@@ -37,21 +37,25 @@ namespace SCIRun {
 namespace Modules {
 namespace Fields {
 
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE ReportFieldInfoModule : public Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
-    public Has6OutputPorts<StringPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag>
+    public Has9OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, ScalarPortTag>
   {
   public:
     ReportFieldInfoModule();
-    virtual void execute();
-    virtual void setStateDefaults() {}
+    virtual void execute() override;
+    virtual void setStateDefaults() override {}
     INPUT_PORT(0, InputField, LegacyField);
-    OUTPUT_PORT(0, FieldType, String);
-    OUTPUT_PORT(1, NumNodes, Int32);
-    OUTPUT_PORT(2, NumElements, Int32);
-    OUTPUT_PORT(3, NumData, Int32);
-    OUTPUT_PORT(4, DataMin, Double);
-    OUTPUT_PORT(5, DataMax, Double);
+    //OUTPUT_PORT(0, FieldType, String);
+    OUTPUT_PORT(0, NumNodes, Int32);
+    OUTPUT_PORT(1, NumElements, Int32);
+    OUTPUT_PORT(2, NumData, Int32);
+    OUTPUT_PORT(3, DataMin, Double);
+    OUTPUT_PORT(4, DataMax, Double);
+    OUTPUT_PORT(5, FieldSize, DenseMatrix);
+    OUTPUT_PORT(6, FieldCenter, DenseMatrix);
+    OUTPUT_PORT(7, Dimensions, DenseMatrix);
+    OUTPUT_PORT(8, GeomSize, Double);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };

@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace Basic {
 
       class SCISHARE ReceiveComplexScalarModule : public SCIRun::Dataflow::Networks::Module,
-        public Has1InputPort<ComplexDenseMatrixPortTag>,
+        public Has1InputPort<ComplexMatrixPortTag>,
         public HasNoOutputPorts
       {
       public:

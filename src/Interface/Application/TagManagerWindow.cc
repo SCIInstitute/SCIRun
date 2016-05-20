@@ -35,7 +35,7 @@
 
 using namespace SCIRun::Gui;
 
-namespace 
+namespace
 {
   const char* tagIndexProperty = "tagIndex";
 }
@@ -90,7 +90,7 @@ void TagManagerWindow::updateTagName(const QString& name)
 }
 
 void TagManagerWindow::setTagColors(const QVector<QString>& colors)
-{ 
+{
   for (int i = 0; i < NumberOfTags; ++i)
   {
     if (i >= colors.size() || colors[i].isEmpty())
@@ -110,33 +110,50 @@ QStringList TagManagerWindow::getTagColors() const
 
 QColor TagManagerWindow::tagColor(int tag) const
 {
-  //rgb(128, 128, 0)
-  auto colorStr = tagColors_[tag];
   int r, g, b;
-  try
+  r = g = b = 155;
+  if (0 <= tag && tag < NumberOfTags)
   {
-    static boost::regex reg("rgb\\((.+), (.+), (.+)\\)");
-    boost::smatch what;
-    regex_match(colorStr, what, reg);
-    r = boost::lexical_cast<int>(what[1]);
-    g = boost::lexical_cast<int>(what[2]);
-    b = boost::lexical_cast<int>(what[3]);
-  }
-  catch (...)
-  {
-    //error results in gray 
-    r = g = b = 155;
+    auto colorStr = tagColors_[tag];
+    try
+    {
+      static boost::regex reg("rgb\\((.+), (.+), (.+)\\)");
+      boost::smatch what;
+      regex_match(colorStr, what, reg);
+      r = boost::lexical_cast<int>(what[1]);
+      g = boost::lexical_cast<int>(what[2]);
+      b = boost::lexical_cast<int>(what[3]);
+    }
+    catch (...)
+    {
+      //error results in gray
+    }
   }
   return QColor(r, g, b);
 }
 
-void TagManagerWindow::helpButtonClicked()
+QString TagManagerWindow::tagName(int tag) const
 {
-  QMessageBox::information(this, 
-    "Module Tag Layer Guide", 
+  if (0 <= tag && tag < NumberOfTags)
+    return tagNames_[tag];
+  return "[No tag]";
+}
+
+void TagManagerWindow::showHelp(QWidget* parent)
+{
+  QMessageBox::information(parent,
+    "Module Tag Layer Guide",
     "This layer allows the user to group modules in a network file by tag number. Ten tags are available, labeled 0 - 9. "
     "Each tag's color can be chosen in the Tag Manager window, as well as a descriptive label. Tag colors are a global setting, while module tags are saved in the network file. \n\n"
     "To use, while in the Network Editor, hold down the Alt / Option key. Then press A to see all module tag groups(each module will be colorized "
     "according to the chosen colors). Or press 0 - 9 keys to see each tag group individually; other modules will be slightly blurred out. While in "
-    "the single - tag view, you can click a module to toggle it as tagged. There is also a button in the toolbar to view all tagged modules.");
+    "the single - tag view, you can click a module to toggle it as tagged. There is also a button in the toolbar to view all tagged modules."
+    "\n\nOnce tags are being used, tag groups can be toggled using Alt-G (show) and Alt-Shift-G (hide). Boxes of the tag color, labelled with the tag's text, will be displayed overlaying the network."
+    "\n\nComing soon: tag names saved in the network file to override application-level names, as well as an option to display tag groups on network load."
+    );
+}
+
+void TagManagerWindow::helpButtonClicked()
+{
+  showHelp(this);
 }

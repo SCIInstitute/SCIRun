@@ -637,6 +637,7 @@ public:
   inline bool is_unsigned_longlong()   { return (data_type_=="unsigned long long"); }
   inline bool is_float()               { return (data_type_=="float"); }
   inline bool is_double()              { return (data_type_=="double"); }
+  inline bool is_complex_double()      { return (data_type_=="std::complex<double>"); }
 
   inline bool is_type(char* )               { return (is_char()); }
   inline bool is_type(unsigned char* )      { return (is_unsigned_char()); }

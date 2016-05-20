@@ -188,8 +188,16 @@ namespace Engine {
     NetworkDoneLoadingSignalType networkDoneLoading_;
 
     boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
-    bool signalSwitch_;
+    bool signalSwitch_, loadingContext_;
     boost::shared_ptr<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
+
+    struct LoadingContext
+    {
+      explicit LoadingContext(bool& load);
+      ~LoadingContext();
+    private:
+      bool& load_;
+    };
   };
 
   typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;

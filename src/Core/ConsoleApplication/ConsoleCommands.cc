@@ -27,10 +27,13 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Core/ConsoleApplication/ConsoleCommands.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Network/Module.h>
+#include <Core/Logging/ConsoleLogger.h>
 #include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun::Core;
@@ -42,18 +45,40 @@ using namespace Algorithms;
 LoadFileCommandConsole::LoadFileCommandConsole()
 {
   addParameter(Name("FileNum"), 0);
+  addParameter(Variables::Filename, std::string());
+}
+
+//TODO: find a better place for this function
+namespace
+{
+  void quietModulesIfNotVerbose()
+  {
+    if (!Application::Instance().parameters()->verboseMode())
+      SCIRun::Dataflow::Networks::Module::defaultLogger_.reset(new SCIRun::Core::Logging::NullLogger);
+  }
 }
 
 bool LoadFileCommandConsole::execute()
 {
-  auto inputFiles = Application::Instance().parameters()->inputFiles();
-  if (!inputFiles.empty())
-  {
-    auto filename = inputFiles[index_];
+  quietModulesIfNotVerbose();
 
+  auto inputFiles = Application::Instance().parameters()->inputFiles();
+  std::string filename;
+  if (!inputFiles.empty())
+    filename = inputFiles[0];
+  else
+  {
+    filename = get(Variables::Filename).toFilename().string();
+  }
+
+  {
     /// @todo: real logger
     std::cout << "Attempting load of " << filename << std::endl;
-
+    if (!boost::filesystem::exists(filename))
+    {
+      std::cout << "File does not exist: " << filename << std::endl;
+      return false;
+    }
     try
     {
       auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename);
@@ -136,14 +161,18 @@ bool PrintModulesCommand::execute()
 
 bool InteractiveModeCommandConsole::execute()
 {
+  quietModulesIfNotVerbose();
+
   PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
-  std::string x;
-  while (x.find("quit") == std::string::npos)
+  std::string line;
+  while (true)
   {
-    std::cout << "scirun5> ";
-    std::getline(std::cin, x);
-    //std::cout << "x is: " << x << std::endl;
-    PythonInterpreter::Instance().run_string(x);
+    std::cout << "scirun5> " << std::flush;
+    std::getline(std::cin, line);
+    if (line.find("quit") != std::string::npos) // TODO: need fix for ^D entry || (!x.empty() && x[0] == '\004'))
+      break;
+
+    PythonInterpreter::Instance().run_string(line);
   }
   exit(0);
   return true;
@@ -151,6 +180,8 @@ bool InteractiveModeCommandConsole::execute()
 
 bool RunPythonScriptCommandConsole::execute()
 {
+  quietModulesIfNotVerbose();
+
   auto script = Application::Instance().parameters()->pythonScriptFile();
   if (script)
   {
