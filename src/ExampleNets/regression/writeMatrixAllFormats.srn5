@@ -80,7 +80,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/git/SCIRunTestData/TransientOutput/simpleText.txt</value>
+										<value>%SCIRUNDATADIR%/TransientOutput/simpleText.txt</value>
 									</value>
 								</second>
 							</item>
@@ -132,7 +132,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/git/SCIRunTestData/TransientOutput/sciBin.mat</value>
+										<value>%SCIRUNDATADIR%/TransientOutput/sciBin.mat</value>
 									</value>
 								</second>
 							</item>
@@ -184,7 +184,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/git/SCIRunTestData/TransientOutput/sciAscii.mat</value>
+										<value>%SCIRUNDATADIR%/TransientOutput/sciAscii.mat</value>
 									</value>
 								</second>
 							</item>
@@ -236,7 +236,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/git/SCIRunTestData/TransientOutput/ecgsim.mat</value>
+										<value>%SCIRUNDATADIR%/TransientOutput/ecgsim.mat</value>
 									</value>
 								</second>
 							</item>
@@ -288,7 +288,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/git/SCIRunTestData/TransientOutput/matlab.mat</value>
+										<value>%SCIRUNDATADIR%/TransientOutput/matlab.mat</value>
 									</value>
 								</second>
 							</item>
@@ -511,4 +511,3 @@ p, li { white-space: pre-wrap; }
 	<loadTagGroups>96</loadTagGroups>
 </networkFile>
 </boost_serialization>
-

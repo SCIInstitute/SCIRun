@@ -4,27 +4,115 @@
 <networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>3</count>
+			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>FairMesh:0</first>
+				<first>CreateLatVol:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
 						<category_name_>NewField</category_name_>
-						<module_name_>FairMesh</module_name_>
+						<module_name_>CreateLatVol</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>4</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>FairMeshMethod</name>
+									<name>DataAtLocation</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>FairMeshMethod</name>
+									<name>DataAtLocation</name>
 									<value class_id="11" tracking_level="0" version="0">
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ElementSizeNormalized</name>
+								</first>
+								<second>
+									<name>ElementSizeNormalized</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PadPercent</name>
+								</first>
+								<second>
+									<name>PadPercent</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XSize</name>
+								</first>
+								<second>
+									<name>XSize</name>
+									<value>
+										<which>0</which>
+										<value>16</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YSize</name>
+								</first>
+								<second>
+									<name>YSize</name>
+									<value>
+										<which>0</which>
+										<value>16</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ZSize</name>
+								</first>
+								<second>
+									<name>ZSize</name>
+									<value>
+										<which>0</which>
+										<value>16</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>FairMesh:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>FairMesh</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FairMeshMethod</name>
+								</first>
+								<second>
+									<name>FairMeshMethod</name>
+									<value>
 										<which>2</which>
 										<value>fast</value>
 									</value>
@@ -38,7 +126,7 @@
 									<name>FilterCutoff</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -50,7 +138,7 @@
 									<name>Lambda</name>
 									<value>
 										<which>1</which>
-										<value>6.30700000000000040e-001</value>
+										<value>6.30700000000000038e-01</value>
 									</value>
 								</second>
 							</item>
@@ -118,7 +206,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -178,7 +266,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -238,7 +326,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -286,7 +374,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -430,7 +518,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999990e-002</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -500,11 +588,23 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>2</count>
+			<count>3</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>FairMesh:0</moduleId1_>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetFieldBoundary:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>FairMesh:0</moduleId1_>
+				<port1_>
 					<name>Faired_Mesh</name>
 					<id>0</id>
 				</port1_>
@@ -529,27 +629,34 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>3</count>
+		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
-			<first>FairMesh:0</first>
+			<first>CreateLatVol:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>1.00000000000000000e+001</first>
-				<second>1.30000000000000000e+002</second>
+				<first>-5.80000000000000000e+01</first>
+				<second>4.55000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>FairMesh:0</first>
+			<second>
+				<first>1.00000000000000000e+01</first>
+				<second>1.30000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:0</first>
 			<second>
-				<first>1.00000000000000000e+001</first>
-				<second>1.00000000000000000e+001</second>
+				<first>1.00000000000000000e+01</first>
+				<second>1.00000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>1.00000000000000000e+001</first>
-				<second>2.50000000000000000e+002</second>
+				<first>1.00000000000000000e+01</first>
+				<second>2.50000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -562,9 +669,13 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>3</count>
+		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
+			<first>CreateLatVol:0</first>
+			<second>-1</second>
+		</item>
+		<item>
 			<first>FairMesh:0</first>
 			<second>1</second>
 		</item>
