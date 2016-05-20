@@ -205,6 +205,7 @@ namespace Gui {
     void metadataLayer(bool active);
     void tagLayer(bool active, int tag);
     bool tagLayerActive() const { return tagLayerActive_; }
+    bool tagGroupsActive() const { return tagGroupsActive_; }
 
     virtual void displayError(const QString& msg, std::function<void()> showModule) override;
 
@@ -300,6 +301,7 @@ namespace Gui {
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
+    bool tagGroupsActive_ {false};
     TagColorFunc tagColor_;
     TagNameFunc tagName_;
 
