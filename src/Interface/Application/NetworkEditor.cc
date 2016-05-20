@@ -1346,6 +1346,48 @@ void NetworkEditor::tagLayer(bool active, int tag)
   }
 }
 
+namespace
+{
+  class TagGroupBox : public QGraphicsRectItem
+  {
+  public:
+    explicit TagGroupBox(const QRectF& rect, NetworkEditor* ned) : QGraphicsRectItem(rect), ned_(ned), displayOnLoad_(false)
+    {
+      setAcceptHoverEvents(true);
+    }
+  protected:
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent*) override
+    {
+      setPen(QPen(pen().color(), 5));
+    }
+
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent*) override
+    {
+      setPen(QPen(pen().color(), 3));
+    }
+
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override
+    {
+      QMenu menu;
+      auto action = menu.addAction("Display in saved network", ned_, SLOT(saveTagGroupRectInFile()));
+      action->setCheckable(true);
+      action->setChecked(displayOnLoad_);
+      menu.exec(event->screenPos());
+      QGraphicsRectItem::mouseDoubleClickEvent(event);
+    }
+  private:
+    NetworkEditor* ned_;
+    bool displayOnLoad_;
+  };
+}
+
+void NetworkEditor::saveTagGroupRectInFile()
+{
+  qDebug() << "saveTagGroupRectInFile" << sender();
+  auto action = qobject_cast<QAction*>(sender());
+  action->setChecked(!action->isChecked());
+}
+
 void NetworkEditor::drawTagGroups()
 {
   QMap<int,QRectF> tagItemRects;
@@ -1379,13 +1421,17 @@ void NetworkEditor::drawTagGroups()
     pen.setWidth(3);
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::RoundJoin);
-    auto rect = scene_->addRect(rectBounds, pen);
+    auto rect = new TagGroupBox(rectBounds, this);
+    rect->setPen(pen);
+    scene_->addItem(rect);
     rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
+    rect->setZValue(-100000);
 
     auto fill = new QGraphicsRectItem(rectBounds);
     auto c = pen.color();
     c.setAlphaF(0.15);
     fill->setBrush(c);
+    fill->setZValue(-100000);
     scene_->addItem(fill);
 
     static const QFont labelFont("Courier", 20, QFont::Bold);

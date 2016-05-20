@@ -31,9 +31,11 @@
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/ImportExport/GenericIEPlugin.h>
+#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <iostream>
 #include <QFileDialog>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -60,7 +62,8 @@ ReadMatrixClassicDialog::ReadMatrixClassicDialog(const std::string& name, Module
 void ReadMatrixClassicDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
-  selectedFilter_ = QString::fromStdString(state_->getValue(Variables::FileTypeName).toString());
+  static MatrixIEPluginManager mgr;
+  selectedFilter_ = QString::fromStdString(dialogBoxFilterFromFileTypeDescription(mgr, state_->getValue(Variables::FileTypeName).toString()));
 }
 
 void ReadMatrixClassicDialog::pushFileNameToState()
@@ -75,7 +78,7 @@ void ReadMatrixClassicDialog::openFile()
   auto file = QFileDialog::getOpenFileName(this, "Open Matrix File", dialogDirectory(), typesQ, &selectedFilter_);
   if (file.length() > 0)
   {
-    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter_.toStdString());
+    auto typeName = fileTypeDescriptionFromDialogBoxFilter(selectedFilter_.toStdString());
     state_->setValue(Variables::FileTypeName, typeName);
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);
