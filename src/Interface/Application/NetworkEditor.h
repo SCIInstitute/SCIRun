@@ -208,6 +208,9 @@ namespace Gui {
 
     virtual void displayError(const QString& msg, std::function<void()> showModule) override;
 
+    bool showTagGroupsOnFileLoad() const { return showTagGroupsOnFileLoad_; }
+    void setShowTagGroupsOnFileLoad(bool show) { showTagGroupsOnFileLoad_ = show; }
+
   protected:
     virtual void dropEvent(QDropEvent* event) override;
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
@@ -314,6 +317,7 @@ namespace Gui {
     bool fileLoading_;
     bool insertingNewModuleAlongConnection_ { false };
     PreexecuteFunc preexecute_;
+    bool showTagGroupsOnFileLoad_ { false };
   };
 }
 }

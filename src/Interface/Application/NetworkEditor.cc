@@ -809,6 +809,7 @@ ModuleTagsHandle NetworkEditor::dumpModuleTags(ModuleFilter filter) const
         tags->tags[mod->getModuleWidget()->getModuleId()] = mod->data(TagDataKey).toInt();
     }
   }
+  tags->showTagGroupsOnLoad = showTagGroupsOnFileLoad();
   return tags;
 }
 
@@ -879,6 +880,9 @@ void NetworkEditor::updateModuleTags(const ModuleTags& moduleTags)
       }
     }
   }
+  setShowTagGroupsOnFileLoad(moduleTags.showTagGroupsOnLoad);
+  if (showTagGroupsOnFileLoad())
+    drawTagGroups();
 }
 
 void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
@@ -1351,7 +1355,7 @@ namespace
   class TagGroupBox : public QGraphicsRectItem
   {
   public:
-    explicit TagGroupBox(const QRectF& rect, NetworkEditor* ned) : QGraphicsRectItem(rect), ned_(ned), displayOnLoad_(false)
+    explicit TagGroupBox(const QRectF& rect, NetworkEditor* ned) : QGraphicsRectItem(rect), ned_(ned)
     {
       setAcceptHoverEvents(true);
     }
@@ -1371,13 +1375,12 @@ namespace
       QMenu menu;
       auto action = menu.addAction("Display in saved network", ned_, SLOT(saveTagGroupRectInFile()));
       action->setCheckable(true);
-      action->setChecked(displayOnLoad_);
+      action->setChecked(ned_->showTagGroupsOnFileLoad());
       menu.exec(event->screenPos());
       QGraphicsRectItem::mouseDoubleClickEvent(event);
     }
   private:
     NetworkEditor* ned_;
-    bool displayOnLoad_;
   };
 }
 
@@ -1385,7 +1388,6 @@ void NetworkEditor::saveTagGroupRectInFile()
 {
   qDebug() << "saveTagGroupRectInFile" << sender();
   auto action = qobject_cast<QAction*>(sender());
-  action->setChecked(!action->isChecked());
 }
 
 void NetworkEditor::drawTagGroups()
