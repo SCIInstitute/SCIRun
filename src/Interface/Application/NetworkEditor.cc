@@ -1386,8 +1386,8 @@ namespace
 
 void NetworkEditor::saveTagGroupRectInFile()
 {
-  qDebug() << "saveTagGroupRectInFile" << sender();
   auto action = qobject_cast<QAction*>(sender());
+  setShowTagGroupsOnFileLoad(action->isChecked());
 }
 
 void NetworkEditor::drawTagGroups()
