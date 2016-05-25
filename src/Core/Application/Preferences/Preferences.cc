@@ -51,7 +51,10 @@ Preferences::Preferences() :
   autoNotes("autoNotes", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080"),
-  postModuleAddScript_temporarySolution("postModuleAddScript", "")
+  postModuleAddScript_temporarySolution("postModuleAddScript_temporarySolution", ""),
+  postModuleAddScriptEnabled_temporarySolution("postModuleAddScriptEnabled_temporarySolution", false),
+  onNetworkLoadScript_temporarySolution("onNetworkLoadScript_temporarySolution", ""),
+  onNetworkLoadScriptEnabled_temporarySolution("onNetworkLoadScriptEnabled_temporarySolution", false)
 {
 }
 

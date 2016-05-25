@@ -200,6 +200,18 @@ std::string NetworkEditorPythonAPI::saveNetwork(const std::string& filename)
   }
 }
 
+std::string NetworkEditorPythonAPI::currentNetworkFile()
+{
+  Guard g(pythonLock_.get());
+
+  if (impl_)
+    return impl_->currentNetworkFile();
+  else
+  {
+    return "Null implementation: NetworkEditorPythonAPI::currentNetworkFile()";
+  }
+}
+
 std::string NetworkEditorPythonAPI::loadNetwork(const std::string& filename)
 {
   Guard g(pythonLock_.get());
@@ -275,6 +287,15 @@ std::string NetworkEditorPythonAPI::scirun_set_module_state(const std::string& m
   auto module = impl_->findModule(moduleId);
   if (module)
   {
+    if (stateVariable == "__UI__")
+    {
+      boost::python::extract<bool> e(value);
+      if (e.check())
+      {
+        e() ? module->showUI() : module->hideUI();
+        return "UI adjusted";
+      }
+    }
     module->setattr(stateVariable, value, false);
     return "Value set";
   }

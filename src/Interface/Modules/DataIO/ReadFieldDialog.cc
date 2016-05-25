@@ -31,9 +31,11 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/ImportExport/GenericIEPlugin.h>
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <iostream>
 #include <QFileDialog>
 
+using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
@@ -59,6 +61,8 @@ ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle stat
 void ReadFieldDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
+  static FieldIEPluginManager mgr;
+  selectedFilter_ = QString::fromStdString(dialogBoxFilterFromFileTypeDescription(mgr, state_->getValue(Variables::FileTypeName).toString()));
 }
 
 void ReadFieldDialog::pushFileNameToState()
@@ -74,7 +78,7 @@ void ReadFieldDialog::openFile()
   auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), typesQ, &selectedFilter_);
   if (file.length() > 0)
   {
-    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter_.toStdString());
+    auto typeName = fileTypeDescriptionFromDialogBoxFilter(selectedFilter_.toStdString());
     state_->setValue(Variables::FileTypeName, typeName);
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);

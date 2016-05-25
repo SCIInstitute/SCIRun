@@ -155,6 +155,7 @@
      <addaction name="helpActionNetworkFileImport_"/>
      <addaction name="helpActionNetworkEditorGUI_"/>
      <addaction name="helpActionClipboard_"/>
+     <addaction name="helpActionTriggeredScripts_"/>
     </widget>
     <addaction name="actionShow_Tooltips_"/>
     <addaction name="actionAbout_"/>
@@ -1032,6 +1033,11 @@
    </property>
    <property name="text">
     <string>Clipboard</string>
+   </property>
+  </action>
+  <action name="helpActionTriggeredScripts_">
+   <property name="text">
+    <string>Triggered Scripts</string>
    </property>
   </action>
  </widget>

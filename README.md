@@ -33,25 +33,24 @@ For documentation, please see: http://sciinstitute.github.io/SCIRun/
 
 ### Platform Notes
 #### Build requirements
-* OS X (tested on 10.7 and 10.8)
+* OS X (tested on 10.7-10.11)
   - Apple clang 5.1
   - Qt 4.8
     + Download from http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg.
     + The above dmg will not work if using OS X 10.11. In this case Qt 4.8 can be acquired through macports using the command 'sudo port install qt4-mac' - more on macports here: https://www.macports.org/install.php
-* Windows (tested on Windows 7, 8)
-  - Visual Studio 2013
+* Windows (tested on Windows 7, 8, 10)
+  - Visual Studio 2013, 2015
   - Qt 4.8
     + Build from source (see http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Seg3D2:Building_Releases#Installing_Qt_on_your_system_and_building_from_scratch for instructions), but be sure to download http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz.
-* Linux (tested on Ubuntu 12.10)
-  - gcc 4.6, 4.7
+* Linux (tested on Ubuntu 12.10, OpenSUSE Leap)
+  - gcc 4.6, 4.7, 4.8
   - Qt 4.8
     + Build from source (http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz), or use system libraries if available.
 * All platforms
   - CMake 2.8
-    + Root cmake file is SCIRun/src/CMakeLists.txt.
+    + Root cmake file is SCIRun/Superbuild/CMakeLists.txt.
     + Building in the source directory is not permitted.
     + Make sure BUILD_SHARED_LIBS is on (default setting).
-    + BUILD_WITH_PYTHON works on Windows, not yet (easily) on MacOS.
 
 #### CMake Build Generators
 * Windows
@@ -63,9 +62,8 @@ For documentation, please see: http://sciinstitute.github.io/SCIRun/
   - Unix Makefiles
 
 #### Unix Makefiles notes
-* Boost must be built before the SCIRun libraries.
-* Parallel make builds can be used as long the Boost target is built first, for example:
-  - make -j4 Boost_external && make -j4
+* Build Superbuild first (src/Superbuild), then subsequently, SCIRun can be built by itself (src/).
+* Included `build.sh` takes care of all this for you.
 
 ### Tagging releases
 On an OSX system, run script `release.sh` in the `src` directory with the release name in format `alpha.XX` as a parameter.
@@ -78,7 +76,7 @@ For help, email the testing mailing list at scirun5-testers@sci.utah.edu.
 
   The MIT License
 
-  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+  Copyright (c) 2016 Scientific Computing and Imaging Institute,
   University of Utah.
 
 

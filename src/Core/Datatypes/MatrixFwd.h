@@ -31,6 +31,7 @@
 #define CORE_DATATYPES_MATRIX_FWD_H
 
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <boost/shared_ptr.hpp>
 
 namespace SCIRun {
@@ -41,6 +42,7 @@ namespace Datatypes {
   class MatrixBase;
 
   typedef MatrixBase<double> Matrix;
+  using ComplexMatrix = MatrixBase<complex>;
 
   template <typename T>
   using SharedPointer = boost::shared_ptr<T>;
@@ -48,11 +50,13 @@ namespace Datatypes {
   typedef SharedPointer<Matrix> MatrixHandle;
   typedef SharedPointer<const Matrix> MatrixConstHandle;
 
+  typedef SharedPointer<ComplexMatrix> ComplexMatrixHandle;
+
   template <typename T>
   class DenseMatrixGeneric;
 
   typedef DenseMatrixGeneric<double> DenseMatrix;
-  using ComplexDenseMatrix = DenseMatrixGeneric<SCIRun::complex>;
+  using ComplexDenseMatrix = DenseMatrixGeneric<complex>;
 
   typedef SharedPointer<DenseMatrix> DenseMatrixHandle;
   typedef SharedPointer<const DenseMatrix> DenseMatrixConstHandle;
@@ -70,9 +74,12 @@ namespace Datatypes {
   class SparseRowMatrixGeneric;
 
   typedef SparseRowMatrixGeneric<double> SparseRowMatrix;
+  using ComplexSparseRowMatrix = SparseRowMatrixGeneric<complex>;
 
   typedef SharedPointer<SparseRowMatrix> SparseRowMatrixHandle;
   typedef SharedPointer<const SparseRowMatrix> SparseRowMatrixConstHandle;
+
+  typedef SharedPointer<ComplexSparseRowMatrix> ComplexSparseRowMatrixHandle;
 
 }}}
 

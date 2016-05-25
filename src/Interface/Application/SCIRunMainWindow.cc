@@ -86,7 +86,7 @@ static const char* ToolkitIconURL = "ToolkitIconURL";
 static const char* ToolkitURL = "ToolkitURL";
 static const char* ToolkitFilename = "ToolkitFilename";
 
-SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown_(true), returnCode_(0), quitAfterExecute_(false)
+SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
 {
 	setupUi(this);
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -240,6 +240,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), firstTimePythonShown
   connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
   connect(helpActionClipboard_, SIGNAL(triggered()), this, SLOT(showClipboardHelp()));
 	connect(helpActionTagLayer_, SIGNAL(triggered()), this, SLOT(showTagHelp()));
+	connect(helpActionTriggeredScripts_, SIGNAL(triggered()), this, SLOT(showTriggerHelp()));
 
   connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
 
@@ -394,6 +395,8 @@ void SCIRunMainWindow::initialize()
 void SCIRunMainWindow::postConstructionSignalHookup()
 {
   connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
+	moduleSelectorTreeWidget_->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(moduleSelectorTreeWidget_, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showModuleSelectorContextMenu(const QPoint&)));
 
   WidgetDisablingService::Instance().addNetworkEditor(networkEditor_);
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), &WidgetDisablingService::Instance(), SLOT(disableInputWidgets()));
@@ -1031,7 +1034,6 @@ void SCIRunMainWindow::setupPythonConsole()
 #ifdef BUILD_WITH_PYTHON
   pythonConsole_ = new PythonConsoleWidget(this);
   connect(actionPythonConsole_, SIGNAL(toggled(bool)), pythonConsole_, SLOT(setVisible(bool)));
-  connect(actionPythonConsole_, SIGNAL(toggled(bool)), this, SLOT(showPythonWarning(bool)));
   actionPythonConsole_->setIcon(QPixmap(":/general/Resources/terminal.png"));
   connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
   pythonConsole_->setVisible(false);
@@ -1071,14 +1073,6 @@ void SCIRunMainWindow::updateMiniView()
   networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
     Qt::KeepAspectRatio,
     Qt::SmoothTransformation));
-}
-
-void SCIRunMainWindow::showPythonWarning(bool visible)
-{
-  if (visible && firstTimePythonShown_)
-  {
-    firstTimePythonShown_ = false;
-  }
 }
 
 void SCIRunMainWindow::makeModulesLargeSize()
@@ -1278,6 +1272,19 @@ namespace {
 
 }
 
+void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
+{
+  auto globalPos = moduleSelectorTreeWidget_->mapToGlobal(pos);
+	auto item = moduleSelectorTreeWidget_->selectedItems()[0];
+	auto subnetData = item->data(0, Qt::UserRole).toString();
+	if (!subnetData.isEmpty())
+	{
+  	QMenu menu;
+		menu.addAction("Rename", this, SLOT(renameSavedSubnetwork()))->setProperty("ID", subnetData);
+		menu.addAction("Delete", this, SLOT(removeSavedSubnetwork()))->setProperty("ID", subnetData);
+  	menu.exec(globalPos);
+	}
+}
 
 void SCIRunMainWindow::fillSavedSubnetworkMenu()
 {
@@ -1343,38 +1350,11 @@ QString idFromPointer(T* item)
 
 void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, const QString& idFromMap)
 {
-  auto dualPushButtons = new QWidget();
-  auto hLayout = new QHBoxLayout();
-  auto delButton = new QToolButton();
-  delButton->setIcon(QPixmap(":/general/Resources/delete_red.png"));
-  delButton->setToolTip("Delete");
-  connect(delButton, SIGNAL(clicked()), this, SLOT(removeSavedSubnetwork()));
-  auto renButton = new QToolButton();
-  renButton->setIcon(QPixmap(":/general/Resources/rename.ico"));
-  renButton->setToolTip("Rename");
-  connect(renButton, SIGNAL(clicked()), this, SLOT(renameSavedSubnetwork()));
-  auto name = new QLabel(fave->text(0));
-  name->setStyleSheet("QLabel { color : " + fave->textColor(0).name() + "; }");
-  hLayout->addWidget(name);
-  hLayout->addWidget(delButton);
-  hLayout->addWidget(renButton);
-  dualPushButtons->setLayout(hLayout);
-#ifdef WIN32
-int subnetHeight = 40;
-#else
-int subnetHeight = 45;
-#endif
-  dualPushButtons->setMaximumHeight(subnetHeight);
-
-  moduleSelectorTreeWidget_->setItemWidget(fave, 0, dualPushButtons);
   auto id = addToMap ? idFromPointer(fave) + "::" + fave->text(0) : idFromMap;
-  delButton->setProperty("ID", id);
-  renButton->setProperty("ID", id);
   fave->setData(0, Qt::UserRole, id);
 
   if (addToMap)
   {
-    //qDebug() << "Adding to saved subnet maps:" << id;
     savedSubnetworksXml_[id] = fave->toolTip(0);
     savedSubnetworksNames_[id] = fave->text(0);
   }
@@ -1449,8 +1429,7 @@ void SCIRunMainWindow::renameSavedSubnetwork()
       auto subnet = tree->child(i);
       if (toRename == subnet->data(0, Qt::UserRole).toString())
       {
-        auto widget = moduleSelectorTreeWidget_->itemWidget(subnet, 0);
-        qobject_cast<QLabel*>(widget->layout()->itemAt(0)->widget())->setText(text);
+				subnet->setText(0, text);
         break;
       }
     }
@@ -1925,6 +1904,15 @@ void SCIRunMainWindow::loadPythonAPIDoc()
   openPythonAPIDoc();
 }
 
+void SCIRunMainWindow::showTriggerHelp()
+{
+	QMessageBox::information(this, "Triggered Scripts",
+    "The triggered scripts interface allows the user to inject Python code that executes whenever a specific event happens. Currently the available events are post-module-add (manually, not "
+    "via network loading), and post-network-load (after user loads a file)."
+    "\n\nExamples can be found in the GUI when you first load the dialog. The scripts are saved at the application level and can be enabled/disabled."
+     );
+}
+
 FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
 {
  	connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
@@ -1960,11 +1948,8 @@ ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar,
   if (infoObject)
   {
     iconUrl_ = infoObject->property(ToolkitIconURL).toString();
-    //qDebug() << "Toolkit info: \nIcon: " << iconUrl_;
     fileUrl_ = infoObject->property(ToolkitURL).toString();
-    //qDebug() << "File url: " << fileUrl_;
     filename_ = infoObject->property(ToolkitFilename).toString();
-    //qDebug() << "Filename: " << filename_;
 
     downloadIcon();
   }
@@ -2002,7 +1987,6 @@ void ToolkitDownloader::showMessageBox()
     auto dir = QFileDialog::getExistingDirectory(qobject_cast<QWidget*>(parent()), "Select toolkit directory", ".");
     if (!dir.isEmpty())
     {
-      //qDebug() << "directory selected " << dir;
       toolkitDir_ = dir;
       zipDownloader_ = new FileDownloader(fileUrl_, statusBar_, this);
       connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
@@ -2016,10 +2000,8 @@ void ToolkitDownloader::saveToolkit()
     return;
 
   auto fullFilename = toolkitDir_.filePath(filename_);
-  //qDebug() << "saving to " << fullFilename;
   QFile file(fullFilename);
   file.open(QIODevice::WriteOnly);
   file.write(zipDownloader_->downloadedData());
   file.close();
-  //qDebug() << "save done";
 }

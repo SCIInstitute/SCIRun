@@ -43,32 +43,17 @@ using namespace SCIRun;
 
 ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attributes(FieldHandle f) const
 {
-  VField* vfield = f->vfield();
-  VMesh*  vmesh  = f->vmesh();
+  auto vfield = f->vfield();
+  auto vmesh  = f->vmesh();
   
-  ReportFieldInfoAlgorithm::Outputs output;
+  Outputs output;
 
   if (vfield && vmesh)
   {
-    // Get name of field
-    //std::string fldname;
-    //if (f->get_property("name",fldname))
-    //{
-    //  gui_fldname_.set(fldname);
-    //}
-    //else
-    //{
-    //  gui_fldname_.set("--- Name Not Assigned ---");
-    //}
-    
-    // Generation
-    //gui_generation_.set(to_string(f->generation));
-    
-    // Typename
     auto td = f->get_type_description();
     if (td)
     {
-      const std::string &tname = td->get_name();
+      const auto& tname = td->get_name();
       output.type = tname;
     }
     else
@@ -99,7 +84,7 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attribu
     Point center;
     Vector size;
     
-    const BBox bbox = vmesh->get_bounding_box();
+    const auto bbox = vmesh->get_bounding_box();
     if (bbox.valid())
     {
       size = bbox.diagonal();
@@ -111,7 +96,7 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attribu
     {
       warning("Input Field is empty.");
       
-      const double nan = std::numeric_limits<double>::quiet_NaN();
+      const auto nan = std::numeric_limits<double>::quiet_NaN();
       output.center = Point(nan,nan,nan);
       output.size = Vector(nan, nan, nan);
 
@@ -133,7 +118,7 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attribu
       output.dims[p] = static_cast<double>(dim[p]);
         
     output.geometricSize = 0.0;
-    for (VMesh::Elem::index_type idx=0; idx< output.numelements_; idx++)
+    for (VMesh::Elem::index_type idx=0; idx< output.numelements_; ++idx)
     {
       output.geometricSize += vmesh->get_size(idx);
     }

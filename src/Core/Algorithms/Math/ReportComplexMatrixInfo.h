@@ -36,11 +36,11 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Math {
-  
+
   class SCISHARE ReportComplexMatrixInfoAlgo : public AlgorithmBase
   {
   public:
-    typedef Datatypes::ComplexDenseMatrixHandle Inputs;
+    typedef Datatypes::ComplexMatrixHandle Inputs;
     typedef boost::tuple<std::string, size_t, size_t, size_t, complex, complex> Outputs;
 
     Outputs runImpl(const Inputs& input) const;

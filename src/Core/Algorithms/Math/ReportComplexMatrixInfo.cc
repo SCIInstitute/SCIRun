@@ -59,9 +59,9 @@ ReportComplexMatrixInfoAlgo::Outputs ReportComplexMatrixInfoAlgo::runImpl(const 
   MaximumCoefficient<complex> max;
   input->accept(max);
 
-  return Outputs(type, 
-    input->nrows(), 
-    input->ncols(), 
+  return Outputs(type,
+    input->nrows(),
+    input->ncols(),
     num.value(),
     min.value(),
     max.value()
@@ -70,12 +70,12 @@ ReportComplexMatrixInfoAlgo::Outputs ReportComplexMatrixInfoAlgo::runImpl(const 
 
 AlgorithmOutput ReportComplexMatrixInfoAlgo::run(const AlgorithmInput& input) const
 {
-  auto matrix = input.get<ComplexDenseMatrix>(Variables::InputMatrix);
+  auto matrix = input.get<ComplexMatrix>(Variables::InputMatrix);
 
   auto outputs = runImpl(matrix);
 
   AlgorithmOutput output;
-  output.setTransient(outputs); 
+  output.setTransient(outputs);
   return output;
 }
 

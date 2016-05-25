@@ -59,7 +59,7 @@ void PortColorLookup::init()
     ("ColorMap", "purple")
     ("Bundle", "orange")
     ("Nrrd", "cyan") // not quite right, it's bluer than the highlight cyan
-    ("ComplexDenseMatrix", "brown")
+    ("ComplexMatrix", "brown")
     ("Datatype", "black");
 }
 
