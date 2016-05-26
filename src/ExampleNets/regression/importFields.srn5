@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="12">
-<networkFile class_id="0" tracking_level="0" version="4">
+<networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>10</count>
+			<count>13</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ImportFieldsFromMatlab:0</first>
@@ -281,6 +281,54 @@
 						<package_name_>SCIRun</package_name_>
 						<category_name_>MiscField</category_name_>
 						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:180</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:181</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:182</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -1080,7 +1128,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>14</count>
+			<count>17</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
@@ -1250,10 +1298,46 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataBlue</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:182</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataGreen</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:181</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataRed</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:180</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>10</count>
+		<count>13</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>ImportFieldsFromMatlab:0</first>
@@ -1312,6 +1396,27 @@
 			</second>
 		</item>
 		<item>
+			<first>ReportMatrixInfo:180</first>
+			<second>
+				<first>-5.00000000000000000e-01</first>
+				<second>9.47000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:181</first>
+			<second>
+				<first>3.24500000000000000e+02</first>
+				<second>9.30000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:182</first>
+			<second>
+				<first>4.44500000000000000e+02</first>
+				<second>1.05000000000000000e+03</second>
+			</second>
+		</item>
+		<item>
 			<first>ShowField:0</first>
 			<second>
 				<first>0.00000000000000000e+00</first>
@@ -1321,8 +1426,8 @@
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>4.00000000000000000e+01</first>
-				<second>7.74000000000000000e+02</second>
+				<first>3.90000000000000000e+01</first>
+				<second>8.30000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1335,7 +1440,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>10</count>
+		<count>13</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>ImportFieldsFromMatlab:0</first>
@@ -1370,6 +1475,18 @@
 			<second>0</second>
 		</item>
 		<item>
+			<first>ReportMatrixInfo:180</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:181</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:182</first>
+			<second>-1</second>
+		</item>
+		<item>
 			<first>ShowField:0</first>
 			<second>0</second>
 		</item>
@@ -1386,6 +1503,11 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
+	<moduleTagLabels class_id="23" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
 </networkFile>
 </boost_serialization>
 

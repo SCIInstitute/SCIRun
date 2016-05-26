@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
-<networkFile class_id="0" tracking_level="0" version="2">
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>3</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ReadField:31</first>
@@ -35,6 +35,54 @@
 				</second>
 			</item>
 			<item>
+				<first>ReportMatrixInfo:269</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:270</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:271</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ShowField:33</first>
 				<second>
 					<module>
@@ -44,7 +92,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>12</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -72,10 +120,34 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
 									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
@@ -115,6 +187,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -176,7 +260,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>2</count>
+			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>ReadField:31</moduleId1_>
@@ -202,30 +286,87 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ViewScene:32</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataBlue</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:271</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:32</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataGreen</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:270</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:32</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataRed</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:269</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>3</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ReadField:31</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1401</first>
-				<second>-448</second>
+				<first>-1.40100000000000000e+03</first>
+				<second>-4.48000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:269</first>
+			<second>
+				<first>-1.01850000000000000e+03</first>
+				<second>-5.90000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:270</first>
+			<second>
+				<first>-8.98500000000000000e+02</first>
+				<second>6.10000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:271</first>
+			<second>
+				<first>-7.78500000000000000e+02</first>
+				<second>1.81000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:33</first>
 			<second>
-				<first>-1384</first>
-				<second>-341</second>
+				<first>-1.38400000000000000e+03</first>
+				<second>-3.41000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:32</first>
 			<second>
-				<first>-1294</first>
-				<second>-217</second>
+				<first>-1.29400000000000000e+03</first>
+				<second>-2.17000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -237,6 +378,47 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>6</count>
+		<item_version>0</item_version>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>ReadField:31</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:269</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:270</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:271</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ShowField:33</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ViewScene:32</first>
+			<second>-1</second>
+		</item>
+	</moduleTags>
+	<disabledModules class_id="21" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledModules>
+	<disabledConnections>
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledConnections>
+	<moduleTagLabels class_id="22" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
 </networkFile>
 </boost_serialization>
 
