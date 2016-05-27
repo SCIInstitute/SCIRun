@@ -1418,6 +1418,28 @@ void ViewSceneDialog::setFieldOfView(int value)
   state_->setValue(Modules::Render::ViewScene::FieldOfView, value);
 }
 
+void ViewSceneDialog::setLightSelected(int index)
+{
+  std::cout << "light selected: " << index << std::endl;
+}
+
+void ViewSceneDialog::setLightPosition(int index)
+{
+  std::cout << "light position: " << index << std::endl;
+}
+
+void ViewSceneDialog::setLightColor(int index)
+{
+  std::cout << "light color: " << index << std::endl;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setLightColor(index, mConfigurationDock->getLightColor(index).redF(), mConfigurationDock->getLightColor(index).greenF(), mConfigurationDock->getLightColor(index).blueF());
+}
+
+void ViewSceneDialog::toggleLightOnOff(int index, bool value)
+{
+  std::cout << "light: " << index << " toggle: "<<value<< std::endl;
+}
 //------------------------------------------------------------------------------
 bool ViewSceneDialog::isObjectUnselected(const std::string& name)
 {

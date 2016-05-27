@@ -141,6 +141,10 @@ namespace SCIRun {
       void setPolygonOffset(int value);
       void setTextOffset(int value);
       void setFieldOfView(int value);
+      void setLightSelected(int index);
+      void setLightPosition(int index);
+      void setLightColor(int index);
+      void toggleLightOnOff(int index, bool value);
 
     protected:
       virtual void mousePressEvent(QMouseEvent* event);

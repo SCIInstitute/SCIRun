@@ -1377,6 +1377,17 @@ namespace SCIRun {
       }
     }
 
+    void SRInterface::setLightColor(int index, float r, float g, float b)
+    {
+      if (index >= LIGHT_NUM)
+        return;
+      StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
+      if (light)
+      {
+        light->lightColor[index] = glm::vec3(r, g, b);
+      }
+    }
+
     //
     double SRInterface::getMaxProjLength(const glm::vec3 &n)
     {

@@ -205,6 +205,9 @@ namespace SCIRun {
       //get scenenox
       Core::Geometry::BBox getSceneBox();
 
+      //Light settings
+      void setLightColor(int index, float r, float g, float b);
+
     private:
 
       class DepthIndex {
