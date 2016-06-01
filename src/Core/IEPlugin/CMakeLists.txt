@@ -33,6 +33,7 @@ SET(Core_IEPlugin_SRCS
   #DIF_Plugin.cc
   EcgsimFileToMatrix_Plugin.cc
   #EcgsimFileToTriSurf_Plugin.cc
+  G3DToField_Plugin.cc
   #HexVolField_Plugin.cc
   IEPluginInit.cc
   #MRC_Plugin.cc
@@ -61,6 +62,7 @@ SET(Core_IEPlugin_HEADERS
   #DIF_Plugin.h
   EcgsimFileToMatrix_Plugin.h
   #EcgsimFileToTriSurf_Plugin.h
+  G3DToField_Plugin.h
   #HexVolField_Plugin.h
   #MRC_Plugin.h
   #MTextFileToTriSurf_Plugin.h
