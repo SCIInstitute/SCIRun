@@ -395,6 +395,8 @@ void SCIRunMainWindow::initialize()
 void SCIRunMainWindow::postConstructionSignalHookup()
 {
   connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
+	moduleSelectorTreeWidget_->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(moduleSelectorTreeWidget_, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showModuleSelectorContextMenu(const QPoint&)));
 
   WidgetDisablingService::Instance().addNetworkEditor(networkEditor_);
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), &WidgetDisablingService::Instance(), SLOT(disableInputWidgets()));
@@ -1270,6 +1272,19 @@ namespace {
 
 }
 
+void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
+{
+  auto globalPos = moduleSelectorTreeWidget_->mapToGlobal(pos);
+	auto item = moduleSelectorTreeWidget_->selectedItems()[0];
+	auto subnetData = item->data(0, Qt::UserRole).toString();
+	if (!subnetData.isEmpty())
+	{
+  	QMenu menu;
+		menu.addAction("Rename", this, SLOT(renameSavedSubnetwork()))->setProperty("ID", subnetData);
+		menu.addAction("Delete", this, SLOT(removeSavedSubnetwork()))->setProperty("ID", subnetData);
+  	menu.exec(globalPos);
+	}
+}
 
 void SCIRunMainWindow::fillSavedSubnetworkMenu()
 {
@@ -1335,38 +1350,11 @@ QString idFromPointer(T* item)
 
 void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, const QString& idFromMap)
 {
-  auto dualPushButtons = new QWidget();
-  auto hLayout = new QHBoxLayout();
-  auto delButton = new QToolButton();
-  delButton->setIcon(QPixmap(":/general/Resources/delete_red.png"));
-  delButton->setToolTip("Delete");
-  connect(delButton, SIGNAL(clicked()), this, SLOT(removeSavedSubnetwork()));
-  auto renButton = new QToolButton();
-  renButton->setIcon(QPixmap(":/general/Resources/rename.ico"));
-  renButton->setToolTip("Rename");
-  connect(renButton, SIGNAL(clicked()), this, SLOT(renameSavedSubnetwork()));
-  auto name = new QLabel(fave->text(0));
-  name->setStyleSheet("QLabel { color : " + fave->textColor(0).name() + "; }");
-  hLayout->addWidget(name);
-  hLayout->addWidget(delButton);
-  hLayout->addWidget(renButton);
-  dualPushButtons->setLayout(hLayout);
-#ifdef WIN32
-int subnetHeight = 40;
-#else
-int subnetHeight = 45;
-#endif
-  dualPushButtons->setMaximumHeight(subnetHeight);
-
-  moduleSelectorTreeWidget_->setItemWidget(fave, 0, dualPushButtons);
   auto id = addToMap ? idFromPointer(fave) + "::" + fave->text(0) : idFromMap;
-  delButton->setProperty("ID", id);
-  renButton->setProperty("ID", id);
   fave->setData(0, Qt::UserRole, id);
 
   if (addToMap)
   {
-    //qDebug() << "Adding to saved subnet maps:" << id;
     savedSubnetworksXml_[id] = fave->toolTip(0);
     savedSubnetworksNames_[id] = fave->text(0);
   }
@@ -1441,8 +1429,7 @@ void SCIRunMainWindow::renameSavedSubnetwork()
       auto subnet = tree->child(i);
       if (toRename == subnet->data(0, Qt::UserRole).toString())
       {
-        auto widget = moduleSelectorTreeWidget_->itemWidget(subnet, 0);
-        qobject_cast<QLabel*>(widget->layout()->itemAt(0)->widget())->setText(text);
+				subnet->setText(0, text);
         break;
       }
     }
@@ -1961,11 +1948,8 @@ ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar,
   if (infoObject)
   {
     iconUrl_ = infoObject->property(ToolkitIconURL).toString();
-    //qDebug() << "Toolkit info: \nIcon: " << iconUrl_;
     fileUrl_ = infoObject->property(ToolkitURL).toString();
-    //qDebug() << "File url: " << fileUrl_;
     filename_ = infoObject->property(ToolkitFilename).toString();
-    //qDebug() << "Filename: " << filename_;
 
     downloadIcon();
   }
@@ -2003,7 +1987,6 @@ void ToolkitDownloader::showMessageBox()
     auto dir = QFileDialog::getExistingDirectory(qobject_cast<QWidget*>(parent()), "Select toolkit directory", ".");
     if (!dir.isEmpty())
     {
-      //qDebug() << "directory selected " << dir;
       toolkitDir_ = dir;
       zipDownloader_ = new FileDownloader(fileUrl_, statusBar_, this);
       connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
@@ -2017,10 +2000,8 @@ void ToolkitDownloader::saveToolkit()
     return;
 
   auto fullFilename = toolkitDir_.filePath(filename_);
-  //qDebug() << "saving to " << fullFilename;
   QFile file(fullFilename);
   file.open(QIODevice::WriteOnly);
   file.write(zipDownloader_->downloadedData());
   file.close();
-  //qDebug() << "save done";
 }

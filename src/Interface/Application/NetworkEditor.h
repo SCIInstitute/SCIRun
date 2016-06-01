@@ -205,8 +205,12 @@ namespace Gui {
     void metadataLayer(bool active);
     void tagLayer(bool active, int tag);
     bool tagLayerActive() const { return tagLayerActive_; }
+    bool tagGroupsActive() const { return tagGroupsActive_; }
 
     virtual void displayError(const QString& msg, std::function<void()> showModule) override;
+
+    bool showTagGroupsOnFileLoad() const { return showTagGroupsOnFileLoad_; }
+    void setShowTagGroupsOnFileLoad(bool show) { showTagGroupsOnFileLoad_ = show; }
 
   protected:
     virtual void dropEvent(QDropEvent* event) override;
@@ -252,6 +256,7 @@ namespace Gui {
     void redrawTagGroups();
     void adjustModuleWidth(int delta);
     void adjustModuleHeight(int delta);
+    void saveTagGroupRectInFile();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -296,6 +301,7 @@ namespace Gui {
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
+    bool tagGroupsActive_ {false};
     TagColorFunc tagColor_;
     TagNameFunc tagName_;
 
@@ -313,6 +319,7 @@ namespace Gui {
     bool fileLoading_;
     bool insertingNewModuleAlongConnection_ { false };
     PreexecuteFunc preexecute_;
+    bool showTagGroupsOnFileLoad_ { false };
   };
 }
 }

@@ -37,7 +37,7 @@ namespace Modules {
 namespace Basic {
 
   class SCISHARE SendComplexScalarModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1OutputPort<ComplexDenseMatrixPortTag>,
+    public Has1OutputPort<ComplexMatrixPortTag>,
     public HasNoInputPorts
   {
   public:

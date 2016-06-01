@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
-<networkFile class_id="0" tracking_level="0" version="2">
+<boost_serialization signature="serialization::archive" version="12">
+<networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>12</count>
+			<count>15</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CalculateFieldData:5</first>
@@ -90,7 +90,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -339,6 +339,54 @@
 				</second>
 			</item>
 			<item>
+				<first>ReportMatrixInfo:272</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:273</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:274</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>RescaleColorMap:0</first>
 				<second>
 					<module>
@@ -370,7 +418,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>1.0104224155513834e-05</value>
+										<value>1.01042241555138341e-05</value>
 									</value>
 								</second>
 							</item>
@@ -382,7 +430,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>-1.8264737487238003e-06</value>
+										<value>-1.82647374872380031e-06</value>
 									</value>
 								</second>
 							</item>
@@ -412,7 +460,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>10</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -440,6 +488,18 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceInvertNormals</name>
 								</first>
 								<second>
@@ -459,6 +519,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -495,6 +567,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -572,7 +656,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>12</count>
+			<count>15</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CalculateFieldData:5</moduleId1_>
@@ -718,93 +802,150 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ViewScene:13</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataBlue</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:274</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:13</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataGreen</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:273</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:13</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataRed</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:272</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>12</count>
+		<count>15</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateFieldData:5</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-607</first>
-				<second>-959</second>
+				<first>-6.07000000000000000e+02</first>
+				<second>-9.59000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:11</first>
 			<second>
-				<first>-147</first>
-				<second>-752</second>
+				<first>-1.47000000000000000e+02</first>
+				<second>-7.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:1</first>
 			<second>
-				<first>-926</first>
-				<second>-1018</second>
+				<first>-9.26000000000000000e+02</first>
+				<second>-1.01800000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:2</first>
 			<second>
-				<first>-633</first>
-				<second>-1080</second>
+				<first>-6.33000000000000000e+02</first>
+				<second>-1.08000000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:3</first>
 			<second>
-				<first>-300</first>
-				<second>-1072</second>
+				<first>-3.00000000000000000e+02</first>
+				<second>-1.07200000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:4</first>
 			<second>
-				<first>-32</first>
-				<second>-1059</second>
+				<first>-3.20000000000000000e+01</first>
+				<second>-1.05900000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:6</first>
 			<second>
-				<first>-857</first>
-				<second>-711</second>
+				<first>-8.57000000000000000e+02</first>
+				<second>-7.11000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:7</first>
 			<second>
-				<first>-494</first>
-				<second>-712</second>
+				<first>-4.94000000000000000e+02</first>
+				<second>-7.12000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:272</first>
+			<second>
+				<first>-1.79500000000000000e+02</first>
+				<second>-1.68000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:273</first>
+			<second>
+				<first>-5.95000000000000000e+01</first>
+				<second>-4.80000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:274</first>
+			<second>
+				<first>6.05000000000000000e+01</first>
+				<second>7.20000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>-152</first>
-				<second>-608</second>
+				<first>-1.52000000000000000e+02</first>
+				<second>-6.08000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:10</first>
 			<second>
-				<first>-456</first>
-				<second>-456</second>
+				<first>-4.56000000000000000e+02</first>
+				<second>-4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>SimulateForwardMagneticField:0</first>
 			<second>
-				<first>-599</first>
-				<second>-830</second>
+				<first>-5.99000000000000000e+02</first>
+				<second>-8.30000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:13</first>
 			<second>
-				<first>-456</first>
-				<second>-304</second>
+				<first>-4.56000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -817,8 +958,8 @@
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 10&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; color:#ffffff;&quot;&gt;ID: 10&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 10</noteText>
 				<position>0</position>
 				<fontSize>13</fontSize>
@@ -829,6 +970,83 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
+	<moduleTags class_id="21" tracking_level="0" version="0">
+		<count>15</count>
+		<item_version>0</item_version>
+		<item class_id="22" tracking_level="0" version="0">
+			<first>CalculateFieldData:5</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:11</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReadField:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReadField:2</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReadField:3</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReadField:4</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:6</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:7</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:272</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:273</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:274</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ShowField:10</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>SimulateForwardMagneticField:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ViewScene:13</first>
+			<second>-1</second>
+		</item>
+	</moduleTags>
+	<disabledModules class_id="23" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledModules>
+	<disabledConnections>
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledConnections>
+	<moduleTagLabels class_id="24" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
 </networkFile>
 </boost_serialization>
 

@@ -52,7 +52,7 @@ protected:
     Py_Initialize();
   }
 
-  FieldHandle roundTripThroughMatlabConverter(FieldHandle field)
+  static FieldHandle roundTripThroughMatlabConverter(FieldHandle field)
   {
     MatlabIO::matlabarray ma;
     {
@@ -69,48 +69,58 @@ protected:
     return actual;
   }
 
-  FieldHandle TetMesh1()
+  static FieldHandle TetMesh1()
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/test_mapfielddatafromelemtonode.fld");
   }
 
-  FieldHandle TetMesh2()
+  static FieldHandle TetMesh2()
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/test_mapfielddatafromnodetoelem.fld");
   }
 
-  FieldHandle CreateTriSurfScalarOnNode()
+  static FieldHandle CreateTriSurfScalarOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
   }
-  FieldHandle CreateTriSurfVectorOnNode()
+  static FieldHandle CreateTriSurfVectorOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
   }
 
-  FieldHandle CreateTetMeshVectorOnNode()
+  static FieldHandle CreateTetMeshVectorOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
   }
-  FieldHandle CreateTetMeshScalarOnNode()
+  static FieldHandle CreateTetMeshScalarOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
   }
-  FieldHandle CreateTetMeshScalarOnElem()
+  static FieldHandle CreateTetMeshScalarOnElem()
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
   }
-  FieldHandle CreateTetMeshTensorOnNode()
+  static FieldHandle CreateTetMeshTensorOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_node.fld");
   }
 
-  FieldHandle CreatePointCloudScalar()
+  static FieldHandle CreatePointCloudScalar()
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/point_cloud/scalar/pts_scalar.fld");
   }
 
-  std::vector<FieldHandle> fileExamples()
+  //static FieldHandle CreateCurveMesh()
+  //{
+  //  return loadFieldFromFile(TestResources::rootDir() / "Fields/test_curve_elem.mat");
+  //}
+
+  //static FieldHandle CreatePointCloudScalar()
+  //{
+  //  return loadFieldFromFile(TestResources::rootDir() / "Fields/point_cloud/scalar/pts_scalar.fld");
+  //}
+
+  static std::vector<FieldHandle> fileExamples()
   {
     return{ TetMesh1(), TetMesh2(), CreateTriSurfScalarOnNode(), CreateTriSurfVectorOnNode(), CreateTetMeshVectorOnNode(), CreateTetMeshScalarOnElem(), CreateTetMeshScalarOnNode(), CreateTetMeshTensorOnNode(), CreatePointCloudScalar() };
   }

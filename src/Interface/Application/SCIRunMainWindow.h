@@ -217,6 +217,7 @@ private Q_SLOTS:
   void showTriggerHelp();
   void copyVersionToClipboard();
   void updateClipboardHistory(const QString& xml);
+  void showModuleSelectorContextMenu(const QPoint& p);
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();

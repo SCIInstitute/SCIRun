@@ -4,15 +4,15 @@
 <networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>13</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ImportFieldsFromMatlab:0</first>
+				<first>CreateFieldData:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
-						<category_name_>Matlab</category_name_>
-						<module_name_>ImportFieldsFromMatlab</module_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CreateFieldData</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
@@ -20,85 +20,37 @@
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>FieldInfoStrings</name>
+									<name>BasisString</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>FieldInfoStrings</name>
+									<name>BasisString</name>
 									<value class_id="11" tracking_level="0" version="0">
-										<which>5</which>
-										<value class_id="12" tracking_level="0" version="0">
-											<count>0</count>
-											<item_version>0</item_version>
-										</value>
+										<which>2</which>
+										<value>Linear</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>Filename</name>
+									<name>FormatString</name>
 								</first>
 								<second>
-									<name>Filename</name>
+									<name>FormatString</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/tdcs/electrodes.mat</value>
+										<value>Scalar</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>PortChoices</name>
+									<name>FunctionString</name>
 								</first>
 								<second>
-									<name>PortChoices</name>
+									<name>FunctionString</name>
 									<value>
-										<which>5</which>
-										<value>
-											<count>6</count>
-											<item_version>0</item_version>
-											<item>
-												<name></name>
-												<value>
-													<which>2</which>
-													<value>one</value>
-												</value>
-											</item>
-											<item>
-												<name></name>
-												<value>
-													<which>2</which>
-													<value>two</value>
-												</value>
-											</item>
-											<item>
-												<name></name>
-												<value>
-													<which>2</which>
-													<value>three</value>
-												</value>
-											</item>
-											<item>
-												<name></name>
-												<value>
-													<which>2</which>
-													<value>four</value>
-												</value>
-											</item>
-											<item>
-												<name></name>
-												<value>
-													<which>2</which>
-													<value>five</value>
-												</value>
-											</item>
-											<item>
-												<name></name>
-												<value>
-													<which>2</which>
-													<value>six</value>
-												</value>
-											</item>
-										</value>
+										<which>2</which>
+										<value>RESULT = X*X+Y*Y+Z*Z;</value>
 									</value>
 								</second>
 							</item>
@@ -107,12 +59,12 @@
 				</second>
 			</item>
 			<item>
-				<first>JoinFields:0</first>
+				<first>CreateLatVol:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>NewField</category_name_>
-						<module_name_>JoinFields</module_name_>
+						<module_name_>CreateLatVol</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -120,73 +72,137 @@
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>ForcePointCloud</name>
+									<name>DataAtLocation</name>
 								</first>
 								<second>
-									<name>ForcePointCloud</name>
+									<name>DataAtLocation</name>
 									<value>
-										<which>3</which>
+										<which>0</which>
 										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>make_no_data</name>
+									<name>ElementSizeNormalized</name>
 								</first>
 								<second>
-									<name>make_no_data</name>
+									<name>ElementSizeNormalized</name>
 									<value>
-										<which>3</which>
+										<which>0</which>
 										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>match_node_values</name>
+									<name>PadPercent</name>
 								</first>
 								<second>
-									<name>match_node_values</name>
+									<name>PadPercent</name>
 									<value>
-										<which>3</which>
-										<value>0</value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>merge_elems</name>
+									<name>XSize</name>
 								</first>
 								<second>
-									<name>merge_elems</name>
+									<name>XSize</name>
 									<value>
-										<which>3</which>
-										<value>0</value>
+										<which>0</which>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>merge_nodes</name>
+									<name>YSize</name>
 								</first>
 								<second>
-									<name>merge_nodes</name>
+									<name>YSize</name>
 									<value>
-										<which>3</which>
+										<which>0</which>
+										<value>16</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ZSize</name>
+								</first>
+								<second>
+									<name>ZSize</name>
+									<value>
+										<which>0</which>
+										<value>16</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ExtractSimpleIsosurface:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>ExtractSimpleIsosurface</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>IsovalueChoice</name>
+								</first>
+								<second>
+									<name>IsovalueChoice</name>
+									<value>
+										<which>2</which>
+										<value>Single</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ListOfIsovalues</name>
+								</first>
+								<second>
+									<name>ListOfIsovalues</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>QuantityOfIsovalues</name>
+								</first>
+								<second>
+									<name>QuantityOfIsovalues</name>
+									<value>
+										<which>0</which>
 										<value>1</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>tolerance</name>
+									<name>SingleIsoValue</name>
 								</first>
 								<second>
-									<name>tolerance</name>
+									<name>SingleIsoValue</name>
 									<value>
 										<which>1</which>
-										<value>9.99999999999999955e-07</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -195,103 +211,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportFieldInfo:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>MiscField</category_name_>
-						<module_name_>ReportFieldInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportFieldInfo:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>MiscField</category_name_>
-						<module_name_>ReportFieldInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportFieldInfo:2</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>MiscField</category_name_>
-						<module_name_>ReportFieldInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportFieldInfo:3</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>MiscField</category_name_>
-						<module_name_>ReportFieldInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportFieldInfo:4</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>MiscField</category_name_>
-						<module_name_>ReportFieldInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportFieldInfo:5</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>MiscField</category_name_>
-						<module_name_>ReportFieldInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportMatrixInfo:180</first>
+				<first>ReportMatrixInfo:186</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -307,7 +227,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo:181</first>
+				<first>ReportMatrixInfo:187</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -323,7 +243,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo:182</first>
+				<first>ReportMatrixInfo:188</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -1127,155 +1047,35 @@
 				</second>
 			</item>
 		</modules>
-		<connections class_id="13" tracking_level="0" version="0">
-			<count>17</count>
+		<connections class_id="12" tracking_level="0" version="0">
+			<count>7</count>
 			<item_version>0</item_version>
-			<item class_id="14" tracking_level="0" version="0">
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_ class_id="15" tracking_level="0" version="0">
-					<name>Field1</name>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>CreateFieldData:0</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>JoinFields:0</moduleId2_>
-				<port2_>
-					<name>InputFields</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_>
-					<name>Field1</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportFieldInfo:0</moduleId2_>
+				<moduleId2_>ExtractSimpleIsosurface:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
 				<port1_>
-					<name>Field2</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>JoinFields:0</moduleId2_>
-				<port2_>
-					<name>InputFields</name>
-					<id>3</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_>
-					<name>Field2</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportFieldInfo:1</moduleId2_>
+				<moduleId2_>CreateFieldData:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_>
-					<name>Field3</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>JoinFields:0</moduleId2_>
-				<port2_>
-					<name>InputFields</name>
-					<id>1</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_>
-					<name>Field3</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportFieldInfo:2</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_>
-					<name>Field4</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>JoinFields:0</moduleId2_>
-				<port2_>
-					<name>InputFields</name>
-					<id>4</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_>
-					<name>Field4</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportFieldInfo:3</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_>
-					<name>Field5</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>JoinFields:0</moduleId2_>
-				<port2_>
-					<name>InputFields</name>
-					<id>5</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_>
-					<name>Field5</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportFieldInfo:4</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_>
-					<name>Field6</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>JoinFields:0</moduleId2_>
-				<port2_>
-					<name>InputFields</name>
-					<id>2</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
-				<port1_>
-					<name>Field6</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportFieldInfo:5</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>JoinFields:0</moduleId1_>
+				<moduleId1_>ExtractSimpleIsosurface:0</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
@@ -1304,7 +1104,7 @@
 					<name>ScreenshotDataBlue</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportMatrixInfo:182</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:188</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
@@ -1316,7 +1116,7 @@
 					<name>ScreenshotDataGreen</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportMatrixInfo:181</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:187</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
@@ -1328,7 +1128,7 @@
 					<name>ScreenshotDataRed</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportMatrixInfo:180</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:186</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
@@ -1336,102 +1136,67 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>13</count>
+	<modulePositions class_id="15" tracking_level="0" version="0">
+		<count>8</count>
 		<item_version>0</item_version>
-		<item class_id="17" tracking_level="0" version="0">
-			<first>ImportFieldsFromMatlab:0</first>
-			<second class_id="18" tracking_level="0" version="0">
-				<first>4.90000000000000000e+01</first>
-				<second>1.40000000000000000e+01</second>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>CreateFieldData:0</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-2.25000000000000000e+02</first>
+				<second>-1.20000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
-			<first>JoinFields:0</first>
+			<first>CreateLatVol:0</first>
 			<second>
-				<first>1.52000000000000000e+02</first>
-				<second>5.32000000000000000e+02</second>
+				<first>-2.52000000000000000e+02</first>
+				<second>-1.79000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportFieldInfo:0</first>
+			<first>ExtractSimpleIsosurface:0</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>1.52000000000000000e+02</second>
+				<first>-1.32000000000000000e+02</first>
+				<second>2.07000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportFieldInfo:1</first>
+			<first>ReportMatrixInfo:186</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>2.28000000000000000e+02</second>
+				<first>1.27500000000000000e+02</first>
+				<second>7.42000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportFieldInfo:2</first>
+			<first>ReportMatrixInfo:187</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>3.04000000000000000e+02</second>
+				<first>2.47500000000000000e+02</first>
+				<second>8.62000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportFieldInfo:3</first>
+			<first>ReportMatrixInfo:188</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>1.52000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportFieldInfo:4</first>
-			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>2.28000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportFieldInfo:5</first>
-			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>3.04000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:180</first>
-			<second>
-				<first>-5.00000000000000000e-01</first>
-				<second>9.47000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:181</first>
-			<second>
-				<first>3.24500000000000000e+02</first>
-				<second>9.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:182</first>
-			<second>
-				<first>4.44500000000000000e+02</first>
-				<second>1.05000000000000000e+03</second>
+				<first>3.67500000000000000e+02</first>
+				<second>9.82000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>0.00000000000000000e+00</first>
-				<second>6.84000000000000000e+02</second>
+				<first>-1.91000000000000000e+02</first>
+				<second>3.60000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>3.90000000000000000e+01</first>
-				<second>8.30000000000000000e+02</second>
+				<first>-1.94000000000000000e+02</first>
+				<second>5.65000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="19" tracking_level="0" version="0">
+	<moduleNotes class_id="18" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleNotes>
@@ -1439,51 +1204,31 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>13</count>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>8</count>
 		<item_version>0</item_version>
-		<item class_id="21" tracking_level="0" version="0">
-			<first>ImportFieldsFromMatlab:0</first>
+		<item class_id="20" tracking_level="0" version="0">
+			<first>CreateFieldData:0</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>JoinFields:0</first>
+			<first>CreateLatVol:0</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>ReportFieldInfo:0</first>
+			<first>ExtractSimpleIsosurface:0</first>
 			<second>0</second>
 		</item>
 		<item>
-			<first>ReportFieldInfo:1</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReportFieldInfo:2</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReportFieldInfo:3</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReportFieldInfo:4</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReportFieldInfo:5</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:180</first>
+			<first>ReportMatrixInfo:186</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:181</first>
+			<first>ReportMatrixInfo:187</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:182</first>
+			<first>ReportMatrixInfo:188</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -1495,7 +1240,7 @@
 			<second>0</second>
 		</item>
 	</moduleTags>
-	<disabledModules class_id="22" tracking_level="0" version="0">
+	<disabledModules class_id="21" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledModules>
@@ -1503,7 +1248,7 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
-	<moduleTagLabels class_id="23" tracking_level="0" version="0">
+	<moduleTagLabels class_id="22" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleTagLabels>

@@ -48,6 +48,7 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   addTextEditManager(isovalListFromQuantityTextEdit_, Parameters::IsovalueListString);
   WidgetStyleMixin::tabStyle(tabWidget);
   connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(updateIsoMethod(int)));
+  updateIsoMethod(0);
 }
 
 void ExtractSimpleIsosurfaceDialog::pullSpecial()
