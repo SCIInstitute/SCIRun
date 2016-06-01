@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="12">
-<networkFile class_id="0" tracking_level="0" version="4">
+<networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>4</count>
+			<count>7</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateLatVol:0</first>
@@ -50,7 +50,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -222,7 +222,7 @@
 									<name>ProbeSize</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999990e-001</value>
+										<value>2.99999999999999989e-01</value>
 									</value>
 								</second>
 							</item>
@@ -246,7 +246,7 @@
 									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>-1.26107956743828530e+000</value>
+										<value>-1.26107956743828531e+00</value>
 									</value>
 								</second>
 							</item>
@@ -258,7 +258,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>3.64795682278091780e-001</value>
+										<value>3.64795682278091782e-01</value>
 									</value>
 								</second>
 							</item>
@@ -270,10 +270,58 @@
 									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>-2.38351823840690790e-001</value>
+										<value>-2.38351823840690785e-01</value>
 									</value>
 								</second>
 							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:27</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:28</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:29</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
 						</stateMap>
 					</state>
 				</second>
@@ -310,7 +358,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -370,7 +418,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -418,7 +466,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -466,7 +514,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -610,7 +658,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999990e-002</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -686,7 +734,7 @@
 									<name>Ambient</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000010e-001</value>
+										<value>2.00000000000000011e-01</value>
 									</value>
 								</second>
 							</item>
@@ -722,7 +770,7 @@
 									<name>Diffuse</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -746,7 +794,7 @@
 									<name>Emission</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -782,7 +830,7 @@
 									<name>FogEnd</name>
 									<value>
 										<which>1</which>
-										<value>7.09999999999999960e-001</value>
+										<value>7.09999999999999964e-01</value>
 									</value>
 								</second>
 							</item>
@@ -806,7 +854,7 @@
 									<name>FogStart</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -842,7 +890,7 @@
 									<name>PolygonOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -866,7 +914,7 @@
 									<name>ScaleBarHeight</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -878,7 +926,7 @@
 									<name>ScaleBarLength</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -890,7 +938,7 @@
 									<name>ScaleBarLineWidth</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -902,7 +950,7 @@
 									<name>ScaleBarMultiplier</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -938,7 +986,7 @@
 									<name>Shine</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -974,7 +1022,7 @@
 									<name>Specular</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000020e-001</value>
+										<value>4.00000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -998,7 +1046,7 @@
 									<name>StereoFusion</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000020e-001</value>
+										<value>4.00000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1010,7 +1058,7 @@
 									<name>TextOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1044,7 +1092,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>3</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
@@ -1082,37 +1130,94 @@
 					<id>1</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataBlue</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:29</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataGreen</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:28</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataRed</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:27</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>4</count>
+		<count>7</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-9.80000000000000000e+001</first>
-				<second>-3.33000000000000000e+002</second>
+				<first>-9.40000000000000000e+01</first>
+				<second>-4.82000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GenerateSinglePointProbeFromField:0</first>
 			<second>
-				<first>-2.74000000000000000e+002</first>
-				<second>-2.56000000000000000e+002</second>
+				<first>-4.09000000000000000e+02</first>
+				<second>-3.20000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:27</first>
+			<second>
+				<first>-3.71500000000000000e+02</first>
+				<second>5.00000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:28</first>
+			<second>
+				<first>-8.25000000000000000e+01</first>
+				<second>5.30000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:29</first>
+			<second>
+				<first>2.09500000000000000e+02</first>
+				<second>6.00000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>2.20000000000000000e+001</first>
-				<second>-1.63000000000000000e+002</second>
+				<first>4.20000000000000000e+01</first>
+				<second>-3.10000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-7.60000000000000000e+001</first>
-				<second>-7.60000000000000000e+001</second>
+				<first>-1.39000000000000000e+02</first>
+				<second>-1.11000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1125,7 +1230,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>4</count>
+		<count>7</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
@@ -1134,6 +1239,18 @@
 		<item>
 			<first>GenerateSinglePointProbeFromField:0</first>
 			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:27</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:28</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:29</first>
+			<second>-1</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
@@ -1152,6 +1269,11 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
+	<moduleTagLabels class_id="22" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
 </networkFile>
 </boost_serialization>
 
