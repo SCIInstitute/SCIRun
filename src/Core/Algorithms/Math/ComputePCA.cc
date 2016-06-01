@@ -48,7 +48,7 @@ void ComputePCAAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftPrinMat, Den
     }
     
     //Input matrix: nxm
-    if (matrix_is::dense(input))
+    if (matrixIs::dense(input))
     {
         //First, we have to center the data.
         auto denseInputCentered = centerData(input);
@@ -78,7 +78,7 @@ void ComputePCAAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftPrinMat, Den
 DenseMatrix ComputePCAAlgo::centerData(MatrixHandle input_matrix)
 {
     //Casts the matrix as dense.
-    auto denseInput = matrix_cast::as_dense(input_matrix);
+    auto denseInput = castMatrix::toDense(input_matrix);
     
     //Counts the number of rows in the input matrix.
     auto rows = denseInput->rows();
@@ -94,7 +94,7 @@ DenseMatrix ComputePCAAlgo::centerData(MatrixHandle input_matrix)
 }
 
 //Run the algorithm.
-AlgorithmOutput ComputePCAAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ComputePCAAlgo::run(const AlgorithmInput& input) const
 {
     auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
     

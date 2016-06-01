@@ -94,7 +94,7 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
   write.run(m1, filename.string());
 
   ReadMatrixAlgorithm read;
-  DenseMatrixConstHandle roundTrip =  matrix_cast::as_dense(read.run(filename.string()));
+  DenseMatrixConstHandle roundTrip =  castMatrix::toDense(read.run(filename.string()));
   ASSERT_TRUE(roundTrip.get() != nullptr);
 
   EXPECT_EQ(*m1, *roundTrip);
@@ -109,7 +109,7 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFile)
   write.run(m1, filename.string());
 
   ReadMatrixAlgorithm read;
-  DenseMatrixConstHandle roundTrip =  matrix_cast::as_dense(read.run(filename.string()));
+  DenseMatrixConstHandle roundTrip =  castMatrix::toDense(read.run(filename.string()));
   ASSERT_TRUE(roundTrip.get() != nullptr);
 
   EXPECT_EQ(*m1, *roundTrip);
@@ -179,14 +179,14 @@ namespace
   {
     std::cout << "Reading file: " << filename << std::endl;
     ReadMatrixAlgorithm read;
-    return matrix_cast::as_sparse(read.run(filename.string()));
+    return castMatrix::toSparse(read.run(filename.string()));
   }
 
   DenseMatrixHandle readDenseMatrixFile(const boost::filesystem::path& filename)
   {
     std::cout << "Reading file: " << filename << std::endl;
     ReadMatrixAlgorithm read;
-    return matrix_cast::as_dense(read.run(filename.string()));
+    return castMatrix::toDense(read.run(filename.string()));
   }
 
   void writeMatrixToFile(const MatrixHandle& matrix, const boost::filesystem::path& filename)

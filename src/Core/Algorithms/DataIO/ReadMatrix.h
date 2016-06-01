@@ -49,7 +49,7 @@ namespace DataIO {
         ReadMatrixAlgorithm();
         Outputs run(const Parameters& filename) const;
       
-        AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+        AlgorithmOutput run(const AlgorithmInput& input) const override;
       };
 
 }}}}

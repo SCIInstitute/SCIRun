@@ -157,14 +157,14 @@ PrintMatrixIntoString::execute()
             
             if (currentmatrix)
             {
-              if (!matrix_is::dense(currentmatrix))
+              if (!matrixIs::dense(currentmatrix))
               {
                 //TODO implement something with sparse
                 error("Currently only works with dense matrices");
                 return;
               }
               
-              auto dense = matrix_cast::as_dense (currentmatrix);
+              auto dense = castMatrix::toDense (currentmatrix);
               dataptr = dense->data();
               if (matrixindex < dense->get_dense_size())
               {

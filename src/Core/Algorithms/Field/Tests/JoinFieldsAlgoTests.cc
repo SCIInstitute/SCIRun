@@ -118,7 +118,7 @@ TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVolsGeneric)
   input.push_back(CreateEmptyLatVol(5,6,7));
   input.push_back(CreateEmptyLatVol(8,9,10));
   
-  auto outputObj = algo.run_generic(withInputData((Variables::InputFields, input)));
+  auto outputObj = algo.run(withInputData((Variables::InputFields, input)));
   
   FieldHandle output = outputObj.get<Field>(Variables::OutputField);
   EXPECT_EQ(914, output->vmesh()->num_nodes());
@@ -151,17 +151,6 @@ protected:
   }
   virtual void TearDown(){ }
 };
-
-// TODO: repeated code - can use above???
-FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type=DOUBLE_E)
-{
-  FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
-  Point minb(-1.0, -1.0, -1.0);
-  Point maxb(1.0, 1.0, 1.0);
-  MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
-  FieldHandle ofh = CreateField(lfi,mesh);
-  return ofh;
-}
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)
 {
@@ -224,7 +213,7 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
   input.push_back(CreateEmptyLatVol(5,6,7));
   input.push_back(CreateEmptyLatVol(8,9,10));
   
-  auto outputObj = algo_.run_generic(withInputData((Variables::InputFields, input)));
+  auto outputObj = algo_.run(withInputData((Variables::InputFields, input)));
   FieldHandle output = outputObj.get<Field>(Variables::OutputField);
   EXPECT_EQ(output->vmesh()->num_nodes(),output->vmesh()->num_nodes());
 }

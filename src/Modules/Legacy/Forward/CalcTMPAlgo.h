@@ -89,7 +89,7 @@ namespace SCIRun
             unsigned int nsamples,
             Datatypes::DenseMatrixHandle& output);
 
-          virtual AlgorithmOutput run_generic(const AlgorithmInput&) const override { throw "todo next lunch"; }
+          virtual AlgorithmOutput run(const AlgorithmInput&) const override { throw "todo next lunch"; }
         };
 
 

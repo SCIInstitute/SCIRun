@@ -29,10 +29,12 @@
 
 SET(Core_Python_SRCS
   PythonInterpreter.cc
+  PythonDatatypeConverter.cc
 )
 
 SET(Core_Python_HEADERS
   PythonInterpreter.h
+  PythonDatatypeConverter.h
   share.h
 )
 
@@ -62,7 +64,9 @@ TARGET_LINK_LIBRARIES(Core_Python
   ${SCI_PYTHON_LIBRARY}
   ${SCI_BOOST_LIBRARY}
   SCIRunPythonAPI
-  Core_Application
+  Core_Matlab
+  Core_Datatypes
+  Core_Datatypes_Legacy_Field
 )
 
 SET_TARGET_PROPERTIES(Core_Python

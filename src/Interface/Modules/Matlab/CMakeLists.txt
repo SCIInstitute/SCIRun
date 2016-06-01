@@ -29,18 +29,21 @@
 
 SET(Interface_Modules_Matlab_FORMS
   ImportDatatypesFromMatlab.ui
-  InterfaceWithMatlab.ui
+  ImportFieldsFromMatlab.ui
+  ExportFieldsToMatlab.ui
 )
 
 SET(Interface_Modules_Matlab_HEADERS
   ImportDatatypesFromMatlabDialog.h
-  InterfaceWithMatlabDialog.h
+  ImportFieldsFromMatlabDialog.h
+  ExportFieldsToMatlabDialog.h
   share.h
 )
 
 SET(Interface_Modules_Matlab_SOURCES
   ImportDatatypesFromMatlabDialog.cc
-  InterfaceWithMatlabDialog.cc
+  ImportFieldsFromMatlabDialog.cc
+  ExportFieldsToMatlabDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Matlab_FORMS_HEADERS ${Interface_Modules_Matlab_FORMS})
@@ -55,7 +58,6 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Matlab
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Matlab
   Modules_Legacy_Matlab_DataIO
-  Modules_Legacy_MatlabInterface
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES})

@@ -9,19 +9,13 @@ User Requests
     + better network parameter editing
     + maybe a network wizard?
     + show what files are being used, network file name
-    + better network parameter editing
 
   - more example nets
   - more documentation, more sample networks (very useful for demonstrating module functionality)
-  - must work with clipboard (through Qt support?)
   - search modules, networks for keywords
 
     + see Matlab descriptors at the top of source files as an example
     + when searching for modules, can we have the option of searching within the module text (i.e. search module GUI component names, variable names etc.)
-
-  - error reporting should not kill SCIRun
-
-    + For example, if you end up with an empty field in your network, and you have a bounding box displayed for that field, the bounding box calculation asserts that the diagonal is zero and aborts the program, which is bad. Instead, an error should be displayed and the user should be able to change the network to fix the problem.
 
   - port colors: change intensities, not just colors
 
@@ -46,11 +40,7 @@ User Requests
 
 * UI
 
-  - select (highlight with mouse?) and copy multiple modules - connections between modules will have to be propagated as well
-  - adjust GUI scale so it doesn't flow over bottom of screen
   - collapse network preview window
-  - zoom or center network in editor
-  - hover or hot key to expose some module parameters
   - side pane to expose some module parameters
 
     + expose important dataset parameters too (size, dims, data info etc.)
@@ -68,33 +58,27 @@ User Requests
     + line up modules
     + expose-like (OS X)
 
-  - Change exponential widget behavior to be more intuitive
   - Add GUI element for indicating result of "Clear Output" button of module CollectMatrices
   - Add string port to Read / Write Nrrd
   - Add support for newer Matlab file format
   - Add cylinder to vector glyph types
   - ShowMatrix module should detect matrix dimensions
-  - reinterpret_cast from pointer-to-object to pointer-to-function not portable
   - IO plugin for Meshalyzer binary mesh format
   - IO plugin for a binary node index matrix
 
 * Networks
 
   - halt network without killing SCIRun
-  - stop module in network
 
 * Subnets
 
   - subnets must work (currently broken) - should be an easy select and create operation in GUI
-  - offer common network fragments as subnets (i.e. ShowField, ColorMap etc., ViewScene)
   - better views for subnets: dockable widgets, tabs etc.
   - duplicate entire subnet
   - import network into other network
 
     + choice to import as subnet or register network
     + choice to save subnet as separate file
-
-  - 'Duplicate' should work on multiply-selected modules
 
 Qt Migration
 ============
@@ -125,23 +109,10 @@ Qt Migration
 
   - All menu options/preferences work
   - Can walk through entire SCIRun tutorial!
-  - At this point, all essential modules should be converted. Can begin converting other individual modules.
-
-* Core
-
-  - Discuss memory model for Matrix/Arrays/etc.
-  - Move namespace SCIRunAlgo into SCIRun::Algo to remove need for using directives in headers.
-  - Replace Thread library with Boost.
-  - Boost threading notes.
 
 * IO
 
   - is there a way we can display a brief blurb describing file importer and exporter plugin information (i.e. show a short description of the file types supported, file extensions etc.)?
-  - change file importer and exporter plugin function pointer table to functors
-
-* Dataflow
-
-  - Execute all button in network editor: triggers execution even if network is currently executing. Queue (or block?) request for execution until current execution is done.
 
 * Graphics and Visualization
 
@@ -155,11 +126,6 @@ Qt Migration
 
   - verify that libpng and zlib are still needed, if so, update
   - better XML parsing library (libxml2 is overly complex and buggy)
-
-* Boost
-
-  - Boost is an external project in the CMake build
-  - In case Boost needs to be built outside of SCIRun: Boost build notes
 
 * Build
 

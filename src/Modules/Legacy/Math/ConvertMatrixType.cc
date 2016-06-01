@@ -56,7 +56,7 @@ void ConvertMatrixTypeModule::execute()
     update_state(Executing);
     setAlgoOptionFromState(Parameters::OutputMatrixType);
 
-    auto output = algo().run_generic(withInputData((InputMatrix, input_matrix)));
+    auto output = algo().run(withInputData((InputMatrix, input_matrix)));
 
     sendOutputFromAlgorithm(ResultMatrix, output);
   }

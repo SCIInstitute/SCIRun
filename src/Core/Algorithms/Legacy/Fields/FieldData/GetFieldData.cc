@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -49,14 +49,16 @@ using namespace Core::Logging;
 
 ALGORITHM_PARAMETER_DEF(Fields, CalcMatrix);
 ALGORITHM_PARAMETER_DEF(Fields, CalcNrrd);
+ALGORITHM_PARAMETER_DEF(Fields, CalcComplexMatrix);
 
 GetFieldDataAlgo::GetFieldDataAlgo()
 {
   addParameter(Parameters::CalcMatrix, true);
+  addParameter(Parameters::CalcComplexMatrix, false);
   addParameter(Parameters::CalcNrrd, false);
 }
 
-AlgorithmOutput GetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GetFieldDataAlgo::run(const AlgorithmInput& input) const
 {
   auto input_field = input.get<Field>(Variables::InputField);
 
@@ -64,28 +66,37 @@ AlgorithmOutput GetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 
   if (get(Parameters::CalcMatrix).toBool())
   {
-    output[Variables::OutputMatrix] = run(input_field);;
+    output[Variables::OutputMatrix] = runMatrix(input_field);
   }
   if (get(Parameters::CalcNrrd).toBool())
   {
-    output[Variables::OutputNrrd] = runNrrd(input_field);;
+    output[Variables::OutputNrrd] = runNrrd(input_field);
+  }
+  if (get(Parameters::CalcComplexMatrix).toBool())
+  {
+    output[Variables::OutputComplexMatrix] = runComplexMatrix(input_field);
   }
 
   return output;
 }
 
-DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
+DenseMatrixHandle GetFieldDataAlgo::runMatrix(FieldHandle input_field) const
 {
-  return runImpl<DenseMatrix>(input_field);
+  return runImplGeneric<DenseMatrix>(input_field);
+}
+
+ComplexDenseMatrixHandle GetFieldDataAlgo::runComplexMatrix(FieldHandle input_field) const
+{
+  return runImplGeneric<ComplexDenseMatrix>(input_field);
 }
 
 NrrdDataHandle GetFieldDataAlgo::runNrrd(FieldHandle input_field) const
 {
-  return runImpl<NrrdData>(input_field);
+  return runImplGeneric<NrrdData>(input_field);
 }
 
 template <class MatrixReturnType>
-boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImpl(FieldHandle input_field) const
+boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImplGeneric(FieldHandle input_field) const
 {
   ScopedAlgorithmStatusReporter asr(this, "GetFieldData");
 
@@ -116,7 +127,7 @@ boost::shared_ptr<MatrixReturnType> GetFieldDataAlgo::runImpl(FieldHandle input_
     if (GetVectorFieldDataV(input_field, mat)) return mat;
   if (vfield1->is_tensor())
     if (GetTensorFieldDataV(input_field, mat)) return mat;
-  
+
   THROW_ALGORITHM_INPUT_ERROR("Unknown field data type!");
   return nullptr;
 }
@@ -128,6 +139,18 @@ namespace SCIRun {
         template <>
         bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, DenseMatrixHandle& output) const
         {
+          return GetScalarFieldDataVDenseImpl(input, output);
+        }
+
+        template <>
+        bool GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle input, ComplexDenseMatrixHandle& output) const
+        {
+          return GetScalarFieldDataVDenseImpl(input, output);
+        }
+
+        template <class ValueType>
+        bool GetFieldDataAlgo::GetScalarFieldDataVDenseImpl(FieldHandle input, boost::shared_ptr<DenseMatrixGeneric<ValueType>>& output) const
+        {
           /// Obtain virtual interface
           VField* vfield = input->vfield();
 
@@ -136,7 +159,7 @@ namespace SCIRun {
           VMesh::size_type esize = vfield->num_evalues();
 
           /// Create output object
-          output.reset(new DenseMatrix(size + esize, 1));
+          output.reset(new DenseMatrixGeneric<ValueType>(size + esize, 1));
 
           if (!output)
           {
@@ -151,7 +174,7 @@ namespace SCIRun {
           if (vfield->basis_order() == 2)
           {
             vfield->vmesh()->synchronize(Mesh::EDGES_E);
-            for (VMesh::Elem::index_type idx = size; idx < size + esize; idx++)
+            for (VMesh::Elem::index_type idx = size; idx < size + esize; ++idx)
             {
               vfield->get_evalue((*output)(idx, 0), idx);
             }

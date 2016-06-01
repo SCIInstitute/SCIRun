@@ -43,10 +43,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-#include <Dataflow/Network/Module.h>
 #include <vector>
 
 using namespace SCIRun;
@@ -54,44 +52,22 @@ using namespace SCIRun::Core::Algorithms::Forward;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 
-InsertVoltageSourceAlgo::InsertVoltageSourceAlgo() : groundfirst_(false), outside_(false)
+InsertVoltageSourceAlgo::InsertVoltageSourceAlgo() : outside_(false), groundfirst_(false)
 {}
 
-InsertVoltageSourceAlgo::InsertVoltageSourceAlgo(bool groundFirst, bool outside) 
-  : groundfirst_(groundFirst), outside_(outside)
+InsertVoltageSourceAlgo::InsertVoltageSourceAlgo(bool groundFirst, bool outside)
+  : outside_(outside), groundfirst_(groundFirst)
 {}
 
 
 void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, FieldHandle& omeshH, DenseMatrixHandle& odirichletMatrix)
 {
-  FieldInformation fi(omeshH);
-  if (fi.is_pointcloudmesh())
-  {
-    //error("FEMesh is a point cloud mesh, the FE mesh needs to have elements");
-    return;
-  }
-
-  FieldInformation fis(isourceH);
-
-  if (fis.is_nodata())
-  {
-    //error("VoltageSource needs to contain data");
-    return;
-  }
-
   std::vector<Point> sources;
   std::vector<double> vals;
-
-  VMesh*  mesh = isourceH->vmesh();
 
   if (groundfirst_)
   {
     Point pnt;
-    if (isourceH->vmesh()->num_nodes() == 0)
-    {
-      //error("VoltageSource field does not have any nodes");
-      return;
-    }
     isourceH->vmesh()->get_center(pnt,VMesh::Node::index_type(0));
 
     sources.push_back(pnt);
@@ -101,6 +77,7 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
   {
 
     VField* field = isourceH->vfield();
+    VMesh*  mesh = isourceH->vmesh();
     VField::size_type num_values = field->num_values();
 
     Point pnt;
@@ -137,7 +114,6 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
 
   VMesh* vmesh = omeshH->vmesh();
   VMesh::Node::size_type nnodes = vmesh->num_nodes();
-  VMesh::Elem::size_type nelems = vmesh->num_elems();
   vmesh->synchronize(Mesh::LOCATE_E);
 
   VMesh::Node::array_type nbrs;
@@ -147,7 +123,7 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
   std::vector<int> have_some(nnodes);
   //have_some.initialize(0);
   std::vector<VMesh::Node::index_type> bc_nodes;
-  
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   for (size_t di=0; di<dirichlet.size(); di++)
   {
@@ -216,7 +192,8 @@ void InsertVoltageSourceAlgo::ExecuteAlgorithm(const FieldHandle& isourceH, Fiel
     for (int j=0; j<nsrcs; j++)
       val+=closest[bc_nodes[i]][j].second/nsrcs;
     //dirichlet.push_back(std::pair<int, double>((int)bc_nodes[i], val));
-    (*odirichletMatrix) << (int)bc_nodes[i], val;
+    (*odirichletMatrix)(i, 0) = static_cast<int>(bc_nodes[i]);
+    (*odirichletMatrix)(i, 1) = val;
   }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

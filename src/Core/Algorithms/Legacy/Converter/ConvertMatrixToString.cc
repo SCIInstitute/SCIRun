@@ -49,7 +49,7 @@ bool ConvertMatrixToStringAlgo::run(MatrixHandle input, StringHandle& output) co
   return algo.MatrixToString(input, output);
 }
 
-AlgorithmOutput ConvertMatrixToStringAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertMatrixToStringAlgo::run(const AlgorithmInput& input) const
 {
 	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
 	

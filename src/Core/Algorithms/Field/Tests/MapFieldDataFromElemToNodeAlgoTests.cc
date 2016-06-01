@@ -32,7 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromElemToNode.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -111,10 +111,9 @@ using namespace SCIRun::TestUtils;
 
 TEST(MapFieldDataFromElemToNode, TetMeshTestInterpolateWithFile)
 {
-
  MapFieldDataFromElemToNodeAlgo algo;
 
- FieldHandle  result = algo.run(TetMesh1());
+ FieldHandle  result = algo.runImpl(TetMesh1());
 
  ASSERT_TRUE(result->vfield()->num_values() == 8);
 
@@ -143,9 +142,9 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMin)
 
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.set_option(MapFieldDataFromElemToNodeAlgo::Method, "Min");
+ algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Min");
 
- FieldHandle  result = algo.run(TetMesh1());
+ FieldHandle  result = algo.runImpl(TetMesh1());
 
  ASSERT_TRUE(result->vfield()->num_values() == 8);
 
@@ -169,12 +168,11 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMin)
 
 TEST(MapFieldDataFromElemToNode, TetMeshTestMax)
 {
-
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.set_option(MapFieldDataFromElemToNodeAlgo::Method, "Max");
+ algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Max");
 
- FieldHandle  result = algo.run(TetMesh1());
+ FieldHandle  result = algo.runImpl(TetMesh1());
 
  ASSERT_TRUE(result->vfield()->num_values() == 8);
 
@@ -198,12 +196,11 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMax)
 
 TEST(MapFieldDataFromElemToNode, TetMeshTestSum)
 {
-
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.set_option(MapFieldDataFromElemToNodeAlgo::Method, "Sum");
+ algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Sum");
 
- FieldHandle  result = algo.run(TetMesh1());
+ FieldHandle  result = algo.runImpl(TetMesh1());
 
  ASSERT_TRUE(result->vfield()->num_values() == 8);
 
@@ -230,9 +227,9 @@ TEST(MapFieldDataFromElemToNode, TetMeshTestMed)
 
  MapFieldDataFromElemToNodeAlgo algo;
 
- algo.set_option(MapFieldDataFromElemToNodeAlgo::Method, "Median");
+ algo.setOption(MapFieldDataFromElemToNodeAlgo::Method, "Median");
 
- FieldHandle  result = algo.run(TetMesh1());
+ FieldHandle  result = algo.runImpl(TetMesh1());
 
  ASSERT_TRUE(result->vfield()->num_values() == 8);
 

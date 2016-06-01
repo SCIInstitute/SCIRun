@@ -35,14 +35,15 @@
 
 #include <boost/assign.hpp>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace boost::assign;
+
 namespace SCIRun
 {
 
 namespace TestUtils
 {
-  
-using namespace SCIRun::Core::Geometry;
-using namespace boost::assign;
 
 void tetCubeGeometry(FieldHandle field)
 {
@@ -289,3 +290,21 @@ FieldHandle CubeTriSurfLinearBasis(data_info_type type)
 }
 
 }}
+
+FieldHandle SCIRun::TestUtils::CreateEmptyLatVol()
+{
+  size_type sizex = 3, sizey = 4, sizez = 5;
+  return CreateEmptyLatVol(sizex, sizey, sizez);
+}
+
+FieldHandle SCIRun::TestUtils::CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type)
+{
+  FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
+
+  Point minb(-1.0, -1.0, -1.0);
+  Point maxb(1.0, 1.0, 1.0);
+  MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
+  FieldHandle ofh = CreateField(lfi, mesh);
+  ofh->vfield()->clear_all_values();
+  return ofh;
+}

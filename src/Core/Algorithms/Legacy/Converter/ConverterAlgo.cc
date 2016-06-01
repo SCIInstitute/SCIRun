@@ -751,9 +751,9 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
 {
   std::ostringstream oss;
 
-  if (matrix_is::sparse(input))
+  if (matrixIs::sparse(input))
   {
-    SparseRowMatrixHandle sparse = matrix_convert::to_sparse(input);
+    SparseRowMatrixHandle sparse = convertMatrix::toSparse(input);
     SparseRowMatrixGeneric<double>::RowsPtr rowData = sparse->get_rows();
     SparseRowMatrixGeneric<double>::ColumnsPtr columnData = sparse->get_cols();
     size_type numRows = sparse->nrows();
@@ -771,7 +771,7 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
 
   else
   {
-    input = matrix_convert::to_dense(input);
+    input = convertMatrix::toDense(input);
     size_type numRows = input->nrows();
     size_type numCols = input->ncols();
     oss << "Dense Matrix (" << numRows << "x" << numCols << "):\n";
@@ -792,7 +792,7 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
 }
 
 
-AlgorithmOutput ConverterAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConverterAlgo::run(const AlgorithmInput& input) const
 {
   throw "not implemented";
 }

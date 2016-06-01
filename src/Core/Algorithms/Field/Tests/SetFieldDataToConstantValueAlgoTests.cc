@@ -76,7 +76,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, InvalidType)
 
   const int value = 5;
   algo.set(Parameters::Value, value);
-  ASSERT_THROW(algo.set_option(Parameters::DataType, std::string("notatype")), AlgorithmParameterNotFound);
+  ASSERT_THROW(algo.setOption(Parameters::DataType, std::string("notatype")), AlgorithmParameterNotFound);
 }
 
 TEST(SetFieldDataToConstantValueAlgoTest, InvalidBasis)
@@ -86,7 +86,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, InvalidBasis)
 
   const int value = 5;
   algo.set(Parameters::Value, value);
-  ASSERT_THROW(algo.set_option(Parameters::BasisOrder, std::string("notabasis")), AlgorithmParameterNotFound);
+  ASSERT_THROW(algo.setOption(Parameters::BasisOrder, std::string("notabasis")), AlgorithmParameterNotFound);
 }
 
 TEST(SetFieldDataToConstantValueAlgoTest, EmptyFieldNoValue)
@@ -103,7 +103,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, EmptyFieldNoValue)
   ASSERT_TRUE(result->vfield()->is_constantdata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   // empty matrix
@@ -125,7 +125,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NoValue)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -151,7 +151,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, IntValue)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -180,7 +180,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, PositiveValue)
   ASSERT_TRUE(result->vfield()->is_double());
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -206,7 +206,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, NegativeValue)
   ASSERT_TRUE(result->vfield()->is_double());
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -233,7 +233,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntLinear)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -260,7 +260,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DISABLED_DataTypeIntConstant)
   ASSERT_TRUE(result->vfield()->is_constantdata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -276,7 +276,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToInt)
 
   const int value = 5;
   algo.set(Parameters::Value, value);
-  algo.set_option(Parameters::DataType, std::string("int"));
+  algo.setOption(Parameters::DataType, std::string("int"));
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(cubeTriSurf, result));
@@ -287,7 +287,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToInt)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -304,7 +304,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToIntFromDouble)
   const double value = 5.2;
   const int intValue = 5;
   algo.set(Parameters::Value, value);
-  algo.set_option(Parameters::DataType, std::string("int"));
+  algo.setOption(Parameters::DataType, std::string("int"));
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(cubeTriSurf, result));
@@ -315,7 +315,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, DataTypeDoubleToIntFromDouble)
   ASSERT_TRUE(result->vfield()->is_lineardata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());
@@ -332,7 +332,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTet)
 
   const double value = -5.7;
   algo.set(Parameters::Value, value);
-  algo.set_option(Parameters::BasisOrder, std::string("constant"));
+  algo.setOption(Parameters::BasisOrder, std::string("constant"));
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(tetmesh, result));
@@ -343,7 +343,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTet)
   ASSERT_TRUE(tetmesh->vfield()->is_lineardata());
   ASSERT_TRUE(result->vfield()->is_constantdata());
 
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
 
   ASSERT_TRUE(data != nullptr);
 
@@ -360,7 +360,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTri)
 
   const int value = 5;
   algo.set(Parameters::Value, value);
-  algo.set_option(Parameters::BasisOrder, std::string("constant"));
+  algo.setOption(Parameters::BasisOrder, std::string("constant"));
 
   FieldHandle result;
   ASSERT_TRUE(algo.runImpl(cubeTriSurf, result));
@@ -371,7 +371,7 @@ TEST(SetFieldDataToConstantValueAlgoTest, BasisOrderLinearToConstantTri)
   ASSERT_TRUE(result->vfield()->is_constantdata());
 
   GetFieldDataAlgo getData;
-  DenseMatrixHandle data = getData.run(result);
+  DenseMatrixHandle data = getData.runMatrix(result);
   ASSERT_TRUE(data != nullptr);
 
   EXPECT_EQ(1, data->ncols());

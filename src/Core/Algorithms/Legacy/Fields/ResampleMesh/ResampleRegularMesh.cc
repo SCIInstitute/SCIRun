@@ -58,7 +58,7 @@ ALGORITHM_PARAMETER_DEF(Fields, ResampleZDimUseScalingFactor);
 ResampleRegularMeshAlgo::ResampleRegularMeshAlgo()
 { 
   /// Option for selecting the resampling kernel
-  add_option(Parameters::ResampleMethod, "Box","Box|Tent|Cubic (Catmull-Rom)|Cubic (B-Spline)|Gaussian");
+  addOption(Parameters::ResampleMethod, "Box","Box|Tent|Cubic (Catmull-Rom)|Cubic (B-Spline)|Gaussian");
   addParameter(Parameters::ResampleGaussianSigma, 1.0);
   addParameter(Parameters::ResampleGaussianExtend, 1.0);
 
@@ -229,27 +229,27 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   double param[NRRD_KERNEL_PARMS_NUM]; param[0] =  1.0;
   for (int j=1; j<NRRD_KERNEL_PARMS_NUM; j++) param[j] = 0.0;
   
-  if (check_option(Parameters::ResampleMethod,"Box")) 
+  if (checkOption(Parameters::ResampleMethod,"Box")) 
   {
     kern = nrrdKernelBox;
   } 
-  else if (check_option(Parameters::ResampleMethod,"Tent"))
+  else if (checkOption(Parameters::ResampleMethod,"Tent"))
   {
     kern = nrrdKernelTent;
   } 
-  else if (check_option(Parameters::ResampleMethod,"Cubic (Catmull-Rom)")) 
+  else if (checkOption(Parameters::ResampleMethod,"Cubic (Catmull-Rom)")) 
   { 
     kern = nrrdKernelBCCubic; 
     param[1] = 0.0; 
     param[2] = 0.5; 
   } 
-  else if (check_option(Parameters::ResampleMethod,"Cubic (B-Spline)"))
+  else if (checkOption(Parameters::ResampleMethod,"Cubic (B-Spline)"))
   { 
     kern = nrrdKernelBCCubic; 
     param[1] = 1.0; 
     param[2] = 0.0; 
   } 
-  else if (check_option(Parameters::ResampleMethod,"Gaussian"))
+  else if (checkOption(Parameters::ResampleMethod,"Gaussian"))
   { 
     kern = nrrdKernelGaussian; 
     param[0] = get(Parameters::ResampleGaussianSigma).toDouble(); 
@@ -474,7 +474,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   return (true);
 }                           
 
-AlgorithmOutput ResampleRegularMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ResampleRegularMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

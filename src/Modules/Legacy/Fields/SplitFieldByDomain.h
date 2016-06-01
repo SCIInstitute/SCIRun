@@ -43,8 +43,8 @@ namespace SCIRun {
       public:
         SplitFieldByDomain();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, All_Fields, Bundle);
@@ -58,7 +58,7 @@ namespace SCIRun {
         OUTPUT_PORT(7, Field7, LegacyField);
         OUTPUT_PORT(8, Field8, LegacyField);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }

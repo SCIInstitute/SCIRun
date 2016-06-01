@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -48,8 +48,8 @@ struct KillMap {
   ~KillMap();
 };
 
-static std::map<std::string, const TypeDescription*>* types = 0;
-static std::vector<const TypeDescription*>* typelist=0;
+static std::map<std::string, const TypeDescription*>* types = nullptr;
+static std::vector<const TypeDescription*>* typelist=nullptr;
 static Mutex typelist_lock("TypeDescription::typelist lock");
 static bool killed=false;
 
@@ -94,16 +94,16 @@ TypeDescription::register_type()
     (*types)[get_name()] = this;
   }
   typelist->push_back(this);
-  
+
   typelist_lock.unlock();
 }
 
 
-TypeDescription::TypeDescription(const std::string &name, 
+TypeDescription::TypeDescription(const std::string &name,
 				 const std::string &path,
-				 const std::string &namesp, 
-				 category_e c) : 
-  subtype_(0), 
+				 const std::string &namesp,
+				 category_e c) :
+  subtype_(nullptr),
   name_(name),
   h_file_path_(strip_absolute_path(path)),
   namespace_(namesp),
@@ -112,11 +112,11 @@ TypeDescription::TypeDescription(const std::string &name,
   register_type();
 }
 
-TypeDescription::TypeDescription(const std::string &name, 
-				 td_vec* sub, 
+TypeDescription::TypeDescription(const std::string &name,
+				 td_vec* sub,
 				 const std::string &path,
 				 const std::string &namesp,
-				 category_e c) : 
+				 category_e c) :
   subtype_(sub),
   name_(name),
   h_file_path_(strip_absolute_path(path)),
@@ -131,8 +131,8 @@ TypeDescription::~TypeDescription()
   delete subtype_;
 }
 
-std::string 
-TypeDescription::get_name( const std::string & type_sep_start /* = "<"  */, 
+std::string
+TypeDescription::get_name( const std::string & type_sep_start /* = "<"  */,
 			   const std::string & type_sep_end   /* = "> " */ ) const
 {
   const std::string comma(",");
@@ -159,11 +159,11 @@ TypeDescription::get_name( const std::string & type_sep_start /* = "<"  */,
 }
 
 // substitute one of the subtype names with the name provided.
-std::string 
+std::string
 TypeDescription::get_similar_name(const std::string &substitute,
 				  const int pos,
-				  const std::string &type_sep_start, 
-				  const std::string &type_sep_end) const 
+				  const std::string &type_sep_start,
+				  const std::string &type_sep_end) const
 {
   const std::string comma(",");
   bool do_end = true;
@@ -195,7 +195,7 @@ TypeDescription::get_similar_name(const std::string &substitute,
 }
 
 
-std::string 
+std::string
 TypeDescription::get_filename() const
 {
   std::string s = get_name();
@@ -210,7 +210,7 @@ TypeDescription::get_filename() const
   return result;
 }
 
-const TypeDescription* 
+const TypeDescription*
 TypeDescription::lookup_type(const std::string& t)
 {
   if(!types) {
@@ -221,11 +221,11 @@ TypeDescription::lookup_type(const std::string& t)
     }
     typelist_lock.unlock();
   }
-  
-  std::map<std::string, const TypeDescription*>::iterator iter = types->find(t);
-   if(iter == types->end())
-      return 0;
-   return iter->second;
+
+  auto iter = types->find(t);
+  if(iter == types->end())
+     return nullptr;
+  return iter->second;
 }
 
 std::string TypeDescription::cc_to_h(const std::string &dot_cc)
@@ -235,7 +235,7 @@ std::string TypeDescription::cc_to_h(const std::string &dot_cc)
   if (len > 3 && dot_cc.substr(len-3, len) == ".cc") {
     dot_h = dot_cc.substr(0, len-3) + ".h";
   } else {
-    std::cerr << "Warning: TypeDescription::cc_to_h input does not end in .cc" 
+    std::cerr << "Warning: TypeDescription::cc_to_h input does not end in .cc"
 	 << std::endl << "the string: '" << dot_cc << "'" << std::endl;
     dot_h = dot_cc;
   }
@@ -245,7 +245,7 @@ std::string TypeDescription::cc_to_h(const std::string &dot_cc)
 
 std::string TypeDescription::strip_absolute_path(const std::string &path)
 {
-  // prevent absolute paths from being stuffed in include paths 
+  // prevent absolute paths from being stuffed in include paths
   // (that prevents installing a binary SCIRun with dynamic compilation)
   // do this by eliminating everything in front of the Core, Dataflow, or Packages
   std::string newpath = path;
@@ -271,16 +271,25 @@ TypeDescription::Register::~Register()
 
 const TypeDescription* get_type_description(double*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("double", "builtin", "builtin");
   }
   return td;
 }
 
+const TypeDescription* get_type_description(std::complex<double>*)
+{
+  static TypeDescription* td = nullptr;
+  if (!td){
+    td = new TypeDescription("complex", "builtin", "builtin");
+  }
+  return td;
+}
+
 const TypeDescription* get_type_description(long*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("long", "builtin", "builtin");
   }
@@ -289,7 +298,7 @@ const TypeDescription* get_type_description(long*)
 
 const TypeDescription* get_type_description(long long*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("long long", "builtin", "builtin");
   }
@@ -298,7 +307,7 @@ const TypeDescription* get_type_description(long long*)
 
 const TypeDescription* get_type_description(unsigned long long*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("unsigned long long", "builtin", "builtin");
   }
@@ -307,7 +316,7 @@ const TypeDescription* get_type_description(unsigned long long*)
 
 const TypeDescription* get_type_description(float*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("float", "builtin", "builtin");
   }
@@ -316,7 +325,7 @@ const TypeDescription* get_type_description(float*)
 
 const TypeDescription* get_type_description(short*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("short", "builtin", "builtin");
   }
@@ -325,7 +334,7 @@ const TypeDescription* get_type_description(short*)
 
 const TypeDescription* get_type_description(unsigned short*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("unsigned short", "builtin", "builtin");
   }
@@ -334,7 +343,7 @@ const TypeDescription* get_type_description(unsigned short*)
 
 const TypeDescription* get_type_description(int*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("int", "builtin", "builtin");
   }
@@ -343,7 +352,7 @@ const TypeDescription* get_type_description(int*)
 
 const TypeDescription* get_type_description(unsigned int*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("unsigned int", "builtin", "builtin");
   }
@@ -352,7 +361,7 @@ const TypeDescription* get_type_description(unsigned int*)
 
 const TypeDescription* get_type_description(char*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("char", "builtin", "builtin");
   }
@@ -361,7 +370,7 @@ const TypeDescription* get_type_description(char*)
 
 const TypeDescription* get_type_description(unsigned char*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("unsigned char", "builtin", "builtin");
   }
@@ -370,7 +379,7 @@ const TypeDescription* get_type_description(unsigned char*)
 
 const TypeDescription* get_type_description(std::string*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("string", "std::string", "std");
   }
@@ -379,7 +388,7 @@ const TypeDescription* get_type_description(std::string*)
 
 const TypeDescription* get_type_description(unsigned long*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
     td = new TypeDescription("unsigned long", "builtin", "builtin");
   }

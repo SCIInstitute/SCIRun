@@ -87,7 +87,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   }
 
   // casting rhs to be a column
-  auto rhsCol = rhs ?  matrix_convert::to_column(rhs) : boost::make_shared<DenseColumnMatrix>(DenseColumnMatrix::Zero(numCols));
+  auto rhsCol = rhs ?  convertMatrix::toColumn(rhs) : boost::make_shared<DenseColumnMatrix>(DenseColumnMatrix::Zero(numCols));
   ENSURE_NOT_NULL(rhsCol, "rhsCol");
   DenseColumnMatrix& rhsColRef = *rhsCol;
 
@@ -102,8 +102,8 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   } 
 
   // casting x to be a column
-  auto xCol = matrix_cast::as_column(x);
-  if (!xCol) xCol = matrix_convert::to_column(x);
+  auto xCol = castMatrix::toColumn(x);
+  if (!xCol) xCol = convertMatrix::toColumn(x);
   ENSURE_NOT_NULL(xCol, "xColumn");
   const DenseColumnMatrix& xColRef = *xCol;
 
@@ -183,7 +183,7 @@ AlgorithmInputName AddKnownsToLinearSystemAlgo::X_Vector("X_Vector");
 AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutLHSMatrix("OutPutLHSMatrix");
 AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector");
 
-AlgorithmOutput AddKnownsToLinearSystemAlgo::run_generic(const AlgorithmInput & input) const
+AlgorithmOutput AddKnownsToLinearSystemAlgo::run(const AlgorithmInput & input) const
 { 
   auto input_lhs = input.get<SparseRowMatrix>(LHS_Matrix);
   auto input_rhs = input.get<DenseMatrix>(RHS_Vector);

@@ -33,11 +33,16 @@
 #include <memory>
 #include <Interface/Modules/Render/GLContext.h>
 #include "Core.h"
+#include <es-general/comp/Transform.hpp>
+
+//freetype
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 // CPM Modules
 #include <es-render/util/Shader.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
-
+#include "comp/StaticClippingPlanes.h"
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
 
@@ -83,6 +88,26 @@ namespace SCIRun {
       {
         MOUSE_OLDSCIRUN,
         MOUSE_NEWSCIRUN
+      };
+
+      enum MatFactor
+      {
+        MAT_AMBIENT,
+        MAT_DIFFUSE,
+        MAT_SPECULAR,
+        MAT_SHINE
+      };
+
+      enum FogFactor
+      {
+        FOG_INTENSITY,
+        FOG_START,
+        FOG_END
+      };
+
+      struct ClippingPlane {
+        bool visible, showFrame, reverseNormal;
+        double x, y, z, d;
       };
 
       void inputMouseDown(const glm::ivec2& pos, MouseButton btn);
@@ -145,6 +170,40 @@ namespace SCIRun {
 
       /// get name of the selection
       std::string &getSelection();
+
+      gen::Transform &getWidgetTransform();
+
+      static std::string& getFSRoot();
+      static std::string& getFSSeparator();
+
+      //Clipping Plane 
+      void setClippingPlaneIndex(int index);
+      void setClippingPlaneVisible(bool value);
+      void setClippingPlaneFrameOn(bool value);
+      void reverseClippingPlaneNormal(bool value);
+      void setClippingPlaneX(double value);
+      void setClippingPlaneY(double value);
+      void setClippingPlaneZ(double value);
+      void setClippingPlaneD(double value);
+
+      //set material factors
+      void setMaterialFactor(MatFactor factor, double value);
+
+      //set fog
+      void setFog(FogFactor factor, double value);
+      void setFogColor(const glm::vec4 &color);
+
+      //camera matrices
+      const glm::mat4& getWorldToProjection() const;
+      const glm::mat4& getWorldToView() const;
+      const glm::mat4& getViewToWorld() const;
+      const glm::mat4& getViewToProjection() const;
+
+      //clipping planes
+      StaticClippingPlanes* getClippingPlanes();
+
+      //get scenenox
+      Core::Geometry::BBox getSceneBox();
 
     private:
 
@@ -212,6 +271,7 @@ namespace SCIRun {
 
         int										          mPort;
       };
+
       // Sets up ESCore.
       void setupCore();
 
@@ -220,6 +280,10 @@ namespace SCIRun {
 
       // Updates the world light.
       void updateWorldLight();
+
+      //update the clipping planes
+      double getMaxProjLength(const glm::vec3 &n);
+      void updateClippingPlanes();
 
       // Renders coordinate axes on the screen.
       void renderCoordinateAxes();
@@ -241,6 +305,9 @@ namespace SCIRun {
       // Adds an IBO to the given entityID.
       void addIBOToEntity(uint64_t entityID, const std::string& iboName);
 
+      //add a texture to the given entityID.
+      void addTextToEntity(uint64_t entityID, const Graphics::Datatypes::SpireText& text);
+
       // Adds a shader to the given entityID. Represents different materials
       // associated with different passes.
       void addShaderToEntity(uint64_t entityID, const std::string& shaderName);
@@ -248,9 +315,20 @@ namespace SCIRun {
       // Apply uniform.
       void applyUniform(uint64_t entityID, const Graphics::Datatypes::SpireSubPass::Uniform& uniform);
 
+      //apply material factors
+      void applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
+
+      //apply fog
+      void applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
+
       // search for a widget at mouse position
       bool foundWidget(const glm::ivec2& pos);
 
+      // update selected widget
+      void updateWidget(const glm::ivec2& pos);
+
+      // make sure clipping plane number matches
+      void checkClippingPlanes(int n);
 
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
@@ -258,10 +336,14 @@ namespace SCIRun {
       bool                              widgetSelected_;  ///< Whether or not a widget is currently selected.
       bool                              widgetExists_;    ///< Geometry contains a widget to find.
 
+      uint64_t                          mSelectedID;
       int                               mZoomSpeed;
       MouseMode                         mMouseMode;       ///< Current mouse mode.
 
       std::string                       mSelected;        ///< Current selection
+      glm::vec4                         mSelectedPos;     ///
+      gen::Transform                    mWidgetTransform;
+
       size_t                            mScreenWidth;     ///< Screen width in pixels.
       size_t                            mScreenHeight;    ///< Screen height in pixels.
 
@@ -275,17 +357,31 @@ namespace SCIRun {
 
       ESCore                            mCore;            ///< Entity system core.
 
-
+      //Modules::Visualization::TextBuilder mTextBuilder;   /// text builder
       std::string                       mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
       std::string                       mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
       std::string                       mArrowObjectName; ///< Object name for profile arrow.
 
+      std::vector<ClippingPlane>        clippingPlanes_;
+      int                               clippingPlaneIndex_;
 
       ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
       ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
       RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
       const int frameInitLimit_;
       std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
+
+      //material settings
+      double                            mMatAmbient;
+      double                            mMatDiffuse;
+      double                            mMatSpecular;
+      double                            mMatShine;
+
+      //fog settings
+      double                            mFogIntensity;
+      double                            mFogStart;
+      double                            mFogEnd;
+      glm::vec4                         mFogColor;
     };
 
   } // namespace Render

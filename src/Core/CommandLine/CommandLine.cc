@@ -55,7 +55,8 @@ public:
       ("datadir,d", po::value<std::string>(), "scirun data directory")
       ("regression,r", po::value<int>(), "regression test a network")
       ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
-      ("interactive,i", "interactive mode--TODO")
+      ("most-recent,1", "load the most recently used file")
+      ("interactive,i", "interactive mode")
       ("headless,x", "disable GUI (Qt still needed, for now)")
       ("input-file", po::value<std::vector<std::string>>(), "SCIRun Network Input File")
       ("script,s", po::value<std::string>(), "SCIRun Python Script")
@@ -116,13 +117,18 @@ public:
       bool disableGui,
       bool disableSplash,
       bool isRegressionMode,
+      bool interactiveMode,
+      bool loadMostRecentFile,
       bool isVerboseMode,
       bool printModules) : help_(help), version_(version), executeNetwork_(executeNetwork),
       executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
-      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode), isVerboseMode_(isVerboseMode),
+      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode), 
+      interactiveMode_(interactiveMode),
+      loadMostRecentFile_(loadMostRecentFile),
+      isVerboseMode_(isVerboseMode),
       printModules_(printModules)
     {}
-    bool help_, version_, executeNetwork_, executeNetworkAndQuit_, disableGui_, disableSplash_, isRegressionMode_, isVerboseMode_, printModules_;
+    bool help_, version_, executeNetwork_, executeNetworkAndQuit_, disableGui_, disableSplash_, isRegressionMode_, interactiveMode_, loadMostRecentFile_, isVerboseMode_, printModules_;
   };
   ApplicationParametersImpl(
     const std::string& entireCommandLine,
@@ -191,6 +197,16 @@ public:
     return flags_.isRegressionMode_;
   }
 
+  virtual bool interactiveMode() const override
+  {
+    return flags_.interactiveMode_;
+  }
+
+  virtual bool loadMostRecentFile() const override
+  {
+    return flags_.loadMostRecentFile_;
+  }
+
   virtual boost::optional<int> regressionTimeoutSeconds() const override
   {
     return regressionTimeout_;
@@ -247,7 +263,7 @@ std::string CommandLineParser::describe() const
   return impl_->describe();
 }
 
-ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[])
+ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[]) const
 {
   try
   {
@@ -285,6 +301,8 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
         parsed.count("headless") != 0,
         parsed.count("no_splash") != 0,
         parsed.count("regression") != 0,
+        parsed.count("interactive") != 0,
+        parsed.count("most-recent") != 0,
         parsed.count("verbose") != 0,
         parsed.count("list-modules") != 0)
       );

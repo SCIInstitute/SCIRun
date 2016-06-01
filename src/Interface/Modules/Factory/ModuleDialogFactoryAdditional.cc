@@ -32,10 +32,8 @@
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
 #include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
 #include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
-#include <Interface/Modules/Matlab/InterfaceWithMatlabDialog.h>
 #include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
 #include <boost/assign.hpp>
-#include <boost/functional/factory.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -50,6 +48,5 @@ void ModuleDialogFactory::addDialogsToMakerMap2()
     ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
     ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
     ADD_MODULE_DIALOG(GenerateStreamLines, GenerateStreamLinesDialog)
-    ADD_MODULE_DIALOG(InterfaceWithMatlab, InterfaceWithMatlabDialog)
   ;
 }

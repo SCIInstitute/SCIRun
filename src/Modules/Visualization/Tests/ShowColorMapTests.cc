@@ -55,7 +55,7 @@ protected:
     Log::get().setVerbose(false);
     showColorMap = makeModule("ShowColorMap");
     showColorMap->setStateDefaults();
-    colorMap.reset(new ColorMap());
+    colorMap = StandardColorMapFactory::create();
     stubPortNWithThisData(showColorMap, 0, colorMap);
   }
 

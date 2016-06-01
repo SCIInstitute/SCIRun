@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,37 +33,34 @@
 #ifndef CORE_ALOGRITHMS_CONVERT_CONVERTTONRRD_H
 #define CORE_ALOGRITHMS_CONVERT_CONVERTTONRRD_H 1
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/NrrdData.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Converter/share.h>
 
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+				namespace Converters {
 
-#include <Core/Algorithms/Converter/share.h>
+ALGORITHM_PARAMETER_DECL(BuildPoints);
+ALGORITHM_PARAMETER_DECL(BuildConnections);
+ALGORITHM_PARAMETER_DECL(BuildData);
+ALGORITHM_PARAMETER_DECL(DataLabel);
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-//! ConvertToNrrdBase supports the dynamically loadable algorithm concept.
-//! when dynamically loaded the user will dynamically cast to a 
-//! ConvertToNrrdBase from the DynamicAlgoBase they will have a pointer to.
-class SCISHARE ConvertToNrrdAlgo : public AlgoBase
+class SCISHARE ConvertToNrrdAlgo : public AlgorithmBase
 {
   public:
-    ConvertToNrrdAlgo()
-    {
-      add_bool("build_points",true);
-      add_bool("build_connections",true);
-      add_bool("build_data",true);
-      add_string("data_label","");
-    }
+    ConvertToNrrdAlgo();
 
-    bool run(FieldHandle input, NrrdDataHandle& points, 
-             NrrdDataHandle& connections,NrrdDataHandle& data);
+    bool runImpl(FieldHandle input, NrrdDataHandle& points,
+             NrrdDataHandle& connections,NrrdDataHandle& data) const;
 
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    static const AlgorithmOutputName Data;
+    static const AlgorithmOutputName Points;
+    static const AlgorithmOutputName Connections;
 };
 
-} // end namespace
+}}}}
 
 #endif // ConvertToNrrd_h

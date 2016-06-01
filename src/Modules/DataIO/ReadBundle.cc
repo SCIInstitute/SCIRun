@@ -28,6 +28,7 @@
 
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Modules/DataIO/ReadBundle.h>
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::DataIO;
@@ -46,15 +47,15 @@ ReadBundleModule::ReadBundleModule()
 
 void ReadBundleModule::execute()
 {
-  /*
-  const std::string ftpre = guiFileType_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-*/
   my_base::execute();
 }
 
 std::string ReadBundleModule::fileTypeList()
 {
   return "SCIRun Bundle File (*.bdl)";
+}
+
+std::string ReadBundleModule::defaultFileTypeName() const
+{
+  return fileTypeList();
 }

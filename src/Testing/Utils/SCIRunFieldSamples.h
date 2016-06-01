@@ -89,6 +89,9 @@ SCISHARE FieldHandle CubeTriSurfLinearBasis(data_info_type type);
 SCISHARE FieldHandle TetrahedronTriSurfConstantBasis(data_info_type type);
 SCISHARE FieldHandle TetrahedronTriSurfLinearBasis(data_info_type type);
 
+SCISHARE FieldHandle CreateEmptyLatVol();
+SCISHARE FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type = DOUBLE_E);
+
 }}
 
 #endif

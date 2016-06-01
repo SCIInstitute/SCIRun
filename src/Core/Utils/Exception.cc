@@ -33,7 +33,7 @@
 
 using namespace SCIRun::Core;
 
-const char* ExceptionBase::what() const throw()
+const char* ExceptionBase::what() const NOEXCEPT
 {
   try
   {
@@ -49,7 +49,7 @@ const char* ExceptionBase::what() const throw()
 }
 
 //TODO: crappy duplication, need a smarter way to extract any boost error message (need to erase the type provided in get_error_info)
-const char* DimensionMismatch::what() const throw()
+const char* DimensionMismatch::what() const NOEXCEPT
 {
   try
   {

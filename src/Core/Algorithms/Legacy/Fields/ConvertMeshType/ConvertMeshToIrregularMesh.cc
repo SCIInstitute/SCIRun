@@ -190,7 +190,7 @@ ConvertMeshToIrregularMeshAlgo::run(FieldHandle input, FieldHandle& output) cons
 
 AlgorithmOutputName ConvertMeshToIrregularMeshAlgo::OutputField("OutputField");
 
-AlgorithmOutput ConvertMeshToIrregularMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertMeshToIrregularMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto ifield = input.get<Field>(Variables::InputField);
 

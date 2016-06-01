@@ -82,7 +82,7 @@ SetConductivitiesToMeshAlgorithm::SetConductivitiesToMeshAlgorithm()
   addParameter(InternalAir,  1e-6);
 }
 
-AlgorithmOutput SetConductivitiesToMeshAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetConductivitiesToMeshAlgorithm::run(const AlgorithmInput& input) const
 {
   auto mesh  = input.get<Field>(InputField);
   

@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/InterfaceWithCleaver.h>
+#include <Modules/Fields/RefineTetMeshLocally.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
@@ -39,7 +40,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Modules/Legacy/Math/SelectSubMatrix.h>
 #include <Modules/Legacy/Math/ConvertMatrixType.h>
-#include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
@@ -53,7 +53,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
 #include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
-#include <Modules/Legacy/Math/EvaluateLinAlgGeneral.h>
 #include <Modules/Math/ComputePCA.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -97,6 +96,6 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
   addModuleDesc<ExtractSimpleIsosurfaceModule>("ExtractSimpleIsosurface","NewField","SCIRun","...","...");
   addModuleDesc<ComputePCA>("ComputePCA","Math","SCIRun","...","...");
-  //addModuleDesc<EvaluateLinearAlgebraGeneral>("Real ported module", "BUGGY--DO NOT USE");
   addModuleDesc<ClipVolumeByIsovalueModule>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
+  addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");
 }

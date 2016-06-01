@@ -73,6 +73,11 @@ const Connection* Port::connection(size_t i) const
   return connections_[i];
 }
 
+boost::optional<ConnectionId> Port::firstConnectionId() const
+{
+  return !connections_.empty() ? connections_[0]->id_ : boost::optional<ConnectionId>();
+}
+
 void Port::setIndex(size_t index)
 {
   index_ = index;
@@ -173,7 +178,7 @@ void OutputPort::sendData(DatatypeHandle data)
 
   for (Connection* c : connections_)
   {
-    if (c && c->iport_)
+    if (c && !c->disabled() && c->iport_)
       source_->send(c->iport_->sink());
   }
 }
@@ -205,7 +210,7 @@ boost::signals2::connection OutputPort::connectConnectionFeedbackListener(const 
   return cxnFeedback_.connect(subscriber);
 }
 
-void OutputPort::sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info)
+void OutputPort::sendConnectionFeedback(const ModuleFeedback& info)
 {
   cxnFeedback_(info);
 }

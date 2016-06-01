@@ -44,6 +44,7 @@ public:
     HAS_DATA,
     USE_TRANSPARENCY,
     NORMALIZE_DATA,
+    IS_TEXT,
 
     USE_DEFAULT_COLOR,
     USE_COLORMAP,
@@ -66,6 +67,7 @@ public:
 
     // Face flags
     USE_NORMALS,
+    USE_FACE_NORMALS,
     USE_TEXTURE,
     IS_DOUBLE_SIDED,
 

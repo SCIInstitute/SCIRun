@@ -60,9 +60,8 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
   connect(tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(pushTable(int,int)));
 }
 
-void BuildBEMatrixDialog::updateFromPortChange(int numPorts, const std::string&)
+void BuildBEMatrixDialog::updateFromPortChange(int numPorts, const std::string&, DynamicPortChange)
 {
-  //std::cout << "updateFromPortChange " << numPorts << std::endl;
   auto oldRowCount = tableWidget->rowCount();
   tableWidget->setRowCount(numPorts - 1);
   tableWidget->blockSignals(true);
@@ -160,12 +159,11 @@ void BuildBEMatrixDialog::pushInsides()
   using namespace TableColumns;
   if (!pulling_)
   {
-    VariableList names;
-    for (int i = 0; i < tableWidget->rowCount(); ++i)
+    auto names = makeHomogeneousVariableList([this](size_t i)
     {
-      auto box = qobject_cast<QDoubleSpinBox*>(tableWidget->cellWidget(i, InsideConductivity));
-      names.push_back(makeVariable("", box->value()));
-    }
+      return qobject_cast<QDoubleSpinBox*>(tableWidget->cellWidget(i, InsideConductivity))->value();
+    }, tableWidget->rowCount());
+
     state_->setValue(Parameters::InsideConductivityList, names);
   }
 }

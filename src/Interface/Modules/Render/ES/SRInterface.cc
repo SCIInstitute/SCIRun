@@ -35,14 +35,14 @@
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 #include <Core/Application/Application.h>
+//#include <Modules/Visualization/ShowColorMapModule.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 
 // CPM modules.
-
 #include <es-general/comp/StaticScreenDims.hpp>
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/StaticOrthoCamera.hpp>
 #include <es-general/comp/StaticObjRefID.hpp>
-#include <es-general/comp/Transform.hpp>
 #include <es-render/comp/StaticIBOMan.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticShaderMan.hpp>
@@ -62,6 +62,7 @@
 #include "comp/RenderList.h"
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
+#include "comp/ClippingPlaneUniforms.h"
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
@@ -77,6 +78,7 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
       int frameInitLimit) :
+      mSelectedID(0),
       mZoomSpeed(65),
       mMouseMode(MOUSE_OLDSCIRUN),
       mScreenWidth(640),
@@ -84,10 +86,19 @@ namespace SCIRun {
       axesFailCount_(0),
       mContext(context),
       frameInitLimit_(frameInitLimit),
-      mCamera(new SRCamera(*this))  // Should come after all vars have been initialized.
+      mCamera(new SRCamera(*this)),  // Should come after all vars have been initialized.
+      clippingPlaneIndex_(0),
+      mMatAmbient(0.2),
+      mMatDiffuse(1.0),
+      mMatSpecular(0.0),
+      mMatShine(2.0),
+      mFogIntensity(0.0),
+      mFogStart(0.0),
+      mFogEnd(1.0),
+      mFogColor(glm::vec4(0.0))
     {
       // Create default colormaps.
-      generateTextures();
+      //generateTextures();
 
       showOrientation_ = true;
       autoRotate_ = false;
@@ -139,6 +150,7 @@ namespace SCIRun {
         StaticSRInterface iface(this);
         mCore.addStaticComponent(iface);
       }
+
     }
 
     //------------------------------------------------------------------------------
@@ -226,7 +238,7 @@ namespace SCIRun {
     {
       if (widgetSelected_)
       {
-
+        updateWidget(pos);
       }
       else
       {
@@ -254,6 +266,7 @@ namespace SCIRun {
       int port)
     {
       mSelected = "";
+      widgetSelected_ = false;
       // Ensure our rendering context is current on our thread.
       mContext->makeCurrent();
 
@@ -345,15 +358,15 @@ namespace SCIRun {
           GLenum primitive = GL_TRIANGLES;
           switch (ibo.prim)
           {
-          case SpireIBO::POINTS:
+          case SpireIBO::PRIMITIVE::POINTS:
             primitive = GL_POINTS;
             break;
 
-          case SpireIBO::LINES:
+          case SpireIBO::PRIMITIVE::LINES:
             primitive = GL_LINES;
             break;
 
-          case SpireIBO::TRIANGLES:
+          case SpireIBO::PRIMITIVE::TRIANGLES:
           default:
             primitive = GL_TRIANGLES;
             break;
@@ -371,7 +384,7 @@ namespace SCIRun {
           {
             uint64_t entityID = getEntityIDForName(pass.passName, port);
 
-            if (pass.renderType == RENDER_VBO_IBO)
+            if (pass.renderType == RenderType::RENDER_VBO_IBO)
             {
               addVBOToEntity(entityID, pass.vboName);
               addIBOToEntity(entityID, pass.iboName);
@@ -442,10 +455,6 @@ namespace SCIRun {
             gen::Transform trafo;
             mCore.addComponent(entityID, trafo);
 
-            // Add lighting uniform checks
-            LightingUniforms lightUniforms;
-            mCore.addComponent(entityID, lightUniforms);
-
             // Add SCIRun render state.
             SRRenderState state;
             state.state = pass.renderState;
@@ -455,10 +464,6 @@ namespace SCIRun {
             ren::CommonUniforms commonUniforms;
             mCore.addComponent(entityID, commonUniforms);
 
-            for (const auto& uniform : pass.mUniforms)
-            {
-              applyUniform(entityID, uniform);
-            }
             SpireSubPass::Uniform uniform(
               "uColor", selCol);
             applyUniform(entityID, uniform);
@@ -484,20 +489,28 @@ namespace SCIRun {
       mCore.execute(0, 50);
 
       GLuint value;
+      GLfloat depth;
       if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
-        (GLvoid*)&value))
+        (GLvoid*)&value, (GLvoid*)&depth))
       {
-        //std::cout << pos.x << "\t" << pos.y << "\n";
-        //selection in value
         auto it = selMap.find(value);
         if (it != selMap.end())
           mSelected = it->second;
-
-        //  std::cout << it->second << " is selected.\n"
-        //  << pos.x << "\t" << pos.y << "\n";
       }
       //release and restore fbo
       fboMan->unbindFBO();
+
+      //calculate position
+      if (mSelected != "")
+      {
+        widgetSelected_ = true;
+        glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
+          (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
+          depth * 2 - 1, 1.0f);
+        mSelectedPos = spos;
+        //selPos = cam->data.projIV * spos;
+        //std::cout << selPos.x << "\t" << selPos.y << "\t" << selPos.z << "\n";
+      }
 
       for (auto& it : entityList)
         mCore.removeEntity(it);
@@ -509,6 +522,8 @@ namespace SCIRun {
       if (mSceneBBox.valid())
       {
         mCamera->doAutoView(mSceneBBox);
+
+        //std::cout << mSceneBBox.get_min() << "\t" << mSceneBBox.get_max() << "\n";
       }
     }
 
@@ -542,9 +557,159 @@ namespace SCIRun {
       return mSelected;
     }
 
+    gen::Transform &SRInterface::getWidgetTransform()
+    {
+      return mWidgetTransform;
+    }
+    
+    //------------------------------------------------------------------------------
+    //--------------Clipping Plane Tools--------------------------------------------
+    void SRInterface::checkClippingPlanes(int n)
+    {
+      while (n >= clippingPlanes_.size())
+      {
+        ClippingPlane plane;
+        plane.visible = false;
+        plane.showFrame = false;
+        plane.reverseNormal = false;
+        plane.x = 0.0;
+        plane.y = 0.0;
+        plane.z = 0.0;
+        plane.d = 0.0;
+        clippingPlanes_.push_back(plane);
+      }
+    }
+
+    void SRInterface::setClippingPlaneIndex(int index)
+    {
+      clippingPlaneIndex_ = index;
+    }
+
+    void SRInterface::setClippingPlaneVisible(bool value)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].visible = value;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::setClippingPlaneFrameOn(bool value)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].showFrame = value;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::reverseClippingPlaneNormal(bool value)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].reverseNormal = value;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::setClippingPlaneX(double value)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].x = value;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::setClippingPlaneY(double value)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].y = value;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::setClippingPlaneZ(double value)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].z = value;
+      updateClippingPlanes();
+    }
+
+    void SRInterface::setClippingPlaneD(double value)
+    {
+      checkClippingPlanes(clippingPlaneIndex_);
+      clippingPlanes_[clippingPlaneIndex_].d = value;
+      updateClippingPlanes();
+    }
+
+    //set material factors
+    void SRInterface::setMaterialFactor(MatFactor factor, double value)
+    {
+      switch (factor)
+      {
+      case MAT_AMBIENT:
+        mMatAmbient = value;
+        break;
+      case MAT_DIFFUSE:
+        mMatDiffuse = value;
+        break;
+      case MAT_SPECULAR:
+        mMatSpecular = value;
+        break;
+      case MAT_SHINE:
+        mMatShine = value;
+        break;
+      }
+    }
+
+    //set fog
+    void SRInterface::setFog(FogFactor factor, double value)
+    {
+      switch (factor)
+      {
+      case FOG_INTENSITY:
+        mFogIntensity = value;
+        break;
+      case FOG_START:
+        mFogStart = value;
+        break;
+      case FOG_END:
+        mFogEnd = value;
+        break;
+      }
+    }
+
+    void SRInterface::setFogColor(const glm::vec4 &color)
+    {
+      mFogColor = color;
+    }
+
+    const glm::mat4& SRInterface::getWorldToProjection() const
+    { return mCamera->getWorldToProjection(); }
+
+    const glm::mat4& SRInterface::getWorldToView() const
+    { return mCamera->getWorldToView(); }
+
+    const glm::mat4& SRInterface::getViewToWorld() const
+    { return mCamera->getViewToWorld(); }
+
+    const glm::mat4& SRInterface::getViewToProjection() const
+    { return mCamera->getViewToProjection(); }
+
+    //------------------------------------------------------------------------------
+    /*void SRInterface::setScaleBar(const ScaleBar &scaleBarData)
+    {
+      scaleBar_.visible = scaleBarData.visible;
+      scaleBar_.fontSize = scaleBarData.fontSize;
+      scaleBar_.length = scaleBarData.length;
+      scaleBar_.height = scaleBarData.height;
+      scaleBar_.multiplier = scaleBarData.multiplier;
+      scaleBar_.numTicks = scaleBarData.numTicks;
+      scaleBar_.lineWidth = scaleBarData.lineWidth;
+      scaleBar_.unit = scaleBarData.unit;
+      if (scaleBar_.visible)
+      {
+        updateScaleBarLength();
+        updateGeometryScaleBar();
+      }
+    }*/
+
     //------------------------------------------------------------------------------
     void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
     {
+      widgetSelected_ = false;
     }
 
     //------------------------------------------------------------------------------
@@ -680,15 +845,15 @@ namespace SCIRun {
             GLenum primitive = GL_TRIANGLES;
             switch (ibo.prim)
             {
-            case SpireIBO::POINTS:
+            case SpireIBO::PRIMITIVE::POINTS:
               primitive = GL_POINTS;
               break;
 
-            case SpireIBO::LINES:
+            case SpireIBO::PRIMITIVE::LINES:
               primitive = GL_LINES;
               break;
 
-            case SpireIBO::TRIANGLES:
+            case SpireIBO::PRIMITIVE::TRIANGLES:
             default:
               primitive = GL_TRIANGLES;
               break;
@@ -699,7 +864,7 @@ namespace SCIRun {
               /// Create sorted lists of Buffers for transparency in each direction of the axis
               uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
               size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
-              Core::Geometry::Vector dir(0.0, 0.0, 0.0);
+              Vector dir(0.0, 0.0, 0.0);
 
               std::vector<DepthIndex> rel_depth(num_triangles);
               for (int i = 0; i <= 6; ++i)
@@ -714,32 +879,32 @@ namespace SCIRun {
                 }
                 if (i == 1)
                 {
-                  dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
+                  dir = Vector(1.0, 0.0, 0.0);
                   name += "X";
                 }
                 if (i == 2)
                 {
-                  dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
+                  dir = Vector(0.0, 1.0, 0.0);
                   name += "Y";
                 }
                 if (i == 3)
                 {
-                  dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
+                  dir = Vector(0.0, 0.0, 1.0);
                   name += "Z";
                 }
                 if (i == 4)
                 {
-                  dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
+                  dir = Vector(-1.0, 0.0, 0.0);
                   name += "NegX";
                 }
                 if (i == 5)
                 {
-                  dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
+                  dir = Vector(0.0, -1.0, 0.0);
                   name += "NegY";
                 }
                 if (i == 6)
                 {
-                  dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
+                  dir = Vector(0.0, 0.0, -1.0);
                   name += "NegZ";
                 }
                 if (i > 0)
@@ -747,15 +912,15 @@ namespace SCIRun {
                   for (size_t j = 0; j < num_triangles; j++)
                   {
                     float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
-                    Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+                    Point node1(vertex1[0], vertex1[1], vertex1[2]);
 
                     float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
-                    Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+                    Point node2(vertex2[0], vertex2[1], vertex2[2]);
 
                     float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
-                    Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+                    Point node3(vertex3[0], vertex3[1], vertex3[2]);
 
-                    rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+                    rel_depth[j].mDepth = Dot(dir, node1) + Dot(dir, node2) + Dot(dir, node3);
                     rel_depth[j].mIndex = j;
                   }
 
@@ -799,7 +964,7 @@ namespace SCIRun {
             {
               uint64_t entityID = getEntityIDForName(pass.passName, port);
 
-              if (pass.renderType == RENDER_VBO_IBO)
+              if (pass.renderType == RenderType::RENDER_VBO_IBO)
               {
                 addVBOToEntity(entityID, pass.vboName);
                 if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
@@ -827,6 +992,8 @@ namespace SCIRun {
                 {
                   addIBOToEntity(entityID, pass.iboName);
                 }
+                //add texture
+                addTextToEntity(entityID, pass.text);
               }
               else
               {
@@ -850,12 +1017,12 @@ namespace SCIRun {
                 // and add them to our entity in question.
                 std::string assetName = "Assets/sphere.geom";
 
-                if (pass.renderType == RENDER_RLIST_SPHERE)
+                if (pass.renderType == RenderType::RENDER_RLIST_SPHERE)
                 {
                   assetName = "Assets/sphere.geom";
                 }
 
-                if (pass.renderType == RENDER_RLIST_CYLINDER)
+                if (pass.renderType == RenderType::RENDER_RLIST_CYLINDER)
                 {
                   assetName = "Assests/arrow.geom";
                 }
@@ -876,18 +1043,25 @@ namespace SCIRun {
                 widgetExists_ = true;
               }
 
-              if (pass.renderType == RENDER_RLIST_SPHERE)
+              if (pass.renderType == RenderType::RENDER_RLIST_SPHERE)
               {
                 double scale = pass.scalar;
                 trafo.transform[0].x = scale;
                 trafo.transform[1].y = scale;
                 trafo.transform[2].z = scale;
               }
+              if (widgetSelected_ && objectName == mSelected)
+              {
+                mSelectedID = entityID;
+              }
               mCore.addComponent(entityID, trafo);
 
               // Add lighting uniform checks
               LightingUniforms lightUniforms;
               mCore.addComponent(entityID, lightUniforms);
+              //plane uniforms
+              ClippingPlaneUniforms clipplingPlaneUniforms;
+              mCore.addComponent(entityID, clipplingPlaneUniforms);
 
               // Add SCIRun render state.
               SRRenderState state;
@@ -895,22 +1069,24 @@ namespace SCIRun {
               mCore.addComponent(entityID, state);
               RenderBasicGeom geom;
               mCore.addComponent(entityID, geom);
-              if (pass.passName.find("TextFont") != std::string::npos)
-              { //this is a font texture
-                // Construct texture component and add it to our entity for rendering.
-                ren::Texture component;
-                component.textureUnit = 0;
-                component.setUniformName("uTX0");
-                component.textureType = GL_TEXTURE_2D;
-                component.glid = mFontTexture;
-                mCore.addComponent(entityID, component);
-              }
               // Ensure common uniforms are covered.
               ren::CommonUniforms commonUniforms;
               mCore.addComponent(entityID, commonUniforms);
 
-              for (const auto& uniform : pass.mUniforms)
+              for (auto& uniform : pass.mUniforms)
               {
+                applyMatFactors(uniform);
+                applyUniform(entityID, uniform);
+              }
+
+              //if (mFogIntensity > 0.0)
+              {
+                Graphics::Datatypes::SpireSubPass::Uniform uniform;
+                uniform.name = "uFogSettings";
+                applyFog(uniform);
+                applyUniform(entityID, uniform);
+                uniform.name = "uFogColor";
+                applyFog(uniform);
                 applyUniform(entityID, uniform);
               }
 
@@ -969,6 +1145,38 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
+    void SRInterface::addTextToEntity(uint64_t entityID, const SpireText& text)
+    {
+      if (text.name == "")
+        return;
+
+       //texture man
+      std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
+      std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
+      if (!textureMan)
+        return;
+
+      std::stringstream ss;
+      ss << "FontTexture:" << entityID << text.name << text.width << text.height;
+      std::string assetName = ss.str();
+
+      ren::Texture texture;
+
+      CPM_ES_CEREAL_NS::CerealHeap<ren::Texture>* contTex =
+        mCore.getOrCreateComponentContainer<ren::Texture>();
+      std::pair<const ren::Texture*, size_t> component =
+        contTex->getComponent(entityID);
+      if (component.first == nullptr)
+        texture = textureMan->createTexture(assetName, text.width, text.height, text.bitmap);
+      else
+        texture = *component.first;
+
+      texture.textureUnit = 0;
+      texture.setUniformName("uTX0");
+      mCore.addComponent(entityID, texture);
+    }
+
+    //------------------------------------------------------------------------------
     void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shaderName)
     {
       std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
@@ -984,14 +1192,47 @@ namespace SCIRun {
     {
       switch (uniform.type)
       {
-      case SpireSubPass::Uniform::UNIFORM_SCALAR:
+      case SpireSubPass::Uniform::UniformType::UNIFORM_SCALAR:
         ren::addGLUniform(mCore, entityID, uniform.name.c_str(), static_cast<float>(uniform.data.x));
         break;
 
-      case SpireSubPass::Uniform::UNIFORM_VEC4:
+      case SpireSubPass::Uniform::UniformType::UNIFORM_VEC4:
         ren::addGLUniform(mCore, entityID, uniform.name.c_str(), uniform.data);
         break;
       }
+    }
+
+    //apply material factors
+    void SRInterface::applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform)
+    {
+      if (uniform.name == "uAmbientColor")
+        uniform.data = glm::vec4(mMatAmbient);
+      else if (uniform.name == "uSpecularColor")
+        uniform.data = glm::vec4(mMatSpecular);
+      else if (uniform.name == "uSpecularPower")
+        uniform.data = glm::vec4(mMatShine);
+    }
+
+    //apply fog
+    void SRInterface::applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform)
+    {
+      if (uniform.name == "uFogSettings")
+      {
+        double start, end, zdist, ddist;
+        glm::vec4 center(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z(), 1.0);
+        glm::mat4 worldToView = mCamera->getWorldToView();
+        center = worldToView * center;
+        center /= center.w;
+        glm::vec3 c3(center.x, center.y, center.z);
+        zdist = glm::length(c3);
+        ddist = 1.1 * mSceneBBox.diagonal().length();
+        start = zdist + (mFogStart - 0.5) * ddist;
+        end = zdist + (mFogEnd - 0.5) * ddist;
+        uniform.data = glm::vec4(mFogIntensity, start, end, 0.0);
+      }
+      else if (uniform.name == "uFogColor")
+        uniform.data = mFogColor;
+      uniform.type = Graphics::Datatypes::SpireSubPass::Uniform::UniformType::UNIFORM_VEC4;
     }
 
     //------------------------------------------------------------------------------
@@ -1007,6 +1248,28 @@ namespace SCIRun {
         }
       }
       return true;
+    }
+
+    //
+    void SRInterface::updateWidget(const glm::ivec2& pos)
+    {
+      gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
+      glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
+        (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
+        mSelectedPos.z, 1.0f);
+      //gen::Transform trafo;
+      mWidgetTransform = gen::Transform();
+      mWidgetTransform.setPosition((spos - mSelectedPos).xyz());
+      mWidgetTransform.transform = glm::inverse(cam->data.projIV) *
+        mWidgetTransform.transform * cam->data.projIV;
+
+      CPM_ES_CEREAL_NS::CerealHeap<gen::Transform>* contTrans =
+        mCore.getOrCreateComponentContainer<gen::Transform>();
+      std::pair<const gen::Transform*, size_t> component =
+        contTrans->getComponent(mSelectedID);
+
+      if (component.first != nullptr)
+        contTrans->modifyIndex(mWidgetTransform, component.second, 0);
     }
 
     //------------------------------------------------------------------------------
@@ -1114,6 +1377,85 @@ namespace SCIRun {
       }
     }
 
+    //
+    double SRInterface::getMaxProjLength(const glm::vec3 &n)
+    {
+      glm::vec3 a1(-1.0, 1.0, -1.0);
+      glm::vec3 a2(-1.0, 1.0, 1.0);
+      glm::vec3 a3(1.0, 1.0, -1.0);
+      glm::vec3 a4(1.0, 1.0, 1.0);
+      return std::max(
+        std::max(
+        std::abs(glm::dot(n, a1)),
+        std::abs(glm::dot(n, a2))),
+        std::max(
+        std::abs(glm::dot(n, a3)),
+        std::abs(glm::dot(n, a4))));
+    }
+
+    void SRInterface::updateClippingPlanes()
+    {
+      StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
+      if (clippingPlanes)
+      {
+        clippingPlanes->clippingPlanes.clear();
+        clippingPlanes->clippingPlaneCtrls.clear();
+        //boundbox transformation
+        glm::mat4 trans_bb = glm::mat4();
+        glm::vec3 scale_bb(mSceneBBox.x_length() / 2.0, mSceneBBox.y_length() / 2.0, mSceneBBox.z_length() / 2.0);
+        glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
+        glm::mat4 temp = glm::scale(glm::mat4(), scale_bb);
+        trans_bb = temp * trans_bb;
+        temp = glm::translate(glm::mat4(), center_bb);
+        trans_bb = temp * trans_bb;
+        //std::cout << trans_bb[0][0] << "\t" << trans_bb[1][0] << "\t" << trans_bb[2][0] << "\t" << trans_bb[3][0] << "\n" <<
+        //  trans_bb[0][1] << "\t" << trans_bb[1][1] << "\t" << trans_bb[2][1] << "\t" << trans_bb[3][1] << "\n" <<
+        //  trans_bb[0][2] << "\t" << trans_bb[1][2] << "\t" << trans_bb[2][2] << "\t" << trans_bb[3][2] << "\n" <<
+        //  trans_bb[0][3] << "\t" << trans_bb[1][3] << "\t" << trans_bb[2][3] << "\t" << trans_bb[3][3] << "\n";
+        int index = 0;
+        for (auto i : clippingPlanes_)
+        {
+          glm::vec3 n3(i.x, i.y, i.z);
+          double d = i.d;
+          glm::vec4 n(0.0);
+          if (glm::length(n3) > 0.0)
+          {
+            n3 = glm::normalize(n3);
+            n = glm::vec4(n3, 0.0);
+            d *= getMaxProjLength(n3);
+          }
+          //std::cout << i.d << "\t" << getMaxProjLength(n3) << "\t" << d << "\n";
+          glm::vec4 o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
+          o.w = 1;
+          o = trans_bb * o;
+          n = glm::inverseTranspose(trans_bb) * n;
+          o.w = 0;
+          n.w = 0;
+          n = glm::normalize(n);
+          n.w = -glm::dot(o, n);
+          //std::cout << n.x << "\t" << n.y << "\t" << n.z << "\t" << n.w << "\n";
+          clippingPlanes->clippingPlanes.push_back(n);
+          glm::vec4 control(i.visible ? 1.0 : 0.0,
+            i.showFrame ? 1.0 : 0.0,
+            i.reverseNormal ? 1.0 : 0.0, 0.0);
+          clippingPlanes->clippingPlaneCtrls.push_back(control);
+          index++;
+        }
+      }
+    }
+
+    StaticClippingPlanes* SRInterface::getClippingPlanes()
+    {
+      StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
+      return clippingPlanes;
+    }
+
+    //get scenenox
+    Core::Geometry::BBox SRInterface::getSceneBox()
+    {
+      return mSceneBBox;
+    }
+
     //------------------------------------------------------------------------------
     void SRInterface::renderCoordinateAxes()
     {
@@ -1135,7 +1477,7 @@ namespace SCIRun {
           {
             GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
             GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
-            GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhong");
+            GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhongNoClipping");
 
             // Bail if assets have not been loaded yet (asynchronous loading may take a
             // few frames).
@@ -1362,7 +1704,7 @@ namespace SCIRun {
       //read in the font data
       bool success = true;
       auto fontPath = SCIRun::Core::Application::Instance().executablePath() / "Assets" / "times_new_roman.font";
-      std::ifstream in(fontPath.string());
+      std::ifstream in(fontPath.string(), std::ifstream::binary);
       if (in.fail())
       {
         //try the MAC App location if the UNIX/Windows location didn't work.
@@ -1378,33 +1720,45 @@ namespace SCIRun {
       {
         size_t w, h;
         in >> w >> h;
+        char temp;
+        in.read(reinterpret_cast<char*>(&temp), sizeof(char));
         uint16_t *font_data = new uint16_t[w*h];
         in.read(reinterpret_cast<char*>(font_data), sizeof(uint16_t)*w*h);
         in.close();
-        std::vector<uint8_t> font;
-        font.reserve(w * h * 4);
+        //std::vector<uint8_t> font;
+        //font.reserve(w * h * 4);
+        char* font = new char[w * h * 4];
         for (size_t i = 0; i < w*h; i++)
         {
           uint16_t pixel = font_data[i];
+/*          font.push_back(static_cast<uint8_t>(pixel >> 8));
           font.push_back(static_cast<uint8_t>(pixel >> 8));
           font.push_back(static_cast<uint8_t>(pixel >> 8));
-          font.push_back(static_cast<uint8_t>(pixel >> 8));
-          font.push_back(static_cast<uint8_t>(pixel & 0x00ff));
+          font.push_back(static_cast<uint8_t>(pixel & 0x00ff));*/
+          font[i * 4] = (pixel & 0x00ff);
+          font[i * 4 + 1] = (pixel & 0x00ff);
+          font[i * 4 + 2] = (pixel & 0x00ff);
+          font[i * 4 + 3] = (pixel >> 8);
         }
 
         // Build font texture
+        GL(glActiveTexture(GL_TEXTURE0));
         GL(glGenTextures(1, &mFontTexture));
         GL(glBindTexture(GL_TEXTURE_2D, mFontTexture));
+        GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
         GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        GL(glPixelStorei(GL_UNPACK_ROW_LENGTH, w));
         GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-        GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
+        //GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
         GL(glTexImage2D(GL_TEXTURE_2D, 0,
-          GL_RGBA8,
-          static_cast<GLsizei>(w), static_cast<GLsizei>(h), 0,
           GL_RGBA,
-          GL_UNSIGNED_BYTE, reinterpret_cast<char*>(&font[0])));
+          GLsizei(w), GLsizei(h), 0,
+          GL_RGBA,
+          GL_UNSIGNED_BYTE, (GLvoid*)font));
         delete font_data;
+        delete font;
       }
     }
   } // namespace Render

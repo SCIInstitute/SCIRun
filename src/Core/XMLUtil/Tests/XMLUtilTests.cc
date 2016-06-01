@@ -31,7 +31,7 @@
 
 using namespace SCIRun;
 
-TEST(XMLUtilTest, get_attribute_by_nameTest)
+TEST(XMLUtilTest, DISABLED_get_attribute_by_nameTest)
 {
 //SCISHARE xmlAttrPtr get_attribute_by_name(const xmlNodePtr p, const char *name);
 

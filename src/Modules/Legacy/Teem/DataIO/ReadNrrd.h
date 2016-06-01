@@ -38,6 +38,7 @@ namespace SCIRun {
 namespace Modules {
 namespace DataIO {
 
+  //TODO: inherit from GenericReader
   class SCISHARE ReadNrrd : public Dataflow::Networks::Module, //GenericReader<NrrdDataHandle, NrrdPortTag>
     public HasNoInputPorts,
     public Has1OutputPort<NrrdPortTag>

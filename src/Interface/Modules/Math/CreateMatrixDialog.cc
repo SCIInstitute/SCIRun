@@ -29,7 +29,6 @@
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QtGui>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

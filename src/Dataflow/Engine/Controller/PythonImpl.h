@@ -49,23 +49,35 @@ namespace Engine {
   {
   public:
     PythonImpl(NetworkEditorController& nec, Core::Commands::GlobalCommandFactoryHandle cmdFactory);
+    ~PythonImpl();
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name) override;
     virtual std::string removeModule(const std::string& id) override;
+    virtual std::vector<boost::shared_ptr<PyModule>> moduleList() const override;
+    virtual boost::shared_ptr<PyModule> findModule(const std::string& id) const override;
     virtual std::string executeAll(const Networks::ExecutableLookup* lookup) override;
     virtual std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) override;
     virtual std::string saveNetwork(const std::string& filename) override;
     virtual std::string loadNetwork(const std::string& filename) override;
+    virtual std::string currentNetworkFile() const override;
     virtual std::string importNetwork(const std::string& filename) override;
+    virtual std::string runScript(const std::string& filename) override;
     virtual std::string quit(bool force) override;
     virtual void setUnlockFunc(boost::function<void()> unlock) override;
+    virtual void setModuleContext(bool inModule) override { inModule_ = inModule; }
+    virtual bool isModuleContext() const override { return inModule_; }
   private:
+    void pythonModuleAddedSlot(const std::string&, Networks::ModuleHandle, ModuleCounter);
+    void pythonModuleRemovedSlot(const Networks::ModuleId&);
     void executionFromPythonStart();
     void executionFromPythonFinish(int);
     boost::shared_ptr<PythonImplImpl> impl_;
+    std::map<std::string, boost::shared_ptr<PyModule>> modules_;
     NetworkEditorController& nec_;
     Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
     boost::function<void()> unlock_;
+    std::vector<boost::signals2::connection> connections_;
+    bool inModule_ = false;
   };
 
 }}}

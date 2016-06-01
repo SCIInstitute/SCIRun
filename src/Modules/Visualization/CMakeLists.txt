@@ -62,6 +62,7 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Core_Algorithms_Visualization
   Graphics_Glyphs
   Graphics_Datatypes
+  ${SCI_FREETYPE_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

@@ -52,6 +52,7 @@ SET(Interface_Modules_Fields_FORMS
   calculatedistancetofieldboundary.ui #TODO: fix case
   MapFieldDataOntoElems.ui
   ConvertIndicesToFieldData.ui
+  ConvertMeshToPointCloudDialog.ui
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
   GenerateSinglePointProbeFromField.ui
@@ -66,7 +67,10 @@ SET(Interface_Modules_Fields_FORMS
   ClipVolumeByIsovalue.ui
   ChooseInput.ui
   convertfielddatatype.ui
-  scalefieldmeshanddata.ui
+  scalefieldmeshanddata.ui #TODO: fix case
+  ConvertMatricesToMesh.ui
+  ReportFieldGeometryMeasures.ui
+  RefineTetMeshLocally.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -97,6 +101,7 @@ SET(Interface_Modules_Fields_HEADERS
   ClipFieldByFunctionDialog.h
   RefineMeshDialog.h
   ConvertFieldBasisDialog.h
+  ConvertMeshToPointCloudDialog.h
   share.h
   SwapFieldDataWithMatrixEntriesDialog.h
   EditMeshBoundingBoxDialog.h
@@ -109,6 +114,9 @@ SET(Interface_Modules_Fields_HEADERS
   ChooseInputDialog.h
   ScaleFieldMeshAndDataDialog.h
   ConvertFieldDataTypeDialog.h
+  ConvertMatricesToMeshDialog.h
+  ReportFieldGeometryMeasuresDialog.h
+  RefineTetMeshLocallyDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -142,6 +150,7 @@ SET(Interface_Modules_Fields_SOURCES
   RefineMeshDialog.cc
   EditMeshBoundingBoxDialog.cc
   ConvertIndicesToFieldDataDialog.cc
+  ConvertMeshToPointCloudDialog.cc
   ExtractSimpleIsosurfaceDialog.cc
   RegisterWithCorrespondencesDialog.cc
   GeneratePointSamplesFromFieldDialog.cc
@@ -150,6 +159,9 @@ SET(Interface_Modules_Fields_SOURCES
   ChooseInputDialog.cc
   ScaleFieldMeshAndDataDialog.cc
   ConvertFieldDataTypeDialog.cc
+  ConvertMatricesToMeshDialog.cc
+  ReportFieldGeometryMeasuresDialog.cc
+  RefineTetMeshLocallyDialog.cc
 )
 
 IF(WITH_TETGEN)

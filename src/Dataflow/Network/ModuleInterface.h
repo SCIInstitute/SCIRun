@@ -134,7 +134,7 @@ namespace Networks {
     virtual ModuleStateHandle get_state() = 0;
     virtual const ModuleStateHandle get_state() const = 0;
 
-    virtual bool do_execute() = 0;
+    virtual void execute() = 0;
 
     typedef boost::signals2::signal<void()> ExecutionSelfRequestSignalType;
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;
@@ -177,6 +177,9 @@ namespace Networks {
     virtual const MetadataMap& metadata() const = 0;
 
     virtual bool isStoppable() const = 0;
+
+    virtual bool executionDisabled() const = 0;
+    virtual void setExecutionDisabled(bool disable) = 0;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

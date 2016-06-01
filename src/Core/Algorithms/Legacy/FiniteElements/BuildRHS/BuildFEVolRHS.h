@@ -63,7 +63,7 @@ class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
   #endif
 
    Datatypes::DenseMatrixHandle run(FieldHandle input) const;
-   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
+   virtual AlgorithmOutput run(const AlgorithmInput &) const;
 private:
    mutable int generation_;
    mutable Datatypes::MatrixHandle basis_fevolrhs_;

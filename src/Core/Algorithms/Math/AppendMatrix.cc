@@ -79,7 +79,7 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
   }
 }
 
-AlgorithmOutput AppendMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput AppendMatrixAlgorithm::run(const AlgorithmInput& input) const
 {
   auto lhs = input.get<DenseMatrix>(Variables::FirstMatrix);
   auto rhs = input.get<DenseMatrix>(Variables::SecondMatrix);

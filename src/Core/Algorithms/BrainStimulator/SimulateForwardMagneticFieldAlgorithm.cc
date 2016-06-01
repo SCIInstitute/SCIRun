@@ -344,7 +344,7 @@ boost::tuple<FieldHandle, FieldHandle> SimulateForwardMagneticFieldAlgo::run(Fie
   return boost::make_tuple(MField, MFieldMagnitudes);
 }
 
-AlgorithmOutput SimulateForwardMagneticFieldAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SimulateForwardMagneticFieldAlgo::run(const AlgorithmInput& input) const
 {
   AlgorithmOutput output;
   

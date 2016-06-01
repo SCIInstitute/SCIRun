@@ -52,7 +52,7 @@ namespace SCIRun{
           RefineMeshHexVolAlgoV();
 
           bool runImpl(FieldHandle input, FieldHandle& output, bool convex, const std::string& select, double isoval) const;
-          AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
 
         private:
           VMesh::Node::index_type add_point(VMesh *refined,

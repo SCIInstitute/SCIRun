@@ -76,7 +76,7 @@ namespace SCIRun
       {
       };
 
-      enum GlobalCommands
+      enum class GlobalCommands
       {
         ShowMainWindow,
         ShowSplashScreen,
@@ -89,9 +89,25 @@ namespace SCIRun
         RunPythonScript,
         SetupDataDirectory,
         ExecuteCurrentNetwork,
+        InteractiveMode,
         SetupQuitAfterExecute,
         QuitCommand
       };
+
+      enum class NetworkEventCommands
+      {
+        PostModuleAdd,
+        OnNetworkLoad
+        //TODO: add more based on user request
+      };
+
+      class SCISHARE NullCommand : public ParameterizedCommand
+      {
+      public:
+        virtual bool execute() override { return true; }
+      };
+
+      SCISHARE std::string mostRecentFileCode();
     }
   }
 }

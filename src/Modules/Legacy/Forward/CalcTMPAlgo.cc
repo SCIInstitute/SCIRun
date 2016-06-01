@@ -190,13 +190,13 @@ bool CalcTMPAlgo::calc_TMPs(MatrixHandle amplitudes,
                             unsigned int nsamples,
                             DenseMatrixHandle& output)
 {
-  if(matrix_is::sparse(amplitudes) ||
-     matrix_is::sparse(deps) ||
-     matrix_is::sparse(depslopes) ||
-     matrix_is::sparse(platslopes) ||
-     matrix_is::sparse(reps) ||
-     matrix_is::sparse(repslopes) ||
-     matrix_is::sparse(rests))
+  if(matrixIs::sparse(amplitudes) ||
+     matrixIs::sparse(deps) ||
+     matrixIs::sparse(depslopes) ||
+     matrixIs::sparse(platslopes) ||
+     matrixIs::sparse(reps) ||
+     matrixIs::sparse(repslopes) ||
+     matrixIs::sparse(rests))
   {
     error("CalcTMPAlgo: Sparse matrices not supported.");
     return false;
@@ -205,13 +205,13 @@ bool CalcTMPAlgo::calc_TMPs(MatrixHandle amplitudes,
   output.reset(new DenseMatrix(amplitudes->nrows(), nsamples));
 
   //TODO: refactor algo to take DenseMatrix directly from module
-  DenseMatrixHandle ampDense(matrix_cast::as_dense(amplitudes));
-  DenseMatrixHandle depsDense(matrix_cast::as_dense(deps));
-  DenseMatrixHandle depslopesDense(matrix_cast::as_dense(depslopes));
-  DenseMatrixHandle platslopesDense(matrix_cast::as_dense(platslopes));
-  DenseMatrixHandle repsDense(matrix_cast::as_dense(reps));
-  DenseMatrixHandle repslopesDense(matrix_cast::as_dense(repslopes));
-  DenseMatrixHandle restsDense(matrix_cast::as_dense(rests));
+  DenseMatrixHandle ampDense(castMatrix::toDense(amplitudes));
+  DenseMatrixHandle depsDense(castMatrix::toDense(deps));
+  DenseMatrixHandle depslopesDense(castMatrix::toDense(depslopes));
+  DenseMatrixHandle platslopesDense(castMatrix::toDense(platslopes));
+  DenseMatrixHandle repsDense(castMatrix::toDense(reps));
+  DenseMatrixHandle repslopesDense(castMatrix::toDense(repslopes));
+  DenseMatrixHandle restsDense(castMatrix::toDense(rests));
 
   return calc_all_TMPs(*ampDense, *depsDense, *depslopesDense, *platslopesDense, *repsDense, *repslopesDense, *restsDense,
     *output);

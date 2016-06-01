@@ -36,6 +36,9 @@ SCIRUN_ADD_UNIT_TEST(Core_Python_Tests
 
 TARGET_LINK_LIBRARIES(Core_Python_Tests
   Core_Python
+  Testing_ModuleTestBase
+  Core_Datatypes_Legacy_Field
+  Testing_Utils
   gtest_main
   gtest
   gmock

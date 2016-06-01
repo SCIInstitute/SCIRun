@@ -294,13 +294,16 @@ std::vector<FieldHandle> SplitFieldByConnectedRegionAlgo::run(FieldHandle input)
       temp[j] = output[j];
     }
   
-    if (sortAscending)
+    if (!sizes.empty())
     {
-      std::sort(order.begin(),order.end(),AscSortSizes(&(sizes[0])));       
-    }
-    else
-    {
-      std::sort(order.begin(),order.end(),SortSizes(&(sizes[0]))); 
+      if (sortAscending)
+      {
+        std::sort(order.begin(), order.end(), AscSortSizes(&(sizes[0])));
+      }
+      else
+      {
+        std::sort(order.begin(), order.end(), SortSizes(&(sizes[0])));
+      }
     }
     
     for (size_t j=0; j<output.size(); j++)
@@ -313,7 +316,7 @@ std::vector<FieldHandle> SplitFieldByConnectedRegionAlgo::run(FieldHandle input)
 }
 
 
-AlgorithmOutput SplitFieldByConnectedRegionAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SplitFieldByConnectedRegionAlgo::run(const AlgorithmInput& input) const
 {
  AlgorithmOutput output;
  

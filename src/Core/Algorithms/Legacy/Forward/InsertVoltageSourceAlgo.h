@@ -59,7 +59,7 @@ namespace SCIRun {
           InsertVoltageSourceAlgo();
           InsertVoltageSourceAlgo(bool groundFirst, bool outside);
           void ExecuteAlgorithm(const FieldHandle& isourceH, FieldHandle& omeshH, Datatypes::DenseMatrixHandle& odirichletMatrix);
-          //virtual AlgorithmOutput run_generic(const AlgorithmInput&) const;
+          //virtual AlgorithmOutput run(const AlgorithmInput&) const;
 
         private:
           bool outside_;

@@ -34,68 +34,70 @@
 ///   University of Utah
 ///@date  March 2001
 
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Modules/Legacy/Fields/ReportFieldGeometryMeasures.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+//#include <Core/Datatypes/MatrixTypeConverter.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/GeometryPrimitives/Vector.h>
 
-namespace SCIRun {
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Fields;
 
 /// @class ReportFieldGeometryMeasures
 /// @brief Build a densematrix, where each row is a particular measure of the
 /// input Field (e.g. the x-values, or the element size). 
 
-class ReportFieldGeometryMeasures : public Module
+const ModuleLookupInfo ReportFieldGeometryMeasures::staticInfo_("ReportFieldGeometryMeasures", "MiscField", "SCIRun");
+
+ALGORITHM_PARAMETER_DEF(Fields, MeasureLocation);
+ALGORITHM_PARAMETER_DEF(Fields, XPositionFlag);
+ALGORITHM_PARAMETER_DEF(Fields, YPositionFlag);
+ALGORITHM_PARAMETER_DEF(Fields, ZPositionFlag);
+ALGORITHM_PARAMETER_DEF(Fields, IndexFlag);
+ALGORITHM_PARAMETER_DEF(Fields, SizeFlag);
+ALGORITHM_PARAMETER_DEF(Fields, NormalsFlag);
+
+ReportFieldGeometryMeasures::ReportFieldGeometryMeasures() : Module(staticInfo_)
 {
-  public:
-    ReportFieldGeometryMeasures(GuiContext* ctx);
-    virtual ~ReportFieldGeometryMeasures() {}
-
-    virtual void execute();
-  private:
-    GuiString simplexString_;
-    GuiInt xFlag_;
-    GuiInt yFlag_;
-    GuiInt zFlag_;
-    GuiInt idxFlag_;
-    GuiInt sizeFlag_;
-    GuiInt normalsFlag_;
-};
-
-
-DECLARE_MAKER(ReportFieldGeometryMeasures)
-
-ReportFieldGeometryMeasures::ReportFieldGeometryMeasures(GuiContext* ctx)
-  : Module("ReportFieldGeometryMeasures", ctx, Filter, "MiscField", "SCIRun"),
-    simplexString_(get_ctx()->subVar("simplexString"), "Node"),
-    xFlag_(get_ctx()->subVar("xFlag"), 1), 
-    yFlag_(get_ctx()->subVar("yFlag"), 1),
-    zFlag_(get_ctx()->subVar("zFlag"), 1), 
-    idxFlag_(get_ctx()->subVar("idxFlag"), 0),
-    sizeFlag_(get_ctx()->subVar("sizeFlag"), 0),
-    normalsFlag_(get_ctx()->subVar("normalsFlag"), 0)
-{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Output_Measures);
 }
 
-
-void
-ReportFieldGeometryMeasures::execute()
+void ReportFieldGeometryMeasures::setStateDefaults()
 {
-  FieldHandle fieldhandle;
-  get_input_handle("Input Field", fieldhandle, true);
+  auto state = get_state();
+  state->setValue(Parameters::MeasureLocation, std::string("Nodes"));
+  state->setValue(Parameters::XPositionFlag, true);
+  state->setValue(Parameters::YPositionFlag, true);
+  state->setValue(Parameters::ZPositionFlag, true);
+  state->setValue(Parameters::IndexFlag, false);
+  state->setValue(Parameters::SizeFlag, false);
+  state->setValue(Parameters::NormalsFlag, false);
+}
 
+void ReportFieldGeometryMeasures::execute()
+{
+  auto fieldhandle = getRequiredInput(InputField);
+
+  auto state = get_state();
   VMesh* mesh = fieldhandle->vmesh();
-
+  
   /// This is a hack for now, it is definitely not an optimal way
   int syncflag = 0;
-  std::string simplex =simplexString_.get();
+  std::string simplex = state->getValue(Parameters::MeasureLocation).toString();
   
-  if (simplex == "Elem")
+  if (simplex == "Elements")
   {
     if (mesh->dimensionality() == 0) simplex = "Node";
     else if (mesh->dimensionality() == 1) simplex = "Edge";
@@ -103,40 +105,46 @@ ReportFieldGeometryMeasures::execute()
     else if (mesh->dimensionality() == 3) simplex = "Cell";
   }
 
-  if (simplex == "Node")
+  if (simplex == "Nodes")
     syncflag = Mesh::NODES_E | Mesh::NODE_NEIGHBORS_E;
-  else if (simplex == "Edge")
+  else if (simplex == "Edges")
     syncflag = Mesh::EDGES_E | Mesh::ELEM_NEIGHBORS_E;
-  else if (simplex == "Face")
+  else if (simplex == "Faces")
     syncflag = Mesh::FACES_E | Mesh::ELEM_NEIGHBORS_E;
-  else if (simplex == "Cell")
+  else if (simplex == "Cells")
     syncflag = Mesh::CELLS_E;
 
   mesh->synchronize(syncflag);
 
-  bool nnormals = normalsFlag_.get() && (simplexString_.get() == "Node");
-  bool fnormals = normalsFlag_.get() && (simplexString_.get() == "Face");
+  const bool normalsFlag = state->getValue(Parameters::NormalsFlag).toBool();
+  bool nnormals = normalsFlag && (state->getValue(Parameters::MeasureLocation).toString() == "Nodes");
+  bool fnormals = normalsFlag && (state->getValue(Parameters::MeasureLocation).toString() == "Faces");
 
   if (nnormals && !mesh->has_normals())
   {
     warning("This mesh type does not contain normals, skipping.");
     nnormals = false;
   }
-  else if (normalsFlag_.get() && !(nnormals || fnormals))
+  else if (fnormals && !mesh->has_normals())
+  {
+    warning("This mesh type does not contain normals, skipping.");
+    fnormals = false;
+  }
+  else if (normalsFlag && !(nnormals || fnormals))
   {
     warning("Cannot compute normals at that simplex location, skipping.");
   }
   
-  if (nnormals)
+  if (nnormals || fnormals)
   {
     mesh->synchronize(Mesh::NORMALS_E);
   }
 
-  bool x = xFlag_.get();
-  bool y = yFlag_.get();
-  bool z = zFlag_.get();
-  bool eidx = idxFlag_.get();
-  bool size = sizeFlag_.get();
+  const bool x = state->getValue(Parameters::XPositionFlag).toBool();
+  const bool y = state->getValue(Parameters::YPositionFlag).toBool();
+  const bool z = state->getValue(Parameters::ZPositionFlag).toBool();
+  const bool eidx = state->getValue(Parameters::IndexFlag).toBool();
+  const bool size = state->getValue(Parameters::SizeFlag).toBool();
 
   size_type ncols=0;
   if (x)     ncols++;
@@ -153,16 +161,16 @@ ReportFieldGeometryMeasures::execute()
     return;
   }
 
-  MatrixHandle output;
+  DenseMatrixHandle output;
 
   update_state(Executing);
 
-  if (simplexString_.get() == "Node")
+  if (state->getValue(Parameters::MeasureLocation).toString() == "Nodes")
   {
     VMesh::Node::size_type nrows;
     mesh->size(nrows);
-    output = new DenseMatrix(nrows,ncols);
-    double* dataptr = output->get_data_pointer();
+    output.reset(new DenseMatrix(nrows,ncols));
+    double* dataptr = output->data();
   
     Point p; double vol; 
     for(VMesh::Node::index_type idx=0; idx<nrows; idx++)
@@ -182,12 +190,12 @@ ReportFieldGeometryMeasures::execute()
       }
     }
   }
-  else if (simplexString_.get() == "Edge")
+  else if (state->getValue(Parameters::MeasureLocation).toString() == "Edges")
   {
     VMesh::Edge::size_type nrows;
     mesh->size(nrows);
-    output = new DenseMatrix(nrows,ncols);
-    double* dataptr = output->get_data_pointer();
+    output.reset(new DenseMatrix(nrows, ncols));
+    double* dataptr = output->data();
   
     Point p; double vol; 
     for(VMesh::Edge::index_type idx=0; idx<nrows; idx++)
@@ -201,12 +209,12 @@ ReportFieldGeometryMeasures::execute()
       if (size) { *dataptr = vol; dataptr++; }
     }
   }  
-  else if (simplexString_.get() == "Face")
+  else if (state->getValue(Parameters::MeasureLocation).toString() == "Faces")
   {
     VMesh::Face::size_type nrows;
     mesh->size(nrows);
-    output = new DenseMatrix(nrows,ncols);
-    double* dataptr = output->get_data_pointer();
+    output.reset(new DenseMatrix(nrows, ncols));
+    double* dataptr = output->data();
   
     Point p; double vol; 
     VMesh::coords_type center;
@@ -229,12 +237,12 @@ ReportFieldGeometryMeasures::execute()
       }
     }
   }
-  else if (simplexString_.get() == "Cell")
+  else if (state->getValue(Parameters::MeasureLocation).toString() == "Cells")
   {
     VMesh::Cell::size_type nrows;
     mesh->size(nrows);
-    output = new DenseMatrix(nrows,ncols);
-    double* dataptr = output->get_data_pointer();
+    output.reset(new DenseMatrix(nrows, ncols));
+    double* dataptr = output->data();
   
     Point p; double vol; 
     for(VMesh::Cell::index_type idx=0; idx<nrows; idx++)
@@ -249,9 +257,5 @@ ReportFieldGeometryMeasures::execute()
     }
   }
 
-  send_output_handle("Output Measures Matrix", output, true);
+  sendOutput(Output_Measures, output);
 }
-
-} // End namespace SCIRun
-
-

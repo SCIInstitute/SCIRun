@@ -61,6 +61,7 @@ SET(Interface_Application_SOURCES
   NetworkEditorControllerGuiProxy.cc
   TreeViewCollaborators.cc
   ModuleWizard/ModuleWizard.cc
+  TriggeredEventsWindow.cc
 )
 
 SET(Interface_Application_HEADERS
@@ -86,6 +87,7 @@ SET(Interface_Application_HEADERS
   NoteEditor.h
   Connection.h
   Port.h
+  PositionProvider.h
   PreferencesWindow.h
   PythonConsoleWidget.h
   TagManagerWindow.h
@@ -94,6 +96,7 @@ SET(Interface_Application_HEADERS
   TreeViewCollaborators.h
   Utility.h
   ModuleWizard/ModuleWizard.h
+  TriggeredEventsWindow.h
 )
 
 SET(Interface_Application_FORMS
@@ -108,6 +111,7 @@ SET(Interface_Application_FORMS
   ShortcutsInterface.ui
   RenderWindow.ui
   TagManager.ui
+  TriggeredEventsWindow.ui
 )
 
 SET(Interface_Application_RESOURCES

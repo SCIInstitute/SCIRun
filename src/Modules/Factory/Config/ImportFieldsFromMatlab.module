@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ImportFieldsFromMatlab",
+    "namespace": "Matlab",
+    "status": "Ported module",
+    "description": "TODO",
+    "header": "Modules/Legacy/Matlab/DataIO/ImportFieldsFromMatlab.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ImportFieldsFromMatlabDialog",
+    "header": "Interface/Modules/Matlab/ImportFieldsFromMatlabDialog.h"
+  }
+}

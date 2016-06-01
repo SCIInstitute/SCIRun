@@ -69,7 +69,7 @@ public:
   static AlgorithmParameterName SortAscending();
   std::vector<FieldHandle> run(FieldHandle input) const;
 
-  AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const;
 };
 
 }}}}

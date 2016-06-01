@@ -53,7 +53,7 @@ public:
   
   bool run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& output) const;
 
-  AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+  AlgorithmOutput run(const AlgorithmInput& input) const;
 };
 
 }}}}

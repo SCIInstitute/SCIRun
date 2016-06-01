@@ -45,7 +45,7 @@ namespace SCIRun {
         {
         public:
           MOCK_METHOD0(execute, void());
-          MOCK_METHOD0(do_execute, bool());
+          MOCK_METHOD0(executeWithSignals, bool());
           MOCK_METHOD0(get_state, ModuleStateHandle());
           MOCK_CONST_METHOD0(get_state, const ModuleStateHandle());
           MOCK_METHOD1(set_state, void(ModuleStateHandle));
@@ -88,6 +88,8 @@ namespace SCIRun {
           MOCK_METHOD1(setReexecutionStrategy, void(ModuleReexecutionStrategyHandle));
           MOCK_METHOD0(enqueueExecuteAgain, void());
           MOCK_METHOD1(connectExecuteSelfRequest, boost::signals2::connection(const ExecutionSelfRequestSignalType::slot_type&));
+          MOCK_METHOD1(setExecutionDisabled, void(bool));
+          MOCK_CONST_METHOD0(executionDisabled, bool(void));
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;

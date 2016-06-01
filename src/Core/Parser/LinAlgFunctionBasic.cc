@@ -65,7 +65,7 @@ bool add_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     // scalar addition
     double val = (*data1)->get(0,0);
 
-    auto data2PlusVal = matrix_convert::to_dense(*data2)->array() + val;
+    auto data2PlusVal = convertMatrix::toDense(*data2)->array() + val;
     data0->reset(new DenseMatrix(data2PlusVal.matrix()));
 
     return (true);
@@ -78,7 +78,7 @@ bool add_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     // scalar addition
     double val = (*data2)->get(0,0);
 
-    auto data1PlusVal = matrix_convert::to_dense(*data1)->array() + val;
+    auto data1PlusVal = convertMatrix::toDense(*data1)->array() + val;
     data0->reset(new DenseMatrix(data1PlusVal.matrix()));
 
     return (true);
@@ -119,7 +119,7 @@ bool sub_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   {
     double val = (*data1)->get(0,0);
 
-    auto valMinusData2 = val - matrix_convert::to_dense(*data2)->array();
+    auto valMinusData2 = val - convertMatrix::toDense(*data2)->array();
     data0->reset(new DenseMatrix(valMinusData2.matrix()));
 
     return (true);
@@ -131,7 +131,7 @@ bool sub_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   {
     double val = (*data2)->get(0, 0);
 
-    auto data1MinusVal = matrix_convert::to_dense(*data1)->array() - val;
+    auto data1MinusVal = convertMatrix::toDense(*data1)->array() - val;
     data0->reset(new DenseMatrix(data1MinusVal.matrix()));
 
     return (true);
@@ -196,7 +196,7 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   {
     double val = (*data1)->get(0, 0);
 
-    auto data2TimesVal = matrix_convert::to_dense(*data2)->array() * val;
+    auto data2TimesVal = convertMatrix::toDense(*data2)->array() * val;
     data0->reset(new DenseMatrix(data2TimesVal.matrix()));
 
     return (true);
@@ -208,7 +208,7 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   {
     double val = (*data2)->get(0, 0);
 
-    auto data1TimesVal = matrix_convert::to_dense(*data1)->array() * val;
+    auto data1TimesVal = convertMatrix::toDense(*data1)->array() * val;
     data0->reset(new DenseMatrix(data1TimesVal.matrix()));
 
     return (true);
@@ -249,10 +249,10 @@ bool mmult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
     return (false);
   }
 
-  if ((matrix_is::dense(*data1)||matrix_is::column(*data1)) &&
-      (matrix_is::dense(*data2)||matrix_is::column(*data2)))
+  if ((matrixIs::dense(*data1)||matrixIs::column(*data1)) &&
+      (matrixIs::dense(*data2)||matrixIs::column(*data2)))
   {
-    auto cwiseMult = matrix_convert::to_dense(*data1)->cwiseProduct(*matrix_convert::to_dense(*data2));
+    auto cwiseMult = convertMatrix::toDense(*data1)->cwiseProduct(*convertMatrix::toDense(*data2));
     data0->reset(new DenseMatrix(cwiseMult.matrix()));
   }
   else
@@ -315,10 +315,10 @@ bool mdiv_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   data0->reset((*data1)->clone());
   if (!(*data0)) return (false);
 
-  if ((matrix_is::dense(*data1)||matrix_is::column(*data1)) &&
-      (matrix_is::dense(*data2)||matrix_is::column(*data2)))
+  if ((matrixIs::dense(*data1)||matrixIs::column(*data1)) &&
+      (matrixIs::dense(*data2)||matrixIs::column(*data2)))
   {
-    auto cwiseDiv = matrix_convert::to_dense(*data1)->cwiseQuotient(*matrix_convert::to_dense(*data2));
+    auto cwiseDiv = convertMatrix::toDense(*data1)->cwiseQuotient(*convertMatrix::toDense(*data2));
     data0->reset(new DenseMatrix(cwiseDiv.matrix()));
   }
   else
@@ -386,8 +386,8 @@ bool mrem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   data0->reset((*data1)->clone());
   if (!(*data0)) return (false);
 
-  if ((matrix_is::dense(*data1)||matrix_is::column(*data1)) &&
-      (matrix_is::dense(*data2)||matrix_is::column(*data2)))
+  if ((matrixIs::dense(*data1)||matrixIs::column(*data1)) &&
+      (matrixIs::dense(*data2)||matrixIs::column(*data2)))
   {
     double* data = (*data0)->get_data_pointer();
     double* ptr1 = (*data1)->get_data_pointer();
@@ -401,7 +401,7 @@ bool mrem_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
       data++; ptr1++; ptr2++;
     }
 
-    auto cwiseMod = matrix_convert::to_dense(*data1)->array() % matrix_convert::to_dense(*data2)->array();
+    auto cwiseMod = convertMatrix::toDense(*data1)->array() % convertMatrix::toDense(*data2)->array();
     data0->reset(new DenseMatrix(cwiseMod.matrix()));
   }
   else

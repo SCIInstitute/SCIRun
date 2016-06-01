@@ -44,9 +44,9 @@ class SCISHARE BuildBEMatrixDialog : public ModuleDialogGeneric,
 public:
   BuildBEMatrixDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 public Q_SLOTS:
-  virtual void updateFromPortChange(int numPorts, const std::string&) override;
+  virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
 protected:
   virtual void pullSpecial() override;
 private Q_SLOTS:

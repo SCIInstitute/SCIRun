@@ -84,6 +84,7 @@ namespace Networks {
   SCISHARE bool operator!=(const IncomingConnectionDescription& lhs, const IncomingConnectionDescription& rhs);
   SCISHARE bool operator==(const ConnectionDescription& lhs, const ConnectionDescription& rhs);
   SCISHARE bool operator!=(const ConnectionDescription& lhs, const ConnectionDescription& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& o, const ConnectionId& cid);
 
   struct SCISHARE OrderedByConnectionId
   {

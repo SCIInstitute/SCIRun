@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -124,7 +124,7 @@ private:
   void expect(char);
   void next_entry();
   virtual void emit_pointer(int&, int&);
-  void io(int, std::string& str);
+  void ioString(bool do_quotes, std::string& str);
 protected:
   virtual void reset_post_header();
 public:

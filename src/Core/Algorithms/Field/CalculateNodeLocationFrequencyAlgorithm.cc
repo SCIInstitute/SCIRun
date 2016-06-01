@@ -90,7 +90,7 @@ FieldHandle CalculateNodeLocationFrequencyAlgo::runImpl(FieldHandle input) const
   return output;
 }
 
-AlgorithmOutput CalculateNodeLocationFrequencyAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput CalculateNodeLocationFrequencyAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
 

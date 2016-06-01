@@ -230,7 +230,7 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std:
   return (true);
 }
 
-AlgorithmOutput RefineMeshCurveAlgoV::run_generic(const AlgorithmInput& input) const 
+AlgorithmOutput RefineMeshCurveAlgoV::run(const AlgorithmInput& input) const 
 {
   throw "not implemented";
 }

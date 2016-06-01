@@ -100,7 +100,7 @@ CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output) const
 AlgorithmOutputName CalculateVectorMagnitudesAlgo::ScalarField("ScalarField");
 AlgorithmInputName CalculateVectorMagnitudesAlgo::VectorField("VectorField");
 
-AlgorithmOutput CalculateVectorMagnitudesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput CalculateVectorMagnitudesAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(VectorField);
 

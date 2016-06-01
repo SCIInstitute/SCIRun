@@ -59,7 +59,7 @@ void MatrixIOBase::io(Piostream& stream)
 PersistentTypeID MatrixIOBase::type_id("MatrixIOBase", "Datatype", 0);
 
 
-BinaryVisitor::BinaryVisitor(MatrixHandle operand) : typeCode_(matrix_is::typeCode(operand)) {}
+BinaryVisitor::BinaryVisitor(MatrixHandle operand) : typeCode_(matrixIs::typeCode(operand)) {}
 
 Matrix* BinaryVisitor::cloneIfNotNull(MatrixHandle m)
 {
@@ -76,14 +76,17 @@ void AddMatrices::visit(DenseMatrixGeneric<double>& dense)
   switch (typeCode_)
   {
   case DENSE:
-    *matrix_cast::as_dense(sum_) += dense;
+    *castMatrix::toDense(sum_) += dense;
     break;
   case COLUMN:
-    *matrix_cast::as_column(sum_) += dense;
+    *castMatrix::toColumn(sum_) += dense;
     break;
   case SPARSE_ROW:
-    *matrix_cast::as_sparse(sum_) = *matrix_cast::as_sparse(sum_) + *matrix_convert::denseToSparse(dense);
+    *castMatrix::toSparse(sum_) = *castMatrix::toSparse(sum_) + *convertMatrix::fromDenseToSparse(dense);
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 void AddMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
@@ -91,16 +94,19 @@ void AddMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
   switch (typeCode_)
   {
   case DENSE:
-    sum_.reset(new SparseRowMatrix(*matrix_convert::to_sparse(sum_) + sparse));
+    sum_.reset(new SparseRowMatrix(*convertMatrix::toSparse(sum_) + sparse));
     typeCode_ = SPARSE_ROW;
     break;
   case COLUMN:
-    sum_.reset(new SparseRowMatrix(*matrix_convert::to_sparse(sum_) + sparse));
+    sum_.reset(new SparseRowMatrix(*convertMatrix::toSparse(sum_) + sparse));
     typeCode_ = SPARSE_ROW;
     break;
   case SPARSE_ROW:
-    *matrix_cast::as_sparse(sum_) = *matrix_cast::as_sparse(sum_) + sparse;
+    *castMatrix::toSparse(sum_) = *castMatrix::toSparse(sum_) + sparse;
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 void AddMatrices::visit(DenseColumnMatrixGeneric<double>& column)
@@ -108,14 +114,17 @@ void AddMatrices::visit(DenseColumnMatrixGeneric<double>& column)
   switch (typeCode_)
   {
   case DENSE:
-    *matrix_cast::as_dense(sum_) += column;
+    *castMatrix::toDense(sum_) += column;
     break;
   case COLUMN:
-    *matrix_cast::as_column(sum_) += column;
+    *castMatrix::toColumn(sum_) += column;
     break;
   case SPARSE_ROW:
-    *matrix_cast::as_sparse(sum_) = *matrix_cast::as_sparse(sum_) + *matrix_convert::denseToSparse(column);
+    *castMatrix::toSparse(sum_) = *castMatrix::toSparse(sum_) + *convertMatrix::fromDenseToSparse(column);
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 
@@ -128,14 +137,17 @@ void MultiplyMatrices::visit(DenseMatrixGeneric<double>& dense)
   switch (typeCode_)
   {
   case DENSE:
-    *matrix_cast::as_dense(product_) *= dense;
+    *castMatrix::toDense(product_) *= dense;
     break;
   case COLUMN:
-    *matrix_cast::as_column(product_) *= dense;
+    *castMatrix::toColumn(product_) *= dense;
     break;
   case SPARSE_ROW:
-    *matrix_cast::as_sparse(product_) = *matrix_cast::as_sparse(product_) * *matrix_convert::denseToSparse(dense);
+    *castMatrix::toSparse(product_) = *castMatrix::toSparse(product_) * *convertMatrix::fromDenseToSparse(dense);
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 void MultiplyMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
@@ -143,16 +155,19 @@ void MultiplyMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
   switch (typeCode_)
   {
   case DENSE:
-    product_.reset(new SparseRowMatrix(*matrix_convert::to_sparse(product_) * sparse));
+    product_.reset(new SparseRowMatrix(*convertMatrix::toSparse(product_) * sparse));
     typeCode_ = SPARSE_ROW;
     break;
   case COLUMN:
-    product_.reset(new SparseRowMatrix(*matrix_convert::to_sparse(product_) * sparse));
+    product_.reset(new SparseRowMatrix(*convertMatrix::toSparse(product_) * sparse));
     typeCode_ = SPARSE_ROW;
     break;
   case SPARSE_ROW:
-    *matrix_cast::as_sparse(product_) = *matrix_cast::as_sparse(product_) * sparse;
+    *castMatrix::toSparse(product_) = *castMatrix::toSparse(product_) * sparse;
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 void MultiplyMatrices::visit(DenseColumnMatrixGeneric<double>& column)
@@ -160,14 +175,17 @@ void MultiplyMatrices::visit(DenseColumnMatrixGeneric<double>& column)
   switch (typeCode_)
   {
   case DENSE:
-    *matrix_cast::as_dense(product_) *= column;
+    *castMatrix::toDense(product_) *= column;
     break;
   case COLUMN:
-    *matrix_cast::as_column(product_) *= column;
+    *castMatrix::toColumn(product_) *= column;
     break;
   case SPARSE_ROW:
-    *matrix_cast::as_sparse(product_) = *matrix_cast::as_sparse(product_) * *matrix_convert::denseToSparse(column);
+    *castMatrix::toSparse(product_) = *castMatrix::toSparse(product_) * *convertMatrix::fromDenseToSparse(column);
     break;
+  case NULL_MATRIX: break;
+  case UNKNOWN: break;
+  default: break;
   }
 }
 
@@ -195,4 +213,19 @@ void ScalarMultiplyMatrix::visit(SparseRowMatrixGeneric<double>& sparse)
 void ScalarMultiplyMatrix::visit(DenseColumnMatrixGeneric<double>& column)
 {
   column *= scalar_;
+}
+
+ComplexDenseMatrix SCIRun::Core::Datatypes::makeComplexMatrix(const DenseMatrix& real, const DenseMatrix& imag)
+{
+  if (real.rows() != imag.rows())
+    THROW_INVALID_ARGUMENT("Real and imaginary dimensions do not match: rows");
+  if (real.cols() != imag.cols())
+    THROW_INVALID_ARGUMENT("Real and imaginary dimensions do not match: columns");
+
+  const std::complex<double> i(0, 1);
+  ComplexDenseMatrix result(real.rows(), real.cols());
+  for (auto r = 0; r < real.rows(); ++r)
+    for (auto c = 0; c < real.cols(); ++c)
+      result(r, c) = real(r, c) + i * imag(r, c);
+  return result;
 }
