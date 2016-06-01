@@ -1430,10 +1430,11 @@ void ViewSceneDialog::setLightPosition(int index)
 
 void ViewSceneDialog::setLightColor(int index)
 {
-  std::cout << "light color: " << index << std::endl;
   auto spire = mSpire.lock();
   if (spire)
-    spire->setLightColor(index, mConfigurationDock->getLightColor(index).redF(), mConfigurationDock->getLightColor(index).greenF(), mConfigurationDock->getLightColor(index).blueF());
+    spire->setLightColor(index, mConfigurationDock->getLightColor(index).redF(), 
+    mConfigurationDock->getLightColor(index).greenF(), 
+    mConfigurationDock->getLightColor(index).blueF());
 }
 
 void ViewSceneDialog::toggleLightOnOff(int index, bool value)

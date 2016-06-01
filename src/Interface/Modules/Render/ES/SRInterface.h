@@ -207,6 +207,7 @@ namespace SCIRun {
 
       //Light settings
       void setLightColor(int index, float r, float g, float b);
+      void setLightPosition(int index, float x, float y);
 
     private:
 

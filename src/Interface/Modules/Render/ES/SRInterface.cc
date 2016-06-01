@@ -1388,6 +1388,25 @@ namespace SCIRun {
       }
     }
 
+
+    void SRInterface::setLightPosition(int index, float x, float y)
+    {
+      if (index >= LIGHT_NUM)
+        return;
+
+      glm::mat4 viewToWorld = mCamera->getViewToWorld();
+      glm::vec3 position = glm::vec3(x, y, 0);
+
+      // Set directional light source (in world space).
+      StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
+      if (light)
+      {
+        glm::vec3 viewDir = viewToWorld[2].xyz();
+        viewDir = -viewDir; // Cameras look down -Z.
+        light->lightDir[index] = viewDir;
+      }
+    }
+
     //
     double SRInterface::getMaxProjLength(const glm::vec3 &n)
     {
