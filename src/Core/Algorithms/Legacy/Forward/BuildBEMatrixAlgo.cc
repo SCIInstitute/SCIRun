@@ -761,8 +761,8 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
   for (; ni != nie; ++ni){ //! for every node
     VMesh::Node::index_type ppi = *ni;
     Point pp = hsurf->get_point(ppi);
-    
-    std::cout<<"pp ="<<pp<";"<<std::endl;
+  
+    std::cout<<"pp = "<<pp<<";"<<std::endl;
 
     hsurf->begin(fi); hsurf->end(fie);
     for (; fi != fie; ++fi) { //! find contributions from every triangle
