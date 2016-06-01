@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,7 +32,6 @@
 
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <vector>
 #include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
 namespace SCIRun {
@@ -43,20 +42,15 @@ namespace SCIRun {
 class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
 {
   public:
-    enum { AUTO = -1 };
-  
-    static AlgorithmParameterName NumProcessors;
-    static AlgorithmParameterName ForceSymmetry;
-    static AlgorithmParameterName GenerateBasis;
+    static const AlgorithmParameterName ForceSymmetry;
+    static const AlgorithmParameterName GenerateBasis;
 
-    static AlgorithmInputName Conductivity_Table;
-    static AlgorithmOutputName Stiffness_Matrix;
+    static const AlgorithmInputName Conductivity_Table;
+    static const AlgorithmOutputName Stiffness_Matrix;
+		static const AlgorithmOutputName Stiffness_Matrix_Complex;
 
-    BuildFEMatrixAlgo() : generation_(0)
+    BuildFEMatrixAlgo()
     {
-      // Number of processors to use
-      addParameter(NumProcessors, AUTO);
-      
       // Whether to force strict symmetry of the matrix
       // Averages symmetric components
       addParameter(ForceSymmetry, false);
@@ -67,17 +61,9 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
       addParameter(GenerateBasis, false);
     }
 
-    bool run(FieldHandle input,
-             Datatypes::DenseMatrixHandle ctable,
-             Datatypes::SparseRowMatrixHandle& output) const;
-  
-    virtual AlgorithmOutput run(const AlgorithmInput &) const;
-private:
-  mutable int generation_;
-  mutable std::vector<std::vector<double> > basis_values_;
-  mutable Datatypes::SparseRowMatrixHandle basis_fematrix_;
+    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
 };
 
 }}}}
 
-#endif 
+#endif

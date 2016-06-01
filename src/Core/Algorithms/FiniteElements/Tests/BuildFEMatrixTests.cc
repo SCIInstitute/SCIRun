@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildFEMatrix.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
@@ -70,7 +71,7 @@ namespace FEInputData
 
   DenseMatrixHandle nullConductivityMatrix()
   {
-    return DenseMatrixHandle();
+    return nullptr;
   }
 }
 
@@ -78,10 +79,8 @@ TEST(BuildFEMatrixAlgorithmTests, ThrowsForNullMesh)
 {
   using namespace FEInputData;
   BuildFEMatrixAlgo algo;
-  SparseRowMatrixHandle output;
 
-  EXPECT_FALSE(algo.run(FieldHandle(), nullConductivityMatrix(), output));
-  /// @todo: consider throwing an exception instead of returning false
+  EXPECT_THROW(algo.run(withInputData((Variables::InputField, nullptr))), AlgorithmProcessingException);
 }
 
 TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e1)
@@ -94,7 +93,10 @@ TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e1)
 
   BuildFEMatrixAlgo algo;
   SparseRowMatrixHandle output;
-  ASSERT_TRUE(algo.run(mesh, nullConductivityMatrix(), output));
+  ASSERT_NO_THROW(
+    auto out = algo.run(withInputData((Variables::InputField, mesh)));
+    output = out.get<SparseRowMatrix>(BuildFEMatrixAlgo::Stiffness_Matrix);
+  );
 
   ASSERT_THAT(output, NotNull());
 
@@ -117,7 +119,10 @@ TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e3)
 
   BuildFEMatrixAlgo algo;
   SparseRowMatrixHandle output;
-  ASSERT_TRUE(algo.run(mesh, nullConductivityMatrix(), output));
+  ASSERT_NO_THROW(
+    auto out = algo.run(withInputData((Variables::InputField, mesh)));
+    output = out.get<SparseRowMatrix>(BuildFEMatrixAlgo::Stiffness_Matrix);
+  );
 
   ASSERT_THAT(output, NotNull());
 
@@ -140,7 +145,10 @@ TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e4)
 
   BuildFEMatrixAlgo algo;
   SparseRowMatrixHandle output;
-  ASSERT_TRUE(algo.run(mesh, nullConductivityMatrix(), output));
+  ASSERT_NO_THROW(
+    auto out = algo.run(withInputData((Variables::InputField, mesh)));
+    output = out.get<SparseRowMatrix>(BuildFEMatrixAlgo::Stiffness_Matrix);
+  );
 
   ASSERT_THAT(output, NotNull());
 
@@ -164,7 +172,10 @@ TEST(BuildFEMatrixAlgorithmTests, DISABLED_TestMeshSize1e5)
 
   BuildFEMatrixAlgo algo;
   SparseRowMatrixHandle output;
-  ASSERT_TRUE(algo.run(mesh, nullConductivityMatrix(), output));
+  ASSERT_NO_THROW(
+    auto out = algo.run(withInputData((Variables::InputField, mesh)));
+    output = out.get<SparseRowMatrix>(BuildFEMatrixAlgo::Stiffness_Matrix);
+  );
 
   ASSERT_THAT(output, NotNull());
 
@@ -188,7 +199,10 @@ TEST(BuildFEMatrixAlgorithmTests, DISABLED_TestMeshSize1e6)
 
   BuildFEMatrixAlgo algo;
   SparseRowMatrixHandle output;
-  ASSERT_TRUE(algo.run(mesh, nullConductivityMatrix(), output));
+  ASSERT_NO_THROW(
+    auto out = algo.run(withInputData((Variables::InputField, mesh)));
+    output = out.get<SparseRowMatrix>(BuildFEMatrixAlgo::Stiffness_Matrix);
+  );
 
   ASSERT_THAT(output, NotNull());
 

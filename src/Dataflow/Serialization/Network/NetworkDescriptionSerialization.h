@@ -82,6 +82,7 @@ namespace Networks {
   typedef std::map<std::string, ModuleWithState> ModuleMapXML;
   typedef std::map<std::string, NoteXML> NotesMapXML;
   typedef std::map<std::string, int> ModuleTagsMapXML;
+  typedef std::map<int, std::string> ModuleTagLabelOverridesMapXML;
   typedef std::vector<std::string> DisabledComponentListXML;
 
   struct SCISHARE ModuleNotes
@@ -97,6 +98,8 @@ namespace Networks {
   struct SCISHARE ModuleTags
   {
     ModuleTagsMapXML tags;
+    ModuleTagLabelOverridesMapXML labels;
+    bool showTagGroupsOnLoad { false };
   };
 
   struct SCISHARE DisabledComponents
@@ -146,6 +149,11 @@ namespace Networks {
         ar & boost::serialization::make_nvp("disabledModules", disabledComponents.disabledModules);
         ar & boost::serialization::make_nvp("disabledConnections", disabledComponents.disabledConnections);
       }
+      if (version > 4)
+      {
+        ar & boost::serialization::make_nvp("moduleTagLabels", moduleTags.labels);
+        ar & boost::serialization::make_nvp("loadTagGroups", moduleTags.showTagGroupsOnLoad);
+      }
     }
   };
 
@@ -164,6 +172,6 @@ namespace Networks {
 
 }}}
 
-BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 4)
+BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 5)
 
 #endif

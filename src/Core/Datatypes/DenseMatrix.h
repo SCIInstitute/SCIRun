@@ -50,7 +50,7 @@ namespace Datatypes {
 
     /// @todo: don't like this default ctor, since it doesn't act like a vector.
     //DenseMatrixGeneric() : Base() {}
-    DenseMatrixGeneric(size_t nrows = 0, size_t ncols = 0) : EigenBase(nrows, ncols) {}
+    explicit DenseMatrixGeneric(size_t nrows = 0, size_t ncols = 0) : EigenBase(nrows, ncols) {}
 
     DenseMatrixGeneric(size_t nrows, size_t ncols, const T& val) : EigenBase(nrows, ncols)
     {
@@ -80,24 +80,34 @@ namespace Datatypes {
       return *this;
     }
 
-    virtual DenseMatrixGeneric* clone() const
+    virtual DenseMatrixGeneric* clone() const override
     {
       return new DenseMatrixGeneric(*this);
     }
 
-    virtual size_t nrows() const { return this->rows(); }
-    virtual size_t ncols() const { return this->cols(); }
+    virtual size_t nrows() const override { return this->rows(); }
+    virtual size_t ncols() const override { return this->cols(); }
 
-    virtual void accept(MatrixVisitorGeneric<T>& visitor)
+    virtual void accept(MatrixVisitorGeneric<T>& visitor) override
     {
       visitor.visit(*this);
     }
 
     /// Persistent representation...
-    virtual std::string dynamic_type_name() const;
-    virtual void io(Piostream&);
+    virtual std::string dynamic_type_name() const override;
+    virtual void io(Piostream&) override;
     static PersistentTypeID type_id;
     static PersistentMaker0 maker0;
+
+    template <typename XYZ>
+    static this_type fromPoint(const XYZ& xyz)
+    {
+      this_type p(3, 1);
+      p(0, 0) = xyz.x();
+      p(1, 0) = xyz.y();
+      p(2, 0) = xyz.z();
+      return p;
+    }
 
     bool isSymmetric() const
     {
@@ -116,7 +126,7 @@ namespace Datatypes {
     }
 
   private:
-    virtual void print(std::ostream& o) const
+    virtual void print(std::ostream& o) const override
     {
       /// @todo!!
       //o << static_cast<const EigenBase&>(m);
@@ -147,7 +157,7 @@ namespace Datatypes {
   std::string DenseMatrixGeneric<T>::dynamic_type_name() const { return type_id.type; }
 
   template <typename T>
-  PersistentTypeID DenseMatrixGeneric<T>::type_id("DenseMatrix", "MatrixBase", DenseMatrixGeneric<T>::maker0);
+  PersistentTypeID DenseMatrixGeneric<T>::type_id("DenseMatrix", "MatrixBase", maker0);
 
   template <typename T>
   DenseMatrixGeneric<T>::DenseMatrixGeneric(const Geometry::Transform& t) : EigenBase(4, 4)
@@ -156,9 +166,9 @@ namespace Datatypes {
     t.get(data);
     T* ptr = data;
 
-    for (int i = 0; i < this->nrows(); ++i)
+    for (auto i = 0; i < this->rows(); ++i)
     {
-      for (int j = 0; j < this->ncols(); ++j)
+      for (auto j = 0; j < this->cols(); ++j)
       {
         (*this)(i,j) = static_cast<T>(*ptr++);
       }
@@ -169,6 +179,7 @@ namespace Datatypes {
 
 }}}
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/MatrixIO.h>
 
 #endif

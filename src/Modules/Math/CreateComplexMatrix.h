@@ -37,7 +37,7 @@ namespace Modules {
 namespace Math {
 
   class SCISHARE CreateComplexMatrix : public Dataflow::Networks::Module,
-    public Has1OutputPort<ComplexDenseMatrixPortTag>,
+    public Has1OutputPort<ComplexMatrixPortTag>,
     public HasNoInputPorts
   {
   public:

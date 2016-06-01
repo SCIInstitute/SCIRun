@@ -30,7 +30,6 @@
 #define ALGORITHMS_MATH_REPORTFIELDINFO_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Algorithms/Field/share.h>
@@ -43,7 +42,7 @@ namespace Fields {
   class SCISHARE ReportFieldInfoAlgorithm : public AlgorithmBase
   {
   public:
-    typedef SCIRun::FieldHandle Inputs;
+    typedef FieldHandle Inputs;
     
     struct SCISHARE Outputs
     {
@@ -61,10 +60,10 @@ namespace Fields {
 
     static std::string summarize(const Outputs& info);
 
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
 
   private:
-    Outputs update_input_attributes(SCIRun::FieldHandle f) const;
+    Outputs update_input_attributes(FieldHandle f) const;
   };
 
 }}}}

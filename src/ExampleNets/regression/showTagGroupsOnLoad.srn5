@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>10</count>
+			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateLatVol:0</first>
@@ -25,8 +25,8 @@
 								<second class_id="10" tracking_level="0" version="0">
 									<name>DataAtLocation</name>
 									<value class_id="11" tracking_level="0" version="0">
-										<which>2</which>
-										<value>Nodes</value>
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -37,8 +37,8 @@
 								<second>
 									<name>ElementSizeNormalized</name>
 									<value>
-										<which>3</which>
-										<value>1</value>
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -62,7 +62,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>4</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -74,7 +74,7 @@
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>3</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -86,7 +86,7 @@
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>2</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -95,92 +95,76 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo:30</first>
+				<first>FairMesh:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>FairMesh</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>4</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FairMeshMethod</name>
+								</first>
+								<second>
+									<name>FairMeshMethod</name>
+									<value>
+										<which>2</which>
+										<value>fast</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FilterCutoff</name>
+								</first>
+								<second>
+									<name>FilterCutoff</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000006e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Lambda</name>
+								</first>
+								<second>
+									<name>Lambda</name>
+									<value>
+										<which>1</which>
+										<value>6.30700000000000038e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NumIterations</name>
+								</first>
+								<second>
+									<name>NumIterations</name>
+									<value>
+										<which>0</which>
+										<value>50</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo:31</first>
+				<first>GetFieldBoundary:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportMatrixInfo:32</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportMatrixInfo:33</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportMatrixInfo:34</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReportMatrixInfo:35</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GetFieldBoundary</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -200,8 +184,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>17</count>
+							<count>33</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CullBackfacingText</name>
+								</first>
+								<second>
+									<name>CullBackfacingText</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>CylinderRadius</name>
@@ -210,7 +206,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -234,7 +230,19 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(0.831373,0.15552,0.123156)</value>
+										<value>Color(0.5,0.5,0.5)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultTextColor</name>
+								</first>
+								<second>
+									<name>DefaultTextColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(1,1,1)</value>
 									</value>
 								</second>
 							</item>
@@ -288,13 +296,25 @@
 							</item>
 							<item>
 								<first>
+									<name>FaceInvertNormals</name>
+								</first>
+								<second>
+									<name>FaceInvertNormals</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
 									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -348,6 +368,18 @@
 							</item>
 							<item>
 								<first>
+									<name>NodeTransparencyValue</name>
+								</first>
+								<second>
+									<name>NodeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.49999976158142090e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>NodesAvailable</name>
 								</first>
 								<second>
@@ -355,6 +387,54 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RenderAsLocation</name>
+								</first>
+								<second>
+									<name>RenderAsLocation</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowCellIndices</name>
+								</first>
+								<second>
+									<name>ShowCellIndices</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowDataValues</name>
+								</first>
+								<second>
+									<name>ShowDataValues</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdgeIndices</name>
+								</first>
+								<second>
+									<name>ShowEdgeIndices</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -372,6 +452,18 @@
 							</item>
 							<item>
 								<first>
+									<name>ShowFaceIndices</name>
+								</first>
+								<second>
+									<name>ShowFaceIndices</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>ShowFaces</name>
 								</first>
 								<second>
@@ -379,6 +471,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodeIndices</name>
+								</first>
+								<second>
+									<name>ShowNodeIndices</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -396,60 +500,112 @@
 							</item>
 							<item>
 								<first>
+									<name>ShowText</name>
+								</first>
+								<second>
+									<name>ShowText</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>SphereScaleValue</name>
 								</first>
 								<second>
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ViewScene:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Render</category_name_>
-						<module_name_>ViewScene</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ViewScene:3</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Render</category_name_>
-						<module_name_>ViewScene</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextAlwaysVisible</name>
+								</first>
+								<second>
+									<name>TextAlwaysVisible</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextColoring</name>
+								</first>
+								<second>
+									<name>TextColoring</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextPrecision</name>
+								</first>
+								<second>
+									<name>TextPrecision</name>
+									<value>
+										<which>0</which>
+										<value>3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextSize</name>
+								</first>
+								<second>
+									<name>TextSize</name>
+									<value>
+										<which>0</which>
+										<value>8</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>UseFaceNormals</name>
+								</first>
+								<second>
+									<name>UseFaceNormals</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>8</count>
+			<count>3</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
 					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetFieldBoundary:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>FairMesh:0</moduleId1_>
+				<port1_>
+					<name>Faired_Mesh</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:0</moduleId2_>
@@ -459,231 +615,80 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ShowField:0</moduleId1_>
+				<moduleId1_>GetFieldBoundary:0</moduleId1_>
 				<port1_>
-					<name>SceneGraph</name>
+					<name>BoundaryField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>FairMesh:0</moduleId2_>
 				<port2_>
-					<name>GeneralGeom</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ViewScene:0</moduleId1_>
-				<port1_>
-					<name>ScreenshotDataBlue</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportMatrixInfo:31</moduleId2_>
-				<port2_>
-					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ViewScene:0</moduleId1_>
-				<port1_>
-					<name>ScreenshotDataGreen</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportMatrixInfo:30</moduleId2_>
-				<port2_>
-					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ViewScene:0</moduleId1_>
-				<port1_>
-					<name>ScreenshotDataRed</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportMatrixInfo:35</moduleId2_>
-				<port2_>
-					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ViewScene:3</moduleId1_>
-				<port1_>
-					<name>ScreenshotDataBlue</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportMatrixInfo:32</moduleId2_>
-				<port2_>
-					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ViewScene:3</moduleId1_>
-				<port1_>
-					<name>ScreenshotDataGreen</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportMatrixInfo:33</moduleId2_>
-				<port2_>
-					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ViewScene:3</moduleId1_>
-				<port1_>
-					<name>ScreenshotDataRed</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportMatrixInfo:34</moduleId2_>
-				<port2_>
-					<name>InputMatrix</name>
+					<name>Input_Mesh</name>
 					<id>0</id>
 				</port2_>
 			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>10</count>
+		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-8.36000000000000000e+02</first>
-				<second>-6.08000000000000000e+02</second>
+				<first>-5.80000000000000000e+01</first>
+				<second>4.55000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:30</first>
+			<first>FairMesh:0</first>
 			<second>
-				<first>-8.64500000000000000e+02</first>
-				<second>-3.50000000000000000e+01</second>
+				<first>1.00000000000000000e+01</first>
+				<second>1.30000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:31</first>
+			<first>GetFieldBoundary:0</first>
 			<second>
-				<first>-7.35500000000000000e+02</first>
-				<second>1.10000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:32</first>
-			<second>
-				<first>-3.68500000000000000e+02</first>
-				<second>-1.79000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:33</first>
-			<second>
-				<first>-2.62500000000000000e+02</first>
-				<second>-5.40000000000000000e+01</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:34</first>
-			<second>
-				<first>-2.02500000000000000e+02</first>
-				<second>6.00000000000000000e+01</second>
-			</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:35</first>
-			<second>
-				<first>-1.04650000000000000e+03</first>
-				<second>-1.63000000000000000e+02</second>
+				<first>1.00000000000000000e+01</first>
+				<second>1.00000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-8.36000000000000000e+02</first>
-				<second>-4.56000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ViewScene:0</first>
-			<second>
-				<first>-8.36000000000000000e+02</first>
-				<second>-3.04000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ViewScene:3</first>
-			<second>
-				<first>-5.32000000000000000e+02</first>
-				<second>-3.04000000000000000e+02</second>
+				<first>1.00000000000000000e+01</first>
+				<second>2.50000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>1</count>
+		<count>0</count>
 		<item_version>0</item_version>
-		<item class_id="19" tracking_level="0" version="0">
-			<first>ShowField:0</first>
-			<second class_id="20" tracking_level="0" version="0">
-				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
-				<noteText>ID: 0</noteText>
-				<position>0</position>
-				<fontSize>13</fontSize>
-			</second>
-		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="21" tracking_level="0" version="0">
-		<count>10</count>
+	<moduleTags class_id="19" tracking_level="0" version="0">
+		<count>4</count>
 		<item_version>0</item_version>
-		<item class_id="22" tracking_level="0" version="0">
+		<item class_id="20" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:30</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:31</first>
-			<second>-1</second>
+			<first>FairMesh:0</first>
+			<second>1</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:32</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:33</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:34</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ReportMatrixInfo:35</first>
-			<second>-1</second>
+			<first>GetFieldBoundary:0</first>
+			<second>1</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ViewScene:0</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ViewScene:3</first>
-			<second>0</second>
+			<second>2</second>
 		</item>
 	</moduleTags>
-	<disabledModules class_id="23" tracking_level="0" version="0">
+	<disabledModules class_id="21" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledModules>
@@ -691,11 +696,11 @@ p, li { white-space: pre-wrap; }
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
-	<moduleTagLabels class_id="24" tracking_level="0" version="0">
+	<moduleTagLabels class_id="22" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleTagLabels>
-	<loadTagGroups>0</loadTagGroups>
+	<loadTagGroups>1</loadTagGroups>
 </networkFile>
 </boost_serialization>
 
