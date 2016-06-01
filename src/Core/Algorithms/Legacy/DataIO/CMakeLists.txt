@@ -66,6 +66,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_DataIO
   #Core_Thread
   #Core_Exceptions
   #Core_Geometry
+  Core_Geometry_Primitives
   #Core_Util
   Core_Math
   Core_Persistent
