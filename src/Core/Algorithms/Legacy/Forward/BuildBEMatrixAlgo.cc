@@ -721,16 +721,16 @@ void BuildBEMatrixBaseCompute::make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2
     for (; fi != fie; ++fi){ //! find contributions from every triangle
 
       hsurf2->get_nodes(nodes, *fi);
-      Vector v1 = hsurf2->get_point(nodes[2]) - pp;
+      Vector v1 = hsurf2->get_point(nodes[0]) - pp;
       Vector v2 = hsurf2->get_point(nodes[1]) - pp;
-      Vector v3 = hsurf2->get_point(nodes[0]) - pp;
+      Vector v3 = hsurf2->get_point(nodes[2]) - pp;
       
       //std::cout<<"p1 = "<<hsurf2->get_point(nodes[2])<<"; p2 ="<<hsurf2->get_point(nodes[1])<<"; p3 ="<<hsurf2->get_point(nodes[0])<<";"<<std::endl;
 
       getOmega(v1, v2, v3, coef);
 
       for (i=0; i<3; ++i)
-        cross_P(ppi, nodes[2-i])-=coef(0,i)*mult;
+        cross_P(ppi, nodes[i])-=coef(0,i)*mult;
     }
   }
 }
@@ -788,9 +788,9 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
 
       hsurf->get_nodes(nodes, *fi);
       if (ppi!=nodes[0] && ppi!=nodes[1] && ppi!=nodes[2]){
-        Vector v1 = hsurf->get_point(nodes[2]) - pp;
+        Vector v1 = hsurf->get_point(nodes[0]) - pp;
         Vector v2 = hsurf->get_point(nodes[1]) - pp;
-        Vector v3 = hsurf->get_point(nodes[0]) - pp;
+        Vector v3 = hsurf->get_point(nodes[2]) - pp;
         
         //std::cout<<"p1 = "<<hsurf->get_point(nodes[2])<<"; p2 ="<<hsurf->get_point(nodes[1])<<"; p3 ="<<hsurf->get_point(nodes[0])<<";"<<std::endl;
 
