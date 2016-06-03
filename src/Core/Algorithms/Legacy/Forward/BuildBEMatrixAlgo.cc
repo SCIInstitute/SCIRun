@@ -1174,7 +1174,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
         auto block = EJ.blockRef(i,j);
         //std::cout << "EJ block cross " << i << "," << j << " is size " << block.rows() << " x " << block.cols()/* << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
 
-        make_cross_G_compute(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
+        make_cross_G_compute(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), block, fields[j].insideconductivity, fields[j].outsideconductivity, op_cond, triangleareas);
       }
     }
   }
