@@ -809,6 +809,7 @@ ModuleTagsHandle NetworkEditor::dumpModuleTags(ModuleFilter filter) const
         tags->tags[mod->getModuleWidget()->getModuleId()] = mod->data(TagDataKey).toInt();
     }
   }
+  tags->showTagGroupsOnLoad = showTagGroupsOnFileLoad();
   return tags;
 }
 
@@ -878,6 +879,12 @@ void NetworkEditor::updateModuleTags(const ModuleTags& moduleTags)
         w->setData(TagDataKey, tagIter->second);
       }
     }
+  }
+  setShowTagGroupsOnFileLoad(moduleTags.showTagGroupsOnLoad);
+  if (showTagGroupsOnFileLoad())
+  {
+    tagGroupsActive_ = true;
+    drawTagGroups();
   }
 }
 
@@ -1338,10 +1345,12 @@ void NetworkEditor::tagLayer(bool active, int tag)
   }
   if (ShowGroups == tag)
   {
+    tagGroupsActive_ = true;
     redrawTagGroups();
   }
   if (HideGroups == tag)
   {
+    tagGroupsActive_ = false;
     removeTagGroups();
   }
 }
@@ -1351,7 +1360,7 @@ namespace
   class TagGroupBox : public QGraphicsRectItem
   {
   public:
-    explicit TagGroupBox(const QRectF& rect, NetworkEditor* ned) : QGraphicsRectItem(rect), ned_(ned), displayOnLoad_(false)
+    explicit TagGroupBox(const QRectF& rect, NetworkEditor* ned) : QGraphicsRectItem(rect), ned_(ned)
     {
       setAcceptHoverEvents(true);
     }
@@ -1371,75 +1380,77 @@ namespace
       QMenu menu;
       auto action = menu.addAction("Display in saved network", ned_, SLOT(saveTagGroupRectInFile()));
       action->setCheckable(true);
-      action->setChecked(displayOnLoad_);
+      action->setChecked(ned_->showTagGroupsOnFileLoad());
       menu.exec(event->screenPos());
       QGraphicsRectItem::mouseDoubleClickEvent(event);
     }
   private:
     NetworkEditor* ned_;
-    bool displayOnLoad_;
   };
 }
 
 void NetworkEditor::saveTagGroupRectInFile()
 {
-  qDebug() << "saveTagGroupRectInFile" << sender();
   auto action = qobject_cast<QAction*>(sender());
-  action->setChecked(!action->isChecked());
+  setShowTagGroupsOnFileLoad(action->isChecked());
+  Q_EMIT modified();
 }
 
 void NetworkEditor::drawTagGroups()
 {
-  QMap<int,QRectF> tagItemRects;
-
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  if (tagGroupsActive_)
   {
-    if (dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      const auto itemTag = item->data(TagDataKey).toInt();
+    QMap<int, QRectF> tagItemRects;
 
-      if (itemTag != NoTag)
+    Q_FOREACH(QGraphicsItem* item, scene_->items())
+    {
+      if (dynamic_cast<ModuleProxyWidget*>(item))
       {
-        auto r = item->boundingRect();
-        r.translate(item->pos());
-        if (!tagItemRects.contains(itemTag))
+        const auto itemTag = item->data(TagDataKey).toInt();
+
+        if (itemTag != NoTag)
         {
-          tagItemRects.insert(itemTag, r);
-        }
-        else
-        {
-          tagItemRects[itemTag] = tagItemRects[itemTag].united(r);
+          auto r = item->boundingRect();
+          r.translate(item->pos());
+          if (!tagItemRects.contains(itemTag))
+          {
+            tagItemRects.insert(itemTag, r);
+          }
+          else
+          {
+            tagItemRects[itemTag] = tagItemRects[itemTag].united(r);
+          }
         }
       }
     }
-  }
 
-  for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
-  {
-    auto rectBounds = rectIter.value().adjusted(-10, -10, 10, 10);
-    QPen pen(tagColor_(rectIter.key()));
-    pen.setWidth(3);
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setJoinStyle(Qt::RoundJoin);
-    auto rect = new TagGroupBox(rectBounds, this);
-    rect->setPen(pen);
-    scene_->addItem(rect);
-    rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
-    rect->setZValue(-100000);
+    for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
+    {
+      auto rectBounds = rectIter.value().adjusted(-10, -10, 10, 10);
+      QPen pen(tagColor_(rectIter.key()));
+      pen.setWidth(3);
+      pen.setCapStyle(Qt::RoundCap);
+      pen.setJoinStyle(Qt::RoundJoin);
+      auto rect = new TagGroupBox(rectBounds, this);
+      rect->setPen(pen);
+      scene_->addItem(rect);
+      rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
+      rect->setZValue(-100000);
 
-    auto fill = new QGraphicsRectItem(rectBounds);
-    auto c = pen.color();
-    c.setAlphaF(0.15);
-    fill->setBrush(c);
-    fill->setZValue(-100000);
-    scene_->addItem(fill);
+      auto fill = new QGraphicsRectItem(rectBounds);
+      auto c = pen.color();
+      c.setAlphaF(0.15);
+      fill->setBrush(c);
+      fill->setZValue(-100000);
+      scene_->addItem(fill);
 
-    static const QFont labelFont("Courier", 20, QFont::Bold);
-    auto label = scene_->addSimpleText(tagName_(rectIter.key()), labelFont);
-    label->setBrush(pen.color());
-    static const QFontMetrics fm(labelFont);
-    auto textWidthInPixels = fm.width(label->text());
-    label->setPos((rect->rect().topLeft() + rect->rect().topRight()) / 2 + QPointF(-textWidthInPixels/2, -30));
+      static const QFont labelFont("Courier", 20, QFont::Bold);
+      auto label = scene_->addSimpleText(tagName_(rectIter.key()), labelFont);
+      label->setBrush(pen.color());
+      static const QFontMetrics fm(labelFont);
+      auto textWidthInPixels = fm.width(label->text());
+      label->setPos((rect->rect().topLeft() + rect->rect().topRight()) / 2 + QPointF(-textWidthInPixels / 2, -30));
+    }
   }
 }
 

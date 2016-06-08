@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="12">
-<networkFile class_id="0" tracking_level="0" version="3">
+<networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>7</count>
+			<count>13</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>FlipSurfaceNormals:0</first>
@@ -103,6 +103,102 @@
 				</second>
 			</item>
 			<item>
+				<first>ReportMatrixInfo:152</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:153</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:154</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:155</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:156</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:157</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ShowField:2</first>
 				<second>
 					<module>
@@ -112,7 +208,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>12</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -140,6 +236,18 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -147,6 +255,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -183,6 +303,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -236,7 +368,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>12</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -264,6 +396,18 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAvailable</name>
+								</first>
+								<second>
+									<name>EdgesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -271,6 +415,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesAvailable</name>
+								</first>
+								<second>
+									<name>FacesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -307,6 +463,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesAvailable</name>
+								</first>
+								<second>
+									<name>NodesAvailable</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -384,7 +552,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+			<count>11</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>FlipSurfaceNormals:0</moduleId1_>
@@ -446,10 +614,82 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ViewScene:3</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataBlue</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:157</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:3</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataGreen</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:156</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:3</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataRed</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:155</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:7</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataBlue</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:154</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:7</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataGreen</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:153</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:7</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataRed</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:152</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>7</count>
+		<count>13</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>FlipSurfaceNormals:0</first>
@@ -470,6 +710,48 @@
 			<second>
 				<first>-1.06400000000000000e+03</first>
 				<second>-8.36000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:152</first>
+			<second>
+				<first>-1.07250000000000000e+03</first>
+				<second>-2.46500000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:153</first>
+			<second>
+				<first>-9.52500000000000000e+02</first>
+				<second>-1.26500000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:154</first>
+			<second>
+				<first>-8.32500000000000000e+02</first>
+				<second>-6.50000000000000000e+00</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:155</first>
+			<second>
+				<first>-1.35750000000000000e+03</first>
+				<second>-1.77500000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:156</first>
+			<second>
+				<first>-1.23750000000000000e+03</first>
+				<second>-5.75000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:157</first>
+			<second>
+				<first>-1.11750000000000000e+03</first>
+				<second>6.25000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
@@ -510,8 +792,8 @@
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 2&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; color:#ffffff;&quot;&gt;ID: 2&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 2</noteText>
 				<position>0</position>
 				<fontSize>13</fontSize>
@@ -523,8 +805,8 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 6&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; color:#ffffff;&quot;&gt;ID: 6&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 6</noteText>
 				<position>0</position>
 				<fontSize>13</fontSize>
@@ -536,7 +818,7 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="21" tracking_level="0" version="0">
-		<count>7</count>
+		<count>13</count>
 		<item_version>0</item_version>
 		<item class_id="22" tracking_level="0" version="0">
 			<first>FlipSurfaceNormals:0</first>
@@ -549,6 +831,30 @@ p, li { white-space: pre-wrap; }
 		<item>
 			<first>ReadField:5</first>
 			<second>0</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:152</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:153</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:154</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:155</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:156</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:157</first>
+			<second>-1</second>
 		</item>
 		<item>
 			<first>ShowField:2</first>
@@ -567,6 +873,19 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 	</moduleTags>
+	<disabledModules class_id="23" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledModules>
+	<disabledConnections>
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledConnections>
+	<moduleTagLabels class_id="24" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
 </networkFile>
 </boost_serialization>
 

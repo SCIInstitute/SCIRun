@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="12">
-<networkFile class_id="0" tracking_level="0" version="4">
+<networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>3</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateLatVol:0</first>
@@ -104,7 +104,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>21</count>
+							<count>22</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -114,7 +114,7 @@
 									<name>InputCenterX</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  0.0000</value>
 									</value>
 								</second>
 							</item>
@@ -126,7 +126,7 @@
 									<name>InputCenterY</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  0.0000</value>
 									</value>
 								</second>
 							</item>
@@ -138,7 +138,7 @@
 									<name>InputCenterZ</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  0.0000</value>
 									</value>
 								</second>
 							</item>
@@ -150,7 +150,7 @@
 									<name>InputSizeX</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  2.0000</value>
 									</value>
 								</second>
 							</item>
@@ -162,7 +162,7 @@
 									<name>InputSizeY</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  2.0000</value>
 									</value>
 								</second>
 							</item>
@@ -174,7 +174,7 @@
 									<name>InputSizeZ</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>  2.0000</value>
 									</value>
 								</second>
 							</item>
@@ -222,7 +222,7 @@
 									<name>OutputSizeX</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -234,7 +234,7 @@
 									<name>OutputSizeY</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -246,7 +246,19 @@
 									<name>OutputSizeZ</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>2.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Resetting</name>
+								</first>
+								<second>
+									<name>Resetting</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -363,6 +375,54 @@
 				</second>
 			</item>
 			<item>
+				<first>ReportMatrixInfo:361</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:362</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:363</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ViewScene:0</first>
 				<second>
 					<module>
@@ -392,7 +452,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>2</count>
+			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
@@ -418,10 +478,46 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataBlue</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:363</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataGreen</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:362</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataRed</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:361</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>3</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
@@ -435,6 +531,27 @@
 			<second>
 				<first>1.52000000000000000e+02</first>
 				<second>1.52000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:361</first>
+			<second>
+				<first>5.97500000000000000e+02</first>
+				<second>5.16000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:362</first>
+			<second>
+				<first>7.17500000000000000e+02</first>
+				<second>6.36000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:363</first>
+			<second>
+				<first>8.37500000000000000e+02</first>
+				<second>7.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -454,7 +571,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>3</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
@@ -463,6 +580,18 @@
 		<item>
 			<first>EditMeshBoundingBox:0</first>
 			<second>1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:361</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:362</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:363</first>
+			<second>-1</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
@@ -477,6 +606,11 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
+	<moduleTagLabels class_id="22" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
 </networkFile>
 </boost_serialization>
 
