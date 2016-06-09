@@ -81,6 +81,8 @@ public:
 
   virtual void adjustLayout(QLayout* layout) = 0;
 
+  virtual void hideButtons() {}
+
   //The following have platform-specific values
   static const int moduleWidthThreshold;
   static const int extraModuleWidth;

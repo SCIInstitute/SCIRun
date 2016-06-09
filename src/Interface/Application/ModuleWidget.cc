@@ -247,6 +247,8 @@ public:
   virtual int getTitleWidth() const override;
 
   virtual void adjustLayout(QLayout* layout) override;
+
+  virtual void hideButtons() override { buttonWidget_->setVisible(false); }
 };
 
 class ModuleWidgetDisplayMini : public Ui::ModuleMini, public ModuleWidgetDisplayBase
@@ -280,8 +282,8 @@ void ModuleWidgetDisplay::setupFrame(QFrame* frame)
 
 void ModuleWidgetDisplay::setupTitle(const QString& name)
 {
-  titleLabel_->setFont(QFont("Helvetica", titleFontSize, QFont::Bold));
-  titleLabel_->setText(name);
+  titleButton_->setFont(QFont("Helvetica", titleFontSize, QFont::Bold));
+  titleButton_->setText(name);
 }
 
 void ModuleWidgetDisplay::setupProgressBar()
@@ -352,7 +354,7 @@ QProgressBar* ModuleWidgetDisplay::getProgressBar() const
 
 int ModuleWidgetDisplay::getTitleWidth() const
 {
-  return titleLabel_->fontMetrics().boundingRect(titleLabel_->text()).width();
+  return titleButton_->fontMetrics().boundingRect(titleButton_->text()).width();
 }
 
 void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
@@ -513,6 +515,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
   //qDebug() << width() << height() << currentWidget()->size();
+
+  fullWidgetDisplay_->hideButtons();
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
