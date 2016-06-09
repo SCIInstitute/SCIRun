@@ -248,7 +248,7 @@ public:
 
   virtual void adjustLayout(QLayout* layout) override;
 
-  virtual void hideButtons() override { buttonWidget_->setVisible(false); }
+  virtual void hideButtons() override { buttonWidget_->setVisible(false); progressBar_->setVisible(false); }
 };
 
 class ModuleWidgetDisplayMini : public Ui::ModuleMini, public ModuleWidgetDisplayBase
@@ -705,7 +705,7 @@ void ModuleWidget::replaceMe()
 
 void ModuleWidget::addPortLayouts(int index)
 {
-  widget(index)->layout()->setContentsMargins(5, 0, 5, 0);
+  widget(index)->layout()->setContentsMargins(0, 0, 0, 0);
 }
 
 void ModuleWidget::createPorts(const ModuleInfoProvider& moduleInfoProvider)
@@ -814,6 +814,7 @@ void ModuleWidget::addOutputPortsToLayout(int index)
     outputPortLayout_ = new QHBoxLayout;
     outputPortLayout_->setSpacing(SMALL_PORT_SPACING);
     outputPortLayout_->setAlignment(Qt::AlignLeft);
+    outputPortLayout_->setContentsMargins(0, 0, 0, 0);
     addOutputPortsToWidget(index);
   }
   ports_->addOutputsToLayout(outputPortLayout_);
@@ -823,14 +824,18 @@ void ModuleWidget::addOutputPortsToWidget(int index)
 {
   auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
   if (vbox)
-    vbox->insertLayout(-1, outputPortLayout_, 10);
+  {
+    vbox->insertLayout(-1, outputPortLayout_, 1);
+  }
 }
 
 void ModuleWidget::removeOutputPortsFromWidget(int index)
 {
   auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
   if (vbox)
+  {
     vbox->removeItem(outputPortLayout_);
+  }
 }
 
 void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
@@ -866,6 +871,7 @@ void ModuleWidget::addInputPortsToLayout(int index)
     inputPortLayout_ = new QHBoxLayout;
     inputPortLayout_->setSpacing(SMALL_PORT_SPACING);
     inputPortLayout_->setAlignment(Qt::AlignLeft);
+    inputPortLayout_->setContentsMargins(0, 0, 0, 0);
     addInputPortsToWidget(index);
   }
   ports_->addInputsToLayout(inputPortLayout_);
@@ -875,7 +881,10 @@ void ModuleWidget::addInputPortsToWidget(int index)
 {
   auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
   if (vbox)
+  {
+    vbox->setContentsMargins(0, 0, 0, 0);
     vbox->insertLayout(0, inputPortLayout_, 1);
+  }
 }
 
 void ModuleWidget::removeInputPortsFromWidget(int index)
