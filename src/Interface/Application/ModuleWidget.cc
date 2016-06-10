@@ -209,28 +209,10 @@ namespace
   }
 }
 
-#ifdef WIN32
-  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 110;
-  const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
-  const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
-  const int ModuleWidgetDisplayBase::smushFactor = 15;
-  const int ModuleWidgetDisplayBase::titleFontSize = 8;
-  const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
-  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
-#else
-  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 80;
-  const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
-  const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
-  const int ModuleWidgetDisplayBase::smushFactor = 15;
-  const int ModuleWidgetDisplayBase::titleFontSize = 12;
-  const int ModuleWidgetDisplayBase::widgetHeightAdjust = 1;
-  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -20;
-#endif
-
 class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
 {
 public:
-  virtual void setupFrame(QFrame* frame) override;
+  virtual void setupFrame(QStackedWidget* stacked) override;
   virtual void setupTitle(const QString& name) override;
   virtual void setupProgressBar() override;
   virtual void setupSpecial() override;
@@ -248,13 +230,13 @@ public:
 
   virtual void adjustLayout(QLayout* layout) override;
 
-  virtual void hideButtons() override { buttonWidget_->setVisible(false); progressBar_->setVisible(false); }
+  virtual void hideButtons() override { /*buttonWidget_->setVisible(false); progressBar_->setVisible(false);*/ }
 };
 
 class ModuleWidgetDisplayMini : public Ui::ModuleMini, public ModuleWidgetDisplayBase
 {
 public:
-  virtual void setupFrame(QFrame* frame) override;
+  virtual void setupFrame(QStackedWidget* stacked) override;
   virtual void setupTitle(const QString& name) override;
   virtual void setupProgressBar() override;
   virtual void setupSpecial() override;
@@ -275,15 +257,15 @@ private:
   mutable QPushButton nullButton_;
 };
 
-void ModuleWidgetDisplay::setupFrame(QFrame* frame)
+void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
 {
-  setupUi(frame);
+  setupUi(stacked);
 }
 
 void ModuleWidgetDisplay::setupTitle(const QString& name)
 {
-  titleButton_->setFont(QFont("Helvetica", titleFontSize, QFont::Bold));
-  titleButton_->setText(name);
+  titleLabel_->setFont(QFont("Helvetica", titleFontSize, QFont::Bold));
+  titleLabel_->setText(name);
 }
 
 void ModuleWidgetDisplay::setupProgressBar()
@@ -354,7 +336,7 @@ QProgressBar* ModuleWidgetDisplay::getProgressBar() const
 
 int ModuleWidgetDisplay::getTitleWidth() const
 {
-  return titleButton_->fontMetrics().boundingRect(titleButton_->text()).width();
+  return titleLabel_->fontMetrics().boundingRect(titleLabel_->text()).width();
 }
 
 void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
@@ -367,9 +349,9 @@ void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
   #endif
 }
 
-void ModuleWidgetDisplayMini::setupFrame(QFrame* frame)
+void ModuleWidgetDisplayMini::setupFrame(QStackedWidget* stacked)
 {
-  setupUi(frame);
+  //setupUi(frame);
 }
 
 void ModuleWidgetDisplayMini::setupTitle(const QString& name)
@@ -460,11 +442,11 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   : QStackedWidget(parent), HasNotes(theModule->get_id(), true),
   currentDisplay_(nullptr),
   fullWidgetDisplay_(new ModuleWidgetDisplay),
-  miniWidgetDisplay_(new ModuleWidgetDisplayMini),
+  //miniWidgetDisplay_(new ModuleWidgetDisplayMini),
   ports_(new PortWidgetManager),
   deletedFromGui_(true),
   colorLocked_(false),
-  isMini_(globalMiniMode_),
+  isMini_(false),
   errored_(false),
   executedOnce_(false),
   skipExecuteDueToFatalError_(false),
@@ -490,9 +472,10 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   setupLogging();
 
   fullIndex_ = buildDisplay(fullWidgetDisplay_.get(), name);
-  miniIndex_ = buildDisplay(miniWidgetDisplay_.get(), name);
+  //miniIndex_ = buildDisplay(miniWidgetDisplay_.get(), name);
 
-  currentDisplay_ = isMini_ ? miniWidgetDisplay_.get() : fullWidgetDisplay_.get();
+  currentDisplay_ = //isMini_ ? miniWidgetDisplay_.get() :
+    fullWidgetDisplay_.get();
   setCurrentIndex(isMini_ ? miniIndex_ : fullIndex_);
 
   makeOptionsDialog();
@@ -521,7 +504,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
 {
-  auto frame = new QFrame();
+  auto frame = new QStackedWidget();
   display->setupFrame(frame);
   int index = addWidget(frame);
 
@@ -566,29 +549,47 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   display->setupButtons(theModule_->has_ui(), this);
 }
 
+#ifdef WIN32
+  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 110;
+  const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
+  const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
+  const int ModuleWidgetDisplayBase::smushFactor = 15;
+  const int ModuleWidgetDisplayBase::titleFontSize = 8;
+  const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
+  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
+#else
+  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 120;
+  const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
+  const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
+  const int ModuleWidgetDisplayBase::smushFactor = 15;
+  const int ModuleWidgetDisplayBase::titleFontSize = 12;
+  const int ModuleWidgetDisplayBase::widgetHeightAdjust = 1;
+  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -20;
+#endif
+
 void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index)
 {
   auto frame = widget(index);
   int pixelWidth = display->getTitleWidth();
-  //std::cout << titleLabel_->text().toStdString() << std::endl;
-  //std::cout << "\tPixelwidth = " << pixelWidth << std::endl;
+  //qDebug() << moduleId_.c_str();
+  //qDebug() << "\tPixelwidth = " << pixelWidth;
   int extraWidth = pixelWidth - ModuleWidgetDisplayBase::moduleWidthThreshold;
-  //std::cout << "\textraWidth = " << extraWidth << std::endl;
+  //qDebug() << "\textraWidth = " << extraWidth;
   if (extraWidth > ModuleWidgetDisplayBase::extraWidthThreshold)
   {
-    //std::cout << "\tGROWING MODULE Current width: " << width() << std::endl;
+    //qDebug() << "\tGROWING MODULE Current width: " << frame->width();
     frame->resize(frame->width() + extraWidth + ModuleWidgetDisplayBase::extraModuleWidth, frame->height());
-    //std::cout << "\tNew width: " << width() << std::endl;
+    //qDebug() << "\tNew width: " << frame->width();
   }
   else
   {
-    //std::cout << "\tSHRINKING MODULE Current width: " << width() << std::endl;
+    //qDebug() << "\tSHRINKING MODULE Current width: " << frame->width();
     frame->resize(frame->width() - ModuleWidgetDisplayBase::smushFactor, frame->height());
-    //std::cout << "\tNew width: " << width() << std::endl;
+    //qDebug() << "\tNew width: " << frame->width();
   }
   display->adjustLayout(frame->layout());
   //qDebug() << size() << frame->size();
-  frame->resize(frame->width() + ModuleWidgetDisplayBase::widgetWidthAdjust, frame->height() + ModuleWidgetDisplayBase::widgetHeightAdjust);
+  //frame->resize(frame->width() + ModuleWidgetDisplayBase::widgetWidthAdjust, frame->height() + ModuleWidgetDisplayBase::widgetHeightAdjust);
   //qDebug() << size() << frame->size();
 }
 
@@ -822,10 +823,14 @@ void ModuleWidget::addOutputPortsToLayout(int index)
 
 void ModuleWidget::addOutputPortsToWidget(int index)
 {
-  auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
+  auto vbox = qobject_cast<QVBoxLayout*>(qobject_cast<QStackedWidget*>(widget(index))->widget(0)->layout());
   if (vbox)
   {
     vbox->insertLayout(-1, outputPortLayout_, 1);
+  }
+  else
+  {
+    qDebug() << "OOPS NO OUTPUT PORTS";
   }
 }
 
@@ -879,11 +884,15 @@ void ModuleWidget::addInputPortsToLayout(int index)
 
 void ModuleWidget::addInputPortsToWidget(int index)
 {
-  auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
+  auto vbox = qobject_cast<QVBoxLayout*>(qobject_cast<QStackedWidget*>(widget(index))->widget(0)->layout());
   if (vbox)
   {
     vbox->setContentsMargins(0, 0, 0, 0);
     vbox->insertLayout(0, inputPortLayout_, 1);
+  }
+  else
+  {
+    qDebug() << "OOPS NO INPUT PORTS";
   }
 }
 
@@ -1009,7 +1018,7 @@ ModuleWidget::~ModuleWidget()
 
   if (!theModule_->isStoppable())
   {
-    removeWidgetFromExecutionDisableList(miniWidgetDisplay_->getExecuteButton());
+    //removeWidgetFromExecutionDisableList(miniWidgetDisplay_->getExecuteButton());
     removeWidgetFromExecutionDisableList(fullWidgetDisplay_->getExecuteButton());
   }
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));

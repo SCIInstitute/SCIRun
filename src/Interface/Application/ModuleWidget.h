@@ -63,7 +63,7 @@ class ModuleWidgetDisplayBase
 {
 public:
   virtual ~ModuleWidgetDisplayBase() {}
-  virtual void setupFrame(QFrame* frame) = 0;
+  virtual void setupFrame(QStackedWidget* stacked) = 0; //TODO
   virtual void setupTitle(const QString& name) = 0;
   virtual void setupProgressBar() = 0;
   virtual void setupSpecial() = 0;
@@ -226,7 +226,7 @@ private Q_SLOTS:
 private:
   ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
-  ModuleWidgetDisplayPtr miniWidgetDisplay_;
+  //ModuleWidgetDisplayPtr miniWidgetDisplay_;
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
