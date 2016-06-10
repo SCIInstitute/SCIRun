@@ -227,6 +227,7 @@ public:
   virtual QProgressBar* getProgressBar() const override;
 
   virtual int getTitleWidth() const override;
+  virtual QLabel* getTitle() const override;
 
   virtual void adjustLayout(QLayout* layout) override;
 
@@ -251,6 +252,7 @@ public:
   virtual QProgressBar* getProgressBar() const override;
 
   virtual int getTitleWidth() const override;
+  virtual QLabel* getTitle() const override { return nullptr; }
 
   virtual void adjustLayout(QLayout* layout) override;
 private:
@@ -337,6 +339,11 @@ QProgressBar* ModuleWidgetDisplay::getProgressBar() const
 int ModuleWidgetDisplay::getTitleWidth() const
 {
   return titleLabel_->fontMetrics().boundingRect(titleLabel_->text()).width();
+}
+
+QLabel* ModuleWidgetDisplay::getTitle() const
+{
+  return titleLabel_;
 }
 
 void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
@@ -440,9 +447,7 @@ void fillColorStateLookup(const QString& background);
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QStackedWidget(parent), HasNotes(theModule->get_id(), true),
-  currentDisplay_(nullptr),
   fullWidgetDisplay_(new ModuleWidgetDisplay),
-  //miniWidgetDisplay_(new ModuleWidgetDisplayMini),
   ports_(new PortWidgetManager),
   deletedFromGui_(true),
   colorLocked_(false),
@@ -462,8 +467,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   editor_(ed),
   deleting_(false),
   defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192)),
-  fullIndex_(0),
-  miniIndex_(0),
   isViewScene_(name == "ViewScene")
 {
   fillColorStateLookup(defaultBackgroundColor_);
@@ -471,18 +474,15 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   setupModuleActions();
   setupLogging();
 
-  fullIndex_ = buildDisplay(fullWidgetDisplay_.get(), name);
-  //miniIndex_ = buildDisplay(miniWidgetDisplay_.get(), name);
-
-  currentDisplay_ = //isMini_ ? miniWidgetDisplay_.get() :
-    fullWidgetDisplay_.get();
-  setCurrentIndex(isMini_ ? miniIndex_ : fullIndex_);
+  setCurrentIndex(buildDisplay(fullWidgetDisplay_.get(), name));
 
   makeOptionsDialog();
   createPorts(*theModule_);
   addPorts(currentIndex());
 
-  resize(currentWidget()->size());
+  //qDebug() << width() << height() << currentWidget()->size();
+  //resize(currentWidget()->size());
+  //qDebug() << width() << height() << currentWidget()->size();
 
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->executionState().connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
@@ -498,25 +498,22 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
   //qDebug() << width() << height() << currentWidget()->size();
-
-  //fullWidgetDisplay_->hideButtons();
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
 {
-  auto frame = new QStackedWidget();
-  display->setupFrame(frame);
-  int index = addWidget(frame);
+  display->setupFrame(this);
+  //int index = addWidget(this);
 
   setupDisplayWidgets(display, name);
 
-  addPortLayouts(index);
+  addPortLayouts(0);
 
-  resizeBasedOnModuleName(display, index);
+  resizeBasedOnModuleName(display, 0);
 
   setupDisplayConnections(display);
 
-  return index;
+  return 0;
 }
 
 void ModuleWidget::setupLogging()
@@ -569,7 +566,7 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
 
 void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index)
 {
-  auto frame = widget(index);
+  auto frame = this;
   int pixelWidth = display->getTitleWidth();
   //qDebug() << moduleId_.c_str();
   //qDebug() << "\tPixelwidth = " << pixelWidth;
@@ -616,20 +613,20 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
     //Q_EMIT backgroundColorUpdated(moduleRGBA(176, 23, 31));
     updateBackgroundColor(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored)));
   }
-  currentDisplay_->getLogButton()->setStyleSheet(
+  fullWidgetDisplay_->getLogButton()->setStyleSheet(
     QString("* { background-color: %1 }")
     .arg(moduleRGBA(color.red(), color.green(), color.blue())));
 }
 
 void ModuleWidget::resetLogButtonColor()
 {
-  currentDisplay_->getLogButton()->setStyleSheet("");
+  fullWidgetDisplay_->getLogButton()->setStyleSheet("");
 }
 
 void ModuleWidget::resetProgressBar()
 {
-  currentDisplay_->getProgressBar()->setValue(0);
-  currentDisplay_->getProgressBar()->setTextVisible(false);
+  fullWidgetDisplay_->getProgressBar()->setValue(0);
+  fullWidgetDisplay_->getProgressBar()->setTextVisible(false);
 }
 
 size_t ModuleWidget::numInputPorts() const { return ports().numInputPorts(); }
@@ -679,7 +676,7 @@ void ModuleWidget::fillReplaceWithMenu()
   fillMenuWithFilteredModuleActions(menu, Application::Instance().controller()->getAllAvailableModuleDescriptions(),
     isReplacement,
     [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); },
-    currentDisplay_->getModuleActionButton());
+    fullWidgetDisplay_->getModuleActionButton());
 }
 
 QMenu* ModuleWidget::getReplaceWithMenu()
@@ -823,13 +820,13 @@ void ModuleWidget::addOutputPortsToLayout(int index)
 
 void ModuleWidget::addOutputPortsToWidget(int index)
 {
-  auto vbox = qobject_cast<QVBoxLayout*>(qobject_cast<QStackedWidget*>(widget(index))->widget(0)->layout());
+  auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
   if (vbox)
   {
     vbox->setContentsMargins(5, 0, 0, 0);
     vbox->insertLayout(-1, outputPortLayout_, 1);
     vbox->setAlignment(outputPortLayout_, Qt::AlignBottom);
-    vbox->setAlignment(dynamic_cast<ModuleWidgetDisplay*>(currentDisplay_)->titleLabel_, Qt::AlignBottom);
+    vbox->setAlignment(fullWidgetDisplay_->getTitle(), Qt::AlignBottom);
   }
   else
   {
@@ -887,7 +884,7 @@ void ModuleWidget::addInputPortsToLayout(int index)
 
 void ModuleWidget::addInputPortsToWidget(int index)
 {
-  auto vbox = qobject_cast<QVBoxLayout*>(qobject_cast<QStackedWidget*>(widget(index))->widget(0)->layout());
+  auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
   if (vbox)
   {
     vbox->setContentsMargins(5, 0, 0, 3);
@@ -1001,6 +998,29 @@ void ModuleWidget::printPortPositions() const
     std::cout << "\t" << p->pos();
   }
   std::cout << std::endl;
+}
+
+enum ModuleWidgetPages
+{
+  TITLE_PAGE,
+  PROGRESS_PAGE,
+  BUTTON_PAGE
+};
+
+void ModuleWidget::enterEvent(QEvent* event)
+{
+  previousPageIndex_ = currentIndex();
+  setCurrentIndex(BUTTON_PAGE);
+  QStackedWidget::enterEvent(event);
+  resize(size());
+  Q_EMIT displayChanged();
+}
+
+void ModuleWidget::leaveEvent(QEvent* event)
+{
+  setCurrentIndex(previousPageIndex_);
+  QStackedWidget::leaveEvent(event);
+  Q_EMIT displayChanged();
 }
 
 bool ModuleWidget::networkBeingCleared_(false);
@@ -1281,22 +1301,22 @@ void ModuleWidget::toggleOptionsDialog()
 void ModuleWidget::colorOptionsButton(bool visible)
 {
   QString styleSheet = visible ? "background-color: rgb(0,0,220); color: white;" : "";
-  currentDisplay_->getOptionsButton()->setStyleSheet(styleSheet);
+  fullWidgetDisplay_->getOptionsButton()->setStyleSheet(styleSheet);
 }
 
 void ModuleWidget::updateProgressBar(double percent)
 {
-  currentDisplay_->getProgressBar()->setValue(percent * currentDisplay_->getProgressBar()->maximum());
+  fullWidgetDisplay_->getProgressBar()->setValue(percent * fullWidgetDisplay_->getProgressBar()->maximum());
 
   //TODO: make this configurable
   //progressBar_->setTextVisible(true);
   updateModuleTime();
-  currentDisplay_->getProgressBar()->setToolTip(currentDisplay_->getProgressBar()->text());
+  fullWidgetDisplay_->getProgressBar()->setToolTip(fullWidgetDisplay_->getProgressBar()->text());
 }
 
 void ModuleWidget::updateModuleTime()
 {
-  currentDisplay_->getProgressBar()->setFormat(QString("%1 s : %p%").arg(timer_.elapsed()));
+  fullWidgetDisplay_->getProgressBar()->setFormat(QString("%1 s : %p%").arg(timer_.elapsed()));
 }
 
 void ModuleWidget::launchDocumentation()
@@ -1379,16 +1399,16 @@ void ModuleWidget::executeButtonPushed()
 
 void ModuleWidget::changeExecuteButtonToStop()
 {
-  currentDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
-  disconnect(currentDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
-  connect(currentDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
+  fullWidgetDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
+  disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
 }
 
 void ModuleWidget::changeExecuteButtonToPlay()
 {
-  currentDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
-  disconnect(currentDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
-  connect(currentDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
+  disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
+  connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
 }
 
 void ModuleWidget::stopButtonPushed()
@@ -1414,14 +1434,14 @@ void ModuleWidget::setGlobalMiniMode(bool mini)
 
 void ModuleWidget::collapseToMiniMode()
 {
-  changeDisplay(currentIndex(), miniIndex_);
-  isMini_ = true;
+  //changeDisplay(currentIndex(), miniIndex_);
+  //isMini_ = true;
 }
 
 void ModuleWidget::expandToFullMode()
 {
-  changeDisplay(currentIndex(), fullIndex_);
-  isMini_ = false;
+  //changeDisplay(currentIndex(), fullIndex_);
+  //isMini_ = false;
 }
 
 void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
@@ -1444,12 +1464,12 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
   colorLocked_ = true;
   setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nClick \"Refresh\" button to replace module for proper execution.");
 
-  disconnect(currentDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
+  disconnect(fullWidgetDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
 
   //This is entirely ViewScene-specific.
-  currentDisplay_->getOptionsButton()->setText("");
-  currentDisplay_->getOptionsButton()->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
-  connect(currentDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(replaceMe()));
+  fullWidgetDisplay_->getOptionsButton()->setText("");
+  fullWidgetDisplay_->getOptionsButton()->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
+  connect(fullWidgetDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(replaceMe()));
 }
 
 void ModuleWidget::highlightPorts()

@@ -78,6 +78,7 @@ public:
   virtual QProgressBar* getProgressBar() const = 0;
 
   virtual int getTitleWidth() const = 0;
+  virtual QLabel* getTitle() const = 0;
 
   virtual void adjustLayout(QLayout* layout) = 0;
 
@@ -223,14 +224,16 @@ private Q_SLOTS:
   void changeExecuteButtonToStop();
   void updateDockWidgetProperties(bool isFloating);
   void incomingConnectionStateChanged(bool disabled);
+protected:
+  virtual void enterEvent(QEvent* event) override;
+  virtual void leaveEvent(QEvent* event) override;
 private:
-  ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
-  //ModuleWidgetDisplayPtr miniWidgetDisplay_;
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
   bool isMini_, errored_, executedOnce_, skipExecuteDueToFatalError_, disabled_;
+  int previousPageIndex_ {0};
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
   std::atomic<int> previousModuleState_;
@@ -276,7 +279,6 @@ private:
   bool deleting_;
   static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
-  int fullIndex_, miniIndex_;
   bool isViewScene_; //TODO: lots of special logic around this case.
 
   static bool globalMiniMode_;
