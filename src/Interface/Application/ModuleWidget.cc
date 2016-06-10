@@ -499,7 +499,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
   //qDebug() << width() << height() << currentWidget()->size();
 
-  fullWidgetDisplay_->hideButtons();
+  //fullWidgetDisplay_->hideButtons();
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -562,7 +562,7 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
   const int ModuleWidgetDisplayBase::smushFactor = 15;
-  const int ModuleWidgetDisplayBase::titleFontSize = 12;
+  const int ModuleWidgetDisplayBase::titleFontSize = 13;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = 1;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -20;
 #endif
@@ -826,7 +826,10 @@ void ModuleWidget::addOutputPortsToWidget(int index)
   auto vbox = qobject_cast<QVBoxLayout*>(qobject_cast<QStackedWidget*>(widget(index))->widget(0)->layout());
   if (vbox)
   {
+    vbox->setContentsMargins(5, 0, 0, 0);
     vbox->insertLayout(-1, outputPortLayout_, 1);
+    vbox->setAlignment(outputPortLayout_, Qt::AlignBottom);
+    vbox->setAlignment(dynamic_cast<ModuleWidgetDisplay*>(currentDisplay_)->titleLabel_, Qt::AlignBottom);
   }
   else
   {
@@ -887,7 +890,7 @@ void ModuleWidget::addInputPortsToWidget(int index)
   auto vbox = qobject_cast<QVBoxLayout*>(qobject_cast<QStackedWidget*>(widget(index))->widget(0)->layout());
   if (vbox)
   {
-    vbox->setContentsMargins(0, 0, 0, 0);
+    vbox->setContentsMargins(5, 0, 0, 3);
     vbox->insertLayout(0, inputPortLayout_, 1);
   }
   else

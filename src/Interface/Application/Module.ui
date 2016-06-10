@@ -24,7 +24,7 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>250</width>
+    <width>260</width>
     <height>16777215</height>
    </size>
   </property>
@@ -52,9 +52,22 @@
      <number>2</number>
     </property>
     <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>10</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
      <widget class="QLabel" name="titleLabel_">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -62,14 +75,21 @@
       <property name="minimumSize">
        <size>
         <width>120</width>
-        <height>30</height>
+        <height>0</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>240</width>
-        <height>30</height>
+        <width>250</width>
+        <height>20</height>
        </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Helvetica</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
       </property>
       <property name="text">
        <string>ModuleTitle</string>
