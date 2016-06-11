@@ -1408,6 +1408,7 @@ void ModuleWidget::changeExecuteButtonToStop()
   fullWidgetDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
   disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
   connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
+  movePortWidgets(currentIndex(), PROGRESS_PAGE);
   setCurrentIndex(PROGRESS_PAGE);
 }
 
@@ -1416,6 +1417,7 @@ void ModuleWidget::changeExecuteButtonToPlay()
   fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
   disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
   connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  movePortWidgets(currentIndex(), TITLE_PAGE);
   setCurrentIndex(TITLE_PAGE);
 }
 
