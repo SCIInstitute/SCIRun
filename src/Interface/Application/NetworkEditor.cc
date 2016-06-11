@@ -1252,17 +1252,6 @@ void NetworkEditor::adjustModuleHeight(int delta)
   }
 }
 
-void NetworkEditor::setModuleMini(bool mini)
-{
-  ModuleWidget::setGlobalMiniMode(mini);
-  for (const auto& item : scene_->items())
-  {
-    auto module = getModule(item);
-    if (module)
-      module->setMiniMode(mini);
-  }
-}
-
 void NetworkEditor::metadataLayer(bool active)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())

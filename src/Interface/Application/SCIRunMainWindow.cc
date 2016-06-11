@@ -265,9 +265,6 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(prefsWindow_->defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), networkEditor_, SIGNAL(defaultNotePositionChanged(NotePosition)));
 
-  connect(prefsWindow_->largeModuleSizeToolButton_, SIGNAL(clicked()), this, SLOT(makeModulesLargeSize()));
-  connect(prefsWindow_->smallModuleSizeToolButton_, SIGNAL(clicked()), this, SLOT(makeModulesSmallSize()));
-
   connect(prefsWindow_->cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
   connect(prefsWindow_->manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
   connect(prefsWindow_->euclideanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesEuclidean()));
@@ -998,8 +995,6 @@ void SCIRunMainWindow::setupDevConsole()
   actionDevConsole_->setShortcut(QKeySequence("`"));
   connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
   connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
-  connect(devConsole_, SIGNAL(moduleHeightAdjusted(int)), networkEditor_, SLOT(adjustModuleHeight(int)));
-  connect(devConsole_, SIGNAL(moduleWidthAdjusted(int)), networkEditor_, SLOT(adjustModuleWidth(int)));
 }
 
 void SCIRunMainWindow::setExecutor(int type)
@@ -1073,16 +1068,6 @@ void SCIRunMainWindow::updateMiniView()
   networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
     Qt::KeepAspectRatio,
     Qt::SmoothTransformation));
-}
-
-void SCIRunMainWindow::makeModulesLargeSize()
-{
-  networkEditor_->setModuleMini(false);
-}
-
-void SCIRunMainWindow::makeModulesSmallSize()
-{
-  networkEditor_->setModuleMini(true);
 }
 
 namespace {

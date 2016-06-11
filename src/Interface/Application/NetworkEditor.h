@@ -248,7 +248,6 @@ namespace Gui {
     void zoomReset();
     void zoomBestFit();
     void centerView();
-    void setModuleMini(bool mini);
     void highlightTaggedItem(int tagValue);
     void resetNetworkDueToCycle();
     void moduleWindowAction();

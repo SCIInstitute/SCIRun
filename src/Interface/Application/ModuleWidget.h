@@ -175,13 +175,9 @@ public Q_SLOTS:
   void pinUI();
   void hideUI();
   void showUI();
-  void setMiniMode(bool mini);
-  void collapseToMiniMode();
-  void expandToFullMode();
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
   void replaceMe();
-  static void setGlobalMiniMode(bool mini);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void interrupt(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
@@ -265,7 +261,7 @@ private:
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
 
-  void changeDisplay(int oldIndex, int newIndex);
+  void movePortWidgets(int oldIndex, int newIndex);
   void addPortLayouts(int index);
   void addInputPortsToLayout(int index);
   void addInputPortsToWidget(int index);

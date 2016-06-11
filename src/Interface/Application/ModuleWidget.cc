@@ -84,8 +84,7 @@ namespace Gui {
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
         << new QAction("Replace With", parent)
-        << new QAction("Collapse", parent)
-        << disabled(new QAction("Ignore*", parent))
+        //<< disabled(new QAction("Ignore*", parent))
         << new QAction("Show Log", parent)
         //<< disabled(new QAction("Make Sub-Network", parent))  // Issue #287
         << separatorAction(parent)
@@ -640,7 +639,6 @@ void ModuleWidget::setupModuleActions()
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
-  connect(actionsMenu_->getAction("Collapse"), SIGNAL(triggered()), this, SLOT(collapseToMiniMode()));
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
   if (isViewScene_ || theModule_->hasDynamicPorts()) //TODO: buggy combination, will disable for now. Fix is #1035
     actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Duplicate"));
@@ -841,6 +839,8 @@ void ModuleWidget::removeOutputPortsFromWidget(int index)
   {
     vbox->removeItem(outputPortLayout_);
   }
+  else
+    qDebug() << "removeOutputPortsFromWidget failed";
 }
 
 void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
@@ -901,6 +901,8 @@ void ModuleWidget::removeInputPortsFromWidget(int index)
   auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
   if (vbox)
     vbox->removeItem(inputPortLayout_);
+  else
+    qDebug() << "removeInputPortsFromWidget failed";
 }
 
 void PortWidgetManager::reindexInputs()
@@ -1010,17 +1012,16 @@ enum ModuleWidgetPages
 void ModuleWidget::enterEvent(QEvent* event)
 {
   previousPageIndex_ = currentIndex();
+  movePortWidgets(previousPageIndex_, BUTTON_PAGE);
   setCurrentIndex(BUTTON_PAGE);
   QStackedWidget::enterEvent(event);
-  resize(size());
-  Q_EMIT displayChanged();
 }
 
 void ModuleWidget::leaveEvent(QEvent* event)
 {
+  movePortWidgets(currentIndex(), previousPageIndex_);
   setCurrentIndex(previousPageIndex_);
   QStackedWidget::leaveEvent(event);
-  Q_EMIT displayChanged();
 }
 
 bool ModuleWidget::networkBeingCleared_(false);
@@ -1419,40 +1420,16 @@ void ModuleWidget::stopButtonPushed()
 
 bool ModuleWidget::globalMiniMode_(false);
 
-void ModuleWidget::setMiniMode(bool mini)
+void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)
 {
-  if (mini)
-    collapseToMiniMode();
-  else
-    expandToFullMode();
-}
-
-void ModuleWidget::setGlobalMiniMode(bool mini)
-{
-  globalMiniMode_ = mini;
-}
-
-void ModuleWidget::collapseToMiniMode()
-{
-  //changeDisplay(currentIndex(), miniIndex_);
-  //isMini_ = true;
-}
-
-void ModuleWidget::expandToFullMode()
-{
-  //changeDisplay(currentIndex(), fullIndex_);
-  //isMini_ = false;
-}
-
-void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
-{
+  qDebug() << "movePortWidgets" << oldIndex << newIndex;
   removeInputPortsFromWidget(oldIndex);
   removeOutputPortsFromWidget(oldIndex);
   addInputPortsToWidget(newIndex);
   addOutputPortsToWidget(newIndex);
-  auto size = widget(newIndex)->size();
-  setCurrentIndex(newIndex);
-  resize(size);
+  //auto size = widget(newIndex)->size();
+  //setCurrentIndex(newIndex);
+  //resize(size);
   Q_EMIT displayChanged();
 }
 
