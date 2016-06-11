@@ -271,6 +271,8 @@ void ModuleWidgetDisplay::setupTitle(const QString& name)
   QFont smallerTitleFont("Helvetica", titleFontSize - 3);
   buttonGroup_->setFont(smallerTitleFont);
   buttonGroup_->setTitle(name);
+  progressGroupBox_->setFont(smallerTitleFont);
+  progressGroupBox_->setTitle(name);
 }
 
 void ModuleWidgetDisplay::setupProgressBar()
@@ -1046,7 +1048,6 @@ ModuleWidget::~ModuleWidget()
 
   if (!theModule_->isStoppable())
   {
-    //removeWidgetFromExecutionDisableList(miniWidgetDisplay_->getExecuteButton());
     removeWidgetFromExecutionDisableList(fullWidgetDisplay_->getExecuteButton());
   }
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
@@ -1407,6 +1408,7 @@ void ModuleWidget::changeExecuteButtonToStop()
   fullWidgetDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
   disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
   connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
+  setCurrentIndex(PROGRESS_PAGE);
 }
 
 void ModuleWidget::changeExecuteButtonToPlay()
@@ -1414,6 +1416,7 @@ void ModuleWidget::changeExecuteButtonToPlay()
   fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
   disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
   connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  setCurrentIndex(TITLE_PAGE);
 }
 
 void ModuleWidget::stopButtonPushed()

@@ -32,7 +32,7 @@
    <string>StackedWidget</string>
   </property>
   <property name="currentIndex">
-   <number>0</number>
+   <number>1</number>
   </property>
   <widget class="QWidget" name="titlePage_">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -128,10 +128,38 @@
      <number>2</number>
     </property>
     <item>
-     <widget class="QProgressBar" name="progressBar_">
-      <property name="value">
-       <number>24</number>
+     <widget class="QGroupBox" name="progressGroupBox_">
+      <property name="title">
+       <string>GroupBox</string>
       </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="margin">
+        <number>1</number>
+       </property>
+       <item>
+        <widget class="QLCDNumber" name="lcdNumber">
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="numDigits">
+          <number>2</number>
+         </property>
+         <property name="segmentStyle">
+          <enum>QLCDNumber::Filled</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QProgressBar" name="progressBar_">
+         <property name="value">
+          <number>24</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -354,5 +382,22 @@
  <resources>
   <include location="scirun5.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>progressBar_</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>lcdNumber</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>32</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>26</x>
+     <y>31</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
