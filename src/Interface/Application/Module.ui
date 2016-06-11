@@ -24,7 +24,7 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>260</width>
+    <width>265</width>
     <height>16777215</height>
    </size>
   </property>
@@ -32,7 +32,7 @@
    <string>StackedWidget</string>
   </property>
   <property name="currentIndex">
-   <number>1</number>
+   <number>0</number>
   </property>
   <widget class="QWidget" name="titlePage_">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -80,7 +80,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>250</width>
+        <width>255</width>
         <height>20</height>
        </size>
       </property>
@@ -154,7 +154,7 @@
      <number>2</number>
     </property>
     <item>
-     <widget class="QGroupBox" name="">
+     <widget class="QGroupBox" name="buttonGroup_">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -176,7 +176,16 @@
       <property name="title">
        <string>ModuleTitle</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">
+        <number>-1</number>
+       </property>
        <item>
         <widget class="QPushButton" name="executePushButton_">
          <property name="enabled">
@@ -184,14 +193,14 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>23</width>
-           <height>23</height>
+           <width>21</width>
+           <height>21</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>23</width>
-           <height>23</height>
+           <width>21</width>
+           <height>21</height>
           </size>
          </property>
          <property name="text">
@@ -209,14 +218,14 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>15</width>
-           <height>23</height>
+           <width>21</width>
+           <height>21</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>15</width>
-           <height>23</height>
+           <width>21</width>
+           <height>21</height>
           </size>
          </property>
          <property name="toolTip">
@@ -240,14 +249,14 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>15</width>
-           <height>23</height>
+           <width>21</width>
+           <height>21</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>15</width>
-           <height>23</height>
+           <width>21</width>
+           <height>21</height>
           </size>
          </property>
          <property name="toolTip">
@@ -271,14 +280,14 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>20</width>
-           <height>23</height>
+           <width>25</width>
+           <height>21</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>20</width>
-           <height>23</height>
+           <width>25</width>
+           <height>21</height>
           </size>
          </property>
          <property name="toolTip">
@@ -315,14 +324,14 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>20</width>
-           <height>23</height>
+           <width>21</width>
+           <height>21</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>20</width>
-           <height>23</height>
+           <width>21</width>
+           <height>21</height>
           </size>
          </property>
          <property name="toolTip">

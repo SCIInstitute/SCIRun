@@ -265,8 +265,12 @@ void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
 
 void ModuleWidgetDisplay::setupTitle(const QString& name)
 {
-  titleLabel_->setFont(QFont("Helvetica", titleFontSize, QFont::Bold));
+  QFont titleFont("Helvetica", titleFontSize, QFont::Bold);
+  titleLabel_->setFont(titleFont);
   titleLabel_->setText(name);
+  QFont smallerTitleFont("Helvetica", titleFontSize - 3);
+  buttonGroup_->setFont(smallerTitleFont);
+  buttonGroup_->setTitle(name);
 }
 
 void ModuleWidgetDisplay::setupProgressBar()
@@ -1422,7 +1426,7 @@ bool ModuleWidget::globalMiniMode_(false);
 
 void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)
 {
-  qDebug() << "movePortWidgets" << oldIndex << newIndex;
+  //qDebug() << "movePortWidgets" << oldIndex << newIndex;
   removeInputPortsFromWidget(oldIndex);
   removeOutputPortsFromWidget(oldIndex);
   addInputPortsToWidget(newIndex);
