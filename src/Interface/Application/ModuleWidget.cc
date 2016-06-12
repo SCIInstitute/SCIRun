@@ -286,6 +286,7 @@ void ModuleWidgetDisplay::setupProgressBar()
 void ModuleWidgetDisplay::setupSpecial()
 {
   optionsButton_->setText("VIEW");
+  optionsButton_->setFont(QFont("Helvetica", 8));
   optionsButton_->setToolTip("View renderer output");
   optionsButton_->resize(100, optionsButton_->height());
   optionsButton_->setIcon(QIcon());
