@@ -355,11 +355,11 @@ QLabel* ModuleWidgetDisplay::getTitle() const
 void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
 {
   //TODO: centralize platform-dependent code
-  #ifdef WIN32
-  layout->removeItem(verticalSpacer_Mac);
-  layout->removeItem(horizontalSpacer_Mac1);
-  layout->removeItem(horizontalSpacer_Mac2);
-  #endif
+  //#ifdef WIN32
+  //layout->removeItem(verticalSpacer_Mac);
+  //layout->removeItem(horizontalSpacer_Mac1);
+  //layout->removeItem(horizontalSpacer_Mac2);
+  //#endif
 }
 
 void ModuleWidgetDisplayMini::setupFrame(QStackedWidget* stacked)
