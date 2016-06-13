@@ -171,6 +171,7 @@ private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
   void loadNetwork();
+  void checkAndLoadNetworkFile(const QString& filename);
   void loadRecentNetwork();
   bool newNetwork();
   void runScript();
