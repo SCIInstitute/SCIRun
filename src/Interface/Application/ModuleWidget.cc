@@ -29,7 +29,6 @@
 #include <iostream>
 #include <QtGui>
 #include "ui_Module.h"
-#include "ui_ModuleMini.h"
 #include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
@@ -233,31 +232,6 @@ public:
   virtual void stopExecuteMovie() override;
 };
 
-class ModuleWidgetDisplayMini : public Ui::ModuleMini, public ModuleWidgetDisplayBase
-{
-public:
-  virtual void setupFrame(QStackedWidget* stacked) override;
-  virtual void setupTitle(const QString& name) override;
-  virtual void setupProgressBar() override;
-  virtual void setupSpecial() override;
-  virtual void setupButtons(bool hasUI, QObject* module) override;
-  virtual void setupIcons() override;
-  virtual QAbstractButton* getOptionsButton() const override;
-  virtual QAbstractButton* getExecuteButton() const override;
-  virtual QAbstractButton* getHelpButton() const override;
-  virtual QAbstractButton* getLogButton() const override;
-  virtual QPushButton* getModuleActionButton() const override;
-
-  virtual QProgressBar* getProgressBar() const override;
-
-  virtual int getTitleWidth() const override;
-  virtual QLabel* getTitle() const override { return nullptr; }
-
-  virtual void adjustLayout(QLayout* layout) override;
-private:
-  mutable QPushButton nullButton_;
-};
-
 void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
 {
   setupUi(stacked);
@@ -373,86 +347,6 @@ void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
   //layout->removeItem(horizontalSpacer_Mac1);
   //layout->removeItem(horizontalSpacer_Mac2);
   //#endif
-}
-
-void ModuleWidgetDisplayMini::setupFrame(QStackedWidget* stacked)
-{
-  //setupUi(frame);
-}
-
-void ModuleWidgetDisplayMini::setupTitle(const QString& name)
-{
-  optionsButton_->setFont(QFont("Helvetica", titleFontSize, QFont::Bold));
-  optionsButton_->setText(name);
-}
-
-void ModuleWidgetDisplayMini::setupProgressBar()
-{
-  progressBar_->setMaximum(100);
-  progressBar_->setMinimum(0);
-  progressBar_->setValue(0);
-  progressBar_->setTextVisible(false);
-}
-
-void ModuleWidgetDisplayMini::setupSpecial()
-{
-  progressBar_->setVisible(false);
-}
-
-void ModuleWidgetDisplayMini::setupButtons(bool hasUI, QObject* module)
-{
-  optionsButton_->setEnabled(hasUI);
-  module->connect(expandToolButton_, SIGNAL(clicked()), SLOT(expandToFullMode()));
-}
-
-void ModuleWidgetDisplayMini::setupIcons()
-{
-
-}
-
-QAbstractButton* ModuleWidgetDisplayMini::getOptionsButton() const
-{
-  return optionsButton_;
-}
-
-QAbstractButton* ModuleWidgetDisplayMini::getExecuteButton() const
-{
-  return &nullButton_;
-}
-
-QAbstractButton* ModuleWidgetDisplayMini::getHelpButton() const
-{
-  return &nullButton_;
-}
-
-QAbstractButton* ModuleWidgetDisplayMini::getLogButton() const
-{
-  return &nullButton_;
-}
-
-QPushButton* ModuleWidgetDisplayMini::getModuleActionButton() const
-{
-  return &nullButton_;
-}
-
-QProgressBar* ModuleWidgetDisplayMini::getProgressBar() const
-{
-  return progressBar_;
-}
-
-int ModuleWidgetDisplayMini::getTitleWidth() const
-{
-  return optionsButton_->fontMetrics().boundingRect(optionsButton_->text()).width() + 50;
-}
-
-void ModuleWidgetDisplayMini::adjustLayout(QLayout* layout)
-{
-  // //TODO: centralize platform-dependent code
-  // #ifdef WIN32
-  // layout->removeItem(verticalSpacer_Mac);
-  // layout->removeItem(horizontalSpacer_Mac1);
-  // layout->removeItem(horizontalSpacer_Mac2);
-  // #endif
 }
 
 static const int UNSET = -1;
