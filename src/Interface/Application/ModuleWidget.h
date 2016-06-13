@@ -63,7 +63,7 @@ class ModuleWidgetDisplayBase
 {
 public:
   virtual ~ModuleWidgetDisplayBase() {}
-  virtual void setupFrame(QFrame* frame) = 0;
+  virtual void setupFrame(QStackedWidget* stacked) = 0; //TODO
   virtual void setupTitle(const QString& name) = 0;
   virtual void setupProgressBar() = 0;
   virtual void setupSpecial() = 0;
@@ -78,8 +78,12 @@ public:
   virtual QProgressBar* getProgressBar() const = 0;
 
   virtual int getTitleWidth() const = 0;
+  virtual QLabel* getTitle() const = 0;
 
   virtual void adjustLayout(QLayout* layout) = 0;
+
+  virtual void startExecuteMovie() {}
+  virtual void stopExecuteMovie() {}
 
   //The following have platform-specific values
   static const int moduleWidthThreshold;
@@ -172,13 +176,9 @@ public Q_SLOTS:
   void pinUI();
   void hideUI();
   void showUI();
-  void setMiniMode(bool mini);
-  void collapseToMiniMode();
-  void expandToFullMode();
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
   void replaceMe();
-  static void setGlobalMiniMode(bool mini);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void interrupt(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
@@ -221,14 +221,16 @@ private Q_SLOTS:
   void changeExecuteButtonToStop();
   void updateDockWidgetProperties(bool isFloating);
   void incomingConnectionStateChanged(bool disabled);
+protected:
+  virtual void enterEvent(QEvent* event) override;
+  virtual void leaveEvent(QEvent* event) override;
 private:
-  ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
-  ModuleWidgetDisplayPtr miniWidgetDisplay_;
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
   bool isMini_, errored_, executedOnce_, skipExecuteDueToFatalError_, disabled_;
+  int previousPageIndex_ {0};
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
   std::atomic<int> previousModuleState_;
@@ -260,7 +262,7 @@ private:
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
 
-  void changeDisplay(int oldIndex, int newIndex);
+  void movePortWidgets(int oldIndex, int newIndex);
   void addPortLayouts(int index);
   void addInputPortsToLayout(int index);
   void addInputPortsToWidget(int index);
@@ -274,7 +276,6 @@ private:
   bool deleting_;
   static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
-  int fullIndex_, miniIndex_;
   bool isViewScene_; //TODO: lots of special logic around this case.
 
   static bool globalMiniMode_;

@@ -75,7 +75,7 @@ QString TreeViewModuleGetter::text() const
 bool TreeViewModuleGetter::isModule() const
 {
   auto current = tree_.currentItem();
-  return current->childCount() == 0 && current->parent() && !current->text(0).startsWith("clipboard") && current->textColor(0) != CLIPBOARD_COLOR;
+  return current && current->childCount() == 0 && current->parent() && !current->text(0).startsWith("clipboard") && current->textColor(0) != CLIPBOARD_COLOR;
 }
 
 QString TreeViewModuleGetter::clipboardXML() const
@@ -86,8 +86,7 @@ QString TreeViewModuleGetter::clipboardXML() const
 bool TreeViewModuleGetter::isClipboardXML() const
 {
   auto current = tree_.currentItem();
-
-  return current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->textColor(0) == CLIPBOARD_COLOR);
+  return current && current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->textColor(0) == CLIPBOARD_COLOR);
 }
 
 NotePosition ComboBoxDefaultNotePositionGetter::position() const
