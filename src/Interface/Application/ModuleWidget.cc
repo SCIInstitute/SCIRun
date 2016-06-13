@@ -229,8 +229,8 @@ public:
   virtual QLabel* getTitle() const override;
 
   virtual void adjustLayout(QLayout* layout) override;
-
-  virtual void hideButtons() override { /*buttonWidget_->setVisible(false); progressBar_->setVisible(false);*/ }
+  virtual void startExecuteMovie() override;
+  virtual void stopExecuteMovie() override;
 };
 
 class ModuleWidgetDisplayMini : public Ui::ModuleMini, public ModuleWidgetDisplayBase
@@ -310,6 +310,19 @@ void ModuleWidgetDisplay::setupIcons()
   getLogButton()->setIcon(QPixmap(":/general/Resources/new/modules/info.png"));
   getModuleActionButton()->setText("");
   getModuleActionButton()->setIcon(QPixmap(":/general/Resources/new/modules/settings.png"));
+
+  auto movie = new QMovie(":/general/Resources/executing.gif");
+  executingLabel_->setMovie(movie);
+}
+
+void ModuleWidgetDisplay::startExecuteMovie()
+{
+  executingLabel_->movie()->start();
+}
+
+void ModuleWidgetDisplay::stopExecuteMovie()
+{
+  executingLabel_->movie()->stop();
 }
 
 QAbstractButton* ModuleWidgetDisplay::getOptionsButton() const
@@ -1411,6 +1424,8 @@ void ModuleWidget::changeExecuteButtonToStop()
   connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
   movePortWidgets(currentIndex(), PROGRESS_PAGE);
   setCurrentIndex(PROGRESS_PAGE);
+
+  fullWidgetDisplay_->startExecuteMovie();
 }
 
 void ModuleWidget::changeExecuteButtonToPlay()

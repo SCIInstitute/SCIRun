@@ -82,7 +82,8 @@ public:
 
   virtual void adjustLayout(QLayout* layout) = 0;
 
-  virtual void hideButtons() {}
+  virtual void startExecuteMovie() {}
+  virtual void stopExecuteMovie() {}
 
   //The following have platform-specific values
   static const int moduleWidthThreshold;
