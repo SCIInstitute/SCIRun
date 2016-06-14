@@ -52,6 +52,7 @@
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/NetworkNotesDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
+#include <Interface/Modules/Fields/RefineTetMeshLocallyDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/EditMeshBoundingBoxDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
@@ -67,7 +68,6 @@
 #include <Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h>
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldDialog.h>
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldOrWidgetDialog.h>
-#include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/FairMeshDialog.h>
@@ -156,17 +156,14 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
     ADD_MODULE_DIALOG(CreateStandardColorMap, CreateStandardColorMapDialog)
     ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
-    ADD_MODULE_DIALOG(InsertFieldsIntoBundle, InsertFieldsIntoBundleDialog)
     ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
     ADD_MODULE_DIALOG(SplitFieldByDomain, SplitFieldByDomainDialog)
-    ADD_MODULE_DIALOG(CreateFieldData, CreateFieldDataDialog)
     ADD_MODULE_DIALOG(CalculateFieldData, CalculateFieldDataDialog)
     ADD_MODULE_DIALOG(SetFieldData, SetFieldDataDialog)
     ADD_MODULE_DIALOG(InterfaceWithCleaver, InterfaceWithCleaverDialog)
     ADD_MODULE_DIALOG(SelectSubMatrix, SelectSubMatrixDialog)
     ADD_MODULE_DIALOG(GetMatrixSlice, GetMatrixSliceDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeDialog)
-    ADD_MODULE_DIALOG(InsertFieldsIntoBundle, InsertFieldsIntoBundleDialog)
     ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
     ADD_MODULE_DIALOG(SplitFieldByDomain, SplitFieldByDomainDialog)
     ADD_MODULE_DIALOG(ConvertMatrixType, ConvertMatrixTypeDialog)
@@ -207,6 +204,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
     ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
     ADD_MODULE_DIALOG(ClipVolumeByIsovalue, ClipVolumeByIsovalueDialog)
+    ADD_MODULE_DIALOG(RefineTetMeshLocally, RefineTetMeshLocallyDialog)
   ;
 }
 

@@ -555,12 +555,12 @@ void matlabconverter::mlArrayTOsciString(const matlabarray &ma, StringHandle &ha
     case matlabarray::mlSTRING:
       {                   
         handle = dynamic_cast<String *>(new String(ma.getstring()));
-        if (handle.get_rep() == 0) throw matlabconverter_error();
+        if (handle.get_rep() == 0) throw error_type();
       }
       break;
     default:
       {   // The program should not get here
-        throw matlabconverter_error();
+        throw error_type();
       }
   }
 }
@@ -696,7 +696,7 @@ void matlabconverter::mlArrayTOsciMatrix(const matlabarray &ma,MatrixHandle &han
 
         if (dataindex == -1)
         {
-          throw matlabconverter_error();
+          throw error_type();
         }
 
         matlabarray subarray;
@@ -714,7 +714,7 @@ void matlabconverter::mlArrayTOsciMatrix(const matlabarray &ma,MatrixHandle &han
       break;
     default:
       {   // The program should not get here
-        throw matlabconverter_error();
+        throw error_type();
       }
   }
 }
@@ -727,9 +727,9 @@ void matlabconverter::sciMatrixTOmlMatrix(MatrixHandle scimat, matlabarray &mlma
   // SCIRun matrices are always (up till now) doubles
   if (dataformat == matlabarray::miSAMEASDATA) dataformat = matlabarray::miDOUBLE;
         
-  if (matrix_is::dense(scimat))
+  if (matrixIs::dense(scimat))
   {
-    DenseMatrix tmatrix = matrix_cast::as_dense(scimat)->transpose();
+    DenseMatrix tmatrix = castMatrix::toDense(scimat)->transpose();
               
     std::vector<int> dims(2);
     dims[1] = tmatrix.nrows();
@@ -737,18 +737,18 @@ void matlabconverter::sciMatrixTOmlMatrix(MatrixHandle scimat, matlabarray &mlma
     mlmat.createdensearray(dims,dataformat);
     mlmat.setnumericarray(tmatrix.data(),mlmat.getnumelements());
   }
-  else if (matrix_is::column(scimat))
+  else if (matrixIs::column(scimat))
   {
     std::vector<int> dims(2);
-    DenseColumnMatrixHandle cmatrix = matrix_cast::as_column(scimat);
+    DenseColumnMatrixHandle cmatrix = castMatrix::toColumn(scimat);
     dims[0] = cmatrix->nrows();
     dims[1] = cmatrix->ncols();
     mlmat.createdensearray(dims,dataformat);
     mlmat.setnumericarray(cmatrix->data(),mlmat.getnumelements());
   }
-  else if (matrix_is::sparse(scimat))
+  else if (matrixIs::sparse(scimat))
   {
-    SparseRowMatrix tmatrix = matrix_cast::as_sparse(scimat)->transpose();
+    SparseRowMatrix tmatrix = castMatrix::toSparse(scimat)->transpose();
               
     std::vector<int> dims(2);
     dims[1] = tmatrix.nrows();
@@ -988,7 +988,7 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
               mlarray.getnumericarray(static_cast<double *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             default:
-              throw matlabconverter_error();
+              throw error_type();
           }
       
           // set some info on the axis as not all SCIRun prs check whether there is any
@@ -1090,7 +1090,7 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
                                 
         if (dataindex == -1)
         {
-          throw matlabconverter_error();
+          throw error_type();
         }
                         
         matlabarray subarray;
@@ -1101,14 +1101,14 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
                                 
         if (subclass != matlabarray::mlDENSE)
         {
-          throw matlabconverter_error();
+          throw error_type();
         }
                               
         mlArrayTOsciNrrdData(subarray,scinrrd);
                                 
         if (scinrrd == 0)
         {
-          throw matlabconverter_error();
+          throw error_type();
         }
                                 
         // Add axes properties if they are specified
@@ -1133,7 +1133,7 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
                     
             if ((axisarrayclass != matlabarray::mlSTRUCT)&&(axisarrayclass != matlabarray::mlOBJECT))
             {
-              throw matlabconverter_error();
+              throw error_type();
             }
                   
                 
@@ -1362,7 +1362,7 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
                         
     default:
       {   // The program should not get here
-        throw matlabconverter_error(); 
+        throw error_type(); 
       }
     }
 }
@@ -1539,19 +1539,23 @@ int matlabconverter::sciFieldCompatible(const matlabarray& mlarray,std::string &
   return(algo.analyze_iscompatible(mlarray,infostring,postremark));
 }
 
-void matlabconverter::mlArrayTOsciField(const matlabarray& mlarray,FieldHandle &scifield)
+void matlabconverter::mlArrayTOsciField(const matlabarray& mlarray, FieldHandle &scifield)
 {
   scifield.reset();
-  
+
   MatlabToFieldAlgo algo;
 
   algo.setreporter(pr_);
-  
+
   std::string fielddesc;
-  if(!(algo.analyze_fieldtype(mlarray,fielddesc)))
+  try
+  {
+    algo.analyze_fieldtype(mlarray, fielddesc);
+  }
+  catch (error_type& e)
   {
     error("matlabconverter: Could not determine the output field type");
-    throw matlabconverter_error();
+    throw;
   }
   
   if (!(algo.execute(scifield)))
@@ -1560,13 +1564,13 @@ void matlabconverter::mlArrayTOsciField(const matlabarray& mlarray,FieldHandle &
     // it will create an algorithm that returns a false. Hence instead of failing at the
     // compiler level a proper description will be issued to the user
     error("mlArrayTOsciField: The dynamically compiled matlabconverter does not function properly; most probably some specific mesh or field converters are missing or have not yet been implemented\n");
-    throw matlabconverter_error();
+    throw error_type();
   }
 
   if (!scifield)
   {
     error("mlArrayTOsciField: The dynamically compiled matlabconverter does not function properly\n");
-    throw matlabconverter_error();
+    throw error_type();
   }
 
   if (mlarray.isstruct())
@@ -1639,14 +1643,14 @@ void matlabconverter::sciFieldTOmlArray(FieldHandle scifield,matlabarray &mlarra
     // compiler level a proper description will be issued to the user of the pr
     error("The dynamically compiled matlabconverter does not function properly; most probably some specific mesh or field converters are missing or have not yet been implemented.");
     mlarray.clear();
-    throw matlabconverter_error();    
+    throw error_type();    
   }
     
   if (mlarray.isempty())
   {
     // Apparently my sanity check did not work, we did not get a Matlab object
     error("Converter did not result in a useful translation, something went wrong, giving up.");
-    throw matlabconverter_error();
+    throw error_type();
   }
         
   // This code is not the most efficient one: we first create the complete structured one and then
@@ -1663,7 +1667,7 @@ void matlabconverter::sciFieldTOmlArray(FieldHandle scifield,matlabarray &mlarra
     else
     {
       error("There is no field data in Field.");    
-      throw matlabconverter_error();
+      throw error_type();
     }
   }
         
@@ -1736,13 +1740,13 @@ void matlabconverter::mlArrayTOsciBundle(matlabarray &mlarray,BundleHandle &scib
   if (!mlarray.isstruct()) 
   {
     error("Matlab array is not a structured array: cannot translate it into a bundle.");
-    throw matlabconverter_error();
+    throw error_type();
   }
   
   if (mlarray.getnumelements()==0) 
   {
     error("Matlab array does not contain any fields.");
-    throw matlabconverter_error();
+    throw error_type();
   }
   int numfields = mlarray.getnumfields();
   
@@ -1750,7 +1754,7 @@ void matlabconverter::mlArrayTOsciBundle(matlabarray &mlarray,BundleHandle &scib
   if (scibundle.get_rep() == 0)
   {
     error("Could not allocate bundle (not enough memory).");
-    throw matlabconverter_error();
+    throw error_type();
   }
   
   std::string dummyinfo;

@@ -67,8 +67,9 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
         INPUT_PORT(0, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, GeometryOutput, GeometryObject);
+
       private:
-        TextBuilder text_;
+        TextBuilder textBuilder_;
       };
     }
   }

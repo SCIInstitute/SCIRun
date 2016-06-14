@@ -72,7 +72,7 @@ bool WriteFieldModule::call_exporter(const std::string& filename)
 {
   ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
-  FieldIEPlugin *pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).toString());
+  auto pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).toString());
   if (pl)
   {
     return pl->writeFile(handle_, filename, getLogger());
@@ -113,18 +113,21 @@ void WriteFieldModule::execute()
    if (gui_increment_.get())
     filename_.set(oldfilename);
 #endif
-
 }
 
 bool WriteFieldModule::useCustomExporter(const std::string& filename) const 
 {
   auto ft = get_state()->getValue(Variables::FileTypeName).toString();
   LOG_DEBUG("WriteField with filetype " << ft);
+  auto ret = boost::filesystem::extension(filename) != ".fld";
   
-  filetype_ = (ft == "SCIRun Field ASCII") ? "ASCII" : "Binary";
+  filetype_ = ft.find("SCIRun Field ASCII") != std::string::npos ? "ASCII" : "Binary";
 
-  return !(ft == "" ||
-    ft == "SCIRun Field Binary" ||
-    ft == "SCIRun Field ASCII" ||
-    ft == "Binary");
+  return ret;
+}
+
+std::string WriteFieldModule::defaultFileTypeName() const
+{
+  FieldIEPluginManager mgr;
+  return defaultImportTypeForFile(&mgr);
 }

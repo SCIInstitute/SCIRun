@@ -107,7 +107,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   {
     // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result. 
     // There's no way to know ahead of time, so I'll just throw an error here and require the user to do this type of math elsewhere.
-    if (matrix_is::sparse(matrix) && (matrix->nrows() * matrix->ncols() > 10000))
+    if (matrixIs::sparse(matrix) && (matrix->nrows() * matrix->ncols() > 10000))
     {
       THROW_ALGORITHM_INPUT_ERROR("ArrayMathEngine needs overhaul to be used with large sparse inputs. See https://github.com/SCIInstitute/SCIRun/issues/482");
     }
@@ -139,7 +139,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   return result;
 }
 
-AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run(const AlgorithmInput& input) const
 {
   auto matrix = input.get<Matrix>(Variables::InputMatrix);
 

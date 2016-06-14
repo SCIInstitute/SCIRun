@@ -115,7 +115,7 @@ SetupTDCSAlgorithm::SetupTDCSAlgorithm()
   addParameter(Parameters::GetContactSurface, false);
 }
 
-AlgorithmOutput SetupTDCSAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetupTDCSAlgorithm::run(const AlgorithmInput& input) const
 {
   auto mesh = input.get<Field>(MESH);
 
@@ -156,7 +156,7 @@ AlgorithmOutput SetupTDCSAlgorithm::run_generic(const AlgorithmInput& input) con
   }  
   
   // obtaining number of electrodes
-  DenseMatrixHandle elc_sponge_location = matrix_convert::to_dense(input.get<Matrix>(ELECTRODE_SPONGE_LOCATION_AVR));
+  DenseMatrixHandle elc_sponge_location = convertMatrix::toDense(input.get<Matrix>(ELECTRODE_SPONGE_LOCATION_AVR));
   if (!elc_sponge_location)
   {
    THROW_ALGORITHM_PROCESSING_ERROR("Electrode sponges matrix (center locations) is not allocated."); 

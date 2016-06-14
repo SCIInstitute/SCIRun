@@ -49,13 +49,14 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
 
   auto descMap = factory.getDirectModuleDescriptionLookupMap();
 
-  EXPECT_GE(descMap.size(), 105);
+  std::cout << "descMap size: " << descMap.size() << std::endl;
+  EXPECT_GE(descMap.size(), 142);
 }
 
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 
   auto network = controller.getNetwork();
@@ -189,7 +190,7 @@ TEST_F(ModuleReplaceTests, CurrentConnectionsFilterReplacements)
   auto filter = builder.build();
 
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
   auto network = controller.getNetwork();
   ModuleHandle send = controller.addModule("SendTestMatrix");

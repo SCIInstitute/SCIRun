@@ -49,7 +49,7 @@ namespace Math {
 
     Outputs run(const Inputs& input, const Parameters& params) const;
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
   };
 
   typedef boost::error_info<struct tag_eigen_computation, Eigen::ComputationInfo> EigenComputationInfo;

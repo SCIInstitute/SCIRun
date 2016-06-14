@@ -33,6 +33,7 @@
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/TagManagerWindow.h>
+#include <Interface/Application/TriggeredEventsWindow.h>
 #include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
@@ -53,11 +54,62 @@ namespace
       strs << QString::fromStdString(path.string());
     return strs;
   }
+
+  QStringList valueListAsString(const QList<QVariant>& qvs)
+  {
+    QStringList qsl;
+    for (const auto& qv : qvs)
+    {
+      qsl.append(qv.toString());
+    }
+    return qsl;
+  }
+  
+  QMap<QString, QString> toStrMap(const QMap<QString, QVariant>& m)
+  {
+    QMap<QString, QString> ss;
+    for (const auto& sv : m.toStdMap())
+    {
+      ss[sv.first] = sv.second.toString();
+    }
+    return ss;
+  }
+
+  template <typename T>
+  QMap<QString, QVariant> fromTypedMap(const QMap<QString, T>& m)
+  {
+    QMap<QString, QVariant> sv;
+    for (const auto& ss : m.toStdMap())
+    {
+      sv[ss.first] = ss.second;
+    }
+    return sv;
+  }
+
+  QMap<QString, QVariant> fromStrMap(const QMap<QString, QString>& m)
+  {
+    return fromTypedMap(m);
+  }
+
+  QMap<QString, bool> toBoolMap(const QMap<QString, QVariant>& m)
+  {
+    QMap<QString, bool> ss;
+    for (const auto& sv : m.toStdMap())
+    {
+      ss[sv.first] = sv.second.toBool();
+    }
+    return ss;
+  }
+
+  QMap<QString, QVariant> fromBoolMap(const QMap<QString, bool>& m)
+  {
+    return fromTypedMap(m);
+  }
 }
 
 void SCIRunMainWindow::readSettings()
 {
-  Preferences& prefs = Preferences::Instance();
+  auto& prefs = Preferences::Instance();
   QSettings settings("SCI:CIBC Software", "SCIRun5");
 
   //TODO: centralize all these values in Preferences singleton, together with keys as names.
@@ -109,7 +161,7 @@ void SCIRunMainWindow::readSettings()
     }
   }
 
-  const QString snapTo = qname(prefs.modulesSnapToGrid);
+  const auto snapTo = qname(prefs.modulesSnapToGrid);
   if (settings.contains(snapTo))
   {
     auto value = settings.value(snapTo).toBool();
@@ -176,7 +228,7 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().logInfo("Setting read: newViewSceneMouseControls = " + QString::number(mode));
     Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(mode);
   }
-  
+
   const QString invertMouseZoom = "invertMouseZoom";
   if (settings.contains(invertMouseZoom))
   {
@@ -227,6 +279,38 @@ void SCIRunMainWindow::readSettings()
   else
     tagManagerWindow_->setTagColors(QVector<QString>());
 
+  const QString triggeredScripts = "triggeredScripts";
+  if (settings.contains(triggeredScripts))
+  {
+    auto scriptsMap = settings.value(triggeredScripts).toMap();
+    GuiLogger::Instance().logInfo("Setting read: triggeredScripts = " + QStringList(scriptsMap.keys()).join(";") + " -> " + valueListAsString(scriptsMap.values()).join(";"));
+    triggeredEventsWindow_->setScripts(toStrMap(scriptsMap));
+  }
+
+  const QString triggeredScriptEnableFlags = "triggeredScriptEnableFlags";
+  if (settings.contains(triggeredScriptEnableFlags))
+  {
+    auto scriptsMap = settings.value(triggeredScriptEnableFlags).toMap();
+    GuiLogger::Instance().logInfo("Setting read: triggeredScriptEnableFlags = " + QString::number(scriptsMap.size()));
+    triggeredEventsWindow_->setScriptEnabledFlags(toBoolMap(scriptsMap));
+  }
+
+  const QString savedSubnetworksNames = "savedSubnetworksNames";
+  if (settings.contains(savedSubnetworksNames))
+  {
+    auto subnetMap = settings.value(savedSubnetworksNames).toMap();
+    GuiLogger::Instance().logInfo("Setting read: savedSubnetworksNames = " + QString::number(subnetMap.size()));
+    savedSubnetworksNames_ = subnetMap;
+  }
+
+  const QString savedSubnetworksXml = "savedSubnetworksXml";
+  if (settings.contains(savedSubnetworksXml))
+  {
+    auto subnetMap = settings.value(savedSubnetworksXml).toMap();
+    GuiLogger::Instance().logInfo("Setting read: savedSubnetworksXml = " + QString::number(subnetMap.size()));
+    savedSubnetworksXml_ = subnetMap;
+  }
+
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -234,7 +318,7 @@ void SCIRunMainWindow::readSettings()
 void SCIRunMainWindow::writeSettings()
 {
   QSettings settings("SCI:CIBC Software", "SCIRun5");
-  Preferences& prefs = Preferences::Instance();
+  auto& prefs = Preferences::Instance();
 
   //TODO: centralize all these values in Preferences singleton, together with keys as names
 
@@ -257,6 +341,10 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("dataPath", convertPathList(prefs.dataPath()));
   settings.setValue("tagNames", tagManagerWindow_->getTagNames());
   settings.setValue("tagColors", tagManagerWindow_->getTagColors());
+  settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->getScripts()));
+  settings.setValue("triggeredScriptEnableFlags", fromBoolMap(triggeredEventsWindow_->getScriptEnabledFlags()));
+  settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
+  settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

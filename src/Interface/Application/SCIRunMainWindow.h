@@ -58,6 +58,7 @@ class ShortcutsInterface;
 class TagManagerWindow;
 class PythonConsoleWidget;
 class FileDownloader;
+class TriggeredEventsWindow;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -79,12 +80,20 @@ public:
   void addToDataDirectory(const QString& dir);
   void setCurrentFile(const QString& fileName);
 
+  //TODO: extract another interface for command objects
+  NetworkEditor* networkEditor() { return networkEditor_; }
+
   bool newInterface() const;
   bool isInFavorites(const QString& module) const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
+  void preexecute();
+  void skipSaveCheck() { skipSaveCheck_ = true; }
+
   ~SCIRunMainWindow();
   int returnCode() const { return returnCode_; }
+
+  QString mostRecentFile() const;
 public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
@@ -107,8 +116,12 @@ private:
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
+  QMap<QString, QVariant> savedSubnetworksXml_;
+  QMap<QString, QVariant> savedSubnetworksNames_;
   QToolButton* executeButton_;
   QByteArray windowState_;
+  QPushButton* versionButton_;
+  TriggeredEventsWindow* triggeredEventsWindow_;
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
@@ -121,14 +134,18 @@ private:
   void readSettings();
   void setupNetworkEditor();
   void setupProvenanceWindow();
+  void setupScriptedEventsWindow();
   void setupDevConsole();
   void setupPreferencesWindow();
   void setupTagManagerWindow();
   void setupPythonConsole();
   void fillModuleSelector();
+  void fillSavedSubnetworkMenu();
   void setupInputWidgets();
+  void setupVersionButton();
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
+  void setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, const QString& idFromMap);
   void showStatusMessage(const QString& str);
   void showStatusMessage(const QString& str, int timeInMsec);
 
@@ -137,7 +154,6 @@ private:
   QStringList recentFiles_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
-  bool firstTimePythonShown_;
   int returnCode_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
   QMap<QString, QAction*> currentModuleActions_;
@@ -146,7 +162,7 @@ private:
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool quitAfterExecute_;
-  bool runningPythonScript_ = false;
+  bool skipSaveCheck_ = false;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
@@ -160,6 +176,7 @@ private Q_SLOTS:
   void runScript();
   void importLegacyNetwork();
   void networkModified();
+  void switchMouseMode();
   void filterModuleNamesInTreeView(const QString& start);
   void makePipesEuclidean();
   void makePipesCubicBezier();
@@ -172,7 +189,6 @@ private Q_SLOTS:
   void setGlobalPortCaching(bool enable);
   void readDefaultNotePosition(int index);
   void updateMiniView();
-  void showPythonWarning(bool visible);
   void makeModulesLargeSize();
   void makeModulesSmallSize();
   void alertForNetworkCycles(int code);
@@ -180,6 +196,8 @@ private Q_SLOTS:
   void setDataDirectoryFromGUI();
   void toolkitDownload();
   void addToPathFromGUI();
+  void removeSavedSubnetwork();
+  void renameSavedSubnetwork();
   void displayAcknowledgement();
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();
@@ -192,6 +210,14 @@ private Q_SLOTS:
   void resetWindowLayout();
   void zoomNetwork();
   void networkTimedOut();
+  void loadPythonAPIDoc();
+  void showSnippetHelp();
+  void showClipboardHelp();
+  void showTagHelp();
+  void showTriggerHelp();
+  void copyVersionToClipboard();
+  void updateClipboardHistory(const QString& xml);
+  void showModuleSelectorContextMenu(const QPoint& p);
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();

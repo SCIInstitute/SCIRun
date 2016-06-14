@@ -90,6 +90,96 @@ namespace SCIRun {
         };
       }
 
+      template <typename T>
+      struct NumberOfElements : MatrixBase<T>::Visitor
+      {
+        size_t value() const { return value_; }
+
+        NumberOfElements() : value_(0) {}
+        size_t value_;
+
+        virtual void visit(DenseMatrixGeneric<T>& m) override
+        {
+          value_ = m.rows() * m.cols();
+        }
+
+        virtual void visit(DenseColumnMatrixGeneric<T>& m) override
+        {
+          value_ = m.nrows();
+        }
+
+        virtual void visit(SparseRowMatrixGeneric<T>& m) override
+        {
+          value_ = m.nonZeros();
+        }
+      };
+
+      template <typename T>
+      struct MinimumCoefficient : MatrixBase<T>::Visitor
+      {
+        T value() const { return value_; }
+
+        MinimumCoefficient() : value_(0) {}
+        T value_;
+
+        virtual void visit(DenseMatrixGeneric<T>& m)
+        {
+          if (!m.empty())
+            value_ = m.minCoeff();
+        }
+
+        virtual void visit(DenseColumnMatrixGeneric<T>& m)
+        {
+          if (!m.empty())
+            value_ = m.minCoeff();
+        }
+
+        virtual void visit(SparseRowMatrixGeneric<T>& m)
+        {
+          if (!m.empty())
+          {
+            auto value = m.valuePtr();
+            if (value)
+              value_ = *std::min_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
+            else
+              value_ = 0;
+          }
+        }
+      };
+
+      template <typename T>
+      struct MaximumCoefficient : MatrixBase<T>::Visitor
+      {
+        T value() const { return value_; }
+
+        MaximumCoefficient() : value_(0) {}
+        T value_;
+
+        virtual void visit(DenseMatrixGeneric<T>& m)
+        {
+          if (!m.empty())
+            value_ = m.maxCoeff();
+        }
+
+        virtual void visit(DenseColumnMatrixGeneric<T>& m)
+        {
+          if (!m.empty())
+            value_ = m.maxCoeff();
+        }
+
+        virtual void visit(SparseRowMatrixGeneric<T>& m)
+        {
+          if (!m.empty())
+          {
+            auto value = m.valuePtr();
+            if (value)
+              value_ = *std::max_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
+            else
+              value_ = 0;
+          }
+        }
+      };
+
     }
   }
 }

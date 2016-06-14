@@ -61,7 +61,7 @@ namespace
         std::transform(groupIter.first, groupIter.second, std::back_inserter(tasks),
           [&](const ParallelModuleExecutionOrder::ModulesByGroup::value_type& mod) -> boost::function<void()>
         {
-          return [=]() { lookup_->lookupExecutable(mod.second)->execute(); };
+          return [=]() { lookup_->lookupExecutable(mod.second)->executeWithSignals(); };
         });
 
         Parallel::RunTasks([&](int i) { tasks[i](); }, tasks.size());

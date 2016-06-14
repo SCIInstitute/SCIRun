@@ -46,7 +46,7 @@ class SCISHARE GetMeshNodesAlgo : public AlgorithmBase
     bool run(FieldHandle& input, Datatypes::DenseMatrixHandle& output) const; 
 
     static AlgorithmOutputName MatrixNodes;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const; 
 };
 
 }}}}

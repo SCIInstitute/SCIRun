@@ -64,6 +64,8 @@ namespace Gui {
     virtual ~CurrentModuleSelection() {}
     virtual QString text() const = 0;
     virtual bool isModule() const = 0;
+    virtual QString clipboardXML() const = 0;
+    virtual bool isClipboardXML() const = 0;
   };
 
   //almost just want to pass a boost::function for this one.
@@ -110,7 +112,7 @@ namespace Gui {
     void trackModule(SCIRun::Dataflow::Networks::ModuleHandle module);
   Q_SIGNALS:
     void moduleExecuteStart(const std::string& id);
-    void moduleExecuteEnd(const std::string& id);
+    void moduleExecuteEnd(double execTime, const std::string& id);
   };
 
   class ModuleProxyWidget;
@@ -148,8 +150,10 @@ namespace Gui {
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
 				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
-        TagColorFunc tagColor = defaultTagColor,
-        QWidget* parent = 0);
+        PreexecuteFunc preexecuteFunc,
+        TagColorFunc tagColor,
+        TagNameFunc tagName,
+        QWidget* parent = nullptr);
     ~NetworkEditor();
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
@@ -171,6 +175,9 @@ namespace Gui {
 
     virtual Dataflow::Networks::ModuleTagsHandle dumpModuleTags(Dataflow::Networks::ModuleFilter filter) const override;
     virtual void updateModuleTags(const Dataflow::Networks::ModuleTags& notes) override;
+
+    virtual Dataflow::Networks::DisabledComponentsHandle dumpDisabledComponents(Dataflow::Networks::ModuleFilter modFilter, Dataflow::Networks::ConnectionFilter connFilter) const override;
+    virtual void updateDisabledComponents(const Dataflow::Networks::DisabledComponents& disabled) override;
 
     size_t numModules() const;
 
@@ -198,8 +205,12 @@ namespace Gui {
     void metadataLayer(bool active);
     void tagLayer(bool active, int tag);
     bool tagLayerActive() const { return tagLayerActive_; }
+    bool tagGroupsActive() const { return tagGroupsActive_; }
 
     virtual void displayError(const QString& msg, std::function<void()> showModule) override;
+
+    bool showTagGroupsOnFileLoad() const { return showTagGroupsOnFileLoad_; }
+    void setShowTagGroupsOnFileLoad(bool show) { showTagGroupsOnFileLoad_ = show; }
 
   protected:
     virtual void dropEvent(QDropEvent* event) override;
@@ -209,6 +220,7 @@ namespace Gui {
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void wheelEvent(QWheelEvent* event) override;
     virtual void contextMenuEvent(QContextMenuEvent *event) override;
+    virtual void mousePressEvent(QMouseEvent *event) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
@@ -241,6 +253,10 @@ namespace Gui {
     void resetNetworkDueToCycle();
     void moduleWindowAction();
     void cleanUpNetwork();
+    void redrawTagGroups();
+    void adjustModuleWidth(int delta);
+    void adjustModuleHeight(int delta);
+    void saveTagGroupRectInFile();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -249,6 +265,7 @@ namespace Gui {
     void networkExecuted();
     void networkExecutionFinished();
     void networkEditorMouseButtonPressed();
+    void middleMouseClicked();
     void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     void defaultNotePositionChanged(NotePosition position);
     void sceneChanged(const QList<QRectF>& region);
@@ -259,6 +276,7 @@ namespace Gui {
     void reenableWidgetDisabling();
     void resetModulesDueToCycle();
     void newModule(const QString& modId, bool hasUI);
+    void newSubnetworkCopied(const QString& xml);
   private Q_SLOTS:
     void cut();
     void copy();
@@ -277,10 +295,15 @@ namespace Gui {
     void unselectConnectionGroup();
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
+    void pasteImpl(const QString& xml);
+    void drawTagGroups();
+    void removeTagGroups();
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
+    bool tagGroupsActive_ {false};
     TagColorFunc tagColor_;
+    TagNameFunc tagName_;
 
     QGraphicsScene* scene_;
 
@@ -294,6 +317,9 @@ namespace Gui {
     boost::shared_ptr<ZLevelManager> zLevelManager_;
     std::string latestModuleId_;
     bool fileLoading_;
+    bool insertingNewModuleAlongConnection_ { false };
+    PreexecuteFunc preexecute_;
+    bool showTagGroupsOnFileLoad_ { false };
   };
 }
 }

@@ -44,7 +44,7 @@ ALGORITHM_PARAMETER_DEF(Math, OutputMatrixType);
 /// @image html ConvertMatrixType.png 
 ConvertMatrixTypeAlgorithm::ConvertMatrixTypeAlgorithm()
 {
-  add_option(Parameters::OutputMatrixType, "passThrough", "passThrough|dense|column|sparse");
+  addOption(Parameters::OutputMatrixType, "passThrough", "passThrough|dense|column|sparse");
 }
 
 MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
@@ -60,15 +60,15 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
   ostr1 << "Dimensions: (" << input_matrix->nrows() << "," << input_matrix->ncols() << ")";
   remark(ostr1.str());
 
-  if(matrix_is::dense(input_matrix))
+  if(matrixIs::dense(input_matrix))
   {
     ostr2 << "Input Matrix Type: DENSE MATRIX";
   } 
-  else if (matrix_is::column(input_matrix))
+  else if (matrixIs::column(input_matrix))
   {
     ostr2 << "Input Matrix Type: COLUMN MATRIX";
   } 
-  else if (matrix_is::sparse(input_matrix))
+  else if (matrixIs::sparse(input_matrix))
   {
     ostr2 << "Input Matrix Type: SPARSE MATRIX";
   } 
@@ -79,7 +79,7 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
 
   remark(ostr2.str());
 
-  auto outputType = get_option(Parameters::OutputMatrixType);
+  auto outputType = getOption(Parameters::OutputMatrixType);
 
   if ("passThrough" == outputType) 
   {
@@ -87,31 +87,31 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
   } 
   else
   {
-    if ("column" == outputType && !matrix_is::column(input_matrix))
+    if ("column" == outputType && !matrixIs::column(input_matrix))
     {
       if (input_matrix->ncols()!=1)
       {
         THROW_ALGORITHM_INPUT_ERROR("Input matrix needs to have a single column to be converted to column matrix type.");  
       }
-      DenseColumnMatrixHandle output = matrix_convert::to_column(input_matrix);
+      DenseColumnMatrixHandle output = convertMatrix::toColumn(input_matrix);
       if (!output) 
       {
         THROW_ALGORITHM_INPUT_ERROR("Conversion to column matrix failed.");    
       }
       return output;
     } 
-    else if ("dense" == outputType && !matrix_is::dense(input_matrix))
+    else if ("dense" == outputType && !matrixIs::dense(input_matrix))
     {
-      auto output = matrix_convert::to_dense(input_matrix);
+      auto output = convertMatrix::toDense(input_matrix);
       if (!output) 
       {
         THROW_ALGORITHM_INPUT_ERROR("Conversion to dense matrix failed.");    
       }
       return output;
     } 
-    else if ("sparse" == outputType && !matrix_is::sparse(input_matrix))
+    else if ("sparse" == outputType && !matrixIs::sparse(input_matrix))
     {
-      auto output = matrix_convert::to_sparse(input_matrix);
+      auto output = convertMatrix::toSparse(input_matrix);
       if (!output) 
       {
         THROW_ALGORITHM_INPUT_ERROR("Conversion to sparse matrix failed.");    
@@ -125,7 +125,7 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
   }
 }
 
-AlgorithmOutput ConvertMatrixTypeAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertMatrixTypeAlgorithm::run(const AlgorithmInput& input) const
 {
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
 

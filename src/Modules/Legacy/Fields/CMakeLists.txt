@@ -52,7 +52,9 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateSignedDistanceToField.h
   ClipFieldByFunction3.h
   ClipFieldByMesh.h
+  ConvertMatricesToMesh.h
   ConvertQuadSurfToTriSurf.h
+  ConvertMeshToPointCloud.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
   SetFieldData.h
@@ -71,6 +73,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
   MapFieldDataFromSourceToDestination.h
+  ReportFieldGeometryMeasures.h
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
   ConvertIndicesToFieldData.h
@@ -118,7 +121,7 @@ SET(Modules_Legacy_Fields_SRCS
   ClipFieldByMesh.cc
   #ClipFieldToFieldOrWidget.cc
   #ClipLatVolByIndicesOrWidget.cc
-  #ConvertMatricesToMesh.cc
+  ConvertMatricesToMesh.cc
   #CollectPointClouds.cc
   #CoregisterPointClouds.cc
   #EditMeshBoundingBox.cc
@@ -130,7 +133,7 @@ SET(Modules_Legacy_Fields_SRCS
   FairMesh.cc
   #GetAllSegmentationBoundaries.cc
   GetFieldBoundary.cc
-  #ReportFieldGeometryMeasures.cc
+  ReportFieldGeometryMeasures.cc
   #SetFieldProperty.cc
   GetSliceFromStructuredFieldByIndices.cc
   #SubsampleStructuredFieldByIndices.cc
@@ -159,7 +162,7 @@ SET(Modules_Legacy_Fields_SRCS
   GeneratePointSamplesFromField.cc
   #SelectFieldROIWithBoxWidget.cc
   SetFieldOrMeshStringProperty.cc
-  #ConvertMeshToPointCloud.cc
+  ConvertMeshToPointCloud.cc
   #ConvertMeshToIrregularMesh.cc
   #ConvertMeshToUnstructuredMesh.cc
   CalculateFieldData5.cc

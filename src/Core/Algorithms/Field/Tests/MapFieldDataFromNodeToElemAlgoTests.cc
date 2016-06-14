@@ -113,11 +113,11 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
 {
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "Average");
+ algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Average");
 
  FieldHandle input=CreateTetMesh2();
 
- FieldHandle result = algo.run(input);
+ FieldHandle result = algo.runImpl(input);
 
  DenseMatrixHandle expected=test_MapFieldDataFromNodeToElemFLD_IntAvr();
 
@@ -130,11 +130,11 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
    EXPECT_NEAR( (*expected)(idx,0),tmp, 1e-5);
  }
 
- algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "Interpolation");
+ algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Interpolation");
 
  FieldHandle input2=CreateTetMesh2();
 
- FieldHandle result2 = algo.run(input);
+ FieldHandle result2 = algo.runImpl(input);
 
  ASSERT_TRUE(result2->vfield()->num_values() == 6);
 
@@ -152,14 +152,14 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestDataAlreadyOnElems)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "Average");
+ algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Average");
 
  FieldHandle input=CreateTetMesh1();
 
  FieldHandle result;
  try
  {
-  result = algo.run(input);
+  result = algo.runImpl(input);
  } catch (...) {}
 
 }
@@ -169,11 +169,11 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMin)
 {
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "Min");
+ algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Min");
 
  FieldHandle input=CreateTetMesh2();
 
- FieldHandle result = algo.run(input);
+ FieldHandle result = algo.runImpl(input);
 
  DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Min();
 
@@ -194,11 +194,11 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMax)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "Max");
+ algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Max");
 
  FieldHandle input=CreateTetMesh2();
 
- FieldHandle result = algo.run(input);
+ FieldHandle result = algo.runImpl(input);
 
  DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Max();
 
@@ -219,11 +219,11 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestSum)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "Sum");
+ algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Sum");
 
  FieldHandle input=CreateTetMesh2();
 
- FieldHandle result = algo.run(input);
+ FieldHandle result = algo.runImpl(input);
 
  DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Sum();
 
@@ -244,11 +244,11 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestMedian)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "Median");
+ algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "Median");
 
  FieldHandle input=CreateTetMesh2();
 
- FieldHandle result = algo.run(input);
+ FieldHandle result = algo.runImpl(input);
 
  DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Med();
 
@@ -268,14 +268,14 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestNone)
 
  MapFieldDataFromNodeToElemAlgo algo;
 
- algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "None");
+ algo.setOption(MapFieldDataFromNodeToElemAlgo::Method, "None");
 
  FieldHandle input=CreateTetMesh2();
 
  FieldHandle result;
  try
  {
-  result = algo.run(input);
+  result = algo.runImpl(input);
  } catch (...) {}
 
  if(result)

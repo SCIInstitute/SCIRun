@@ -78,26 +78,26 @@ MatrixHandle EvalOperator(EvaluateLinearAlgebraBinaryAlgorithm::Parameters op)
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanAddDenseDense)
 {
-  auto result = matrix_cast::as_dense(EvalOperator<DENSE, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
+  auto result = castMatrix::toDense(EvalOperator<DENSE, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
   EXPECT_EQ(2 * matrix1(), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanSubtractDenseDense)
 {
-  auto result = matrix_cast::as_dense(EvalOperator<DENSE, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT));
+  auto result = castMatrix::toDense(EvalOperator<DENSE, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT));
   EXPECT_EQ(Zero, *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanMultiplyDenseDense)
 {
-  auto result = matrix_cast::as_dense(EvalOperator<DENSE, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
+  auto result = castMatrix::toDense(EvalOperator<DENSE, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
   EXPECT_EQ(matrix1() * matrix1(), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanUseFunctionDenseDense)
 {
   std::string functionArg = "x+y";
-  auto result = matrix_cast::as_dense(EvalOperator<DENSE, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg)));
+  auto result = castMatrix::toDense(EvalOperator<DENSE, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg)));
   EXPECT_EQ(matrix1() + matrix1(), *result);
 }
 
@@ -105,26 +105,26 @@ TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanUseFunctionDenseDense)
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanAddSparseSparse)
 {
-  auto result = matrix_cast::as_sparse(EvalOperator<SPARSE_ROW, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
+  auto result = castMatrix::toSparse(EvalOperator<SPARSE_ROW, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
   EXPECT_SPARSE_EQ(2 * *matrix1sparse(), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanSubtractSparseSparse)
 {
-  auto result = matrix_cast::as_sparse(EvalOperator<SPARSE_ROW, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT));
-  EXPECT_SPARSE_EQ(*matrix_convert::denseToSparse(Zero), *result);
+  auto result = castMatrix::toSparse(EvalOperator<SPARSE_ROW, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT));
+  EXPECT_SPARSE_EQ(*convertMatrix::fromDenseToSparse(Zero), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanMultiplySparseSparse)
 {
-  auto result = matrix_cast::as_sparse(EvalOperator<SPARSE_ROW, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
+  auto result = castMatrix::toSparse(EvalOperator<SPARSE_ROW, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
   EXPECT_SPARSE_EQ(*matrix1sparse() * *matrix1sparse(), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanUseFunctionSparseSparse)
 {
   std::string functionArg = "x+y";
-  auto result = matrix_cast::as_sparse(EvalOperator<SPARSE_ROW, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg)));
+  auto result = castMatrix::toSparse(EvalOperator<SPARSE_ROW, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg)));
   EXPECT_SPARSE_EQ(*matrix1sparse() + *matrix1sparse(), *result);
 }
 
@@ -132,26 +132,26 @@ TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanUseFunctionSparseSparse)
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanAddDenseSparse)
 {
-  auto result = matrix_cast::as_sparse(EvalOperator<DENSE, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
+  auto result = castMatrix::toSparse(EvalOperator<DENSE, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
   EXPECT_SPARSE_EQ(2 * *matrix1sparse(), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanSubtractDenseSparse)
 {
-  auto result = matrix_cast::as_sparse(EvalOperator<DENSE, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT));
-  EXPECT_SPARSE_EQ(*matrix_convert::denseToSparse(Zero), *result);
+  auto result = castMatrix::toSparse(EvalOperator<DENSE, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT));
+  EXPECT_SPARSE_EQ(*convertMatrix::fromDenseToSparse(Zero), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanMultiplyDenseSparse)
 {
-  auto result = matrix_cast::as_sparse(EvalOperator<DENSE, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
+  auto result = castMatrix::toSparse(EvalOperator<DENSE, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
   EXPECT_SPARSE_EQ(*matrix1sparse() * *matrix1sparse(), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanUseFunctionDenseSparse)
 {
   std::string functionArg = "x+y";
-  auto result = matrix_cast::as_sparse(EvalOperator<DENSE, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg)));
+  auto result = castMatrix::toSparse(EvalOperator<DENSE, SPARSE_ROW>(EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg)));
   EXPECT_SPARSE_EQ(*matrix1sparse() + *matrix1sparse(), *result);
 }
 
@@ -159,25 +159,25 @@ TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanUseFunctionDenseSparse)
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanAddSparseDense)
 {
-  auto result = matrix_cast::as_sparse(EvalOperator<SPARSE_ROW, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
+  auto result = castMatrix::toSparse(EvalOperator<SPARSE_ROW, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
   EXPECT_SPARSE_EQ(2 * *matrix1sparse(), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanSubtractSparseDense)
 {
-  auto result = matrix_cast::as_sparse(EvalOperator<SPARSE_ROW, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT));
-  EXPECT_SPARSE_EQ(*matrix_convert::denseToSparse(Zero), *result);
+  auto result = castMatrix::toSparse(EvalOperator<SPARSE_ROW, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT));
+  EXPECT_SPARSE_EQ(*convertMatrix::fromDenseToSparse(Zero), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanMultiplySparseDense)
 {
-  auto result = matrix_cast::as_sparse(EvalOperator<SPARSE_ROW, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
+  auto result = castMatrix::toSparse(EvalOperator<SPARSE_ROW, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
   EXPECT_SPARSE_EQ(*matrix1sparse() * *matrix1sparse(), *result);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanUseFunctionSparseDense)
 {
   std::string functionArg = "x+y";
-  auto result = matrix_cast::as_sparse(EvalOperator<SPARSE_ROW, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg)));
+  auto result = castMatrix::toSparse(EvalOperator<SPARSE_ROW, DENSE>(EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg)));
   EXPECT_SPARSE_EQ(*matrix1sparse() + *matrix1sparse(), *result);
 }

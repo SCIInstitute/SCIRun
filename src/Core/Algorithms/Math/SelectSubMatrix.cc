@@ -163,17 +163,17 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
   } 
   else  ///GUI input only
   {    
-     if(matrix_is::sparse(input_matrix))
+     if(matrixIs::sparse(input_matrix))
      { 
-       SparseRowMatrixHandle mat (new  SparseRowMatrix(matrix_cast::as_sparse(input_matrix)->block(row_start,col_start,row_end,col_end)));
+       SparseRowMatrixHandle mat (new  SparseRowMatrix(castMatrix::toSparse(input_matrix)->block(row_start,col_start,row_end,col_end)));
        return mat;
      } else
-     if(matrix_is::dense(input_matrix))
+     if(matrixIs::dense(input_matrix))
       {
-        DenseMatrixHandle mat (new  DenseMatrix(matrix_cast::as_dense(input_matrix)->block(row_start,col_start,row_end,col_end)));
+        DenseMatrixHandle mat (new  DenseMatrix(castMatrix::toDense(input_matrix)->block(row_start,col_start,row_end,col_end)));
 	return mat;
       }  else
-      if (matrix_is::column(input_matrix))
+      if (matrixIs::column(input_matrix))
       {
         if (input_matrix->ncols()!=1)
         {
@@ -192,7 +192,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
            THROW_ALGORITHM_INPUT_ERROR("Gui row indeces exceed input matrix dimensions! ");	 
         }
 
-	auto first_column = matrix_cast::as_column(input_matrix);
+	auto first_column = castMatrix::toColumn(input_matrix);
 
         if (!first_column || first_column->nrows()<=0 || first_column->ncols()!=1)
         {
@@ -259,7 +259,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
     }
   }
 
-  auto sparse_matrix = matrix_cast::as_sparse(input_matrix);
+  auto sparse_matrix = castMatrix::toSparse(input_matrix);
 
   if (sparse_matrix)
   {
@@ -311,9 +311,9 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
    DenseMatrixHandle dense_input_matrix; 
    DenseColumnMatrixHandle col_dense_input_matrix; 
 
-   if (matrix_is::dense(input_matrix))
+   if (matrixIs::dense(input_matrix))
    {
-     dense_input_matrix = matrix_cast::as_dense(input_matrix);
+     dense_input_matrix = castMatrix::toDense(input_matrix);
    
    if (rows.size()>0 && cols.size()>0)
    {
@@ -353,7 +353,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
       return output;
    }
    } else
-   if (matrix_is::column(input_matrix)) ///@Spencer this stuff needs to be tested in UnitTest
+   if (matrixIs::column(input_matrix)) ///@Spencer this stuff needs to be tested in UnitTest
    { 
      if (input_matrix->ncols()!=1)
      {
@@ -376,7 +376,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
        THROW_ALGORITHM_INPUT_ERROR("Rows input matrix does not contain any rows! ");
      }
        
-     auto first_column = matrix_cast::as_column(input_matrix);
+     auto first_column = castMatrix::toColumn(input_matrix);
     
      if (!first_column || first_column->nrows()<=0 || first_column->ncols()!=1)
      {
@@ -421,7 +421,7 @@ AlgorithmParameterName SelectSubMatrixAlgorithm::columnStartSpinBox() { return A
 AlgorithmParameterName SelectSubMatrixAlgorithm::columnEndSpinBox() { return AlgorithmParameterName("columnEndSpinBox"); }
 AlgorithmParameterName SelectSubMatrixAlgorithm::rowEndSpinBox() { return AlgorithmParameterName("rowEndSpinBox"); }
     
-AlgorithmOutput SelectSubMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SelectSubMatrixAlgorithm::run(const AlgorithmInput& input) const
 {
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
   auto rowindicies = input.get<DenseMatrix>(RowIndicies);

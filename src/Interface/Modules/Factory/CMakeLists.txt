@@ -93,6 +93,12 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   ${QT_LIBRARIES}
 )
 
+IF(BUILD_WITH_PYTHON)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Factory
+    Interface_Modules_Python
+  )
+ENDIF()
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Factory)
 ENDIF()

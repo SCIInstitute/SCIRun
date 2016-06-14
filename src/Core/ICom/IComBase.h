@@ -46,6 +46,7 @@
 #include <winsock2.h>
 #endif
 
+#include <Core/Exceptions/Exception.h>
 #include <Core/ICom/IComFwd.h>
 #include <Core/ICom/share.h>
 
@@ -62,39 +63,39 @@ class SCISHARE IComBase {
 	class   icomerror : public std::exception
 	{
 		public:
-			virtual const char* what() const throw() override { return "general icomerror"; }
+      virtual const char* what() const NOEXCEPT override{ return "general icomerror"; }
 	}; // general socket/packet communication error
 
 	class   could_not_open_socket		: public icomerror
 	{
 	public:
-		virtual const char* what() const throw() override { return "could_not_open_socket"; }
+		virtual const char* what() const NOEXCEPT override { return "could_not_open_socket"; }
 	};
 	class   invalid_port_number			: public icomerror
 	{
 	public:
-		virtual const char* what() const throw() override { return "invalid_port_number"; }
+		virtual const char* what() const NOEXCEPT override { return "invalid_port_number"; }
 	};
 	class   could_not_resolve_address   : public icomerror
 	{
 	public:
-		virtual const char* what() const throw() override { return "could_not_resolve_address"; }
+		virtual const char* what() const NOEXCEPT override { return "could_not_resolve_address"; }
 	};
 	class   not_a_string_packet			: public icomerror
 	{
 	public:
-		virtual const char* what() const throw() override { return "not_a_string_packet"; }
+		virtual const char* what() const NOEXCEPT override { return "not_a_string_packet"; }
 	};
 	class   invalid_data_format			: public icomerror
 	{
 	public:
-		virtual const char* what() const throw() override { return "invalid_data_format"; }
+		virtual const char* what() const NOEXCEPT override { return "invalid_data_format"; }
 	};
 	class   invalid_address				: public icomerror
 	{
 	public:
 		explicit invalid_address(const std::string& msg = "") : msg_("invalid_address: " + msg) {}
-		virtual const char* what() const throw() override { return msg_.c_str(); }
+		virtual const char* what() const NOEXCEPT override { return msg_.c_str(); }
 	private:
 		std::string msg_;
 	};

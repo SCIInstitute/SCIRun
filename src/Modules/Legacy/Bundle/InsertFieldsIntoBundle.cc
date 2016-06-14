@@ -37,10 +37,10 @@ using namespace SCIRun::Modules::Bundles;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-ModuleLookupInfo InsertFieldsIntoBundle::staticInfo_("InsertFieldsIntoBundle", "Bundle", "SCIRun");
-AlgorithmParameterName InsertFieldsIntoBundle::NumFields("NumFields");
-AlgorithmParameterName InsertFieldsIntoBundle::FieldNames("FieldNames");
-AlgorithmParameterName InsertFieldsIntoBundle::FieldReplace("FieldReplace");
+const ModuleLookupInfo InsertFieldsIntoBundle::staticInfo_("InsertFieldsIntoBundle", "Bundle", "SCIRun");
+const AlgorithmParameterName InsertFieldsIntoBundle::NumFields("NumFields");
+const AlgorithmParameterName InsertFieldsIntoBundle::FieldNames("FieldNames");
+const AlgorithmParameterName InsertFieldsIntoBundle::FieldReplace("FieldReplace");
 
 InsertFieldsIntoBundle::InsertFieldsIntoBundle() : Module(staticInfo_)
 {
@@ -52,26 +52,6 @@ InsertFieldsIntoBundle::InsertFieldsIntoBundle() : Module(staticInfo_)
 void InsertFieldsIntoBundle::setStateDefaults()
 {
 
-}
-
-void InsertFieldsIntoBundle::portAddedSlot(const ModuleId& mid, const PortId& pid)
-{
-  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == id_)
-  {
-    int fields = num_input_ports() - 2; // -1 for empty end, -1 for bundle port 0
-    get_state()->setTransientValue(NumFields, fields);
-  }
-}
-
-void InsertFieldsIntoBundle::portRemovedSlot(const ModuleId& mid, const PortId& pid)
-{
-  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == id_)
-  {
-    int fields = num_input_ports() - 2; // -1 for empty end, -1 for bundle port 0
-    get_state()->setTransientValue(NumFields, fields);
-  }
 }
 
 void InsertFieldsIntoBundle::execute()
@@ -108,15 +88,21 @@ void InsertFieldsIntoBundle::execute()
     }
 
     //TODO: instead grab a vector of tuple<string,bool>. need to modify Variable::Value again
-    auto fieldNames = get_state()->getValue(FieldNames).toVector();
-    auto replace = get_state()->getValue(FieldReplace).toVector();
+    //auto fieldNames = get_state()->getValue(FieldNames).toVector();
+    auto iPorts = inputPorts();
+    if (fields.size() != iPorts.size() - 2)
+      warning("Problem in state of dynamic ports");
+    auto fieldPortNameIterator = iPorts.begin() + 1; // bundle port is first
+    auto state = get_state();
+    auto replace = state->getValue(FieldReplace).toVector();
 
     for (int i = 0; i < fields.size(); ++i)
     {
       auto field = fields[i];
+      auto stateName = state->getValue(Name((*fieldPortNameIterator++)->id().toString())).toString();
       if (field)
       {
-        auto name = i < fieldNames.size() ? fieldNames[i].toString() : ("field" + boost::lexical_cast<std::string>(i));
+        auto name = !stateName.empty() ? stateName : ("field" + boost::lexical_cast<std::string>(i));
         auto replaceField = i < replace.size() ? replace[i].toBool() : true;
         if (replaceField || !bundle->isField(name))
         {

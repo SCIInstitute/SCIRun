@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "InsertFieldsIntoBundle",
+    "namespace": "Bundles",
+    "status": "Converted",
+    "description": "Inserts a field object into a bundle",
+    "header": "Modules/Legacy/Bundle/InsertFieldsIntoBundle.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "InsertFieldsIntoBundleDialog",
+    "header": "Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h"
+  }
+}

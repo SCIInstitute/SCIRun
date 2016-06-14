@@ -46,7 +46,7 @@ namespace SCIRun {
           ProjectPointsOntoMeshAlgo();
           bool runImpl(FieldHandle input, FieldHandle object, FieldHandle& output) const;  
           static const AlgorithmInputName ObjectField;
-          AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
 
       }}}}

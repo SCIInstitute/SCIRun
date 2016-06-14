@@ -47,7 +47,7 @@ ConvertMeshToPointCloudMeshAlgo::ConvertMeshToPointCloudMeshAlgo()
 {
   /// Do we want to get the location of the data nodes
   /// or the location of the nodes
-  add_option(Location,"node","node|data");
+  addOption(Location,"node","node|data");
 }
 
 bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
@@ -88,7 +88,7 @@ bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& ou
     fo.make_nodata();
 
   /// Check whether we are extracting the element centers or the node centers
-  bool datalocation = get_option(Location) == "data";
+  bool datalocation = getOption(Location) == "data";
   // If we extract locations of nodes (no data locations), constant data needs
   // to be voided as we cannot store it anywhere
   if (!datalocation && fi.is_constantdata()) 
@@ -158,7 +158,7 @@ bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& ou
   return (true);
 }
 
-AlgorithmOutput ConvertMeshToPointCloudMeshAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertMeshToPointCloudMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
 

@@ -118,7 +118,7 @@ bool TransformMeshWithTransformAlgo::run(FieldHandle input, DenseMatrixHandle tr
 const AlgorithmInputName TransformMeshWithTransformAlgo::TransformMatrix("TransformMatrix");
 const AlgorithmOutputName TransformMeshWithTransformAlgo::Transformed_Field("Transformed_Field");
 
-AlgorithmOutput TransformMeshWithTransformAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput TransformMeshWithTransformAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
   auto transform = input.get<DenseMatrix>(TransformMatrix);

@@ -30,9 +30,10 @@
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Datatypes/String.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Algorithms/Math/ReportComplexMatrixInfo.h>
 
 using namespace SCIRun::Core::Algorithms::General;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -41,7 +42,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-std::string DescribeDatatype::describe(const DatatypeHandle data) const
+std::string DescribeDatatype::describe(const DatatypeHandle& data) const
 {
   if (!data)
     return "[null data]";
@@ -57,9 +58,18 @@ std::string DescribeDatatype::describe(const DatatypeHandle data) const
   if (mat)
   {
     ReportMatrixInfoAlgorithm algo;
-    auto info = algo.run(mat);
+    auto info = algo.runImpl(mat);
 
     return "[Matrix Data] Info:\n" + ReportMatrixInfoAlgorithm::summarize(info);
+  }
+
+  auto cmat = boost::dynamic_pointer_cast<ComplexDenseMatrix>(data);
+  if (cmat)
+  {
+    ReportComplexMatrixInfoAlgo algo;
+    auto info = algo.runImpl(cmat);
+
+    return "[Complex Matrix Data] Info:\n" + ReportComplexMatrixInfoAlgo::summarize(info);
   }
 
   auto field = boost::dynamic_pointer_cast<Field>(data);

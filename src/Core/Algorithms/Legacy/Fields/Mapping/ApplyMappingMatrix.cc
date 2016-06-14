@@ -117,7 +117,7 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
     THROW_ALGORITHM_INPUT_ERROR("No input mapping field");
   }
   
-  auto matrix = matrix_cast::as_sparse(mapping); 
+  auto matrix = castMatrix::toSparse(mapping); 
   
   if (!matrix)
   {
@@ -229,7 +229,7 @@ AlgorithmInputName ApplyMappingMatrixAlgo::Destination("Destination");
 AlgorithmInputName ApplyMappingMatrixAlgo::Mapping("Mapping");
 AlgorithmOutputName ApplyMappingMatrixAlgo::Output("Output");
 
-AlgorithmOutput ApplyMappingMatrixAlgo::run_generic(const AlgorithmInput & input) const
+AlgorithmOutput ApplyMappingMatrixAlgo::run(const AlgorithmInput & input) const
 {
   AlgorithmOutput output;
  

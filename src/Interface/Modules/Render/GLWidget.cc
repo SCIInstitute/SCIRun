@@ -113,14 +113,16 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
   // Extract appropriate key.
   SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y());
+ 
   SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
@@ -128,12 +130,14 @@ void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::wheelEvent(QWheelEvent * event)
 {
   mGraphics->inputMouseWheel(event->delta());
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
@@ -141,12 +145,14 @@ void GLWidget::keyPressEvent(QKeyEvent* event)
 {
   std::cout << "key down" << std::endl;
   mGraphics->inputShiftKeyDown(event->key() == Qt::Key_Shift);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::keyReleaseEvent(QKeyEvent* event)
 {
   mGraphics->inputShiftKeyDown(false);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------

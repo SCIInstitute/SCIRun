@@ -1068,8 +1068,8 @@ public:
   virtual std::string dynamic_type_name() const { return latvol_typeid.type; }
 
   // Unsafe due to non-constness of unproject.
-  Core::Geometry::Transform &get_transform() { return transform_; }
-  Core::Geometry::Transform &set_transform(const Core::Geometry::Transform &trans)
+  Core::Geometry::Transform& get_transform() { return transform_; }
+  Core::Geometry::Transform& set_transform(const Core::Geometry::Transform &trans)
   { 
     transform_ = trans; 
     transform_.compute_imat();

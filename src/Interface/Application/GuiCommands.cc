@@ -45,6 +45,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
 #include <boost/algorithm/string.hpp>
+#include <Core/Utils/CurrentFileName.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
@@ -62,10 +63,15 @@ bool LoadFileCommandGui::execute()
 {
   std::string inputFile;
   auto inputFilesFromCommandLine = Application::Instance().parameters()->inputFiles();
+
   if (!inputFilesFromCommandLine.empty())
     inputFile = inputFilesFromCommandLine[index_];
   else
-    inputFile = get(Variables::Filename).toString();
+  {
+    inputFile = get(Variables::Filename).toFilename().string();
+    if (mostRecentFileCode() == inputFile)
+      inputFile = SCIRunMainWindow::Instance()->mostRecentFile().toStdString();
+  }
 
   return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile));
 }
@@ -76,14 +82,30 @@ bool ExecuteCurrentNetworkCommandGui::execute()
   return true;
 }
 
+static const AlgorithmParameterName RunningPython("RunningPython");
+
+QuitAfterExecuteCommandGui::QuitAfterExecuteCommandGui()
+{
+  addParameter(RunningPython, false);
+}
+
 bool QuitAfterExecuteCommandGui::execute()
 {
+  if (get(RunningPython).toBool())
+    SCIRunMainWindow::Instance()->skipSaveCheck();
   SCIRunMainWindow::Instance()->setupQuitAfterExecute();
   return true;
 }
 
+QuitCommandGui::QuitCommandGui()
+{
+  addParameter(RunningPython, false);
+}
+
 bool QuitCommandGui::execute()
 {
+  if (get(RunningPython).toBool())
+    SCIRunMainWindow::Instance()->skipSaveCheck();
   SCIRunMainWindow::Instance()->quit();
   exit(0);
   return true;
@@ -117,7 +139,7 @@ bool ShowSplashScreenGui::execute()
 
 void ShowSplashScreenGui::initSplashScreen()
 {
-  splash_ = new QSplashScreen(0, QPixmap(":/general/Resources/scirun_5_0_alpha.png"), Qt::WindowStaysOnTopHint);
+  splash_ = new QSplashScreen(nullptr, QPixmap(":/general/Resources/scirun_5_0_alpha.png"), Qt::WindowStaysOnTopHint);
   splashTimer_ = new QTimer;
   splashTimer_->setSingleShot( true );
   splashTimer_->setInterval( 5000 );
@@ -149,6 +171,16 @@ QPointF SCIRun::Gui::findCenterOfNetwork(const ModulePositions& positions)
   return centroidOfPointRange(pointRange.begin(), pointRange.end());
 }
 
+const char* SCIRun::Gui::addNewModuleActionTypePropertyName()
+{
+  return "connectNewModuleSource";
+}
+
+const char* SCIRun::Gui::insertNewModuleActionTypePropertyName()
+{
+  return "inputPortToConnectPid";
+}
+
 namespace std
 {
 template <typename T1, typename T2>
@@ -160,12 +192,12 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 
 bool NetworkFileProcessCommand::execute()
 {
-  if (!filename_.empty())
-    GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename_));
+  auto filename = get(Variables::Filename).toFilename().string();
+  GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename));
 
   try
   {
-    auto file = processXmlFile();
+    auto file = processXmlFile(filename);
 
     if (file)
     {
@@ -177,7 +209,7 @@ bool NetworkFileProcessCommand::execute()
       else
       {
         int numModules = static_cast<int>(file->network.modules.size());
-        QProgressDialog progress("Loading network " + QString::fromStdString(filename_), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
+        QProgressDialog progress("Loading network " + QString::fromStdString(filename), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
         progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
@@ -196,31 +228,23 @@ bool NetworkFileProcessCommand::execute()
       QPointF center = findCenterOfNetworkFile(*file);
       networkEditor_->centerOn(center);
 
-      GuiLogger::Instance().logInfoStd("File load done (" + filename_ + ").");
+      GuiLogger::Instance().logInfoStd("File load done (" + filename + ").");
+      SCIRun::Core::setCurrentFileName(filename);
       return true;
     }
-    else
-    {
-      if (!filename_.empty())
-      {
-        GuiLogger::Instance().logErrorStd("File load failed (" + filename_ + "): null xml returned.");
-      }
-    }
+    GuiLogger::Instance().logErrorStd("File load failed (" + filename + "): null xml returned.");
   }
   catch (ExceptionBase& e)
   {
-    if (!filename_.empty())
-      GuiLogger::Instance().logErrorStd("File load failed (" + filename_ + "): exception in load_xml, " + e.what());
+    GuiLogger::Instance().logErrorStd("File load failed (" + filename + "): exception in load_xml, " + e.what());
   }
   catch (std::exception& ex)
   {
-    if (!filename_.empty())
-      GuiLogger::Instance().logErrorStd("File load failed(" + filename_ + "): exception in load_xml, " + ex.what());
+    GuiLogger::Instance().logErrorStd("File load failed(" + filename + "): exception in load_xml, " + ex.what());
   }
   catch (...)
   {
-    if (!filename_.empty())
-      GuiLogger::Instance().logErrorStd("File load failed(" + filename_ + "): Unknown exception in load_xml.");
+    GuiLogger::Instance().logErrorStd("File load failed(" + filename + "): Unknown exception in load_xml.");
   }
   return false;
 }
@@ -232,17 +256,17 @@ int NetworkFileProcessCommand::guiProcess(const NetworkFileHandle& file)
   return static_cast<int>(file->network.modules.size()) + 1;
 }
 
-NetworkFileHandle FileOpenCommand::processXmlFile()
+NetworkFileHandle FileOpenCommand::processXmlFile(const std::string& filename)
 {
-  return XMLSerializer::load_xml<NetworkFile>(filename_);
+  return XMLSerializer::load_xml<NetworkFile>(filename);
 }
 
-NetworkFileHandle FileImportCommand::processXmlFile()
+NetworkFileHandle FileImportCommand::processXmlFile(const std::string& filename)
 {
   auto dtdpath = Core::Application::Instance().executablePath();
   const auto& modFactory = Core::Application::Instance().controller()->moduleFactory();
   LegacyNetworkIO lnio(dtdpath.string(), modFactory, logContents_);
-  return lnio.load_net(filename_);
+  return lnio.load_net(filename);
 }
 
 bool RunPythonScriptCommandGui::execute()
@@ -269,8 +293,8 @@ NetworkSaveCommand::NetworkSaveCommand()
 
 bool NetworkSaveCommand::execute()
 {
-  auto filename = get(Variables::Filename).toString();
-  std::string fileNameWithExtension = filename;
+  auto filename = get(Variables::Filename).toFilename().string();
+  auto fileNameWithExtension = filename;
   if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
     fileNameWithExtension += ".srn5";
 
@@ -282,5 +306,13 @@ bool NetworkSaveCommand::execute()
   SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
   GuiLogger::Instance().logInfo("File save done: " + QString::fromStdString(filename));
   SCIRunMainWindow::Instance()->setWindowModified(false);
+
+  SCIRun::Core::setCurrentFileName(filename);
+
   return true;
+}
+
+NetworkFileProcessCommand::NetworkFileProcessCommand() : networkEditor_(SCIRunMainWindow::Instance()->networkEditor())
+{
+  addParameter(Variables::Filename, std::string());
 }

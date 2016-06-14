@@ -35,6 +35,7 @@
 
 #include <vector>
 #include <string>
+#include <complex>
 
 #include <Core/Utils/Legacy/share.h>
 
@@ -84,11 +85,9 @@ public:
   std::string get_namespace() const { return namespace_; }
 
   struct Register {
-    Register(const TypeDescription*);
+    explicit Register(const TypeDescription*);
     ~Register();
   };
-
-//  void fill_compile_info(CompileInfo *ci) const;
 
   /// convert a string that ends in .cc to end in .h
   static std::string cc_to_h(const std::string &dot_cc);
@@ -110,6 +109,7 @@ private:
 
 
 SCISHARE const TypeDescription* get_type_description(double*);
+SCISHARE const TypeDescription* get_type_description(std::complex<double>*);
 SCISHARE const TypeDescription* get_type_description(float*);
 SCISHARE const TypeDescription* get_type_description(short*);
 SCISHARE const TypeDescription* get_type_description(unsigned short*); 
@@ -127,9 +127,9 @@ SCISHARE const TypeDescription* get_type_description(std::string*);
 template <class T>
 const TypeDescription* get_type_description(std::vector<T>*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
-    const TypeDescription *sub = get_type_description(static_cast<T*>(0));
+    const TypeDescription *sub = get_type_description(static_cast<T*>(nullptr));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("vector", subs, "std::vector", "std",
@@ -141,10 +141,10 @@ const TypeDescription* get_type_description(std::vector<T>*)
 template <class T1, class T2>
 const TypeDescription* get_type_description (std::pair<T1,T2> *)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
-    const TypeDescription *sub1 = get_type_description(static_cast<T1*>(0));
-    const TypeDescription *sub2 = get_type_description(static_cast<T2*>(0));
+    const TypeDescription *sub1 = get_type_description(static_cast<T1*>(nullptr));
+    const TypeDescription *sub2 = get_type_description(static_cast<T2*>(nullptr));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(2);
     (*subs)[0] = sub1;
     (*subs)[1] = sub2;

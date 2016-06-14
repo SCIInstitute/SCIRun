@@ -29,11 +29,11 @@
 #ifdef None
 #  undef None
 #endif
-#ifdef CursorShape 
-#  undef CursorShape 
+#ifdef CursorShape
+#  undef CursorShape
 #endif
-#ifdef Status  
-#  undef Status  
+#ifdef Status
+#  undef Status
 #endif
 #ifdef Bool
 #  undef Bool
@@ -50,33 +50,36 @@
 #ifdef GrayScale
 #  undef GrayScale
 #endif
-#ifdef KeyPress 
-#undef KeyPress 
+#ifdef KeyPress
+#undef KeyPress
 #endif
-#ifdef KeyRelease               
-#undef KeyRelease               
+#ifdef KeyRelease
+#undef KeyRelease
 #endif
-#ifdef ChildAdded 
-#undef ChildAdded 
+#ifdef ChildAdded
+#undef ChildAdded
 #endif
-#ifdef ChildPolished 
-#undef ChildPolished 
+#ifdef ChildPolished
+#undef ChildPolished
 #endif
-#ifdef ChildRemoved 
-#undef ChildRemoved 
+#ifdef ChildRemoved
+#undef ChildRemoved
 #endif
-#ifdef FocusIn 
-#undef FocusIn 
+#ifdef FocusIn
+#undef FocusIn
 #endif
-#ifdef FocusOut 
-#undef FocusOut 
+#ifdef FocusOut
+#undef FocusOut
 #endif
-#ifdef Drop 
-#undef Drop 
+#ifdef Drop
+#undef Drop
 #endif
-#ifdef DragMove 
-#undef DragMove 
+#ifdef DragMove
+#undef DragMove
 #endif
-#ifdef FontChange 
-#undef FontChange 
+#ifdef FontChange
+#undef FontChange
+#endif
+#ifdef Complex
+#undef Complex 
 #endif

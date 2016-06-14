@@ -43,7 +43,7 @@ class SCISHARE SplitFieldByDomainAlgo : public AlgorithmBase
     SplitFieldByDomainAlgo();
 
     bool runImpl(FieldHandle input, FieldList& output) const;  
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 
     static AlgorithmParameterName SortBySize;
     static AlgorithmParameterName SortAscending;

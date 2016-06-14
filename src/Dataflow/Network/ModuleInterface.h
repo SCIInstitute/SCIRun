@@ -134,7 +134,7 @@ namespace Networks {
     virtual ModuleStateHandle get_state() = 0;
     virtual const ModuleStateHandle get_state() const = 0;
 
-    virtual bool do_execute() = 0;
+    virtual void execute() = 0;
 
     typedef boost::signals2::signal<void()> ExecutionSelfRequestSignalType;
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;
@@ -150,10 +150,10 @@ namespace Networks {
     virtual void send_output_handle(const PortId& id, SCIRun::Core::Datatypes::DatatypeHandle data) = 0;
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
-    virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
+    virtual SCIRun::Core::Logging::LoggerHandle getLogger() const override = 0;
 
     /// @todo functions
-    virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const = 0;
+    virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override = 0;
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
     virtual void setUiToggleFunc(UiToggleFunc func) = 0;
 
@@ -177,6 +177,9 @@ namespace Networks {
     virtual const MetadataMap& metadata() const = 0;
 
     virtual bool isStoppable() const = 0;
+
+    virtual bool executionDisabled() const = 0;
+    virtual void setExecutionDisabled(bool disable) = 0;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

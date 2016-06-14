@@ -41,3 +41,8 @@ UndoableCommand::~UndoableCommand()
 RedoableCommand::~RedoableCommand()
 {
 }
+
+std::string SCIRun::Core::Commands::mostRecentFileCode()
+{
+  return "..MOST_RECENT_FILE_CODE..";
+}

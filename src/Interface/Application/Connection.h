@@ -74,19 +74,24 @@ public:
   void updateNoteFromFile(const Note& note);
   std::pair<PortWidget*, PortWidget*> connectedPorts() const { return { fromPort_, toPort_ }; }
   const SCIRun::Dataflow::Networks::ConnectionId& id() const { return id_; }
+  bool disabled() const { return disabled_; }
+  void setDisabled(bool disabled);
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
   void updateNote(const Note& note);
+  void toggleDisabled();
+  void insertNewModule();
 
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void noteChanged();
+  void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* output, const std::string& newModuleName, const SCIRun::Dataflow::Networks::PortDescriptionInterface* input);
 protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
-  QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+  QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
   virtual void setNoteGraphicsContext() override;
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
@@ -98,12 +103,14 @@ private:
   PortWidget* toPort_;
   SCIRun::Dataflow::Networks::ConnectionId id_;
   ConnectionDrawStrategyPtr drawer_;
-  void destroy();
+  void destroyConnection();
   bool destroyed_;
   class ConnectionMenu* menu_;
   bool menuOpen_;
+  bool disabled_ {false};
   QColor placeHoldingColor_;
   int placeHoldingWidth_;
+  double defaultZValue() const;
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};

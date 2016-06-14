@@ -59,12 +59,12 @@ ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
 RefineMeshAlgo::RefineMeshAlgo()
 {
 		using namespace Parameters; 
-		add_option(AddConstraints,"all","all|greaterthan|unequal|lessthan|none");
-		add_option(RefineMethod,"Default","Default|Expand refinement volume to improve element quality"); 
+		addOption(AddConstraints,"all","all|greaterthan|unequal|lessthan|none");
+		addOption(RefineMethod,"Default","Default|Expand refinement volume to improve element quality"); 
 		addParameter(IsoValue,0.0);
 }
 
-AlgorithmOutput RefineMeshAlgo::run_generic(const AlgorithmInput& input) const 
+AlgorithmOutput RefineMeshAlgo::run(const AlgorithmInput& input) const 
 { 
 	auto field = input.get<Field>(Variables::InputField);
   FieldHandle outputField;
@@ -90,9 +90,9 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 	FieldInformation fi(input);
 	FieldInformation fo(output); 
 
-	const std::string rMethod = get_option(Parameters::RefineMethod);
+	const std::string rMethod = getOption(Parameters::RefineMethod);
 	const double isoVal = get(Parameters::IsoValue).toDouble();
-	const std::string addCon = get_option(Parameters::AddConstraints);
+	const std::string addCon = getOption(Parameters::AddConstraints);
  
   if (input->vfield()->num_values() == 0)
   {

@@ -51,7 +51,7 @@ void ComputePCA::execute()
     {
         update_state(Executing);
         
-        auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
+        auto output = algo().run(withInputData((InputMatrix,input_matrix)));
         
         sendOutputFromAlgorithm(LeftPrincipalMatrix, output);
         sendOutputFromAlgorithm(PrincipalValues, output);

@@ -382,7 +382,7 @@ TEST(SelectSubMatrixTests, BoundaryChecksGUI)
   algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), true);
   algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox(), col_from);
   algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox(), col_to);
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
   
   if (result1)
   {
@@ -397,7 +397,7 @@ TEST(SelectSubMatrixTests, BoundaryChecksGUI)
   algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), row_from);
   algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), row_to);
   
-  DenseMatrixHandle result2 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
+  DenseMatrixHandle result2 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
 
   if (result2)
   {
@@ -412,7 +412,7 @@ TEST(SelectSubMatrixTests, BoundaryChecksGUI)
   algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), row_from);
   algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), row_to);
   
-  DenseMatrixHandle result3 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
+  DenseMatrixHandle result3 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
   
   if (result3)
   {
@@ -431,7 +431,7 @@ TEST(SelectSubMatrixTests, BoundaryChecksInputMatrices)
   
   DenseMatrixHandle index_rows(index_matrix1());
   
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,index_rows,DenseMatrixHandle()));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,index_rows,DenseMatrixHandle()));
   
   if (!result1)
   {
@@ -455,7 +455,7 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_1)
   DenseMatrixHandle result1;
   try
   {
-    result1 =  matrix_cast::as_dense(algo.run(m1,index_rows,DenseMatrixHandle()));
+    result1 =  castMatrix::toDense(algo.run(m1,index_rows,DenseMatrixHandle()));
   }
   catch (...)
   {
@@ -472,7 +472,7 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_1)
   DenseMatrixHandle result2;
   try
   {
-    result2 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),index_col));
+    result2 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),index_col));
   }
   catch (...)
   {
@@ -498,7 +498,7 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_2)
   
   try
   {
-    result1 =  matrix_cast::as_dense(algo.run(m1,index_rows,DenseMatrixHandle()));
+    result1 =  castMatrix::toDense(algo.run(m1,index_rows,DenseMatrixHandle()));
   }
   catch (...)
   {
@@ -518,7 +518,7 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_2)
   
   try
   {
-    result2 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),index_cols));
+    result2 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),index_cols));
   }
   catch (...)
   {
@@ -544,7 +544,7 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_3)
   
   try
   {
-    result1 =  matrix_cast::as_dense(algo.run(m1,index_rows,DenseMatrixHandle()));
+    result1 =  castMatrix::toDense(algo.run(m1,index_rows,DenseMatrixHandle()));
   }
   catch (...)
   {
@@ -561,7 +561,7 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_3)
   
   try
   {
-    result2 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),index_cols));
+    result2 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),index_cols));
   }
   catch (...)
   {
@@ -588,7 +588,7 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_4)
   
   try
   {
-    result1 =  matrix_cast::as_dense(algo.run(m1,index_rows,DenseMatrixHandle()));
+    result1 =  castMatrix::toDense(algo.run(m1,index_rows,DenseMatrixHandle()));
   }
   catch (...)
   {
@@ -605,7 +605,7 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_4)
   
   try
   {
-    result2 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),index_cols));
+    result2 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),index_cols));
   }
   catch (...)
   {
@@ -633,7 +633,7 @@ TEST(SelectSubMatrixTests, Gui_Submatrix_rowsandcolumns_passinputthrough)
   algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), row_from);
   algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), row_to); 
   
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
     
   DenseMatrixHandle expected_result(Gui_Submatrix_rowsandcolumns_passinputthrough());
     
@@ -660,7 +660,7 @@ TEST(SelectSubMatrixTests, Gui_Submatrix_rowsonly)
   algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), row_to);  
 
   
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
 
   DenseMatrixHandle expected_result(result_Gui_Submatrix_rowsonly());
   
@@ -689,7 +689,7 @@ TEST(SelectSubMatrixTests, Gui_Submatrix_columnsonly)
   algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox(), col_from);
   algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox(), col_to);  
 
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
  
   DenseMatrixHandle expected_result(result_Gui_Submatrix_columnsonly());
  
@@ -721,7 +721,7 @@ TEST(SelectSubMatrixTests, Gui_Submatrix_rowsandcolumns)
   algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), row_from);
   algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), row_to); 
   
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
     
   DenseMatrixHandle expected_result(result_Gui_Submatrix_rowsandcolumns());
   
@@ -745,7 +745,7 @@ TEST(SelectSubMatrixTests, Pipe_InputMatrix_through)
   algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), -1000);
   algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), 10000);
   
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,0,0)); 
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,0,0)); 
   
   for (int i = 0; i < result1->rows(); i++)
    for (int j = 0; j < result1->cols(); j++)
@@ -757,14 +757,14 @@ TEST(SelectSubMatrixTests, InputMatrix_empty)
   SelectSubMatrixAlgorithm algo;
 
   DenseMatrixHandle m2;
-  DenseMatrixHandle result2 =  matrix_cast::as_dense(algo.run(m2,0,0));
+  DenseMatrixHandle result2 =  castMatrix::toDense(algo.run(m2,0,0));
 
   if (result2)
   {
     std::cout << "ERROR (indices NULL, DenseMatrixHandle empty): output is not NULL." << std::endl;
   }
  
-  DenseMatrixHandle result3 =  matrix_cast::as_dense(algo.run(0,0,0));
+  DenseMatrixHandle result3 =  castMatrix::toDense(algo.run(0,0,0));
   
   if (result3)
   {
@@ -782,7 +782,7 @@ TEST(SelectSubMatrixTests, InputMatrix_rowsonly)
   
   DenseMatrixHandle index_rows(index_matrix1());
   
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,index_rows,DenseMatrixHandle()));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,index_rows,DenseMatrixHandle()));
   
   if (!result1)
   {
@@ -810,7 +810,7 @@ TEST(SelectSubMatrixTests, InputMatrix_columnsonly)
   
   DenseMatrixHandle index_cols(index_matrix2());
   
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),index_cols));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),index_cols));
   
   if (!result1)
   {
@@ -838,7 +838,7 @@ TEST(SelectSubMatrixTests, InputMatrix_rowsandcolumns)
   DenseMatrixHandle index_rows(index_matrix4());
   DenseMatrixHandle index_cols(index_matrix3());
   
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,index_rows,index_cols));
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,index_rows,index_cols));
 
   if (!result1)
   {
@@ -867,7 +867,7 @@ TEST(SelectSubMatrixTests, NOGUI_DenseColumnMatrixCols)
    
   try
   {
-    result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),index_cols));
+    result1 =  castMatrix::toDense(algo.run(m1,DenseMatrixHandle(),index_cols));
   }
   catch (...)
   {
@@ -895,7 +895,7 @@ TEST(SelectSubMatrixTests, NOGUI_DenseColumnMatrixRows)
    
   try
   {
-    result1 =  matrix_cast::as_dense(algo.run(m1,index_cols,DenseMatrixHandle()));
+    result1 =  castMatrix::toDense(algo.run(m1,index_cols,DenseMatrixHandle()));
   }
   catch (...)
   {
@@ -931,7 +931,7 @@ TEST(SelectSubMatrixTests, GUI_DenseColumnMatrixRows)
   algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), from);
   algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), to);
   
-  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,0,0)); 
+  DenseMatrixHandle result1 =  castMatrix::toDense(algo.run(m1,0,0)); 
   
   DenseMatrixHandle expected_result(densecolumnmatrix_expectedoutput2());
 

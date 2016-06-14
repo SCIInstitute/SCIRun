@@ -62,10 +62,10 @@ ALGORITHM_PARAMETER_DEF(Fields, MaxDistance);
 MapFieldDataOntoElemsAlgo::MapFieldDataOntoElemsAlgo()
 {
   using namespace Parameters;
-  add_option(Quantity, "value", "value|gradient|gradientnorm|flux");
-  add_option(InterpolationModel, "interpolateddata","interpolateddataonly|interpolateddata|closestnodedata|closestinterpolateddata");
-  add_option(SamplePoints, "regular1","regular1|regular2|regular3|regular4|regular5|gaussian1|gaussian2|gaussian3");
-  add_option(SampleMethod, "average","average|integrate|min|max|sum|mostcommon|median");
+  addOption(Quantity, "value", "value|gradient|gradientnorm|flux");
+  addOption(InterpolationModel, "interpolateddata","interpolateddataonly|interpolateddata|closestnodedata|closestinterpolateddata");
+  addOption(SamplePoints, "regular1","regular1|regular2|regular3|regular4|regular5|gaussian1|gaussian2|gaussian3");
+  addOption(SampleMethod, "average","average|integrate|min|max|sum|mostcommon|median");
   addParameter(OutsideValue, 0.0);
   addParameter(MaxDistance, std::numeric_limits<double>::max());
 }
@@ -158,8 +158,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
   std::vector<double> weights;
   std::vector<Point> points;
 
-  std::string sample_points = algo_->get_option(Parameters::SamplePoints);
-  std::string sample_method = algo_->get_option(Parameters::SampleMethod);
+  std::string sample_points = algo_->getOption(Parameters::SamplePoints);
+  std::string sample_method = algo_->getOption(Parameters::SampleMethod);
 
   if (sample_points == "regular1")
   {
@@ -1023,8 +1023,8 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
 
   fo.make_constantdata();
 
-  std::string quantity = get_option(Parameters::Quantity);
-  std::string value = get_option(Parameters::InterpolationModel);
+  std::string quantity = getOption(Parameters::Quantity);
+  std::string value = getOption(Parameters::InterpolationModel);
 
   if (value == "closestnodedata")
   {
@@ -1152,7 +1152,7 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
   if (quantity == "flux") algo.is_flux_ = true;
 
   algo.has_nan_ = false;
-  std::string valuestr = get_option(Parameters::InterpolationModel);
+  std::string valuestr = getOption(Parameters::InterpolationModel);
   if (valuestr == "interpolateddataonly") algo.has_nan_ = true;
 
   // Parallel algorithm
@@ -1194,8 +1194,8 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   FieldInformation fo(destination);
   fo.make_constantdata();
 
-  std::string quantity = get_option(Parameters::Quantity);
-  std::string value = get_option(Parameters::InterpolationModel);
+  std::string quantity = getOption(Parameters::Quantity);
+  std::string value = getOption(Parameters::InterpolationModel);
 
   if (value == "closestnodedata")
   {
@@ -1280,7 +1280,7 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   algo.is_flux_ = quantity == "flux";
 
   algo.has_nan_ = false;
-  std::string valuestr = get_option(Parameters::InterpolationModel);
+  std::string valuestr = getOption(Parameters::InterpolationModel);
   if (valuestr == "interpolateddataonly") algo.has_nan_ = true;
 
   // Parallel algorithm
@@ -1309,7 +1309,7 @@ const AlgorithmInputName MapFieldDataOntoElemsAlgo::Source("Source");
 const AlgorithmInputName MapFieldDataOntoElemsAlgo::Destination("Destination");
 const AlgorithmInputName MapFieldDataOntoElemsAlgo::Weights("Weights");
 
-AlgorithmOutput MapFieldDataOntoElemsAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MapFieldDataOntoElemsAlgo::run(const AlgorithmInput& input) const
 {
   dumpAlgoState();
   auto source = input.get<Field>(Source);

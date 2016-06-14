@@ -49,7 +49,7 @@ ALGORITHM_PARAMETER_DEF(Fields, BuildBasisMapping)
 
 ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
 {
-  add_option(Parameters::OutputType, "Linear", "None|Constant|Linear|Quadratic");
+  addOption(Parameters::OutputType, "Linear", "None|Constant|Linear|Quadratic");
   addParameter(Parameters::BuildBasisMapping, false);
 }
 
@@ -66,7 +66,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
   
   FieldInformation fo(input);
   
-  const std::string basistype = get_option(Parameters::OutputType);
+  const std::string basistype = getOption(Parameters::OutputType);
   const bool buildBasisMapping = get(Parameters::BuildBasisMapping).toBool();
   
   int basis_order = input->vfield()->basis_order();
@@ -497,7 +497,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   return runImpl(input,output,dummy);
 }
 
-AlgorithmOutput ConvertFieldBasisTypeAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertFieldBasisTypeAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

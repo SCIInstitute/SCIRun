@@ -31,12 +31,12 @@
 #define MODULES_FIELDS_REPORTFIELDINFO_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Modules/Legacy/Matlab/DataIO/share.h>
 
 namespace SCIRun {
 namespace Modules {
-namespace Fields {
-  
+namespace Matlab {
+
   class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
     public Has6OutputPorts<StringPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag>

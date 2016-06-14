@@ -34,6 +34,7 @@ SET(Core_Datatypes_SRCS
   Geometry.cc
   Material.cc
   Matrix.cc
+  MatrixAlgorithms.cc
   MatrixTypeConversions.cc
   PropertyManagerExtensions.cc
   Scalar.cc
@@ -53,6 +54,7 @@ SET(Core_Datatypes_HEADERS
   HasId.h
   Material.h
   Matrix.h
+  MatrixAlgorithms.h
   MatrixComparison.h
   MatrixFwd.h
   MatrixIO.h

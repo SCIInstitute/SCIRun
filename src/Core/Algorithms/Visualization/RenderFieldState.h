@@ -44,6 +44,7 @@ public:
     HAS_DATA,
     USE_TRANSPARENCY,
     NORMALIZE_DATA,
+    IS_TEXT,
 
     USE_DEFAULT_COLOR,
     USE_COLORMAP,
@@ -66,6 +67,7 @@ public:
 
     // Face flags
     USE_NORMALS,
+    USE_FACE_NORMALS,
     USE_TEXTURE,
     IS_DOUBLE_SIDED,
 
@@ -87,6 +89,9 @@ public:
     USE_MAJOR_RADIUS,
     USE_MINOR_RADIUS,
     USE_PITCH,
+
+    // Rendering Options
+    USE_BLEND,
 
     MAX_ACTION_FLAGS
   };

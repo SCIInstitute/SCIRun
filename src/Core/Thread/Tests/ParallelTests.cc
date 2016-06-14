@@ -28,10 +28,14 @@
 
 #include <gtest/gtest.h>
 #include <numeric>
+#include <fstream>
 
 #include <Core/Thread/Parallel.h>
+#include <boost/filesystem/path.hpp>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::TestUtils;
 
 TEST(ParallelTests, CanDoubleNumberInParallel)
 {
@@ -39,7 +43,7 @@ TEST(ParallelTests, CanDoubleNumberInParallel)
   std::vector<int> nums(size);
   int i = 0;
   std::generate(nums.begin(), nums.end(), [&]() {return i++;});
-  
+
   int expectedSum = size * (size-1) / 2;
   EXPECT_EQ(expectedSum, std::accumulate(nums.begin(), nums.end(), 0, std::plus<int>()));
 
@@ -67,3 +71,46 @@ TEST(ParallelTests, CanDoubleNumberWithParallelForEach)
   //EXPECT_TRUE(false);
 }
 #endif
+
+namespace
+{
+  boost::filesystem::path procInfoTest;
+
+  int legacyNumProcessors()
+  {
+    int np = 0;
+
+    if (np == 0) {
+
+      // Linux
+      std::ifstream cpuinfo(procInfoTest.string());//"/proc/cpuinfo");
+      if (cpuinfo) {
+        int count = 0;
+        std::cout << "count = 0" << std::endl;
+        while (!cpuinfo.eof())
+        {
+          std::string str;
+          cpuinfo >> str;
+          if (str == "processor") {
+            ++count;
+          }
+        }
+        np = count;
+      }
+
+      if (np <= 0) np = 1;
+    }
+    return np;
+  }
+}
+
+TEST(NumCoresTest, CompareToV4Linux)
+{
+  procInfoTest = TestResources::rootDir() / "Other" / "cpuinfo_mtblanc";
+
+  std::cout << procInfoTest << "\nmtblanc: " << legacyNumProcessors() << std::endl;
+
+  procInfoTest = TestResources::rootDir() / "Other" / "cpuinfo_zugspitze";
+
+  std::cout << procInfoTest << "\nzugspitze: " << legacyNumProcessors() << std::endl;
+}

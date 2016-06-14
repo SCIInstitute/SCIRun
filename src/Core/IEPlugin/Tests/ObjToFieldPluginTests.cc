@@ -28,6 +28,10 @@
 
 #include <gtest/gtest.h>
 #include <Core/IEPlugin/ObjToField_Plugin.h>
+#include <Core/IEPlugin/PointCloudField_Plugin.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
 
 /// TODO: intern
 
@@ -39,4 +43,29 @@ TEST(ObjToFieldPluginTests, DISABLED_CanRead)
 TEST(ObjToFieldPluginTests, DISABLED_CanWrite)
 {
   FAIL() << "todo";
+}
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+TEST(PointCloudFieldTests, PrecisionOfNodePositions)
+{
+  FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, DOUBLE_E);
+  Point minb(-1.0, -1.0, -1.0);
+  Point maxb(1.0, 1.0, 1.0);
+  MeshHandle mesh = CreateMesh(lfi, 3, 3, 3, minb, maxb);
+  FieldHandle ofh = CreateField(lfi, mesh);
+
+
+  ConvertMeshToPointCloudMeshAlgo algo;
+  FieldHandle pc;
+  algo.runImpl(ofh, pc);
+
+  ASSERT_TRUE(pc->vmesh()->is_pointcloudmesh());
+
+  ASSERT_TRUE(PointCloudFieldToText_writer(nullptr, pc, "E:\\v5pc.pts"));
+
+
+
 }

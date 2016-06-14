@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CreateComplexMatrix",
+    "namespace": "Math",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Math/CreateComplexMatrix.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "CreateComplexMatrixDialog",
+    "header": "Interface/Modules/Math/CreateComplexMatrixDialog.h"
+  }
+}

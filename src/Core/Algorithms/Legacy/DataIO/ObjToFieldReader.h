@@ -53,7 +53,7 @@ namespace SCIRun
         explicit ObjToFieldReader(Logging::LoggerHandle log);
         bool read(const std::string& filename, FieldHandle& field_handle);
         bool write(const std::string& filename, const FieldHandle& field);
-        virtual AlgorithmOutput run_generic(const AlgorithmInput&) const override { throw "not implemented"; }
+        virtual AlgorithmOutput run(const AlgorithmInput&) const override { throw "not implemented"; }
       private:
         Logging::LoggerHandle log_;
       };

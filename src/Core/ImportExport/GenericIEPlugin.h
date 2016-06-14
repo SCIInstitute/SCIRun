@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -77,8 +77,8 @@ public:
   virtual std::string pluginname() const override { return pluginname_; }
   virtual std::string fileExtension() const override { return fileextension_; }
   virtual std::string fileMagic() const override { return filemagic_; }
-  virtual bool hasReader() const { return filereader_ != nullptr; }
-  virtual bool hasWriter() const { return filewriter_ != nullptr; }
+  virtual bool hasReader() const override { return filereader_ != nullptr; }
+  virtual bool hasWriter() const override { return filewriter_ != nullptr; }
 
   virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const override;
   virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const override;
@@ -87,8 +87,8 @@ public:
   IEPluginLegacyAdapter(const std::string &name,
     const std::string &fileextension,
     const std::string &filemagic,
-    boost::shared_ptr<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename) = 0,
-    bool (*fwriter)(Core::Logging::LoggerHandle pr, boost::shared_ptr<Data> f, const char *filename) = 0);
+    boost::shared_ptr<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename) = nullptr,
+    bool (*fwriter)(Core::Logging::LoggerHandle pr, boost::shared_ptr<Data> f, const char *filename) = nullptr);
 
   ~IEPluginLegacyAdapter();
 
@@ -106,11 +106,11 @@ private:
 
 template <class Data>
 class PluginMap
-{ 
+{
 public:
-  PluginMap() : lock_("IE plugin map"), pluginTable_(0) {}
+  PluginMap() : lock_("IE plugin map"), pluginTable_(nullptr) {}
   Core::Thread::Mutex& getLock();
-  typedef std::map<std::string, GenericIEPluginInterface<Data>*> Map;
+  using Map = std::map<std::string, GenericIEPluginInterface<Data>*>;
   Map& getMap();
   void createMap();
   void destroyMap();
@@ -158,7 +158,7 @@ void PluginMap<Data>::createMap()
 {
   if (!pluginTable_)
   {
-    pluginTable_ = new typename PluginMap<Data>::Map();
+    pluginTable_ = new Map();
   }
 }
 
@@ -174,7 +174,7 @@ size_t PluginMap<Data>::numPlugins() const
 template <class Data>
 void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& results) const
 {
-  if (0 == map_.numPlugins()) 
+  if (0 == map_.numPlugins())
   {
     return;
   }
@@ -190,7 +190,7 @@ void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& r
 template <class Data>
 void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& results) const
 {
-  if (0 == map_.numPlugins()) 
+  if (0 == map_.numPlugins())
   {
     return;
   }
@@ -207,14 +207,14 @@ template <class Data>
 GenericIEPluginInterface<Data>* GenericIEPluginManager<Data>::get_plugin(const std::string &name) const
 {
   if (0 == map_.numPlugins())
-    return 0;
+    return nullptr;
 
   Core::Thread::Guard s(map_.getLock().get());
   // Should check for invalid name.
   auto loc = map_.getMap().find(name);
   if (loc == map_.getMap().end())
   {
-    return 0;
+    return nullptr;
   }
   else
   {
@@ -322,7 +322,7 @@ bool IEPluginLegacyAdapter<Data>::operator==(const IEPluginLegacyAdapter<Data>& 
 }
 
 template <class Data>
-std::string defaultImportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
+std::string defaultImportTypeForFile(const GenericIEPluginManager<Data>* mgr = nullptr)
 {
   return "";
 }
@@ -339,23 +339,27 @@ SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<NrrdD
 SCISHARE std::string fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter);
 
 template <class Data>
+std::string dialogBoxFilterFromFileTypeDescription(const GenericIEPluginManager<Data>& mgr, const std::string& name)
+{
+  if (name.find("*") != std::string::npos) // user has set state variable with full filter string
+    return name;
+  std::ostringstream filter;
+  auto pl = mgr.get_plugin(name);
+  auto ext = pl ? pl->fileExtension() : std::string();
+  filter << name << " (" << (!ext.empty() ? ext : "*.*") << ")";
+  return filter.str();
+}
+
+template <class Data>
 std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>& mgr, const std::string& defaultType, const std::vector<std::string>& pluginNames)
 {
   std::ostringstream types;
   types << defaultType;
 
-  for (const std::string& name : pluginNames)
+  // Qt dialog-specific formatting
+  for (const auto& name : pluginNames)
   {
-    auto pl = mgr.get_plugin(name);
-    types << ";;" << name;
-    if (!pl->fileExtension().empty())
-    {
-      types << " (" << pl->fileExtension() << ")";
-    }
-    else
-    {
-      types << " (*.*)";
-    }
+    types << ";;" << dialogBoxFilterFromFileTypeDescription(mgr, name);
   }
   return types.str();
 }
@@ -370,7 +374,7 @@ std::string makeGuiTypesListForImport(const GenericIEPluginManager<Data>& mgr)
 }
 
 template <class Data>
-std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
+std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = nullptr)
 {
   return "";
 }

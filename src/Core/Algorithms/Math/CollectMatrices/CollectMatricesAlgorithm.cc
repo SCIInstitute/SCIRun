@@ -42,6 +42,7 @@ using namespace SCIRun::Core::Datatypes;
 ALGORITHM_PARAMETER_DEF(Math, CollectAppendIndicator);
 ALGORITHM_PARAMETER_DEF(Math, CollectRowIndicator);
 ALGORITHM_PARAMETER_DEF(Math, CollectPrependIndicator);
+ALGORITHM_PARAMETER_DEF(Math, ClearCollectMatricesOutput);
 
 MatrixHandle
 CollectDenseMatricesAlgorithm::concat_cols(MatrixHandle m1H, MatrixHandle m2H) const
@@ -92,8 +93,8 @@ CollectSparseRowMatricesAlgorithm::concat_cols(MatrixHandle m1H, MatrixHandle m2
   const size_type newCols = m1H->ncols() + m2H->ncols();
 
   SparseRowMatrixFromMap::Values shiftedValues;
-  auto m1sparse = matrix_cast::as_sparse(m1H);
-  auto m2sparse = matrix_cast::as_sparse(m2H);
+  auto m1sparse = castMatrix::toSparse(m1H);
+  auto m2sparse = castMatrix::toSparse(m2H);
 
   copy_shifted_contents(m2sparse, shiftedValues, 0, m1sparse->ncols());
 
@@ -109,8 +110,8 @@ CollectSparseRowMatricesAlgorithm::concat_rows(MatrixHandle m1H, MatrixHandle m2
   auto newCols = m1H->ncols();
 
   SparseRowMatrixFromMap::Values shiftedValues;
-  auto m1sparse = matrix_cast::as_sparse(m1H);
-  auto m2sparse = matrix_cast::as_sparse(m2H);
+  auto m1sparse = castMatrix::toSparse(m1H);
+  auto m2sparse = castMatrix::toSparse(m2H);
 
   copy_shifted_contents(m2sparse, shiftedValues, m1sparse->nrows(), 0);
 
@@ -120,7 +121,7 @@ CollectSparseRowMatricesAlgorithm::concat_rows(MatrixHandle m1H, MatrixHandle m2
 void
 CollectSparseRowMatricesAlgorithm::check_args(MatrixHandle m1H, MatrixHandle m2H) const
 {
-  if (!matrix_is::sparse(m1H) || !matrix_is::sparse(m2H))
+  if (!matrixIs::sparse(m1H) || !matrixIs::sparse(m2H))
     THROW_ALGORITHM_INPUT_ERROR("Both matrices to concatenate must be sparse.");
 }
 

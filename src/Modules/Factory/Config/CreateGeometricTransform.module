@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CreateGeometricTransform",
+    "namespace": "Math",
+    "status": "GUI finished. Working on Algorithm.",
+    "description": "Build a 4x4 geometric transformation matrix capable of translation, scaling, rotation, sheering and permutation.",
+    "header": "Modules/Math/CreateGeometricTransform.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "CreateGeometricTransformDialog",
+    "header": "Interface/Modules/Math/CreateGeometricTransformDialog.h"
+  }
+}

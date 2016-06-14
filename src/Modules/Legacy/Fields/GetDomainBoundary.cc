@@ -123,7 +123,7 @@ void GetDomainBoundary::execute()
       algo().set(Parameters::MaxRange, guiValue);
     }
       
-    auto output = algo().run_generic(withInputData((InputField, ifield)(ElemLink, optionalAlgoInput(elemLink))));
+    auto output = algo().run(withInputData((InputField, ifield)(ElemLink, optionalAlgoInput(elemLink))));
     
     sendOutputFromAlgorithm(BoundaryField, output);
   }

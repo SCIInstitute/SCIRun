@@ -51,7 +51,7 @@ namespace SCIRun{
           RefineMeshTetVolAlgoV();
 
           bool runImpl(FieldHandle input, FieldHandle& output, const std::string& select, double isoval) const;
-          AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          AlgorithmOutput run(const AlgorithmInput& input) const override;
         };
       }
     }

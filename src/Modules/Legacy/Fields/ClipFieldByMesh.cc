@@ -74,8 +74,8 @@ void ClipFieldByMesh::execute()
     CalculateIsInsideFieldAlgo insideAlgo;
     //insideAlgo.setLogger(getLogger());
 
-    insideAlgo.set_option(Parameters::FieldOutputType, "char");
-    insideAlgo.set_option(Parameters::SamplingScheme, "regular2");
+    insideAlgo.setOption(Parameters::FieldOutputType, "char");
+    insideAlgo.setOption(Parameters::SamplingScheme, "regular2");
 
     if (!insideAlgo.runImpl(input,object,selection))
     {
@@ -89,7 +89,7 @@ void ClipFieldByMesh::execute()
     }
 
     if (input->vmesh()->num_elems() == selection->vfield()->num_values())
-      clipAlgo.set_option(Parameters::ClipMethod, "Element Center");
+      clipAlgo.setOption(Parameters::ClipMethod, "Element Center");
 
     if (!clipAlgo.runImpl(input,selection,output,interpolant))
     {

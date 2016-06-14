@@ -69,7 +69,7 @@ void InterfaceWithCleaverModule::execute()
     setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingY);
     setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingZ);
 
-    auto output = algo().run_generic(withInputData((InputFields, fields)));
+    auto output = algo().run(withInputData((InputFields, fields)));
 
     sendOutputFromAlgorithm(OutputField,output);
   }

@@ -72,7 +72,7 @@ void SetupTDCS::execute()
   auto scalp_tri_surf = getRequiredInput(SCALP_TRI_SURF_MESH);
   auto elc_tri_surf = getRequiredInput(ELECTRODE_TRI_SURF_MESH);
     
-  DenseMatrixHandle elc_sponge_location = matrix_convert::to_dense(getRequiredInput(ELECTRODE_SPONGE_LOCATION_AVR));
+  DenseMatrixHandle elc_sponge_location = convertMatrix::toDense(getRequiredInput(ELECTRODE_SPONGE_LOCATION_AVR));
   
   // obtaining electrode values from state map
   auto elc_vals_from_state = get_state()->getValue(Parameters::ElectrodeTableValues).toVector();
@@ -98,7 +98,7 @@ void SetupTDCS::execute()
      state->setValue(Parameters::number_of_electrodes, nr_elec);
     }
     
-    auto output = algo().run_generic(make_input((MESH, mesh)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
+    auto output = algo().run(make_input((MESH, mesh)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
     
     auto table = output.additionalAlgoOutput(); /// get the two outputs, the third table column and the container that establishes data transfer between GUI/Algo via state  
     if (table)

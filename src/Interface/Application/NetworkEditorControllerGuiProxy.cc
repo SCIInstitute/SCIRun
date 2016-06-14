@@ -134,14 +134,14 @@ void NetworkEditorControllerGuiProxy::setExecutorType(int type)
   controller_->setExecutorType(type);
 }
 
-void NetworkEditorControllerGuiProxy::duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
+void NetworkEditorControllerGuiProxy::duplicateModule(const ModuleHandle& module)
 {
   controller_->duplicateModule(module);
 }
 
-void NetworkEditorControllerGuiProxy::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+void NetworkEditorControllerGuiProxy::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const PortDescriptionInterface* portToConnectUponInsertion)
 {
-  controller_->connectNewModule(moduleToConnectTo, portToConnect, newModuleName);
+  controller_->connectNewModule(portToConnect, newModuleName, portToConnectUponInsertion);
 }
 
 const ModuleDescriptionMap& NetworkEditorControllerGuiProxy::getAllAvailableModuleDescriptions() const

@@ -34,6 +34,7 @@
 #include <boost/python.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <Dataflow/Engine/Python/share.h>
 
 namespace SCIRun
@@ -43,7 +44,8 @@ namespace SCIRun
     namespace Thread
     {
       class Mutex;
-  }}
+    }
+  }
 
   class SCISHARE PyModule
   {
@@ -55,14 +57,25 @@ namespace SCIRun
     virtual void reset() = 0;
 
     //state
-    virtual boost::python::object getattr(const std::string& name) = 0;
-    virtual void setattr(const std::string& name, boost::python::object object) = 0;
+    virtual boost::python::object getattr(const std::string& name, bool transient) = 0;
+    virtual void setattr(const std::string& name, boost::python::object object, bool transient) = 0;
     virtual std::vector<std::string> stateVars() const = 0;
     virtual std::string stateToString() const = 0;
 
     //ports
     virtual boost::shared_ptr<class PyPorts> output() = 0;
     virtual boost::shared_ptr<class PyPorts> input() = 0;
+
+    //time added to network, for id sorting
+    virtual boost::posix_time::ptime creationTime() const = 0;
+  };
+
+  class SCISHARE PyDatatype
+  {
+  public:
+    virtual ~PyDatatype() {}
+    virtual std::string type() const = 0;
+    virtual boost::python::object value() const = 0;
   };
 
   class SCISHARE PyPort : public boost::enable_shared_from_this<PyPort>
@@ -70,9 +83,12 @@ namespace SCIRun
   public:
     virtual ~PyPort() {}
     virtual std::string name() const = 0;
+    virtual std::string id() const = 0;
     virtual std::string type() const = 0;
     virtual bool isInput() const = 0;
     virtual void connect(const PyPort& other) const = 0;
+    virtual std::string dataTypeName() const = 0; //TODO: precursor to getting actual data off of port
+    virtual boost::shared_ptr<PyDatatype> data() const = 0;
   };
 
   class SCISHARE PyConnection
@@ -110,15 +126,21 @@ namespace SCIRun
     virtual ~NetworkEditorPythonInterface() {}
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name) = 0;
     virtual std::string removeModule(const std::string& id) = 0;
+    virtual std::vector<boost::shared_ptr<PyModule>> moduleList() const = 0;
+    virtual boost::shared_ptr<PyModule> findModule(const std::string& id) const = 0;
     virtual std::string connect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
     virtual std::string disconnect(const std::string& moduleIdFrom, int fromIndex, const std::string& moduleIdTo, int toIndex) = 0;
     virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup* lookup) = 0;
     virtual std::string saveNetwork(const std::string& filename) = 0;
     virtual std::string loadNetwork(const std::string& filename) = 0;
+    virtual std::string importNetwork(const std::string& filename) = 0;
+    virtual std::string runScript(const std::string& filename) = 0;
+    virtual std::string currentNetworkFile() const = 0;
     virtual std::string quit(bool force) = 0;
-    virtual void setLock(Core::Thread::Mutex* mutex) = 0;
+    virtual void setUnlockFunc(boost::function<void()> unlock) = 0;
+    virtual void setModuleContext(bool inModule) = 0;
+    virtual bool isModuleContext() const = 0;
   };
-
 }
 
 #endif

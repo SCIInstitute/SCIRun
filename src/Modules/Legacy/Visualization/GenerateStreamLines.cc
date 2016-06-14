@@ -81,7 +81,7 @@ void GenerateStreamLines::execute()
     setAlgoBoolFromState(Parameters::AutoParameters);
     setAlgoOptionFromState(Parameters::StreamlineMethod);
 
-    auto output = algo().run_generic(withInputData((Vector_Field, input)(Seed_Points, seeds)));
+    auto output = algo().run(withInputData((Vector_Field, input)(Seed_Points, seeds)));
 
     #ifdef NEED_ALGO_OUTPUT
     gui_tolerance_.set(algo_.get_scalar("tolerance"));

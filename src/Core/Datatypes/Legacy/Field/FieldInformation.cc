@@ -658,23 +658,6 @@ FieldInformation::set_container_type(const std::string& type)
   container_type = type;
 }
 
-
-std::string
-FieldInformation::get_field_name() const
-{
-  // Deal with some SCIRun design flaw
-  std::string meshptr = "";
-  if ((container_type.find("2d") != std::string::npos)||(container_type.find("3d") != std::string::npos)) 
-    meshptr = "," + mesh_type + "<" + mesh_basis_type + "<" + point_type + "> " + "> ";
-    
-  std::string field_template = field_type + "<" + mesh_type + "<" + 
-    mesh_basis_type + "<" + point_type + "> " + "> " + "," +
-    basis_type + "<" + data_type + "> " + "," + container_type + "<" +
-    data_type + meshptr + "> " + "> ";
-    
-  return(field_template);
-}
-
 std::string
 FieldInformation::get_field_type_id() const
 {

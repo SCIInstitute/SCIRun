@@ -77,7 +77,7 @@ Key thing: when undoing/redoing, since we're loading from scratch, need to scope
 class ProvenanceWindowListItem : public QListWidgetItem
 {
 public:
-  ProvenanceWindowListItem(ProvenanceItemHandle info, QListWidget* parent = 0) :
+  explicit ProvenanceWindowListItem(ProvenanceItemHandle info, QListWidget* parent = nullptr) :
     QListWidgetItem(QString::fromStdString(info->name()), parent),
     info_(info)
   {

@@ -99,7 +99,7 @@ void ElectrodeCoilSetupModule::execute()
 	
     algo().set(Parameters::TableValues, table_handle);
      
-    auto output = algo().run_generic(input);  
+    auto output = algo().run(input);  
 
     auto table = output.additionalAlgoOutput();
 

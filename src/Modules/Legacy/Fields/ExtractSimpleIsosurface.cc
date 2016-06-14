@@ -86,14 +86,13 @@ void ExtractSimpleIsosurfaceModule::execute()
       auto isoList = state->getValue(Parameters::ListOfIsovalues).toString();
       std::vector<std::string> tokens;
       boost::split(tokens, isoList, boost::is_any_of(","));
-      
+
       std::transform(tokens.begin(), tokens.end(), std::back_inserter(isoDoubles), [](const std::string& s)
       {
         try { return boost::lexical_cast<double>(s); } catch (boost::bad_lexical_cast&) { return 0.0; }
       });
-      
     }
-    if (state->getValue(Parameters::IsovalueChoice).toString() == "Quantity")
+    else if (state->getValue(Parameters::IsovalueChoice).toString() == "Quantity")
     {
       //TODO: add exclusive/inclusive option; move to algo level
       double qmin, qmax;
@@ -113,7 +112,7 @@ void ExtractSimpleIsosurfaceModule::execute()
     std::transform(isoDoubles.begin(), isoDoubles.end(), std::back_inserter(isos), [](double x) { return makeVariable("iso", x); });
     algo().set(Parameters::Isovalues, isos);
 
-    auto output = algo().run_generic(withInputData((InputField, field)));
+    auto output = algo().run(withInputData((InputField, field)));
     sendOutputFromAlgorithm(OutputField, output);
   }
 }
