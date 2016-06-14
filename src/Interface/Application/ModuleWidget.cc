@@ -135,7 +135,6 @@ public:
   virtual int getTitleWidth() const override;
   virtual QLabel* getTitle() const override;
 
-  virtual void adjustLayout(QLayout* layout) override;
   virtual void startExecuteMovie() override;
   virtual void stopExecuteMovie() override;
 };
@@ -168,9 +167,12 @@ void ModuleWidgetDisplay::setupProgressBar()
 void ModuleWidgetDisplay::setupSpecial()
 {
   optionsButton_->setText("VIEW");
-  optionsButton_->setFont(QFont("Helvetica", 8));
+  optionsButton_->setFont(QFont("Helvetica", viewFontSize));
   optionsButton_->setToolTip("View renderer output");
-  optionsButton_->resize(100, optionsButton_->height());
+
+  //optionsButton_->setMaximumWidth(140);
+  //optionsButton_->resize(140, optionsButton_->height());
+
   optionsButton_->setIcon(QIcon());
   executePushButton_->hide();
   progressBar_->setVisible(false);
@@ -245,16 +247,6 @@ int ModuleWidgetDisplay::getTitleWidth() const
 QLabel* ModuleWidgetDisplay::getTitle() const
 {
   return titleLabel_;
-}
-
-void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
-{
-  //TODO: centralize platform-dependent code
-  //#ifdef WIN32
-  //layout->removeItem(verticalSpacer_Mac);
-  //layout->removeItem(horizontalSpacer_Mac1);
-  //layout->removeItem(horizontalSpacer_Mac2);
-  //#endif
 }
 
 static const int UNSET = -1;
@@ -372,6 +364,7 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
   const int ModuleWidgetDisplayBase::smushFactor = 15;
   const int ModuleWidgetDisplayBase::titleFontSize = 9;
+  const int ModuleWidgetDisplayBase::viewFontSize = 6;
   const int ModuleWidgetDisplayBase::buttonPageFontSizeDiff = 1;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
@@ -381,6 +374,7 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
   const int ModuleWidgetDisplayBase::smushFactor = 15;
   const int ModuleWidgetDisplayBase::titleFontSize = 13;
+  const int ModuleWidgetDisplayBase::viewFontSize = 8;
   const int ModuleWidgetDisplayBase::buttonPageFontSizeDiff = 3;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = 1;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -20;
@@ -406,7 +400,6 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
     frame->resize(frame->width() - ModuleWidgetDisplayBase::smushFactor, frame->height());
     //qDebug() << "\tNew width: " << frame->width();
   }
-  display->adjustLayout(frame->layout());
   //qDebug() << size() << frame->size();
   //frame->resize(frame->width() + ModuleWidgetDisplayBase::widgetWidthAdjust, frame->height() + ModuleWidgetDisplayBase::widgetHeightAdjust);
   //qDebug() << size() << frame->size();

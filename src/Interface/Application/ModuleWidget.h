@@ -80,10 +80,8 @@ public:
   virtual int getTitleWidth() const = 0;
   virtual QLabel* getTitle() const = 0;
 
-  virtual void adjustLayout(QLayout* layout) = 0;
-
-  virtual void startExecuteMovie() {}
-  virtual void stopExecuteMovie() {}
+  virtual void startExecuteMovie() = 0;
+  virtual void stopExecuteMovie() = 0;
 
   //The following have platform-specific values
   static const int moduleWidthThreshold;
@@ -91,6 +89,7 @@ public:
   static const int extraWidthThreshold;
   static const int smushFactor;
   static const int titleFontSize;
+  static const int viewFontSize;
   static const int buttonPageFontSizeDiff;
   static const int widgetHeightAdjust;
   static const int widgetWidthAdjust;
