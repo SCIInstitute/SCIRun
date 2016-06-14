@@ -56,15 +56,6 @@ using namespace Gui;
 using namespace Dataflow::Networks;
 using namespace Logging;
 
-ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset)
-{
-}
-
-QPointF ProxyWidgetPosition::currentPosition() const
-{
-  return widget_->pos() + offset_;
-}
-
 namespace SCIRun {
 namespace Gui {
   class ModuleActionsMenu
@@ -104,89 +95,6 @@ namespace Gui {
   };
 }}
 
-QColor Gui::to_color(const std::string& str, int alpha)
-{
-  QColor result;
-  if (SCIRunMainWindow::Instance()->newInterface())
-  {
-    if (str == "red")
-      result = Qt::red;
-    else if (str == "blue")
-      result = QColor(14,139,255);
-    else if (str == "darkBlue")
-      result = Qt::darkBlue;
-    else if (str == "cyan")
-      result = QColor(27,207,207);
-    else if (str == "darkCyan")
-      result = Qt::darkCyan;
-    else if (str == "darkGreen")
-      result = QColor(0,175,70);
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "magenta")
-      result = QColor(255,75,240);
-    else if (str == "white")
-      result = Qt::white;
-    else if (str == "yellow")
-      result = QColor(234,255,55);
-    else if (str == "darkYellow")
-      result = Qt::darkYellow;
-    else if (str == "lightGray")
-      result = Qt::lightGray;
-    else if (str == "darkGray")
-      result = Qt::darkGray;
-    else if (str == "black")
-      result = Qt::black;
-    else if (str == "purple")
-      result = QColor(122,119,226);
-    else if (str == "orange")
-      result = QColor(254, 139, 38);
-    else if (str == "brown")
-      result = QColor(160, 82, 45);
-    else
-      result = Qt::black;
-  }
-  else
-  {
-    if (str == "red")
-      result = Qt::red;
-    else if (str == "blue")
-      result = Qt::blue;
-    else if (str == "darkBlue")
-      result = Qt::darkBlue;
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "darkCyan")
-      result = Qt::darkCyan;
-    else if (str == "darkGreen")
-      result = Qt::darkGreen;
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "magenta")
-      result = Qt::magenta;
-    else if (str == "white")
-      result = Qt::white;
-    else if (str == "yellow")
-      result = Qt::yellow;
-    else if (str == "darkYellow")
-      result = Qt::darkYellow;
-    else if (str == "lightGray")
-      result = Qt::lightGray;
-    else if (str == "darkGray")
-      result = Qt::darkGray;
-    else if (str == "black")
-      result = Qt::black;
-    else if (str == "purple")
-      result = Qt::darkMagenta;
-    else if (str == "orange")
-      result = QColor(255, 165, 0);
-    else
-      result = Qt::black;
-  }
-  result.setAlpha(alpha);
-  return result;
-}
-
 namespace
 {
   //TODO: make run-time configurable
@@ -205,6 +113,11 @@ namespace
       .arg(r).arg(g).arg(b)
       .arg(moduleAlpha());
   }
+
+  QString scirunModuleFontName()
+  {
+    return "Helvetica";
+  }
 }
 
 class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
@@ -220,6 +133,7 @@ public:
   virtual QAbstractButton* getExecuteButton() const override;
   virtual QAbstractButton* getHelpButton() const override;
   virtual QAbstractButton* getLogButton() const override;
+  virtual void setStatusColor(const QString& color) override;
   virtual QPushButton* getModuleActionButton() const override;
 
   virtual QProgressBar* getProgressBar() const override;
@@ -227,7 +141,6 @@ public:
   virtual int getTitleWidth() const override;
   virtual QLabel* getTitle() const override;
 
-  virtual void adjustLayout(QLayout* layout) override;
   virtual void startExecuteMovie() override;
   virtual void stopExecuteMovie() override;
 };
@@ -239,10 +152,10 @@ void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
 
 void ModuleWidgetDisplay::setupTitle(const QString& name)
 {
-  QFont titleFont("Helvetica", titleFontSize, QFont::Bold);
+  QFont titleFont(scirunModuleFontName(), titleFontSize, QFont::Bold);
   titleLabel_->setFont(titleFont);
   titleLabel_->setText(name);
-  QFont smallerTitleFont("Helvetica", titleFontSize - 3);
+  QFont smallerTitleFont(scirunModuleFontName(), titleFontSize - buttonPageFontSizeDiff);
   buttonGroup_->setFont(smallerTitleFont);
   buttonGroup_->setTitle(name);
   progressGroupBox_->setFont(smallerTitleFont);
@@ -260,9 +173,12 @@ void ModuleWidgetDisplay::setupProgressBar()
 void ModuleWidgetDisplay::setupSpecial()
 {
   optionsButton_->setText("VIEW");
-  optionsButton_->setFont(QFont("Helvetica", 8));
+  optionsButton_->setFont(QFont(scirunModuleFontName(), viewFontSize));
   optionsButton_->setToolTip("View renderer output");
-  optionsButton_->resize(100, optionsButton_->height());
+
+  //optionsButton_->setMaximumWidth(140);
+  //optionsButton_->resize(140, optionsButton_->height());
+
   optionsButton_->setIcon(QIcon());
   executePushButton_->hide();
   progressBar_->setVisible(false);
@@ -319,6 +235,19 @@ QAbstractButton* ModuleWidgetDisplay::getLogButton() const
   return logButton2_;
 }
 
+void ModuleWidgetDisplay::setStatusColor(const QString& color)
+{
+  if (color.isEmpty())
+  {
+    getLogButton()->setStyleSheet("");
+  }
+  else
+  {
+    auto style = QString("* { background-color: %1 }").arg(color);
+    getLogButton()->setStyleSheet(style);
+  }
+}
+
 QPushButton* ModuleWidgetDisplay::getModuleActionButton() const
 {
   return moduleActionButton_;
@@ -339,16 +268,6 @@ QLabel* ModuleWidgetDisplay::getTitle() const
   return titleLabel_;
 }
 
-void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
-{
-  //TODO: centralize platform-dependent code
-  //#ifdef WIN32
-  //layout->removeItem(verticalSpacer_Mac);
-  //layout->removeItem(horizontalSpacer_Mac1);
-  //layout->removeItem(horizontalSpacer_Mac2);
-  //#endif
-}
-
 static const int UNSET = -1;
 static const int SELECTED = -50;
 
@@ -364,11 +283,10 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   ports_(new PortWidgetManager),
   deletedFromGui_(true),
   colorLocked_(false),
-  isMini_(false),
-  errored_(false),
   executedOnce_(false),
   skipExecuteDueToFatalError_(false),
   disabled_(false),
+  errored_(false),
   theModule_(theModule),
   previousModuleState_(UNSET),
   moduleId_(theModule->get_id()),
@@ -416,7 +334,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
 {
   display->setupFrame(this);
-  //int index = addWidget(this);
 
   setupDisplayWidgets(display, name);
 
@@ -464,15 +381,19 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
   const int ModuleWidgetDisplayBase::smushFactor = 15;
-  const int ModuleWidgetDisplayBase::titleFontSize = 8;
+  const int ModuleWidgetDisplayBase::titleFontSize = 9;
+  const int ModuleWidgetDisplayBase::viewFontSize = 6;
+  const int ModuleWidgetDisplayBase::buttonPageFontSizeDiff = 1;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
 #else
-  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 120;
-  const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
+  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 116;
+  const int ModuleWidgetDisplayBase::extraModuleWidth = 2;
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
   const int ModuleWidgetDisplayBase::smushFactor = 15;
   const int ModuleWidgetDisplayBase::titleFontSize = 13;
+  const int ModuleWidgetDisplayBase::viewFontSize = 8;
+  const int ModuleWidgetDisplayBase::buttonPageFontSizeDiff = 3;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = 1;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -20;
 #endif
@@ -497,10 +418,6 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
     frame->resize(frame->width() - ModuleWidgetDisplayBase::smushFactor, frame->height());
     //qDebug() << "\tNew width: " << frame->width();
   }
-  display->adjustLayout(frame->layout());
-  //qDebug() << size() << frame->size();
-  //frame->resize(frame->width() + ModuleWidgetDisplayBase::widgetWidthAdjust, frame->height() + ModuleWidgetDisplayBase::widgetHeightAdjust);
-  //qDebug() << size() << frame->size();
 }
 
 void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
@@ -521,19 +438,15 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
 {
   if (color == Qt::red)
   {
-    //qDebug() << "errored set color";
     errored_ = true;
-    //Q_EMIT backgroundColorUpdated(moduleRGBA(176, 23, 31));
     updateBackgroundColor(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored)));
   }
-  fullWidgetDisplay_->getLogButton()->setStyleSheet(
-    QString("* { background-color: %1 }")
-    .arg(moduleRGBA(color.red(), color.green(), color.blue())));
+  fullWidgetDisplay_->setStatusColor(moduleRGBA(color.red(), color.green(), color.blue()));
 }
 
 void ModuleWidget::resetLogButtonColor()
 {
-  fullWidgetDisplay_->getLogButton()->setStyleSheet("");
+  fullWidgetDisplay_->setStatusColor("");
 }
 
 void ModuleWidget::resetProgressBar()
@@ -1056,24 +969,17 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
   {
   case static_cast<int>(ModuleExecutionState::Waiting):
   {
-    //qDebug() << "waiting color";
     Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Waiting)));
   }
   break;
   case static_cast<int>(ModuleExecutionState::Executing):
   {
-    //qDebug() << "executing color";
     Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Executing)));
   }
   break;
   case static_cast<int>(ModuleExecutionState::Completed):
   {
-    if (!errored_)
-    {
-      //qDebug() << "completed color";
-      Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
-    }
-    //else qDebug() << "errored color";
+    Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
   }
   break;
   }
@@ -1083,24 +989,30 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 {
   if (!colorLocked_)
   {
-    //qDebug() << "color update: " << color;
+    auto colorToUse(color);
+
+    if (errored_)
+    {
+      colorToUse = colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored));
+    }
+
     QString rounded;
     if (SCIRunMainWindow::Instance()->newInterface())
       rounded = "color: white; border-radius: 7px;";
-    setStyleSheet(rounded + " background-color: " + color);
-    previousModuleState_ = colorStateLookup.left.at(color);
+    setStyleSheet(rounded + " background-color: " + colorToUse);
+    previousModuleState_ = colorStateLookup.left.at(colorToUse);
   }
 }
 
 void ModuleWidget::setColorSelected()
 {
-  updateBackgroundColor(colorStateLookup.right.at(SELECTED));
+  Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(SELECTED));
   Q_EMIT moduleSelected(true);
 }
 
 void ModuleWidget::setColorUnselected()
 {
-  updateBackgroundColor(defaultBackgroundColor_);
+  Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
   Q_EMIT moduleSelected(false);
 }
 

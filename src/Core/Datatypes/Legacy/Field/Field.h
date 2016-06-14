@@ -61,6 +61,8 @@ class SCISHARE Field : public Core::Datatypes::Datatype, public Core::Datatypes:
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     /// Detach the mesh from the field, if needed make a new copy of it.
+    // NOTE: IF THIS FUNCTION IS CALLED IN LEGACY CODE, IT MUST BE CONVERTED TO A deep_clone CALL ON THE FIELD OBJECT
+    // FYI detach() calls should be converted to clone() calls (shallow copy, only field data is copied, not the mesh).
     virtual void mesh_detach() = 0;
 #endif
     /// The order of the field: we could get this one from the type_description
