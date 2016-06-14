@@ -91,10 +91,6 @@ void BuildBEMatrixBase::getOmega(
 
   Vector Nyij( y21.length() , y32.length() , y13.length() );
   
-  //std::cout<<"y1 = "<<y1<<"; y2 = "<<y2<<"; y3 = "<<y3<<";"<<std::endl;
-  //std::cout<<"y21 = "<<y21<<"; y32 = "<<y32<<"; y13 = "<<y13<<";"<<std::endl;
-
-
   Vector gamma( 0 , 0 , 0 );
   double NomGamma , DenomGamma;
 
@@ -102,26 +98,22 @@ void BuildBEMatrixBase::getOmega(
   DenomGamma = Ny[1]*Nyij[0] + Dot(y2,y21);
   if (fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 ){
     gamma[0] = -1/Nyij[0] * log(NomGamma/DenomGamma);
-  //std::cout<<"NomGamma = "<<NomGamma <<"; DenomGamma = "<<DenomGamma<<"; log1 = "<< log(NomGamma/DenomGamma)<<";"<<std::endl;
   }
   NomGamma = Ny[1]*Nyij[1] + Dot(y2,y32);
   DenomGamma = Ny[2]*Nyij[1] + Dot(y3,y32);
   if (fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 ){
     gamma[1] = -1/Nyij[1] * log(NomGamma/DenomGamma);
-//std::cout<<"NomGamma = "<<NomGamma <<"; DenomGamma = "<<DenomGamma<<"; log2 = "<< log(NomGamma/DenomGamma)<<";"<<std::endl;
   }
   NomGamma = Ny[2]*Nyij[2] + Dot(y3,y13);
   DenomGamma = Ny[0]*Nyij[2] + Dot(y1,y13);
   if (fabs(DenomGamma-NomGamma) > epsilon && (DenomGamma != 0) && NomGamma != 0 ){
     gamma[2] = -1/Nyij[2] * log(NomGamma/DenomGamma);
-  //std::cout<<"NomGamma = "<<NomGamma <<"; DenomGamma = "<<DenomGamma<<"; log3 = "<< log(NomGamma/DenomGamma)<<";"<<std::endl;
   }
 
   double d = Dot( y1, Cross(y2, y3) );
 
   Vector OmegaVec = (gamma[2]-gamma[0])*y1 + (gamma[0]-gamma[1])*y2 + (gamma[1]-gamma[2])*y3;
   
-  //std::cout<<"Omega = "<<OmegaVec<<";"<<std::endl;
   
 
   /*
@@ -137,8 +129,6 @@ void BuildBEMatrixBase::getOmega(
 
   double Nn=0 , Omega=0 ;
   Nn = Ny[0]*Ny[1]*Ny[2] + Ny[0]*Dot(y2,y3) + Ny[2]*Dot(y1,y2) + Ny[1]*Dot(y3,y1);
-  
-  //std::cout<<"Nn = "<<Nn<<";"<<std::endl;
   
   if (Nn > 0)  Omega = 2 * atan( d / Nn );
   if (Nn < 0)  Omega = 2 * atan( d / Nn ) + 2*M_PI ;
@@ -159,8 +149,6 @@ void BuildBEMatrixBase::getOmega(
   coef(0,0) = (1/A2) * ( Zn1*Omega + d * Dot(y32, OmegaVec) );
   coef(0,1) = (1/A2) * ( Zn2*Omega + d * Dot(y13, OmegaVec) );
   coef(0,2) = (1/A2) * ( Zn3*Omega + d * Dot(y21, OmegaVec) );
-  
-  //std::cout<<"coef = "<<coef<<";"<<std::endl;
   
 }
 
@@ -714,8 +702,6 @@ void BuildBEMatrixBaseCompute::make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2
   for (; ni != nie; ++ni){ //! for every node
     VMesh::Node::index_type ppi = *ni;
     Point pp = hsurf1->get_point(ppi);
-    
-    //std::cout<<"pp = "<<pp<<";"<<std::endl;
 
     hsurf2->begin(fi); hsurf2->end(fie);
     for (; fi != fie; ++fi){ //! find contributions from every triangle
@@ -724,8 +710,6 @@ void BuildBEMatrixBaseCompute::make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2
       Vector v1 = hsurf2->get_point(nodes[0]) - pp;
       Vector v2 = hsurf2->get_point(nodes[1]) - pp;
       Vector v3 = hsurf2->get_point(nodes[2]) - pp;
-      
-      //std::cout<<"p1 = "<<hsurf2->get_point(nodes[2])<<"; p2 ="<<hsurf2->get_point(nodes[1])<<"; p3 ="<<hsurf2->get_point(nodes[0])<<";"<<std::endl;
 
       getOmega(v1, v2, v3, coef);
 
@@ -772,18 +756,13 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
   unsigned int i;
 
   hsurf->begin(ni); hsurf->end(nie);
-  
-  std::cout<<"numnodes = "<<nnodes<<";"<<std::endl;
 
   for (; ni != nie; ++ni){ //! for every node
     VMesh::Node::index_type ppi = *ni;
     Point pp = hsurf->get_point(ppi);
-  
-    //std::cout<<"pp = "<<pp<<";"<<std::endl;
 
     hsurf->begin(fi); hsurf->end(fie);
     
-      //std::cout<<"numfaces = "<<hsurf->end(fie)<<";"<<std::endl;
     for (; fi != fie; ++fi) { //! find contributions from every triangle
 
       hsurf->get_nodes(nodes, *fi);
@@ -792,8 +771,6 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
         Vector v2 = hsurf->get_point(nodes[1]) - pp;
         Vector v3 = hsurf->get_point(nodes[2]) - pp;
         
-        //std::cout<<"p1 = "<<hsurf->get_point(nodes[2])<<"; p2 ="<<hsurf->get_point(nodes[1])<<"; p3 ="<<hsurf->get_point(nodes[0])<<";"<<std::endl;
-
         getOmega(v1, v2, v3, coef);
 
         for (i=0; i<3; ++i)
@@ -1053,7 +1030,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
 
 static void printInfo(const DenseMatrix& m, const std::string& name)
 {
-#if 1
+#if 0
   std::cout << name << ": " << m.rows() << " x " << m.cols() << std::endl;
   std::cout << name << " min: " << m.minCoeff() << std::endl;
   std::cout << name << " max: " << m.maxCoeff() << std::endl;
@@ -1115,8 +1092,6 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   std::vector<int> fieldNodeSize(fields.size());
   std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
   DenseBlockMatrix EE(fieldNodeSize, fieldNodeSize);
-  std::cout<<"pre matrix"<<std::endl;
-  printInfo(EE.matrix(), "EE");
 
   // Calculate EE in block matrix form
   for(int i = 0; i < Nfields; i++)
@@ -1133,9 +1108,6 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
         auto block = EE.blockRef(i, j);
         make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), block, fields[j].insideconductivity, fields[j].outsideconductivity, op_cond);
       }
-      std::cout<<"E <"<<i<<","<<j<<">"<<std::endl;
-      printInfo(EE.matrix(), "EE");
-      
     }
   }
 
@@ -1165,15 +1137,11 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       if (i == sourcefieldindices[j])
       {
         auto block = EJ.blockRef(i,j);
-        //std::cout << "EJ block auto " << i << "," << j << " is size " << block.rows() << " x " << block.cols() /*<< " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
-
         make_auto_G_compute(fields[i].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
       }
       else
       {
         auto block = EJ.blockRef(i,j);
-        //std::cout << "EJ block cross " << i << "," << j << " is size " << block.rows() << " x " << block.cols()/* << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
-
         make_cross_G_compute(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), block, fields[j].insideconductivity, fields[j].outsideconductivity, op_cond, triangleareas);
       }
     }
@@ -1181,11 +1149,12 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 
   printInfo(EJ.matrix(), "EJ");
 
+  // This needs to be checked.  It was taken out because the deflation was producing errors
+  // Jeroen's matlab code, which was the basis of this code, only does a defation in test cases.
+  
   // Perform deflation on EE matrix
-  //const double deflationconstant = 1.0/EE.matrix().ncols();
-  //EE.matrix() = EE.matrix().array() + deflationconstant;
-
-  printInfo(EE.matrix(), "EE after deflation");
+  const double deflationconstant = 1.0/EE.matrix().ncols();
+  EE.matrix() = EE.matrix().array() + deflationconstant;
 
   std::vector<int> measurementNodeSize(measurementfieldindices.size());
   auto measFields = fields | boost::adaptors::filtered([](const bemfield& f) { return f.measurement; });
