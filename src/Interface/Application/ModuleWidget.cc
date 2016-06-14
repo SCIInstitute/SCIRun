@@ -369,8 +369,8 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
 #else
-  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 120;
-  const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
+  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 116;
+  const int ModuleWidgetDisplayBase::extraModuleWidth = 2;
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
   const int ModuleWidgetDisplayBase::smushFactor = 15;
   const int ModuleWidgetDisplayBase::titleFontSize = 13;
@@ -400,9 +400,6 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
     frame->resize(frame->width() - ModuleWidgetDisplayBase::smushFactor, frame->height());
     //qDebug() << "\tNew width: " << frame->width();
   }
-  //qDebug() << size() << frame->size();
-  //frame->resize(frame->width() + ModuleWidgetDisplayBase::widgetWidthAdjust, frame->height() + ModuleWidgetDisplayBase::widgetHeightAdjust);
-  //qDebug() << size() << frame->size();
 }
 
 void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
