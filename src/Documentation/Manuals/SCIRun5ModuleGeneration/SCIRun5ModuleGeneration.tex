@@ -1621,10 +1621,15 @@ If you have changes to make, either that you noticed or requested by the develop
 \hline
 \bf{SCIRun4} & \bf{SCIRun 5} & \bf{Notes}\\ 
 \hline
-\verb|if (input.get_rep() == 0)| & \verb|if (!input)| & Checks for an empty handle.\\
-                                                                                 & & Works for all major handle types. \\
+\verb|if (input.get_rep()==0)| 	& \verb|if (!input)| 					& Checks for an empty handle.\\
+                                                	&					 			& Works for all major handle types. \\
 \hline
-
+\verb|output = input;| 		& \verb|FieldHandle  output_field( |		& Copy a field and \\
+\verb|output.detach();|              	& \verb|  input_field->clone());| 			& disconnect the data\\
+\hline
+\verb|output = input;| 		& \verb|FieldHandle  output_field( |		& Copy a field and disconnect  \\
+\verb|output.detach();|              	& \verb|  input_field->deep_clone());| 	& the mesh and data. \\
+\verb|output->mesh_detach();| 	& 								&  \\                                                           
 \hline
 \end{tabular}
 
@@ -1639,8 +1644,7 @@ If you have changes to make, either that you noticed or requested by the develop
 ConvertMeshToPointCloudDialog.h:32:10: fatal error: 
       'Interface/Modules/Field/ui_ConvertMeshToPointCloudDialog.h' file not found
 \end{verbatim}
-In this instance, the path to the header is misspelled.
-
+In this instance, the path to the header is misspelled.  Check for the correct path and filename.  Make sure the file you want to include exists.  If the code was converted from SCIRun4, some of the dependent header files are renamed, combined with other files, or deprecated.  
 
 \end{itemize}
       
