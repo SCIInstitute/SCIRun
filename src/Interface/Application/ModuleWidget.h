@@ -73,6 +73,7 @@ public:
   virtual QAbstractButton* getExecuteButton() const = 0;
   virtual QAbstractButton* getHelpButton() const = 0;
   virtual QAbstractButton* getLogButton() const = 0;
+  virtual void setStatusColor(const QString& color) = 0;
   virtual QPushButton* getModuleActionButton() const = 0;
 
   virtual QProgressBar* getProgressBar() const = 0;
@@ -229,7 +230,8 @@ private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
-  bool isMini_, errored_, executedOnce_, skipExecuteDueToFatalError_, disabled_;
+  bool executedOnce_, skipExecuteDueToFatalError_, disabled_;
+  std::atomic<bool> errored_;
   int previousPageIndex_ {0};
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;

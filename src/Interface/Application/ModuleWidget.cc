@@ -133,6 +133,7 @@ public:
   virtual QAbstractButton* getExecuteButton() const override;
   virtual QAbstractButton* getHelpButton() const override;
   virtual QAbstractButton* getLogButton() const override;
+  virtual void setStatusColor(const QString& color) override;
   virtual QPushButton* getModuleActionButton() const override;
 
   virtual QProgressBar* getProgressBar() const override;
@@ -234,6 +235,19 @@ QAbstractButton* ModuleWidgetDisplay::getLogButton() const
   return logButton2_;
 }
 
+void ModuleWidgetDisplay::setStatusColor(const QString& color)
+{
+  if (color.isEmpty())
+  {
+    getLogButton()->setStyleSheet("");
+  }
+  else
+  {
+    auto style = QString("* { background-color: %1 }").arg(color);
+    getLogButton()->setStyleSheet(style);
+  }
+}
+
 QPushButton* ModuleWidgetDisplay::getModuleActionButton() const
 {
   return moduleActionButton_;
@@ -269,11 +283,10 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   ports_(new PortWidgetManager),
   deletedFromGui_(true),
   colorLocked_(false),
-  isMini_(false),
-  errored_(false),
   executedOnce_(false),
   skipExecuteDueToFatalError_(false),
   disabled_(false),
+  errored_(false),
   theModule_(theModule),
   previousModuleState_(UNSET),
   moduleId_(theModule->get_id()),
@@ -425,19 +438,15 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
 {
   if (color == Qt::red)
   {
-    //qDebug() << "errored set color";
     errored_ = true;
-    //Q_EMIT backgroundColorUpdated(moduleRGBA(176, 23, 31));
     updateBackgroundColor(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored)));
   }
-  fullWidgetDisplay_->getLogButton()->setStyleSheet(
-    QString("* { background-color: %1 }")
-    .arg(moduleRGBA(color.red(), color.green(), color.blue())));
+  fullWidgetDisplay_->setStatusColor(moduleRGBA(color.red(), color.green(), color.blue()));
 }
 
 void ModuleWidget::resetLogButtonColor()
 {
-  fullWidgetDisplay_->getLogButton()->setStyleSheet("");
+  fullWidgetDisplay_->setStatusColor("");
 }
 
 void ModuleWidget::resetProgressBar()
@@ -960,24 +969,17 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
   {
   case static_cast<int>(ModuleExecutionState::Waiting):
   {
-    //qDebug() << "waiting color";
     Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Waiting)));
   }
   break;
   case static_cast<int>(ModuleExecutionState::Executing):
   {
-    //qDebug() << "executing color";
     Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Executing)));
   }
   break;
   case static_cast<int>(ModuleExecutionState::Completed):
   {
-    if (!errored_)
-    {
-      //qDebug() << "completed color";
-      Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
-    }
-    //else qDebug() << "errored color";
+    Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
   }
   break;
   }
@@ -987,24 +989,30 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 {
   if (!colorLocked_)
   {
-    //qDebug() << "color update: " << color;
+    auto colorToUse(color);
+
+    if (errored_)
+    {
+      colorToUse = colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored));
+    }
+
     QString rounded;
     if (SCIRunMainWindow::Instance()->newInterface())
       rounded = "color: white; border-radius: 7px;";
-    setStyleSheet(rounded + " background-color: " + color);
-    previousModuleState_ = colorStateLookup.left.at(color);
+    setStyleSheet(rounded + " background-color: " + colorToUse);
+    previousModuleState_ = colorStateLookup.left.at(colorToUse);
   }
 }
 
 void ModuleWidget::setColorSelected()
 {
-  updateBackgroundColor(colorStateLookup.right.at(SELECTED));
+  Q_EMIT backgroundColorUpdated(colorStateLookup.right.at(SELECTED));
   Q_EMIT moduleSelected(true);
 }
 
 void ModuleWidget::setColorUnselected()
 {
-  updateBackgroundColor(defaultBackgroundColor_);
+  Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
   Q_EMIT moduleSelected(false);
 }
 
