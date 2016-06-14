@@ -1153,8 +1153,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   // Jeroen's matlab code, which was the basis of this code, only does a defation in test cases.
   
   // Perform deflation on EE matrix
-  const double deflationconstant = 1.0/EE.matrix().ncols();
-  EE.matrix() = EE.matrix().array() + deflationconstant;
+  //const double deflationconstant = 1.0/EE.matrix().ncols();
+  //EE.matrix() = EE.matrix().array() + deflationconstant;
 
   std::vector<int> measurementNodeSize(measurementfieldindices.size());
   auto measFields = fields | boost::adaptors::filtered([](const bemfield& f) { return f.measurement; });
