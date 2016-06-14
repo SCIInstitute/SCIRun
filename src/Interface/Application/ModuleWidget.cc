@@ -113,6 +113,11 @@ namespace
       .arg(r).arg(g).arg(b)
       .arg(moduleAlpha());
   }
+
+  QString scirunModuleFontName()
+  {
+    return "Helvetica";
+  }
 }
 
 class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
@@ -146,10 +151,10 @@ void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
 
 void ModuleWidgetDisplay::setupTitle(const QString& name)
 {
-  QFont titleFont("Helvetica", titleFontSize, QFont::Bold);
+  QFont titleFont(scirunModuleFontName(), titleFontSize, QFont::Bold);
   titleLabel_->setFont(titleFont);
   titleLabel_->setText(name);
-  QFont smallerTitleFont("Helvetica", titleFontSize - buttonPageFontSizeDiff);
+  QFont smallerTitleFont(scirunModuleFontName(), titleFontSize - buttonPageFontSizeDiff);
   buttonGroup_->setFont(smallerTitleFont);
   buttonGroup_->setTitle(name);
   progressGroupBox_->setFont(smallerTitleFont);
@@ -167,7 +172,7 @@ void ModuleWidgetDisplay::setupProgressBar()
 void ModuleWidgetDisplay::setupSpecial()
 {
   optionsButton_->setText("VIEW");
-  optionsButton_->setFont(QFont("Helvetica", viewFontSize));
+  optionsButton_->setFont(QFont(scirunModuleFontName(), viewFontSize));
   optionsButton_->setToolTip("View renderer output");
 
   //optionsButton_->setMaximumWidth(140);
