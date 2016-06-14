@@ -134,7 +134,7 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transf
   std::string oldMoveMethod = state->getValue(MoveMethod).toString();
   state->setValue(MoveMethod, std::string("Location"));
   //TODO: Communicate with dialog to Q_EMIT executeActionTriggered();
-  state->setValue(WidgetMoved, true);
+  state->setTransientValue(WidgetMoved, true);
   state->setValue(MoveMethod, std::string(oldMoveMethod));
   impl_->previousTransform_ = transformMatrix;
 }
@@ -156,7 +156,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeSize, 1.0);
   state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
-  state->setValue(WidgetMoved, false);
+  state->setTransientValue(WidgetMoved, false);
 
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
