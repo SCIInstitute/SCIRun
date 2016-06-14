@@ -797,7 +797,7 @@ void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& aut
         getOmega(v1, v2, v3, coef);
 
         for (i=0; i<3; ++i)
-          auto_P(ppi, nodes[2-i])-=coef(0,i)*mult;
+          auto_P(ppi, nodes[i])-=coef(0,i)*mult;
       }
     }
   }
