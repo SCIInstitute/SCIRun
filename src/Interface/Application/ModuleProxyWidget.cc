@@ -408,3 +408,12 @@ void ModuleProxyWidget::highlightPorts(int state)
 {
   doHighlight_ = state != 0;
 }
+
+ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset)
+{
+}
+
+QPointF ProxyWidgetPosition::currentPosition() const
+{
+  return widget_->pos() + offset_;
+}

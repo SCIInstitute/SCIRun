@@ -91,6 +91,7 @@ public:
   static const int extraWidthThreshold;
   static const int smushFactor;
   static const int titleFontSize;
+  static const int buttonPageFontSizeDiff;
   static const int widgetHeightAdjust;
   static const int widgetWidthAdjust;
 };

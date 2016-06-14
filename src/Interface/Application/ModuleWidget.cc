@@ -56,15 +56,6 @@ using namespace Gui;
 using namespace Dataflow::Networks;
 using namespace Logging;
 
-ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset)
-{
-}
-
-QPointF ProxyWidgetPosition::currentPosition() const
-{
-  return widget_->pos() + offset_;
-}
-
 namespace SCIRun {
 namespace Gui {
   class ModuleActionsMenu
@@ -103,89 +94,6 @@ namespace Gui {
     QMenu* menu_;
   };
 }}
-
-QColor Gui::to_color(const std::string& str, int alpha)
-{
-  QColor result;
-  if (SCIRunMainWindow::Instance()->newInterface())
-  {
-    if (str == "red")
-      result = Qt::red;
-    else if (str == "blue")
-      result = QColor(14,139,255);
-    else if (str == "darkBlue")
-      result = Qt::darkBlue;
-    else if (str == "cyan")
-      result = QColor(27,207,207);
-    else if (str == "darkCyan")
-      result = Qt::darkCyan;
-    else if (str == "darkGreen")
-      result = QColor(0,175,70);
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "magenta")
-      result = QColor(255,75,240);
-    else if (str == "white")
-      result = Qt::white;
-    else if (str == "yellow")
-      result = QColor(234,255,55);
-    else if (str == "darkYellow")
-      result = Qt::darkYellow;
-    else if (str == "lightGray")
-      result = Qt::lightGray;
-    else if (str == "darkGray")
-      result = Qt::darkGray;
-    else if (str == "black")
-      result = Qt::black;
-    else if (str == "purple")
-      result = QColor(122,119,226);
-    else if (str == "orange")
-      result = QColor(254, 139, 38);
-    else if (str == "brown")
-      result = QColor(160, 82, 45);
-    else
-      result = Qt::black;
-  }
-  else
-  {
-    if (str == "red")
-      result = Qt::red;
-    else if (str == "blue")
-      result = Qt::blue;
-    else if (str == "darkBlue")
-      result = Qt::darkBlue;
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "darkCyan")
-      result = Qt::darkCyan;
-    else if (str == "darkGreen")
-      result = Qt::darkGreen;
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "magenta")
-      result = Qt::magenta;
-    else if (str == "white")
-      result = Qt::white;
-    else if (str == "yellow")
-      result = Qt::yellow;
-    else if (str == "darkYellow")
-      result = Qt::darkYellow;
-    else if (str == "lightGray")
-      result = Qt::lightGray;
-    else if (str == "darkGray")
-      result = Qt::darkGray;
-    else if (str == "black")
-      result = Qt::black;
-    else if (str == "purple")
-      result = Qt::darkMagenta;
-    else if (str == "orange")
-      result = QColor(255, 165, 0);
-    else
-      result = Qt::black;
-  }
-  result.setAlpha(alpha);
-  return result;
-}
 
 namespace
 {
@@ -242,7 +150,7 @@ void ModuleWidgetDisplay::setupTitle(const QString& name)
   QFont titleFont("Helvetica", titleFontSize, QFont::Bold);
   titleLabel_->setFont(titleFont);
   titleLabel_->setText(name);
-  QFont smallerTitleFont("Helvetica", titleFontSize - 3);
+  QFont smallerTitleFont("Helvetica", titleFontSize - buttonPageFontSizeDiff);
   buttonGroup_->setFont(smallerTitleFont);
   buttonGroup_->setTitle(name);
   progressGroupBox_->setFont(smallerTitleFont);
@@ -416,7 +324,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
 {
   display->setupFrame(this);
-  //int index = addWidget(this);
 
   setupDisplayWidgets(display, name);
 
@@ -464,7 +371,8 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
   const int ModuleWidgetDisplayBase::smushFactor = 15;
-  const int ModuleWidgetDisplayBase::titleFontSize = 8;
+  const int ModuleWidgetDisplayBase::titleFontSize = 9;
+  const int ModuleWidgetDisplayBase::buttonPageFontSizeDiff = 1;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
 #else
@@ -473,6 +381,7 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
   const int ModuleWidgetDisplayBase::smushFactor = 15;
   const int ModuleWidgetDisplayBase::titleFontSize = 13;
+  const int ModuleWidgetDisplayBase::buttonPageFontSizeDiff = 3;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = 1;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -20;
 #endif
