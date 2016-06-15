@@ -99,7 +99,7 @@ namespace Networks {
   {
     ModuleTagsMapXML tags;
     ModuleTagLabelOverridesMapXML labels;
-    bool showTagGroupsOnLoad;
+    bool showTagGroupsOnLoad { false };
   };
 
   struct SCISHARE DisabledComponents

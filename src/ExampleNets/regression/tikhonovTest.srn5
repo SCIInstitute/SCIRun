@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="12">
-<networkFile class_id="0" tracking_level="0" version="3">
+<networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>16</count>
+			<count>19</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>BuildNoiseColumnMatrix:0</first>
@@ -427,6 +427,54 @@
 				</second>
 			</item>
 			<item>
+				<first>ReportMatrixInfo:304</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:305</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:306</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ReportMatrixInfo:4</first>
 				<second>
 					<module>
@@ -490,7 +538,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>9.85428732007672625e+03</value>
+										<value>9.81924109123303060e+03</value>
 									</value>
 								</second>
 							</item>
@@ -502,7 +550,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>-1.25839976014293879e+04</value>
+										<value>-1.28562850193486884e+04</value>
 									</value>
 								</second>
 							</item>
@@ -802,7 +850,7 @@
 									<name>LCurveText</name>
 									<value>
 										<which>2</which>
-										<value>SolveInverseProblemWithTikhonov:3 plot_graph &quot; 2.62456 7.15244 2.62456 7.15124 2.62456 7.14983 2.62457 7.14818 2.62457 7.14625 2.62458 7.144 2.62458 7.14136 2.62459 7.1383 2.62461 7.13472 2.62462 7.13057 2.62465 7.12575 2.62468 7.12016 2.62472 7.11371 2.62477 7.10628 2.62484 7.09774 2.62493 7.08796 2.62504 7.0768 2.62518 7.06413 2.62536 7.0498 2.62558 7.03367 2.62585 7.01562 2.62617 6.99553 2.62654 6.9733 2.62698 6.94885 2.62748 6.92214 2.62804 6.89316 2.62865 6.86193 2.62931 6.8285 2.63002 6.79297 2.63075 6.75548 2.63151 6.71617 2.63228 6.67524 2.63305 6.6329 2.63381 6.58936 2.63455 6.54487 2.63527 6.49963 2.63596 6.45386 2.63663 6.40775 2.63725 6.36148 2.63785 6.31519 2.63841 6.26902 2.63895 6.22307 2.63945 6.17746 2.63992 6.13229 2.64037 6.08765 2.64079 6.04364 2.64119 6.00038 2.64156 5.95793 2.64192 5.9164 2.64226 5.87582 2.64258 5.83623 2.64288 5.79763 2.64318 5.75996 2.64347 5.72317 2.64374 5.68714 2.64401 5.65176 2.64428 5.6169 2.64455 5.58243 2.64481 5.54823 2.64507 5.5142 2.64534 5.48028 2.6456 5.44642 2.64587 5.41263 2.64613 5.37893 2.6464 5.3454 2.64666 5.31214 2.64693 5.27926 2.64719 5.24689 2.64745 5.21517 2.64771 5.18421 2.64797 5.15413 2.64822 5.12502 2.64848 5.09691 2.64873 5.06986 2.64898 5.04386 2.64923 5.01892 2.64949 4.99501 2.64974 4.97213 2.65 4.95026 2.65027 4.92938 2.65054 4.9095 2.65081 4.89063 2.65109 4.87277 2.65138 4.85594 2.65167 4.84016 2.65197 4.82542 2.65227 4.81172 2.65258 4.79904 2.6529 4.78734 2.65323 4.77658 2.65357 4.76669 2.65392 4.7576 2.65428 4.74924 2.65465 4.74155 2.65505 4.73445 2.65546 4.72791 2.6559 4.72185 2.65636 4.71626 2.65684 4.71108 2.65736 4.70629 2.65791 4.70185 2.65849 4.69774 2.65912 4.6939 2.6598 4.69031 2.66054 4.68692 2.66135 4.68369 2.66226 4.68058 2.66327 4.67755 2.66443 4.67456 2.66576 4.67157 2.6673 4.66857 2.6691 4.66553 2.67121 4.66243 2.67369 4.65925 2.67661 4.65598 2.68007 4.65258 2.68416 4.64905 2.689 4.64536 2.69474 4.64148 2.70154 4.63738 2.70957 4.63304 2.71902 4.62842 2.73007 4.6235 2.74291 4.61824 2.75768 4.61261 2.77446 4.60661 2.79328 4.60022 2.81411 4.59342 2.83682 4.58622 2.86125 4.57862 2.8872 4.57063 2.91444 4.56226 2.94278 4.55351 2.97202 4.54436 3.00205 4.53481 3.03277 4.5248 3.06412 4.5143 3.09609 4.50323 3.12865 4.4915 3.16174 4.47904 3.19529 4.46574 3.22917 4.45153 3.26319 4.43635 3.29714 4.42015 3.33075 4.40294 3.36379 4.38474 3.39599 4.36564 3.42715 4.34574 3.45709 4.32518 3.48571 4.30415 3.51296 4.28279 3.53884 4.26126 3.56344 4.23967 3.58688 4.21809 3.60933 4.19652 3.63098 4.17488 3.65204 4.15307 3.6727 4.13089 3.69313 4.10816 3.71347 4.08466 3.73377 4.06018 3.75406 4.03456 3.77427 4.00765 3.79432 3.97939 3.81405 3.94975 3.83332 3.91881 3.85194 3.88669 3.86979 3.85364 3.88672 3.81994 3.90264 3.78595 3.9175 3.7521 3.93128 3.71879 3.94402 3.68643 3.95576 3.65536 3.96661 3.62578 3.97668 3.5978 3.98613 3.57135 3.9951 3.54623 4.00379 3.52212 4.01237 3.49861 4.02102 3.47526 4.02991 3.4516 4.03917 3.42717 4.04891 3.40156 4.05918 3.3744 4.06999 3.34538 4.08127 3.31422 4.09293 3.28072 4.10482 3.24476 4.11675 3.20623 4.12856 3.16511 4.14006 3.12142 4.15109 3.07521 4.16154 3.02658 4.17131 2.97566 4.18033 2.92259 4.18857 2.86752 4.19604 2.81063 4.20274 2.75208 4.20872 2.69203 &quot; &quot; 1.62456 4.66553 2.6691 4.66553 2.6691 2.69203 &quot; 0.00802643 111 ; 
+										<value>SolveInverseProblemWithTikhonov:3 plot_graph &quot; 2.63265 7.12108 2.63265 7.11986 2.63265 7.11842 2.63265 7.11674 2.63266 7.11478 2.63266 7.11248 2.63267 7.1098 2.63267 7.10668 2.63268 7.10305 2.6327 7.09883 2.63272 7.09394 2.63274 7.08828 2.63278 7.08174 2.63282 7.07422 2.63288 7.06559 2.63295 7.05572 2.63305 7.04448 2.63317 7.03174 2.63332 7.01736 2.6335 7.00121 2.63372 6.98319 2.63399 6.96317 2.6343 6.9411 2.63466 6.9169 2.63507 6.89056 2.63552 6.86208 2.63603 6.8315 2.63657 6.79889 2.63715 6.76437 2.63776 6.72808 2.63838 6.69017 2.63902 6.65084 2.63966 6.61029 2.6403 6.56874 2.64093 6.52639 2.64154 6.48346 2.64213 6.44015 2.64271 6.39664 2.64326 6.35311 2.64378 6.3097 2.64429 6.26652 2.64477 6.22367 2.64523 6.1812 2.64567 6.13914 2.64609 6.0975 2.64649 6.05624 2.64688 6.01533 2.64726 5.97471 2.64763 5.93434 2.64798 5.89416 2.64832 5.85417 2.64866 5.81434 2.64898 5.77472 2.6493 5.73535 2.64961 5.69633 2.64991 5.65776 2.6502 5.61977 2.65048 5.5825 2.65075 5.54609 2.65101 5.51067 2.65126 5.47634 2.65151 5.44318 2.65175 5.41123 2.65199 5.38045 2.65222 5.35079 2.65245 5.32212 2.65268 5.29426 2.65292 5.26702 2.65316 5.24016 2.6534 5.21346 2.65366 5.18673 2.65393 5.1598 2.65421 5.13256 2.65451 5.10495 2.65482 5.07701 2.65514 5.04884 2.65547 5.0206 2.65581 4.99253 2.65615 4.96494 2.6565 4.93815 2.65685 4.91251 2.65719 4.88834 2.65752 4.86594 2.65785 4.84551 2.65816 4.82716 2.65846 4.81092 2.65874 4.7967 2.65902 4.78438 2.65928 4.77373 2.65954 4.76455 2.65979 4.75661 2.66004 4.74968 2.66029 4.74357 2.66054 4.73813 2.6608 4.73322 2.66108 4.72871 2.66137 4.72454 2.66169 4.72063 2.66204 4.71693 2.66242 4.7134 2.66285 4.70999 2.66333 4.70669 2.66387 4.70346 2.66449 4.70027 2.6652 4.6971 2.66601 4.69392 2.66697 4.69073 2.66808 4.6875 2.66938 4.68422 2.6709 4.68087 2.67269 4.67745 2.67479 4.67395 2.67725 4.67037 2.68013 4.66671 2.68349 4.66294 2.68743 4.65907 2.69202 4.65508 2.69737 4.65095 2.70362 4.64667 2.7109 4.64219 2.71937 4.63751 2.7292 4.63258 2.74056 4.62737 2.75359 4.62186 2.76844 4.61601 2.78518 4.60981 2.80384 4.60325 2.8244 4.5963 2.84675 4.58898 2.87074 4.58127 2.8962 4.57319 2.92293 4.56474 2.95074 4.55591 2.97947 4.54671 3.009 4.53709 3.03925 4.52704 3.07018 4.51648 3.10175 4.50536 3.13395 4.49358 3.16673 4.48106 3.2 4.4677 3.23362 4.45342 3.26742 4.43817 3.30116 4.42189 3.3346 4.40459 3.36747 4.38631 3.39952 4.36711 3.43053 4.34711 3.46035 4.32646 3.48884 4.30533 3.51596 4.28387 3.54173 4.26225 3.56622 4.24058 3.58955 4.21892 3.61188 4.19728 3.63342 4.17558 3.65436 4.15371 3.6749 4.1315 3.69522 4.10873 3.71544 4.0852 3.73563 4.0607 3.75581 4.03506 3.77593 4.00814 3.79588 3.97986 3.81553 3.9502 3.83472 3.91924 3.85328 3.8871 3.87106 3.85402 3.88794 3.82028 3.90382 3.78625 3.91864 3.75235 3.93239 3.71899 3.94509 3.68656 3.95681 3.65542 3.96764 3.62578 3.97769 3.59772 3.98711 3.57121 3.99606 3.54602 4.00472 3.52185 4.01327 3.4983 4.02189 3.4749 4.03074 3.4512 4.03996 3.42675 4.04965 3.40111 4.05988 3.37394 4.07063 3.34489 4.08187 3.31372 4.09347 3.28022 4.1053 3.24424 4.11719 3.20571 4.12894 3.16458 4.14039 3.12089 4.15139 3.07468 4.1618 3.02605 4.17153 2.97512 4.18052 2.92205 4.18874 2.86698 4.19618 2.81008 4.20286 2.75153 4.20882 2.69148 &quot; &quot; 1.63265 4.67395 2.67479 4.67395 2.67479 2.69148 &quot; 0.00802643 111 ; 
 </value>
 									</value>
 								</second>
@@ -1002,7 +1050,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>19</count>
+			<count>22</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>BuildNoiseColumnMatrix:0</moduleId1_>
@@ -1232,10 +1280,46 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataBlue</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:306</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataGreen</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:305</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ViewScene:0</moduleId1_>
+				<port1_>
+					<name>ScreenshotDataRed</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:304</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>16</count>
+		<count>19</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>BuildNoiseColumnMatrix:0</first>
@@ -1301,6 +1385,27 @@
 			</second>
 		</item>
 		<item>
+			<first>ReportMatrixInfo:304</first>
+			<second>
+				<first>-1.71500000000000000e+02</first>
+				<second>3.99000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:305</first>
+			<second>
+				<first>-5.15000000000000000e+01</first>
+				<second>5.19000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:306</first>
+			<second>
+				<first>6.85000000000000000e+01</first>
+				<second>6.39000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
 			<first>ReportMatrixInfo:4</first>
 			<second>
 				<first>-3.80000000000000000e+02</first>
@@ -1359,8 +1464,8 @@
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Use regularized inverse operator to compute inverse solution&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt;&quot;&gt;Use regularized inverse operator to compute inverse solution&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Use regularized inverse operator to compute inverse solution</noteText>
 				<position>3</position>
 				<fontSize>13</fontSize>
@@ -1372,8 +1477,8 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Epicardial potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt;&quot;&gt;Epicardial potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Epicardial potentials</noteText>
 				<position>5</position>
 				<fontSize>13</fontSize>
@@ -1385,9 +1490,9 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Forward&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Matrix&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt;&quot;&gt;Forward&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:16pt;&quot;&gt;Matrix&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Forward
 Matrix</noteText>
 				<position>3</position>
@@ -1400,8 +1505,8 @@ Matrix</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.SF NS Text&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Lucida Grande&apos;; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 0</noteText>
 				<position>0</position>
 				<fontSize>13</fontSize>
@@ -1413,7 +1518,7 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="22" tracking_level="0" version="0">
-		<count>16</count>
+		<count>19</count>
 		<item_version>0</item_version>
 		<item class_id="23" tracking_level="0" version="0">
 			<first>BuildNoiseColumnMatrix:0</first>
@@ -1452,6 +1557,18 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
+			<first>ReportMatrixInfo:304</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:305</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:306</first>
+			<second>-1</second>
+		</item>
+		<item>
 			<first>ReportMatrixInfo:4</first>
 			<second>0</second>
 		</item>
@@ -1480,6 +1597,19 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 	</moduleTags>
+	<disabledModules class_id="24" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledModules>
+	<disabledConnections>
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledConnections>
+	<moduleTagLabels class_id="25" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
 </networkFile>
 </boost_serialization>
 
