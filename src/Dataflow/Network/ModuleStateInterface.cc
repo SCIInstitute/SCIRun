@@ -35,6 +35,14 @@ ModuleStateInterface::~ModuleStateInterface()
 {
 }
 
+void ModuleStateInterface::overwriteWith(const ModuleStateInterface& other)
+{
+  for (const auto& otherKey : other.getKeys())
+  {
+    setValue(otherKey, other.getValue(otherKey).value());
+  }
+}
+
 ModuleStateInterfaceFactory::~ModuleStateInterfaceFactory()
 {
 }

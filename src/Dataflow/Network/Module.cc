@@ -347,7 +347,12 @@ const ModuleStateHandle Module::get_state() const
 
 void Module::set_state(ModuleStateHandle state)
 {
-  state_ = state;
+  if (!state_)
+    state_ = state;
+  else if (state) // merge/overwrite
+  {
+    state_->overwriteWith(*state);
+  }
   initStateObserver(state_.get());
   postStateChangeInternalSignalHookup();
 }
