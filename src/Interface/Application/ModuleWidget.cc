@@ -376,7 +376,7 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   display->setupButtons(theModule_->has_ui(), this);
 }
 
-#ifdef WIN32
+#if defined (WIN32)
   const int ModuleWidgetDisplayBase::moduleWidthThreshold = 110;
   const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
@@ -386,7 +386,7 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::buttonPageFontSizeDiff = 1;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
-#else
+#elif defined (__APPLE__)
   const int ModuleWidgetDisplayBase::moduleWidthThreshold = 116;
   const int ModuleWidgetDisplayBase::extraModuleWidth = 2;
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
@@ -396,6 +396,19 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::buttonPageFontSizeDiff = 3;
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = 1;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -20;
+#else // Linux
+  
+  //TODO: need a parameter for spacer between buttons and group box title 
+  
+  const int ModuleWidgetDisplayBase::moduleWidthThreshold = 110;
+  const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
+  const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
+  const int ModuleWidgetDisplayBase::smushFactor = 15;
+  const int ModuleWidgetDisplayBase::titleFontSize = 8;
+  const int ModuleWidgetDisplayBase::viewFontSize = 5;
+  const int ModuleWidgetDisplayBase::buttonPageFontSizeDiff = 1;
+  const int ModuleWidgetDisplayBase::widgetHeightAdjust = -20;
+  const int ModuleWidgetDisplayBase::widgetWidthAdjust = -10;
 #endif
 
 void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index)
