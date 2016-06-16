@@ -63,7 +63,6 @@ ALGORITHM_PARAMETER_DEF(Fields, FieldElem);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
-ALGORITHM_PARAMETER_DEF(Fields, WidgetMoved);
 
 namespace SCIRun
 {
@@ -97,7 +96,6 @@ namespace SCIRun
 GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
   : GeometryGeneratingModule(staticInfo_), impl_(new GenerateSinglePointProbeFromFieldImpl)
 {
-  //counter_ = -1;
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeneratedWidget);
   INITIALIZE_PORT(GeneratedPoint);
@@ -111,9 +109,9 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedba
   if (impl_->previousTransform_ != vsf.transform)
   {
     adjustPositionFromTransform(vsf.transform);
+    enqueueExecuteAgain();
   }
 }
-
 
 void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transform& transformMatrix)
 {
@@ -133,8 +131,6 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transf
   state->setValue(ZLocation, newLocation.z());
   std::string oldMoveMethod = state->getValue(MoveMethod).toString();
   state->setValue(MoveMethod, std::string("Location"));
-  //TODO: Communicate with dialog to Q_EMIT executeActionTriggered();
-  state->setValue(WidgetMoved, true);
   state->setValue(MoveMethod, std::string(oldMoveMethod));
   impl_->previousTransform_ = transformMatrix;
 }
@@ -156,7 +152,6 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeSize, 1.0);
   state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
-  state->setValue(WidgetMoved, false);
 
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
@@ -215,9 +210,6 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
   const double THRESHOLD = 1e-6;
   auto state = get_state();
   using namespace Parameters;
-
-  //std::cout << "Size: " << state->getValue(ProbeSize).toInt() << std::endl;
-  //std::cout << "executing" << std::endl;
 
   // Maybe update the widget.
   BBox bbox;
