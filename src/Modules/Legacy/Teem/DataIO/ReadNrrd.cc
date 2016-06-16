@@ -109,6 +109,11 @@ ReadNrrd::ReadNrrd() :
   INITIALIZE_PORT(Output_Data);
 }
 
+void ReadNrrd::setStateDefaults()
+{
+  get_state()->setValue(Variables::Filename, std::string());
+}
+
 std::string ReadNrrd::fileTypeList()
 {
    /*

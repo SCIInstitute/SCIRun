@@ -46,6 +46,11 @@ ReceiveScalarModule::ReceiveScalarModule()
   INITIALIZE_PORT(Input);
 }
 
+void ReceiveScalarModule::setStateDefaults()
+{
+  get_state()->setValue(ReceivedValue, 0.0);
+}
+
 void ReceiveScalarModule::execute()
 {
   auto doubleData = getRequiredInput(Input);

@@ -64,6 +64,7 @@ void SetupTDCS::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::pointdistancebound);
   setStateIntFromAlgo(Parameters::number_of_electrodes);
   setStateBoolFromAlgo(Parameters::GetContactSurface);
+  state->setValue(Parameters::SurfaceAreaValues, VariableList());
 }
 
 void SetupTDCS::execute()
