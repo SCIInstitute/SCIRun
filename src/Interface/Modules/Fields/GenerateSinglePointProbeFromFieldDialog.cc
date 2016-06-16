@@ -76,10 +76,10 @@ void GenerateSinglePointProbeFromFieldDialog::pullSpecial()
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
 
-  bool reexecute = transient_value_cast<bool>(state_->getTransientValue(Parameters::WidgetMoved));
+  bool reexecute = state_->getValue(Parameters::WidgetMoved).toBool();
+  state_->setValue(Parameters::WidgetMoved, false);
   if (reexecute)
   {
-    state_->setTransientValue(Parameters::WidgetMoved, false, false);
     Q_EMIT executeActionTriggered();
   }
 }
