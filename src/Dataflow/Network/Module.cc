@@ -964,3 +964,9 @@ void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& 
     }
   }
 }
+
+std::string Module::helpPageUrl() const
+{
+  auto url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + get_module_name();
+  return url;
+}

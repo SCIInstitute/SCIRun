@@ -397,9 +397,9 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
   const int ModuleWidgetDisplayBase::widgetHeightAdjust = 1;
   const int ModuleWidgetDisplayBase::widgetWidthAdjust = -20;
 #else // Linux
-  
-  //TODO: need a parameter for spacer between buttons and group box title 
-  
+
+  //TODO: need a parameter for spacer between buttons and group box title
+
   const int ModuleWidgetDisplayBase::moduleWidthThreshold = 110;
   const int ModuleWidgetDisplayBase::extraModuleWidth = 5;
   const int ModuleWidgetDisplayBase::extraWidthThreshold = 5;
@@ -1160,8 +1160,7 @@ void ModuleWidget::updateModuleTime()
 
 void ModuleWidget::launchDocumentation()
 {
-  //TODO: push this help url construction to module layer
-  openUrl("http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + QString::fromStdString(getModule()->get_module_name()), "module help page");
+  openUrl(QString::fromStdString(theModule_->helpPageUrl()), "module help page");
 }
 
 void ModuleWidget::setStartupNote(const QString& text)

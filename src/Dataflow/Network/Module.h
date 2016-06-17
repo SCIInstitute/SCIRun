@@ -68,6 +68,8 @@ namespace Networks {
     std::string get_packagename() const { return info_.package_name_; }
     ModuleId get_id() const override { return id_; }
 
+    virtual std::string helpPageUrl() const override;
+
     //for serialization
     virtual const ModuleLookupInfo& get_info() const override final { return info_; }
     virtual void set_id(const std::string& id) override final;
