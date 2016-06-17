@@ -109,6 +109,7 @@ namespace SCIRun {
       // Construct ESCore. We will need to bootstrap the core. We should also
       // probably add utility static classes.
       setupCore();
+      setupLights();
     }
 
     //------------------------------------------------------------------------------
@@ -151,6 +152,16 @@ namespace SCIRun {
         mCore.addStaticComponent(iface);
       }
 
+    }
+
+    void SRInterface::setupLights()
+    {
+      //mLightPosition;
+      mLightsOn.push_back(true);
+      for (int i = 1; i < LIGHT_NUM; ++i)
+      {
+        mLightsOn.push_back(false);
+      }
     }
 
     //------------------------------------------------------------------------------
@@ -1371,9 +1382,12 @@ namespace SCIRun {
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
       if (light)
       {
-        glm::vec3 viewDir = viewToWorld[2].xyz();
-        viewDir = -viewDir; // Cameras look down -Z.
-        light->lightDir[0] = viewDir;
+        for (int i = 0; i < LIGHT_NUM; ++i)
+        {
+          glm::vec3 viewDir = viewToWorld[2].xyz();
+          viewDir = -viewDir; // Cameras look down -Z.
+          light->lightDir[i] = mLightsOn[i] ? viewDir : glm::vec3(0.0, 0.0, 0.0);
+        }
       }
     }
 
@@ -1396,14 +1410,25 @@ namespace SCIRun {
 
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
       glm::vec3 position = glm::vec3(x, y, 0);
+      mLightPosition[index] = glm::vec2(x, y);
 
       // Set directional light source (in world space).
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
       if (light)
       {
-        glm::vec3 viewDir = viewToWorld[2].xyz();
+        //glm::vec3 viewDir = viewToWorld[2].xyz();
+        glm::vec3 viewDir = mLightsOn[index] ? viewToWorld[2].xyz() : glm::vec3(0.0, 0.0, 0.0);
         viewDir = -viewDir; // Cameras look down -Z.
+        
         light->lightDir[index] = viewDir;
+      }
+    }
+
+    void SRInterface::setLightOn(int index, bool value)
+    {
+      if (mLightsOn.size() > 0 && index < LIGHT_NUM)
+      {
+        mLightsOn[index] = value;
       }
     }
 

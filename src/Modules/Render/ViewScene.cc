@@ -99,10 +99,10 @@ void ViewScene::setStateDefaults()
   state->setValue(Light1On, false);
   state->setValue(Light2On, false);
   state->setValue(Light3On, false);
-  state->setValue(HeadLightColor, ColorRGB(0.0, 0.0, 1.0).toString());
-  state->setValue(Light1Color, ColorRGB(0.0, 0.0, 1.0).toString());
-  state->setValue(Light2Color, ColorRGB(0.0, 0.0, 1.0).toString());
-  state->setValue(Light3Color, ColorRGB(0.0, 0.0, 1.0).toString());
+  state->setValue(HeadLightColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
 
   postStateChangeInternalSignalHookup();
 }

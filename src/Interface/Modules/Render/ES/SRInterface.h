@@ -208,6 +208,7 @@ namespace SCIRun {
       //Light settings
       void setLightColor(int index, float r, float g, float b);
       void setLightPosition(int index, float x, float y);
+      void setLightOn(int index, bool value);
 
     private:
 
@@ -279,6 +280,9 @@ namespace SCIRun {
       // Sets up ESCore.
       void setupCore();
 
+      // set initial configuration of the lights
+      void setupLights();
+
       // Places mCamera's transform into our static camera component.
       void updateCamera();
 
@@ -333,7 +337,7 @@ namespace SCIRun {
 
       // make sure clipping plane number matches
       void checkClippingPlanes(int n);
-
+      
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
       bool                              selectWidget_;    ///< Whether mouse click will select a widget.
@@ -386,6 +390,10 @@ namespace SCIRun {
       double                            mFogStart;
       double                            mFogEnd;
       glm::vec4                         mFogColor;
+
+      //light settings
+      std::vector<glm::vec2>            mLightPosition;
+      std::vector<bool>                 mLightsOn;
     };
 
   } // namespace Render
