@@ -38,8 +38,10 @@
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/SCIRunFieldSamples.h>
+#include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace Core::Python;
 using namespace Testing;
 using namespace TestUtils;
@@ -49,7 +51,8 @@ class FieldConversionTests : public testing::Test
 protected:
   virtual void SetUp() override
   {
-    Py_Initialize();
+    PythonInterpreter::Instance().initialize(false, "Core_Python_Tests", boost::filesystem::current_path().string());
+    PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   }
 
   static FieldHandle roundTripThroughMatlabConverter(FieldHandle field)
