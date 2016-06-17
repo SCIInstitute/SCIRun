@@ -70,6 +70,7 @@ void SolveInverseProblemWithTikhonov::setStateDefaults()
   state->setValue(Parameters::TikhonovSolutionSubcase, 0);
   state->setValue(Parameters::TikhonovResidualSubcase, 0);
   state->setValue(LambdaCorner, 0.0);
+  state->setValue(LCurveText, std::string());
 }
 
 void SolveInverseProblemWithTikhonov::execute()

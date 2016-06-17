@@ -725,3 +725,86 @@ std::vector<PortWidget*> PortWidget::connectedPorts() const
   }
   return otherPorts;
 }
+
+QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
+{
+  QColor result;
+  if (SCIRunMainWindow::Instance()->newInterface())
+  {
+    if (str == "red")
+      result = Qt::red;
+    else if (str == "blue")
+      result = QColor(14, 139, 255);
+    else if (str == "darkBlue")
+      result = Qt::darkBlue;
+    else if (str == "cyan")
+      result = QColor(27, 207, 207);
+    else if (str == "darkCyan")
+      result = Qt::darkCyan;
+    else if (str == "darkGreen")
+      result = QColor(0, 175, 70);
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "magenta")
+      result = QColor(255, 75, 240);
+    else if (str == "white")
+      result = Qt::white;
+    else if (str == "yellow")
+      result = QColor(234, 255, 55);
+    else if (str == "darkYellow")
+      result = Qt::darkYellow;
+    else if (str == "lightGray")
+      result = Qt::lightGray;
+    else if (str == "darkGray")
+      result = Qt::darkGray;
+    else if (str == "black")
+      result = Qt::black;
+    else if (str == "purple")
+      result = QColor(122, 119, 226);
+    else if (str == "orange")
+      result = QColor(254, 139, 38);
+    else if (str == "brown")
+      result = QColor(160, 82, 45);
+    else
+      result = Qt::black;
+  }
+  else
+  {
+    if (str == "red")
+      result = Qt::red;
+    else if (str == "blue")
+      result = Qt::blue;
+    else if (str == "darkBlue")
+      result = Qt::darkBlue;
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "darkCyan")
+      result = Qt::darkCyan;
+    else if (str == "darkGreen")
+      result = Qt::darkGreen;
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "magenta")
+      result = Qt::magenta;
+    else if (str == "white")
+      result = Qt::white;
+    else if (str == "yellow")
+      result = Qt::yellow;
+    else if (str == "darkYellow")
+      result = Qt::darkYellow;
+    else if (str == "lightGray")
+      result = Qt::lightGray;
+    else if (str == "darkGray")
+      result = Qt::darkGray;
+    else if (str == "black")
+      result = Qt::black;
+    else if (str == "purple")
+      result = Qt::darkMagenta;
+    else if (str == "orange")
+      result = QColor(255, 165, 0);
+    else
+      result = Qt::black;
+  }
+  result.setAlpha(alpha);
+  return result;
+}

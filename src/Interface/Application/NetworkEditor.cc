@@ -605,7 +605,22 @@ void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
 
 void NetworkEditor::dropEvent(QDropEvent* event)
 {
-  //TODO: mime check here to ensure this only gets called for drags from treewidget
+  auto data = event->mimeData();
+  if (data->hasUrls())
+  {
+    auto urls = data->urls();
+    if (!urls.isEmpty())
+    {
+      auto file = urls[0].path();
+      QFileInfo check_file(file);
+      if (check_file.exists() && check_file.isFile() && file.endsWith("srn5"))
+      {
+        Q_EMIT requestLoadNetwork(file);
+        return;
+      }
+    }
+  }
+
   if (moduleSelectionGetter_->isModule())
   {
     addNewModuleAtPosition(mapToScene(event->pos()));
@@ -1249,17 +1264,6 @@ void NetworkEditor::adjustModuleHeight(int delta)
       proxy->adjustHeight(delta);
       //qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
     }
-  }
-}
-
-void NetworkEditor::setModuleMini(bool mini)
-{
-  ModuleWidget::setGlobalMiniMode(mini);
-  for (const auto& item : scene_->items())
-  {
-    auto module = getModule(item);
-    if (module)
-      module->setMiniMode(mini);
   }
 }
 
