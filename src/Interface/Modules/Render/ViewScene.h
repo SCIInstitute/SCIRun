@@ -144,7 +144,10 @@ namespace SCIRun {
       void setLightSelected(int index);
       void setLightPosition(int index);
       void setLightColor(int index);
-      void toggleLightOnOff(int index, bool value);
+      void toggleHeadLight(bool value);
+      void toggleLight1(bool value);
+      void toggleLight2(bool value);
+      void toggleLight3(bool value);
 
     protected:
       virtual void mousePressEvent(QMouseEvent* event);
@@ -171,6 +174,8 @@ namespace SCIRun {
         double projLength;
       };
 
+      //void setInitialLightValues();
+      QColor checkColorSetting(std::string& rgb, QColor defaultColor);
       void selectObject(const int x, const int y);
       void restoreObjColor();
       void updatClippingPlaneDisplay();
@@ -194,6 +199,8 @@ namespace SCIRun {
       void lookDownAxisX(int upIndex, glm::vec3& up);
       void lookDownAxisY(int upIndex, glm::vec3& up);
       void lookDownAxisZ(int upIndex, glm::vec3& up);
+
+      void toggleLightOnOff(int index, bool value);
 
       // update scale bar geometries
       Graphics::Datatypes::GeometryHandle buildGeometryScaleBar();

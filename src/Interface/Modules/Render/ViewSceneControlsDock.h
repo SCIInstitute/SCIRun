@@ -96,6 +96,7 @@ namespace SCIRun {
       void updateZoomOptionVisibility();
       void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
       void updatePlaneControlDisplay(double x, double y, double z, double d);
+      void setLightValues(int index, QColor color, QPointF position, bool on);
       QPointF getLightPosition(int index) const;
       QColor getLightColor(int index) const;
 
