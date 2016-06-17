@@ -35,6 +35,7 @@
 #include <boost/timer.hpp>
 #include <atomic>
 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/Module.h>
@@ -276,6 +277,12 @@ bool Module::executeWithSignals() NOEXCEPT
   {
     std::ostringstream ostr;
     ostr << "Port not found, it may need initializing the module constructor. " << std::endl << "Message: " << e.what() << std::endl;
+    error(ostr.str());
+  }
+  catch (AlgorithmParameterNotFound& e)
+  {
+    std::ostringstream ostr;
+    ostr << "State key not found, it may need initializing in ModuleClass::setStateDefaults(). " << std::endl << "Message: " << e.what() << std::endl;
     error(ostr.str());
   }
   catch (Core::ExceptionBase& e)
