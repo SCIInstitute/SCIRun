@@ -214,6 +214,7 @@ private Q_SLOTS:
   void showClipboardHelp();
   void showTagHelp();
   void showTriggerHelp();
+  void launchNewUserWizard();
   void copyVersionToClipboard();
   void updateClipboardHistory(const QString& xml);
   void showModuleSelectorContextMenu(const QPoint& p);
