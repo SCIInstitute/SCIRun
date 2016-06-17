@@ -1,4 +1,4 @@
- 
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -7,7 +7,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -52,6 +52,8 @@ namespace SCIRun {
         OUTPUT_PORT(1, OutputDirichletMatrix, DenseMatrix);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+        LEGACY_BIOPSE_MODULE
       };
 
     }

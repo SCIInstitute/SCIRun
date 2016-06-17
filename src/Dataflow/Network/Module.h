@@ -112,6 +112,10 @@ namespace Networks {
     virtual std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
   protected:
     virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
+
+    // override this for modules that changed packages, to point to correct wiki page
+    virtual std::string legacyPackageName() const { return get_packagename(); }
+
   public:
     virtual void setLogger(Core::Logging::LoggerHandle log) override final;
     virtual Core::Logging::LoggerHandle getLogger() const override final;
@@ -1012,6 +1016,8 @@ namespace Modules
       return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name(), ModuleType::outputPort4Name(), ModuleType::outputPort5Name(), ModuleType::outputPort6Name(), ModuleType::outputPort7Name(), ModuleType::outputPort8Name());
     }
   };
+
+  #define LEGACY_BIOPSE_MODULE protected: virtual std::string legacyPackageName() const override { return "BioPSE"; }
 }
 }
 
