@@ -1430,16 +1430,75 @@ void ViewSceneDialog::setLightPosition(int index)
 
 void ViewSceneDialog::setLightColor(int index)
 {
+  QColor lightColor(mConfigurationDock->getLightColor(index));
+  switch (index)
+  {
+  case 0:
+    state_->setValue(Modules::Render::ViewScene::HeadLightColor, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    break;
+  case 1:
+    state_->setValue(Modules::Render::ViewScene::Light1Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    break;
+  case 2:
+    state_->setValue(Modules::Render::ViewScene::Light2Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    break;
+  case 3:
+    state_->setValue(Modules::Render::ViewScene::Light3Color, ColorRGB(lightColor.red(), lightColor.green(), lightColor.blue()).toString());
+    break;
+  default:
+    return;
+  }
+
   auto spire = mSpire.lock();
   if (spire)
-    spire->setLightColor(index, mConfigurationDock->getLightColor(index).redF(), 
-    mConfigurationDock->getLightColor(index).greenF(), 
-    mConfigurationDock->getLightColor(index).blueF());
+    spire->setLightColor(index, lightColor.redF(), lightColor.greenF(), lightColor.blueF());
+}
+
+
+void ViewSceneDialog::toggleHeadLight(bool value)
+{
+  toggleLightOnOff(0, value);
+}
+
+void ViewSceneDialog::toggleLight1(bool value)
+{
+  toggleLightOnOff(1, value);
+}
+
+void ViewSceneDialog::toggleLight2(bool value)
+{
+  toggleLightOnOff(2, value);
+}
+
+void ViewSceneDialog::toggleLight3(bool value)
+{
+  toggleLightOnOff(3, value);
 }
 
 void ViewSceneDialog::toggleLightOnOff(int index, bool value)
 {
   std::cout << "light: " << index << " toggle: "<<value<< std::endl;
+  switch (index)
+  {
+  case 0:
+    state_->setValue(Modules::Render::ViewScene::HeadLightOn, value);
+    break;
+  case 1:
+    state_->setValue(Modules::Render::ViewScene::Light1On, value);
+    break;
+  case 2:
+    state_->setValue(Modules::Render::ViewScene::Light2On, value);
+    break;
+  case 3:
+    state_->setValue(Modules::Render::ViewScene::Light3On, value);
+    break;
+  default:
+    return;
+  }
+
+  auto spire = mSpire.lock();
+  if (spire)
+    return;
 }
 //------------------------------------------------------------------------------
 bool ViewSceneDialog::isObjectUnselected(const std::string& name)

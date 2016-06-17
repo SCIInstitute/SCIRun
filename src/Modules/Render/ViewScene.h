@@ -111,6 +111,15 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName PolygonOffset;
     static const Core::Algorithms::AlgorithmParameterName TextOffset;
     static const Core::Algorithms::AlgorithmParameterName FieldOfView;
+    static const Core::Algorithms::AlgorithmParameterName HeadLightOn;
+    static const Core::Algorithms::AlgorithmParameterName Light1On;
+    static const Core::Algorithms::AlgorithmParameterName Light2On;
+    static const Core::Algorithms::AlgorithmParameterName Light3On;
+    static const Core::Algorithms::AlgorithmParameterName HeadLightColor;
+    static const Core::Algorithms::AlgorithmParameterName Light1Color;
+    static const Core::Algorithms::AlgorithmParameterName Light2Color;
+    static const Core::Algorithms::AlgorithmParameterName Light3Color;
+
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
 #ifdef BUILD_TESTING
