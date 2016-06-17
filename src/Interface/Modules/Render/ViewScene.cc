@@ -129,24 +129,13 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   {
     //Set background Color
     auto colorStr = state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString();
-    /*
-    if (!colorStr.empty())
-    {
-      ColorRGB color(colorStr);
-      bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-        static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-        static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
-    }
-    else
-    {
-      bgColor_ = Qt::black;
-    }
-    */
-    QColor color(255);
-    bgColor_ = checkColorSetting(colorStr, color);
+    bgColor_ = checkColorSetting(colorStr, Qt::black);
+    
     auto spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
   }
+
+  setInitialLightValues();
 
   state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
@@ -157,7 +146,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
 }
 
-/*
+
 void ViewSceneDialog::setInitialLightValues()
 {
   QColor light0 = checkColorSetting(state_->getValue(Modules::Render::ViewScene::HeadLightColor).toString(), Qt::white);
@@ -179,8 +168,8 @@ void ViewSceneDialog::setInitialLightValues()
     spire->setLightOn(3, state_->getValue(Modules::Render::ViewScene::Light3On).toBool());
   }
 }
-*/
-QColor checkColorSetting(std::string& rgb, QColor defaultColor)
+
+QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 {
   QColor newColor;
   if (!rgb.empty())

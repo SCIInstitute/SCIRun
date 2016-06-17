@@ -174,7 +174,7 @@ namespace SCIRun {
         double projLength;
       };
 
-      //void setInitialLightValues();
+      void setInitialLightValues();
       QColor checkColorSetting(std::string& rgb, QColor defaultColor);
       void selectObject(const int x, const int y);
       void restoreObjColor();
