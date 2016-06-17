@@ -265,9 +265,6 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(prefsWindow_->defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), networkEditor_, SIGNAL(defaultNotePositionChanged(NotePosition)));
 
-  connect(prefsWindow_->largeModuleSizeToolButton_, SIGNAL(clicked()), this, SLOT(makeModulesLargeSize()));
-  connect(prefsWindow_->smallModuleSizeToolButton_, SIGNAL(clicked()), this, SLOT(makeModulesSmallSize()));
-
   connect(prefsWindow_->cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
   connect(prefsWindow_->manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
   connect(prefsWindow_->euclideanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesEuclidean()));
@@ -281,9 +278,6 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
 #endif
-  prefsWindow_->chooseBackgroundColorButton_->setHidden(true);
-  prefsWindow_->resetBackgroundColorButton_->setHidden(true);
-  prefsWindow_->backgroundColorLabel_->setHidden(true);
 
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
@@ -345,6 +339,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
+	connect(networkEditor_, SIGNAL(requestLoadNetwork(const QString&)), this, SLOT(checkAndLoadNetworkFile(const QString&)));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
   connect(prefsWindow_->actionTextIconCheckBox_, SIGNAL(clicked()), this, SLOT(adjustExecuteButtonAppearance()));
@@ -594,6 +589,14 @@ void SCIRunMainWindow::loadNetwork()
   if (okToContinue())
   {
     QString filename = QFileDialog::getOpenFileName(this, "Load Network...", latestNetworkDirectory_.path(), "*.srn5");
+    loadNetworkFile(filename);
+  }
+}
+
+void SCIRunMainWindow::checkAndLoadNetworkFile(const QString& filename)
+{
+  if (okToContinue())
+  {
     loadNetworkFile(filename);
   }
 }
@@ -998,8 +1001,6 @@ void SCIRunMainWindow::setupDevConsole()
   actionDevConsole_->setShortcut(QKeySequence("`"));
   connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
   connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
-  connect(devConsole_, SIGNAL(moduleHeightAdjusted(int)), networkEditor_, SLOT(adjustModuleHeight(int)));
-  connect(devConsole_, SIGNAL(moduleWidthAdjusted(int)), networkEditor_, SLOT(adjustModuleWidth(int)));
 }
 
 void SCIRunMainWindow::setExecutor(int type)
@@ -1073,16 +1074,6 @@ void SCIRunMainWindow::updateMiniView()
   networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
     Qt::KeepAspectRatio,
     Qt::SmoothTransformation));
-}
-
-void SCIRunMainWindow::makeModulesLargeSize()
-{
-  networkEditor_->setModuleMini(false);
-}
-
-void SCIRunMainWindow::makeModulesSmallSize()
-{
-  networkEditor_->setModuleMini(true);
 }
 
 namespace {

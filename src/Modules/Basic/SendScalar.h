@@ -44,7 +44,7 @@ namespace Basic {
   public:
     SendScalarModule();
     virtual void execute();
-    virtual void setStateDefaults() {}
+    virtual void setStateDefaults();
 
     OUTPUT_PORT(0, Scalar, Double);
     static Core::Algorithms::AlgorithmParameterName ValueToSend();

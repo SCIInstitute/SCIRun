@@ -133,10 +133,13 @@
    <item row="2" column="2">
     <widget class="QDoubleSpinBox" name="valueSpinBox_">
      <property name="decimals">
-      <number>4</number>
+      <number>10</number>
+     </property>
+     <property name="minimum">
+      <double>-999999999.000000000000000</double>
      </property>
      <property name="maximum">
-      <double>1000000.000000000000000</double>
+      <double>999999999.000000000000000</double>
      </property>
      <property name="singleStep">
       <double>0.100000000000000</double>

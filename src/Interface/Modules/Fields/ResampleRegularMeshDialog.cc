@@ -52,7 +52,7 @@ ResampleRegularMeshDialog::ResampleRegularMeshDialog(const std::string& name, Mo
   addTwoChoiceBooleanComboBoxManager(zAxisDimensionComboBox_, Parameters::ResampleZDimUseScalingFactor);
   addComboBoxManager(kernelComboBox_, Parameters::ResampleMethod);
 
-  connect(kernelComboBox_, SIGNAL(activated(const QString&)), this, SLOT(setGuassianWidgetsEnabled(const QString&)));
+  connect(kernelComboBox_, SIGNAL(activated(const QString&)), this, SLOT(setGaussianWidgetsEnabled(const QString&)));
 }
 
 void ResampleRegularMeshDialog::setGaussianWidgetsEnabled(const QString& label)
