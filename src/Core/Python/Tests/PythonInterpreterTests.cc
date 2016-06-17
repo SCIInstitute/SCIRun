@@ -51,8 +51,12 @@ class FieldConversionTests : public testing::Test
 protected:
   virtual void SetUp() override
   {
+  #ifdef WIN32
     PythonInterpreter::Instance().initialize(false, "Core_Python_Tests", boost::filesystem::current_path().string());
     PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  #else
+    Py_Initialize();
+  #endif
   }
 
   static FieldHandle roundTripThroughMatlabConverter(FieldHandle field)
