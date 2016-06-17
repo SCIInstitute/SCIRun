@@ -392,7 +392,7 @@ namespace SCIRun {
       glm::vec4                         mFogColor;
 
       //light settings
-      std::vector<glm::vec2>            mLightPosition;
+      std::vector<glm::vec3>            mLightPosition;
       std::vector<bool>                 mLightsOn;
     };
 

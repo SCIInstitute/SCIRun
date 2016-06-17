@@ -158,9 +158,11 @@ namespace SCIRun {
     {
       //mLightPosition;
       mLightsOn.push_back(true);
+      mLightPosition.push_back(glm::vec3(0, 0, 1));
       for (int i = 1; i < LIGHT_NUM; ++i)
       {
         mLightsOn.push_back(false);
+        mLightPosition.push_back(glm::vec3(0, 0, 1));
       }
     }
 
@@ -1386,7 +1388,7 @@ namespace SCIRun {
         {
           glm::vec3 viewDir = viewToWorld[2].xyz();
           viewDir = -viewDir; // Cameras look down -Z.
-          light->lightDir[i] = mLightsOn[i] ? viewDir : glm::vec3(0.0, 0.0, 0.0);
+          light->lightDir[i] = mLightsOn[i] ? viewDir-mLightPosition[i] : glm::vec3(0.0, 0.0, 0.0);
         }
       }
     }
@@ -1410,18 +1412,22 @@ namespace SCIRun {
 
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
       glm::vec3 position = glm::vec3(x, y, 0);
-      mLightPosition[index] = glm::vec2(x, y);
-
+      if (mLightPosition.size() > 0)
+      {
+        mLightPosition[index] = glm::vec3(x, y, 0);
+      }
+      /*
       // Set directional light source (in world space).
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
       if (light)
       {
-        //glm::vec3 viewDir = viewToWorld[2].xyz();
-        glm::vec3 viewDir = mLightsOn[index] ? viewToWorld[2].xyz() : glm::vec3(0.0, 0.0, 0.0);
-        viewDir = -viewDir; // Cameras look down -Z.
-        
-        light->lightDir[index] = viewDir;
+        glm::vec3 viewDir = viewToWorld[2].xyz();
+        viewDir = -viewDir; // Cameras look down -Z.        
+        light->lightDir[index] = mLightsOn[index] ? viewDir-position : glm::vec3(0.0, 0.0, 0.0);
+        std::cout << "x: " << viewDir.x << " y: " << viewDir.y << " z: " << viewDir.z << std::endl;
+        std::cout << "x: " << x << " y: " << y << " z: " << 0 << std::endl;
       }
+      */
     }
 
     void SRInterface::setLightOn(int index, bool value)

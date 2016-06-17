@@ -1451,14 +1451,11 @@ void ViewSceneDialog::setFieldOfView(int value)
   state_->setValue(Modules::Render::ViewScene::FieldOfView, value);
 }
 
-void ViewSceneDialog::setLightSelected(int index)
-{
-  std::cout << "light selected: " << index << std::endl;
-}
-
 void ViewSceneDialog::setLightPosition(int index)
 {
-  std::cout << "light position: " << index << std::endl;
+  auto spire = mSpire.lock();
+  if (spire)
+    spire->setLightPosition(index, mConfigurationDock->getLightPosition(index).x(), mConfigurationDock->getLightPosition(index).y());
 }
 
 void ViewSceneDialog::setLightColor(int index)

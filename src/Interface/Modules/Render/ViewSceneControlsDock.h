@@ -59,7 +59,6 @@ namespace SCIRun {
       QColor getColor() const;
 
     Q_SIGNALS:
-      void lightSelected(int index);
       void lightMoved(int index);
       void colorChanged(int index);
     protected:

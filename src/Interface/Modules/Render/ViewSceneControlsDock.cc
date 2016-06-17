@@ -141,7 +141,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   for (auto &light : lightControls_)
   {
-    connect(light, SIGNAL(lightSelected(int)), parent, SLOT(setLightSelected(int)));
     connect(light, SIGNAL(lightMoved(int)), parent, SLOT(setLightPosition(int)));
     connect(light, SIGNAL(colorChanged(int)), parent, SLOT(setLightColor(int)));
   }
@@ -434,7 +433,6 @@ void LightControlCircle::mousePressEvent(QMouseEvent* event)
   QGraphicsView::mousePressEvent(event);
   if (event->buttons() & Qt::LeftButton)
   {
-    Q_EMIT lightSelected(index_);
     if (lightPosition_->isUnderMouse())
     {
       //std::cout << "small dot clicked" << std::endl;
