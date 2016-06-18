@@ -30,6 +30,7 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Core/Utils/StringUtil.h>
 #include <Core/Logging/Log.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Dataflow::State;
@@ -82,7 +83,9 @@ ModuleStateHandle SimpleMapModuleState::clone() const
 const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& parameterName) const
 {
   StateMap::const_iterator i = stateMap_.find(parameterName);
-  return i != stateMap_.end() ? i->second : Value(AlgorithmParameterName(""), -1);
+  if (i != stateMap_.end())
+    return i->second;
+  BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("Module has no state value with name " + parameterName.name_));
 }
 
 bool SimpleMapModuleState::containsKey(const Name& name) const

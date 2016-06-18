@@ -55,6 +55,7 @@ void ExtractSimpleIsosurfaceModule::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::SingleIsoValue);
   setStateStringFromAlgo(Parameters::ListOfIsovalues);
   setStateIntFromAlgo(Parameters::QuantityOfIsovalues);
+  get_state()->setValue(Parameters::IsovalueListString, std::string());
 }
 
 void ExtractSimpleIsosurfaceModule::execute()

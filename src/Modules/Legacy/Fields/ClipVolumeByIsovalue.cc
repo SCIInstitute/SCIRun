@@ -69,6 +69,7 @@ void ClipVolumeByIsovalueModule::setStateDefaults()
 {
   auto state = get_state();
   setStateDoubleFromAlgo(ClipMeshByIsovalueAlgo::ScalarIsoValue);
+  setStateIntFromAlgo(ClipMeshByIsovalueAlgo::LessThanIsoValue);
 }
 
 
