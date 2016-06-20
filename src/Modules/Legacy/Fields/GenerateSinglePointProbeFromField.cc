@@ -106,7 +106,8 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedba
 {
   auto vsf = static_cast<const ViewSceneFeedback&>(var);
 
-  if (impl_->previousTransform_ != vsf.transform)
+  if (vsf.selectionName.find(get_id()) != std::string::npos &&
+    impl_->previousTransform_ != vsf.transform)
   {
     adjustPositionFromTransform(vsf.transform);
     enqueueExecuteAgain();
@@ -521,11 +522,8 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
   Graphics::GlyphGeom glyphs;
   while (eiter != eiter_end)
   {
-    //checkForInterruption();
-
     Point p;
     mesh->get_point(p, *eiter);
-
     glyphs.addSphere(p, radius, num_strips, node_color);
 
     ++eiter;

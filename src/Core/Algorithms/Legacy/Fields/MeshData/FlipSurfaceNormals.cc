@@ -48,7 +48,7 @@ AlgorithmOutput FlipSurfaceNormalsAlgo::run(const AlgorithmInput& input) const
 {
 	auto input_field = input.get<Field>(Variables::InputField);
 	
-	FieldHandle output_field = input_field;
+	FieldHandle output_field(input_field->deep_clone());
 	run(input_field,output_field);
 	
 	AlgorithmOutput output;

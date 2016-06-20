@@ -241,6 +241,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(helpActionClipboard_, SIGNAL(triggered()), this, SLOT(showClipboardHelp()));
 	connect(helpActionTagLayer_, SIGNAL(triggered()), this, SLOT(showTagHelp()));
 	connect(helpActionTriggeredScripts_, SIGNAL(triggered()), this, SLOT(showTriggerHelp()));
+  connect(helpActionNewUserWizard_, SIGNAL(triggered()), this, SLOT(launchNewUserWizard()));
 
   connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
 
@@ -1581,6 +1582,11 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     m->menuAction()->setVisible(false);
   Q_FOREACH(QWidget* w, nonfunctioningWidgets)
     w->setVisible(false);
+}
+
+void SCIRunMainWindow::launchNewUserWizard()
+{
+  newUserWizard(this);
 }
 
 void SCIRunMainWindow::adjustModuleDock(int state)

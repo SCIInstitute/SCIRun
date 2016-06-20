@@ -122,18 +122,16 @@ PortManager<T>::add(const T& item)
           portPair.second->incrementIndex();
       }
 
-      for (const auto& portPair : ports_)
-      {
-        DYNAMIC_PORT_LOG(std::cout << "\t id " << portPair.second->id().toString() << " index after setting " << portPair.second->getIndex() << std::endl);
-      }
+
+      DYNAMIC_PORT_LOG(for (const auto& portPair : ports_) std::cout << "\t id " << portPair.second->id().toString() << " index after setting " << portPair.second->getIndex() << std::endl;);
 
       return newPortIndex;
     }
   }
-  if (item->isDynamic())
-  {
-    DYNAMIC_PORT_LOG(std::cout << "original port: " << item->id().toString() << " newIndex: " << size() - 1 << std::endl);
-  }
+
+
+  DYNAMIC_PORT_LOG(if (item->isDynamic()) std::cout << "original port: " << item->id().toString() << " newIndex: " << size() - 1 << std::endl;);
+
   return size() - 1;
 }
 
@@ -147,10 +145,7 @@ PortManager<T>::lastIndexByName(const std::string& name) const
     return -1;
 
   DYNAMIC_PORT_LOG(std::cout << name << "  Input port object indexes:\n");
-  for (const auto& input : matches)
-  {
-    DYNAMIC_PORT_LOG(std::cout << input->id() << " " << input->id().name << " " << input->getIndex() << std::endl);
-  }
+  DYNAMIC_PORT_LOG(for (const auto& input : matches) std::cout << input->id() << " " << input->id().name << " " << input->getIndex() << std::endl;);
 
   return static_cast<int>((*std::max_element(matches.begin(), matches.end(), [](const T& port1, const T& port2) { return port1->getIndex() < port2->getIndex(); }))->getIndex());
 }

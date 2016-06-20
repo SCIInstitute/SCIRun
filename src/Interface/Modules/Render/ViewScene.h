@@ -71,7 +71,7 @@ namespace SCIRun {
 
     Q_SIGNALS:
       void newGeometryValueForwarder();
-      void mousePressSignalForTestingGeometryObjectFeedback(int x, int y);
+      void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
       protected Q_SLOTS:
       void menuMouseControlChanged(int index);
@@ -98,8 +98,8 @@ namespace SCIRun {
       void invertZoomClicked(bool value);
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
-      void sendGeometryFeedbackToState(int x, int y);
-      //Clipping Plane 
+      void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
+      //Clipping Plane
       void setClippingPlaneIndex(int index);
       void setClippingPlaneVisible(bool value);
       void setClippingPlaneFrameOn(bool value);
@@ -168,7 +168,7 @@ namespace SCIRun {
       };
 
       void selectObject(const int x, const int y);
-      void restoreObjColor();
+      std::string restoreObjColor();
       void updatClippingPlaneDisplay();
       bool isObjectUnselected(const std::string& name);
       void addToolBar();
