@@ -111,6 +111,8 @@ namespace SCIRun
   }
 }
 
+const int fadeInSeconds = 1;
+
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
   : QGraphicsProxyWidget(parent),
   NoteDisplayHelper(boost::make_shared<ModuleWidgetNoteDisplayStrategy>()),
@@ -133,10 +135,23 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   stackDepth_ = 0;
 
   originalSize_ = size();
+
+  {
+    timeLine_ = new QTimeLine(fadeInSeconds * 1000, this);
+    connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(animate(qreal)));
+    //connect(timeLine_, SIGNAL(finished()), this, SLOT(deleteLater()));
+    timeLine_->start();
+  }
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+}
+
+void ModuleProxyWidget::animate(qreal val)
+{
+  setOpacity(val);
+  setScale(val);
 }
 
 void ModuleProxyWidget::adjustHeight(int delta)
