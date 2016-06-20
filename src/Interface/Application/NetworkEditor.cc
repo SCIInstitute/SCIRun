@@ -1323,6 +1323,22 @@ void NetworkEditor::tagLayer(bool active, int tag)
 {
   tagLayerActive_ = active;
 
+  if (active)
+  {
+    auto items = scene_->selectedItems();
+    Q_FOREACH(QGraphicsItem* item, items)
+    {
+      if (item->data(TagDataKey).toInt() == NoTag)
+      {
+        item->setData(TagDataKey, tag);
+      }
+      else if (ClearTags == tag)
+      {
+        item->setData(TagDataKey, NoTag);
+      }
+    }
+  }
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     item->setData(TagLayerKey, active);
@@ -1334,7 +1350,7 @@ void NetworkEditor::tagLayer(bool active, int tag)
       {
         highlightTaggedItem(item, itemTag);
       }
-      else if (tag != NoTag)
+      else if (tag != NoTag && tag != ClearTags)
       {
         if (tag == itemTag)
         {
