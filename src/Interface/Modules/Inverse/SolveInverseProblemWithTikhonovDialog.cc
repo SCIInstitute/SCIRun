@@ -55,8 +55,8 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMin);
   addDoubleSpinBoxManager(lambdaMaxDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMax);
   addDoubleSpinBoxManager(lambdaResolutionDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaResolution);
-  addDoubleSpinBoxManager(lCurveMinDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMin);
-  addDoubleSpinBoxManager(lCurveMaxDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMax);
+  addDoubleLineEditManager(lCurveMinLineEdit_, SolveInverseProblemWithTikhonovModule::LambdaMin);
+  addDoubleLineEditManager(lCurveMaxLineEdit_, SolveInverseProblemWithTikhonovModule::LambdaMax);
 
   addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaSliderValue);
 

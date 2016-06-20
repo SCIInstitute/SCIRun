@@ -56,6 +56,8 @@ ConvertFieldBasis::ConvertFieldBasis()
 void ConvertFieldBasis::setStateDefaults()
 {
   setStateStringFromAlgoOption(Parameters::OutputType);
+  get_state()->setValue(Parameters::InputFieldName, std::string());
+  get_state()->setValue(Parameters::InputType, std::string());
 }
 
 void

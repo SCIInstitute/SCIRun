@@ -121,8 +121,9 @@ namespace SCIRun {
     class PortActionsMenu : public QMenu
     {
     public:
-      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent), faves_(nullptr)
+      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent), parent_(parent), faves_(nullptr)
       {
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         QList<QAction*> actions;
         if (!parent->isInput())
         {
@@ -137,13 +138,17 @@ namespace SCIRun {
           actions.append(separatorAction(parent));
         }
         addActions(actions);
+#endif
 
-        auto m = new QMenu("Connect Module", parent);
+        base_ = new QMenu("Connect Module", parent);
         faves_ = new QMenu("Favorites", parent);
-        m->addMenu(faves_);
-        compatibleModuleActions_ = fillConnectToEmptyPortMenu(m, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
-        addMenu(m);
+        base_->addMenu(faves_);
+        compatibleModuleActions_ = fillConnectToEmptyPortMenu(base_, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
+
+        connectModuleAction_ = addAction("Connect Module...");
+        connect(connectModuleAction_, SIGNAL(triggered()), parent, SLOT(pickConnectModule()));
       }
+
       void filterFavorites()
       {
         faves_->clear();
@@ -151,9 +156,40 @@ namespace SCIRun {
           if (SCIRunMainWindow::Instance()->isInFavorites(action->text())) // TODO: break out predicate
             faves_->addAction(action);
       }
+
+      QStringList compatibleModules() const
+      {
+        QStringList qsl;
+        Q_FOREACH(QAction* q, compatibleModuleActions_)
+          qsl.append(q->text());
+        qsl.sort();
+        return qsl;
+      }
+
+      void portPicked(const QString& module)
+      {
+        auto actionIter = std::find_if(compatibleModuleActions_.begin(), compatibleModuleActions_.end(), [&module](QAction* a) { return a->text() == module; });
+        if (actionIter != compatibleModuleActions_.end())
+        {
+          (*actionIter)->trigger();
+        }
+        else
+          qDebug() << "action not found:" << compatibleModules();
+      }
+
+      virtual void showEvent(QShowEvent* event) override
+      {
+        QPoint p = pos();
+        QRect geo = parent_->geometry();
+        move(p.x() + geo.width() - geometry().width(), p.y());
+      }
+
     private:
+      PortWidget* parent_;
+      QMenu* base_;
       QMenu* faves_;
       QList<QAction*> compatibleModuleActions_;
+      QAction* connectModuleAction_;
     };
   }}
 
@@ -309,6 +345,20 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
   else
   {
     //qDebug() << "mouse release sth else";
+  }
+}
+
+void PortWidget::pickConnectModule()
+{
+  QInputDialog qid;
+  qid.setWindowTitle("Connect new module here");
+  qid.setLabelText("New module to connect:");
+  qid.setComboBoxItems(menu_->compatibleModules());
+  qid.setOption(QInputDialog::UseListViewForComboBoxItems, true);
+  auto ok = qid.exec();
+  if (ok == QDialog::Accepted)
+  {
+    menu_->portPicked(qid.textValue());
   }
 }
 
@@ -674,4 +724,87 @@ std::vector<PortWidget*> PortWidget::connectedPorts() const
     otherPorts.push_back(notThisOne(ends));
   }
   return otherPorts;
+}
+
+QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
+{
+  QColor result;
+  if (SCIRunMainWindow::Instance()->newInterface())
+  {
+    if (str == "red")
+      result = Qt::red;
+    else if (str == "blue")
+      result = QColor(14, 139, 255);
+    else if (str == "darkBlue")
+      result = Qt::darkBlue;
+    else if (str == "cyan")
+      result = QColor(27, 207, 207);
+    else if (str == "darkCyan")
+      result = Qt::darkCyan;
+    else if (str == "darkGreen")
+      result = QColor(0, 175, 70);
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "magenta")
+      result = QColor(255, 75, 240);
+    else if (str == "white")
+      result = Qt::white;
+    else if (str == "yellow")
+      result = QColor(234, 255, 55);
+    else if (str == "darkYellow")
+      result = Qt::darkYellow;
+    else if (str == "lightGray")
+      result = Qt::lightGray;
+    else if (str == "darkGray")
+      result = Qt::darkGray;
+    else if (str == "black")
+      result = Qt::black;
+    else if (str == "purple")
+      result = QColor(122, 119, 226);
+    else if (str == "orange")
+      result = QColor(254, 139, 38);
+    else if (str == "brown")
+      result = QColor(160, 82, 45);
+    else
+      result = Qt::black;
+  }
+  else
+  {
+    if (str == "red")
+      result = Qt::red;
+    else if (str == "blue")
+      result = Qt::blue;
+    else if (str == "darkBlue")
+      result = Qt::darkBlue;
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "darkCyan")
+      result = Qt::darkCyan;
+    else if (str == "darkGreen")
+      result = Qt::darkGreen;
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "magenta")
+      result = Qt::magenta;
+    else if (str == "white")
+      result = Qt::white;
+    else if (str == "yellow")
+      result = Qt::yellow;
+    else if (str == "darkYellow")
+      result = Qt::darkYellow;
+    else if (str == "lightGray")
+      result = Qt::lightGray;
+    else if (str == "darkGray")
+      result = Qt::darkGray;
+    else if (str == "black")
+      result = Qt::black;
+    else if (str == "purple")
+      result = Qt::darkMagenta;
+    else if (str == "orange")
+      result = QColor(255, 165, 0);
+    else
+      result = Qt::black;
+  }
+  result.setAlpha(alpha);
+  return result;
 }

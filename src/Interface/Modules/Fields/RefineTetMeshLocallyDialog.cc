@@ -61,9 +61,3 @@ RefineTetMeshLocallyDialog::RefineTetMeshLocallyDialog(const std::string& name, 
 
   connect(constraintComboBox_, SIGNAL(activated(int)), this, SLOT(setIsoValueEnabled()));*/
 }
-
-void RefineTetMeshLocallyDialog::pullSpecial()
-{
-
-}
-

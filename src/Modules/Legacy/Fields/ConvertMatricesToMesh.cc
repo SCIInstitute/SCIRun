@@ -65,6 +65,9 @@ void ConvertMatricesToMesh::setStateDefaults()
   auto state = get_state();
   state->setValue(FieldBaseType, std::string("TetVol"));
   state->setValue(DataType, std::string("double"));
+
+  state->setValue(InputFieldName, std::string("[Field Name]"));
+  state->setValue(InputFieldTypeName, std::string("[Field Type]"));
 }
 
 void ConvertMatricesToMesh::execute()
@@ -160,7 +163,7 @@ void ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows
   }
 }
 
+const AlgorithmParameterName ConvertMatricesToMesh::InputFieldName("InputFieldName");
 const AlgorithmParameterName ConvertMatricesToMesh::InputFieldTypeName("InputFieldTypeName");
-const AlgorithmParameterName ConvertMatricesToMesh::InputFieldTypeTypeName("InputFieldTypeTypeName");
 const AlgorithmParameterName ConvertMatricesToMesh::FieldBaseType("FieldBaseType");
 const AlgorithmParameterName ConvertMatricesToMesh::DataType("DataType");
