@@ -443,6 +443,7 @@ public:
     WidgetSlotManager(state, dialog, lineEdit, stateKey), stateKey_(stateKey), lineEdit_(lineEdit)
       {
         connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
+        lineEdit_->setValidator(new QDoubleValidator(lineEdit_));
       }
       virtual void pull() override
       {
@@ -456,15 +457,10 @@ public:
       virtual void pushImpl() override
       {
         LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
-        try
-        {
-          auto value = boost::lexical_cast<double>(lineEdit_->text().toStdString());
+        bool ok;
+        auto value = lineEdit_->text().toDouble(&ok);
+        if (ok)
           state_->setValue(stateKey_, value);
-        }
-        catch (boost::bad_lexical_cast&)
-        {
-          // ignore for now
-        }
       }
 private:
   AlgorithmParameterName stateKey_;

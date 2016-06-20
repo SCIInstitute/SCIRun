@@ -63,6 +63,7 @@ void RefineTetMeshLocally::setStateDefaults()
  setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyDihedralAngleSmaller);
  setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyDihedralAngleBigger);
  setStateIntFromAlgo(Parameters::RefineTetMeshLocallyMaxNumberRefinementIterations);
+ setStateIntFromAlgo(Parameters::RefineTetMeshLocallyRadioButtons);
  setStateBoolFromAlgo(Parameters::RefineTetMeshLocallyDoNoSplitSurfaceTets);
  setStateBoolFromAlgo(Parameters::RefineTetMeshLocallyCounterClockWiseOrdering);
  setStateBoolFromAlgo(Parameters::RefineTetMeshLocallyUseModuleInputField);
@@ -70,13 +71,12 @@ void RefineTetMeshLocally::setStateDefaults()
 
 void RefineTetMeshLocally::execute()
 {
+  auto inputfield_ = getRequiredInput(InputField);
 
- FieldHandle inputfield_ = getRequiredInput(InputField);
-
-  if (needToExecute() )
+  if (needToExecute())
   {
     update_state(Executing);
-    
+
     setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyIsoValue);
     setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyEdgeLength);
     setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyVolume);
@@ -87,9 +87,9 @@ void RefineTetMeshLocally::execute()
     setAlgoBoolFromState(Parameters::RefineTetMeshLocallyUseModuleInputField);
     setAlgoIntFromState(Parameters::RefineTetMeshLocallyMaxNumberRefinementIterations);
     auto RadioButton = (get_state()->getValue(Parameters::RefineTetMeshLocallyRadioButtons)).toInt();
-        if (RadioButton==-1)
-       RadioButton=0;
-    algo().set(Parameters::RefineTetMeshLocallyRadioButtons, RadioButton);      
+    if (RadioButton == -1)
+      RadioButton = 0;
+    algo().set(Parameters::RefineTetMeshLocallyRadioButtons, RadioButton);
     auto output = algo().run(withInputData((InputField, inputfield_)));
     sendOutputFromAlgorithm(OutputField, output);
   }

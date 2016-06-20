@@ -54,7 +54,6 @@ namespace SCIRun {
       {
       public:
         ConvertMatricesToMesh();
-        virtual ~ConvertMatricesToMesh() {}
         virtual void setStateDefaults();
         virtual void execute();
 
@@ -65,8 +64,8 @@ namespace SCIRun {
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
+        static const Core::Algorithms::AlgorithmParameterName InputFieldName;
         static const Core::Algorithms::AlgorithmParameterName InputFieldTypeName;
-        static const Core::Algorithms::AlgorithmParameterName InputFieldTypeTypeName;
         static const Core::Algorithms::AlgorithmParameterName FieldBaseType;
         static const Core::Algorithms::AlgorithmParameterName DataType;
       

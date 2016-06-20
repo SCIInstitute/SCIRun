@@ -75,13 +75,6 @@ void GenerateSinglePointProbeFromFieldDialog::pullSpecial()
     static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
-
-  bool reexecute = state_->getValue(Parameters::WidgetMoved).toBool();
-  state_->setValue(Parameters::WidgetMoved, false);
-  if (reexecute)
-  {
-    Q_EMIT executeActionTriggered();
-  }
 }
 
 void GenerateSinglePointProbeFromFieldDialog::assignDefaultMeshColor()

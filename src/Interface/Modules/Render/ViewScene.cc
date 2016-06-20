@@ -81,7 +81,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setFocusPolicy(Qt::StrongFocus);
 
   addToolBar();
-  setupClippingPlanes(); 
+  setupClippingPlanes();
   setupScaleBar();
 
   // Setup Qt OpenGL widget.
@@ -94,7 +94,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
-  connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int)), this, SLOT(sendGeometryFeedbackToState(int, int)));
+  connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
 
   if (mGLWidget->isValid())
   {
@@ -162,7 +162,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   }
 }
 
-void ViewSceneDialog::restoreObjColor()
+std::string ViewSceneDialog::restoreObjColor()
 {
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
@@ -172,10 +172,10 @@ void ViewSceneDialog::restoreObjColor()
 
   auto spire = mSpire.lock();
   if (!spire)
-    return;
+    return "";
 
   std::string selName = spire->getSelection();
-  if (selName != "")
+  if (!selName.empty())
   {
     auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
     if (geomDataTransient && !geomDataTransient->empty())
@@ -184,7 +184,7 @@ void ViewSceneDialog::restoreObjColor()
       if (!geomData)
       {
         LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-        return;
+        return "";
       }
       for (auto it = geomData->begin(); it != geomData->end(); ++it)
       {
@@ -207,6 +207,7 @@ void ViewSceneDialog::restoreObjColor()
       }
     }
   }
+  return selName;
 }
 
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
@@ -214,10 +215,10 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   if (selected_)
   {
     selected_ = false;
-    restoreObjColor();
+    auto selName = restoreObjColor();
     newGeometryValue();
     //std::cout << "mousePressSignalForTestingGeometryObjectFeedback\n";
-    Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y());
+    Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y(), selName);
   }
 }
 
@@ -1577,7 +1578,7 @@ void ViewSceneDialog::setupMaterials()
     mConfigurationDock->setMaterialTabValues(
       state_->getValue(Modules::Render::ViewScene::Ambient).toDouble(),
       state_->getValue(Modules::Render::ViewScene::Diffuse).toDouble(),
-      state_->getValue(Modules::Render::ViewScene::Specular).toDouble(), 
+      state_->getValue(Modules::Render::ViewScene::Specular).toDouble(),
       state_->getValue(Modules::Render::ViewScene::Shine).toDouble(),
       state_->getValue(Modules::Render::ViewScene::Emission).toDouble(),
       state_->getValue(Modules::Render::ViewScene::FogOn).toBool(),
@@ -1690,13 +1691,14 @@ namespace //TODO: move to appropriate location
   }
 }
 
-void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y)
+void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::string& selName)
 {
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   glm::mat4 trans = spire->getWidgetTransform().transform;
 
   ViewSceneFeedback vsf;
   vsf.transform = toSciTransform(trans);
+  vsf.selectionName = selName;
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 }
 

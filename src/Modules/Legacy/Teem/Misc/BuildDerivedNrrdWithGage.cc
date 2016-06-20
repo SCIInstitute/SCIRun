@@ -85,6 +85,22 @@ BuildDerivedNrrdWithGage::BuildDerivedNrrdWithGage():
 void BuildDerivedNrrdWithGage::setStateDefaults()
 {
   //setStateStringFromAlgo(Parameters::DataLabel);
+  auto state = get_state();
+  state->setValue(Parameters::FieldKind, std::string("Scalar"));
+  state->setValue(Parameters::Quantity, std::string("value"));
+  state->setValue(Parameters::OType, std::string("double"));
+  state->setValue(Parameters::ValuesType, std::string("zero"));
+  state->setValue(Parameters::DType, std::string("zero"));
+  state->setValue(Parameters::DDType, std::string("zero"));
+  state->setValue(Parameters::ValuesNumParm1, std::string());
+  state->setValue(Parameters::ValuesNumParm2, std::string());
+  state->setValue(Parameters::ValuesNumParm3, std::string());
+  state->setValue(Parameters::DNumParm1, std::string());
+  state->setValue(Parameters::DNumParm2, std::string());
+  state->setValue(Parameters::DNumParm3, std::string());
+  state->setValue(Parameters::DDNumParm1, std::string());
+  state->setValue(Parameters::DDNumParm2, std::string());
+  state->setValue(Parameters::DDNumParm3, std::string());
 }
 
 #if 0

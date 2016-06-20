@@ -171,6 +171,7 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(EdgeTransparencyValue, 0.65f);
   state->setValue(NodeTransparencyValue, 0.65f);
   state->setValue(SphereScaleValue, 0.03);
+  state->setValue(SphereResolution, 5);
   state->setValue(CylinderRadius, 0.1);
   state->setValue(CylinderResolution, 5);
 
@@ -190,6 +191,8 @@ void ShowFieldModule::setStateDefaults()
 
   state->setValue(UseFaceNormals, false);
   state->setValue(FaceInvertNormals, false);
+
+  state->setValue(FieldName, std::string());
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT

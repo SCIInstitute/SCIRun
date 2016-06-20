@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="12">
-<networkFile class_id="0" tracking_level="0" version="3">
+<networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>4</count>
@@ -130,7 +130,7 @@
 									<name>ReceivedValue</name>
 									<value>
 										<which>2</which>
-										<value>test_string_for_scirun</value>
+										<value>C:\Users\Dan</value>
 									</value>
 								</second>
 							</item>
@@ -161,7 +161,7 @@
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>GetStringsFromBundle:1</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
-					<name>string1</name>
+					<name>string2</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>PrintDatatype:0</moduleId2_>
@@ -202,29 +202,29 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>GetStringsFromBundle:1</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>2.04000000000000000e+02</first>
-				<second>-9.80000000000000000e+01</second>
+				<first>2.04000000000000000e+002</first>
+				<second>-9.80000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>InsertEnvironmentIntoBundle:0</first>
 			<second>
-				<first>8.90000000000000000e+01</first>
-				<second>-2.62000000000000000e+02</second>
+				<first>8.90000000000000000e+001</first>
+				<second>-2.62000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>PrintDatatype:0</first>
 			<second>
-				<first>1.49000000000000000e+02</first>
-				<second>1.28000000000000000e+02</second>
+				<first>1.49000000000000000e+002</first>
+				<second>1.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportBundleInfo:0</first>
 			<second>
-				<first>-1.55000000000000000e+02</first>
-				<second>-9.90000000000000000e+01</second>
+				<first>-1.55000000000000000e+002</first>
+				<second>-9.90000000000000000e+001</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -256,6 +256,19 @@
 			<second>0</second>
 		</item>
 	</moduleTags>
+	<disabledModules class_id="21" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledModules>
+	<disabledConnections>
+		<count>0</count>
+		<item_version>0</item_version>
+	</disabledConnections>
+	<moduleTagLabels class_id="22" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
 </networkFile>
 </boost_serialization>
 

@@ -69,11 +69,7 @@ namespace Render {
 
   class SCISHARE ViewScene : public Dataflow::Networks::ModuleWithAsyncDynamicPorts,
     public Has1InputPort<AsyncDynamicPortTag<GeometryPortTag>>,
-#ifdef BUILD_TESTING
     public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
-#else
-    public HasNoOutputPorts
-#endif
   {
   public:
     ViewScene();
@@ -113,12 +109,10 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName FieldOfView;
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
-#ifdef BUILD_TESTING
     OUTPUT_PORT(0, ScreenshotDataRed, DenseMatrix);
     OUTPUT_PORT(1, ScreenshotDataGreen, DenseMatrix);
     OUTPUT_PORT(2, ScreenshotDataBlue, DenseMatrix);
     virtual void execute() override;
-#endif
 
     static Core::Thread::Mutex mutex_;
 
