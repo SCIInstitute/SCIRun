@@ -75,7 +75,7 @@ QString TreeViewModuleGetter::text() const
 bool TreeViewModuleGetter::isModule() const
 {
   auto current = tree_.currentItem();
-  return current->childCount() == 0 && current->parent() && !current->text(0).startsWith("clipboard") && current->textColor(0) != CLIPBOARD_COLOR;
+  return current && current->childCount() == 0 && current->parent() && !current->text(0).startsWith("clipboard") && current->textColor(0) != CLIPBOARD_COLOR;
 }
 
 QString TreeViewModuleGetter::clipboardXML() const
@@ -86,8 +86,7 @@ QString TreeViewModuleGetter::clipboardXML() const
 bool TreeViewModuleGetter::isClipboardXML() const
 {
   auto current = tree_.currentItem();
-
-  return current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->textColor(0) == CLIPBOARD_COLOR);
+  return current && current->childCount() == 0 && current->parent() && (current->text(0).startsWith("clipboard") || current->textColor(0) == CLIPBOARD_COLOR);
 }
 
 NotePosition ComboBoxDefaultNotePositionGetter::position() const
@@ -158,4 +157,66 @@ void WidgetDisablingService::temporarilyEnableService()
 {
   //qDebug() << "temp enable service";
   serviceEnabled_ = true;
+}
+
+namespace {
+
+QWizardPage *createIntroPage()
+{
+  QWizardPage *page = new QWizardPage;
+  page->setTitle("Introduction");
+
+  QLabel *label = new QLabel("This wizard will help you set up SCIRun for the first time and learn the basic SCIRun operations and hotkeys.");
+  label->setWordWrap(true);
+
+  QVBoxLayout *layout = new QVBoxLayout;
+  layout->addWidget(label);
+  page->setLayout(layout);
+
+  return page;
+}
+
+QWizardPage *createPathSettingPage()
+{
+  QWizardPage *page = new QWizardPage;
+  page->setTitle("Set Data Path");
+
+  QLabel *label = new QLabel("Specify the location of SCIRun's data folder. This path is referenced in modules using the code %SCIRUNDATADIR%.");
+  label->setWordWrap(true);
+
+  auto classNameLabel = new QLabel("Data path:");
+  auto classNameLineEdit = new QLineEdit;
+  
+  //page->registerField("className*", classNameLineEdit);
+
+  QVBoxLayout *layout = new QVBoxLayout;
+  layout->addWidget(label);
+
+  auto hbox = new QHBoxLayout;
+  hbox->addWidget(classNameLabel);
+  hbox->addWidget(classNameLineEdit);
+  hbox->addWidget(new QPushButton("Set Path..."));
+  layout->addLayout(hbox);
+
+  page->setLayout(layout);
+
+  return page;
+}
+
+QWizardPage *createConclusionPage()
+{
+  return nullptr;
+}
+
+}
+
+void SCIRun::Gui::newUserWizard(QWidget* parent)
+{
+  auto wizard = new QWizard(parent);
+  wizard->addPage(createIntroPage());
+  wizard->addPage(createPathSettingPage());
+  //wizard.addPage(createConclusionPage());
+
+  wizard->setWindowTitle("SCIRun Tutorial Wizard");
+  wizard->exec();
 }

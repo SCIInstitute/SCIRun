@@ -64,7 +64,7 @@ using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory,
-  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, GlobalCommandFactoryHandle cmdFactory, 
+  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, GlobalCommandFactoryHandle cmdFactory,
   NetworkEventCommandFactoryHandle eventCmdFactory, NetworkEditorSerializationManager* nesm) :
   theNetwork_(new Network(mf, sf, af, reex)),
   moduleFactory_(mf),
@@ -88,7 +88,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 }
 
 NetworkEditorController::NetworkEditorController(NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
-  : theNetwork_(network), executorFactory_(executorFactory), 
+  : theNetwork_(network), executorFactory_(executorFactory),
   eventCmdFactory_(new NullCommandFactory),
   serializationManager_(nesm),
   signalSwitch_(true)
@@ -120,7 +120,7 @@ namespace
 
       ModulePositions positions;
       int i = 0;
-      const double moduleVerticalSpacing = 120;
+      const double moduleVerticalSpacing = 80;
       const double moduleHorizontalSpacing = 264;
       const double moduleSpacingOffset = 10;
       static int numSnips = 0;
@@ -722,7 +722,7 @@ void NetworkEditorController::cleanUpNetwork()
     for (const auto& g : c.second)
     {
       //std::cout << "component " << c.first << " group " << g.first << " module " << g.second << std::endl;
-      cleanedUp.modulePositions[g.second] = { c.first * 400.0, g.first * 150.0 };
+      cleanedUp.modulePositions[g.second] = { c.first * 400.0, g.first * 80.0 };
     }
   }
 

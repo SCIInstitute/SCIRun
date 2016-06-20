@@ -55,11 +55,9 @@ ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
 {
   INITIALIZE_PORT(GeneralGeom);
-#ifdef BUILD_TESTING
   INITIALIZE_PORT(ScreenshotDataRed);
   INITIALIZE_PORT(ScreenshotDataGreen);
   INITIALIZE_PORT(ScreenshotDataBlue);
-#endif
 }
 
 void ViewScene::setStateDefaults()

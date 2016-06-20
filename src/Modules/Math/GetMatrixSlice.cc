@@ -52,6 +52,7 @@ void GetMatrixSlice::setStateDefaults()
 {
   setStateBoolFromAlgo(Parameters::IsSliceColumn);
   setStateIntFromAlgo(Parameters::SliceIndex);
+  setStateIntFromAlgo(Parameters::MaxIndex);
   setStateIntFromAlgo(Parameters::SliceIncrement);
   setStateIntFromAlgo(Parameters::PlayModeDelay);
   setStateStringFromAlgoOption(Parameters::PlayModeType);

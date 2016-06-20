@@ -81,6 +81,7 @@ namespace Datatypes {
   struct SCISHARE ViewSceneFeedback : ModuleFeedback
   {
     Geometry::Transform transform;
+    std::string selectionName;
   };
 
 }}}

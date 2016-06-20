@@ -45,6 +45,11 @@ SendScalarModule::SendScalarModule()
   INITIALIZE_PORT(Scalar);
 }
 
+void SendScalarModule::setStateDefaults()
+{
+  get_state()->setValue(ValueToSend(), 0.0);
+}
+
 void SendScalarModule::execute()
 {
   if (needToExecute())
