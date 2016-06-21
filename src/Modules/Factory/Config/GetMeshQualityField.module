@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "GetDomainBoundary",
+    "name": "GetMeshQualityField",
     "namespace": "Fields",
     "status": "Real ported module: Many bugs and UI logic issues",
     "description": "...",
