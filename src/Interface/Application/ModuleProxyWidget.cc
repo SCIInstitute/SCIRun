@@ -139,8 +139,7 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   {
     timeLine_ = new QTimeLine(fadeInSeconds * 1000, this);
     connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(animate(qreal)));
-    //connect(timeLine_, SIGNAL(finished()), this, SLOT(deleteLater()));
-    timeLine_->start();
+    //timeLine_->start();
   }
 }
 
