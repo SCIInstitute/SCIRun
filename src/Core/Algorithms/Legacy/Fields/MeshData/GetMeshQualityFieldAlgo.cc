@@ -37,15 +37,15 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 GetMeshQualityFieldAlgo::GetMeshQualityFieldAlgo()
 {
-  //add_option("metric","scaled_jacobian","scaled_jacobian|jacobian|volume|insc_circ_ratio");
-    addParameter(Variables::Method, 0);
+  add_option("metric","scaled_jacobian","scaled_jacobian|jacobian|volume|insc_circ_ratio");
 }
+
+ALGORITHM_PARAMETER_DEF(Fields,Metric);
 
 bool
 GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
 {
-  //std::string metric = get_option("metric");
-    auto metric = get(Variables::Method).toInt();
+  std::string metric = get_option("metric");
   
   if (!input)
   {

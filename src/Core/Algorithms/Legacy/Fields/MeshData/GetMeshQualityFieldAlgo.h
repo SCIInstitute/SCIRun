@@ -29,32 +29,31 @@
 #ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H
 #define CORE_ALGORITHMS_LEGACY_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H 1
 
-//Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-
 //Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-
-//For Windows support
-#include <Core/Algorithms/Fields/share.h>
-
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-namespace SCIRunAlgo {
+//For Windows support
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-using namespace SCIRun;
+namespace SCIRun {
+    namespace Core {
+        namespace Algorithms {
+            namespace Fields {
+                
+ALGORITHM_PARAMETER_DECL(Metric);
 
-class SCISHARE GetMeshQualityFieldAlgo : public AlgoBase
+class SCISHARE GetMeshQualityFieldAlgo : public AlgorithmBase
 {
   public:
     /// Set defaults
-    GetMeshQualityFieldAlgo()
+    GetMeshQualityFieldAlgo();
     
     ///Run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
+    bool run(FieldHandle input, FieldHandle& output) const;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const;
 };
 
-}
+}}}}
 
 #endif

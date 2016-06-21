@@ -28,7 +28,7 @@
 /// @todo Documentation Modules/Legacy/Fields/GetMeshQualityField.cc
 //Reports the quality of each element in the mesh based on the metric that you choose.
 
-#include <Core/Algorithms/Fields/MeshData/GetMeshQualityField.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/GetMeshQualityField.h>
@@ -49,7 +49,7 @@ GetMeshQualityField::GetMeshQualityField() : Module(staticInfo_)
 
 void GetMeshQualityField::setStateDefaults()
 {
-    setStateIntFromAlgo(Variables::Method);
+    setStateStringFromAlgoOption(GetMeshQualityFieldAlgo::Metric);
 }
 
 void GetMeshQualityField::execute()
@@ -60,7 +60,9 @@ void GetMeshQualityField::execute()
   {
     update_state(Executing);
       
-    auto output = algo().run(withInputData((InputField, field)));
+    setAlgoOptionFromState(GetMeshQualityFieldAlgo::Metric);
+      
+    auto output = algo().run(withInputData((InputField,input)));
       
     sendOutputFromAlgorithm(OutputField,output);
       

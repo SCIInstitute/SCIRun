@@ -107,7 +107,7 @@ SET(Modules_Legacy_Fields_SRCS
   SplitFieldByDomain.cc
   AlignMeshBoundingBoxes.cc
   ProjectPointsOntoMesh.cc
-  #GetMeshQualityField.cc
+  GetMeshQualityField.cc
   #ApplyFilterToFieldData.cc
   ApplyMappingMatrix.cc
   #CalculateNodeNormals.cc
