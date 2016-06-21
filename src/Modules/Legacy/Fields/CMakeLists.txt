@@ -84,6 +84,7 @@ SET(Modules_Legacy_Fields_HEADERS
   GeneratePointSamplesFromField.h
   GeneratePointSamplesFromFieldOrWidget.h
   TransformMeshWithTransform.h
+  GetMeshQualityField.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
