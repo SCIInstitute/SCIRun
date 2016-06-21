@@ -26,8 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 /// @todo Documentation Modules/Legacy/Fields/GetMeshQualityField.cc
+//Reports the quality of each element in the mesh based on the metric that you choose.
 
-//#include <Core/Algorithms/Fields/MeshData/GetMeshQualityField.h>
+#include <Core/Algorithms/Fields/MeshData/GetMeshQualityField.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/GetMeshfiQualityField.h>
@@ -54,9 +55,9 @@ void GetMeshQualityField::execute()
   {
     update_state(Executing);
       
-    //auto output = algo().run(withInputData((InputField, field)));
+    auto output = algo().run(withInputData((InputField, field)));
       
-    //sendOutputFromAlgorithm(OutputField,output);
+    sendOutputFromAlgorithm(OutputField,output);
       
   }
 }
