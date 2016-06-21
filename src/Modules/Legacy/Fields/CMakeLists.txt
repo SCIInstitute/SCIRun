@@ -55,6 +55,7 @@ SET(Modules_Legacy_Fields_HEADERS
   ConvertMatricesToMesh.h
   ConvertQuadSurfToTriSurf.h
   ConvertMeshToPointCloud.h
+  ConvertMeshToUnstructuredMesh.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
   SetFieldData.h
@@ -164,7 +165,7 @@ SET(Modules_Legacy_Fields_SRCS
   SetFieldOrMeshStringProperty.cc
   ConvertMeshToPointCloud.cc
   #ConvertMeshToIrregularMesh.cc
-  #ConvertMeshToUnstructuredMesh.cc
+  ConvertMeshToUnstructuredMesh.cc
   CalculateFieldData5.cc
   #CalculateFieldDataMetric.cc
   #CalculateMeshNodes.cc
