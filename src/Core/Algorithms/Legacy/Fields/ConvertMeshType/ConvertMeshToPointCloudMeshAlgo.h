@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 #ifndef CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H
@@ -39,18 +39,21 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-class SCISHARE ConvertMeshToPointCloudMeshAlgo : public AlgorithmBase
-{
-  public:
-    ConvertMeshToPointCloudMeshAlgo();
+        class SCISHARE ConvertMeshToPointCloudMeshAlgo : public AlgorithmBase
+        {
+        public:
+          ConvertMeshToPointCloudMeshAlgo();
 
-    bool runImpl(FieldHandle input, FieldHandle& output) const;
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+          bool runImpl(FieldHandle input, FieldHandle& output) const;
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 
-    static AlgorithmParameterName Location;
-};
+          static AlgorithmParameterName Location;
+        };
 
-      }}}}
+      }
+    }
+  }
+}
 
 #endif 
 
