@@ -26,22 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MeshData/GetMeshQualityField.h>
+#include <Core/Algorithms/Fields/MeshData/GetMeshQualityFieldAlgo.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
 
-namespace SCIRunAlgo {
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+GetMeshQualityFieldAlgo::GetMeshQualityFieldAlgo()
+{
+  //add_option("metric","scaled_jacobian","scaled_jacobian|jacobian|volume|insc_circ_ratio");
+    addParameter(Variables::Method, 0);
+}
 
 bool
 GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
 {
-  algo_start("GetMeshQualityField");
-  std::string metric = get_option("metric");
+  //std::string metric = get_option("metric");
+    auto metric = get(Variables::Method).toInt();
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return false;
   }
 
   FieldInformation fi(input);
@@ -50,10 +59,10 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
   
   output = CreateField(fi,input->mesh());
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return false;
   }
   
   VField* ofield = output->vfield();
@@ -92,9 +101,6 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
     }  
   }  
 
-  algo_end();
-  return (true);
+    return true;
 }
 
-
-}

@@ -31,7 +31,7 @@
 #include <Core/Algorithms/Fields/MeshData/GetMeshQualityField.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/GetMeshfiQualityField.h>
+#include <Modules/Legacy/Fields/GetMeshQualityField.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -45,6 +45,11 @@ GetMeshQualityField::GetMeshQualityField() : Module(staticInfo_)
     //Initialize all ports.
     INITIALIZE_PORT(InputField);
     INITIALIZE_PORT(OutputField);
+}
+
+void GetMeshQualityField::setStateDefaults()
+{
+    setStateIntFromAlgo(Variables::Method);
 }
 
 void GetMeshQualityField::execute()

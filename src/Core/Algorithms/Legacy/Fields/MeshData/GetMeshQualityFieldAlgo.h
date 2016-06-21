@@ -26,18 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H
-#define CORE_ALGORITHMS_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H 1
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H 1
 
-// Datatypes that the algorithm uses
+//Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+//Base class for algorithm
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
-// for Windows support
+//For Windows support
 #include <Core/Algorithms/Fields/share.h>
+
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 namespace SCIRunAlgo {
 
@@ -48,11 +50,8 @@ class SCISHARE GetMeshQualityFieldAlgo : public AlgoBase
   public:
     /// Set defaults
     GetMeshQualityFieldAlgo()
-    {
-      add_option("metric","scaled_jacobian","scaled_jacobian|jacobian|volume|insc_circ_ratio");
-    }
     
-    /// run the algorithm
+    ///Run the algorithm
     bool run(FieldHandle input, FieldHandle& output);
 };
 
