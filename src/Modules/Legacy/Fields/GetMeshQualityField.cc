@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Fields/MeshData/GetMeshQualityField.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/GetMeshfiQualityField.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
