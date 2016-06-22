@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_GetMeshQualityFieldDialog_H
 #define INTERFACE_MODULES_GetMeshQualityFieldDialog_H
 
-#include "Interface/Modules/Fields/ui_GetMeshQualityFieldDialog.h"
+#include "Interface/Modules/Fields/ui_GetMeshQualityField.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/share.h>
 

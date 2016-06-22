@@ -27,11 +27,12 @@
 */
 
 #include <Interface/Modules/Fields/GetMeshQualityFieldDialog.h>
-#include <Core/Algorithms/Legacy/Fields/Mapping/GetMeshQualityField.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 
 
 GetMeshQualityFieldDialog::GetMeshQualityFieldDialog(const std::string& name, ModuleStateHandle state,
@@ -42,10 +43,10 @@ GetMeshQualityFieldDialog::GetMeshQualityFieldDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
     
-  map._insert(StringPair("Scaled Jacobian","scaled_jacobian"));
-  map._insert(StringPair("Jacobian","jacobian"));
-  map._insert(StringPair("Volume","volume"));
-  map._insert(StringPair("Scaled Inscribed/Circumscribed Ratio","insc_circ_ratio"));
+  map_.insert(StringPair("Scaled Jacobian","scaled_jacobian"));
+  map_.insert(StringPair("Jacobian","jacobian"));
+  map_.insert(StringPair("Volume","volume"));
+  map_.insert(StringPair("Scaled Inscribed/Circumscribed Ratio","insc_circ_ratio"));
     
-  addComboBoxManager(metricComboBox_, GetMeshQualityFieldAlgo::Metric,map_);
+  addComboBoxManager(metricComboBox_, Metric,map_);
 }
