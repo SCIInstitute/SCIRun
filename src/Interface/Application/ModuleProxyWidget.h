@@ -33,6 +33,8 @@
 #include <Interface/Application/Note.h>
 #include <QGraphicsProxyWidget>
 
+class QTimeLine;
+
 namespace SCIRun
 {
   namespace Gui
@@ -74,6 +76,7 @@ namespace SCIRun
       void updateNote(const Note& note);
       void ensureThisVisible();
       void disableModuleGUI(bool disabled);
+      void animate(qreal val);
     private:
       void ensureItemVisible(QGraphicsItem* item);
       bool isSubwidget(QWidget* alienWidget) const;
@@ -87,6 +90,7 @@ namespace SCIRun
       bool doHighlight_;
       int stackDepth_;
       QSizeF originalSize_;
+      QTimeLine* timeLine_;
     };
 
     // arbitrary values
@@ -95,6 +99,7 @@ namespace SCIRun
     static const int CurrentTagKey = 101;
     static const int NoTag = -1;
     static const int AllTags = -50;
+    static const int ClearTags = -77;
     static const int ShowGroups = -100;
     static const int HideGroups = -101;
   }
