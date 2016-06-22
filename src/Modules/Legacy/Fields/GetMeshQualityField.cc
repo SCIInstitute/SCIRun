@@ -29,7 +29,7 @@
 //Reports the quality of each element in the mesh based on the metric that you choose.
 
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/GetMeshQualityField.h>
 
@@ -37,6 +37,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 
 const ModuleLookupInfo GetMeshQualityField::staticInfo_("GetMeshQualityField", "MiscField", "SCIRun");
 
@@ -49,7 +50,7 @@ GetMeshQualityField::GetMeshQualityField() : Module(staticInfo_)
 
 void GetMeshQualityField::setStateDefaults()
 {
-    setStateStringFromAlgoOption(GetMeshQualityFieldAlgo::Metric);
+    setStateStringFromAlgoOption(Metric);
 }
 
 void GetMeshQualityField::execute()
@@ -60,7 +61,7 @@ void GetMeshQualityField::execute()
   {
     update_state(Executing);
       
-    setAlgoOptionFromState(GetMeshQualityFieldAlgo::Metric);
+    setAlgoOptionFromState(Metric);
       
     auto output = algo().run(withInputData((InputField,input)));
       
