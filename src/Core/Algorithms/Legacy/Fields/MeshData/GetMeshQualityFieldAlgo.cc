@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MeshData/GetMeshQualityFieldAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -42,13 +42,26 @@ ALGORITHM_PARAMETER_DEF(Fields,Metric);
 
 GetMeshQualityFieldAlgo::GetMeshQualityFieldAlgo()
 {
-  addOption(Metric,"scaled_jacobian","scaled_jacobian|jacobian|volume|insc_circ_ratio");
+    addOption(Parameters::Metric,"scaled_jacobian","scaled_jacobian|jacobian|volume|insc_circ_ratio");
+}
+
+AlgorithmOutput GetMeshQualityFieldAlgo::run(const AlgorithmInput& input) const
+{
+    auto input_field = input.get<Field>(Variables::InputField);
+    
+    FieldHandle output_field;
+    output_field = runImpl(input_field);
+    
+    AlgorithmOutput output;
+    output[Variables::OutputField] = output_field;
+    
+    return output;
 }
 
 bool
-GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
+GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output) const
 {
-  std::string Metric = getOption("Metric");
+    std::string Metric = getOption(Parameters::Metric);
   
   if (!input)
   {
