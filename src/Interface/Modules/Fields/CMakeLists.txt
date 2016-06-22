@@ -71,6 +71,7 @@ SET(Interface_Modules_Fields_FORMS
   ConvertMatricesToMesh.ui
   ReportFieldGeometryMeasures.ui
   RefineTetMeshLocally.ui
+  GetMeshQualityField.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -117,6 +118,7 @@ SET(Interface_Modules_Fields_HEADERS
   ConvertMatricesToMeshDialog.h
   ReportFieldGeometryMeasuresDialog.h
   RefineTetMeshLocallyDialog.h
+  GetMeshQualityField.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -162,6 +164,7 @@ SET(Interface_Modules_Fields_SOURCES
   ConvertMatricesToMeshDialog.cc
   ReportFieldGeometryMeasuresDialog.cc
   RefineTetMeshLocallyDialog.cc
+  GetMeshQualityField.cc
 )
 
 IF(WITH_TETGEN)
