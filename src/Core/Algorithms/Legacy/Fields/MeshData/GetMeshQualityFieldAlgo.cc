@@ -27,11 +27,11 @@
 */
 
 #include <Core/Algorithms/Fields/MeshData/GetMeshQualityFieldAlgo.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -48,7 +48,7 @@ GetMeshQualityFieldAlgo::GetMeshQualityFieldAlgo()
 bool
 GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
 {
-  std::string Metric = get_option("Metric");
+  std::string Metric = getOption("Metric");
   
   if (!input)
   {
@@ -76,7 +76,7 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
     VMesh::Elem::size_type num_values = imesh->num_elems();
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
     {
-      ofield->set_value(imesh->scaled_jacobian_Metric(j),j);
+      ofield->set_value(imesh->scaled_jacobian_metric(j),j);
     }
   }
   else if (Metric == "jacobian")
@@ -84,7 +84,7 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
     VMesh::Elem::size_type num_values = imesh->num_elems();
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
     {
-      ofield->set_value(imesh->jacobian_Metric(j),j);
+      ofield->set_value(imesh->jacobian_metric(j),j);
     }  
   }
   else if (Metric == "volume")
@@ -92,7 +92,7 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
     VMesh::Elem::size_type num_values = imesh->num_elems();
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
     {
-      ofield->set_value(imesh->volume_Metric(j),j);
+      ofield->set_value(imesh->volume_metric(j),j);
     }  
   }
   else if (Metric == "insc_circ_ratio")
@@ -100,7 +100,7 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
     VMesh::Elem::size_type num_values = imesh->num_elems();
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
     {
-      ofield->set_value(imesh->inscribed_circumscribed_radius_Metric(j),j);
+      ofield->set_value(imesh->inscribed_circumscribed_radius_metric(j),j);
     }  
   }  
 
