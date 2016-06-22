@@ -26,35 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Fields/ConvertMeshToUnstructuredMesh.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#ifndef MODULES_LEGACY_FIELDS_ConvertMeshToUnstructuredMesh_H__
+#define MODULES_LEGACY_FIELDS_ConvertMeshToUnstructuredMesh_H__
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-const ModuleLookupInfo ConvertMeshToUnstructuredMesh::staticInfo_("ConvertMeshToUnstructuredMesh", "ChangeMesh", "SCIRun");
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh() : Module(staticInfo_, false)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-}
+      class SCISHARE ConvertMeshToUnstructuredMesh : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        ConvertMeshToUnstructuredMesh();
 
-void ConvertMeshToUnstructuredMesh::execute()
-{
-  auto ifield = getRequiredInput(InputField);
-  
-  if (needToExecute())
-  {
-    update_state(Executing);
-      
-    auto output = algo().run(withInputData((InputField, ifield)));
-    sendOutputFromAlgorithm(OutputField, output);
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
+
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+        
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+    }
   }
 }
 
+#endif

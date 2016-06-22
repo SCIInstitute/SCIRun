@@ -65,10 +65,8 @@ TEST(FactoryGeneratorTests, GenerateSomeJsonFromModuleProperties)
     pt.put("module.description", mod.second.moduleInfo_);
     std::ostringstream buf;
     write_json(buf, pt, false);
-    std::string json = buf.str(); // {"foo":"bar"}
+    auto json = buf.str(); // {"foo":"bar"}
     std::cout << json << std::endl;
-
-
 
     if (i > 3)
       break;
@@ -167,6 +165,7 @@ TEST(FactoryGeneratorTests, CanReadDirectoryOfDescriptorFiles)
 
   EXPECT_THAT(files, ElementsAre(
     (path / "CreateLatVol.module").string(),
+    (path / "GetMeshQualityField.module").string(),
     (path / "test1.module").string(),
     (path / "test2.module").string()));
 }
@@ -195,6 +194,33 @@ TEST(FactoryGeneratorTests, CanBuildModuleDescriptorFromFile)
   EXPECT_EQ("Ported module", desc.status_);
   EXPECT_EQ("Creates Lattice Volumes", desc.description_);
   EXPECT_EQ("Modules/Legacy/Fields/CreateLatVol.h", desc.header_);
+}
+
+TEST(FactoryGeneratorTests, CanBuildModuleDescriptorFromFile2)
+{
+  auto realJson = TestResources::rootDir() / "Other" / "Factory" / "Config" / "GetMeshQualityField.module";
+
+  auto desc = MakeDescriptorFromFile(realJson.string());
+
+  EXPECT_EQ("GetMeshQualityField", desc.name_);
+  EXPECT_EQ("Fields", desc.namespace_);
+  EXPECT_EQ("Ported module", desc.status_);
+  EXPECT_EQ("...", desc.description_);
+  EXPECT_EQ("Modules/Legacy/Fields/GetMeshQualityField.h", desc.header_);
+}
+
+TEST(FactoryGeneratorTests, InvalidJsonProducesHelpfulError)
+{
+  auto realJson = TestResources::rootDir() / "Other" / "Factory" / "Config" / "Invalid" / "GetMeshQualityField.module";
+
+  auto desc = MakeDescriptorFromFile(realJson.string());
+}
+
+TEST(FactoryGeneratorTests, InvalidJsonProducesHelpfulError2)
+{
+  auto realJson = TestResources::rootDir() / "Other" / "Factory" / "Config" / "Invalid" / "CreateLatVol.module";
+
+  auto desc = MakeDescriptorFromFile(realJson.string());
 }
 
 TEST(FactoryGeneratorTests, CanGenerateMapFromFileList)

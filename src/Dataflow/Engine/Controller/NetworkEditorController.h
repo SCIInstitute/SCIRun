@@ -153,7 +153,7 @@ namespace Engine {
 
     const Networks::ReplacementImpl::ModuleLookupInfoSet& possibleReplacements(Networks::ModuleHandle module);
 
-    void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+    void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions, bool selectAll);
 
     void cleanUpNetwork();
 

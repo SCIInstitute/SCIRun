@@ -30,6 +30,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   ClipMesh/ClipMeshBySelection.h
   ClipMesh/ClipMeshByIsovalue.h
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
+  ConvertMeshType/ConvertMeshToUnstructuredMesh.h
   DistanceField/CalculateSignedDistanceField.h
   DistanceField/CalculateDistanceField.h
   Mapping/ApplyMappingMatrix.h
@@ -112,7 +113,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.cc
   ConvertMeshType/ConvertMeshToTetVolMesh.cc
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.cc
-  #ConvertMeshType/ConvertMeshToUnstructuredMesh.cc
+  ConvertMeshType/ConvertMeshToUnstructuredMesh.cc
   ConvertMeshType/ConvertMeshToIrregularMesh.cc
   #ConvertMeshType/ConvertLatVolDataFromElemToNode.cc
   #ConvertMeshType/ConvertLatVolDataFromNodeToElem.cc

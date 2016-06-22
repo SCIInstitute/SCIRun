@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Include the algorithm
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/Fields/ConvertMeshToPointCloud.h>
@@ -53,7 +52,6 @@ void ConvertMeshToPointCloud::setStateDefaults()
 {
   setStateStringFromAlgoOption(ConvertMeshToPointCloudMeshAlgo::Location);
 }
-
   
 void
 ConvertMeshToPointCloud::execute()

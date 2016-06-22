@@ -200,6 +200,7 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(NoTranslation, true);
   state->setValue(XYZTranslation, false);
   state->setValue(RDITranslation, false);
+  state->setValue(Resetting, false);
   
   //TODO
 
