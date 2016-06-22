@@ -50,7 +50,9 @@ AlgorithmOutput GetMeshQualityFieldAlgo::run(const AlgorithmInput& input) const
     auto input_field = input.get<Field>(Variables::InputField);
     
     FieldHandle output_field;
-    output_field = runImpl(input_field);
+    
+    if (!run(input_field, output_field))
+        THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
     
     AlgorithmOutput output;
     output[Variables::OutputField] = output_field;
