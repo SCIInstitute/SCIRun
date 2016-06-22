@@ -43,8 +43,10 @@ namespace Fields {
   {
   public:
     GetMeshQualityField();
+      
     virtual void execute();
     virtual void setStateDefaults();
+      
     INPUT_PORT(0, InputField, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
   
