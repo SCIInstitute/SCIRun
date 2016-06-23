@@ -82,6 +82,11 @@ namespace Networks {
     virtual size_t num_input_ports() const override final;
     virtual size_t num_output_ports() const override final;
 
+    // override this for modules that changed packages, to point to correct wiki page
+    virtual std::string legacyPackageName() const { return get_packagename(); }
+    // override this for modules that changed names, to point to correct wiki page
+    virtual std::string legacyModuleName() const { return get_module_name(); }
+
     virtual bool hasInputPort(const PortId& id) const override final;
     virtual bool hasOutputPort(const PortId& id) const override final;
     virtual InputPortHandle getInputPort(const PortId& id) override final;
@@ -112,9 +117,6 @@ namespace Networks {
     virtual std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
   protected:
     virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
-
-    // override this for modules that changed packages, to point to correct wiki page
-    virtual std::string legacyPackageName() const { return get_packagename(); }
 
   public:
     virtual void setLogger(Core::Logging::LoggerHandle log) override final;
@@ -1017,7 +1019,10 @@ namespace Modules
     }
   };
 
-  #define LEGACY_BIOPSE_MODULE protected: virtual std::string legacyPackageName() const override { return "BioPSE"; }
+#define LEGACY_BIOPSE_MODULE public: virtual std::string legacyPackageName() const override { return "BioPSE"; }
+#define LEGACY_MATLAB_MODULE public: virtual std::string legacyPackageName() const override { return "MatlabInterface"; }
+#define CONVERTED_VERSION_OF_MODULE(modName) public: virtual std::string legacyModuleName() const override { return #modName; }
+
 }
 }
 

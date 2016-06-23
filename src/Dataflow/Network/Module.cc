@@ -968,6 +968,6 @@ void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& 
 std::string Module::helpPageUrl() const
 {
   auto url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:"
-    + legacyPackageName() + ":" + get_module_name();
+    + legacyPackageName() + ":" + legacyModuleName();
   return url;
 }
