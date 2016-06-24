@@ -11,7 +11,8 @@ https://github.com/SCIInstitute/SCIRun
 - [SCIRun 5](#user-content-scirun-5)
 	- [Summary](#user-content-summary)
 	- [Goals](#user-content-goals)
-	- [Build](#user-content-build)
+ 	  - [Build](#user-content-build)
+ 	  - [Python API](#user-content-python-api)
 	- [Documentation](#user-content-documentation)
 	- [Questions and Answers](#user-content-questions-and-answers)
 	- [License and Credits](#user-content-license-and-credits)
@@ -25,11 +26,14 @@ https://github.com/SCIInstitute/SCIRun
 SCIRun 5 is a complete rewrite of the GUI front end and graphical components of SCIRun 4, including a more stable and
 efficient middle layer, with support for Python scripting.
 
-### Build
-Please see http://sciinstitute.github.io/scirun.pages/build.html
-
 ### Documentation
 For documentation, please see: http://sciinstitute.github.io/scirun.pages
+
+#### Build
+Please see http://sciinstitute.github.io/scirun.pages/build.html
+
+#### Python API
+Please see http://sciinstitute.github.io/scirun.pages/python.html
 
 ### Questions and Answers
 For help, email the testing mailing list at scirun5-testers@sci.utah.edu.
