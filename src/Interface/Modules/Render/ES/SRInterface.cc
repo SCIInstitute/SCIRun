@@ -1378,7 +1378,14 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::updateWorldLight()
     {
+      /*
+      getWorldToProjection() const;
+      getWorldToView() const;
+      getViewToWorld() const;
+      getViewToProjection() const;
+      */
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
+      //glm::mat4 viewToWorld = mCamera->getWorldToView();
 
       // Set directional light source (in world space).
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
@@ -1386,9 +1393,17 @@ namespace SCIRun {
       {
         for (int i = 0; i < LIGHT_NUM; ++i)
         {
+          /*
+          glm::vec3 viewDir = glm::vec3(0.0, 0.0, -1.0) - mLightPosition[i];
+          glm::vec4 newDir(viewDir.x, viewDir.y, viewDir.z, 1.0);
+          viewToWorld *= newDir;
+          glm::vec3 lightDir = viewToWorld[4].xyz();
+          */
+
           glm::vec3 viewDir = viewToWorld[2].xyz();
           viewDir = -viewDir; // Cameras look down -Z.
-          light->lightDir[i] = mLightsOn[i] ? viewDir-mLightPosition[i] : glm::vec3(0.0, 0.0, 0.0);
+          light->lightDir[i] = mLightsOn[i] ? viewDir - mLightPosition[i] : glm::vec3(0.0, 0.0, 0.0);
+          //light->lightDir[i] = mLightsOn[i] ? lightDir : glm::vec3(0.0, 0.0, 0.0);
         }
       }
     }
@@ -1414,9 +1429,9 @@ namespace SCIRun {
       glm::vec3 position = glm::vec3(x, y, 0);
       if (mLightPosition.size() > 0)
       {
-        mLightPosition[index] = glm::vec3(x, y, 0);
+        mLightPosition[index] = glm::vec3(x, y, 0.0);
       }
-      
+      /*
       // Set directional light source (in world space).
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
       if (light)
@@ -1435,7 +1450,7 @@ namespace SCIRun {
         std::cout << "view4x: " << view4.x << " view4y: " << view4.y << " view4z: " << view4.z << std::endl;
         std::cout << "x: " << x << " y: " << y << " z: " << 0 << std::endl;
       }
-      
+      */
     }
 
     void SRInterface::setLightOn(int index, bool value)
