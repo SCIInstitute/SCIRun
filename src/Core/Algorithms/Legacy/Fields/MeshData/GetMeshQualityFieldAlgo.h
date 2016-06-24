@@ -26,36 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H
-#define CORE_ALGORITHMS_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H 1
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+//Base class for algorithm
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+//For Windows support
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+namespace SCIRun {
+    namespace Core {
+        namespace Algorithms {
+            namespace Fields {
+                
+ALGORITHM_PARAMETER_DECL(Metric);
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GetMeshQualityFieldAlgo : public AlgoBase
+class SCISHARE GetMeshQualityFieldAlgo : public AlgorithmBase
 {
   public:
     /// Set defaults
-    GetMeshQualityFieldAlgo()
-    {
-      add_option("metric","scaled_jacobian","scaled_jacobian|jacobian|volume|insc_circ_ratio");
-    }
+    GetMeshQualityFieldAlgo();
     
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
+    ///Run the algorithm
+    bool run(FieldHandle input, FieldHandle& output) const;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const;
 };
 
-}
+}}}}
 
 #endif

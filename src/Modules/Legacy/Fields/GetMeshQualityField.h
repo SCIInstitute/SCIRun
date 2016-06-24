@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,47 +25,33 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/GetMeshQualityField.cc
-//Reports the quality of each element in the mesh based on the metric that you choose.
 
-#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
+
+#ifndef MODULES_LEGACY_FIELDS_GETMESHQUALITYFIELD_H__
+#define MODULES_LEGACY_FIELDS_GETMESHQUALITYFIELD_H__
+
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/GetMeshQualityField.h>
+#include <Modules/Fields/share.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms::Fields::Parameters;
-
-const ModuleLookupInfo GetMeshQualityField::staticInfo_("GetMeshQualityField", "MiscField", "SCIRun");
-
-GetMeshQualityField::GetMeshQualityField() : Module(staticInfo_)
-{
-    //Initialize all ports.
-    INITIALIZE_PORT(InputField);
-    INITIALIZE_PORT(OutputField);
-}
-
-void GetMeshQualityField::setStateDefaults()
-{
-    setStateStringFromAlgoOption(Metric);
-}
-
-void GetMeshQualityField::execute()
-{
-  auto input = getRequiredInput(InputField);
+namespace SCIRun {
+namespace Modules {
+namespace Fields {
   
-  if (needToExecute())
+  class SCISHARE GetMeshQualityField : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
   {
-    update_state(Executing);
+  public:
+    GetMeshQualityField();
       
-    setAlgoOptionFromState(Metric);
+    virtual void execute();
+    virtual void setStateDefaults();
       
-    auto output = algo().run(withInputData((InputField,input)));
-      
-    sendOutputFromAlgorithm(OutputField,output);
-      
-  }
-}
+    INPUT_PORT(0, InputField, LegacyField);
+    OUTPUT_PORT(0, OutputField, LegacyField);
+  
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
+}}}
+
+#endif

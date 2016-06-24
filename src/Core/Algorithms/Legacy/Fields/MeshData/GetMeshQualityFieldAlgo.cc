@@ -26,22 +26,49 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MeshData/GetMeshQualityField.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-namespace SCIRunAlgo {
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+ALGORITHM_PARAMETER_DEF(Fields,Metric);
+
+GetMeshQualityFieldAlgo::GetMeshQualityFieldAlgo()
+{
+    addOption(Parameters::Metric,"scaled_jacobian","scaled_jacobian|jacobian|volume|insc_circ_ratio");
+}
+
+AlgorithmOutput GetMeshQualityFieldAlgo::run(const AlgorithmInput& input) const
+{
+    auto input_field = input.get<Field>(Variables::InputField);
+    
+    FieldHandle output_field;
+    
+    if (!run(input_field, output_field))
+        THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+    
+    AlgorithmOutput output;
+    output[Variables::OutputField] = output_field;
+    
+    return output;
+}
 
 bool
-GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
+GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output) const
 {
-  algo_start("GetMeshQualityField");
-  std::string metric = get_option("metric");
+    std::string Metric = getOption(Parameters::Metric);
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return false;
   }
 
   FieldInformation fi(input);
@@ -50,16 +77,16 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
   
   output = CreateField(fi,input->mesh());
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return false;
   }
   
   VField* ofield = output->vfield();
   VMesh*  imesh  = input->vmesh();
   
-  if (metric == "scaled_jacobian")
+  if (Metric == "scaled_jacobian")
   {
     VMesh::Elem::size_type num_values = imesh->num_elems();
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
@@ -67,7 +94,7 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
       ofield->set_value(imesh->scaled_jacobian_metric(j),j);
     }
   }
-  else if (metric == "jacobian")
+  else if (Metric == "jacobian")
   {
     VMesh::Elem::size_type num_values = imesh->num_elems();
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
@@ -75,7 +102,7 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
       ofield->set_value(imesh->jacobian_metric(j),j);
     }  
   }
-  else if (metric == "volume")
+  else if (Metric == "volume")
   {
     VMesh::Elem::size_type num_values = imesh->num_elems();
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
@@ -83,7 +110,7 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
       ofield->set_value(imesh->volume_metric(j),j);
     }  
   }
-  else if (metric == "insc_circ_ratio")
+  else if (Metric == "insc_circ_ratio")
   {
     VMesh::Elem::size_type num_values = imesh->num_elems();
     for (VMesh::Elem::index_type j=0; j<num_values; j++)
@@ -92,9 +119,6 @@ GetMeshQualityFieldAlgo::run(FieldHandle input, FieldHandle& output)
     }  
   }  
 
-  algo_end();
-  return (true);
+    return true;
 }
 
-
-}
