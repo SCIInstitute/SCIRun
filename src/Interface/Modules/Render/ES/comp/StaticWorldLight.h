@@ -6,6 +6,7 @@
 #include <entity-system/GenericSystem.hpp>
 #include <cereal-glm/CerealGLM.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
+#include "LightingUniforms.h"
 
 namespace SCIRun {
 namespace Render {
@@ -15,16 +16,25 @@ namespace Render {
 struct StaticWorldLight
 {
   // -- Data --
-  glm::vec3 lightDir;
+  glm::vec3 lightDir[LIGHT_NUM];
+  glm::vec3 lightColor[LIGHT_NUM];
 
   // -- Functions --
-  StaticWorldLight() { }
+  StaticWorldLight()
+  {
+    lightDir[0] = glm::vec3(1.0f, 0.0f, 0.0f);
+    for (int i = 0; i < LIGHT_NUM; ++i)
+      lightColor[i] = glm::vec3(1.0f);
+  }
 
   static const char* getName() {return "StaticWorldLight";}
 
   bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
   {
-    s.serialize("dir", lightDir);
+    for (int i = 0; i < LIGHT_NUM; ++i)
+      s.serialize("dir", lightDir[i]);
+    for (int i = 0; i < LIGHT_NUM; ++i)
+      s.serialize("color", lightColor[i]);
     return true;
   }
 };
