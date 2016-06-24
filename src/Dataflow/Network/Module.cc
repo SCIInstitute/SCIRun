@@ -35,6 +35,7 @@
 #include <boost/timer.hpp>
 #include <atomic>
 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/Module.h>
@@ -278,6 +279,12 @@ bool Module::executeWithSignals() NOEXCEPT
     ostr << "Port not found, it may need initializing the module constructor. " << std::endl << "Message: " << e.what() << std::endl;
     error(ostr.str());
   }
+  catch (AlgorithmParameterNotFound& e)
+  {
+    std::ostringstream ostr;
+    ostr << "State key not found, it may need initializing in ModuleClass::setStateDefaults(). " << std::endl << "Message: " << e.what() << std::endl;
+    error(ostr.str());
+  }
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
@@ -347,7 +354,12 @@ const ModuleStateHandle Module::get_state() const
 
 void Module::set_state(ModuleStateHandle state)
 {
-  state_ = state;
+  if (!state_)
+    state_ = state;
+  else if (state) // merge/overwrite
+  {
+    state_->overwriteWith(*state);
+  }
   initStateObserver(state_.get());
   postStateChangeInternalSignalHookup();
 }
@@ -951,4 +963,11 @@ void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& 
       connection->oport_->sendConnectionFeedback(feedback);
     }
   }
+}
+
+std::string Module::helpPageUrl() const
+{
+  auto url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:"
+    + legacyPackageName() + ":" + get_module_name();
+  return url;
 }

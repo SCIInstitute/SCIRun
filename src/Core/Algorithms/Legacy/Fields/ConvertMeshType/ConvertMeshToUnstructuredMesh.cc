@@ -27,39 +27,30 @@
 */
 
 // Get all the class definitions. 
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-// As we already included DynamicAlgorithm.h in the header we do not need to
-// include it again here.
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
-// Implementation of the actual access point to the algorithm
-
-bool 
-ConvertMeshToUnstructuredMeshAlgo::
-run(FieldHandle input, FieldHandle& output)
+bool ConvertMeshToUnstructuredMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
-  // Mark that we are starting the algorithm, but do not report progress
-  algo_start("ConvertMeshToUnstructuredMesh");
+  ScopedAlgorithmStatusReporter asr(this, "ConvertMeshToUnstructuredMesh");
 
-  // Step 0:
-  // Safety test:
-  // Test whether we received actually a field. A handle can point to no object.
-  // Using a null handle will cause the program to crash. Hence it is a good
-  // policy to check all incoming handles and to see whether they point to actual
-  // objects.
-  
-  // Handle: the function get_rep() returns the pointer contained in the handle
-  if (input.get_rep() == 0)
+  // Null check
+  if (!input)
   {
-    // If we encounter a null pointer we return an error message and return to
-    // the program to deal with this error. 
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
  // Step 1: determine the type of the input fields and determine what type the
@@ -91,7 +82,7 @@ run(FieldHandle input, FieldHandle& output)
    if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
-    algo_end(); return (false);
+    return (false);
   }
   
   // If the mesh is already unstructured, we only need to copy the input to the
@@ -102,7 +93,7 @@ run(FieldHandle input, FieldHandle& output)
     remark("Mesh already is unstructured; copying input to output");
     // Copy input to output (output is a reference to the input)
     output = input;
-    algo_end(); return (true);
+    return (true);
   }
 
   // Define the output type of the data
@@ -121,19 +112,19 @@ run(FieldHandle input, FieldHandle& output)
   else
   {
     error("No unstructure method available for mesh: " + fi.get_mesh_type());
-    algo_end(); return (false);
+    return (false);
   }
 
   // Create a new output field
   output = CreateField(fo);
 
-  if (output.get_rep() == 0)
+  if (!output)
   { 
     // Error reporting:
     // we forward the specific message to the ProgressReporter and return a
     // false to indicate that an error has occured.
     error("Could not obtain input field");
-    algo_end(); return (false);
+    return (false);
   }  
 
   // Get the virtual interface of the objects
@@ -169,16 +160,23 @@ run(FieldHandle input, FieldHandle& output)
     omesh->add_elem(nodes);
   }
 
-  // Resize the data
-  // and copy the data
   ofield->resize_values();
   ofield->copy_values(ifield);
 
-  /// Copy properties of the property manager
-	output->copy_properties(input.get_rep());
+  CopyProperties(*input, *output);
    
-  // Success:
-  algo_end(); return (true);
+  return (true);
 }
 
-} // End namespace SCIRunAlgo
+AlgorithmOutput ConvertMeshToUnstructuredMeshAlgo::run(const AlgorithmInput& input) const
+{
+  auto ifield = input.get<Field>(Variables::InputField);
+
+  FieldHandle ofield;
+  if (!runImpl(ifield, ofield))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = ofield;
+  return output;
+}

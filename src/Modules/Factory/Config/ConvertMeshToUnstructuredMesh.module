@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertMeshToUnstructuredMesh",
+    "namespace": "Fields",
+    "status": "Ported module",
+    "description": "Converts a mesh to unstructured mesh.",
+    "header": "Modules/Legacy/Fields/ConvertMeshToUnstructuredMesh.h"
+  },
+  "algorithm": {
+    "name": "ConvertMeshToUnstructuredMeshAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

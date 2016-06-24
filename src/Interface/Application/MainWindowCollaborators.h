@@ -172,6 +172,7 @@ namespace Gui {
     QStatusBar* statusBar_;
   };
 
+  void newUserWizard(QWidget* parent);
 }
 }
 #endif

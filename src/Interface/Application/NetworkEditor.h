@@ -165,7 +165,7 @@ namespace Gui {
     void appendToNetwork(const Dataflow::Networks::NetworkFileHandle& xml);
 
     virtual Dataflow::Networks::ModulePositionsHandle dumpModulePositions(Dataflow::Networks::ModuleFilter filter) const override;
-    virtual void updateModulePositions(const Dataflow::Networks::ModulePositions& modulePositions) override;
+    virtual void updateModulePositions(const Dataflow::Networks::ModulePositions& modulePositions, bool selectAll) override;
 
     virtual Dataflow::Networks::ModuleNotesHandle dumpModuleNotes(Dataflow::Networks::ModuleFilter filter) const override;
     virtual void updateModuleNotes(const Dataflow::Networks::ModuleNotes& moduleNotes) override;
@@ -248,7 +248,6 @@ namespace Gui {
     void zoomReset();
     void zoomBestFit();
     void centerView();
-    void setModuleMini(bool mini);
     void highlightTaggedItem(int tagValue);
     void resetNetworkDueToCycle();
     void moduleWindowAction();
@@ -277,6 +276,7 @@ namespace Gui {
     void resetModulesDueToCycle();
     void newModule(const QString& modId, bool hasUI);
     void newSubnetworkCopied(const QString& xml);
+    void requestLoadNetwork(const QString& file);
   private Q_SLOTS:
     void cut();
     void copy();

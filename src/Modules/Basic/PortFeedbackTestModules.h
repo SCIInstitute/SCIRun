@@ -43,7 +43,7 @@ namespace Basic {
   public:
     PortFeedbackSender();
     virtual void execute() override;
-    virtual void setStateDefaults() override {}
+    virtual void setStateDefaults() override;
 
     INPUT_PORT(0, Input, String);
 
@@ -58,9 +58,9 @@ namespace Basic {
     void processFeedback(const Core::Datatypes::ModuleFeedback& var);
     PortFeedbackReceiver();
     virtual void execute() override;
-    virtual void setStateDefaults() override {}
+    virtual void setStateDefaults() override;
 
-    OUTPUT_PORT(0, Output, Matrix);
+    OUTPUT_PORT(0, Output, String);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };

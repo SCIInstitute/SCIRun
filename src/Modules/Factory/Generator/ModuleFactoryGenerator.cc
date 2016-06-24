@@ -41,14 +41,23 @@ using namespace Generator;
 
 ModuleDescriptor ModuleDescriptorJsonParser::readJsonString(const std::string& json) const
 {
+  using boost::property_tree::ptree;
+  using boost::property_tree::read_json;
+  using boost::property_tree::write_json;
+  ptree modProps;
   try
   {
-    using boost::property_tree::ptree;
-    using boost::property_tree::read_json;
-    using boost::property_tree::write_json;
-    ptree modProps;
     std::istringstream is(json);
     read_json(is, modProps);
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << "ModuleDescriptorJsonParser failed, error reading JSON: " << e.what() << "\n" << json << std::endl;
+    return {};
+  }
+
+  try
+  {
     ModuleDescriptor moduleDesc;
     moduleDesc.name_ = modProps.get<std::string>("module.name");
     moduleDesc.namespace_ = modProps.get<std::string>("module.namespace");
@@ -56,19 +65,19 @@ ModuleDescriptor ModuleDescriptorJsonParser::readJsonString(const std::string& j
     moduleDesc.description_ = modProps.get<std::string>("module.description");
     moduleDesc.header_ = modProps.get<std::string>("module.header");
     moduleDesc.algo_ = {
-                    modProps.get<std::string>("algorithm.name"),
-                    modProps.get<std::string>("algorithm.namespace"),
-                    modProps.get<std::string>("algorithm.header")
-                 };
+      modProps.get<std::string>("algorithm.name"),
+      modProps.get<std::string>("algorithm.namespace"),
+      modProps.get<std::string>("algorithm.header")
+    };
     moduleDesc.dialog_ = {
-                      modProps.get<std::string>("UI.name"),
-                      modProps.get<std::string>("UI.header")
-                   };
+      modProps.get<std::string>("UI.name"),
+      modProps.get<std::string>("UI.header")
+    };
     return moduleDesc;
   }
-  catch (...)
+  catch (std::exception& e)
   {
-    std::cerr << "ModuleDescriptorJsonParser failed:\n" << json << std::endl;
+    std::cerr << "ModuleDescriptorJsonParser read failed, missing JSON element: " << e.what() << "\n" << json << std::endl;
     return {};
   }
 }

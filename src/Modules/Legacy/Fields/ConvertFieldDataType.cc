@@ -52,6 +52,8 @@ ConvertFieldDataType::ConvertFieldDataType() : Module(staticInfo_)
 void ConvertFieldDataType::setStateDefaults()
 {
   setStateStringFromAlgoOption(Parameters::FieldDatatype);
+  get_state()->setValue(Parameters::InputFieldName, std::string());
+  get_state()->setValue(Parameters::InputType, std::string());
 }
 
 void ConvertFieldDataType::execute()

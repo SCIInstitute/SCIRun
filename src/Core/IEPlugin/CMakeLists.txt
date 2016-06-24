@@ -50,7 +50,7 @@ SET(Core_IEPlugin_SRCS
   #StructHexVolField_Plugin.cc
   #StructQuadSurfField_Plugin.cc
   TriSurfField_Plugin.cc
-  #TetVolField_Plugin.cc
+  TetVolField_Plugin.cc
 )
 
 SET(Core_IEPlugin_HEADERS
@@ -78,7 +78,7 @@ SET(Core_IEPlugin_HEADERS
   #StructHexVolField_Plugin.h
   #StructQuadSurfField_Plugin.h
   TriSurfField_Plugin.h
-  #TetVolField_Plugin.h
+  TetVolField_Plugin.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_IEPlugin

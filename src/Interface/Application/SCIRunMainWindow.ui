@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1081</width>
-         <height>443</height>
+         <width>1093</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -162,6 +162,7 @@
     <addaction name="actionCredits_"/>
     <addaction name="actionLicense_"/>
     <addaction name="actionKeyboardShortcuts_"/>
+    <addaction name="helpActionNewUserWizard_"/>
     <addaction name="menuNew_Features"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
@@ -1038,6 +1039,11 @@
   <action name="helpActionTriggeredScripts_">
    <property name="text">
     <string>Triggered Scripts</string>
+   </property>
+  </action>
+  <action name="helpActionNewUserWizard_">
+   <property name="text">
+    <string>New User Wizard...</string>
    </property>
   </action>
  </widget>
