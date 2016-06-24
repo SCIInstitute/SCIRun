@@ -11,9 +11,9 @@ https://github.com/SCIInstitute/SCIRun
 - [SCIRun 5](#user-content-scirun-5)
 	- [Summary](#user-content-summary)
 	- [Goals](#user-content-goals)
+	- [Documentation](#user-content-documentation)
  	  - [Build](#user-content-build)
  	  - [Python API](#user-content-python-api)
-	- [Documentation](#user-content-documentation)
 	- [Questions and Answers](#user-content-questions-and-answers)
 	- [License and Credits](#user-content-license-and-credits)
 
