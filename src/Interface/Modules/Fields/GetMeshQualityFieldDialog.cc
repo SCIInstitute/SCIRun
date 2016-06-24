@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,47 +25,28 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/GetMeshQualityField.cc
-//Reports the quality of each element in the mesh based on the metric that you choose.
 
+#include <Interface/Modules/Fields/GetMeshQualityFieldDialog.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/GetMeshQualityField.h>
-
-using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 
-const ModuleLookupInfo GetMeshQualityField::staticInfo_("GetMeshQualityField", "MiscField", "SCIRun");
 
-GetMeshQualityField::GetMeshQualityField() : Module(staticInfo_)
+GetMeshQualityFieldDialog::GetMeshQualityFieldDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-    //Initialize all ports.
-    INITIALIZE_PORT(InputField);
-    INITIALIZE_PORT(OutputField);
-}
-
-void GetMeshQualityField::setStateDefaults()
-{
-    setStateStringFromAlgoOption(Metric);
-}
-
-void GetMeshQualityField::execute()
-{
-  auto input = getRequiredInput(InputField);
-  
-  if (needToExecute())
-  {
-    update_state(Executing);
-      
-    setAlgoOptionFromState(Metric);
-      
-    auto output = algo().run(withInputData((InputField,input)));
-      
-    sendOutputFromAlgorithm(OutputField,output);
-      
-  }
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+    
+  map_.insert(StringPair("Scaled Jacobian","scaled_jacobian"));
+  map_.insert(StringPair("Jacobian","jacobian"));
+  map_.insert(StringPair("Volume","volume"));
+  map_.insert(StringPair("Scaled Inscribed/Circumscribed Ratio","insc_circ_ratio"));
+    
+  addComboBoxManager(metricComboBox_, Metric,map_);
 }
