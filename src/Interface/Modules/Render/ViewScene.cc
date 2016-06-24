@@ -149,10 +149,17 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 void ViewSceneDialog::setInitialLightValues()
 {
-  QColor light0 = checkColorSetting(state_->getValue(Modules::Render::ViewScene::HeadLightColor).toString(), Qt::white);
-  QColor light1 = checkColorSetting(state_->getValue(Modules::Render::ViewScene::Light1Color).toString(), Qt::white);
-  QColor light2 = checkColorSetting(state_->getValue(Modules::Render::ViewScene::Light2Color).toString(), Qt::white);
-  QColor light3 = checkColorSetting(state_->getValue(Modules::Render::ViewScene::Light3Color).toString(), Qt::white);
+  auto light0str = state_->getValue(Modules::Render::ViewScene::HeadLightColor).toString();
+  QColor light0 = checkColorSetting(light0str, Qt::white);
+
+  auto light1str = state_->getValue(Modules::Render::ViewScene::Light1Color).toString();
+  QColor light1 = checkColorSetting(light1str, Qt::white);
+  
+  auto light2str = state_->getValue(Modules::Render::ViewScene::Light2Color).toString();
+  QColor light2 = checkColorSetting(light2str, Qt::white);
+  
+  auto light3str = state_->getValue(Modules::Render::ViewScene::Light3Color).toString();
+  QColor light3 = checkColorSetting(light3str, Qt::white);
   
   auto spire = mSpire.lock();
   if (spire)
