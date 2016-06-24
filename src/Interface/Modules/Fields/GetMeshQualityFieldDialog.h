@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Fields/ConvertMeshToUnstructuredMesh.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#ifndef INTERFACE_MODULES_GetMeshQualityFieldDialog_H
+#define INTERFACE_MODULES_GetMeshQualityFieldDialog_H
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
+#include "Interface/Modules/Fields/ui_GetMeshQualityField.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-const ModuleLookupInfo ConvertMeshToUnstructuredMesh::staticInfo_("ConvertMeshToUnstructuredMesh", "ChangeMesh", "SCIRun");
+namespace SCIRun {
+namespace Gui {
 
-ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh() : Module(staticInfo_, false)
+class SCISHARE GetMeshQualityFieldDialog : public ModuleDialogGeneric,
+  public Ui::GetMeshQualityFieldDialog
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
+	Q_OBJECT
+
+public:
+  GetMeshQualityFieldDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+    
+private:
+    GuiStringTranslationMap map_;
+};
+
+}
 }
 
-void ConvertMeshToUnstructuredMesh::execute()
-{
-  auto ifield = getRequiredInput(InputField);
-  
-  if (needToExecute())
-  {
-    update_state(Executing);
-      
-    auto output = algo().run(withInputData((InputField, ifield)));
-    sendOutputFromAlgorithm(OutputField, output);
-  }
-}
-
+#endif

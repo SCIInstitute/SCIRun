@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Fields/ConvertMeshToUnstructuredMesh.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms::Fields;
+#include <Interface/Modules/Fields/GetMeshQualityFieldDialog.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 
-const ModuleLookupInfo ConvertMeshToUnstructuredMesh::staticInfo_("ConvertMeshToUnstructuredMesh", "ChangeMesh", "SCIRun");
 
-ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh() : Module(staticInfo_, false)
+GetMeshQualityFieldDialog::GetMeshQualityFieldDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+    
+  map_.insert(StringPair("Scaled Jacobian","scaled_jacobian"));
+  map_.insert(StringPair("Jacobian","jacobian"));
+  map_.insert(StringPair("Volume","volume"));
+  map_.insert(StringPair("Scaled Inscribed/Circumscribed Ratio","insc_circ_ratio"));
+    
+  addComboBoxManager(metricComboBox_, Metric,map_);
 }
-
-void ConvertMeshToUnstructuredMesh::execute()
-{
-  auto ifield = getRequiredInput(InputField);
-  
-  if (needToExecute())
-  {
-    update_state(Executing);
-      
-    auto output = algo().run(withInputData((InputField, ifield)));
-    sendOutputFromAlgorithm(OutputField, output);
-  }
-}
-

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Fields/ConvertMeshToUnstructuredMesh.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
+#ifndef MODULES_LEGACY_FIELDS_GETMESHQUALITYFIELD_H__
+#define MODULES_LEGACY_FIELDS_GETMESHQUALITYFIELD_H__
 
-const ModuleLookupInfo ConvertMeshToUnstructuredMesh::staticInfo_("ConvertMeshToUnstructuredMesh", "ChangeMesh", "SCIRun");
+#include <Dataflow/Network/Module.h>
+#include <Modules/Fields/share.h>
 
-ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh() : Module(staticInfo_, false)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-}
-
-void ConvertMeshToUnstructuredMesh::execute()
-{
-  auto ifield = getRequiredInput(InputField);
+namespace SCIRun {
+namespace Modules {
+namespace Fields {
   
-  if (needToExecute())
+  class SCISHARE GetMeshQualityField : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
   {
-    update_state(Executing);
+  public:
+    GetMeshQualityField();
       
-    auto output = algo().run(withInputData((InputField, ifield)));
-    sendOutputFromAlgorithm(OutputField, output);
-  }
-}
+    virtual void execute();
+    virtual void setStateDefaults();
+      
+    INPUT_PORT(0, InputField, LegacyField);
+    OUTPUT_PORT(0, OutputField, LegacyField);
+  
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
+}}}
 
+#endif

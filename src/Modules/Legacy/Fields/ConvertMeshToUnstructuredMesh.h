@@ -26,36 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H
-#define CORE_ALGORITHMS_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H 1
+#ifndef MODULES_LEGACY_FIELDS_ConvertMeshToUnstructuredMesh_H__
+#define MODULES_LEGACY_FIELDS_ConvertMeshToUnstructuredMesh_H__
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+      class SCISHARE ConvertMeshToUnstructuredMesh : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        ConvertMeshToUnstructuredMesh();
 
-namespace SCIRunAlgo {
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
-using namespace SCIRun;
-
-class SCISHARE GetMeshQualityFieldAlgo : public AlgoBase
-{
-  public:
-    /// Set defaults
-    GetMeshQualityFieldAlgo()
-    {
-      add_option("metric","scaled_jacobian","scaled_jacobian|jacobian|volume|insc_circ_ratio");
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+        
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
     }
-    
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-};
-
+  }
 }
 
 #endif

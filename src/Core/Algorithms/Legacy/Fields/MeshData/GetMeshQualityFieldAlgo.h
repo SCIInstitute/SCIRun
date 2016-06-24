@@ -26,35 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Fields/ConvertMeshToUnstructuredMesh.h>
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MESHDATA_GETMESHQUALITYFIELD_H 1
+
+//Base class for algorithm
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
+//For Windows support
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-const ModuleLookupInfo ConvertMeshToUnstructuredMesh::staticInfo_("ConvertMeshToUnstructuredMesh", "ChangeMesh", "SCIRun");
+namespace SCIRun {
+    namespace Core {
+        namespace Algorithms {
+            namespace Fields {
+                
+ALGORITHM_PARAMETER_DECL(Metric);
 
-ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh() : Module(staticInfo_, false)
+class SCISHARE GetMeshQualityFieldAlgo : public AlgorithmBase
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-}
+  public:
+    /// Set defaults
+    GetMeshQualityFieldAlgo();
+    
+    ///Run the algorithm
+    bool run(FieldHandle input, FieldHandle& output) const;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const;
+};
 
-void ConvertMeshToUnstructuredMesh::execute()
-{
-  auto ifield = getRequiredInput(InputField);
-  
-  if (needToExecute())
-  {
-    update_state(Executing);
-      
-    auto output = algo().run(withInputData((InputField, ifield)));
-    sendOutputFromAlgorithm(OutputField, output);
-  }
-}
+}}}}
 
+#endif

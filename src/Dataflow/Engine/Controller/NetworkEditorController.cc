@@ -147,7 +147,7 @@ namespace
           nec_.requestConnection(c.first, c.second);
       }
 
-      nec_.updateModulePositions(positions);
+      nec_.updateModulePositions(positions, true);
 
       return mods_.back();
     }
@@ -170,7 +170,6 @@ namespace
       if (!isSnippetName(label))
         return {};
 
-      //TODO: need a way to specify more than just linear connections.
       parseModules(label);
 
       if (mods_.size() < 2)
@@ -483,7 +482,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       }
       if (serializationManager_)
       {
-        serializationManager_->updateModulePositions(xml->modulePositions);
+        serializationManager_->updateModulePositions(xml->modulePositions, false);
         serializationManager_->updateModuleNotes(xml->moduleNotes);
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
         serializationManager_->updateModuleTags(xml->moduleTags);
@@ -560,7 +559,7 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
       {
         xml->modulePositions.modulePositions = remapIdBasedContainer(xml->modulePositions.modulePositions, info.moduleIdMapping);
         shiftAppendedModules(xml->modulePositions.modulePositions);
-        serializationManager_->updateModulePositions(xml->modulePositions); // need to shift everything.
+        serializationManager_->updateModulePositions(xml->modulePositions, false); // need to shift everything.
         xml->moduleNotes.notes = remapIdBasedContainer(xml->moduleNotes.notes, info.moduleIdMapping);
         serializationManager_->updateModuleNotes(xml->moduleNotes);
         xml->connectionNotes.notes = remapIdBasedContainer(xml->connectionNotes.notes, info.moduleIdMapping);
@@ -688,11 +687,11 @@ const ModuleLookupInfoSet& NetworkEditorController::possibleReplacements(ModuleH
   return replacementFilter_->findReplacements(makeConnectedPortInfo(module));
 }
 
-void NetworkEditorController::updateModulePositions(const ModulePositions& modulePositions)
+void NetworkEditorController::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
 {
   if (serializationManager_)
   {
-    serializationManager_->updateModulePositions(modulePositions);
+    serializationManager_->updateModulePositions(modulePositions, selectAll);
   }
 }
 
@@ -726,5 +725,5 @@ void NetworkEditorController::cleanUpNetwork()
     }
   }
 
-  updateModulePositions(cleanedUp);
+  updateModulePositions(cleanedUp, false);
 }
