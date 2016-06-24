@@ -40,6 +40,7 @@ namespace SCIRun {
         public Has4InputPorts<FieldPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
         public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
       {
+        LEGACY_BIOPSE_MODULE
       public:
         ApplyFEMVoltageSource();
         virtual void setStateDefaults();
