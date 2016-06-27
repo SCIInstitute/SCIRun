@@ -1676,6 +1676,17 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
     	}
 		}
 	}
+	else if (event->key() == Qt::Key_J)
+	{
+		if (!actionToggleTagLayer_->isChecked())
+		{
+    	if (networkEditor_->tagLayerActive())
+    	{
+      	networkEditor_->tagLayer(true, ClearTags);
+				showStatusMessage("Tag layer active: selected modules' tags cleared");
+    	}
+	  }
+	}
   else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
   {
 		if (!actionToggleTagLayer_->isChecked())

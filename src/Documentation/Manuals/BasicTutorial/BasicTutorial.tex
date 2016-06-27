@@ -1,0 +1,345 @@
+\documentclass[fleqn,11pt,openany]{book}
+
+% These two need to be set before including scirun style package
+\title{SCIRun Visualization Basics}
+\author{Ayla Khan, David Weinstein}
+
+% INCLUDE SCI STYLE DOCUMENT
+\usepackage{scirun}
+
+\begin{document}
+
+%% starting from SCIRun Doc wiki
+%% http://software.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Tutorial:BioPSE
+
+
+
+% CREATE TITLE PAGE --------------------------------------------------
+\maketitle
+
+% CHAPTERS ---------------------------------------------------------------
+
+\chapter{SCIRun Overview} \label{overview}
+
+\begin{introduction}
+This tutorial demonstrates how to build a simple SCIRun dataflow network.
+\end{introduction}
+
+\section{Software requirements}
+
+\subsection{SCIRun  \SCIRunVersion}
+
+All available downloads for SCIRun version \SCIRunVersion and the SCIRunData archive are available from 
+\href{http://www.scirun.org}{SCI software portal}.
+Make sure to update to the most up-to-date release available, which will include
+the latest bug fixes. 
+
+Currently, the easiest way to get started with SCIRun version \SCIRunVersion is to download and install
+a binary version for Mac OS X. 
+Sources are also available for Linux, however this option is recommended
+only for advanced Linux users.
+
+Unpack the SCIRunData archive in a convenient location.
+Recall from the User Guide that the path to data can be set using the
+\textenvvar{SCIRUN\_DATA} environment variable or by setting
+\textenvvar{SCIRUN\_DATA} in the \emph{.scirunrc} file.
+
+%%\subsection{SCIRun SVN}
+
+\chapter{Simple Dataflow Network}
+
+\begin{introduction}
+Scope: \hyperref[readdata]{Read Data File} - \hyperref[slice]{Slice} -
+\hyperref[visualize]{Visualize} - \hyperref[bbox]{Bounding Box} - \hyperref[isosurface]{Isosurface}
+\end{introduction}
+
+\section{Slice Field}
+
+The purpose of this section is to read, manipulate, and visualize a structured mesh dataset originating from SCIRunData. 
+
+\subsection{Read Data File}\label{readdata}
+
+Create a \textbf{ReadField} module by using the \textbf{Module Selector} on the left hand side of the screen. Navigate to \textbf{DataIO} subsection using the scroll bar in the Module Selector and instantiate a ReadField (Figure \ref{fig:readfield}). Recall from the \textbf{User Guide} that a module can also be selected by giving a text input into the filter in the Module Selector (Figure \ref{fig:readfield2}). 
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{BasicTutorial_figures/readfield_text.png}
+\caption{Locate ReadField module using scroll bar in the Module Selector.}
+\label{fig:readfield}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.8\textwidth]{BasicTutorial_figures/readfield.png}
+\caption{Locate ReadField module using text input into filter.}
+\label{fig:readfield2}
+\end{figure}
+
+Within the ReadField \textbf{user interface (UI)}, click the open button to navigate to the SCIRunData directory and select the dataset \emph{volume/engine.nhdr} (Figure \ref{fig:readfieldtype}). Notice that many different file formats can be imported by changing the file type within the ReadField selector window. When using Mac OSX El Capitan, press the options button in the ReadField selector window to change the file type. Change the file type to Nrrd file. The ReadField UI can be closed after selection to provide for a larger network viewing frame. 
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.8\textwidth]{BasicTutorial_figures/readfield_select.png}
+\caption{The ReadField selector window can be used to select and read many data files.}
+\label{fig:readfieldtype}
+\end{figure}
+
+\subsection{Slice Field}\label{slice}
+
+Slice the engine field by node index along a given axis by instantiating the module
+\textbf{GetSlicesFromStructuredFieldByIndices} in the \textbf{NewField} category and connecting it to ReadField (Figure \ref{fig:slicemod}). This can be done by using the Module Selector filter or scrolling through the list of modules in the Module Selector.
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.8\textwidth]{BasicTutorial_figures/getslice.png}
+\caption{Using the ReadField port's pop-up module menu to instantiate GetSliceFromStructuredFieldByIndices.}
+\label{fig:slicemod}
+\end{figure}
+
+\subsection{Visualize Field}\label{visualize}
+
+To visualize the field geometry, instantiate module \textbf{ShowField}
+in the \textbf{Visualization} category and module \textbf{ViewScene}
+in the \textbf{Render} category (Figure \ref{fig:colormap}).
+ShowField takes a field as input, and outputs scene-graph geometry.
+ViewScene displays the geometry and allows a user to interact with the scene.
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.8\textwidth]{BasicTutorial_figures/viewscene.png}
+\caption{SCIRun can be used to visualize the structured mesh.}
+\label{fig:colormap}
+\end{figure}
+
+
+Apply a colored scale to the data values on the geometry using \textbf{CreateStandardColorMaps}
+and \textbf{RescaleColorMaps} modules in \textbf{Visualization} (Figure \ref{fig:rescale}). Colors can be manipulated using the CreateStandardColorMap UI and RescaleColorMap UI (Figure \ref{fig:viewscene}). Change the coloring scheme to Blackbody using the drop-down menu in the CreatSrandardColorMap UI.  
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.8\textwidth]{BasicTutorial_figures/colorscale.png}
+\caption{Apply and rescale a colormap to data values on the geometry.}
+\label{fig:rescale}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.8\textwidth]{BasicTutorial_figures/manipulatecolorscale.png}
+\caption{Manipulate the color scaling using both the CreateStandardColorMaps and RescaleColorMaps modules.}
+\label{fig:viewscene}
+\end{figure}
+
+Return to the default color scale. Use the sliders in the GetSlicesFromStructuredFieldByIndices UI
+to change slice position within the geometry. Compare with figure \ref{fig:rescale}. 
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/sliceselect.png}
+\caption{Different cross sections can be visualized within the geometry using GetSlicesFromStructuredFieldbyIndices. }
+\label{fig:getslice}
+\end{figure}
+
+
+\section{Show Bounding Box}\label{bbox}
+
+Add the \textbf{EditMeshBoundingBox} module under \textbf{ChangeMesh} (Figure \ref{fig:addbbox}). Connect it to the ReadField module and direct the output to the ViewScene module. Execute the network to visualize the bounding box of engine.nhrd. Adjust the size of the bounding box by pressing the + or - buttons under Widget Scale in the EditMeshBoundingBox UI (Figure \ref{fig:addbbox2}).
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/editmeshboundingbox.png}
+\caption{Visualize the mesh's bounding box.}
+\label{fig:addbbox}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/editmeshbbox.png}
+\caption{Change the scale of the mesh's bounding box using the Scale Widget in the EditMeshBoundingBox UI.}
+\label{fig:addbbox2}
+\end{figure}
+
+\section{Isosurface}\label{isosurface}
+
+Construct an isosurface from the field by instantiating and connecting a \textbf{ExtractSimpleIsosurface} module to the ReadField module. The isovalue must be changed within the ExtractSimpleIsosurface UI. Open the field information by clicking on the connection between the ReadField and ExtractSimpleIsosurface  and press I to bring up information. Enter a value from within the data range like 120. 
+Visualize the isosurface by connecting it to a new ShowField module ported into the ViewScene module (Figure \ref{fig:extract}). 
+Execute the network. Color isosurface output geometry by connecting the RescaleColorMap module to the ShowField module (Figure \ref{fig:changeisoval}). To better view the geometry, turn off the edges within the ShowField UI (Figure \ref{fig:viewisosurf}). 
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/extractiso.png}
+\caption{Extract an isosurface from field.}
+\label{fig:extract}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/coloriso.png}
+\caption{Change the isovalue within ExtractSimpleIsosurface UI.}
+\label{fig:changeisoval}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/edgesiso.png}
+\caption{Adjusting parameters within the ShowField UI helps to better visualize the isosurface.}
+\label{fig:viewisosurf}
+\end{figure}
+
+\chapter{Create, Manipulate and Visualize Field}
+
+\begin{introduction}
+Scope: \hyperref[createfield]{Generate Lattice Volume} - \hyperref[isosurface2]{Isosurface} -
+\hyperref[]{Visualize Geometry}
+\end{introduction}
+
+\section{Create Field}\label{createfield}
+
+Create and manipulate a structured mesh type in this exercise.
+Start by creating a lattice volume using \textbf{CreateLatVol} module.
+Assign data at nodes using \textbf{CalculateFieldData} module.
+Connect CalculateFieldData to CreateLatVol. Input the expression $RESULT = sqrt(X*X + Y*Y + Z*Z)$ to compute data for each node within the CreateFieldData UI.
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/create.png}
+\caption{Create lattice volume field using CreateLatVol module.}
+\label{fig:createnewfield}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/fielddata.png}
+\caption{Create a new field by inputting an expression into the CreateFieldData UI. }
+\label{fig:calcfielddata}
+\end{figure}
+
+
+\section{Isosurface}\label{isosurface2}
+
+Generate the isosurface by instantiating and connecting an ExtractSimpleIsosurface module to CalculateFieldData (Figure \ref{fig:extractisosurf2}). Adjust the isovalue within the ExtractSimpleIsosurface UI so that the isosurface can be visualized (Figure \ref{fig:conncolormap}). Add a color map and visualize the isosurface as in section \ref{isosurface} (Figure \ref{fig:viewdefaultisosurf}). Show the mesh bounding box as in section \ref{bbox} (Figure \ref{fig:changeisoval2}).
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/extractiso2.png}
+\caption{Extract an isosurface from the field data.}
+\label{fig:extractisosurf2}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/selectisoval.png}
+\caption{Change the isovalue so that an isosurface can be visualized.}
+\label{fig:conncolormap}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/viewisocirc.png}
+\caption{Visualize the isosurface.}
+\label{fig:viewdefaultisosurf}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/bbox.png}
+\caption{Visualize the mesh's bounding box.}
+\label{fig:changeisoval2}
+\end{figure}
+
+
+\section{Slice Field}\label{slice2}
+
+%%TODO: should add blurb about disabling modules and add image
+%%
+%% Postpone until SCIRun 5 due to disabled modules bugs.
+Extend the functionality of this network by slicing the field using GetSliceFromStructuredFieldByIndices as in section \ref{slice}.
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/getslice2.png}
+\caption{Insert GetSliceFromStructuredFieldByIndices into the network.}
+\label{fig:slicemod2}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/changeslice.png}
+\caption{Change the slice index using the GetSliceFromStructuredFieldByIndices UI.}
+\label{fig:showslice}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/colorslice.png}
+\caption{Attach the RescaleColorMap module to the ShowField module.}
+\label{fig:showslice}
+\end{figure}
+
+\section{Clip Field}\label{clipfieldfunc}
+
+Clip out a subset of the original field by converting the lattice volume to an unstructured mesh using \textbf{ConvertMeshToUnstructuredMesh} (Figure \ref{fig:convertmesh}) and adding \textbf{ClipFieldByFunction} (Figure \ref{fig:clipfield}) to the network.
+%% TODO: should highlight in image
+Set the clipping location setting in ClipFieldByFunction to \emph{all nodes}.
+Use the expression $DATA1> 1 \&\& X < 0$ to clip the field (Figure \ref{fig:clipfield_input}).
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/convertmesh.png}
+\caption{Convert the original field to an unstructured mesh.}
+\label{fig:convertmesh}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/clipfield.png}
+\caption{Insert a ClipFieldbyFunction module.}
+\label{fig:clipfield}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/clipfield_input.png}
+\caption{Clip the field by entering an expression in the ClipField UI.}
+\label{fig:clipfield_input}
+\end{figure}
+
+
+\subsection{Extract Boundary}\label{clipvol}
+
+
+At this point, it will be necessary to map the fields by interpolating the the boundary surface field to the clipping field.
+First, use \textbf{BuildMappingMatrix} to build a matrix that maps a linear combination of data values in the clipping field to a value in the boundary field. Then use \textbf{ApplyMappingMatrix} to multiply the data vector of the clipping field with the mapping matrix to obtain the data vector for the boundary surface field (Figure \ref{fig:mappingmatrix}). Use GetFieldBoundary to extract the boundary surface from the lattice volume and use it as input into the ApplyMappingMatrixModule and BuildMapping Matrix (Figure \ref{fig:highlightmods}). Port the output from the BuildMappingMatrix module to ApplyMappingMatrix and visualize the resultant field using a ShowFieldModule (Figure \ref{fig:viewbound}). Add a colormap to and enable transparency in ShowField UI for further functionality (Figure \ref{fig:finalview})
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/mappingmatrix.png}
+\caption{Build and apply the mapping network connections.}
+\label{fig:mappingmatrix}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/fieldboundary.png}
+\caption{Add GetFieldBoundary to the network.}
+\label{fig:highlightmods}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/view_boundary.png}
+\caption{Connect all the modules for mapping and visualize the output.}
+\label{fig:viewbound}
+\end{figure}
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.9\textwidth]{BasicTutorial_figures/finalview.png}
+\caption{Add a colormap and enable transparency.}
+\label{fig:finalview}
+\end{figure}
+
+Finally, it is not strictly necessary to explicitly convert the original mesh to an unstructured mesh using ConvertMeshToUnstructuredMesh because ClipFieldByFunction can implicitly convert structured mesh types to unstructured mesh types before clipping the field.
+As a final exercise, delete ConvertMeshToUnstructuredMesh from the network and try to obtain the same result.
+
+\end{document}

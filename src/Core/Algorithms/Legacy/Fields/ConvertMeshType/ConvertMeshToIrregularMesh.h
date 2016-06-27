@@ -31,8 +31,6 @@
 #define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOIRREGULARMESH_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-
-// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -47,11 +45,9 @@ class SCISHARE ConvertMeshToIrregularMeshAlgo : public AlgorithmBase
     {
     }
 
-    bool run(FieldHandle input, FieldHandle& output) const;
+    bool runImpl(FieldHandle input, FieldHandle& output) const;
 
-    static AlgorithmOutputName OutputField;
-
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const; 
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override; 
 };
 
 }}}}
