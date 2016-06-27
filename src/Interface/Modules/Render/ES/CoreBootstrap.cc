@@ -157,7 +157,7 @@ public:
 
     // Add static world light.
     StaticWorldLight worldLight;
-    worldLight.lightDir = glm::vec3(1.0f, 0.0f, 0.0f);
+    //worldLight.lightDir = glm::vec3(1.0f, 0.0f, 0.0f);
     core.addStaticComponent(worldLight);
     core.addExemptComponent<StaticWorldLight>();
 

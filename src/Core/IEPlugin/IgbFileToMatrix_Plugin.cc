@@ -38,7 +38,7 @@
  
 
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
-#include <Core/IEPlugin/IgbmFileToMatrix_Plugin.h>
+#include <Core/IEPlugin/IgbFileToMatrix_Plugin.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Utils/Legacy/StringUtil.h>
