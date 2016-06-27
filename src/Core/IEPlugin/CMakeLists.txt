@@ -32,7 +32,7 @@ SET(Core_IEPlugin_SRCS
   CurveField_Plugin.cc
   #DIF_Plugin.cc
   EcgsimFileToMatrix_Plugin.cc
-  #IgbFileToMatrix_Plugin.cc
+  IgbFileToMatrix_Plugin.cc
   #EcgsimFileToTriSurf_Plugin.cc
   G3DToField_Plugin.cc
   #HexVolField_Plugin.cc

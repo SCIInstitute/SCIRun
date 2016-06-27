@@ -40,6 +40,7 @@ namespace SCIRun {
         public Has2InputPorts<FieldPortTag, MatrixPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
+        CONVERTED_VERSION_OF_MODULE(ExtractIsosurface)
       public:
         ExtractSimpleIsosurfaceModule();
 

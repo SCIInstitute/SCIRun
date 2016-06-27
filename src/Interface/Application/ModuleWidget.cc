@@ -329,6 +329,10 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
   //qDebug() << width() << height() << currentWidget()->size();
+
+  auto oldName = theModule->legacyModuleName();
+  if (theModule->get_module_name() != oldName)
+    setToolTip("Converted version of module " + QString::fromStdString(oldName));
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)

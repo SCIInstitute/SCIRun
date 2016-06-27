@@ -31,7 +31,7 @@
 #define MODULES_LEGACY_FIELDS_GETMESHQUALITYFIELD_H__
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
 namespace Modules {
