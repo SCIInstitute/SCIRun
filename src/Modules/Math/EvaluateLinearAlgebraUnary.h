@@ -41,6 +41,7 @@ namespace Math {
     public Has1InputPort<MatrixPortTag>,
     public Has1OutputPort<MatrixPortTag>
   {
+    CONVERTED_VERSION_OF_MODULE(EvaluateLinAlgUnary)
   public:
     EvaluateLinearAlgebraUnaryModule();
     virtual void execute();

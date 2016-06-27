@@ -52,6 +52,7 @@ namespace SCIRun {
         public Has1InputPort<DynamicPortTag<DatatypePortTag>>,
         public Has1OutputPort<DatatypePortTag>
       {
+        CONVERTED_VERSION_OF_MODULE(ChooseMatrix)
       public:
         ChooseInput();
         virtual void execute() override;

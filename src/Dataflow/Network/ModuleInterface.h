@@ -80,6 +80,8 @@ namespace Networks {
     virtual bool hasDynamicPorts() const = 0;
 
     virtual std::string helpPageUrl() const = 0;
+    virtual std::string legacyPackageName() const = 0;
+    virtual std::string legacyModuleName() const = 0;
   };
 
   class SCISHARE ModuleDisplayInterface

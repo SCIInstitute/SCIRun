@@ -117,10 +117,15 @@ protected:
     return loadFieldFromFile(TestResources::rootDir() / "Fields/point_cloud/scalar/pts_scalar.fld");
   }
 
-  //static FieldHandle CreateCurveMesh()
-  //{
-  //  return loadFieldFromFile(TestResources::rootDir() / "Fields/test_curve_elem.mat");
-  //}
+  static FieldHandle CreateCurveMeshElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/test_curve_elem.fld");
+  }
+
+  static FieldHandle CreateImageNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld");
+  }
 
   //static FieldHandle CreatePointCloudScalar()
   //{
@@ -129,7 +134,10 @@ protected:
 
   static std::vector<FieldHandle> fileExamples()
   {
-    return{ TetMesh1(), TetMesh2(), CreateTriSurfScalarOnNode(), CreateTriSurfVectorOnNode(), CreateTetMeshVectorOnNode(), CreateTetMeshScalarOnElem(), CreateTetMeshScalarOnNode(), CreateTetMeshTensorOnNode(), CreatePointCloudScalar() };
+    return{ TetMesh1(), TetMesh2(), CreateTriSurfScalarOnNode(), CreateTriSurfVectorOnNode(), CreateTetMeshVectorOnNode(), 
+      CreateTetMeshScalarOnElem(), CreateTetMeshScalarOnNode(), CreateTetMeshTensorOnNode(), CreatePointCloudScalar(), 
+      CreateCurveMeshElem(), CreateImageNode()
+    };
   }
 };
 
