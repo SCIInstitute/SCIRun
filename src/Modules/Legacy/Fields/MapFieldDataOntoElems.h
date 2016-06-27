@@ -42,6 +42,8 @@ namespace Fields {
     public Has1OutputPort<FieldPortTag>,
     public Core::Thread::Interruptible
   {
+    CONVERTED_VERSION_OF_MODULE(MapFieldDataOntoElems)
+
   public:
     MapFieldDataOntoElements();
 
