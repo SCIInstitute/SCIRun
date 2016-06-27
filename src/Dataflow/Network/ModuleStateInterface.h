@@ -61,6 +61,9 @@ namespace Networks {
     virtual bool containsKey(const Name& name) const = 0;
     virtual Keys getKeys() const = 0;
     virtual ModuleStateHandle clone() const = 0;
+    
+    // this function preserves key/value pairs not in other
+    void overwriteWith(const ModuleStateInterface& other);
 
     //non-serialized state: algorithm output needing to be pushed, for instance--TODO: make classes instead of raw string/any
     typedef boost::any TransientValue;

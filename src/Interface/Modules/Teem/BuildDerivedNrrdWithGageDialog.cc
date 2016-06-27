@@ -57,7 +57,6 @@ BuildDerivedNrrdWithGageDialog::BuildDerivedNrrdWithGageDialog(const std::string
   addLineEditManager(ddNumParm1LineEdit_, Parameters::DDNumParm1);
   addLineEditManager(ddNumParm2LineEdit_, Parameters::DDNumParm2);
   addLineEditManager(ddNumParm3LineEdit_, Parameters::DDNumParm3);
-  //connect(quantityComboBox_, SIGNAL(), this, SLOT());
 }
 
 void BuildDerivedNrrdWithGageDialog::updateDescriptionLabel(const QString& item)

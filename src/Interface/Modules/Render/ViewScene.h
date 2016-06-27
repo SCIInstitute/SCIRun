@@ -71,7 +71,7 @@ namespace SCIRun {
 
     Q_SIGNALS:
       void newGeometryValueForwarder();
-      void mousePressSignalForTestingGeometryObjectFeedback(int x, int y);
+      void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
       protected Q_SLOTS:
       void menuMouseControlChanged(int index);
@@ -98,8 +98,8 @@ namespace SCIRun {
       void invertZoomClicked(bool value);
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
-      void sendGeometryFeedbackToState(int x, int y);
-      //Clipping Plane 
+      void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
+      //Clipping Plane
       void setClippingPlaneIndex(int index);
       void setClippingPlaneVisible(bool value);
       void setClippingPlaneFrameOn(bool value);
@@ -141,6 +141,12 @@ namespace SCIRun {
       void setPolygonOffset(int value);
       void setTextOffset(int value);
       void setFieldOfView(int value);
+      void setLightPosition(int index);
+      void setLightColor(int index);
+      void toggleHeadLight(bool value);
+      void toggleLight1(bool value);
+      void toggleLight2(bool value);
+      void toggleLight3(bool value);
 
     protected:
       virtual void mousePressEvent(QMouseEvent* event);
@@ -167,8 +173,10 @@ namespace SCIRun {
         double projLength;
       };
 
+      void setInitialLightValues();
+      QColor checkColorSetting(std::string& rgb, QColor defaultColor);
       void selectObject(const int x, const int y);
-      void restoreObjColor();
+      std::string restoreObjColor();
       void updatClippingPlaneDisplay();
       bool isObjectUnselected(const std::string& name);
       void addToolBar();
@@ -190,6 +198,8 @@ namespace SCIRun {
       void lookDownAxisX(int upIndex, glm::vec3& up);
       void lookDownAxisY(int upIndex, glm::vec3& up);
       void lookDownAxisZ(int upIndex, glm::vec3& up);
+
+      void toggleLightOnOff(int index, bool value);
 
       // update scale bar geometries
       Graphics::Datatypes::GeometryHandle buildGeometryScaleBar();

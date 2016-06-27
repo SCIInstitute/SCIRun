@@ -30,32 +30,29 @@
 #ifndef CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTMESHTOUNSTRUCTUREDMESH_H
 #define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTMESHTOUNSTRUCTUREDMESH_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+        class SCISHARE ConvertMeshToUnstructuredMeshAlgo : public AlgorithmBase
+        {
+        public:
+          ConvertMeshToUnstructuredMeshAlgo()
+          {
+          }
 
-namespace SCIRunAlgo {
+          bool runImpl(FieldHandle input, FieldHandle& output) const;
 
-using namespace SCIRun;
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+        };
 
-class SCISHARE ConvertMeshToUnstructuredMeshAlgo : public AlgoBase
-{
-  public:
-    /// Set defaults
-    ConvertMeshToUnstructuredMeshAlgo()
-    {
+      }
     }
+  }
+}
 
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);};
-
-} // end namespace SCIRunAlgo
-
-#endif
-
+#endif 

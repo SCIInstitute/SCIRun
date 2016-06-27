@@ -69,11 +69,7 @@ namespace Render {
 
   class SCISHARE ViewScene : public Dataflow::Networks::ModuleWithAsyncDynamicPorts,
     public Has1InputPort<AsyncDynamicPortTag<GeometryPortTag>>,
-#ifdef BUILD_TESTING
     public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
-#else
-    public HasNoOutputPorts
-#endif
   {
   public:
     ViewScene();
@@ -111,14 +107,21 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName PolygonOffset;
     static const Core::Algorithms::AlgorithmParameterName TextOffset;
     static const Core::Algorithms::AlgorithmParameterName FieldOfView;
+    static const Core::Algorithms::AlgorithmParameterName HeadLightOn;
+    static const Core::Algorithms::AlgorithmParameterName Light1On;
+    static const Core::Algorithms::AlgorithmParameterName Light2On;
+    static const Core::Algorithms::AlgorithmParameterName Light3On;
+    static const Core::Algorithms::AlgorithmParameterName HeadLightColor;
+    static const Core::Algorithms::AlgorithmParameterName Light1Color;
+    static const Core::Algorithms::AlgorithmParameterName Light2Color;
+    static const Core::Algorithms::AlgorithmParameterName Light3Color;
+
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
-#ifdef BUILD_TESTING
     OUTPUT_PORT(0, ScreenshotDataRed, DenseMatrix);
     OUTPUT_PORT(1, ScreenshotDataGreen, DenseMatrix);
     OUTPUT_PORT(2, ScreenshotDataBlue, DenseMatrix);
     virtual void execute() override;
-#endif
 
     static Core::Thread::Mutex mutex_;
 

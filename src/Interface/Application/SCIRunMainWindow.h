@@ -171,6 +171,7 @@ private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
   void loadNetwork();
+  void checkAndLoadNetworkFile(const QString& filename);
   void loadRecentNetwork();
   bool newNetwork();
   void runScript();
@@ -189,8 +190,6 @@ private Q_SLOTS:
   void setGlobalPortCaching(bool enable);
   void readDefaultNotePosition(int index);
   void updateMiniView();
-  void makeModulesLargeSize();
-  void makeModulesSmallSize();
   void alertForNetworkCycles(int code);
   void updateDockWidgetProperties(bool isFloating);
   void setDataDirectoryFromGUI();
@@ -215,6 +214,7 @@ private Q_SLOTS:
   void showClipboardHelp();
   void showTagHelp();
   void showTriggerHelp();
+  void launchNewUserWizard();
   void copyVersionToClipboard();
   void updateClipboardHistory(const QString& xml);
   void showModuleSelectorContextMenu(const QPoint& p);

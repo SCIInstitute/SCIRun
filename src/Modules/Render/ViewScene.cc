@@ -55,11 +55,9 @@ ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
 {
   INITIALIZE_PORT(GeneralGeom);
-#ifdef BUILD_TESTING
   INITIALIZE_PORT(ScreenshotDataRed);
   INITIALIZE_PORT(ScreenshotDataGreen);
   INITIALIZE_PORT(ScreenshotDataBlue);
-#endif
 }
 
 void ViewScene::setStateDefaults()
@@ -95,6 +93,15 @@ void ViewScene::setStateDefaults()
   state->setValue(PolygonOffset, 0.0);
   state->setValue(TextOffset, 0.0);
   state->setValue(FieldOfView, 20);
+  state->setValue(HeadLightOn, true);
+  state->setValue(Light1On, false);
+  state->setValue(Light2On, false);
+  state->setValue(Light3On, false);
+  state->setValue(HeadLightColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
+
   postStateChangeInternalSignalHookup();
 }
 
@@ -266,3 +273,11 @@ const AlgorithmParameterName ViewScene::StereoFusion("StereoFusion");
 const AlgorithmParameterName ViewScene::PolygonOffset("PolygonOffset");
 const AlgorithmParameterName ViewScene::TextOffset("TextOffset");
 const AlgorithmParameterName ViewScene::FieldOfView("FieldOfView");
+const AlgorithmParameterName ViewScene::HeadLightOn("HeadLightOn");
+const AlgorithmParameterName ViewScene::Light1On("Light1On");
+const AlgorithmParameterName ViewScene::Light2On("Light2On");
+const AlgorithmParameterName ViewScene::Light3On("Light3On");
+const AlgorithmParameterName ViewScene::HeadLightColor("HeadLightColor");
+const AlgorithmParameterName ViewScene::Light1Color("Light1Color");
+const AlgorithmParameterName ViewScene::Light2Color("Light2Color");
+const AlgorithmParameterName ViewScene::Light3Color("Light3Color");

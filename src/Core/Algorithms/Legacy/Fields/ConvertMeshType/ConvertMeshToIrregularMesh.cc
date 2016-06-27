@@ -42,7 +42,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
 bool 
-ConvertMeshToIrregularMeshAlgo::run(FieldHandle input, FieldHandle& output) const
+ConvertMeshToIrregularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   // Mark that we are starting the algorithm, but do not report progress
   ScopedAlgorithmStatusReporter asr(this, "ConvertMeshToIrregularMesh");
@@ -188,17 +188,15 @@ ConvertMeshToIrregularMeshAlgo::run(FieldHandle input, FieldHandle& output) cons
   return (true);
 }
 
-AlgorithmOutputName ConvertMeshToIrregularMeshAlgo::OutputField("OutputField");
-
 AlgorithmOutput ConvertMeshToIrregularMeshAlgo::run(const AlgorithmInput& input) const
 {
   auto ifield = input.get<Field>(Variables::InputField);
 
   FieldHandle ofield;
-  if (!run(ifield, ofield))
+  if (!runImpl(ifield, ofield))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[OutputField] = ofield;
+  output[Variables::OutputField] = ofield;
   return output;
 }

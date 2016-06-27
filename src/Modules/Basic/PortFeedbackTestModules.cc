@@ -42,6 +42,11 @@ PortFeedbackSender::PortFeedbackSender()
   INITIALIZE_PORT(Input);
 }
 
+void PortFeedbackSender::setStateDefaults()
+{
+
+}
+
 void PortFeedbackSender::execute()
 {
  
@@ -54,7 +59,12 @@ PortFeedbackReceiver::PortFeedbackReceiver()
 {
   INITIALIZE_PORT(Output);
 
-  getOutputPort(Output)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processFeedback(var); });
+  //getOutputPort(Output)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processFeedback(var); });
+}
+
+void PortFeedbackReceiver::setStateDefaults()
+{
+
 }
 
 void PortFeedbackReceiver::execute()

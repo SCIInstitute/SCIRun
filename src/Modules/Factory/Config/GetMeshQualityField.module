@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetMeshQualityField",
+    "namespace": "Fields",
+    "status": "Ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/GetMeshQualityField.h"
+  },
+  "algorithm": {
+    "name": "GetMeshQualityFieldAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h"
+  },
+  "UI": {
+    "name": "GetMeshQualityFieldDialog",
+    "header": "Interface/Modules/Fields/GetMeshQualityFieldDialog.h"
+  }
+}

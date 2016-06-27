@@ -33,8 +33,10 @@
 #include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>
 #include <Core/IEPlugin/EcgsimFileToMatrix_Plugin.h>
 #include <Core/IEPlugin/PointCloudField_Plugin.h>
+#include <Core/IEPlugin/IGBFileToMatrix_Plugin.h>
 #include <Core/IEPlugin/CurveField_Plugin.h>
 #include <Core/IEPlugin/TriSurfField_Plugin.h>
+#include <Core/IEPlugin/TetVolField_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/IEPlugin/IEPluginInit.h>
@@ -67,6 +69,7 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter CurveField_plugin("CurveField", "*.pts *.pos *.edge", "", TextToCurveField_reader, CurveFieldToTextBaseIndexZero_writer);
 
   static MatrixIEPluginLegacyAdapter EcgsimFileMatrix_plugin("ECGSimFile", "", "", EcgsimFileMatrix_reader, EcgsimFileMatrix_writer);
+  //static MatrixIEPluginLegacyAdapter IgbFileMatrix_plugin("IGBFile", "*.igb", "*.igb", IgbFileMatrix_reader, IgbFileMatrix_writer);
 
   static FieldIEPluginLegacyAdapter TriSurfField_plugin("TriSurfField", "*.fac *.tri *.pts *.pos", "", TextToTriSurfField_reader, TriSurfFieldToTextBaseIndexZero_writer);
   static FieldIEPluginLegacyAdapter TriSurfFieldBaseIndexOne_plugin("TriSurfField[BaseIndex 1]", "*.fac *.pts", "", nullptr, TriSurfFieldToTextBaseIndexOne_writer);
@@ -76,4 +79,9 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter VtkFromTriSurfField_plugin("VtkToTriSurfField", "*.vtk", "", VtkToTriSurfField_reader, nullptr);
   static FieldIEPluginLegacyAdapter TriSurfFieldToExotxt_plugin("TriSurfFieldToExotxt", "*.ex2", "", nullptr, TriSurfFieldToExotxt_writer);
   static FieldIEPluginLegacyAdapter TriSurfFieldToExotxtBaseIndexOne_plugin("TriSurfFieldToExotxt[BaseIndex 1]", "*.ex2", "", nullptr, TriSurfFieldToExotxtBaseIndexOne_writer);
+
+  static FieldIEPluginLegacyAdapter TetVolField_plugin("TetVolField","*.elem *.tet *.pts *.pos", "", TextToTetVolField_reader, TetVolFieldToTextBaseIndexZero_writer);
+  static FieldIEPluginLegacyAdapter TetVolFieldBaseIndexOne_plugin("TetVolField[BaseIndex 1]", "*.tet *.pts", "", nullptr, TetVolFieldToTextBaseIndexOne_writer);
+  static FieldIEPluginLegacyAdapter JHU_elemsPtsFileToTetVol_plugin("JHUFileToTetVol","*.elem *.tet *.pts *.pos", "", TextToTetVolField_reader, nullptr);
+  static FieldIEPluginLegacyAdapter TetVolFieldVtk_plugin("TetVolFieldToVtk", "*.vtk", "", nullptr, TetVolFieldToVtk_writer);
 }

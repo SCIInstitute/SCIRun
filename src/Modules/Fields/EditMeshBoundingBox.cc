@@ -197,7 +197,11 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(OutputSizeY, 1.0);
   state->setValue(OutputSizeZ, 1.0);
   state->setValue(Scale, 0.1);
-
+  state->setValue(NoTranslation, true);
+  state->setValue(XYZTranslation, false);
+  state->setValue(RDITranslation, false);
+  state->setValue(Resetting, false);
+  
   //TODO
 
   createBoxWidget();

@@ -111,6 +111,8 @@ namespace SCIRun
   }
 }
 
+const int fadeInSeconds = 1;
+
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
   : QGraphicsProxyWidget(parent),
   NoteDisplayHelper(boost::make_shared<ModuleWidgetNoteDisplayStrategy>()),
@@ -133,10 +135,22 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   stackDepth_ = 0;
 
   originalSize_ = size();
+
+  {
+    timeLine_ = new QTimeLine(fadeInSeconds * 1000, this);
+    connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(animate(qreal)));
+    //timeLine_->start();
+  }
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+}
+
+void ModuleProxyWidget::animate(qreal val)
+{
+  setOpacity(val);
+  setScale(val);
 }
 
 void ModuleProxyWidget::adjustHeight(int delta)
@@ -407,4 +421,13 @@ void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 void ModuleProxyWidget::highlightPorts(int state)
 {
   doHighlight_ = state != 0;
+}
+
+ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset)
+{
+}
+
+QPointF ProxyWidgetPosition::currentPosition() const
+{
+  return widget_->pos() + offset_;
 }

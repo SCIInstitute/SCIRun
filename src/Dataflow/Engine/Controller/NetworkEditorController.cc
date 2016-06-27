@@ -64,7 +64,7 @@ using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Thread;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory,
-  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, GlobalCommandFactoryHandle cmdFactory, 
+  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, GlobalCommandFactoryHandle cmdFactory,
   NetworkEventCommandFactoryHandle eventCmdFactory, NetworkEditorSerializationManager* nesm) :
   theNetwork_(new Network(mf, sf, af, reex)),
   moduleFactory_(mf),
@@ -88,7 +88,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 }
 
 NetworkEditorController::NetworkEditorController(NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
-  : theNetwork_(network), executorFactory_(executorFactory), 
+  : theNetwork_(network), executorFactory_(executorFactory),
   eventCmdFactory_(new NullCommandFactory),
   serializationManager_(nesm),
   signalSwitch_(true)
@@ -120,7 +120,7 @@ namespace
 
       ModulePositions positions;
       int i = 0;
-      const double moduleVerticalSpacing = 120;
+      const double moduleVerticalSpacing = 80;
       const double moduleHorizontalSpacing = 264;
       const double moduleSpacingOffset = 10;
       static int numSnips = 0;
@@ -147,7 +147,7 @@ namespace
           nec_.requestConnection(c.first, c.second);
       }
 
-      nec_.updateModulePositions(positions);
+      nec_.updateModulePositions(positions, true);
 
       return mods_.back();
     }
@@ -170,7 +170,6 @@ namespace
       if (!isSnippetName(label))
         return {};
 
-      //TODO: need a way to specify more than just linear connections.
       parseModules(label);
 
       if (mods_.size() < 2)
@@ -483,7 +482,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       }
       if (serializationManager_)
       {
-        serializationManager_->updateModulePositions(xml->modulePositions);
+        serializationManager_->updateModulePositions(xml->modulePositions, false);
         serializationManager_->updateModuleNotes(xml->moduleNotes);
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
         serializationManager_->updateModuleTags(xml->moduleTags);
@@ -560,7 +559,7 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
       {
         xml->modulePositions.modulePositions = remapIdBasedContainer(xml->modulePositions.modulePositions, info.moduleIdMapping);
         shiftAppendedModules(xml->modulePositions.modulePositions);
-        serializationManager_->updateModulePositions(xml->modulePositions); // need to shift everything.
+        serializationManager_->updateModulePositions(xml->modulePositions, false); // need to shift everything.
         xml->moduleNotes.notes = remapIdBasedContainer(xml->moduleNotes.notes, info.moduleIdMapping);
         serializationManager_->updateModuleNotes(xml->moduleNotes);
         xml->connectionNotes.notes = remapIdBasedContainer(xml->connectionNotes.notes, info.moduleIdMapping);
@@ -688,11 +687,11 @@ const ModuleLookupInfoSet& NetworkEditorController::possibleReplacements(ModuleH
   return replacementFilter_->findReplacements(makeConnectedPortInfo(module));
 }
 
-void NetworkEditorController::updateModulePositions(const ModulePositions& modulePositions)
+void NetworkEditorController::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
 {
   if (serializationManager_)
   {
-    serializationManager_->updateModulePositions(modulePositions);
+    serializationManager_->updateModulePositions(modulePositions, selectAll);
   }
 }
 
@@ -722,9 +721,9 @@ void NetworkEditorController::cleanUpNetwork()
     for (const auto& g : c.second)
     {
       //std::cout << "component " << c.first << " group " << g.first << " module " << g.second << std::endl;
-      cleanedUp.modulePositions[g.second] = { c.first * 400.0, g.first * 150.0 };
+      cleanedUp.modulePositions[g.second] = { c.first * 400.0, g.first * 80.0 };
     }
   }
 
-  updateModulePositions(cleanedUp);
+  updateModulePositions(cleanedUp, false);
 }

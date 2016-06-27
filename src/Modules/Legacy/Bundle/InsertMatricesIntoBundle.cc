@@ -52,7 +52,7 @@ InsertMatricesIntoBundle::InsertMatricesIntoBundle() : Module(staticInfo_)
 
 void InsertMatricesIntoBundle::setStateDefaults()
 {
-
+  get_state()->setValue(MatrixReplace, VariableList());
 }
 
 void InsertMatricesIntoBundle::execute()

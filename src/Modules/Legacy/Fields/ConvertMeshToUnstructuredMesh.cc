@@ -26,62 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Include the algorithm
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Modules/Legacy/Fields/ConvertMeshToUnstructuredMesh.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-// Base class for the module
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 
-// Ports included in the module
-#include <Dataflow/Network/Ports/FieldPort.h>
+const ModuleLookupInfo ConvertMeshToUnstructuredMesh::staticInfo_("ConvertMeshToUnstructuredMesh", "ChangeMesh", "SCIRun");
 
-// For Windows support
-#include <Dataflow/Modules/Fields/share.h>
-
-namespace SCIRun {
-
-/// @class ConvertMeshToUnstructuredMesh
-/// @brief Convert a structured field into an unstructured field for editing.
-
-class SCISHARE ConvertMeshToUnstructuredMesh : public Module 
+ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh() : Module(staticInfo_, false)
 {
-  public:
-    ConvertMeshToUnstructuredMesh(GuiContext*);
-    virtual ~ConvertMeshToUnstructuredMesh() {}
-    virtual void execute();
-    
-  private:
-    SCIRunAlgo::ConvertMeshToUnstructuredMeshAlgo algo_;
-};
-
-DECLARE_MAKER(ConvertMeshToUnstructuredMesh)
- ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh(GuiContext* context)
-  : Module("ConvertMeshToUnstructuredMesh", context, Source, "ChangeMesh", "SCIRun")
-{
-  /// Forward errors to the module
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
 }
 
-void
-ConvertMeshToUnstructuredMesh::execute()
+void ConvertMeshToUnstructuredMesh::execute()
 {
-  // Define fieldhandles
-  FieldHandle ifield, ofield;
+  auto ifield = getRequiredInput(InputField);
   
-  // Get data from input port
-  get_input_handle("Input Field",ifield,true);
-  
-  // We only execute if something changed
-  if (inputs_changed_ || !oport_cached("Output Field"))
+  if (needToExecute())
   {
     update_state(Executing);
       
-    // Run the algorithm
-    if (!(algo_.run(ifield,ofield))) return;
-    // Send to output to the output port
-    send_output_handle("Output Field", ofield);
+    auto output = algo().run(withInputData((InputField, ifield)));
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }
-
-} // End namespace SCIRun
 

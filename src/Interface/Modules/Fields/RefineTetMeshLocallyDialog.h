@@ -44,9 +44,7 @@ class SCISHARE RefineTetMeshLocallyDialog : public ModuleDialogGeneric,
 public:
   RefineTetMeshLocallyDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-protected:
-  virtual void pullSpecial() override;
+    QWidget* parent = nullptr);
   /*
 private Q_SLOTS:
 		//void setIsoValueEnabled();

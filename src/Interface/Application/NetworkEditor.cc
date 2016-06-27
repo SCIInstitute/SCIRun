@@ -144,10 +144,8 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
-  //qDebug() << "addModuleWidget " << module->get_id().id_.c_str();
   latestModuleId_ = module->get_id().id_;
-  //std::cout << "\tNE modules done (start): " << *count.count << std::endl;
-  ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
+  auto moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
 
   setupModuleWidget(moduleWidget);
@@ -156,7 +154,6 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
     moduleWidget->postLoadAction();
   }
   count.increment();
-  //std::cout << "\tNE modules done (end): " << *count.count << std::endl;
   Q_EMIT modified();
   Q_EMIT newModule(QString::fromStdString(module->get_id()), module->has_ui());
 }
@@ -605,7 +602,22 @@ void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
 
 void NetworkEditor::dropEvent(QDropEvent* event)
 {
-  //TODO: mime check here to ensure this only gets called for drags from treewidget
+  auto data = event->mimeData();
+  if (data->hasUrls())
+  {
+    auto urls = data->urls();
+    if (!urls.isEmpty())
+    {
+      auto file = urls[0].path();
+      QFileInfo check_file(file);
+      if (check_file.exists() && check_file.isFile() && file.endsWith("srn5"))
+      {
+        Q_EMIT requestLoadNetwork(file);
+        return;
+      }
+    }
+  }
+
   if (moduleSelectionGetter_->isModule())
   {
     addNewModuleAtPosition(mapToScene(event->pos()));
@@ -834,7 +846,7 @@ DisabledComponentsHandle NetworkEditor::dumpDisabledComponents(ModuleFilter modF
   return disabled;
 }
 
-void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions)
+void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
@@ -845,6 +857,8 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
       {
         w->setPos(posIter->second.first, posIter->second.second);
         ensureVisible(w);
+        if (selectAll)
+          w->setSelected(true);
       }
     }
   }
@@ -1018,10 +1032,13 @@ void NetworkEditor::appendToNetwork(const NetworkFileHandle& xml)
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (!originalItems.contains(item))
+    {
       if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
       {
         w->getModuleWidget()->postLoadAction();
+        w->setSelected(true);
       }
+    }
   }
 
   setSceneRect(QRectF());
@@ -1094,8 +1111,6 @@ void NetworkEditor::selectAll()
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    //if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
-    //mpw->setSelected(true);
     item->setSelected(true);
   }
 }
@@ -1252,17 +1267,6 @@ void NetworkEditor::adjustModuleHeight(int delta)
   }
 }
 
-void NetworkEditor::setModuleMini(bool mini)
-{
-  ModuleWidget::setGlobalMiniMode(mini);
-  for (const auto& item : scene_->items())
-  {
-    auto module = getModule(item);
-    if (module)
-      module->setMiniMode(mini);
-  }
-}
-
 void NetworkEditor::metadataLayer(bool active)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
@@ -1319,6 +1323,22 @@ void NetworkEditor::tagLayer(bool active, int tag)
 {
   tagLayerActive_ = active;
 
+  if (active)
+  {
+    auto items = scene_->selectedItems();
+    Q_FOREACH(QGraphicsItem* item, items)
+    {
+      if (item->data(TagDataKey).toInt() == NoTag)
+      {
+        item->setData(TagDataKey, tag);
+      }
+      else if (ClearTags == tag)
+      {
+        item->setData(TagDataKey, NoTag);
+      }
+    }
+  }
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     item->setData(TagLayerKey, active);
@@ -1330,7 +1350,7 @@ void NetworkEditor::tagLayer(bool active, int tag)
       {
         highlightTaggedItem(item, itemTag);
       }
-      else if (tag != NoTag)
+      else if (tag != NoTag && tag != ClearTags)
       {
         if (tag == itemTag)
         {

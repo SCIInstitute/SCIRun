@@ -51,6 +51,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Forward;
 
 const ModuleLookupInfo BuildBEMatrix::staticInfo_("BuildBEMatrix", "Forward", "SCIRun");
@@ -63,6 +64,10 @@ BuildBEMatrix::BuildBEMatrix() : Module(staticInfo_)
 
 void BuildBEMatrix::setStateDefaults()
 {
+  get_state()->setValue(Parameters::FieldNameList, VariableList());
+  get_state()->setValue(Parameters::BoundaryConditionList, VariableList());
+  get_state()->setValue(Parameters::OutsideConductivityList, VariableList());
+  get_state()->setValue(Parameters::InsideConductivityList, VariableList());
 }
 
 void BuildBEMatrix::execute()
