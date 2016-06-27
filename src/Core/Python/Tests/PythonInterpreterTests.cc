@@ -38,7 +38,11 @@
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/SCIRunFieldSamples.h>
+#ifdef WIN32
+#ifndef DEBUG
 #include <Core/Python/PythonInterpreter.h>
+#endif
+#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -52,8 +56,10 @@ protected:
   virtual void SetUp() override
   {
   #ifdef WIN32
+  #ifndef DEBUG
     PythonInterpreter::Instance().initialize(false, "Core_Python_Tests", boost::filesystem::current_path().string());
     PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  #endif
   #else
     Py_Initialize();
   #endif
