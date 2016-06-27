@@ -32,6 +32,7 @@ SET(Core_IEPlugin_SRCS
   CurveField_Plugin.cc
   #DIF_Plugin.cc
   EcgsimFileToMatrix_Plugin.cc
+  IgbFileToMatrix_Plugin.cc
   #EcgsimFileToTriSurf_Plugin.cc
   G3DToField_Plugin.cc
   #HexVolField_Plugin.cc
@@ -61,6 +62,7 @@ SET(Core_IEPlugin_HEADERS
   CurveField_Plugin.h
   #DIF_Plugin.h
   EcgsimFileToMatrix_Plugin.h
+  IgbFileToMatrix_Plugin.h
   #EcgsimFileToTriSurf_Plugin.h
   G3DToField_Plugin.h
   #HexVolField_Plugin.h

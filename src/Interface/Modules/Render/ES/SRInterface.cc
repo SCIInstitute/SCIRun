@@ -109,6 +109,7 @@ namespace SCIRun {
       // Construct ESCore. We will need to bootstrap the core. We should also
       // probably add utility static classes.
       setupCore();
+      setupLights();
     }
 
     //------------------------------------------------------------------------------
@@ -151,6 +152,18 @@ namespace SCIRun {
         mCore.addStaticComponent(iface);
       }
 
+    }
+
+    void SRInterface::setupLights()
+    {
+      //mLightPosition;
+      mLightsOn.push_back(true);
+      mLightPosition.push_back(glm::vec3(0, 0, 1));
+      for (int i = 1; i < LIGHT_NUM; ++i)
+      {
+        mLightsOn.push_back(false);
+        mLightPosition.push_back(glm::vec3(0, 0, 1));
+      }
     }
 
     //------------------------------------------------------------------------------
@@ -1365,15 +1378,86 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::updateWorldLight()
     {
+      /*
+      getWorldToProjection() const;
+      getWorldToView() const;
+      getViewToWorld() const;
+      getViewToProjection() const;
+      */
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
+      //glm::mat4 viewToWorld = mCamera->getWorldToView();
 
       // Set directional light source (in world space).
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
       if (light)
       {
+        for (int i = 0; i < LIGHT_NUM; ++i)
+        {
+          /*
+          glm::vec3 viewDir = glm::vec3(0.0, 0.0, -1.0) - mLightPosition[i];
+          glm::vec4 newDir(viewDir.x, viewDir.y, viewDir.z, 1.0);
+          viewToWorld *= newDir;
+          glm::vec3 lightDir = viewToWorld[4].xyz();
+          */
+
+          glm::vec3 viewDir = viewToWorld[2].xyz();
+          viewDir = -viewDir; // Cameras look down -Z.
+          light->lightDir[i] = mLightsOn[i] ? viewDir - mLightPosition[i] : glm::vec3(0.0, 0.0, 0.0);
+          //light->lightDir[i] = mLightsOn[i] ? lightDir : glm::vec3(0.0, 0.0, 0.0);
+        }
+      }
+    }
+
+    void SRInterface::setLightColor(int index, float r, float g, float b)
+    {
+      if (index >= LIGHT_NUM)
+        return;
+      StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
+      if (light)
+      {
+        light->lightColor[index] = glm::vec3(r, g, b);
+      }
+    }
+
+
+    void SRInterface::setLightPosition(int index, float x, float y)
+    {
+      if (index >= LIGHT_NUM)
+        return;
+
+      glm::mat4 viewToWorld = mCamera->getViewToWorld();
+      glm::vec3 position = glm::vec3(x, y, 0);
+      if (mLightPosition.size() > 0)
+      {
+        mLightPosition[index] = glm::vec3(x, y, 0.0);
+      }
+      /*
+      // Set directional light source (in world space).
+      StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
+      if (light)
+      {
         glm::vec3 viewDir = viewToWorld[2].xyz();
-        viewDir = -viewDir; // Cameras look down -Z.
-        light->lightDir = viewDir;
+        viewDir = -viewDir; // Cameras look down -Z.        
+        light->lightDir[index] = mLightsOn[index] ? viewDir-position : glm::vec3(0.0, 0.0, 0.0);
+
+        glm::vec3 view1 = viewToWorld[0].xyz();
+        glm::vec3 view2 = viewToWorld[1].xyz();
+        glm::vec3 view4 = viewToWorld[3].xyz();
+        std::cout << "size: " << viewToWorld.length() << std::endl;
+        std::cout << "view1x: " << view1.x << " view1y: " << view1.y << " view1z: " << view1.z << std::endl;
+        std::cout << "view2x: " << view2.x << " view2y: " << view2.y << " view2z: " << view2.z << std::endl;
+        std::cout << "view3x: " << viewDir.x << " view3y: " << viewDir.y << " view3z: " << viewDir.z << std::endl;
+        std::cout << "view4x: " << view4.x << " view4y: " << view4.y << " view4z: " << view4.z << std::endl;
+        std::cout << "x: " << x << " y: " << y << " z: " << 0 << std::endl;
+      }
+      */
+    }
+
+    void SRInterface::setLightOn(int index, bool value)
+    {
+      if (mLightsOn.size() > 0 && index < LIGHT_NUM)
+      {
+        mLightsOn[index] = value;
       }
     }
 
