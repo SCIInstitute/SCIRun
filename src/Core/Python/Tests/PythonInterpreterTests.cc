@@ -133,10 +133,10 @@ protected:
     return loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld");
   }
 
-  //static FieldHandle CreatePointCloudScalar()
-  //{
-  //  return loadFieldFromFile(TestResources::rootDir() / "Fields/point_cloud/scalar/pts_scalar.fld");
-  //}
+  static FieldHandle CreateTriSurfFromCVRTI()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/CVRTI_cappedTorso/CappedTorso_192.fld");
+  }
 
   static std::vector<FieldHandle> fileExamples()
   {
@@ -330,6 +330,32 @@ TEST_F(FieldConversionTests, RoundTripTetVolNode)
   EXPECT_EQ("TetVolMesh<TetLinearLgn<Point>>", info.get_mesh_type_id());
   EXPECT_EQ("TetVolMesh", info.get_mesh_type());
   EXPECT_EQ("GenericField<TetVolMesh<TetLinearLgn<Point>>,TetLinearLgn<double>,vector<double>>", info.get_field_type_id());
+}
+
+
+TEST_F(FieldConversionTests, RoundTripTriSurfCVRTI)
+{
+  auto expected = CreateTriSurfFromCVRTI();
+  auto pyField = convertFieldToPython(expected);
+  EXPECT_EQ(10, len(pyField.items()));
+
+  FieldExtractor converter(pyField);
+
+  ASSERT_TRUE(converter.check());
+
+  auto actual = converter();
+  ASSERT_TRUE(actual != nullptr);
+  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  ASSERT_TRUE(actualField != nullptr);
+
+  FieldInformation info(actualField);
+  EXPECT_TRUE(info.is_trisurf());
+  EXPECT_TRUE(info.is_double());
+  EXPECT_TRUE(info.is_scalar());
+  EXPECT_TRUE(info.is_linear());
+  EXPECT_EQ("TriSurfMesh<TriLinearLgn<Point>>", info.get_mesh_type_id());
+  EXPECT_EQ("TriSurfMesh", info.get_mesh_type());
+  EXPECT_EQ("GenericField<TriSurfMesh<TriLinearLgn<Point>>,TriLinearLgn<double>,vector<double>>", info.get_field_type_id());
 }
 
 TEST_F(FieldConversionTests, RoundTripTetVolCell)
