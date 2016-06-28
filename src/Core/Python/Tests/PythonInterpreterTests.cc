@@ -133,10 +133,10 @@ protected:
     return loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld");
   }
 
-  //static FieldHandle CreatePointCloudScalar()
-  //{
-  //  return loadFieldFromFile(TestResources::rootDir() / "Fields/point_cloud/scalar/pts_scalar.fld");
-  //}
+  static FieldHandle CreateTriSurfFromCVRTI()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/CVRTI_cappedTorso/CappedTorso_192.fld");
+  }
 
   static std::vector<FieldHandle> fileExamples()
   {
@@ -330,6 +330,62 @@ TEST_F(FieldConversionTests, RoundTripTetVolNode)
   EXPECT_EQ("TetVolMesh<TetLinearLgn<Point>>", info.get_mesh_type_id());
   EXPECT_EQ("TetVolMesh", info.get_mesh_type());
   EXPECT_EQ("GenericField<TetVolMesh<TetLinearLgn<Point>>,TetLinearLgn<double>,vector<double>>", info.get_field_type_id());
+}
+
+// TODO: found a workaround for Brett's failing mesh (need to set data to all zeros)
+TEST_F(FieldConversionTests, DISABLED_RoundTripTriSurfCVRTI)
+{
+  auto expected = CreateTriSurfFromCVRTI();
+  {
+    FieldInformation info(expected);
+    EXPECT_TRUE(info.is_trisurf());
+    EXPECT_TRUE(info.is_double());
+    EXPECT_TRUE(info.is_scalar());
+    EXPECT_TRUE(info.is_linear());
+    EXPECT_EQ("TriSurfMesh<TriLinearLgn<Point>>", info.get_mesh_type_id());
+    EXPECT_EQ("TriSurfMesh", info.get_mesh_type());
+    EXPECT_EQ("GenericField<TriSurfMesh<TriLinearLgn<Point>>,TriLinearLgn<double>,vector<double>>", info.get_field_type_id());
+  }
+
+  auto pyField = convertFieldToPython(expected);
+  EXPECT_EQ(10, len(pyField.items()));
+  {
+    boost::python::extract<boost::python::dict> e(pyField);
+    auto pyMatlabDict = e();
+
+    auto length = len(pyMatlabDict);
+
+    auto keys = pyMatlabDict.keys();
+    auto values = pyMatlabDict.values();
+
+    for (int i = 0; i < length; ++i)
+    {
+      boost::python::extract<std::string> key_i(keys[i]);
+
+      boost::python::extract<std::string> value_i_string(values[i]);
+      boost::python::extract<boost::python::list> value_i_list(values[i]);
+      auto fieldName = key_i();
+      std::cout << "setting field " << fieldName << " " << (value_i_string.check() ? value_i_string() : "NOT A STRING") << std::endl;
+    }
+  }
+
+  FieldExtractor converter(pyField);
+
+  ASSERT_TRUE(converter.check());
+
+  auto actual = converter();
+  ASSERT_TRUE(actual != nullptr);
+  auto actualField = boost::dynamic_pointer_cast<Field>(actual);
+  ASSERT_TRUE(actualField != nullptr);
+
+  FieldInformation info(actualField);
+  EXPECT_TRUE(info.is_trisurf());
+  EXPECT_TRUE(info.is_double());
+  EXPECT_TRUE(info.is_scalar());
+  EXPECT_TRUE(info.is_linear());
+  EXPECT_EQ("TriSurfMesh<TriLinearLgn<Point>>", info.get_mesh_type_id());
+  EXPECT_EQ("TriSurfMesh", info.get_mesh_type());
+  EXPECT_EQ("GenericField<TriSurfMesh<TriLinearLgn<Point>>,TriLinearLgn<double>,vector<double>>", info.get_field_type_id());
 }
 
 TEST_F(FieldConversionTests, RoundTripTetVolCell)
