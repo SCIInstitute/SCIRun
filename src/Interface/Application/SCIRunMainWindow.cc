@@ -533,7 +533,7 @@ void SCIRunMainWindow::executeAll()
 {
 	if (Application::Instance().parameters()->isRegressionMode())
 	{
-		auto timeout = Application::Instance().parameters()->regressionTimeoutSeconds();
+		auto timeout = Application::Instance().parameters()->developerParameters()->regressionTimeoutSeconds();
 		QTimer::singleShot(1000 * *timeout, this, SLOT(networkTimedOut()));
 	}
 
