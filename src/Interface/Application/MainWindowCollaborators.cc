@@ -172,6 +172,7 @@ NewUserWizard::NewUserWizard(QWidget* parent) : QWizard(parent)
   addPage(createPathSettingPage());
   addPage(createConnectionChoicePage());
   addPage(createLicensePage());
+  addPage(createDocPage());
 }
 
 QWizardPage* NewUserWizard::createIntroPage()
@@ -201,7 +202,7 @@ QWizardPage* NewUserWizard::createPathSettingPage()
   page->setTitle("Configuring Paths");
   page->setSubTitle("Specify the location of SCIRun's data folder. This path is referenced in network files and modules using the code %SCIRUNDATADIR%.");
   auto downloadLabel = new QLabel("The data can be downloaded from <a href=\"http://www.sci.utah.edu/download/scirun/\">sci.utah.edu</a>");
-  
+  downloadLabel->setOpenExternalLinks(true);
   auto layout = new QVBoxLayout;
   layout->addWidget(downloadLabel);
 
@@ -221,15 +222,38 @@ QWizardPage* NewUserWizard::createLicensePage()
   auto page = new QWizardPage;
   page->setTitle("Applicable Licenses");
   QString licenseText(
-    "<p><a href = \"https://github.com/SCIInstitute/SCIRun/blob/master/src/LICENSE.txt\">SCIRun License</a>"
-    "<p><a href = \"https://github.com/CIBC-Internal/teem/blob/master/LICENSE.txt\">Teem License</a>"
+    "<p><a href = \"https://raw.githubusercontent.com/SCIInstitute/SCIRun/master/src/LICENSE.txt\">SCIRun License</a>"
+    "<p><a href = \"https://raw.githubusercontent.com/CIBC-Internal/teem/master/LICENSE.txt\">Teem License</a>"
 #if WITH_TETGEN
     "<p><a href = \"http://wias-berlin.de/software/tetgen/1.5/FAQ-license.html\">Tetgen License</a>"
 #endif
     );
   auto layout = new QVBoxLayout;
   auto licenseLabel = new QLabel(licenseText);
+  licenseLabel->setStyleSheet("QLabel { background-color : lightgray; color : blue; }");
+  licenseLabel->setAlignment(Qt::AlignCenter);
+  licenseLabel->setOpenExternalLinks(true);
   layout->addWidget(licenseLabel);
+  page->setLayout(layout);
+  return page;
+}
+
+QWizardPage* NewUserWizard::createDocPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Documentation");
+  page->setSubTitle("For more information on SCIRun 5 functionality, documentation can be found at: ");
+  auto layout = new QVBoxLayout;
+  auto docLabel = new QLabel(
+    "<p><a href = \"https://github.com/SCIInstitute/SCIRun/wiki\">New SCIRun Wiki</a>"
+    "<p><a href = \"http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php5/CIBC:Documentation:SCIRun:Reference\">Old SCIRun Wiki</a>"
+    "<p><a href = \"http://sciinstitute.github.io/scirun.pages/\">SCIRun Doc Home Page</a>"
+    "<p><a href = \"mailto:scirun-users@sci.utah.edu\">SCIRun Users mailing list</a>"
+  );
+  docLabel->setStyleSheet("QLabel { background-color : lightgray; color : blue; }");
+  docLabel->setAlignment(Qt::AlignCenter);
+  docLabel->setOpenExternalLinks(true);
+  layout->addWidget(docLabel);
   page->setLayout(layout);
   return page;
 }
@@ -239,7 +263,6 @@ void NewUserWizard::updatePathLabel(const QString& dir)
   pathWidget_->setText(dir);
 }
 
-
 class ConnectionStyleWizardPage : public QWizardPage, public Ui::ConnectionStyleWizardPage
 {
 public:
@@ -247,16 +270,14 @@ public:
   {
     setupUi(this);
     manhattanLabel_->setPixmap(QPixmap(":/general/Resources/manhattan.png"));
-    registerField("useManhattan*", manhattanRadioButton_);
     euclideanLabel_->setPixmap(QPixmap(":/general/Resources/euclidean.png"));
-    registerField("useEuclidean*", euclideanRadioButton_);
     cubicLabel_->setPixmap(QPixmap(":/general/Resources/cubic.png"));
-    registerField("useCubic*", cubicRadioButton_);
+    registerField("connectionChoice*", connectionComboBox_);
+    connect(connectionComboBox_, SIGNAL(currentIndexChanged(int)), SCIRunMainWindow::Instance(), SLOT(setConnectionPipelineType(int)));
   }
 };
 
 QWizardPage* NewUserWizard::createConnectionChoicePage()
 {
-  auto page = new ConnectionStyleWizardPage;
-  return page;
+  return new ConnectionStyleWizardPage;
 }

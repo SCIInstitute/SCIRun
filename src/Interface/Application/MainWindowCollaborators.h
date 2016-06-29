@@ -186,6 +186,7 @@ namespace Gui {
     QWizardPage* createPathSettingPage();
     QWizardPage* createLicensePage();
     QWizardPage* createConnectionChoicePage();
+    QWizardPage* createDocPage();
     QLineEdit* pathWidget_;
   };
 }

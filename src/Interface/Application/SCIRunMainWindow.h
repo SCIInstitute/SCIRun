@@ -98,6 +98,7 @@ public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
   void setDataDirectoryFromGUI();
+  void setConnectionPipelineType(int type);
 protected:
   virtual void closeEvent(QCloseEvent* event) override;
   virtual void keyPressEvent(QKeyEvent *event) override;

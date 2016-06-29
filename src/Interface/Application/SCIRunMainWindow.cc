@@ -866,6 +866,23 @@ void SCIRunMainWindow::makePipesManhattan()
   networkEditor_->setConnectionPipelineType(MANHATTAN);
 }
 
+void SCIRunMainWindow::setConnectionPipelineType(int type)
+{
+	networkEditor_->setConnectionPipelineType(type);
+	switch (type)
+	{
+	case MANHATTAN:
+		prefsWindow_->manhattanPipesRadioButton_->setChecked(true);
+		break;
+	case CUBIC:
+		prefsWindow_->cubicPipesRadioButton_->setChecked(true);
+		break;
+	case EUCLIDEAN:
+		prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
+		break;
+	}
+}
+
 void SCIRunMainWindow::chooseBackgroundColor()
 {
   auto brush = networkEditor_->background();

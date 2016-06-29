@@ -6,38 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>630</width>
-    <height>221</height>
+    <width>648</width>
+    <height>272</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string/>
   </property>
   <property name="title">
-   <string>Connection style</string>
+   <string>Connection drawing style</string>
   </property>
   <property name="subTitle">
-   <string>Choose a connection draw style:</string>
+   <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <widget class="QRadioButton" name="manhattanRadioButton_">
+    <widget class="QLabel" name="label">
      <property name="text">
       <string>Manhattan</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QRadioButton" name="euclideanRadioButton_">
-     <property name="text">
-      <string>Euclidean</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QRadioButton" name="cubicRadioButton_">
-     <property name="text">
-      <string>Cubic</string>
      </property>
     </widget>
    </item>
@@ -95,6 +81,52 @@
      </property>
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Euclidean</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Cubic</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QComboBox" name="connectionComboBox_">
+     <property name="currentIndex">
+      <number>-1</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>Manhattan</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Euclidean</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Cubic</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Choose style:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </item>
