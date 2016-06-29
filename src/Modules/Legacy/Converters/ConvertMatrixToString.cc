@@ -30,8 +30,8 @@
 #include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
 
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Datatypes/DenseMatrix.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -45,7 +45,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Converters;
 
 
-ConvertMatrixToString::ConvertMatrixToString() : Module(ModuleLookupInfo("ConvertMatrixToString","Converters","BioPSE"),false)
+ConvertMatrixToString::ConvertMatrixToString() : Module(ModuleLookupInfo("ConvertMatrixToString","Converters","SCIRun"),false)
 {
 	INITIALIZE_PORT(InputMatrix);
 	INITIALIZE_PORT(ResultString);

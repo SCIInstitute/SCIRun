@@ -87,7 +87,10 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(zValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneZ(int)));
   connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
   //-----------Lights Tab-----------------//
-  
+  connect(headlightCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleHeadLight(bool)));
+  connect(light1CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight1(bool)));
+  connect(light2CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight2(bool)));
+  connect(light3CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight3(bool)));
   //-----------Materials Tab-----------------//
   connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
   connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
@@ -131,10 +134,16 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   WidgetStyleMixin::tabStyle(tabWidget);
 
-  setupLightControlCircle(headlightFrame_, parent->pulling_, false);
-  setupLightControlCircle(light1Frame_, parent->pulling_, true);
-  setupLightControlCircle(light2Frame_, parent->pulling_, true);
-  setupLightControlCircle(light3Frame_, parent->pulling_, true);
+  setupLightControlCircle(headlightFrame_, 0, parent->pulling_, false);
+  setupLightControlCircle(light1Frame_, 1, parent->pulling_, true);
+  setupLightControlCircle(light2Frame_, 2, parent->pulling_, true);
+  setupLightControlCircle(light3Frame_, 3, parent->pulling_, true);
+
+  for (auto &light : lightControls_)
+  {
+    connect(light, SIGNAL(lightMoved(int)), parent, SLOT(setLightPosition(int)));
+    connect(light, SIGNAL(colorChanged(int)), parent, SLOT(setLightColor(int)));
+  }
 
   /////Set unused widgets to be not visible
   ////Clipping tab
@@ -290,9 +299,14 @@ void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double
   dValueHorizontalSlider_->setSliderPosition(d * 100);
 }
 
-QPointF ViewSceneControlsDock::getLightPosition(int index)
+QPointF ViewSceneControlsDock::getLightPosition(int index) const
 {
   return lightControls_[index]->getLightPosition();
+}
+
+QColor ViewSceneControlsDock::getLightColor(int index) const
+{
+  return lightControls_[index]->getColor();
 }
 
 void ViewSceneControlsDock::addItem(const QString& name, bool checked)
@@ -362,19 +376,19 @@ void ViewSceneControlsDock::setupObjectListWidget()
 }
 
 
-void ViewSceneControlsDock::setupLightControlCircle(QFrame* frame, const boost::atomic<bool>& pulling, bool moveable)
+void ViewSceneControlsDock::setupLightControlCircle(QFrame* frame, int index, const boost::atomic<bool>& pulling, bool moveable)
 {
   auto scene = new QGraphicsScene(frame);
-  auto lightcontrol = new LightControlCircle(scene, pulling, frame->rect(), frame);
+  auto lightcontrol = new LightControlCircle(scene, index, pulling, frame->rect(), frame);
   lightcontrol->setMovable(moveable);
   lightControls_.push_back(lightcontrol);
 }
 
-LightControlCircle::LightControlCircle(QGraphicsScene* scene,  //ModuleStateHandle state,
+LightControlCircle::LightControlCircle(QGraphicsScene* scene,  int index,
   const boost::atomic<bool>& pulling, QRectF sceneRect,
   QWidget* parent)
   : QGraphicsView(scene, parent), 
-  dialogPulling_(pulling)
+  dialogPulling_(pulling), index_(index), lightColor_(Qt::white)
 {
   setSceneRect(sceneRect);
   static QPen pointPen(Qt::white, 1);
@@ -383,12 +397,12 @@ LightControlCircle::LightControlCircle(QGraphicsScene* scene,  //ModuleStateHand
   qreal radius = sceneRect.height() - 12;
   boundingCircle_ = scene->addEllipse(x, y, radius, radius, pointPen, QBrush(Qt::transparent));
 
-  const int lightCircleRadius = 8;
+  const int lightCircleRadius = 10;
   qreal circleX = (sceneRect.width() / 2) - (lightCircleRadius / 2);
   qreal circleY = (sceneRect.height() / 2) - (lightCircleRadius / 2);
-  lightPosition_ = scene->addEllipse(circleX, circleY, lightCircleRadius, lightCircleRadius, pointPen, QBrush(Qt::white));
-  previousX = circleX;
-  previousY = circleY;
+  lightPosition_ = scene->addEllipse(circleX, circleY, lightCircleRadius, lightCircleRadius, pointPen, QBrush(lightColor_));
+  previousX_ = circleX;
+  previousY_ = circleY;
   lightPosition_->setFlag(QGraphicsItem::ItemIsMovable, true);
 }
 
@@ -397,9 +411,21 @@ void LightControlCircle::setMovable(bool canMove)
   lightPosition_->setFlag(QGraphicsItem::ItemIsMovable, canMove);
 }
 
-QPointF LightControlCircle::getLightPosition()
+QPointF LightControlCircle::getLightPosition() const
 {
   return lightPosition_->pos();
+}
+
+void LightControlCircle::setColor(const QColor& color)
+{
+  lightColor_ = color;
+  static_cast<QGraphicsEllipseItem*>(lightPosition_)->setBrush(QBrush(color));
+  Q_EMIT colorChanged(index_);
+}
+
+QColor LightControlCircle::getColor() const
+{
+  return lightColor_;
 }
 
 void LightControlCircle::mousePressEvent(QMouseEvent* event)
@@ -411,9 +437,10 @@ void LightControlCircle::mousePressEvent(QMouseEvent* event)
     {
       //std::cout << "small dot clicked" << std::endl;
     }
-    else if (boundingCircle_->contains(event->pos()))
+    else if (boundingCircle_->isUnderMouse())
     {
-      //std::cout << "bounding circle clicked!" << std::endl;
+      //std::cout << "bounding circle clicked!" << std::endl; 
+      selectLightColor();
     }
   }
 }
@@ -425,12 +452,24 @@ void LightControlCircle::mouseMoveEvent(QMouseEvent* event)
   {
     if (lightPosition_->collidesWithItem(boundingCircle_))
     {
-      previousX = lightPosition_->pos().x();
-      previousY = lightPosition_->pos().y();
+      previousX_ = lightPosition_->pos().x();
+      previousY_ = lightPosition_->pos().y();
     }
     else
     {
-      lightPosition_->setPos(previousX, previousY);
+      lightPosition_->setPos(previousX_, previousY_);
     }
+    Q_EMIT lightMoved(index_);
+  }
+}
+
+void LightControlCircle::selectLightColor()
+{
+  QString title = index_<1 ? windowTitle() + " Choose color for Headlight" : windowTitle() + " Choose color for Light" + QString::number(index_);
+ 
+  auto newColor = QColorDialog::getColor(lightColor_, this, title);
+  if (newColor.isValid())
+  {
+    setColor(newColor);  
   }
 }

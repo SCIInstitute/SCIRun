@@ -67,6 +67,9 @@ namespace Matlab {
     enum { NUMPORTS = 6 };
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    
+    LEGACY_MATLAB_MODULE
+
   protected:
     virtual void postStateChangeInternalSignalHookup() override;
   private:

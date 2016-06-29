@@ -41,6 +41,7 @@ namespace Math {
     public Has1InputPort<MatrixPortTag>,
     public Has1OutputPort<MatrixPortTag>
   {
+    CONVERTED_VERSION_OF_MODULE(ReportMatrixRowMeasure)
   public:
     ReportMatrixSliceMeasure();
     virtual void execute();

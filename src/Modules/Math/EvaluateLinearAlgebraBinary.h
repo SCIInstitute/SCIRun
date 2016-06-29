@@ -41,6 +41,7 @@ namespace SCIRun {
         public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
         public Has1OutputPort<MatrixPortTag>
       {
+        CONVERTED_VERSION_OF_MODULE(EvaluateLinAlgBinary)
       public:
         EvaluateLinearAlgebraBinaryModule();
         virtual void execute();

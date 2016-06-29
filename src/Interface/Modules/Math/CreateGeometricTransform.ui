@@ -54,6 +54,9 @@
             <property name="decimals">
              <number>6</number>
             </property>
+            <property name="minimum">
+             <double>-99.989999999999995</double>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -68,6 +71,9 @@
             <property name="decimals">
              <number>6</number>
             </property>
+            <property name="minimum">
+             <double>-99.989999999999995</double>
+            </property>
            </widget>
           </item>
           <item row="2" column="0">
@@ -81,6 +87,9 @@
            <widget class="QDoubleSpinBox" name="translateVectorZDoubleSpinBox_">
             <property name="decimals">
              <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-99.989999999999995</double>
             </property>
            </widget>
           </item>
@@ -370,6 +379,9 @@
             <property name="decimals">
              <number>6</number>
             </property>
+            <property name="minimum">
+             <double>-99.989999999999995</double>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -384,6 +396,9 @@
             <property name="decimals">
              <number>6</number>
             </property>
+            <property name="minimum">
+             <double>-99.989999999999995</double>
+            </property>
            </widget>
           </item>
           <item row="2" column="0">
@@ -397,6 +412,9 @@
            <widget class="QDoubleSpinBox" name="rotationFixedPointZDoubleSpinBox_">
             <property name="decimals">
              <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-99.989999999999995</double>
             </property>
            </widget>
           </item>
@@ -459,22 +477,6 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QDoubleSpinBox" name="rotateZAxisDoubleSpinBox_">
-            <property name="minimum">
-             <double>-1.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>1.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-            <property name="value">
-             <double>1.000000000000000</double>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_22">
             <property name="text">
@@ -495,6 +497,22 @@
             </property>
             <property name="singleStep">
              <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="rotateZAxisDoubleSpinBox_">
+            <property name="minimum">
+             <double>-1.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -539,6 +557,9 @@
             <property name="decimals">
              <number>6</number>
             </property>
+            <property name="minimum">
+             <double>-99.989999999999995</double>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -553,6 +574,9 @@
             <property name="decimals">
              <number>6</number>
             </property>
+            <property name="minimum">
+             <double>-99.989999999999995</double>
+            </property>
            </widget>
           </item>
           <item row="2" column="0">
@@ -566,6 +590,9 @@
            <widget class="QDoubleSpinBox" name="shearVectorZDoubleSpinBox_">
             <property name="decimals">
              <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-99.989999999999995</double>
             </property>
            </widget>
           </item>

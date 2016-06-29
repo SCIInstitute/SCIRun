@@ -59,6 +59,7 @@ namespace SCIRun
         public HasNoInputPorts,
         public Has1OutputPort<ColorMapPortTag>
       {
+        CONVERTED_VERSION_OF_MODULE(CreateStandardColorMaps)
       public:
         CreateStandardColorMap();
         virtual void execute() override;
