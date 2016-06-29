@@ -102,7 +102,7 @@ SET(Interface_Application_HEADERS
 SET(Interface_Application_FORMS
   DeveloperConsole.ui
   Module.ui
-  #ModuleMini.ui
+  ConnectionStyleWizardPage.ui
   ModuleLogWindow.ui
   NoteEditor.ui
   Preferences.ui

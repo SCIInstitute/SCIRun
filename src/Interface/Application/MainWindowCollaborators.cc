@@ -30,6 +30,8 @@
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Logging/Log.h>
+#include "ui_ConnectionStyleWizardPage.h"
+#include <Interface/Application/ui_ConnectionStyleWizardPage.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -161,12 +163,14 @@ void WidgetDisablingService::temporarilyEnableService()
 
 NewUserWizard::NewUserWizard(QWidget* parent) : QWizard(parent)
 {
-  setWindowTitle("SCIRun Tutorial");
+  setWindowTitle("SCIRun Initial Setup");
   //setPixmap(WatermarkPixmap, QPixmap(":/general/Resources/scirun_5_0_alpha.png"));
   //setPixmap(BackgroundPixmap, QPixmap(":/general/Resources/scirun_5_0_alpha.png"));
+  setOption(NoCancelButton);
 
   addPage(createIntroPage());
   addPage(createPathSettingPage());
+  addPage(createConnectionChoicePage());
   addPage(createLicensePage());
 }
 
@@ -189,8 +193,6 @@ public:
   }
 };
 
-
-
 QWizardPage* NewUserWizard::createPathSettingPage()
 {
   pathWidget_ = new QLineEdit("");
@@ -198,8 +200,10 @@ QWizardPage* NewUserWizard::createPathSettingPage()
   auto page = new PathSettingPage(pathWidget_);
   page->setTitle("Configuring Paths");
   page->setSubTitle("Specify the location of SCIRun's data folder. This path is referenced in network files and modules using the code %SCIRUNDATADIR%.");
+  auto downloadLabel = new QLabel("The data can be downloaded from <a href=\"http://www.sci.utah.edu/download/scirun/\">sci.utah.edu</a>");
   
   auto layout = new QVBoxLayout;
+  layout->addWidget(downloadLabel);
 
   layout->addWidget(pathWidget_);
   auto button = new QPushButton("Set Path...");
@@ -217,8 +221,11 @@ QWizardPage* NewUserWizard::createLicensePage()
   auto page = new QWizardPage;
   page->setTitle("Applicable Licenses");
   QString licenseText(
-    "<p><a href = \"https://github.com/SCIInstitute/SCIRun/blob/master/src/LICENSE.txt\">SCIRun License"
+    "<p><a href = \"https://github.com/SCIInstitute/SCIRun/blob/master/src/LICENSE.txt\">SCIRun License</a>"
     "<p><a href = \"https://github.com/CIBC-Internal/teem/blob/master/LICENSE.txt\">Teem License</a>"
+#if WITH_TETGEN
+    "<p><a href = \"http://wias-berlin.de/software/tetgen/1.5/FAQ-license.html\">Tetgen License</a>"
+#endif
     );
   auto layout = new QVBoxLayout;
   auto licenseLabel = new QLabel(licenseText);
@@ -230,4 +237,26 @@ QWizardPage* NewUserWizard::createLicensePage()
 void NewUserWizard::updatePathLabel(const QString& dir)
 {
   pathWidget_->setText(dir);
+}
+
+
+class ConnectionStyleWizardPage : public QWizardPage, public Ui::ConnectionStyleWizardPage
+{
+public:
+  ConnectionStyleWizardPage()
+  {
+    setupUi(this);
+    manhattanLabel_->setPixmap(QPixmap(":/general/Resources/manhattan.png"));
+    registerField("useManhattan*", manhattanRadioButton_);
+    euclideanLabel_->setPixmap(QPixmap(":/general/Resources/euclidean.png"));
+    registerField("useEuclidean*", euclideanRadioButton_);
+    cubicLabel_->setPixmap(QPixmap(":/general/Resources/cubic.png"));
+    registerField("useCubic*", cubicRadioButton_);
+  }
+};
+
+QWizardPage* NewUserWizard::createConnectionChoicePage()
+{
+  auto page = new ConnectionStyleWizardPage;
+  return page;
 }
