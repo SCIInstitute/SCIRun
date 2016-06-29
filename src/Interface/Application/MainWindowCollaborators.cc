@@ -161,10 +161,13 @@ void WidgetDisablingService::temporarilyEnableService()
 
 NewUserWizard::NewUserWizard(QWidget* parent) : QWizard(parent)
 {
+  setWindowTitle("SCIRun Tutorial");
+  //setPixmap(WatermarkPixmap, QPixmap(":/general/Resources/scirun_5_0_alpha.png"));
+  //setPixmap(BackgroundPixmap, QPixmap(":/general/Resources/scirun_5_0_alpha.png"));
+
   addPage(createIntroPage());
   addPage(createPathSettingPage());
-
-  setWindowTitle("SCIRun Tutorial Wizard");
+  addPage(createLicensePage());
 }
 
 QWizardPage* NewUserWizard::createIntroPage()
@@ -172,32 +175,33 @@ QWizardPage* NewUserWizard::createIntroPage()
   auto page = new QWizardPage;
   page->setTitle("Introduction");
 
-  auto label = new QLabel("This wizard will help you set up SCIRun for the first time and learn the basic SCIRun operations and hotkeys. All of these settings are available at any time in the Preferences window.");
-  label->setWordWrap(true);
-
-  auto layout = new QVBoxLayout;
-  layout->addWidget(label);
-  page->setLayout(layout);
+  page->setSubTitle("This wizard will help you set up SCIRun for the first time and learn the basic SCIRun operations and hotkeys. All of these settings are available at any time in the Preferences window.");
 
   return page;
 }
 
+class PathSettingPage : public QWizardPage
+{
+public:
+  explicit PathSettingPage(QLineEdit* pathWidget)
+  {
+    registerField("dataPath*", pathWidget);
+  }
+};
+
+
+
 QWizardPage* NewUserWizard::createPathSettingPage()
 {
-  auto page = new QWizardPage;
+  pathWidget_ = new QLineEdit("");
+  pathWidget_->setReadOnly(true);
+  auto page = new PathSettingPage(pathWidget_);
   page->setTitle("Configuring Paths");
-
-  auto label = new QLabel("Specify the location of SCIRun's data folder. This path is referenced in network files and modules using the code %SCIRUNDATADIR%.");
-  label->setWordWrap(true);
-
-  pathLabel_ = new QLabel("Data path:");
-
-  //page->registerField("className*", classNameLineEdit);
-
+  page->setSubTitle("Specify the location of SCIRun's data folder. This path is referenced in network files and modules using the code %SCIRUNDATADIR%.");
+  
   auto layout = new QVBoxLayout;
-  layout->addWidget(label);
 
-  layout->addWidget(pathLabel_);
+  layout->addWidget(pathWidget_);
   auto button = new QPushButton("Set Path...");
   layout->addWidget(button);
   connect(button, SIGNAL(clicked()), SCIRunMainWindow::Instance(), SLOT(setDataDirectoryFromGUI()));
@@ -208,12 +212,22 @@ QWizardPage* NewUserWizard::createPathSettingPage()
   return page;
 }
 
-QWizardPage* NewUserWizard::createConclusionPage()
+QWizardPage* NewUserWizard::createLicensePage()
 {
-  return nullptr;
+  auto page = new QWizardPage;
+  page->setTitle("Applicable Licenses");
+  QString licenseText(
+    "<p><a href = \"https://github.com/SCIInstitute/SCIRun/blob/master/src/LICENSE.txt\">SCIRun License"
+    "<p><a href = \"https://github.com/CIBC-Internal/teem/blob/master/LICENSE.txt\">Teem License</a>"
+    );
+  auto layout = new QVBoxLayout;
+  auto licenseLabel = new QLabel(licenseText);
+  layout->addWidget(licenseLabel);
+  page->setLayout(layout);
+  return page;
 }
 
 void NewUserWizard::updatePathLabel(const QString& dir)
 {
-  pathLabel_->setText("Data path: " + dir);
+  pathWidget_->setText(dir);
 }

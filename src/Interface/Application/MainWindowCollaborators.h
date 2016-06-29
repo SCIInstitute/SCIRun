@@ -40,7 +40,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDir>
-#include <QLabel>
+#include <QLineEdit>
 #include <QMutex>
 #include <QWizard>
 
@@ -179,14 +179,13 @@ namespace Gui {
     Q_OBJECT
   public:
     explicit NewUserWizard(QWidget* parent);
-
   private Q_SLOTS:
     void updatePathLabel(const QString& dir);
   private:
-    QLabel* pathLabel_;
     QWizardPage* createIntroPage();
     QWizardPage* createPathSettingPage();
-    QWizardPage *createConclusionPage();
+    QWizardPage* createLicensePage();
+    QLineEdit* pathWidget_;
   };
 }
 }
