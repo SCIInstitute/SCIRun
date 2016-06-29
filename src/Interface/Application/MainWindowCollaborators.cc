@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <QtGui>
 #include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
@@ -159,64 +159,61 @@ void WidgetDisablingService::temporarilyEnableService()
   serviceEnabled_ = true;
 }
 
-namespace {
-
-QWizardPage *createIntroPage()
+NewUserWizard::NewUserWizard(QWidget* parent) : QWizard(parent)
 {
-  QWizardPage *page = new QWizardPage;
+  addPage(createIntroPage());
+  addPage(createPathSettingPage());
+
+  setWindowTitle("SCIRun Tutorial Wizard");
+}
+
+QWizardPage* NewUserWizard::createIntroPage()
+{
+  auto page = new QWizardPage;
   page->setTitle("Introduction");
 
-  QLabel *label = new QLabel("This wizard will help you set up SCIRun for the first time and learn the basic SCIRun operations and hotkeys.");
+  auto label = new QLabel("This wizard will help you set up SCIRun for the first time and learn the basic SCIRun operations and hotkeys. All of these settings are available at any time in the Preferences window.");
   label->setWordWrap(true);
 
-  QVBoxLayout *layout = new QVBoxLayout;
+  auto layout = new QVBoxLayout;
   layout->addWidget(label);
   page->setLayout(layout);
 
   return page;
 }
 
-QWizardPage *createPathSettingPage()
+QWizardPage* NewUserWizard::createPathSettingPage()
 {
-  QWizardPage *page = new QWizardPage;
-  page->setTitle("Set Data Path");
+  auto page = new QWizardPage;
+  page->setTitle("Configuring Paths");
 
-  QLabel *label = new QLabel("Specify the location of SCIRun's data folder. This path is referenced in modules using the code %SCIRUNDATADIR%.");
+  auto label = new QLabel("Specify the location of SCIRun's data folder. This path is referenced in network files and modules using the code %SCIRUNDATADIR%.");
   label->setWordWrap(true);
 
-  auto classNameLabel = new QLabel("Data path:");
-  auto classNameLineEdit = new QLineEdit;
-  
+  pathLabel_ = new QLabel("Data path:");
+
   //page->registerField("className*", classNameLineEdit);
 
-  QVBoxLayout *layout = new QVBoxLayout;
+  auto layout = new QVBoxLayout;
   layout->addWidget(label);
 
-  auto hbox = new QHBoxLayout;
-  hbox->addWidget(classNameLabel);
-  hbox->addWidget(classNameLineEdit);
-  hbox->addWidget(new QPushButton("Set Path..."));
-  layout->addLayout(hbox);
+  layout->addWidget(pathLabel_);
+  auto button = new QPushButton("Set Path...");
+  layout->addWidget(button);
+  connect(button, SIGNAL(clicked()), SCIRunMainWindow::Instance(), SLOT(setDataDirectoryFromGUI()));
+  connect(SCIRunMainWindow::Instance(), SIGNAL(dataDirectorySet(const QString&)), this, SLOT(updatePathLabel(const QString&)));
 
   page->setLayout(layout);
 
   return page;
 }
 
-QWizardPage *createConclusionPage()
+QWizardPage* NewUserWizard::createConclusionPage()
 {
   return nullptr;
 }
 
-}
-
-void SCIRun::Gui::newUserWizard(QWidget* parent)
+void NewUserWizard::updatePathLabel(const QString& dir)
 {
-  auto wizard = new QWizard(parent);
-  wizard->addPage(createIntroPage());
-  wizard->addPage(createPathSettingPage());
-  //wizard.addPage(createConclusionPage());
-
-  wizard->setWindowTitle("SCIRun Tutorial Wizard");
-  wizard->exec();
+  pathLabel_->setText("Data path: " + dir);
 }

@@ -1169,6 +1169,7 @@ namespace {
     addSnippet("[ReadField*->ShowField->ViewScene]", snips);
     addSnippet("[CreateLatVol->ShowField->ViewScene]", snips);
     addSnippet("[ReadField*->ReportFieldInfo]", snips);
+    addSnippet("[ReadMatrix*->ReportMatrixInfo]", snips);
     addSnippet("[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]", snips);
     addSnippet("[GetFieldBoundary->FairMesh->ShowField]", snips);
 
@@ -1448,6 +1449,7 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
 
     RemembersFileDialogDirectory::setStartingDir(dir);
     Preferences::Instance().setDataDirectory(dir.toStdString());
+    Q_EMIT dataDirectorySet(dir);
   }
 }
 
@@ -1480,13 +1482,13 @@ void SCIRunMainWindow::addToDataDirectory(const QString& dir)
 
 void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
+  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
   setDataDirectory(dir);
 }
 
 void SCIRunMainWindow::addToPathFromGUI()
 {
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
+  auto dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
 	addToDataDirectory(dir);
 }
 
@@ -1586,7 +1588,8 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
 
 void SCIRunMainWindow::launchNewUserWizard()
 {
-  newUserWizard(this);
+  NewUserWizard wiz(this);
+  wiz.exec();
 }
 
 void SCIRunMainWindow::adjustModuleDock(int state)
