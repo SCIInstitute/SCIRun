@@ -27,11 +27,11 @@
 */
 
 /*
- *  EcgsimFileToMatrix_Plugin.cc
+ *  IgbFiletoMatrix_Plugin.cc
  *
  *  Written by:
- *   Jeroen Stinstra
- *   Department of Computer Science
+ *   Karli Gillette
+ *   Department of Bioengineering
  *   University of Utah
  *
  */
@@ -46,10 +46,22 @@
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
+#include <string.h>
+#include <stdlib.h>
+#include <string>
+#include <stdio.h>
+#include <vector>
+#include <boost/tokenizer.hpp>
+#include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/iter_find.hpp>
+#include <cmath>
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
+using namespace std;
 using namespace SCIRun;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -57,211 +69,120 @@ using namespace SCIRun::Core::Datatypes;
 
 MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
 {
-  DenseMatrixHandle result;
-
-  int ncols = 0;
-  int nrows = 0;
-  int line_ncols = 0;
-  int header_rows = 0;
-  int header_cols = 0;
-
-  std::string line;
-  double data;
-
-  // STAGE 1 - SCAN THE FILE TO DETERMINE THE DIMENSIONS OF THE MATRIX
-  // AND CHECK THE FILE'S INTEGRITY.
-
-  {
-    std::ifstream inputfile;
-    inputfile.exceptions( std::ifstream::badbit );
-
-    try
+     
+    string line;
+    vector<string> strs;
+    int x_size=0;
+    int t_size=0;
+    int count=0;
+   
+    
+    ifstream myfile (filename);
+    if (myfile.is_open())
     {
-      inputfile.open(filename);
-
-      // get header information
-      getline(inputfile,line,'\n');
-      for (size_t p = 0;p<line.size();p++)
-      {
-        if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
-      }
-      std::istringstream iss(line);
-      iss >> header_rows;
-      iss >> header_cols; 
-
-      while( getline(inputfile,line,'\n'))
-      {
-        if (line.size() > 0)
+        //while ( myfile.good() )
+        for(int i=0; i<5; i++)
         {
-          // block out comments
-          if ((line[0] == '#')||(line[0] == '%')) continue;
-        }
-                  
-        // replace comma's and tabs with white spaces
-        for (size_t p = 0;p<line.size();p++)
-        {
-          if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
-        }
-        std::istringstream iss(line);
-        iss.exceptions( std::ifstream::failbit | std::ifstream::badbit);
-
-        try
-        {
-          line_ncols = 0;
-          while(1)
-          {
-            iss >> data;
-            line_ncols++;
-          }
-        }
-        catch(...)
-        {
-        }
-
-        if (line_ncols > 0)
-        {
-          nrows++;
-          if (ncols > 0)
-          {
-            if (ncols != line_ncols)
+            getline (myfile,line);
+            cout << line << endl;
+            
+            boost::split(strs,line,boost::is_any_of(":, "));
+            size_t sz;
+            sz=line.size();
+            
+            std::cout << sz << std::endl;
+            
+            
+            for(int p=0;p<sz;p++)
             {
-              if (pr) pr->error("Improper format of text file, not every line contains the same amount of numbers");
-              return (result);
+             
+               std::cout << p << std::endl; 	
+             
+                if (boost::iequals(strs[p], "x"))
+                {
+                    x_size=atoi(strs[p+1].c_str());
+                    std::cout << "found it: " << strs[p] << "= " << strs[p+1] << '\n';
+                    
+                    count += 1;
+                    
+                }
+                if (boost::iequals(strs[p], "t"))
+                {
+                    t_size=atoi(strs[p+1].c_str());
+                    std::cout << "found it: " << strs[p] << "= " << strs[p+1] << '\n';
+                    
+                    count +=1;
+                     
+                }
+                
+                if (count ==2 ) break;
+                
+  
             }
-          }
-          else
-          {
-            ncols = line_ncols;
-          }
-        }
-      }
+        
+                     
+        	}
+        myfile.close();
+    }
 
-      if(ncols*nrows != header_cols*header_rows)
-      {
-        if (pr) pr->error("Data does not match header information.");
+            
+        streamoff length=0;
+        streamsize numbyts=0;
+        //char * buffer;
+        
+        
+        
+        
+        ifstream is;
+        is.open (filename, ios::in |  ios::binary );
+        if (is.is_open())
+        {
+            // get length of file:
+            is.seekg (0, ios::end);
+            length = is.tellg();
+            is.seekg (1024, ios::beg);
+
+            vector<float> vec;
+            vec.resize(x_size*t_size);
+            
+            
+        
+            is.read ((char*)&vec[0],x_size * t_size * sizeof(float));
+            if (!is)
+            {
+                numbyts=is.gcount();
+                cout << "Error reading binary data. Number of bytes read: " << numbyts << endl;
+
+            }
+            is.close();
+        
+        
+            // auto result(boost::make_shared<DenseMatrix>(x_size,t_size));
+            
+            DenseMatrixHandle result;
+            
+            result.reset(new DenseMatrix(x_size,t_size));
+            
+                for(size_t p=0;p<t_size;p++ )
+                {
+                
+                    for(size_t pp=0;pp<x_size;pp++ )
+                    {
+            
+                	
+                        (*result) << vec[(p*x_size)+pp];
+                		std::cout << vec[(p*x_size)+pp] << std::endl; 
+                    }
+                }
+           
+    
         return(result);
-      }
-    }
-    catch (...)
-    {
-      if (pr) pr->error("Could not open file: "+std::string(filename));
-      return (result);
-    }
-    
-    inputfile.close();
-  }
-
-  // STAGE 2 - NOW ACTUALLY READ AND STORE THE MATRIX
-
-  {
-    std::ifstream inputfile;
-    inputfile.exceptions( std::ifstream::badbit );
-
-    result.reset(new DenseMatrix(header_rows,header_cols));
-    if (!result)
-    {
-      if (pr) pr->error("Could not allocate matrix");
-      return(result);
-    }
-    
-    double* dataptr = result->data();
-    int k = 0;
-
-    try
-    {
-      inputfile.open(filename);
-    
-      // get header information
-      getline(inputfile,line,'\n');
-
-      while( getline(inputfile,line,'\n'))
-      {
-        if (line.size() > 0)
-        {
-          // block out comments
-          if ((line[0] == '#')||(line[0] == '%')) continue;
         }
-                                          
-        // replace comma's and tabs with white spaces
-        for (size_t p = 0;p<line.size();p++)
-        {
-          if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
-        }
-        std::istringstream iss(line);
-        iss.exceptions( std::ifstream::failbit | std::ifstream::badbit);
-        try
-        {
-          while(1)
-          {
-            iss >> data;
-            dataptr[k++] = data;
-          }
-        }
-        catch(...)
-        {
-        }
-      }
-    }
-    catch (...)
-    {
-      if (pr) pr->error("Could not open and read data in file: " + std::string(filename));
-      return (result);
-    }
-    
-    inputfile.close();
-  }
-  return(result);
 }
-
-
-bool SCIRun::IgbFileMatrix_writer(LoggerHandle pr, MatrixHandle matrixInput, const char *filename)
-{
-
-  std::ofstream outputfile;
-  outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
-
-  DenseMatrixHandle matrix = castMatrix::toDense(matrixInput);
   
-  if (!matrix)
-  {
-    if (pr) pr->error("Empty matrix detected");
-    return(false);
-  }
-
-  double* dataptr = matrix->data();
-  if (!dataptr)
-  {
-    if (pr) pr->error("Empty matrix detected");
-    return(false);
-  }
-
-  try
-  {
-    outputfile.open(filename);
-  }
-  catch (...)
-  {
-    if (pr) pr->error("Could not open file: "+std::string(filename));
-    return (false);
-  }
-    
-  // output header line
-  //int rows = matrix->nrows();
-  //int cols = matrix->ncols();
-  outputfile << matrix->nrows() << " " << matrix->ncols() << std::endl;
-
-  size_t k = 0;
-  for (int p=0; p<matrix->nrows(); p++)  
-  {
-    for (int q=0; q<matrix->ncols(); q++)  
-    {
-      outputfile << dataptr[k++] << " ";
-    }
-    outputfile << "\n";
-  }  
   
-  return (true);
-}
+  
+
 
 
 
