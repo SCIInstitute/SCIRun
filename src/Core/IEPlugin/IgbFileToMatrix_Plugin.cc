@@ -84,13 +84,11 @@ MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
         for(int i=0; i<5; i++)
         {
             getline (myfile,line);
-            cout << line << endl;
             
             boost::split(strs,line,boost::is_any_of(":, "));
             size_t sz;
             sz=line.size();
             
-            std::cout << sz << std::endl;
             
             
             for(int p=0;p<sz;p++)
@@ -101,7 +99,7 @@ MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
                 if (boost::iequals(strs[p], "x"))
                 {
                     x_size=atoi(strs[p+1].c_str());
-                    std::cout << "found it: " << strs[p] << "= " << strs[p+1] << '\n';
+                
                     
                     count += 1;
                     
@@ -109,7 +107,7 @@ MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
                 if (boost::iequals(strs[p], "t"))
                 {
                     t_size=atoi(strs[p+1].c_str());
-                    std::cout << "found it: " << strs[p] << "= " << strs[p+1] << '\n';
+                
                     
                     count +=1;
                      
@@ -170,8 +168,8 @@ MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
                     {
             
                 	
-                        (*result) << vec[(p*x_size)+pp];
-                		std::cout << vec[(p*x_size)+pp] << std::endl; 
+                        (*result)(pp, p) = vec[(p*x_size)+pp];
+                		
                     }
                 }
            
