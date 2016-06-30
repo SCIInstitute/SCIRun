@@ -960,6 +960,7 @@ void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& 
       auto connection = inputPort->connection(0); // only one incoming connection for input ports
       //VariableHandle feedback(new Variable(Name(inputPort->id().toString()), info));
       //TODO: extract port method
+      std::cout << get_id() << " Module::sendFeedbackUpstreamAlongIncomingConnections" << std::endl;
       connection->oport_->sendConnectionFeedback(feedback);
     }
   }

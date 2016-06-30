@@ -147,9 +147,8 @@ namespace SCIRun
       class EditMeshBoundingBoxImpl
       {
       public:
-        Transform box_initial_transform_;
         Transform field_initial_transform_;
-        BBox box_initial_bounds_;
+        Transform userWidgetTransform_;
       };
     }
   }
@@ -167,17 +166,16 @@ EditMeshBoundingBox::EditMeshBoundingBox()
 
 void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 {
+  static int callCount = 0;
+  std::cout << "callback count: " << callCount++ << std::endl;
   auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  //std::cout << "before:" << std::endl;
-  //impl_->box_initial_transform_.print();
   if (vsf.selectionName.find(get_id()) != std::string::npos)// && impl_->previousTransform_ != vsf.transform)
   {
     std::cout << "EditMeshBoundingBox::processWidgetFeedback transform from ViewSceneDialog:" << std::endl;
-    vsf.transform.print();
-    //std::cout << "after:" << std::endl;
-    //impl_->box_initial_transform_.print();
+    //vsf.transform.print();
+    impl_->userWidgetTransform_ = vsf.transform;
     //adjustPositionFromTransform(vsf.transform);
-    //enqueueExecuteAgain();
+    enqueueExecuteAgain();
   }
 
 }
@@ -218,25 +216,22 @@ void EditMeshBoundingBox::setStateDefaults()
   setBoxRestrictions();
 
   getOutputPort(Transformation_Widget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
+  impl_->userWidgetTransform_.load_identity();
 }
 
 void EditMeshBoundingBox::execute()
 {
-  std::cout << "EMBB impl" << std::endl;
-  impl_->box_initial_transform_.print();
-  impl_->field_initial_transform_.print();
-  //impl_->box_initial_bounds_.print();
-
   //TODO: need version to pass a func for ifNull case--fancy but useful. For now just reset each time.
   setBoxRestrictions();
   auto field = getRequiredInput(InputField);
 
-  if (needToExecute())
+  if (needToExecute() || impl_->userWidgetTransform_ != Transform::Identity())
   {
     clear_vals();
     update_state(Executing);
     update_input_attributes(field);
     executeImpl(field);
+    impl_->userWidgetTransform_.load_identity();
   }
 }
 
@@ -384,7 +379,6 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
       bbox.extend(Point(0, 0, 0));
       bbox.extend(Point(1, 1, 1));
     }
-    impl_->box_initial_bounds_ = bbox;
 
     // build a widget identical to the BBox
     size = Vector(bbox.get_max() - bbox.get_min());
@@ -418,20 +412,6 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
     Point in(center + sizez / 2.);
 
     // Translate * Rotate * Scale.
-    Transform r;
-    std::cout << ">>>1" << std::endl;
-    impl_->box_initial_transform_.print();
-    impl_->box_initial_transform_.load_identity();
-    impl_->box_initial_transform_.pre_scale(Vector((right - center).length(),
-      (down - center).length(),
-      (in - center).length()));
-    r.load_frame((right - center).safe_normal(),
-      (down - center).safe_normal(),
-      (in - center).safe_normal());
-    impl_->box_initial_transform_.pre_trans(r);
-    impl_->box_initial_transform_.pre_translate(Vector(center));
-    std::cout << ">>>1" << std::endl;
-    impl_->box_initial_transform_.print();
 
     auto state = get_state();
     const double newscale = size.length() * 0.015;
@@ -503,8 +483,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
 
     Transform r;
     impl_->field_initial_transform_.load_identity();
-    std::cout << ">>>1" << std::endl;
-    impl_->field_initial_transform_.print();
 
     double sx = (right - center).length();
     double sy = (down - center).length();
@@ -519,13 +497,9 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
     r.load_frame((right - center).safe_normal(),
       (down - center).safe_normal(),
       (in - center).safe_normal());
-      std::cout << ">>>2.1" << std::endl;
-      r.print();
 
     impl_->field_initial_transform_.pre_trans(r);
     impl_->field_initial_transform_.pre_translate(Vector(center));
-    std::cout << ">>>2" << std::endl;
-    impl_->field_initial_transform_.print();
 
     state->setValue(Resetting, false);
   }
@@ -585,18 +559,26 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
   t.pre_trans(r);
   t.pre_translate(Vector(center));
 
-  std::cout << ">>>3" << std::endl;
-  impl_->field_initial_transform_.print();
+  //std::cout << ">>>3" << std::endl;
+  //impl_->field_initial_transform_.print();
   Transform inv(impl_->field_initial_transform_);
   inv.invert();
   t.post_trans(inv);
+  t.post_trans(impl_->userWidgetTransform_);
+
+  impl_->userWidgetTransform_.project_inplace(center);
+  impl_->userWidgetTransform_.project_inplace(right);
+  impl_->userWidgetTransform_.project_inplace(down);
+  impl_->userWidgetTransform_.project_inplace(in);
+  box_->setPosition(center, right, down, in);
 
   // Change the input field handle here.
   FieldHandle output(fh->deep_clone());
   output->vmesh()->transform(t);
+  
 
-  std::cout << ">>>4" << std::endl;
-  output->vmesh()->get_transform().print();
+  //std::cout << ">>>4" << std::endl;
+  //output->vmesh()->get_transform().print();
 
   sendOutput(OutputField, output);
 
