@@ -96,6 +96,7 @@ namespace SCIRun {
         void executeImpl(FieldHandle f);
         void clear_vals();
         void update_input_attributes(FieldHandle);
+        void updateOutputAttributes(const Core::Geometry::BBox& box);
         void build_widget(FieldHandle, bool reset);
         bool isBoxEmpty() const;
         void widget_moved(bool);
