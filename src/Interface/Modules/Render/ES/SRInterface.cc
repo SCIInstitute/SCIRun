@@ -1841,8 +1841,8 @@ namespace SCIRun {
           GLsizei(w), GLsizei(h), 0,
           GL_RGBA,
           GL_UNSIGNED_BYTE, (GLvoid*)font));
-        delete font_data;
-        delete font;
+        delete [] font_data;
+        delete [] font;
       }
     }
   } // namespace Render
