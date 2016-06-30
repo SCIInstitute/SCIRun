@@ -224,9 +224,9 @@ QWizardPage* NewUserWizard::createLicensePage()
   QString licenseText(
     "<p><a href = \"https://raw.githubusercontent.com/SCIInstitute/SCIRun/master/src/LICENSE.txt\">SCIRun License</a>"
     "<p><a href = \"https://raw.githubusercontent.com/CIBC-Internal/teem/master/LICENSE.txt\">Teem License</a>"
-#if WITH_TETGEN
-    "<p><a href = \"http://wias-berlin.de/software/tetgen/1.5/FAQ-license.html\">Tetgen License</a>"
-#endif
+//#if WITH_TETGEN
+//    "<p><a href = \"http://wias-berlin.de/software/tetgen/1.5/FAQ-license.html\">Tetgen License</a>"
+//#endif
     );
   auto layout = new QVBoxLayout;
   auto licenseLabel = new QLabel(licenseText);
