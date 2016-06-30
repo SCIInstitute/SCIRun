@@ -1074,6 +1074,15 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(true);
       }
 
+      auto expand = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(-1);
+      if (expand > 0)
+      {
+        qDebug() << "expand factor for dialogs:" << expand;
+        qDebug() << dialog_->size();
+        dialog_->setFixedHeight(dialog_->size().height() * expand);
+        qDebug() << dialog_->size();
+      }
+
       dialog_->pull();
     }
   }

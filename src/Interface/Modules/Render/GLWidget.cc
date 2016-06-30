@@ -59,8 +59,8 @@ GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
 
   // Call gl platform init.
   CPM_GL_PLATFORM_NS::glPlatformInit();
-  
-  auto frameInitLimitFromCommandLine = Core::Application::Instance().parameters()->frameInitLimit();
+
+  auto frameInitLimitFromCommandLine = Core::Application::Instance().parameters()->developerParameters()->frameInitLimit();
   if (frameInitLimitFromCommandLine)
   {
     std::cout << "Renderer frame init limit changed to " << *frameInitLimitFromCommandLine << std::endl;
@@ -119,7 +119,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
- 
+
   SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
   event->ignore();

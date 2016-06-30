@@ -65,6 +65,7 @@ public:
       ("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
       ("reexecuteMode", po::value<std::string>(), "network reexecution mode--DEVELOPER USE ONLY")
       ("frameInitLimit", po::value<int>(), "ViewScene frame init limit--increase if renderer fails")
+      ("guiExpandFactor", po::value<double>(), "Expansion factor for high resolution displays")
       ("list-modules", "print list of available modules")
       ;
 
@@ -105,6 +106,44 @@ private:
 namespace
 {
 
+class DeveloperParametersImpl : public DeveloperParameters
+{
+public:
+  DeveloperParametersImpl(
+    const boost::optional<std::string>& threadMode,
+    const boost::optional<std::string>& reexecuteMode,
+    const boost::optional<int>& frameInitLimit,
+    const boost::optional<int>& regressionTimeout,
+    const boost::optional<double>& guiExpandFactor
+  ) : threadMode_(threadMode), reexecuteMode_(reexecuteMode), frameInitLimit_(frameInitLimit),
+    regressionTimeout_(regressionTimeout), guiExpandFactor_(guiExpandFactor)
+  {}
+  virtual boost::optional<int> regressionTimeoutSeconds() const override
+  {
+    return regressionTimeout_;
+  }
+  virtual boost::optional<std::string> threadMode() const  override
+  {
+    return threadMode_;
+  }
+  virtual boost::optional<std::string> reexecuteMode() const override
+  {
+    return reexecuteMode_;
+  }
+  virtual boost::optional<int> frameInitLimit() const override
+  {
+    return frameInitLimit_;
+  }
+  virtual boost::optional<double> guiExpandFactor() const override
+  {
+    return guiExpandFactor_;
+  }
+private:
+  boost::optional<std::string> threadMode_, reexecuteMode_;
+  boost::optional<int> frameInitLimit_, regressionTimeout_;
+  boost::optional<double> guiExpandFactor_;
+};
+
 class ApplicationParametersImpl : public ApplicationParameters
 {
 public:
@@ -122,7 +161,7 @@ public:
       bool isVerboseMode,
       bool printModules) : help_(help), version_(version), executeNetwork_(executeNetwork),
       executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
-      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode), 
+      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode),
       interactiveMode_(interactiveMode),
       loadMostRecentFile_(loadMostRecentFile),
       isVerboseMode_(isVerboseMode),
@@ -135,15 +174,11 @@ public:
     std::vector<std::string>&& inputFiles,
     const boost::optional<boost::filesystem::path>& pythonScriptFile,
     const boost::optional<boost::filesystem::path>& dataDirectory,
-    const boost::optional<std::string>& threadMode,
-    const boost::optional<std::string>& reexecuteMode,
-    const boost::optional<int>& frameInitLimit,
-    const boost::optional<int>& regressionTimeout,
+    DeveloperParametersPtr devParams,
     const Flags& flags
    ) : entireCommandLine_(entireCommandLine),
     inputFiles_(inputFiles), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory),
-    threadMode_(threadMode), reexecuteMode_(reexecuteMode), frameInitLimit_(frameInitLimit),
-    regressionTimeout_(regressionTimeout),
+    devParams_(devParams),
     flags_(flags)
   {}
 
@@ -207,29 +242,14 @@ public:
     return flags_.loadMostRecentFile_;
   }
 
-  virtual boost::optional<int> regressionTimeoutSeconds() const override
+  virtual DeveloperParametersPtr developerParameters() const override
   {
-    return regressionTimeout_;
+    return devParams_;
   }
 
   virtual bool verboseMode() const override
   {
     return flags_.isVerboseMode_;
-  }
-
-  virtual boost::optional<std::string> threadMode() const override
-  {
-    return threadMode_;
-  }
-
-  virtual boost::optional<std::string> reexecuteMode() const override
-  {
-    return reexecuteMode_;
-  }
-
-  virtual boost::optional<int> frameInitLimit() const override
-  {
-    return frameInitLimit_;
   }
 
   virtual bool printModuleList() const override
@@ -247,8 +267,7 @@ private:
   std::vector<std::string> inputFiles_;
   boost::optional<boost::filesystem::path> pythonScriptFile_;
   boost::optional<boost::filesystem::path> dataDirectory_;
-  boost::optional<std::string> threadMode_, reexecuteMode_;
-  boost::optional<int> frameInitLimit_, regressionTimeout_;
+  DeveloperParametersPtr devParams_;
   Flags flags_;
 };
 
@@ -261,6 +280,15 @@ CommandLineParser::CommandLineParser() : impl_(new CommandLineParserInternal)
 std::string CommandLineParser::describe() const
 {
   return impl_->describe();
+}
+
+namespace
+{
+  template <typename T>
+  boost::optional<T> parseOptionalArg(const po::variables_map& parsed, const std::string& label)
+  {
+    return parsed.count(label) != 0 ? parsed[label].as<T>() : boost::optional<T>();
+  }
 }
 
 ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[]) const
@@ -280,19 +308,19 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     {
       dataDirectory = boost::filesystem::path(parsed["datadir"].as<std::string>());
     }
-    auto threadMode = parsed.count("threadMode") != 0 ? parsed["threadMode"].as<std::string>() : boost::optional<std::string>();
-    auto reexecuteMode = parsed.count("reexecuteMode") != 0 ? parsed["reexecuteMode"].as<std::string>() : boost::optional<std::string>();
-    auto frameInitLimit = parsed.count("frameInitLimit") != 0 ? parsed["frameInitLimit"].as<int>() : boost::optional<int>();
-    auto regressionTimeout = parsed.count("regression") != 0 ? parsed["regression"].as<int>() : boost::optional<int>();
+
     return boost::make_shared<ApplicationParametersImpl>
       (boost::algorithm::join(cmdline, " "),
       std::move(inputFiles),
       pythonScriptFile,
       dataDirectory,
-      threadMode,
-      reexecuteMode,
-      frameInitLimit,
-      regressionTimeout,
+      boost::make_shared<DeveloperParametersImpl>(
+        parseOptionalArg<std::string>(parsed, "threadMode"),
+        parseOptionalArg<std::string>(parsed, "reexecuteMode"),
+        parseOptionalArg<int>(parsed, "frameInitLimit"),
+        parseOptionalArg<int>(parsed, "regression"),
+        parseOptionalArg<double>(parsed, "guiExpandFactor")
+      ),
       ApplicationParametersImpl::Flags(
         parsed.count("help") != 0,
         parsed.count("version") != 0,

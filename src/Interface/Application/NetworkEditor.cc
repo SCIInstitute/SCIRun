@@ -375,6 +375,17 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->createPortPositionProviders();
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
+  auto expand = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(-1);
+
+  if (expand > 0)
+  {
+    qDebug() << "expand factor:" << expand;
+    qDebug() << proxy->size();
+    module->setFixedHeight(proxy->size().height() * expand);
+    proxy->setMaximumHeight(proxy->size().height() * expand);
+    qDebug() << proxy->size();
+  }
+
   scene_->addItem(proxy);
   ensureVisible(proxy);
   proxy->createStartupNote();
