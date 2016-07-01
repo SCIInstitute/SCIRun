@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>463</width>
+    <width>380</width>
     <height>29</height>
    </rect>
   </property>
@@ -34,7 +34,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="searchLineEdit_"/>
+    <widget class="QLineEdit" name="searchLineEdit_">
+     <property name="maximumSize">
+      <size>
+       <width>300</width>
+       <height>16777215</height>
+      </size>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
