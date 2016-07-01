@@ -712,6 +712,7 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 
 void NetworkEditor::mouseDoubleClickEvent(QMouseEvent* event)
 {
+  #if 0
   if (!search_)
   {
     search_ = scene_->addWidget(new NetworkSearchWidget(this));
@@ -721,6 +722,7 @@ void NetworkEditor::mouseDoubleClickEvent(QMouseEvent* event)
   search_->setVisible(true);
 
   QGraphicsView::mouseDoubleClickEvent(event);
+  #endif
 }
 
 void NetworkEditor::hideSearchBox()
