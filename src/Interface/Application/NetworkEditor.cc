@@ -710,6 +710,36 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
   QGraphicsView::mouseReleaseEvent(event);
 }
 
+void NetworkEditor::mouseDoubleClickEvent(QMouseEvent* event)
+{
+  if (!search_)
+  {
+    search_ = scene_->addWidget(new NetworkSearchWidget(this));
+    search_->setOpacity(0.9);
+  }
+  search_->setPos(mapToScene(event->pos()));
+  search_->setVisible(true);
+
+  QGraphicsView::mouseDoubleClickEvent(event);
+}
+
+void NetworkEditor::hideSearchBox()
+{
+  if (search_)
+    search_->setVisible(false);
+}
+
+NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
+{
+  setupUi(this);
+  connect(closeButton_, SIGNAL(clicked()), ned, SLOT(hideSearchBox()));
+}
+
+NetworkSearchWidgetProxy::NetworkSearchWidgetProxy(NetworkSearchWidget* nsw)
+{
+  setWidget(nsw);
+}
+
 ConnectionLine* NetworkEditor::getSingleConnectionSelected()
 {
 	ConnectionLine* connectionSelected = nullptr;

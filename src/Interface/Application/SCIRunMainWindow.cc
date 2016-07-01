@@ -1866,7 +1866,6 @@ void SCIRunMainWindow::showKeyboardShortcutsDialog()
 
 void SCIRunMainWindow::runNewModuleWizard()
 {
-	qDebug() << "new module wizard coming soon";
   auto wizard = new ClassWizard(this);
 	wizard->show();
 }

@@ -31,6 +31,8 @@
 
 #include <QGraphicsView>
 #include <QGraphicsTextItem>
+#include <QGraphicsProxyWidget>
+#include "ui_NetworkSearch.h"
 #ifndef Q_MOC_RUN
 #include <boost/shared_ptr.hpp>
 #include <atomic>
@@ -87,7 +89,7 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    explicit ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent = 0);
+    explicit ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent = nullptr);
     ~ErrorItem();
     int num() const { return counter_; }
   protected:
@@ -102,6 +104,20 @@ namespace Gui {
     const int counter_;
     QGraphicsRectItem* rect_;
     static std::atomic<int> instanceCounter_;
+  };
+
+  class NetworkSearchWidget : public QWidget, public Ui::NetworkSearch
+  {
+    Q_OBJECT
+  public:
+    explicit NetworkSearchWidget(class NetworkEditor* ned);
+  };
+
+  class NetworkSearchWidgetProxy : public QGraphicsProxyWidget
+  {
+    Q_OBJECT
+  public:
+    explicit NetworkSearchWidgetProxy(NetworkSearchWidget* base);
   };
 
   class ModuleEventProxy : public QObject
@@ -221,6 +237,7 @@ namespace Gui {
     virtual void wheelEvent(QWheelEvent* event) override;
     virtual void contextMenuEvent(QContextMenuEvent *event) override;
     virtual void mousePressEvent(QMouseEvent *event) override;
+    virtual void mouseDoubleClickEvent(QMouseEvent* event) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
@@ -284,6 +301,7 @@ namespace Gui {
     void paste();
     void bringToFront();
     void sendToBack();
+    void hideSearchBox();
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
@@ -324,6 +342,7 @@ namespace Gui {
     bool insertingNewModuleAlongConnection_ { false };
     PreexecuteFunc preexecute_;
     bool showTagGroupsOnFileLoad_ { false };
+    QGraphicsProxyWidget* search_ { nullptr };
   };
 }
 }
