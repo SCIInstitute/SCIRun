@@ -19,7 +19,7 @@ https://github.com/SCIInstitute/SCIRun
 
 ### Summary
 
-| Warning! |  SCIRun 5 is alpha software, you may use for real science but beware of instability.  |
+| Warning! |  SCIRun 5 is beta software, you may use for real science but beware of instability.  |
 |:--------:|:-------------------------------------------------------------------------------------:|
 
 ### Goals

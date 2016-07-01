@@ -326,8 +326,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   //TODO: store in xml file, add to app resources
 	connect(actionForwardInverse_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
   actionForwardInverse_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png"));
-  actionForwardInverse_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.zip"));
-  actionForwardInverse_->setProperty(ToolkitFilename, QString("FwdInvToolkit_v1.zip"));
+  actionForwardInverse_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip"));
+  actionForwardInverse_->setProperty(ToolkitFilename, QString("FwdInvToolkit_v1.2.zip"));
   actionForwardInverse_->setIcon(QPixmap(":/general/Resources/download.png"));
 
 	connect(actionBrainStimulator_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
@@ -533,7 +533,7 @@ void SCIRunMainWindow::executeAll()
 {
 	if (Application::Instance().parameters()->isRegressionMode())
 	{
-		auto timeout = Application::Instance().parameters()->regressionTimeoutSeconds();
+		auto timeout = Application::Instance().parameters()->developerParameters()->regressionTimeoutSeconds();
 		QTimer::singleShot(1000 * *timeout, this, SLOT(networkTimedOut()));
 	}
 
@@ -866,6 +866,23 @@ void SCIRunMainWindow::makePipesManhattan()
   networkEditor_->setConnectionPipelineType(MANHATTAN);
 }
 
+void SCIRunMainWindow::setConnectionPipelineType(int type)
+{
+	networkEditor_->setConnectionPipelineType(type);
+	switch (type)
+	{
+	case MANHATTAN:
+		prefsWindow_->manhattanPipesRadioButton_->setChecked(true);
+		break;
+	case CUBIC:
+		prefsWindow_->cubicPipesRadioButton_->setChecked(true);
+		break;
+	case EUCLIDEAN:
+		prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
+		break;
+	}
+}
+
 void SCIRunMainWindow::chooseBackgroundColor()
 {
   auto brush = networkEditor_->background();
@@ -1169,6 +1186,7 @@ namespace {
     addSnippet("[ReadField*->ShowField->ViewScene]", snips);
     addSnippet("[CreateLatVol->ShowField->ViewScene]", snips);
     addSnippet("[ReadField*->ReportFieldInfo]", snips);
+    addSnippet("[ReadMatrix*->ReportMatrixInfo]", snips);
     addSnippet("[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]", snips);
     addSnippet("[GetFieldBoundary->FairMesh->ShowField]", snips);
 
@@ -1448,6 +1466,7 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
 
     RemembersFileDialogDirectory::setStartingDir(dir);
     Preferences::Instance().setDataDirectory(dir.toStdString());
+    Q_EMIT dataDirectorySet(dir);
   }
 }
 
@@ -1480,13 +1499,13 @@ void SCIRunMainWindow::addToDataDirectory(const QString& dir)
 
 void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
+  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
   setDataDirectory(dir);
 }
 
 void SCIRunMainWindow::addToPathFromGUI()
 {
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
+  auto dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
 	addToDataDirectory(dir);
 }
 
@@ -1586,7 +1605,8 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
 
 void SCIRunMainWindow::launchNewUserWizard()
 {
-  newUserWizard(this);
+  NewUserWizard wiz(this);
+  wiz.exec();
 }
 
 void SCIRunMainWindow::adjustModuleDock(int state)
@@ -1846,7 +1866,6 @@ void SCIRunMainWindow::showKeyboardShortcutsDialog()
 
 void SCIRunMainWindow::runNewModuleWizard()
 {
-	qDebug() << "new module wizard coming soon";
   auto wizard = new ClassWizard(this);
 	wizard->show();
 }
@@ -1940,7 +1959,11 @@ void FileDownloader::fileDownloaded(QNetworkReply* reply)
 void FileDownloader::downloadProgress(qint64 received, qint64 total)
 {
   if (statusBar_)
+	{
     statusBar_->showMessage(tr("File progress: %1 / %2").arg(received).arg(total), 1000);
+		if (received == total)
+			statusBar_->showMessage("File downloaded.", 1000);
+	}
 }
 
 void SCIRunMainWindow::toolkitDownload()
@@ -1983,7 +2006,7 @@ void ToolkitDownloader::showMessageBox()
 #else
   toolkitInfo.setText("Toolkit information");
 #endif
-  toolkitInfo.setInformativeText("Click OK to download the latest version of this toolkit.");
+  toolkitInfo.setInformativeText("Click OK to download the latest version of this toolkit:\n\n" + fileUrl_);
   toolkitInfo.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
   toolkitInfo.setIconPixmap(image);
   toolkitInfo.setDefaultButton(QMessageBox::Ok);
@@ -2012,4 +2035,5 @@ void ToolkitDownloader::saveToolkit()
   file.open(QIODevice::WriteOnly);
   file.write(zipDownloader_->downloadedData());
   file.close();
+	statusBar_->showMessage("Toolkit file saved.", 1000);
 }

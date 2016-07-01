@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -63,10 +63,11 @@ class SCISHARE SimulateForwardMagneticFieldModule : public SCIRun::Dataflow::Net
     INPUT_PORT(1, ConductivityTensor, LegacyField);
     INPUT_PORT(2, DipoleSources, LegacyField);
     INPUT_PORT(3, DetectorLocations, LegacyField);
-    
+
     OUTPUT_PORT(0, MagneticField, LegacyField);
     OUTPUT_PORT(1, MagneticFieldMagnitudes, LegacyField);
 
+    LEGACY_BIOPSE_MODULE
 };
 
 }}}

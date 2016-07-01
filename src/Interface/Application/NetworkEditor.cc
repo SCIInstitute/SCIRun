@@ -375,6 +375,17 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->createPortPositionProviders();
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
+  auto expand = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(-1);
+
+  if (expand > 0)
+  {
+    qDebug() << "expand factor:" << expand;
+    qDebug() << proxy->size();
+    module->setFixedHeight(proxy->size().height() * expand);
+    proxy->setMaximumHeight(proxy->size().height() * expand);
+    qDebug() << proxy->size();
+  }
+
   scene_->addItem(proxy);
   ensureVisible(proxy);
   proxy->createStartupNote();
@@ -699,6 +710,36 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
   QGraphicsView::mouseReleaseEvent(event);
 }
 
+void NetworkEditor::mouseDoubleClickEvent(QMouseEvent* event)
+{
+  if (!search_)
+  {
+    search_ = scene_->addWidget(new NetworkSearchWidget(this));
+    search_->setOpacity(0.9);
+  }
+  search_->setPos(mapToScene(event->pos()));
+  search_->setVisible(true);
+
+  QGraphicsView::mouseDoubleClickEvent(event);
+}
+
+void NetworkEditor::hideSearchBox()
+{
+  if (search_)
+    search_->setVisible(false);
+}
+
+NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
+{
+  setupUi(this);
+  connect(closeButton_, SIGNAL(clicked()), ned, SLOT(hideSearchBox()));
+}
+
+NetworkSearchWidgetProxy::NetworkSearchWidgetProxy(NetworkSearchWidget* nsw)
+{
+  setWidget(nsw);
+}
+
 ConnectionLine* NetworkEditor::getSingleConnectionSelected()
 {
 	ConnectionLine* connectionSelected = nullptr;
@@ -821,6 +862,7 @@ ModuleTagsHandle NetworkEditor::dumpModuleTags(ModuleFilter filter) const
         tags->tags[mod->getModuleWidget()->getModuleId()] = mod->data(TagDataKey).toInt();
     }
   }
+  tags->labels = tagLabelOverrides_;
   tags->showTagGroupsOnLoad = showTagGroupsOnFileLoad();
   return tags;
 }
@@ -895,6 +937,7 @@ void NetworkEditor::updateModuleTags(const ModuleTags& moduleTags)
     }
   }
   setShowTagGroupsOnFileLoad(moduleTags.showTagGroupsOnLoad);
+  tagLabelOverrides_ = moduleTags.labels;
   if (showTagGroupsOnFileLoad())
   {
     tagGroupsActive_ = true;
@@ -991,6 +1034,7 @@ void NetworkEditor::removeModuleWidget(const ModuleId& id)
 
 void NetworkEditor::clear()
 {
+  tagLabelOverrides_.clear();
   ModuleWidget::NetworkClearingScope clearing;
   //auto portSwitch = createDynamicPortDisabler();
   scene_->clear();
@@ -1380,7 +1424,9 @@ namespace
   class TagGroupBox : public QGraphicsRectItem
   {
   public:
-    explicit TagGroupBox(const QRectF& rect, NetworkEditor* ned) : QGraphicsRectItem(rect), ned_(ned)
+    explicit TagGroupBox(int tagNum, const QRectF& rect, NetworkEditor* ned) : QGraphicsRectItem(rect),
+      tagNumber_(tagNum),
+      ned_(ned)
     {
       setAcceptHoverEvents(true);
     }
@@ -1398,21 +1444,45 @@ namespace
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override
     {
       QMenu menu;
-      auto action = menu.addAction("Display in saved network", ned_, SLOT(saveTagGroupRectInFile()));
-      action->setCheckable(true);
-      action->setChecked(ned_->showTagGroupsOnFileLoad());
+      auto autoDisplay = menu.addAction("Display in saved network", ned_, SLOT(saveTagGroupRectInFile()));
+      autoDisplay->setCheckable(true);
+      autoDisplay->setChecked(ned_->showTagGroupsOnFileLoad());
+      auto rename = menu.addAction("Rename in saved network...", ned_, SLOT(renameTagGroupInFile()));
+      rename->setProperty("tag", tagNumber_);
       menu.exec(event->screenPos());
       QGraphicsRectItem::mouseDoubleClickEvent(event);
     }
   private:
+    int tagNumber_;
     NetworkEditor* ned_;
   };
+
+  const int TagTextKey = 123;
 }
 
 void NetworkEditor::saveTagGroupRectInFile()
 {
   auto action = qobject_cast<QAction*>(sender());
   setShowTagGroupsOnFileLoad(action->isChecked());
+  Q_EMIT modified();
+}
+
+void NetworkEditor::renameTagGroupInFile()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  auto tagNum = action->property("tag").toInt();
+
+  bool ok;
+  auto text = QInputDialog::getText(this, tr("Rename tag group"),
+    tr("Enter new tag group name for this network file:"), QLineEdit::Normal, checkForOverriddenTagName(tagNum), &ok);
+  if (ok && !text.isEmpty())
+  {
+    bool changed = tagLabelOverrides_[tagNum] != text.toStdString();
+    tagLabelOverrides_[tagNum] = text.toStdString();
+    if (changed)
+      renameTagGroup(tagNum, text);
+  }
+
   Q_EMIT modified();
 }
 
@@ -1447,11 +1517,12 @@ void NetworkEditor::drawTagGroups()
     for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
     {
       auto rectBounds = rectIter.value().adjusted(-10, -10, 10, 10);
-      QPen pen(tagColor_(rectIter.key()));
+      auto tagNum = rectIter.key();
+      QPen pen(tagColor_(tagNum));
       pen.setWidth(3);
       pen.setCapStyle(Qt::RoundCap);
       pen.setJoinStyle(Qt::RoundJoin);
-      auto rect = new TagGroupBox(rectBounds, this);
+      auto rect = new TagGroupBox(tagNum, rectBounds, this);
       rect->setPen(pen);
       scene_->addItem(rect);
       rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
@@ -1465,13 +1536,23 @@ void NetworkEditor::drawTagGroups()
       scene_->addItem(fill);
 
       static const QFont labelFont("Courier", 20, QFont::Bold);
-      auto label = scene_->addSimpleText(tagName_(rectIter.key()), labelFont);
+
+      auto label = scene_->addSimpleText(checkForOverriddenTagName(tagNum), labelFont);
       label->setBrush(pen.color());
+      label->setData(TagTextKey, tagNum);
       static const QFontMetrics fm(labelFont);
       auto textWidthInPixels = fm.width(label->text());
       label->setPos((rect->rect().topLeft() + rect->rect().topRight()) / 2 + QPointF(-textWidthInPixels / 2, -30));
     }
   }
+}
+
+QString NetworkEditor::checkForOverriddenTagName(int tag) const
+{
+  auto nameOverrideIter = tagLabelOverrides_.find(tag);
+  if (nameOverrideIter != tagLabelOverrides_.end() && !nameOverrideIter->second.empty())
+    return QString::fromStdString(nameOverrideIter->second);
+  return tagName_(tag);
 }
 
 void NetworkEditor::removeTagGroups()
@@ -1481,6 +1562,21 @@ void NetworkEditor::removeTagGroups()
     if (dynamic_cast<QGraphicsRectItem*>(item) || dynamic_cast<QGraphicsSimpleTextItem*>(item))
     {
       delete item;
+    }
+  }
+}
+
+void NetworkEditor::renameTagGroup(int tag, const QString& name)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto rectLabel = dynamic_cast<QGraphicsSimpleTextItem*>(item))
+    {
+      if (rectLabel->data(TagTextKey).toInt() == tag)
+      {
+        rectLabel->setText(name);
+        return;
+      }
     }
   }
 }
@@ -1499,6 +1595,7 @@ void NetworkEditor::highlightTaggedItem(int tagValue)
 
 void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
 {
+  qDebug() << "highlightTaggedItem" << tagValue;
   if (tagValue == NoTag)
   {
     item->setGraphicsEffect(blurEffect());
