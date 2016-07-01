@@ -832,6 +832,7 @@ ModuleTagsHandle NetworkEditor::dumpModuleTags(ModuleFilter filter) const
         tags->tags[mod->getModuleWidget()->getModuleId()] = mod->data(TagDataKey).toInt();
     }
   }
+  tags->labels = tagLabelOverrides_;
   tags->showTagGroupsOnLoad = showTagGroupsOnFileLoad();
   return tags;
 }
@@ -906,6 +907,7 @@ void NetworkEditor::updateModuleTags(const ModuleTags& moduleTags)
     }
   }
   setShowTagGroupsOnFileLoad(moduleTags.showTagGroupsOnLoad);
+  tagLabelOverrides_ = moduleTags.labels;
   if (showTagGroupsOnFileLoad())
   {
     tagGroupsActive_ = true;
@@ -1002,6 +1004,7 @@ void NetworkEditor::removeModuleWidget(const ModuleId& id)
 
 void NetworkEditor::clear()
 {
+  tagLabelOverrides_.clear();
   ModuleWidget::NetworkClearingScope clearing;
   //auto portSwitch = createDynamicPortDisabler();
   scene_->clear();
@@ -1423,6 +1426,8 @@ namespace
     int tagNumber_;
     NetworkEditor* ned_;
   };
+
+  const int TagTextKey = 123;
 }
 
 void NetworkEditor::saveTagGroupRectInFile()
@@ -1439,12 +1444,14 @@ void NetworkEditor::renameTagGroupInFile()
 
   bool ok;
   auto text = QInputDialog::getText(this, tr("Rename tag group"),
-    tr("Enter new tag group name for this network file:"), QLineEdit::Normal, tagName_(tagNum), &ok);
+    tr("Enter new tag group name for this network file:"), QLineEdit::Normal, checkForOverriddenTagName(tagNum), &ok);
   if (ok && !text.isEmpty())
   {
-    qDebug() << "rename tag group" << tagNum << "to" << text;
+    bool changed = tagLabelOverrides_[tagNum] != text.toStdString();
+    tagLabelOverrides_[tagNum] = text.toStdString();
+    if (changed)
+      renameTagGroup(tagNum, text);
   }
-
 
   Q_EMIT modified();
 }
@@ -1499,13 +1506,23 @@ void NetworkEditor::drawTagGroups()
       scene_->addItem(fill);
 
       static const QFont labelFont("Courier", 20, QFont::Bold);
-      auto label = scene_->addSimpleText(tagName_(tagNum), labelFont);
+
+      auto label = scene_->addSimpleText(checkForOverriddenTagName(tagNum), labelFont);
       label->setBrush(pen.color());
+      label->setData(TagTextKey, tagNum);
       static const QFontMetrics fm(labelFont);
       auto textWidthInPixels = fm.width(label->text());
       label->setPos((rect->rect().topLeft() + rect->rect().topRight()) / 2 + QPointF(-textWidthInPixels / 2, -30));
     }
   }
+}
+
+QString NetworkEditor::checkForOverriddenTagName(int tag) const
+{
+  auto nameOverrideIter = tagLabelOverrides_.find(tag);
+  if (nameOverrideIter != tagLabelOverrides_.end() && !nameOverrideIter->second.empty())
+    return QString::fromStdString(nameOverrideIter->second);
+  return tagName_(tag);
 }
 
 void NetworkEditor::removeTagGroups()
@@ -1515,6 +1532,21 @@ void NetworkEditor::removeTagGroups()
     if (dynamic_cast<QGraphicsRectItem*>(item) || dynamic_cast<QGraphicsSimpleTextItem*>(item))
     {
       delete item;
+    }
+  }
+}
+
+void NetworkEditor::renameTagGroup(int tag, const QString& name)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto rectLabel = dynamic_cast<QGraphicsSimpleTextItem*>(item))
+    {
+      if (rectLabel->data(TagTextKey).toInt() == tag)
+      {
+        rectLabel->setText(name);
+        return;
+      }
     }
   }
 }

@@ -299,6 +299,8 @@ namespace Gui {
     void pasteImpl(const QString& xml);
     void drawTagGroups();
     void removeTagGroups();
+    QString checkForOverriddenTagName(int tag) const;
+    void renameTagGroup(int tag, const QString& name);
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
@@ -317,6 +319,7 @@ namespace Gui {
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
     boost::shared_ptr<ZLevelManager> zLevelManager_;
     std::string latestModuleId_;
+    std::map<int, std::string> tagLabelOverrides_;
     bool fileLoading_;
     bool insertingNewModuleAlongConnection_ { false };
     PreexecuteFunc preexecute_;
