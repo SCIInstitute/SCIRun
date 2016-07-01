@@ -301,7 +301,7 @@ namespace Gui {
     void paste();
     void bringToFront();
     void sendToBack();
-    void hideSearchBox();
+    void searchTextChanged(const QString& text);
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;

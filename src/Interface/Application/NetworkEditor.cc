@@ -721,19 +721,19 @@ void NetworkEditor::mouseDoubleClickEvent(QMouseEvent* event)
   search_->setPos(mapToScene(event->pos()));
   search_->setVisible(true);
 #endif
-  QGraphicsView::mouseDoubleClickEvent(event);  
-}
-
-void NetworkEditor::hideSearchBox()
-{
-  if (search_)
-    search_->setVisible(false);
+  QGraphicsView::mouseDoubleClickEvent(event);
 }
 
 NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
 {
   setupUi(this);
-  connect(closeButton_, SIGNAL(clicked()), ned, SLOT(hideSearchBox()));
+  //connect(closeButton_, SIGNAL(clicked()), ned, SLOT(hideSearchBox()));
+  connect(searchLineEdit_, SIGNAL(textChanged(const QString&)), ned, SLOT(searchTextChanged(const QString&)));
+}
+
+void NetworkEditor::searchTextChanged(const QString& text)
+{
+  scene()->addSimpleText(text);
 }
 
 NetworkSearchWidgetProxy::NetworkSearchWidgetProxy(NetworkSearchWidget* nsw)

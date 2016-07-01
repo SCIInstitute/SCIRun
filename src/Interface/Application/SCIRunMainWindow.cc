@@ -132,25 +132,16 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
 
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
-  auto moduleSearchAction = new QWidgetAction(this);
-  moduleSearchAction->setDefaultWidget(new QLineEdit(this));
-
-#if 0
   {
-    //TODO!!!!
-    moduleSearchAction->setVisible(true);
-
-    QToolBar* f = addToolBar(tr("&Search"));
-    f->setObjectName("SearchToolBar");
-
-    QWidgetAction* showModuleLabel = new QWidgetAction(this);
-    showModuleLabel->setDefaultWidget(new QLabel("Module Search:", this));
-    showModuleLabel->setVisible(true);
-
-    f->addAction(showModuleLabel);
-    f->addAction(moduleSearchAction);
+		auto searchAction = new QWidgetAction(this);
+	  searchAction->setDefaultWidget(new NetworkSearchWidget(networkEditor_));
+		addToolBarBreak();
+		auto searchBar = addToolBar("&Search");
+		searchBar->setObjectName("SearchToolBar");
+		WidgetStyleMixin::toolbarStyle(searchBar);
+    searchBar->addAction(searchAction);
   }
-#endif
+
 
   setActionIcons();
 
