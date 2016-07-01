@@ -85,12 +85,12 @@ namespace Gui {
     virtual void displayError(const QString& msg, std::function<void()> showModule) = 0;
   };
 
-  class ErrorItem : public QGraphicsTextItem
+  class FloatingTextItem : public QGraphicsTextItem
   {
     Q_OBJECT
   public:
-    explicit ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent = nullptr);
-    ~ErrorItem();
+    FloatingTextItem(const QString& text, std::function<void()> action, QGraphicsItem* parent = nullptr);
+    ~FloatingTextItem();
     int num() const { return counter_; }
   protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -100,10 +100,17 @@ namespace Gui {
     void animate(qreal val);
   private:
     QTimeLine* timeLine_;
-    std::function<void()> showModule_;
+    std::function<void()> action_;
     const int counter_;
     QGraphicsRectItem* rect_;
     static std::atomic<int> instanceCounter_;
+  };
+
+  class ErrorItem : public FloatingTextItem
+  {
+    Q_OBJECT
+  public:
+    ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent = nullptr);
   };
 
   class NetworkSearchWidget : public QWidget, public Ui::NetworkSearch
@@ -111,13 +118,6 @@ namespace Gui {
     Q_OBJECT
   public:
     explicit NetworkSearchWidget(class NetworkEditor* ned);
-  };
-
-  class NetworkSearchWidgetProxy : public QGraphicsProxyWidget
-  {
-    Q_OBJECT
-  public:
-    explicit NetworkSearchWidgetProxy(NetworkSearchWidget* base);
   };
 
   class ModuleEventProxy : public QObject

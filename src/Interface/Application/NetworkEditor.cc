@@ -733,12 +733,8 @@ NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
 
 void NetworkEditor::searchTextChanged(const QString& text)
 {
+  //TODO
   scene()->addSimpleText(text);
-}
-
-NetworkSearchWidgetProxy::NetworkSearchWidgetProxy(NetworkSearchWidget* nsw)
-{
-  setWidget(nsw);
 }
 
 ConnectionLine* NetworkEditor::getSingleConnectionSelected()
@@ -1616,15 +1612,19 @@ void NetworkEditor::cleanUpNetwork()
   centerView();
 }
 
-std::atomic<int> ErrorItem::instanceCounter_(0);
+ErrorItem::ErrorItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : FloatingTextItem(text, action, parent)
+{
+  setDefaultTextColor(Qt::red);
+}
 
-ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent) : QGraphicsTextItem(text, parent),
-  showModule_(showModule), counter_(instanceCounter_), rect_(nullptr)
+std::atomic<int> FloatingTextItem::instanceCounter_(0);
+
+FloatingTextItem::FloatingTextItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : QGraphicsTextItem(text, parent),
+  action_(action), counter_(instanceCounter_), rect_(nullptr)
 {
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
   setZValue(10000);
   ++instanceCounter_;
-  setDefaultTextColor(Qt::red);
 
   {
     timeLine_ = new QTimeLine(10000, this);
@@ -1634,17 +1634,17 @@ ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGra
   timeLine_->start();
 }
 
-ErrorItem::~ErrorItem()
+FloatingTextItem::~FloatingTextItem()
 {
   --instanceCounter_;
   delete rect_;
 }
 
-void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void FloatingTextItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
   if (event->buttons() & Qt::LeftButton)
   {
-    showModule_();
+    action_();
   }
   else if (event->buttons() & Qt::RightButton)
   {
@@ -1658,13 +1658,13 @@ void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
   QGraphicsTextItem::mousePressEvent(event);
 }
 
-void ErrorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void FloatingTextItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
   timeLine_->setCurrentTime(0);
   QGraphicsTextItem::hoverEnterEvent(event);
 }
 
-void ErrorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void FloatingTextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   if (!rect_)
   {
@@ -1673,7 +1673,7 @@ void ErrorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     auto f = font();
     f.setBold(true);
     setFont(f);
-    setFlags(flags() ^ ItemIsMovable);
+    setFlags(flags() & !ItemIsMovable);
     rect_ = scene()->addRect(boundingRect(), QPen(Qt::red, 2, Qt::DotLine));
     rect_->setPos(pos());
   }
@@ -1691,7 +1691,7 @@ void ErrorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   QGraphicsTextItem::mouseDoubleClickEvent(event);
 }
 
-void ErrorItem::animate(qreal val)
+void FloatingTextItem::animate(qreal val)
 {
   if (val < 1)
     show();
