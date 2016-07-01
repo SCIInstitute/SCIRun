@@ -1391,7 +1391,9 @@ namespace
   class TagGroupBox : public QGraphicsRectItem
   {
   public:
-    explicit TagGroupBox(const QRectF& rect, NetworkEditor* ned) : QGraphicsRectItem(rect), ned_(ned)
+    explicit TagGroupBox(int tagNum, const QRectF& rect, NetworkEditor* ned) : QGraphicsRectItem(rect),
+      tagNumber_(tagNum),
+      ned_(ned)
     {
       setAcceptHoverEvents(true);
     }
@@ -1409,13 +1411,16 @@ namespace
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override
     {
       QMenu menu;
-      auto action = menu.addAction("Display in saved network", ned_, SLOT(saveTagGroupRectInFile()));
-      action->setCheckable(true);
-      action->setChecked(ned_->showTagGroupsOnFileLoad());
+      auto autoDisplay = menu.addAction("Display in saved network", ned_, SLOT(saveTagGroupRectInFile()));
+      autoDisplay->setCheckable(true);
+      autoDisplay->setChecked(ned_->showTagGroupsOnFileLoad());
+      auto rename = menu.addAction("Rename in saved network...", ned_, SLOT(renameTagGroupInFile()));
+      rename->setProperty("tag", tagNumber_);
       menu.exec(event->screenPos());
       QGraphicsRectItem::mouseDoubleClickEvent(event);
     }
   private:
+    int tagNumber_;
     NetworkEditor* ned_;
   };
 }
@@ -1424,6 +1429,23 @@ void NetworkEditor::saveTagGroupRectInFile()
 {
   auto action = qobject_cast<QAction*>(sender());
   setShowTagGroupsOnFileLoad(action->isChecked());
+  Q_EMIT modified();
+}
+
+void NetworkEditor::renameTagGroupInFile()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  auto tagNum = action->property("tag").toInt();
+
+  bool ok;
+  auto text = QInputDialog::getText(this, tr("Rename tag group"),
+    tr("Enter new tag group name for this network file:"), QLineEdit::Normal, tagName_(tagNum), &ok);
+  if (ok && !text.isEmpty())
+  {
+    qDebug() << "rename tag group" << tagNum << "to" << text;
+  }
+
+
   Q_EMIT modified();
 }
 
@@ -1458,11 +1480,12 @@ void NetworkEditor::drawTagGroups()
     for (auto rectIter = tagItemRects.constBegin(); rectIter != tagItemRects.constEnd(); ++rectIter)
     {
       auto rectBounds = rectIter.value().adjusted(-10, -10, 10, 10);
-      QPen pen(tagColor_(rectIter.key()));
+      auto tagNum = rectIter.key();
+      QPen pen(tagColor_(tagNum));
       pen.setWidth(3);
       pen.setCapStyle(Qt::RoundCap);
       pen.setJoinStyle(Qt::RoundJoin);
-      auto rect = new TagGroupBox(rectBounds, this);
+      auto rect = new TagGroupBox(tagNum, rectBounds, this);
       rect->setPen(pen);
       scene_->addItem(rect);
       rect->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
@@ -1476,7 +1499,7 @@ void NetworkEditor::drawTagGroups()
       scene_->addItem(fill);
 
       static const QFont labelFont("Courier", 20, QFont::Bold);
-      auto label = scene_->addSimpleText(tagName_(rectIter.key()), labelFont);
+      auto label = scene_->addSimpleText(tagName_(tagNum), labelFont);
       label->setBrush(pen.color());
       static const QFontMetrics fm(labelFont);
       auto textWidthInPixels = fm.width(label->text());
@@ -1510,6 +1533,7 @@ void NetworkEditor::highlightTaggedItem(int tagValue)
 
 void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
 {
+  qDebug() << "highlightTaggedItem" << tagValue;
   if (tagValue == NoTag)
   {
     item->setGraphicsEffect(blurEffect());

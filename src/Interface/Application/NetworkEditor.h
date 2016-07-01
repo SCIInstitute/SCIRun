@@ -256,6 +256,7 @@ namespace Gui {
     void adjustModuleWidth(int delta);
     void adjustModuleHeight(int delta);
     void saveTagGroupRectInFile();
+    void renameTagGroupInFile();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
