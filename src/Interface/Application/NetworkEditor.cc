@@ -731,10 +731,38 @@ NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
   connect(searchLineEdit_, SIGNAL(textChanged(const QString&)), ned, SLOT(searchTextChanged(const QString&)));
 }
 
+SearchResultItem::SearchResultItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : FloatingTextItem(text, action, parent)
+{
+  setDefaultTextColor(Qt::green);
+}
+
 void NetworkEditor::searchTextChanged(const QString& text)
 {
-  //TODO
-  scene()->addSimpleText(text);
+  auto searchItem = new SearchResultItem(text);
+  searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 20));
+  scene()->addItem(searchItem);
+}
+
+QPointF NetworkEditor::positionOfFloatingText(int num, bool top, int spacing) const
+{
+  QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
+  auto br = tl + viewport()->rect().bottomRight();
+  auto mat = matrix().inverted();
+  auto rect = mat.mapRect(QRectF(tl, br));
+
+  auto corner = top ? rect.topLeft() : rect.bottomLeft();
+  return (corner + QPointF(30, (top ? 1 : -1)* (spacing * num + 100)));
+}
+
+void NetworkEditor::displayError(const QString& msg, std::function<void()> showModule)
+{
+  if (Preferences::Instance().showModuleErrorInlineMessages)
+  {
+    auto errorItem = new ErrorItem(msg, showModule);
+    scene()->addItem(errorItem);
+
+    errorItem->setPos(positionOfFloatingText(errorItem->num(), false, 40));
+  }
 }
 
 ConnectionLine* NetworkEditor::getSingleConnectionSelected()
@@ -1673,8 +1701,8 @@ void FloatingTextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     auto f = font();
     f.setBold(true);
     setFont(f);
-    setFlags(flags() & !ItemIsMovable);
-    rect_ = scene()->addRect(boundingRect(), QPen(Qt::red, 2, Qt::DotLine));
+    setFlags(flags() & ~ItemIsMovable);
+    rect_ = scene()->addRect(boundingRect(), QPen(defaultTextColor(), 2, Qt::DotLine));
     rect_->setPos(pos());
   }
   else
@@ -1698,38 +1726,6 @@ void FloatingTextItem::animate(qreal val)
   else
     hide();
   setOpacity(val < 0.5 ? 1 : 2 - 2*val);
-}
-
-void NetworkEditor::displayError(const QString& msg, std::function<void()> showModule)
-{
-  if (Preferences::Instance().showModuleErrorInlineMessages)
-  {
-    auto errorItem = new ErrorItem(msg, showModule);
-    scene()->addItem(errorItem);
-
-    QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
-    QPointF br = tl + viewport()->rect().bottomRight();
-    QMatrix mat = matrix().inverted();
-    auto rect = mat.mapRect(QRectF(tl, br));
-
-    auto corner = rect.bottomLeft();
-    errorItem->setPos(corner + QPointF(100, -(40*errorItem->num() + 100)));
-
-#if 0
-    auto xMin = rect.topLeft().x();
-    auto xMax = rect.topRight().x();
-    auto yMin = rect.topLeft().y();
-    auto yMax = rect.bottomLeft().y();
-    for (double x = xMin; x < xMax; x += 100)
-      for (double y = yMin; y < yMax; y += 100)
-      {
-        QString xy = QString::number(x) + "," + QString::number(y);
-        auto item = scene()->addText(xy);
-        item->setDefaultTextColor(Qt::white);
-        item->setPos(x, y);
-  }
-#endif
-  }
 }
 
 NetworkEditor::~NetworkEditor()

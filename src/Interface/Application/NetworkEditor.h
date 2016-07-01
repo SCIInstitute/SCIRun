@@ -113,6 +113,13 @@ namespace Gui {
     ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent = nullptr);
   };
 
+  class SearchResultItem : public FloatingTextItem
+  {
+    Q_OBJECT
+  public:
+    SearchResultItem(const QString& text, std::function<void()> action = [](){}, QGraphicsItem* parent = nullptr);
+  };
+
   class NetworkSearchWidget : public QWidget, public Ui::NetworkSearch
   {
     Q_OBJECT
@@ -319,6 +326,7 @@ namespace Gui {
     void removeTagGroups();
     QString checkForOverriddenTagName(int tag) const;
     void renameTagGroup(int tag, const QString& name);
+    QPointF positionOfFloatingText(int num, bool top, int spacing) const;
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
