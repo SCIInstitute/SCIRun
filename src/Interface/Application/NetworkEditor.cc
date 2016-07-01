@@ -729,18 +729,50 @@ NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
   setupUi(this);
   //connect(closeButton_, SIGNAL(clicked()), ned, SLOT(hideSearchBox()));
   connect(searchLineEdit_, SIGNAL(textChanged(const QString&)), ned, SLOT(searchTextChanged(const QString&)));
+  connect(clearToolButton_, SIGNAL(clicked()), searchLineEdit_, SLOT(clear()));
 }
 
 SearchResultItem::SearchResultItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : FloatingTextItem(text, action, parent)
 {
   setDefaultTextColor(Qt::green);
+  items_.insert(this);
 }
+
+SearchResultItem::~SearchResultItem()
+{
+  items_.erase(this);
+}
+
+void SearchResultItem::removeAll()
+{
+  auto copyOfItems(items_);
+  for (auto& sri : copyOfItems)
+    delete sri;
+  items_.clear();
+}
+
+std::set<SearchResultItem*> SearchResultItem::items_;
 
 void NetworkEditor::searchTextChanged(const QString& text)
 {
-  auto searchItem = new SearchResultItem(text);
-  searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 20));
-  scene()->addItem(searchItem);
+  if (text.isEmpty())
+  {
+    SearchResultItem::removeAll();
+    return;
+  }
+  if (text.length() > 2)
+  {
+    SearchResultItem::removeAll();
+
+    std::vector<QString> dummyResults{ "module", "note", "guiSetting" };
+
+    for (const auto& result : dummyResults)
+    {
+      auto searchItem = new SearchResultItem(result + " found: " + text);
+      searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 20));
+      scene()->addItem(searchItem);
+    }
+  }
 }
 
 QPointF NetworkEditor::positionOfFloatingText(int num, bool top, int spacing) const

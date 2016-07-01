@@ -117,7 +117,10 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    SearchResultItem(const QString& text, std::function<void()> action = [](){}, QGraphicsItem* parent = nullptr);
+    explicit SearchResultItem(const QString& text, std::function<void()> action = [](){}, QGraphicsItem* parent = nullptr);
+    ~SearchResultItem();
+    static void removeAll();
+    static std::set<SearchResultItem*> items_;
   };
 
   class NetworkSearchWidget : public QWidget, public Ui::NetworkSearch
