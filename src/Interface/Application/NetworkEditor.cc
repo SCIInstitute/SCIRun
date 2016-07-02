@@ -763,12 +763,42 @@ enum SearchTupleParts
 class NetworkSearchEngine
 {
 public:
-  NetworkSearchEngine(QGraphicsScene* scene) : scene_(scene) {}
+  explicit NetworkSearchEngine(QGraphicsScene* scene) : scene_(scene) {}
 
   using Result = std::tuple<QString, QString, std::function<void()>>;
   using ResultList = std::vector<Result>;
   ResultList search(const QString& text) const
   {
+    ResultList results;
+    Q_FOREACH(auto item, scene_->items())
+    {
+      if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        qDebug() << "module widget. should search module id, state keys";
+        qDebug() << w;
+      }
+      else if (auto c = dynamic_cast<ConnectionLine*>(item))
+      {
+        qDebug() << "connection line. should search note--or maybe not.";
+        qDebug() << item;
+      }
+      else if (auto text = dynamic_cast<QGraphicsTextItem*>(item))
+      {
+        qDebug() << "note. should search text.";
+        qDebug() << text;
+      }
+      else if (auto stext = dynamic_cast<QGraphicsSimpleTextItem*>(item))
+      {
+        qDebug() << "tag label. should search text.";
+        qDebug() << stext;
+      }
+      else
+      {
+        //qDebug() << "something else";
+        //qDebug() << item;
+      }
+
+    }
     qDebug() << "need to search for" << text;
     std::function<void()> blank;
     return { {"Module", "CreateLatVol:0", blank}, {"Module note", "note contents", blank}};
