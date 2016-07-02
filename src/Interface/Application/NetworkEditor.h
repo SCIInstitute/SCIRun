@@ -117,7 +117,7 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    explicit SearchResultItem(const QString& text, std::function<void()> action = [](){}, QGraphicsItem* parent = nullptr);
+    SearchResultItem(const QString& text, std::function<void()> action, QGraphicsItem* parent = nullptr);
     ~SearchResultItem();
     static void removeAll();
     static std::set<SearchResultItem*> items_;
@@ -329,7 +329,7 @@ namespace Gui {
     void removeTagGroups();
     QString checkForOverriddenTagName(int tag) const;
     void renameTagGroup(int tag, const QString& name);
-    QPointF positionOfFloatingText(int num, bool top, int spacing) const;
+    QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
@@ -353,7 +353,6 @@ namespace Gui {
     bool insertingNewModuleAlongConnection_ { false };
     PreexecuteFunc preexecute_;
     bool showTagGroupsOnFileLoad_ { false };
-    QGraphicsProxyWidget* search_ { nullptr };
   };
 }
 }

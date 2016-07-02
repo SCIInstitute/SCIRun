@@ -753,6 +753,30 @@ void SearchResultItem::removeAll()
 
 std::set<SearchResultItem*> SearchResultItem::items_;
 
+enum SearchTupleParts
+{
+  ItemType,
+  ItemName,
+  ItemAction
+};
+
+class NetworkSearchEngine
+{
+public:
+  NetworkSearchEngine(QGraphicsScene* scene) : scene_(scene) {}
+
+  using Result = std::tuple<QString, QString, std::function<void()>>;
+  using ResultList = std::vector<Result>;
+  ResultList search(const QString& text) const
+  {
+    qDebug() << "need to search for" << text;
+    std::function<void()> blank;
+    return { {"Module", "CreateLatVol:0", blank}, {"Module note", "note contents", blank}};
+  }
+private:
+  QGraphicsScene* scene_;
+};
+
 void NetworkEditor::searchTextChanged(const QString& text)
 {
   if (text.isEmpty())
@@ -764,18 +788,25 @@ void NetworkEditor::searchTextChanged(const QString& text)
   {
     SearchResultItem::removeAll();
 
-    std::vector<QString> dummyResults{ "module", "note", "guiSetting" };
-
-    for (const auto& result : dummyResults)
+    NetworkSearchEngine engine(scene());
+    auto results = engine.search(text);
+    if (!results.empty())
     {
-      auto searchItem = new SearchResultItem(result + " found: " + text);
-      searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 20));
+      auto title = new SearchResultItem("Search results:", {});
+      title->setPos(positionOfFloatingText(title->num(), true, 20, 30));
+      scene()->addItem(title);
+    }
+    for (const auto& result : results)
+    {
+      auto searchItem = new SearchResultItem(std::get<ItemType>(result) + ": " + std::get<ItemName>(result),
+        std::get<ItemAction>(result));
+      searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, 30));
       scene()->addItem(searchItem);
     }
   }
 }
 
-QPointF NetworkEditor::positionOfFloatingText(int num, bool top, int spacing) const
+QPointF NetworkEditor::positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const
 {
   QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
   auto br = tl + viewport()->rect().bottomRight();
@@ -783,7 +814,7 @@ QPointF NetworkEditor::positionOfFloatingText(int num, bool top, int spacing) co
   auto rect = mat.mapRect(QRectF(tl, br));
 
   auto corner = top ? rect.topLeft() : rect.bottomLeft();
-  return (corner + QPointF(30, (top ? 1 : -1)* (spacing * num + 100)));
+  return (corner + QPointF(horizontalIndent, (top ? 1 : -1)* (verticalSpacing * num + 100)));
 }
 
 void NetworkEditor::displayError(const QString& msg, std::function<void()> showModule)
@@ -793,7 +824,7 @@ void NetworkEditor::displayError(const QString& msg, std::function<void()> showM
     auto errorItem = new ErrorItem(msg, showModule);
     scene()->addItem(errorItem);
 
-    errorItem->setPos(positionOfFloatingText(errorItem->num(), false, 40));
+    errorItem->setPos(positionOfFloatingText(errorItem->num(), false, 30, 40));
   }
 }
 
@@ -1704,7 +1735,8 @@ void FloatingTextItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
   if (event->buttons() & Qt::LeftButton)
   {
-    action_();
+    if (action_)
+      action_();
   }
   else if (event->buttons() & Qt::RightButton)
   {
