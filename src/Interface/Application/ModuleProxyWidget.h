@@ -59,6 +59,8 @@ namespace SCIRun
       void createPortPositionProviders();
       void snapToGrid();
       void highlightPorts(int state);
+      void ensureThisVisible();
+      void showAndColor(const QColor& color);
 
     Q_SIGNALS:
       void selected();
@@ -74,9 +76,9 @@ namespace SCIRun
       virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:
       void updateNote(const Note& note);
-      void ensureThisVisible();
       void disableModuleGUI(bool disabled);
-      void animate(qreal val);
+      void loadAnimate(qreal val);
+      void colorAnimate(qreal val);
     private:
       void ensureItemVisible(QGraphicsItem* item);
       bool isSubwidget(QWidget* alienWidget) const;

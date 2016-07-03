@@ -50,6 +50,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
+#include <boost/algorithm/string/find.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -732,9 +733,10 @@ NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
   connect(clearToolButton_, SIGNAL(clicked()), searchLineEdit_, SLOT(clear()));
 }
 
-SearchResultItem::SearchResultItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : FloatingTextItem(text, action, parent)
+SearchResultItem::SearchResultItem(const QString& text, const QColor& color, std::function<void()> action, QGraphicsItem* parent)
+  : FloatingTextItem(text, action, parent)
 {
-  setDefaultTextColor(Qt::green);
+  setDefaultTextColor(color);
   items_.insert(this);
 }
 
@@ -757,15 +759,16 @@ enum SearchTupleParts
 {
   ItemType,
   ItemName,
-  ItemAction
+  ItemAction,
+  ItemColor
 };
 
 class NetworkSearchEngine
 {
 public:
-  explicit NetworkSearchEngine(QGraphicsScene* scene) : scene_(scene) {}
+  NetworkSearchEngine(QGraphicsScene* scene, TagColorFunc tagColor) : scene_(scene), tagColor_(tagColor) {}
 
-  using Result = std::tuple<QString, QString, std::function<void()>>;
+  using Result = std::tuple<QString, QString, std::function<void()>, QColor>;
   using ResultList = std::vector<Result>;
   ResultList search(const QString& text) const
   {
@@ -776,6 +779,8 @@ public:
       {
         qDebug() << "module widget. should search module id, state keys";
         qDebug() << w;
+        auto subresults = searchItem(w, text);
+        results.insert(results.end(), subresults.begin(), subresults.end());
       }
       else if (auto c = dynamic_cast<ConnectionLine*>(item))
       {
@@ -799,12 +804,30 @@ public:
       }
 
     }
-    qDebug() << "need to search for" << text;
-    std::function<void()> blank;
-    return { {"Module", "CreateLatVol:0", blank}, {"Module note", "note contents", blank}};
+    // qDebug() << "need to search for" << text;
+    // std::function<void()> blank;
+    // return { {"Module", "CreateLatVol:0", blank}, {"Module note", "note contents", blank}};
+    return results;
   }
 private:
+  ResultList searchItem(ModuleProxyWidget* mod, const QString& text) const
+  {
+    ResultList results;
+    auto id = mod->getModuleWidget()->getModuleId();
+    if (boost::ifind_first(id, text.toStdString()))
+    {
+      results.emplace_back("Module",
+        QString::fromStdString(id),
+        [mod]() { mod->showAndColor(Qt::yellow); },
+        tagColor_(mod->data(TagDataKey).toInt()));
+    }
+
+    //TODO: state keys and values
+
+    return results;
+  }
   QGraphicsScene* scene_;
+  TagColorFunc tagColor_;
 };
 
 void NetworkEditor::searchTextChanged(const QString& text)
@@ -818,18 +841,18 @@ void NetworkEditor::searchTextChanged(const QString& text)
   {
     SearchResultItem::removeAll();
 
-    NetworkSearchEngine engine(scene());
+    NetworkSearchEngine engine(scene(), tagColor_);
     auto results = engine.search(text);
     if (!results.empty())
     {
-      auto title = new SearchResultItem("Search results:", {});
+      auto title = new SearchResultItem("Search results:", Qt::green, {});
       title->setPos(positionOfFloatingText(title->num(), true, 20, 30));
       scene()->addItem(title);
     }
     for (const auto& result : results)
     {
       auto searchItem = new SearchResultItem(std::get<ItemType>(result) + ": " + std::get<ItemName>(result),
-        std::get<ItemAction>(result));
+        std::get<ItemColor>(result), std::get<ItemAction>(result));
       searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, 30));
       scene()->addItem(searchItem);
     }
