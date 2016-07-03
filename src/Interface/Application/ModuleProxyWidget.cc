@@ -243,6 +243,7 @@ void ModuleProxyWidget::disableModuleGUI(bool disabled)
 
 void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+  clearNoteCursor();
   auto taggingOn = data(TagLayerKey).toBool();
   auto currentTag = data(CurrentTagKey).toInt();
   if (taggingOn && currentTag > NoTag)

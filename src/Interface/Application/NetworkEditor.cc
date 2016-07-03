@@ -739,6 +739,7 @@ SearchResultItem::SearchResultItem(const QString& text, const QColor& color, std
   : FloatingTextItem(text, action, parent)
 {
   setDefaultTextColor(color);
+  setHtml("<div style='background:rgba(150, 150, 150, 30%);'>" + toPlainText() + "</div>");
   items_.insert(this);
 }
 
@@ -805,10 +806,11 @@ private:
     auto id = mod->getModuleWidget()->getModuleId();
     if (boost::ifind_first(id, text.toStdString()))
     {
+      auto tag = mod->data(TagDataKey).toInt();
       results.emplace_back("Module",
         QString::fromStdString(id),
         [mod]() { mod->showAndColor(Qt::green); },
-        tagColor_(mod->data(TagDataKey).toInt()));
+        tag != NoTag ? tagColor_(tag) : Qt::white);
     }
 
     auto metadata = mod->getModuleWidget()->metadataToString();
@@ -855,7 +857,6 @@ private:
     auto doc = note->document();
     QTextCursor cur(doc->find(text));
     note->setTextCursor(cur);
-    //QTimer::singleShot(4000, &cur, SLOT(networkTimedOut()));
   }
 
   QGraphicsScene* scene_;
@@ -875,18 +876,21 @@ void NetworkEditor::searchTextChanged(const QString& text)
 
     NetworkSearchEngine engine(scene(), tagColor_);
     auto results = engine.search(text);
+    auto textScale = 1.0 / currentScale_;
     if (!results.empty())
     {
       auto title = new SearchResultItem("Search results:", Qt::green, {});
-      title->setPos(positionOfFloatingText(title->num(), true, 20, 30));
+      title->setPos(positionOfFloatingText(title->num(), true, 20, textScale * 20));
       scene()->addItem(title);
+      title->scale(textScale, textScale);
     }
     for (const auto& result : results)
     {
       auto searchItem = new SearchResultItem(std::get<ItemType>(result) + ": " + std::get<ItemName>(result),
         std::get<ItemColor>(result), std::get<ItemAction>(result));
-      searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, 30));
+      searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 20));
       scene()->addItem(searchItem);
+      searchItem->scale(textScale, textScale);
     }
   }
 }
