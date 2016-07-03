@@ -541,6 +541,7 @@ Module::Builder& Module::Builder::setStateDefaults()
   if (module_)
   {
     module_->setStateDefaults();
+    module_->copyStateToMetadata();
   }
   return *this;
 }
