@@ -1357,20 +1357,20 @@ void ModuleWidget::unhighlightPorts()
   Q_EMIT displayChanged();
 }
 
+QString ModuleWidget::metadataToString() const
+{
+  auto metadata = theModule_->metadata().getFullMap();
+  QStringList display;
+  for (const auto& metaPair : metadata)
+  {
+    display.append(QString::fromStdString(metaPair.first) + " : " + QString::fromStdString(metaPair.second));
+  }
+  return display.join("\n");
+}
+
 void ModuleWidget::updateMetadata(bool active)
 {
-  if (active)
-  {
-    auto metadata = theModule_->metadata().getFullMap();
-    QStringList display;
-    for (const auto& metaPair : metadata)
-    {
-      display.append(QString::fromStdString(metaPair.first) + " : " + QString::fromStdString(metaPair.second));
-    }
-    setToolTip("Metadata:\n" + display.join("\n"));
-  }
-  else
-    setToolTip("");
+  setToolTip(active ? "Metadata:\n" + metadataToString() : "");
 }
 
 void ModuleWidget::setExecutionDisabled(bool disabled)
