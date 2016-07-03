@@ -149,6 +149,7 @@ ModuleProxyWidget::~ModuleProxyWidget()
 
 void ModuleProxyWidget::showAndColor(const QColor& color)
 {
+  animateColor_ = color;
   timeLine_ = new QTimeLine(4000, this);
   connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(colorAnimate(qreal)));
   timeLine_->start();
@@ -169,7 +170,7 @@ void ModuleProxyWidget::colorAnimate(qreal val)
     if (!effect)
     {
       auto colorize = new QGraphicsColorizeEffect;
-      colorize->setColor(Qt::green);
+      colorize->setColor(animateColor_);
       setGraphicsEffect(colorize);
     }
     else if (auto c = dynamic_cast<QGraphicsColorizeEffect*>(effect))
@@ -211,7 +212,7 @@ void ModuleProxyWidget::ensureThisVisible()
 
 void ModuleProxyWidget::ensureItemVisible(QGraphicsItem* item)
 {
-  auto views = scene()->views();
+  auto views = item->scene()->views();
   if (!views.isEmpty())
   {
     auto netEd = qobject_cast<NetworkEditor*>(views[0]);

@@ -53,6 +53,9 @@ namespace SCIRun
       void adjustHeight(int delta);
       void adjustWidth(int delta);
 
+      //TODO: move to utility
+      static void ensureItemVisible(QGraphicsItem* item);
+
     public Q_SLOTS:
       void highlightIfSelected();
       void setDefaultNotePosition(NotePosition position);
@@ -80,11 +83,11 @@ namespace SCIRun
       void loadAnimate(qreal val);
       void colorAnimate(qreal val);
     private:
-      void ensureItemVisible(QGraphicsItem* item);
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
 
       ModuleWidget* module_;
+      QColor animateColor_;
       bool grabbedByWidget_, isSelected_;
       QWidget* pressedSubWidget_;
       QPointF position_;

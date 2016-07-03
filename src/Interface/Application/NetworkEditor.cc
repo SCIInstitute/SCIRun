@@ -178,6 +178,8 @@ boost::optional<ConnectionId> NetworkEditor::requestConnection(const PortDescrip
 
 namespace
 {
+  const int TagTextKey = 123;
+  
   ModuleProxyWidget* findById(const QList<QGraphicsItem*>& list, const std::string& id)
   {
     Q_FOREACH(QGraphicsItem* item, list)
@@ -775,38 +777,31 @@ public:
     ResultList results;
     Q_FOREACH(auto item, scene_->items())
     {
+      ResultList subresults;
       if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
       {
-        qDebug() << "module widget. should search module id, state keys";
-        qDebug() << w;
-        auto subresults = searchItem(w, text);
-        results.insert(results.end(), subresults.begin(), subresults.end());
+        subresults = searchItem(w, text);
       }
-      else if (auto c = dynamic_cast<ConnectionLine*>(item))
+      // else if (auto c = dynamic_cast<ConnectionLine*>(item))
+      // {
+      //   //qDebug() << "connection line. should search note--or maybe not.";
+      //   //qDebug() << item;
+      // }
+      else if (auto t = dynamic_cast<QGraphicsTextItem*>(item))
       {
-        qDebug() << "connection line. should search note--or maybe not.";
-        qDebug() << item;
+        subresults = searchItem(t, text);
       }
-      else if (auto text = dynamic_cast<QGraphicsTextItem*>(item))
+      else if (auto s = dynamic_cast<QGraphicsSimpleTextItem*>(item))
       {
-        qDebug() << "note. should search text.";
-        qDebug() << text;
-      }
-      else if (auto stext = dynamic_cast<QGraphicsSimpleTextItem*>(item))
-      {
-        qDebug() << "tag label. should search text.";
-        qDebug() << stext;
+        subresults = searchItem(s, text);
       }
       else
       {
         //qDebug() << "something else";
         //qDebug() << item;
       }
-
+      results.insert(results.end(), subresults.begin(), subresults.end());
     }
-    // qDebug() << "need to search for" << text;
-    // std::function<void()> blank;
-    // return { {"Module", "CreateLatVol:0", blank}, {"Module note", "note contents", blank}};
     return results;
   }
 private:
@@ -818,7 +813,7 @@ private:
     {
       results.emplace_back("Module",
         QString::fromStdString(id),
-        [mod]() { mod->showAndColor(Qt::yellow); },
+        [mod]() { mod->showAndColor(Qt::green); },
         tagColor_(mod->data(TagDataKey).toInt()));
     }
 
@@ -826,6 +821,42 @@ private:
 
     return results;
   }
+
+  ResultList searchItem(QGraphicsTextItem* note, const QString& text) const
+  {
+    ResultList results;
+    auto cursor = note->document()->find(text);
+    if (!cursor.isNull())
+    {
+      results.emplace_back("Note",
+        "..." + note->toPlainText().mid(cursor.position() - 10, 20) + "...",
+        [note, text]() { ModuleProxyWidget::ensureItemVisible(note); selectNote(note, text); },
+        Qt::white);
+    }
+    return results;
+  }
+
+  ResultList searchItem(QGraphicsSimpleTextItem* tag, const QString& text) const
+  {
+    ResultList results;
+    if (tag->text().contains(text, Qt::CaseInsensitive))
+    {
+      results.emplace_back("Tag",
+        tag->text(),
+        [tag]() { ModuleProxyWidget::ensureItemVisible(tag); },
+        tagColor_(tag->data(TagTextKey).toInt()));
+    }
+    return results;
+  }
+
+  static void selectNote(QGraphicsTextItem* note, const QString& text)
+  {
+    auto doc = note->document();
+    QTextCursor cur(doc->find(text));
+    note->setTextCursor(cur);
+    //QTimer::singleShot(4000, &cur, SLOT(networkTimedOut()));
+  }
+
   QGraphicsScene* scene_;
   TagColorFunc tagColor_;
 };
@@ -1597,8 +1628,6 @@ namespace
     int tagNumber_;
     NetworkEditor* ned_;
   };
-
-  const int TagTextKey = 123;
 }
 
 void NetworkEditor::saveTagGroupRectInFile()
