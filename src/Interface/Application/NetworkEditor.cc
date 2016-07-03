@@ -179,7 +179,7 @@ boost::optional<ConnectionId> NetworkEditor::requestConnection(const PortDescrip
 namespace
 {
   const int TagTextKey = 123;
-  
+
   ModuleProxyWidget* findById(const QList<QGraphicsItem*>& list, const std::string& id)
   {
     Q_FOREACH(QGraphicsItem* item, list)
@@ -782,11 +782,6 @@ public:
       {
         subresults = searchItem(w, text);
       }
-      // else if (auto c = dynamic_cast<ConnectionLine*>(item))
-      // {
-      //   //qDebug() << "connection line. should search note--or maybe not.";
-      //   //qDebug() << item;
-      // }
       else if (auto t = dynamic_cast<QGraphicsTextItem*>(item))
       {
         subresults = searchItem(t, text);
@@ -798,7 +793,6 @@ public:
       else
       {
         //qDebug() << "something else";
-        //qDebug() << item;
       }
       results.insert(results.end(), subresults.begin(), subresults.end());
     }
@@ -817,7 +811,14 @@ private:
         tagColor_(mod->data(TagDataKey).toInt()));
     }
 
-    //TODO: state keys and values
+    auto metadata = mod->getModuleWidget()->metadataToString();
+    if (metadata.contains(text, Qt::CaseInsensitive))
+    {
+      results.emplace_back("Module metadata match in",
+        QString::fromStdString(id),
+        [mod]() { mod->showAndColor(Qt::yellow); },
+        Qt::yellow);
+    }
 
     return results;
   }
