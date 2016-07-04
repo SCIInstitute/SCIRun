@@ -160,6 +160,7 @@ public:
   };
 
   QString metadataToString() const;
+  QDialog* dialog();
 
 public Q_SLOTS:
   virtual bool executeWithSignals() override;

@@ -1089,6 +1089,11 @@ void ModuleWidget::makeOptionsDialog()
   }
 }
 
+QDialog* ModuleWidget::dialog()
+{
+  return dialog_;
+}
+
 void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 {
   if (isFloating)

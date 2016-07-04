@@ -739,7 +739,8 @@ SearchResultItem::SearchResultItem(const QString& text, const QColor& color, std
   : FloatingTextItem(text, action, parent)
 {
   setDefaultTextColor(color);
-  setHtml("<div style='background:rgba(150, 150, 150, 30%);'>" + toPlainText() + "</div>");
+  auto backgroundGray = QString("background:rgba(%1, %1, %1, 30%)").arg(200);
+  setHtml("<div style='" + backgroundGray + ";font: 15px Lucida, sans-serif'>" + toPlainText() + "</div>");
   items_.insert(this);
 }
 
@@ -822,6 +823,18 @@ private:
         Qt::yellow);
     }
 
+    auto dialog = mod->getModuleWidget()->dialog();
+    if (dialog && text.length() > 5)
+    {
+      auto widgetMatches = dialog->findChildren<QWidget*>(QRegExp(".*" + text + ".*", Qt::CaseInsensitive));
+      Q_FOREACH(auto widget, widgetMatches)
+      {
+        results.emplace_back("Module UI widget match",
+          QString::fromStdString(id) + "::" + widget->objectName(),
+          [mod]() { mod->showAndColor("#AA3333"); },
+          "#AA3333");
+      }
+    }
     return results;
   }
 
@@ -880,7 +893,7 @@ void NetworkEditor::searchTextChanged(const QString& text)
     if (!results.empty())
     {
       auto title = new SearchResultItem("Search results:", Qt::green, {});
-      title->setPos(positionOfFloatingText(title->num(), true, 20, textScale * 20));
+      title->setPos(positionOfFloatingText(title->num(), true, 20, textScale * 22));
       scene()->addItem(title);
       title->scale(textScale, textScale);
     }
@@ -888,7 +901,7 @@ void NetworkEditor::searchTextChanged(const QString& text)
     {
       auto searchItem = new SearchResultItem(std::get<ItemType>(result) + ": " + std::get<ItemName>(result),
         std::get<ItemColor>(result), std::get<ItemAction>(result));
-      searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 20));
+      searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 22));
       scene()->addItem(searchItem);
       searchItem->scale(textScale, textScale);
     }
