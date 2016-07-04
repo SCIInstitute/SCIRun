@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Logging/Log.h>
+#include <Core/Math/MiscMath.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -51,7 +52,7 @@ MapFieldDataOntoElemsDialog::MapFieldDataOntoElemsDialog(const std::string& name
   connect(useNanForUnassignedValuesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setUseNanForUnassignedValues(int)));
 }
 
-void MapFieldDataOntoNodesDialog::pullSpecial()
+void MapFieldDataOntoElemsDialog::pullSpecial()
 {
   if (IsNan(state_->getValue(Parameters::OutsideValue).toDouble()))
   {
@@ -59,7 +60,7 @@ void MapFieldDataOntoNodesDialog::pullSpecial()
   }
 }
 
-void MapFieldDataOntoNodesDialog::setUseNanForUnassignedValues(int state)
+void MapFieldDataOntoElemsDialog::setUseNanForUnassignedValues(int state)
 {
   if (!pulling_)
   {
