@@ -798,6 +798,7 @@ public:
       }
       results.insert(results.end(), subresults.begin(), subresults.end());
     }
+    std::sort(results.begin(), results.end(), [](const Result& r1, const Result& r2) { return std::get<ItemType>(r1) < std::get<ItemType>(r2); });
     return results;
   }
 private:
