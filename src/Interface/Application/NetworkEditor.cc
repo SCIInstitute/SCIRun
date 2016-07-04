@@ -1568,7 +1568,8 @@ void NetworkEditor::tagLayer(bool active, int tag)
     {
       if (item->data(TagDataKey).toInt() == NoTag)
       {
-        item->setData(TagDataKey, tag);
+        if (validTag(tag))
+          item->setData(TagDataKey, tag);
       }
       else if (ClearTags == tag)
       {
@@ -1787,7 +1788,6 @@ void NetworkEditor::highlightTaggedItem(int tagValue)
 
 void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
 {
-  qDebug() << "highlightTaggedItem" << tagValue;
   if (tagValue == NoTag)
   {
     item->setGraphicsEffect(blurEffect());

@@ -40,7 +40,6 @@ class TagManagerWindow : public QDockWidget, public Ui::TagManager
 
 public:
   explicit TagManagerWindow(QWidget* parent = nullptr);
-  enum { NumberOfTags = 10 };
   void setTagNames(const QVector<QString>& names);
   void setTagColors(const QVector<QString>& colors);
   QStringList getTagNames() const { return tagNames_.toList(); }

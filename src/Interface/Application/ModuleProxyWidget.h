@@ -97,16 +97,6 @@ namespace SCIRun
       QSizeF originalSize_;
       QTimeLine* timeLine_;
     };
-
-    // arbitrary values
-    static const int TagDataKey = 123;
-    static const int TagLayerKey = 100;
-    static const int CurrentTagKey = 101;
-    static const int NoTag = -1;
-    static const int AllTags = -50;
-    static const int ClearTags = -77;
-    static const int ShowGroups = -100;
-    static const int HideGroups = -101;
   }
 }
 
