@@ -158,6 +158,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     standardBar->addAction(actionSelectMode_);
     standardBar->addAction(actionToggleMetadataLayer_);
     standardBar->addAction(actionToggleTagLayer_);
+    connect(actionNetworkBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
+    connect(standardBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
     //setUnifiedTitleAndToolBarOnMac(true);
   }
   {
@@ -176,6 +178,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
       "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
       );
     executeBar->setAutoFillBackground(true);
+    connect(actionExecuteBar_, SIGNAL(toggled(bool)), executeBar, SLOT(setVisible(bool)));
+    connect(executeBar, SIGNAL(visibilityChanged(bool)), actionExecuteBar_, SLOT(setChecked(bool)));
   }
   {
     auto searchAction = new QWidgetAction(this);
@@ -185,6 +189,9 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     searchBar->setObjectName("SearchToolBar");
     WidgetStyleMixin::toolbarStyle(searchBar);
     searchBar->addAction(searchAction);
+    connect(actionSearchBar_, SIGNAL(toggled(bool)), searchBar, SLOT(setVisible(bool)));
+    connect(searchBar, SIGNAL(visibilityChanged(bool)), actionSearchBar_, SLOT(setChecked(bool)));
+    searchBar->setVisible(false);
   }
 
   networkEditor_->addAction(actionExecute_All_);
