@@ -49,7 +49,6 @@ protected:
   virtual void pullSpecial() override;
 private Q_SLOTS:
   void setUseNanForUnassignedValues(int state);
-  
 };
 
 }
