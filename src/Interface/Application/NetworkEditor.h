@@ -174,11 +174,13 @@ namespace Gui {
 	  Q_OBJECT
 
   public:
-    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
+    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, 
+        boost::shared_ptr<DefaultNotePositionGetter> dnpg,
 				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
         PreexecuteFunc preexecuteFunc,
         TagColorFunc tagColor,
         TagNameFunc tagName,
+        double highResolutionExpandFactor,
         QWidget* parent = nullptr);
     ~NetworkEditor();
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -353,6 +355,7 @@ namespace Gui {
     bool insertingNewModuleAlongConnection_ { false };
     PreexecuteFunc preexecute_;
     bool showTagGroupsOnFileLoad_ { false };
+    double highResolutionExpandFactor_{ 1 };
   };
 }
 }

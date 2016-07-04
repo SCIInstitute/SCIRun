@@ -104,7 +104,8 @@ class ModuleWidget : public QStackedWidget,
 	Q_OBJECT
 
 public:
-  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
+  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
+    boost::shared_ptr<DialogErrorControl> dialogErrorControl,
     QWidget* parent = nullptr);
   ~ModuleWidget();
 
@@ -161,6 +162,8 @@ public:
 
   QString metadataToString() const;
   QDialog* dialog();
+
+  static double highResolutionExpandFactor_;
 
 public Q_SLOTS:
   virtual bool executeWithSignals() override;

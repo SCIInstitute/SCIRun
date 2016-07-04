@@ -64,6 +64,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   PreexecuteFunc preexecuteFunc,
   TagColorFunc tagColor,
   TagNameFunc tagName,
+  double highResolutionExpandFactor,
   QWidget* parent)
   : QGraphicsView(parent),
   modulesSelectedByCL_(false),
@@ -80,11 +81,13 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   moduleEventProxy_(new ModuleEventProxy),
   zLevelManager_(new ZLevelManager(scene_)),
   fileLoading_(false),
-  preexecute_(preexecuteFunc)
+  preexecute_(preexecuteFunc),
+  highResolutionExpandFactor_(highResolutionExpandFactor)
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
   ModuleWidget::closestPortFinder_.reset(new ClosestPortFinder(scene_));
+  ModuleWidget::highResolutionExpandFactor_ = highResolutionExpandFactor_; 
 
   setScene(scene_);
   setDragMode(RubberBandDrag);
@@ -378,15 +381,15 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->createPortPositionProviders();
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
-  auto expand = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(-1);
-
-  if (expand > 0)
+  if (highResolutionExpandFactor_ > 1)
   {
-    qDebug() << "expand factor:" << expand;
-    qDebug() << proxy->size();
-    module->setFixedHeight(proxy->size().height() * expand);
-    proxy->setMaximumHeight(proxy->size().height() * expand);
-    qDebug() << proxy->size();
+    //qDebug() << "module widget expand factor:" << highResolutionExpandFactor_;
+    //qDebug() << proxy->size();
+    module->setFixedHeight(proxy->size().height() * highResolutionExpandFactor_);
+    proxy->setMaximumHeight(proxy->size().height() * highResolutionExpandFactor_);
+    module->setFixedWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
+    proxy->setMaximumWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
+    //qDebug() << proxy->size();
   }
 
   scene_->addItem(proxy);
