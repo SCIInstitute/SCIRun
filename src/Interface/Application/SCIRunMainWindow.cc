@@ -88,37 +88,37 @@ static const char* ToolkitFilename = "ToolkitFilename";
 
 SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
 {
-	setupUi(this);
-	setAttribute(Qt::WA_DeleteOnClose);
-	if (newInterface())
-		setStyleSheet(
-		"background-color: rgb(66,66,69);"
-		"color: white;"
-		"selection-color: yellow;"
-		"selection-background-color: blue;"//336699 lighter blue
-		"QToolBar {        background-color: rgb(66,66,69); border: 1px solid black; color: black;     }"
-		"QProgressBar {        background-color: rgb(66,66,69); border: 0px solid black; color: black  ;   }"
-		"QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69); }"
-		"QPushButton {"
-		"  border: 2px solid #8f8f91;"
-		"  border - radius: 6px;"
-		"  background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
-		"  stop : 0 #f6f7fa, stop: 1 #dadbde);"
-		"  min - width: 80px;"
-		"}"
-		"QPushButton:pressed{"
-		"background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
-		"stop : 0 #dadbde, stop: 1 #f6f7fa);"
-		"}"
-		"QPushButton:flat{"
-		"          border: none; /* no border for a flat push button */"
-		"}"
-		"QPushButton:default {"
-		"border - color: navy; /* make the default button prominent */"
-		"}"
-		);
-	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
-	dialogErrorControl_.reset(new DialogErrorControl(this));
+  setupUi(this);
+  setAttribute(Qt::WA_DeleteOnClose);
+  if (newInterface())
+    setStyleSheet(
+    "background-color: rgb(66,66,69);"
+    "color: white;"
+    "selection-color: yellow;"
+    "selection-background-color: blue;"//336699 lighter blue
+    "QToolBar {        background-color: rgb(66,66,69); border: 1px solid black; color: black;     }"
+    "QProgressBar {        background-color: rgb(66,66,69); border: 0px solid black; color: black  ;   }"
+    "QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69); }"
+    "QPushButton {"
+    "  border: 2px solid #8f8f91;"
+    "  border - radius: 6px;"
+    "  background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
+    "  stop : 0 #f6f7fa, stop: 1 #dadbde);"
+    "  min - width: 80px;"
+    "}"
+    "QPushButton:pressed{"
+    "background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
+    "stop : 0 #dadbde, stop: 1 #f6f7fa);"
+    "}"
+    "QPushButton:flat{"
+    "          border: none; /* no border for a flat push button */"
+    "}"
+    "QPushButton:default {"
+    "border - color: navy; /* make the default button prominent */"
+    "}"
+    );
+  menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
+  dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
   tagManagerWindow_->hide();
   setupPreferencesWindow();
@@ -132,68 +132,60 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
 
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
-  auto moduleSearchAction = new QWidgetAction(this);
-  moduleSearchAction->setDefaultWidget(new QLineEdit(this));
-
-#if 0
-  {
-    //TODO!!!!
-    moduleSearchAction->setVisible(true);
-
-    QToolBar* f = addToolBar(tr("&Search"));
-    f->setObjectName("SearchToolBar");
-
-    QWidgetAction* showModuleLabel = new QWidgetAction(this);
-    showModuleLabel->setDefaultWidget(new QLabel("Module Search:", this));
-    showModuleLabel->setVisible(true);
-
-    f->addAction(showModuleLabel);
-    f->addAction(moduleSearchAction);
-  }
-#endif
-
   setActionIcons();
 
-  auto standardBar = addToolBar("Standard");
-	WidgetStyleMixin::toolbarStyle(standardBar);
-  standardBar->setObjectName("StandardToolBar");
-  standardBar->addAction(actionNew_);
-  standardBar->addAction(actionLoad_);
-  standardBar->addAction(actionSave_);
-  standardBar->addAction(actionRunScript_);
-  standardBar->addAction(actionEnterWhatsThisMode_);
-  standardBar->addSeparator();
-  standardBar->addAction(actionPinAllModuleUIs_);
-  standardBar->addAction(actionRestoreAllModuleUIs_);
-  standardBar->addAction(actionHideAllModuleUIs_);
-  standardBar->addSeparator();
-  standardBar->addAction(actionCenterNetworkViewer_);
-  standardBar->addAction(actionZoomIn_);
-  standardBar->addAction(actionZoomOut_);
-  //standardBar->addAction(actionZoomBestFit_);
-  actionZoomBestFit_->setDisabled(true);
-  standardBar->addAction(actionResetNetworkZoom_);
-  standardBar->addAction(actionDragMode_);
-  standardBar->addAction(actionSelectMode_);
-  standardBar->addAction(actionToggleMetadataLayer_);
-  standardBar->addAction(actionToggleTagLayer_);
-  //setUnifiedTitleAndToolBarOnMac(true);
+  {
+    auto standardBar = addToolBar("Standard");
+    WidgetStyleMixin::toolbarStyle(standardBar);
+    standardBar->setObjectName("StandardToolBar");
+    standardBar->addAction(actionNew_);
+    standardBar->addAction(actionLoad_);
+    standardBar->addAction(actionSave_);
+    standardBar->addAction(actionRunScript_);
+    standardBar->addAction(actionEnterWhatsThisMode_);
+    standardBar->addSeparator();
+    standardBar->addAction(actionPinAllModuleUIs_);
+    standardBar->addAction(actionRestoreAllModuleUIs_);
+    standardBar->addAction(actionHideAllModuleUIs_);
+    standardBar->addSeparator();
+    standardBar->addAction(actionCenterNetworkViewer_);
+    standardBar->addAction(actionZoomIn_);
+    standardBar->addAction(actionZoomOut_);
+    //standardBar->addAction(actionZoomBestFit_);
+    actionZoomBestFit_->setDisabled(true);
+    standardBar->addAction(actionResetNetworkZoom_);
+    standardBar->addAction(actionDragMode_);
+    standardBar->addAction(actionSelectMode_);
+    standardBar->addAction(actionToggleMetadataLayer_);
+    standardBar->addAction(actionToggleTagLayer_);
+    //setUnifiedTitleAndToolBarOnMac(true);
+  }
+  {
+    auto executeBar = addToolBar(tr("&Execute"));
+    executeBar->setObjectName("ExecuteToolBar");
 
-  auto executeBar = addToolBar(tr("&Execute"));
-  executeBar->setObjectName("ExecuteToolBar");
+    executeButton_ = new QToolButton;
+    executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    executeButton_->addAction(actionExecute_All_);
+    executeButton_->setDefaultAction(actionExecute_All_);
+    executeBar->addWidget(executeButton_);
 
-	executeButton_ = new QToolButton;
-	executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	executeButton_->addAction(actionExecute_All_);
-	executeButton_->setDefaultAction(actionExecute_All_);
-	executeBar->addWidget(executeButton_);
-
-  networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
-  executeBar->addActions(networkProgressBar_->actions());
-  executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
-		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
-		);
-  executeBar->setAutoFillBackground(true);
+    networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
+    executeBar->addActions(networkProgressBar_->actions());
+    executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
+      "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
+      );
+    executeBar->setAutoFillBackground(true);
+  }
+  {
+    auto searchAction = new QWidgetAction(this);
+    searchAction->setDefaultWidget(new NetworkSearchWidget(networkEditor_));
+    addToolBarBreak();
+    auto searchBar = addToolBar("&Search");
+    searchBar->setObjectName("SearchToolBar");
+    WidgetStyleMixin::toolbarStyle(searchBar);
+    searchBar->addAction(searchAction);
+  }
 
   networkEditor_->addAction(actionExecute_All_);
   auto sep = new QAction(this);

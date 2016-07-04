@@ -1075,11 +1075,12 @@ void ModuleWidget::makeOptionsDialog()
       }
 
       auto expand = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(-1);
-      if (expand > 0)
+      if (expand > 1)
       {
         qDebug() << "expand factor for dialogs:" << expand;
         qDebug() << dialog_->size();
         dialog_->setFixedHeight(dialog_->size().height() * expand);
+        dialog_->setFixedWidth(dialog_->size().width() * ((expand - 1) * 0.5) + 1);
         qDebug() << dialog_->size();
       }
 
@@ -1356,20 +1357,20 @@ void ModuleWidget::unhighlightPorts()
   Q_EMIT displayChanged();
 }
 
+QString ModuleWidget::metadataToString() const
+{
+  auto metadata = theModule_->metadata().getFullMap();
+  QStringList display;
+  for (const auto& metaPair : metadata)
+  {
+    display.append(QString::fromStdString(metaPair.first) + " : " + QString::fromStdString(metaPair.second));
+  }
+  return display.join("\n");
+}
+
 void ModuleWidget::updateMetadata(bool active)
 {
-  if (active)
-  {
-    auto metadata = theModule_->metadata().getFullMap();
-    QStringList display;
-    for (const auto& metaPair : metadata)
-    {
-      display.append(QString::fromStdString(metaPair.first) + " : " + QString::fromStdString(metaPair.second));
-    }
-    setToolTip("Metadata:\n" + display.join("\n"));
-  }
-  else
-    setToolTip("");
+  setToolTip(active ? "Metadata:\n" + metadataToString() : "");
 }
 
 void ModuleWidget::setExecutionDisabled(bool disabled)

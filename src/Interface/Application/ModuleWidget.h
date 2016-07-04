@@ -159,6 +159,8 @@ public:
     ~NetworkClearingScope();
   };
 
+  QString metadataToString() const;
+
 public Q_SLOTS:
   virtual bool executeWithSignals() override;
   void toggleOptionsDialog();
