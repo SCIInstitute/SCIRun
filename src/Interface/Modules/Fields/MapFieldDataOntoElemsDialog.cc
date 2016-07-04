@@ -48,4 +48,22 @@ MapFieldDataOntoElemsDialog::MapFieldDataOntoElemsDialog(const std::string& name
   addComboBoxManager(samplePointsComboBox_, Parameters::SamplePoints);
   addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
   addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
+  connect(useNanForUnassignedValuesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setUseNanForUnassignedValues(int)));
+}
+
+void MapFieldDataOntoNodesDialog::pullSpecial()
+{
+  if (IsNan(state_->getValue(Parameters::OutsideValue).toDouble()))
+  {
+    useNanForUnassignedValuesCheckBox_->setChecked(true);
+  }
+}
+
+void MapFieldDataOntoNodesDialog::setUseNanForUnassignedValues(int state)
+{
+  if (!pulling_)
+  {
+    if (0 != state)
+    state_->setValue(Parameters::OutsideValue, std::numeric_limits<double>::quiet_NaN());
+  }
 }
