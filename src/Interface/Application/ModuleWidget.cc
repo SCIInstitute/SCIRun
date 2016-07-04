@@ -1080,7 +1080,7 @@ void ModuleWidget::makeOptionsDialog()
         qDebug() << "expand factor for dialogs:" << expand;
         qDebug() << dialog_->size();
         dialog_->setFixedHeight(dialog_->size().height() * expand);
-        dialog_->setFixedWidth(dialog_->size().width() * ((expand - 1) * 0.5) + 1);
+        dialog_->setFixedWidth(dialog_->size().width() * (((expand - 1) * 0.5) + 1));
         qDebug() << dialog_->size();
       }
 
