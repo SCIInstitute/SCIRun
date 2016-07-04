@@ -32,6 +32,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Core/Datatypes/Color.h>
+#include <boost/format.hpp>
 
 using namespace SCIRun;
 using namespace Modules::Fields;
@@ -167,17 +168,16 @@ EditMeshBoundingBox::EditMeshBoundingBox()
 void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 {
   auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  if (vsf.selectionName.find(get_id()) != std::string::npos)// && impl_->previousTransform_ != vsf.transform)
+  if (vsf.selectionName.find(get_id()) != std::string::npos)
   {
     impl_->userWidgetTransform_ = vsf.transform;
     enqueueExecuteAgain();
   }
-
 }
 
 void EditMeshBoundingBox::createBoxWidget()
 {
-  box_ = WidgetFactory::createBox();  //new BoxWidget(this, &widget_lock_, 1.0, false, false);
+  box_ = WidgetFactory::createBox();
   box_->connect(getOutputPort(Transformation_Widget));
 }
 
@@ -204,8 +204,8 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(XYZTranslation, false);
   state->setValue(RDITranslation, false);
   state->setValue(Resetting, false);
-
-  //TODO
+  state->setValue(BoxRealScale, 0.0);
+  state->setValue(BoxMode, 0);
 
   createBoxWidget();
   setBoxRestrictions();
@@ -242,6 +242,14 @@ void EditMeshBoundingBox::clear_vals()
   state->setValue(InputSizeZ, cleared);
 }
 
+namespace
+{
+  std::string convertForLabel(double coord)
+  {
+    return str(boost::format("%8.4f") % coord);
+  }
+}
+
 void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 {
   bbox_ = f->vmesh()->get_bounding_box();
@@ -254,11 +262,14 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
   }
   auto size = bbox_.diagonal();
   auto center = bbox_.center();
-  box_->setPosition(center,
-                    center + Vector(size.x() / 2., 0, 0),
-                    center + Vector(0, size.y() / 2., 0),
-                    center + Vector(0, 0, size.z() / 2.));
-  updateOutputAttributes(bbox_);
+
+  auto state = get_state();
+  state->setValue(InputCenterX, convertForLabel(center.x()));
+  state->setValue(InputCenterY, convertForLabel(center.y()));
+  state->setValue(InputCenterZ, convertForLabel(center.z()));
+  state->setValue(InputSizeX, convertForLabel(size.x()));
+  state->setValue(InputSizeY, convertForLabel(size.y()));
+  state->setValue(InputSizeZ, convertForLabel(size.z()));
 }
 
 void EditMeshBoundingBox::updateOutputAttributes(const BBox& box)
@@ -268,24 +279,23 @@ void EditMeshBoundingBox::updateOutputAttributes(const BBox& box)
   auto state = get_state();
   const bool useOutputSize = state->getValue(UseOutputSize).toBool();
   const bool useOutputCenter = state->getValue(UseOutputCenter).toBool();
-  char s[32];
-  sprintf(s, "%8.4f", center.x());
-  state->setValue(InputCenterX, boost::lexical_cast<std::string>(s));
+
+  state->setValue(OutputCenterX, convertForLabel(center.x()));
   if (!useOutputCenter) state->setValue(OutputCenterX, center.x());
-  sprintf(s, "%8.4f", center.y());
-  state->setValue(InputCenterY, boost::lexical_cast<std::string>(s));
+
+  state->setValue(OutputCenterY, convertForLabel(center.y()));
   if (!useOutputCenter) state->setValue(OutputCenterY, center.y());
-  sprintf(s, "%8.4f", center.z());
-  state->setValue(InputCenterZ, boost::lexical_cast<std::string>(s));
+
+  state->setValue(OutputCenterZ, convertForLabel(center.z()));
   if (!useOutputCenter) state->setValue(OutputCenterZ, center.z());
-  sprintf(s, "%8.4f", size.x());
-  state->setValue(InputSizeX, boost::lexical_cast<std::string>(s));
+
+  state->setValue(OutputSizeX, convertForLabel(size.x()));
   if (!useOutputSize) state->setValue(OutputSizeX, size.x());
-  sprintf(s, "%8.4f", size.y());
-  state->setValue(InputSizeY, boost::lexical_cast<std::string>(s));
+
+  state->setValue(OutputSizeY, convertForLabel(size.y()));
   if (!useOutputSize) state->setValue(OutputSizeY, size.y());
-  sprintf(s, "%8.4f", size.z());
-  state->setValue(InputSizeZ, boost::lexical_cast<std::string>(s));
+
+  state->setValue(OutputSizeZ, convertForLabel(size.z()));
   if (!useOutputSize) state->setValue(OutputSizeZ, size.z());
 }
 
