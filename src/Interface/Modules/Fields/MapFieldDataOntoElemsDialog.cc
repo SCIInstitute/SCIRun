@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Logging/Log.h>
+#include <Core/Math/MiscMath.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -48,4 +49,22 @@ MapFieldDataOntoElemsDialog::MapFieldDataOntoElemsDialog(const std::string& name
   addComboBoxManager(samplePointsComboBox_, Parameters::SamplePoints);
   addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
   addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
+  connect(useNanForUnassignedValuesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setUseNanForUnassignedValues(int)));
+}
+
+void MapFieldDataOntoElemsDialog::pullSpecial()
+{
+  if (IsNan(state_->getValue(Parameters::OutsideValue).toDouble()))
+  {
+    useNanForUnassignedValuesCheckBox_->setChecked(true);
+  }
+}
+
+void MapFieldDataOntoElemsDialog::setUseNanForUnassignedValues(int state)
+{
+  if (!pulling_)
+  {
+    if (0 != state)
+    state_->setValue(Parameters::OutsideValue, std::numeric_limits<double>::quiet_NaN());
+  }
 }
