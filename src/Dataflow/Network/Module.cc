@@ -963,7 +963,6 @@ void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& 
     if (inputPort->nconnections() > 0)
     {
       auto connection = inputPort->connection(0); // only one incoming connection for input ports
-      //VariableHandle feedback(new Variable(Name(inputPort->id().toString()), info));
       //TODO: extract port method
       connection->oport_->sendConnectionFeedback(feedback);
     }

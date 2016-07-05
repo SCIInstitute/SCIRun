@@ -77,7 +77,8 @@ namespace Networks {
 
     typedef boost::signals2::signal<void()> state_changed_sig_t;
 
-    virtual boost::signals2::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber) = 0;
+    virtual boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) = 0;
+    virtual boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) = 0;
   };
 
   class SCISHARE ModuleStateInterfaceFactory

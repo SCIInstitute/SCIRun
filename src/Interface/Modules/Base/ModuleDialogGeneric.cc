@@ -56,7 +56,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
   if (state_)
   {
     LOG_DEBUG("ModuleDialogGeneric connecting to state" << std::endl);
-    stateConnection_ = state_->connect_state_changed([this]() { pullSignal(); });
+    stateConnection_ = state_->connectStateChanged([this]() { pullSignal(); });
   }
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
   createExecuteAction();

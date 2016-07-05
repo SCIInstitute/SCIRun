@@ -351,7 +351,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   }
 
   LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
-  module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
+  module->getModule()->get_state()->connectStateChanged(boost::bind(&NetworkEditor::modified, this));
 
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
