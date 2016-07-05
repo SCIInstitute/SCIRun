@@ -56,6 +56,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  --reexecuteMode arg     network reexecution mode--DEVELOPER USE ONLY\n"
     "  --frameInitLimit arg    ViewScene frame init limit--increase if renderer \n"
     "                          fails\n"
+    "  --guiExpandFactor arg   Expansion factor for high resolution displays\n"
     "  --list-modules          print list of available modules\n";
 
   EXPECT_EQ(expectedHelp, parser.describe());
@@ -143,8 +144,8 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
 
-    ASSERT_TRUE(!!aph->threadMode());
-    EXPECT_EQ("serial", *aph->threadMode());
+    ASSERT_TRUE(!!aph->developerParameters()->threadMode());
+    EXPECT_EQ("serial", *aph->developerParameters()->threadMode());
   }
 
   {
@@ -153,8 +154,8 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
 
-    ASSERT_TRUE(!!aph->threadMode());
-    EXPECT_EQ("serial", *aph->threadMode());
+    ASSERT_TRUE(!!aph->developerParameters()->threadMode());
+    EXPECT_EQ("serial", *aph->developerParameters()->threadMode());
   }
 
   {

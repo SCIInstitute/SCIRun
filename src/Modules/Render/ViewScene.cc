@@ -107,7 +107,7 @@ void ViewScene::setStateDefaults()
 
 void ViewScene::postStateChangeInternalSignalHookup()
 {
-  get_state()->connect_state_changed([this]() { processViewSceneObjectFeedback(); });
+  get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
 }
 
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
@@ -177,7 +177,6 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   //std::cout << "asyncExecute " << asyncUpdates_ << std::endl;
 }
 
-#ifdef BUILD_TESTING
 void ViewScene::execute()
 {
   if (needToExecute())
@@ -228,7 +227,6 @@ void ViewScene::execute()
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
   }
 }
-#endif
 
 void ViewScene::processViewSceneObjectFeedback()
 {

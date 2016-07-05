@@ -51,13 +51,13 @@ namespace Gui {
     None,
     Tooltip,
     Top,
-    Left, 
-    Right, 
+    Left,
+    Right,
     Bottom
   };
 
   // TODO: refactor. Combine with ModuleNoteXML, and bring together various Note-related classes to support consistent read/write.
-  // IDEA: subclass QGraphicsTextItem properly and add a way to associate with a HasNotes object (either module or connection). 
+  // IDEA: subclass QGraphicsTextItem properly and add a way to associate with a HasNotes object (either module or connection).
   // Then serialization will be uniform for all notes.
 
   struct Note
@@ -92,6 +92,7 @@ namespace Gui {
     void updateNoteImpl(const Note& note);
     void updateNotePosition();
     void setDefaultNotePositionImpl(NotePosition position);
+    void clearNoteCursor();
     QGraphicsItem* item_;
     QGraphicsScene* scene_;
     PositionProviderPtr positioner_;

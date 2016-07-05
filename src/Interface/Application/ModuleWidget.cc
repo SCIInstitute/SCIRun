@@ -1035,6 +1035,8 @@ void ModuleWidget::setColorUnselected()
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
 
+double ModuleWidget::highResolutionExpandFactor_ = 1;
+
 void ModuleWidget::makeOptionsDialog()
 {
   if (theModule_->has_ui())
@@ -1074,9 +1076,23 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(true);
       }
 
+      if (highResolutionExpandFactor_ > 1)
+      {
+        //qDebug() << "expand factor for dialogs:" << highResolutionExpandFactor_;
+        //qDebug() << dialog_->size();
+        dialog_->setFixedHeight(dialog_->size().height() * highResolutionExpandFactor_);
+        dialog_->setFixedWidth(dialog_->size().width() * (((highResolutionExpandFactor_ - 1) * 0.5) + 1));
+        //qDebug() << dialog_->size();
+      }
+
       dialog_->pull();
     }
   }
+}
+
+QDialog* ModuleWidget::dialog()
+{
+  return dialog_;
 }
 
 void ModuleWidget::updateDockWidgetProperties(bool isFloating)
@@ -1347,20 +1363,20 @@ void ModuleWidget::unhighlightPorts()
   Q_EMIT displayChanged();
 }
 
+QString ModuleWidget::metadataToString() const
+{
+  auto metadata = theModule_->metadata().getFullMap();
+  QStringList display;
+  for (const auto& metaPair : metadata)
+  {
+    display.append(QString::fromStdString(metaPair.first) + " : " + QString::fromStdString(metaPair.second));
+  }
+  return display.join("\n");
+}
+
 void ModuleWidget::updateMetadata(bool active)
 {
-  if (active)
-  {
-    auto metadata = theModule_->metadata().getFullMap();
-    QStringList display;
-    for (const auto& metaPair : metadata)
-    {
-      display.append(QString::fromStdString(metaPair.first) + " : " + QString::fromStdString(metaPair.second));
-    }
-    setToolTip("Metadata:\n" + display.join("\n"));
-  }
-  else
-    setToolTip("");
+  setToolTip(active ? "Metadata:\n" + metadataToString() : "");
 }
 
 void ModuleWidget::setExecutionDisabled(bool disabled)

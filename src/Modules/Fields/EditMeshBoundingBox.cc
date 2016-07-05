@@ -32,6 +32,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Core/Datatypes/Color.h>
+#include <boost/format.hpp>
 
 using namespace SCIRun;
 using namespace Modules::Fields;
@@ -147,9 +148,8 @@ namespace SCIRun
       class EditMeshBoundingBoxImpl
       {
       public:
-        Transform box_initial_transform_;
         Transform field_initial_transform_;
-        BBox box_initial_bounds_;
+        Transform userWidgetTransform_;
       };
     }
   }
@@ -168,13 +168,16 @@ EditMeshBoundingBox::EditMeshBoundingBox()
 void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 {
   auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  std::cout << "EditMeshBoundingBox::processWidgetFeedback transfrom from ViewSceneDialog:" << std::endl;
-  vsf.transform.print();
+  if (vsf.selectionName.find(get_id()) != std::string::npos)
+  {
+    impl_->userWidgetTransform_ = vsf.transform;
+    enqueueExecuteAgain();
+  }
 }
 
 void EditMeshBoundingBox::createBoxWidget()
 {
-  box_ = WidgetFactory::createBox();  //new BoxWidget(this, &widget_lock_, 1.0, false, false);
+  box_ = WidgetFactory::createBox();
   box_->connect(getOutputPort(Transformation_Widget));
 }
 
@@ -201,13 +204,14 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(XYZTranslation, false);
   state->setValue(RDITranslation, false);
   state->setValue(Resetting, false);
-  
-  //TODO
+  state->setValue(BoxRealScale, 0.0);
+  state->setValue(BoxMode, 0);
 
   createBoxWidget();
   setBoxRestrictions();
 
   getOutputPort(Transformation_Widget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
+  impl_->userWidgetTransform_.load_identity();
 }
 
 void EditMeshBoundingBox::execute()
@@ -216,12 +220,13 @@ void EditMeshBoundingBox::execute()
   setBoxRestrictions();
   auto field = getRequiredInput(InputField);
 
-  if (needToExecute())
+  if (needToExecute() || impl_->userWidgetTransform_ != Transform::Identity())
   {
     clear_vals();
     update_state(Executing);
     update_input_attributes(field);
     executeImpl(field);
+    impl_->userWidgetTransform_.load_identity();
   }
 }
 
@@ -237,11 +242,16 @@ void EditMeshBoundingBox::clear_vals()
   state->setValue(InputSizeZ, cleared);
 }
 
+namespace
+{
+  std::string convertForLabel(double coord)
+  {
+    return str(boost::format("%8.4f") % coord);
+  }
+}
+
 void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 {
-  Point center;
-  Vector size;
-
   bbox_ = f->vmesh()->get_bounding_box();
 
   if (!bbox_.valid())
@@ -250,35 +260,43 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
     bbox_.extend(Point(0, 0, 0));
     bbox_.extend(Point(1, 1, 1));
   }
-  size = bbox_.diagonal();
-  center = bbox_.center();
-  box_->setPosition(center,
-                    center + Vector(size.x() / 2., 0, 0),
-                    center + Vector(0, size.y() / 2., 0),
-                    center + Vector(0, 0, size.z() / 2.));
+  auto size = bbox_.diagonal();
+  auto center = bbox_.center();
 
+  auto state = get_state();
+  state->setValue(InputCenterX, convertForLabel(center.x()));
+  state->setValue(InputCenterY, convertForLabel(center.y()));
+  state->setValue(InputCenterZ, convertForLabel(center.z()));
+  state->setValue(InputSizeX, convertForLabel(size.x()));
+  state->setValue(InputSizeY, convertForLabel(size.y()));
+  state->setValue(InputSizeZ, convertForLabel(size.z()));
+}
+
+void EditMeshBoundingBox::updateOutputAttributes(const BBox& box)
+{
+  auto size = box.diagonal();
+  auto center = box.center();
   auto state = get_state();
   const bool useOutputSize = state->getValue(UseOutputSize).toBool();
   const bool useOutputCenter = state->getValue(UseOutputCenter).toBool();
-    char s[32];
-    sprintf(s, "%8.4f",center.x());
-    state->setValue(InputCenterX, boost::lexical_cast<std::string>(s));
-    if (!useOutputCenter) state->setValue(OutputCenterX, center.x());
-    sprintf(s, "%8.4f",center.y());
-    state->setValue(InputCenterY, boost::lexical_cast<std::string>(s));
-    if (!useOutputCenter) state->setValue(OutputCenterY, center.y());
-    sprintf(s, "%8.4f",center.z());
-    state->setValue(InputCenterZ, boost::lexical_cast<std::string>(s));
-    if (!useOutputCenter) state->setValue(OutputCenterZ, center.z());
-    sprintf(s, "%8.4f",size.x());
-    state->setValue(InputSizeX, boost::lexical_cast<std::string>(s));
-    if (!useOutputSize) state->setValue(OutputSizeX, size.x());
-    sprintf(s, "%8.4f",size.y());
-    state->setValue(InputSizeY, boost::lexical_cast<std::string>(s));
-    if (!useOutputSize) state->setValue(OutputSizeY, size.y());
-    sprintf(s, "%8.4f",size.z());
-    state->setValue(InputSizeZ, boost::lexical_cast<std::string>(s));
-    if (!useOutputSize) state->setValue(OutputSizeZ, size.z());
+
+  state->setValue(OutputCenterX, convertForLabel(center.x()));
+  if (!useOutputCenter) state->setValue(OutputCenterX, center.x());
+
+  state->setValue(OutputCenterY, convertForLabel(center.y()));
+  if (!useOutputCenter) state->setValue(OutputCenterY, center.y());
+
+  state->setValue(OutputCenterZ, convertForLabel(center.z()));
+  if (!useOutputCenter) state->setValue(OutputCenterZ, center.z());
+
+  state->setValue(OutputSizeX, convertForLabel(size.x()));
+  if (!useOutputSize) state->setValue(OutputSizeX, size.x());
+
+  state->setValue(OutputSizeY, convertForLabel(size.y()));
+  if (!useOutputSize) state->setValue(OutputSizeY, size.y());
+
+  state->setValue(OutputSizeZ, convertForLabel(size.z()));
+  if (!useOutputSize) state->setValue(OutputSizeZ, size.z());
 }
 
 bool EditMeshBoundingBox::isBoxEmpty() const
@@ -369,7 +387,6 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
       bbox.extend(Point(0, 0, 0));
       bbox.extend(Point(1, 1, 1));
     }
-    impl_->box_initial_bounds_ = bbox;
 
     // build a widget identical to the BBox
     size = Vector(bbox.get_max() - bbox.get_min());
@@ -403,16 +420,6 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
     Point in(center + sizez / 2.);
 
     // Translate * Rotate * Scale.
-    Transform r;
-    impl_->box_initial_transform_.load_identity();
-    impl_->box_initial_transform_.pre_scale(Vector((right - center).length(),
-      (down - center).length(),
-      (in - center).length()));
-    r.load_frame((right - center).safe_normal(),
-      (down - center).safe_normal(),
-      (in - center).safe_normal());
-    impl_->box_initial_transform_.pre_trans(r);
-    impl_->box_initial_transform_.pre_translate(Vector(center));
 
     auto state = get_state();
     const double newscale = size.length() * 0.015;
@@ -560,13 +567,25 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
   t.pre_trans(r);
   t.pre_translate(Vector(center));
 
-  Transform inv(impl_->field_initial_transform_);
+  auto inv(impl_->field_initial_transform_);
   inv.invert();
   t.post_trans(inv);
+  const auto widgetMoved = impl_->userWidgetTransform_ != Transform::Identity();
+  if (widgetMoved)
+  {
+    t.post_trans(impl_->userWidgetTransform_);
+    impl_->userWidgetTransform_.project_inplace(center);
+    impl_->userWidgetTransform_.project_inplace(right);
+    impl_->userWidgetTransform_.project_inplace(down);
+    impl_->userWidgetTransform_.project_inplace(in);
+    box_->setPosition(center, right, down, in);
+  }
 
   // Change the input field handle here.
   FieldHandle output(fh->deep_clone());
   output->vmesh()->transform(t);
+
+  widget_moved(widgetMoved);
 
   sendOutput(OutputField, output);
 

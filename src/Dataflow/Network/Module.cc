@@ -222,26 +222,29 @@ size_t Module::num_output_ports() const
   return oports_.size();
 }
 
-namespace //TODO requirements for state metadata reporting
+//TODO requirements for state metadata reporting
+std::string Module::stateMetaInfo() const
 {
-  std::string stateMetaInfo(ModuleStateHandle state)
+  if (!state_)
+    return "Null state map.";
+  auto keys = state_->getKeys();
+  size_t i = 0;
+  std::ostringstream ostr;
+  ostr << "\n\t{";
+  for (const auto& key : keys)
   {
-    if (!state)
-      return "Null state map.";
-    auto keys = state->getKeys();
-    size_t i = 0;
-    std::ostringstream ostr;
-    ostr << "\n\t{";
-    for (const auto& key : keys)
-    {
-      ostr << "[" << key.name() << ", " << state->getValue(key).value() << "]";
-      i++;
-      if (i < keys.size())
-        ostr << ",\n\t";
-    }
-    ostr << "}";
-    return ostr.str();
+    ostr << "[" << key.name() << ", " << state_->getValue(key).value() << "]";
+    i++;
+    if (i < keys.size())
+      ostr << ",\n\t";
   }
+  ostr << "}";
+  return ostr.str();
+}
+
+void Module::copyStateToMetadata()
+{
+  metadata_.setMetadata("Module state", stateMetaInfo());
 }
 
 bool Module::executeWithSignals() NOEXCEPT
@@ -253,7 +256,7 @@ bool Module::executeWithSignals() NOEXCEPT
   {
     std::string isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
     metadata_.setMetadata("Last execution timestamp", isoString);
-    metadata_.setMetadata("Module state", stateMetaInfo(get_state()));
+    copyStateToMetadata();
   }
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
@@ -362,6 +365,7 @@ void Module::set_state(ModuleStateHandle state)
   }
   initStateObserver(state_.get());
   postStateChangeInternalSignalHookup();
+  copyStateToMetadata();
 }
 
 AlgorithmBase& Module::algo()
@@ -537,6 +541,7 @@ Module::Builder& Module::Builder::setStateDefaults()
   if (module_)
   {
     module_->setStateDefaults();
+    module_->copyStateToMetadata();
   }
   return *this;
 }
@@ -958,7 +963,6 @@ void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& 
     if (inputPort->nconnections() > 0)
     {
       auto connection = inputPort->connection(0); // only one incoming connection for input ports
-      //VariableHandle feedback(new Variable(Name(inputPort->id().toString()), info));
       //TODO: extract port method
       connection->oport_->sendConnectionFeedback(feedback);
     }

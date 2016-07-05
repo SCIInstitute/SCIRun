@@ -147,6 +147,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>methodComboBox_</tabstop>
+  <tabstop>maxDistanceSpinBox_</tabstop>
+  <tabstop>noMaxCheckBox_</tabstop>
+  <tabstop>defaultValueDoubleSpinBox_</tabstop>
+  <tabstop>useNanForUnassignedValuesCheckBox_</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -156,12 +163,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>70</x>
-     <y>139</y>
+     <x>134</x>
+     <y>107</y>
     </hint>
     <hint type="destinationlabel">
-     <x>187</x>
-     <y>114</y>
+     <x>361</x>
+     <y>102</y>
     </hint>
    </hints>
   </connection>
@@ -172,8 +179,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>50</x>
-     <y>197</y>
+     <x>236</x>
+     <y>206</y>
     </hint>
     <hint type="destinationlabel">
      <x>378</x>

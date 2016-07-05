@@ -31,6 +31,8 @@
 
 #include <QGraphicsView>
 #include <QGraphicsTextItem>
+#include <QGraphicsProxyWidget>
+#include "ui_NetworkSearch.h"
 #ifndef Q_MOC_RUN
 #include <boost/shared_ptr.hpp>
 #include <atomic>
@@ -83,12 +85,12 @@ namespace Gui {
     virtual void displayError(const QString& msg, std::function<void()> showModule) = 0;
   };
 
-  class ErrorItem : public QGraphicsTextItem
+  class FloatingTextItem : public QGraphicsTextItem
   {
     Q_OBJECT
   public:
-    explicit ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent = 0);
-    ~ErrorItem();
+    FloatingTextItem(const QString& text, std::function<void()> action, QGraphicsItem* parent = nullptr);
+    ~FloatingTextItem();
     int num() const { return counter_; }
   protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
@@ -98,10 +100,34 @@ namespace Gui {
     void animate(qreal val);
   private:
     QTimeLine* timeLine_;
-    std::function<void()> showModule_;
+    std::function<void()> action_;
     const int counter_;
     QGraphicsRectItem* rect_;
     static std::atomic<int> instanceCounter_;
+  };
+
+  class ErrorItem : public FloatingTextItem
+  {
+    Q_OBJECT
+  public:
+    ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent = nullptr);
+  };
+
+  class SearchResultItem : public FloatingTextItem
+  {
+    Q_OBJECT
+  public:
+    SearchResultItem(const QString& text, const QColor& color, std::function<void()> action, QGraphicsItem* parent = nullptr);
+    ~SearchResultItem();
+    static void removeAll();
+    static std::set<SearchResultItem*> items_;
+  };
+
+  class NetworkSearchWidget : public QWidget, public Ui::NetworkSearch
+  {
+    Q_OBJECT
+  public:
+    explicit NetworkSearchWidget(class NetworkEditor* ned);
   };
 
   class ModuleEventProxy : public QObject
@@ -148,11 +174,13 @@ namespace Gui {
 	  Q_OBJECT
 
   public:
-    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg,
+    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, 
+        boost::shared_ptr<DefaultNotePositionGetter> dnpg,
 				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
         PreexecuteFunc preexecuteFunc,
         TagColorFunc tagColor,
         TagNameFunc tagName,
+        double highResolutionExpandFactor,
         QWidget* parent = nullptr);
     ~NetworkEditor();
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -221,6 +249,7 @@ namespace Gui {
     virtual void wheelEvent(QWheelEvent* event) override;
     virtual void contextMenuEvent(QContextMenuEvent *event) override;
     virtual void mousePressEvent(QMouseEvent *event) override;
+    virtual void mouseDoubleClickEvent(QMouseEvent* event) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
@@ -256,6 +285,7 @@ namespace Gui {
     void adjustModuleWidth(int delta);
     void adjustModuleHeight(int delta);
     void saveTagGroupRectInFile();
+    void renameTagGroupInFile();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -283,6 +313,7 @@ namespace Gui {
     void paste();
     void bringToFront();
     void sendToBack();
+    void searchTextChanged(const QString& text);
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
@@ -298,6 +329,9 @@ namespace Gui {
     void pasteImpl(const QString& xml);
     void drawTagGroups();
     void removeTagGroups();
+    QString checkForOverriddenTagName(int tag) const;
+    void renameTagGroup(int tag, const QString& name);
+    QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;
@@ -316,10 +350,12 @@ namespace Gui {
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
     boost::shared_ptr<ZLevelManager> zLevelManager_;
     std::string latestModuleId_;
+    std::map<int, std::string> tagLabelOverrides_;
     bool fileLoading_;
     bool insertingNewModuleAlongConnection_ { false };
     PreexecuteFunc preexecute_;
     bool showTagGroupsOnFileLoad_ { false };
+    double highResolutionExpandFactor_{ 1 };
   };
 }
 }
