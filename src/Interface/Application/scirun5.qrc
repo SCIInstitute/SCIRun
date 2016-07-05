@@ -32,9 +32,9 @@
     <file>Resources/copy.png</file>
     <file>Resources/paste.png</file>
     <file>Resources/download.png</file>
-    <file>Resources/cubic.PNG</file>
-    <file>Resources/euclidean.PNG</file>
-    <file>Resources/manhattan.PNG</file>
+    <file>Resources/cubicPipe.png</file>
+    <file>Resources/euclideanPipe.png</file>
+    <file>Resources/manhattanPipe.png</file>
     <file>Resources/timepiece-512.png</file>
     <file>Resources/new/general/folder.png</file>
     <file>Resources/new/general/header-divider.png</file>
