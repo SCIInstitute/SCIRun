@@ -282,8 +282,11 @@ bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle data, siz
   else if (((nrows == 1) && (ncols == 3)) || ((ncols == 1) && (nrows == 3)))
   {
     Vector v;
-    if ((nrows == 1) && (nrows == 3)) { v[0] = (*data)(0, 0); v[1] = (*data)(0, 1); v[2] = (*data)(0, 2); }
-    if ((ncols == 1) && (ncols == 3)) { v[0] = (*data)(0, 0); v[1] = (*data)(1, 0); v[2] = (*data)(2, 0); }
+    /*
+    if ((nrows == 1) && (ncols == 3)) { v[0] = (*data)(0, 0); v[1] = (*data)(0, 1); v[2] = (*data)(0, 2); }
+    if ((ncols == 1) && (nrows == 3)) { v[0] = (*data)(0, 0); v[1] = (*data)(1, 0); v[2] = (*data)(2, 0); }
+     */
+    v[0] = (*data)(0, 0); v[1] = (*data)(0, 1); v[2] = (*data)(0, 2);
     ofield->set_all_values(v);
   }
   else
@@ -304,55 +307,75 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
   if ((ncols == 6) && (nrows == numvals))
   {
       std::cout<<"rows, 6 elems"<<std::endl;
-    Vector v[6];
+    //Vector v[6];
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
+      /*
       v[0] = (*data)(i, 0); v[1] = (*data)(i, 1);	v[2] = (*data)(i, 2);
       v[3] = (*data)(i, 3); v[4] = (*data)(i, 4);	v[5] = (*data)(i, 5);
       ofield->set_values(v, i);
         std::cout<<"nodes. vector = "<<v[0]<<','<<v[1]<<','<<v[2]<<','<<v[3]<<','<<v[4]<<','<<v[5]<<std::endl;
+       */
+      ofield->set_value(Tensor((*data)(i, 0),(*data)(i, 1),(*data)(i, 2),(*data)(i, 3),(*data)(i, 4),(*data)(i, 5)), i);
+      std::cout<<"nodes. vector = "<<(*data)(i, 0)<<","<<(*data)(i, 1)<<","<<(*data)(i, 2)<<","<<(*data)(i, 3)<<","<<(*data)(i, 4)<<","<<(*data)(i, 5)<<std::endl;
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
+      /*
       v[0]=(* data)(i,0); v[1]=(* data)(i,1);	v[2]=(* data)(i,2);
       v[3]=(* data)(i,3); v[4]=(* data)(i,4);	v[5]=(* data)(i,5);
       ofield->set_evalues(v,i);
         std::cout<<"elems. vector = "<<v[0]<<','<<v[1]<<','<<v[2]<<','<<v[3]<<','<<v[4]<<','<<v[5]<<std::endl;
+       */
+      ofield->set_evalue(Tensor((*data)(i, 0),(*data)(i, 1),(*data)(i, 2),(*data)(i, 3),(*data)(i, 4),(*data)(i, 5)), i);
+      std::cout<<"elem. vector = "<<(*data)(i, 0)<<","<<(*data)(i, 1)<<","<<(*data)(i, 2)<<","<<(*data)(i, 3)<<","<<(*data)(i, 4)<<","<<(*data)(i, 5)<<std::endl;
     }
   }
   else if ((nrows == 6) && (ncols == numvals))
   {
     std::cout<<"cols, 6 elems"<<std::endl;
     
-    Vector v[6];
+    //Vector v[6];
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
-      v[0] = (*data)(0, i); v[1] = (*data)(1, i);	v[2] = (*data)(2, i);
-      v[3] = (*data)(3, i); v[4] = (*data)(4, i);	v[5] = (*data)(5, i);
-      ofield->set_values(v, i);
-      std::cout<<"nodes. vector = "<<v[0]<<','<<v[1]<<','<<v[2]<<','<<v[3]<<','<<v[4]<<','<<v[5]<<std::endl;
+      /*
+       v[0] = (*data)(i, 0); v[1] = (*data)(i, 1);	v[2] = (*data)(i, 2);
+       v[3] = (*data)(i, 3); v[4] = (*data)(i, 4);	v[5] = (*data)(i, 5);
+       ofield->set_values(v, i);
+       std::cout<<"nodes. vector = "<<v[0]<<','<<v[1]<<','<<v[2]<<','<<v[3]<<','<<v[4]<<','<<v[5]<<std::endl;
+       */
+      ofield->set_value(Tensor((*data)(0,i),(*data)(1,i),(*data)(2,i),(*data)(3,i),(*data)(4,i),(*data)(5,i)), i);
+      std::cout<<"nodes. vector = "<<(*data)(0,i)<<","<<(*data)(1,i)<<","<<(*data)(2,i)<<","<<(*data)(3,i)<<","<<(*data)(4,i)<<","<<(*data)(5,i)<<std::endl;
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      v[0]=(* data)(0,i); v[1]=(* data)(1,i);	v[2]=(* data)(2,i);
-      v[3]=(* data)(3,i); v[4]=(* data)(4,i);	v[5]=(* data)(5,i);
-      ofield->set_evalues(v,i);
-      std::cout<<"elems. vector = "<<v[0]<<','<<v[1]<<','<<v[2]<<','<<v[3]<<','<<v[4]<<','<<v[5]<<std::endl;
+      /*
+       v[0]=(* data)(i,0); v[1]=(* data)(i,1);	v[2]=(* data)(i,2);
+       v[3]=(* data)(i,3); v[4]=(* data)(i,4);	v[5]=(* data)(i,5);
+       ofield->set_evalues(v,i);
+       std::cout<<"elems. vector = "<<v[0]<<','<<v[1]<<','<<v[2]<<','<<v[3]<<','<<v[4]<<','<<v[5]<<std::endl;
+       */
+      ofield->set_evalue(Tensor((*data)(0,i),(*data)(1,i),(*data)(2,i),(*data)(3,i),(*data)(4,i),(*data)(5,i)), i);
+      std::cout<<"elem. vector = "<<(*data)(0,i)<<","<<(*data)(1,i)<<","<<(*data)(2,i)<<","<<(*data)(3,i)<<","<<(*data)(4,i)<<","<<(*data)(5,i)<<std::endl;
     }
   }
   else if (((nrows == 1) && (ncols == 6)) || ((ncols == 1) && (nrows == 6)))
   {
+    /*
     Vector v;
     if ((nrows == 1) && (ncols == 6)) { v[0] = (*data)(0, 0); v[1] = (*data)(0, 1); v[2] = (*data)(0, 2); v[3] = (*data)(0, 3); v[4] = (*data)(0, 4); v[5] = (*data)(0, 5); }
     if ((ncols == 1) && (nrows == 6)) { v[0] = (*data)(0, 0); v[1] = (*data)(1, 0); v[2] = (*data)(2, 0); v[3] = (*data)(3, 0); v[4] = (*data)(4, 0); v[5] = (*data)(5, 0); }
     std::cout<<"constant. vector = "<<v[0]<<','<<v[1]<<','<<v[2]<<','<<v[3]<<','<<v[4]<<','<<v[5]<<std::endl;
-    ofield->set_all_values(v);
+     */
+    
+    ofield->set_all_values(Tensor((*data)(0, 0),(*data)(0, 1),(*data)(0, 2),(*data)(0, 3),(*data)(0, 4),(*data)(0, 5)));
+    
   }
   /// Handle 9 by n data
   else if ((ncols == 9) && (nrows == numvals))
   {
     std::cout<<"rows, 9 elems"<<std::endl;
-    Vector v[9];
+    //Vector v[9];
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
       /*
@@ -381,7 +404,7 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
   else if ((nrows == 9) && (ncols == numvals))
   {
     std::cout<<"cols, 9 elems"<<std::endl;
-    Vector v[9];
+    //Vector v[9];
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
       /*
@@ -391,8 +414,8 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
        ofield->set_values(v, i);
        std::cout<<"nodes. vector = "<<v[0]<<','<<v[1]<<','<<v[2]<<','<<v[3]<<','<<v[4]<<','<<v[5]<<','<<v[6]<<','<<v[7]<<','<<v[8]<<std::endl;
        */
-      ofield->set_value(Tensor((*data)(i, 0),(*data)(i, 1),(*data)(i, 2),(*data)(i, 3),(*data)(i, 4),(*data)(i, 8)), i);
-      std::cout<<"nodes. vector = "<<(*data)(i, 0)<<","<<(*data)(i, 1)<<","<<(*data)(i, 2)<<","<<(*data)(i, 3)<<","<<(*data)(i, 4)<<","<<(*data)(i, 8)<<std::endl;
+      ofield->set_value(Tensor((*data)(0,i),(*data)(1,i),(*data)(2,i),(*data)(3,i),(*data)(4,i),(*data)(8,i)), i);
+      std::cout<<"nodes. vector = "<<(*data)(0,i)<<","<<(*data)(1,i)<<","<<(*data)(2,i)<<","<<(*data)(3,i)<<","<<(*data)(4,i)<<","<<(*data)(8,i)<<std::endl;
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
@@ -403,8 +426,9 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
        ofield->set_evalues(v,i);
        std::cout<<"elems. vector = "<<v[0]<<','<<v[1]<<','<<v[2]<<','<<v[3]<<','<<v[4]<<','<<v[5]<<','<<v[6]<<','<<v[7]<<','<<v[8]<<std::endl;
        */
-      ofield->set_evalue(Tensor((*data)(i, 0),(*data)(i, 1),(*data)(i, 2),(*data)(i, 3),(*data)(i, 4),(*data)(i, 8)), i);
-      std::cout<<"elems. vector = "<<(*data)(i, 0)<<","<<(*data)(i, 1)<<","<<(*data)(i, 2)<<","<<(*data)(i, 3)<<","<<(*data)(i, 4)<<","<<(*data)(i, 8)<<std::endl;    }
+      ofield->set_evalue(Tensor((*data)(0,i),(*data)(1,i),(*data)(2,i),(*data)(3,i),(*data)(4,i),(*data)(8,i)), i);
+      std::cout<<"elem. vector = "<<(*data)(0,i)<<","<<(*data)(1,i)<<","<<(*data)(2,i)<<","<<(*data)(3,i)<<","<<(*data)(4,i)<<","<<(*data)(8,i)<<std::endl;
+    }
   }
   else if (((nrows == 1) && (ncols == 9)) || ((ncols == 1) && (nrows == 9)))
   {
@@ -415,7 +439,7 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
     ofield->set_all_values(v);
         std::cout<<"constant. vector = "<<v[0]<<','<<v[1]<<','<<v[2]<<','<<v[3]<<','<<v[4]<<','<<v[5]<<','<<v[6]<<','<<v[7]<<','<<v[8]<<std::endl;
     */
-    ofield->set_all_values(Tensor((*data)(i, 0),(*data)(i, 1),(*data)(i, 2),(*data)(i, 3),(*data)(i, 4),(*data)(i, 8)));
+    ofield->set_all_values(Tensor((*data)(0, 0),(*data)(0, 1),(*data)(0, 2),(*data)(0, 3),(*data)(0, 4),(*data)(0, 8)));
   }
   else
   {
