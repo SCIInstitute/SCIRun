@@ -64,6 +64,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   PreexecuteFunc preexecuteFunc,
   TagColorFunc tagColor,
   TagNameFunc tagName,
+  double highResolutionExpandFactor,
   QWidget* parent)
   : QGraphicsView(parent),
   modulesSelectedByCL_(false),
@@ -80,11 +81,13 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   moduleEventProxy_(new ModuleEventProxy),
   zLevelManager_(new ZLevelManager(scene_)),
   fileLoading_(false),
-  preexecute_(preexecuteFunc)
+  preexecute_(preexecuteFunc),
+  highResolutionExpandFactor_(highResolutionExpandFactor)
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
   ModuleWidget::closestPortFinder_.reset(new ClosestPortFinder(scene_));
+  ModuleWidget::highResolutionExpandFactor_ = highResolutionExpandFactor_; 
 
   setScene(scene_);
   setDragMode(RubberBandDrag);
@@ -348,7 +351,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   }
 
   LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
-  module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
+  module->getModule()->get_state()->connectStateChanged(boost::bind(&NetworkEditor::modified, this));
 
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
@@ -378,15 +381,15 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->createPortPositionProviders();
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
-  auto expand = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(-1);
-
-  if (expand > 0)
+  if (highResolutionExpandFactor_ > 1)
   {
-    qDebug() << "expand factor:" << expand;
-    qDebug() << proxy->size();
-    module->setFixedHeight(proxy->size().height() * expand);
-    proxy->setMaximumHeight(proxy->size().height() * expand);
-    qDebug() << proxy->size();
+    //qDebug() << "module widget expand factor:" << highResolutionExpandFactor_;
+    //qDebug() << proxy->size();
+    module->setFixedHeight(proxy->size().height() * highResolutionExpandFactor_);
+    proxy->setMaximumHeight(proxy->size().height() * highResolutionExpandFactor_);
+    module->setFixedWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
+    proxy->setMaximumWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
+    //qDebug() << proxy->size();
   }
 
   scene_->addItem(proxy);
@@ -739,7 +742,8 @@ SearchResultItem::SearchResultItem(const QString& text, const QColor& color, std
   : FloatingTextItem(text, action, parent)
 {
   setDefaultTextColor(color);
-  setHtml("<div style='background:rgba(150, 150, 150, 30%);'>" + toPlainText() + "</div>");
+  auto backgroundGray = QString("background:rgba(%1, %1, %1, 30%)").arg(200);
+  setHtml("<div style='" + backgroundGray + ";font: 15px Lucida, sans-serif'>" + toPlainText() + "</div>");
   items_.insert(this);
 }
 
@@ -797,6 +801,7 @@ public:
       }
       results.insert(results.end(), subresults.begin(), subresults.end());
     }
+    std::sort(results.begin(), results.end(), [](const Result& r1, const Result& r2) { return std::get<ItemType>(r1) < std::get<ItemType>(r2); });
     return results;
   }
 private:
@@ -822,6 +827,18 @@ private:
         Qt::yellow);
     }
 
+    auto dialog = mod->getModuleWidget()->dialog();
+    if (dialog && text.length() > 5)
+    {
+      auto widgetMatches = dialog->findChildren<QWidget*>(QRegExp(".*" + text + ".*", Qt::CaseInsensitive));
+      Q_FOREACH(auto widget, widgetMatches)
+      {
+        results.emplace_back("Module UI widget match",
+          QString::fromStdString(id) + "::" + widget->objectName(),
+          [mod]() { mod->showAndColor("#AA3333"); },
+          "#AA3333");
+      }
+    }
     return results;
   }
 
@@ -880,7 +897,7 @@ void NetworkEditor::searchTextChanged(const QString& text)
     if (!results.empty())
     {
       auto title = new SearchResultItem("Search results:", Qt::green, {});
-      title->setPos(positionOfFloatingText(title->num(), true, 20, textScale * 20));
+      title->setPos(positionOfFloatingText(title->num(), true, 20, textScale * 22));
       scene()->addItem(title);
       title->scale(textScale, textScale);
     }
@@ -888,7 +905,7 @@ void NetworkEditor::searchTextChanged(const QString& text)
     {
       auto searchItem = new SearchResultItem(std::get<ItemType>(result) + ": " + std::get<ItemName>(result),
         std::get<ItemColor>(result), std::get<ItemAction>(result));
-      searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 20));
+      searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 22));
       scene()->addItem(searchItem);
       searchItem->scale(textScale, textScale);
     }
@@ -1551,7 +1568,8 @@ void NetworkEditor::tagLayer(bool active, int tag)
     {
       if (item->data(TagDataKey).toInt() == NoTag)
       {
-        item->setData(TagDataKey, tag);
+        if (validTag(tag))
+          item->setData(TagDataKey, tag);
       }
       else if (ClearTags == tag)
       {
@@ -1770,7 +1788,6 @@ void NetworkEditor::highlightTaggedItem(int tagValue)
 
 void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
 {
-  qDebug() << "highlightTaggedItem" << tagValue;
   if (tagValue == NoTag)
   {
     item->setGraphicsEffect(blurEffect());

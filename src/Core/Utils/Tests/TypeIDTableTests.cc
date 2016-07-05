@@ -28,12 +28,14 @@
 
 #include <gtest/gtest.h>
 #include <boost/thread.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/format.hpp>
 
 #include <Core/Utils/TypeIDTable.h>
 
 using namespace SCIRun::Core::Utility;
 
-struct Dummy 
+struct Dummy
 {
   int x;
 };
@@ -51,7 +53,7 @@ bool operator!=(const Dummy& x1, const Dummy& x2)
 TEST(TypeIDTableTests, CanConstructEmpty)
 {
   TypeIDTable<Dummy> table;
-  
+
   auto ctor = table.findConstructorInfo("LatVolMesh");
 
   EXPECT_FALSE(ctor);
@@ -132,4 +134,16 @@ TEST(TypeIDTableTests, MultithreadedAccessIsSafe)
   }
 
   EXPECT_EQ(1, trueCount);
+}
+
+TEST(StringFormatting, NewWayMatchesOldWay)
+{
+  double x = 3.14159265;
+  char s[32];
+  sprintf(s, "%8.4f", x);
+  auto expected = boost::lexical_cast<std::string>(s);
+
+  auto actual = str(boost::format("%8.4f") % x);
+
+  EXPECT_EQ(expected, actual);
 }

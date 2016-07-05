@@ -205,6 +205,17 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>xSizeSpinBox_</tabstop>
+  <tabstop>ySizeSpinBox_</tabstop>
+  <tabstop>zSizeSpinBox_</tabstop>
+  <tabstop>padPercentageSpinBox_</tabstop>
+  <tabstop>dataAtNodesButton_</tabstop>
+  <tabstop>dataAtCellsButton_</tabstop>
+  <tabstop>dataAtNoneButton_</tabstop>
+  <tabstop>elementSizeNormalizedButton_</tabstop>
+  <tabstop>elementSizeOneButton_</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

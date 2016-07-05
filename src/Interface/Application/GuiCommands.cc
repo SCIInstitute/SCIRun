@@ -300,7 +300,8 @@ bool NetworkSaveCommand::execute()
 
   auto file = Application::Instance().controller()->saveNetwork();
 
-  XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
+  if (!XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile"))
+    return false;
   SCIRunMainWindow::Instance()->setCurrentFile(QString::fromStdString(fileNameWithExtension));
 
   SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);

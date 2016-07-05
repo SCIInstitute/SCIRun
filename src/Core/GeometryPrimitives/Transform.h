@@ -72,6 +72,8 @@ namespace SCIRun {
         double get_imat_val(int i, int j) const { return imat[i][j]; }
         void set_imat_val(int i, int j, double val) { imat[i][j] = val; }
 
+        static const Transform& Identity();
+
         Transform();
         Transform(const Transform&);
         Transform& operator=(const Transform&);

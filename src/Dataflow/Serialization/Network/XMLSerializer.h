@@ -47,26 +47,29 @@ namespace Networks {
   namespace XMLSerializer 
   {
     template <class Serializable>
-    void save_xml(const Serializable& data, std::ostream& ostr, const std::string& rootName)
+    bool save_xml(const Serializable& data, std::ostream& ostr, const std::string& rootName)
     {
       if (!ostr.good())
-        return;
+        return false;
       boost::archive::xml_oarchive oa(ostr);
       oa << boost::serialization::make_nvp(rootName.c_str(), data);
+      return true;
     }
 
     template <class Serializable>
-    void save_xml(const Serializable& data, const std::string& filename, const std::string& rootName)
+    bool save_xml(const Serializable& data, const std::string& filename, const std::string& rootName)
     {
       std::ofstream ofs(filename.c_str());
-      save_xml(data, ofs, rootName);
+      if (!ofs)
+        return false;
+      return save_xml(data, ofs, rootName);
     }
 
     template <class Serializable>
     boost::shared_ptr<Serializable> load_xml(std::istream& istr)
     {
       if (!istr.good())
-        return boost::shared_ptr<Serializable>();
+        return nullptr;
       boost::archive::xml_iarchive ia(istr);
       boost::shared_ptr<Serializable> nh(new Serializable);
       ia >> BOOST_SERIALIZATION_NVP(*nh);

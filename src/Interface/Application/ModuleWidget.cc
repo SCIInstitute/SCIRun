@@ -1035,6 +1035,8 @@ void ModuleWidget::setColorUnselected()
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
 
+double ModuleWidget::highResolutionExpandFactor_ = 1;
+
 void ModuleWidget::makeOptionsDialog()
 {
   if (theModule_->has_ui())
@@ -1074,19 +1076,23 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(true);
       }
 
-      auto expand = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(-1);
-      if (expand > 1)
+      if (highResolutionExpandFactor_ > 1)
       {
-        qDebug() << "expand factor for dialogs:" << expand;
-        qDebug() << dialog_->size();
-        dialog_->setFixedHeight(dialog_->size().height() * expand);
-        dialog_->setFixedWidth(dialog_->size().width() * ((expand - 1) * 0.5) + 1);
-        qDebug() << dialog_->size();
+        //qDebug() << "expand factor for dialogs:" << highResolutionExpandFactor_;
+        //qDebug() << dialog_->size();
+        dialog_->setFixedHeight(dialog_->size().height() * highResolutionExpandFactor_);
+        dialog_->setFixedWidth(dialog_->size().width() * (((highResolutionExpandFactor_ - 1) * 0.5) + 1));
+        //qDebug() << dialog_->size();
       }
 
       dialog_->pull();
     }
   }
+}
+
+QDialog* ModuleWidget::dialog()
+{
+  return dialog_;
 }
 
 void ModuleWidget::updateDockWidgetProperties(bool isFloating)

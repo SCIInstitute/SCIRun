@@ -112,7 +112,7 @@ QColor TagManagerWindow::tagColor(int tag) const
 {
   int r, g, b;
   r = g = b = 155;
-  if (0 <= tag && tag < NumberOfTags)
+  if (validTag(tag))
   {
     auto colorStr = tagColors_[tag];
     try
@@ -134,8 +134,7 @@ QColor TagManagerWindow::tagColor(int tag) const
 
 QString TagManagerWindow::tagName(int tag) const
 {
-  auto name = (0 <= tag && tag < NumberOfTags) ? tagNames_[tag] : "[No tag]";
-  qDebug() << "tagName" << tag << name;
+  auto name = validTag(tag) ? tagNames_[tag] : "[No tag]";
   return name;
 }
 
