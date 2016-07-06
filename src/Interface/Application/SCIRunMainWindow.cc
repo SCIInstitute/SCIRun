@@ -1503,7 +1503,7 @@ void SCIRunMainWindow::addToDataDirectory(const QString& dir)
 
 void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
-  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
+  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), QString::fromStdString(Core::Preferences::Instance().dataDirectory().parent_path().string()));
   setDataDirectory(dir);
 }
 

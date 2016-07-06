@@ -104,6 +104,7 @@ SET(Interface_Application_FORMS
   Module.ui
   ModuleLogWindow.ui
   ConnectionStyleWizardPage.ui
+  OtherSettingsWizardPage.ui
   NetworkSearch.ui
   NoteEditor.ui
   Preferences.ui
