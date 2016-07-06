@@ -31,7 +31,8 @@
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Logging/Log.h>
 #include "ui_ConnectionStyleWizardPage.h"
-#include <Interface/Application/ui_ConnectionStyleWizardPage.h>
+#include "ui_OtherSettingsWizardPage.h"
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -171,8 +172,20 @@ NewUserWizard::NewUserWizard(QWidget* parent) : QWizard(parent)
   addPage(createIntroPage());
   addPage(createPathSettingPage());
   addPage(createConnectionChoicePage());
+  addPage(createOtherSettingsPage());
   addPage(createLicensePage());
   addPage(createDocPage());
+}
+
+NewUserWizard::~NewUserWizard()
+{
+  showPrefs();
+}
+
+void NewUserWizard::showPrefs()
+{
+  if (showPrefs_)
+    SCIRunMainWindow::Instance()->actionPreferences_->trigger();
 }
 
 QWizardPage* NewUserWizard::createIntroPage()
@@ -263,6 +276,11 @@ void NewUserWizard::updatePathLabel(const QString& dir)
   pathWidget_->setText(dir);
 }
 
+void NewUserWizard::setShowPrefs(int state)
+{
+  showPrefs_ = state != 0;
+}
+
 class ConnectionStyleWizardPage : public QWizardPage, public Ui::ConnectionStyleWizardPage
 {
 public:
@@ -280,4 +298,20 @@ public:
 QWizardPage* NewUserWizard::createConnectionChoicePage()
 {
   return new ConnectionStyleWizardPage;
+}
+
+class OtherSettingsWizardPage : public QWizardPage, public Ui::OtherSettingsWizardPage
+{
+public:
+  explicit OtherSettingsWizardPage(NewUserWizard* wiz) 
+  {
+    setupUi(this);
+    //connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), SCIRunMainWindow::Instance(), SLOT(setConnectionPipelineType(int)));
+    connect(loadPreferencesCheckBox_, SIGNAL(stateChanged(int)), wiz, SLOT(setShowPrefs(int)));
+  }
+};
+
+QWizardPage* NewUserWizard::createOtherSettingsPage()
+{
+  return new OtherSettingsWizardPage(this);
 }
