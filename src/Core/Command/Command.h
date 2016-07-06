@@ -88,6 +88,7 @@ namespace SCIRun
         ImportNetworkFile,
         RunPythonScript,
         SetupDataDirectory,
+        DisableViewScenes,
         ExecuteCurrentNetwork,
         InteractiveMode,
         SetupQuitAfterExecute,
