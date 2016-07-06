@@ -174,7 +174,7 @@ namespace Gui {
 	  Q_OBJECT
 
   public:
-    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, 
+    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
         boost::shared_ptr<DefaultNotePositionGetter> dnpg,
 				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
         PreexecuteFunc preexecuteFunc,
@@ -215,6 +215,9 @@ namespace Gui {
     void disableInputWidgets();
     void enableInputWidgets();
 
+    void disableViewScenes();
+    void enableViewScenes();
+
     //TODO: this class is getting too big and messy, schedule refactoring
 
     void setBackground(const QBrush& brush);
@@ -249,7 +252,6 @@ namespace Gui {
     virtual void wheelEvent(QWheelEvent* event) override;
     virtual void contextMenuEvent(QContextMenuEvent *event) override;
     virtual void mousePressEvent(QMouseEvent *event) override;
-    virtual void mouseDoubleClickEvent(QMouseEvent* event) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);

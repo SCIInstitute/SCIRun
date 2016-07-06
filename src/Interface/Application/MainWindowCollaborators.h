@@ -179,15 +179,21 @@ namespace Gui {
     Q_OBJECT
   public:
     explicit NewUserWizard(QWidget* parent);
+    ~NewUserWizard();
+  public Q_SLOTS:
+    void setShowPrefs(int state);
   private Q_SLOTS:
     void updatePathLabel(const QString& dir);
+    void showPrefs();
   private:
     QWizardPage* createIntroPage();
     QWizardPage* createPathSettingPage();
     QWizardPage* createLicensePage();
     QWizardPage* createConnectionChoicePage();
     QWizardPage* createDocPage();
+    QWizardPage* createOtherSettingsPage();
     QLineEdit* pathWidget_;
+    bool showPrefs_{ false };
   };
 }
 }

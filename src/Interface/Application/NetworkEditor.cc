@@ -87,7 +87,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
   ModuleWidget::closestPortFinder_.reset(new ClosestPortFinder(scene_));
-  ModuleWidget::highResolutionExpandFactor_ = highResolutionExpandFactor_; 
+  ModuleWidget::highResolutionExpandFactor_ = highResolutionExpandFactor_;
 
   setScene(scene_);
   setDragMode(RubberBandDrag);
@@ -716,20 +716,6 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
   QGraphicsView::mouseReleaseEvent(event);
 }
 
-void NetworkEditor::mouseDoubleClickEvent(QMouseEvent* event)
-{
-#if 0
-  if (!search_)
-  {
-    search_ = scene_->addWidget(new NetworkSearchWidget(this));
-    search_->setOpacity(0.9);
-  }
-  search_->setPos(mapToScene(event->pos()));
-  search_->setVisible(true);
-#endif
-  QGraphicsView::mouseDoubleClickEvent(event);
-}
-
 NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
 {
   setupUi(this);
@@ -786,6 +772,10 @@ public:
       if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
       {
         subresults = searchItem(w, text);
+      }
+      else if (dynamic_cast<FloatingTextItem*>(item))
+      {
+        // skip--don't search errors or search results
       }
       else if (auto t = dynamic_cast<QGraphicsTextItem*>(item))
       {
@@ -1280,6 +1270,32 @@ void NetworkEditor::appendToNetwork(const NetworkFileHandle& xml)
   }
 
   setSceneRect(QRectF());
+}
+
+void NetworkEditor::disableViewScenes()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto c = dynamic_cast<ConnectionLine*>(item))
+    {
+      if (c->id().id_.find("ViewScene") != std::string::npos)
+        c->setDisabled(true);
+    }
+  }
+  //TODO: doesn't work yet.
+  //Application::Instance().controller()->connectNetworkExecutionFinished([this](int code){ enableViewScenes(); });
+}
+
+void NetworkEditor::enableViewScenes()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto c = dynamic_cast<ConnectionLine*>(item))
+    {
+      if (c->id().id_.find("ViewScene") != std::string::npos)
+        c->setDisabled(false);
+    }
+  }
 }
 
 size_t NetworkEditor::numModules() const

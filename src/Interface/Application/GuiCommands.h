@@ -47,8 +47,8 @@ namespace Gui {
   public:
     LoadFileCommandGui();
     virtual bool execute() override;
-  private:
-    int index_ = 0;
+  //private:
+  //  int index_ = 0;
   };
 
   class RunPythonScriptCommandGui : public Core::Commands::GuiCommand
@@ -132,6 +132,12 @@ namespace Gui {
   {
   public:
     NetworkSaveCommand();
+    virtual bool execute() override;
+  };
+
+  class DisableViewScenesCommandGui : public Core::Commands::GuiCommand
+  {
+  public:
     virtual bool execute() override;
   };
 }

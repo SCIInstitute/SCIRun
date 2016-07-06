@@ -104,7 +104,7 @@ class ModuleWidget : public QStackedWidget,
 	Q_OBJECT
 
 public:
-  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
+  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule,
     boost::shared_ptr<DialogErrorControl> dialogErrorControl,
     QWidget* parent = nullptr);
   ~ModuleWidget();
@@ -227,7 +227,7 @@ private Q_SLOTS:
   void changeExecuteButtonToPlay();
   void changeExecuteButtonToStop();
   void updateDockWidgetProperties(bool isFloating);
-  void incomingConnectionStateChanged(bool disabled);
+  void incomingConnectionStateChanged(bool disabled, int index);
 protected:
   virtual void enterEvent(QEvent* event) override;
   virtual void leaveEvent(QEvent* event) override;

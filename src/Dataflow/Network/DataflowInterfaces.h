@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +28,7 @@
 /// @todo Documentation Dataflow/Network/DataflowInterfaces.h
 
 #ifndef DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H
-#define DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H 
+#define DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
@@ -51,12 +51,12 @@ namespace Networks {
   };
 
   typedef boost::signals2::signal<void(SCIRun::Core::Datatypes::DatatypeHandle)> DataHasChangedSignalType;
-  
+
   class SCISHARE DatatypeSinkInterface
   {
   public:
     virtual ~DatatypeSinkInterface() {}
-    
+
     // "mailbox" interface
     //virtual bool hasData() const = 0;
     //virtual void setHasData(bool dataPresent) = 0;
@@ -68,6 +68,7 @@ namespace Networks {
     virtual bool hasChanged() const = 0;
     virtual void invalidateProvider() = 0;
     virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber) = 0;
+    virtual void forceFireDataHasChanged() = 0;
   };
 
 }}}

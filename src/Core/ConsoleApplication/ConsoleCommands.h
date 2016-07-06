@@ -41,17 +41,14 @@ namespace Console {
   public:
     LoadFileCommandConsole();
     virtual bool execute() override;
-  private:
-    int index_ = 0;
+  // private:
+  //   int index_ = 0;
   };
 
   class SCISHARE SaveFileCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
-    //LoadFileCommandConsole();
     virtual bool execute() override;
-  //private:
-  //  int index_ = 0;
   };
 
   class SCISHARE RunPythonScriptCommandConsole : public Core::Commands::ConsoleCommand
