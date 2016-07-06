@@ -1282,11 +1282,20 @@ void NetworkEditor::disableViewScenes()
         c->setDisabled(true);
     }
   }
+  //TODO: doesn't work yet.
+  //Application::Instance().controller()->connectNetworkExecutionFinished([this](int code){ enableViewScenes(); });
 }
 
 void NetworkEditor::enableViewScenes()
 {
-
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto c = dynamic_cast<ConnectionLine*>(item))
+    {
+      if (c->id().id_.find("ViewScene") != std::string::npos)
+        c->setDisabled(false);
+    }
+  }
 }
 
 size_t NetworkEditor::numModules() const
