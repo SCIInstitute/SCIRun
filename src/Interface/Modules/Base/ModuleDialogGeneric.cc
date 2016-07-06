@@ -436,6 +436,45 @@ void ModuleDialogGeneric::addLineEditManager(QLineEdit* lineEdit, const Algorith
   addWidgetSlotManager(boost::make_shared<LineEditSlotManager>(state_, *this, stateKey, lineEdit));
 }
 
+class TabSlotManager : public WidgetSlotManager
+{
+public:
+  TabSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTabWidget* tabWidget) :
+    WidgetSlotManager(state, dialog, tabWidget, stateKey), stateKey_(stateKey), tabWidget_(tabWidget)
+  {
+    connect(tabWidget_, SIGNAL(currentChanged(int)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
+    if (newValue != tabWidget_->tabText(tabWidget_->currentIndex()))
+    {
+      for (int i = 0; i < tabWidget_->count(); ++i)
+      {
+        if (tabWidget_->tabText(i) == newValue)
+        {
+          tabWidget_->setCurrentIndex(i);
+          LOG_DEBUG("In new version of pull code for LineEdit: " << newValue.toStdString());
+          return;
+        }
+      }
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for QTabWidget: " << tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
+    state_->setValue(stateKey_, tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QTabWidget* tabWidget_;
+};
+
+void ModuleDialogGeneric::addTabManager(QTabWidget* tab, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<TabSlotManager>(state_, *this, stateKey, tab));
+}
+
 class DoubleLineEditSlotManager : public WidgetSlotManager
 {
 public:
