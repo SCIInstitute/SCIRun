@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,7 +38,7 @@ Connection::Connection(OutputPortHandle oport, InputPortHandle iport, const Conn
   ENSURE_NOT_NULL(oport_, "output port is null");
   ENSURE_NOT_NULL(iport_, "input port is null");
 
-  /// @todo: this is already checked in the controller layer. Do we need a redundant check here? 
+  /// @todo: this is already checked in the controller layer. Do we need a redundant check here?
   //if (oport_->get_colorname() != iport_->get_colorname())
   //  THROW_INVALID_ARGUMENT("Ports do not have matching type.");
 
@@ -50,4 +50,17 @@ Connection::~Connection()
 {
   oport_->detach(this);
   iport_->detach(this);
+}
+
+std::string Connection::id() const
+{
+  return id_;
+}
+
+void Connection::setDisable(bool disable)
+{
+  std::cout << "setting " << id_ << " to " << disable << std::endl;
+  disabled_ = disable;
+  if (!disabled_)
+    iport_->resendNewDataSignal();
 }

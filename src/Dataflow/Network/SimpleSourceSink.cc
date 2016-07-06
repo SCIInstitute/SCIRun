@@ -110,6 +110,11 @@ void SimpleSink::setData(DatatypeHandle data)
     dataHasChanged_(data);
 }
 
+void SimpleSink::forceFireDataHasChanged()
+{
+  dataHasChanged_(weakData_.lock());
+}
+
 DatatypeSinkInterface* SimpleSink::clone() const
 {
   return new SimpleSink;

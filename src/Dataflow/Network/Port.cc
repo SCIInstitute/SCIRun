@@ -68,7 +68,7 @@ void Port::detach(Connection* conn)
   connections_.erase(pos);
 }
 
-const Connection* Port::connection(size_t i) const
+Connection* Port::connection(size_t i) const
 {
   return connections_[i];
 }
@@ -154,8 +154,28 @@ boost::signals2::connection InputPort::connectDataOnPortHasChanged(const DataOnP
 {
   return sink()->connectDataHasChanged([this, subscriber] (DatatypeHandle data)
   {
-    subscriber(this->id(), data);
+    std::cout << "connectDataHasChanged" << std::endl;
+    if (!this->connections_.empty())
+    {
+      std::cout << "connectDataHasChanged connections not empty" << std::endl;
+      auto conn = *this->connections_.begin();
+      if (!conn->disabled())
+      {
+        std::cout << "enabled: " << conn->id() << std::endl;
+        subscriber(this->id(), data);
+      }
+      else
+      {
+        std::cout << "disabled: " << conn->id() << std::endl;
+      }
+    }
+    std::cout << "connectDataHasChanged connections is empty" << std::endl;
   });
+}
+
+void InputPort::resendNewDataSignal()
+{
+  sink()->forceFireDataHasChanged();
 }
 
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)
@@ -178,8 +198,13 @@ void OutputPort::sendData(DatatypeHandle data)
 
   for (Connection* c : connections_)
   {
+    std::cout << c->id();
     if (c && !c->disabled() && c->iport_)
+    {
       source_->send(c->iport_->sink());
+      std::cout << "\t sent.";
+    }
+    std::cout << std::endl;
   }
 }
 

@@ -59,7 +59,7 @@ public:
   virtual ~Port();
 
   size_t nconnections() const override;
-  const Connection* connection(size_t) const override;
+  Connection* connection(size_t) const override;
 
   virtual PortId id() const override { return id_; }
   virtual void setId(const PortId& id) override { id_ = id; }
@@ -110,6 +110,7 @@ public:
   virtual InputPortInterface* clone() const override;
   virtual bool hasChanged() const override;
   virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) override;
+  virtual void resendNewDataSignal() override;
 private:
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;

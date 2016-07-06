@@ -255,7 +255,7 @@ void PortWidget::turn_on_light()
   lightOn_ = true;
 }
 
-boost::optional<ConnectionId> PortWidget::firstConnectionId() const 
+boost::optional<ConnectionId> PortWidget::firstConnectionId() const
 {
   auto c = firstConnection();
   return c ? c->id() : boost::optional<ConnectionId>();
@@ -379,7 +379,7 @@ void PortWidget::pickConnectModule()
     connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
     connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
 
-    if (dialog.exec() == QDialog::Accepted) 
+    if (dialog.exec() == QDialog::Accepted)
     {
       Q_FOREACH(QListWidgetItem* lineEdit, list.selectedItems())
         menu_->portPicked(lineEdit->text());
@@ -490,7 +490,7 @@ void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
 
 void PortWidget::connectionDisabled(bool disabled)
 {
-  Q_EMIT incomingConnectionStateChange(disabled);
+  Q_EMIT incomingConnectionStateChange(disabled, getIndex());
 }
 
 void PortWidget::setConnectionsDisabled(bool disabled)
@@ -697,7 +697,7 @@ void PortWidget::insertNewModule(const PortDescriptionInterface* output, const s
 {
   setProperty(addNewModuleActionTypePropertyName(), sender()->property(addNewModuleActionTypePropertyName()));
   setProperty(insertNewModuleActionTypePropertyName(), QString::fromStdString(input->id().toString()));
-  
+
   Q_EMIT connectNewModule(output, newModuleName);
 }
 

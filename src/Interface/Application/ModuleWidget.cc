@@ -33,6 +33,7 @@
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Network/Connection.h>
 
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Connection.h>
@@ -578,7 +579,7 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
       this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    connect(w, SIGNAL(incomingConnectionStateChange(bool)), this, SLOT(incomingConnectionStateChanged(bool)));
+    connect(w, SIGNAL(incomingConnectionStateChange(bool, int)), this, SLOT(incomingConnectionStateChanged(bool, int)));
     ports_->addPort(w);
     ++i;
     if (dialog_ && port->isDynamic())
@@ -1388,8 +1389,15 @@ void ModuleWidget::setExecutionDisabled(bool disabled)
   theModule_->setExecutionDisabled(disabled_);
 }
 
-void ModuleWidget::incomingConnectionStateChanged(bool disabled)
+void ModuleWidget::incomingConnectionStateChanged(bool disabled, int index)
 {
+  qDebug() << "ModuleWidget::incomingConnectionStateChanged" << disabled << index;
+  if (index < theModule_->num_input_ports())
+  {
+    qDebug() << "\tincomingConnectionStateChanged" << theModule_->inputPorts()[index]->connection(0)->id().c_str() << disabled;
+    theModule_->inputPorts()[index]->connection(0)->setDisable(disabled);
+  }
+
   bool shouldDisable;
   if (disabled)
   {
