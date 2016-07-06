@@ -36,7 +36,7 @@ typedef SCIRun::Modules::Fields::EditMeshBoundingBox EditMeshBoundingBoxModule;
 
 EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogGeneric(state, parent), doubleUpScale_(1.5625), upScale_(1.25), downScale_(0.8), doubleDownScale_(0.64)
 {
   setupUi(this);
   //custom value for cylinder size
@@ -78,7 +78,7 @@ void EditMeshBoundingBoxDialog::AdjustScale(float scaleFactor)
   executeActionTriggered();
 }
 
-void EditMeshBoundingBoxDialog::ScaleUpPush(){ AdjustScale(1.25); }
-void EditMeshBoundingBoxDialog::ScaleDoubleUpPush(){ AdjustScale(1.5625); }
-void EditMeshBoundingBoxDialog::ScaleDownPush(){ AdjustScale(0.8); }
-void EditMeshBoundingBoxDialog::ScaleDoubleDownPush(){ AdjustScale(0.64); }
+void EditMeshBoundingBoxDialog::ScaleUpPush(){ AdjustScale(upScale_); }
+void EditMeshBoundingBoxDialog::ScaleDoubleUpPush(){ AdjustScale(doubleUpScale_); }
+void EditMeshBoundingBoxDialog::ScaleDownPush(){ AdjustScale(downScale_); }
+void EditMeshBoundingBoxDialog::ScaleDoubleDownPush(){ AdjustScale(doubleDownScale_); }

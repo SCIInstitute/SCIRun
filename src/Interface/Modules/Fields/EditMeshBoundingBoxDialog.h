@@ -47,6 +47,7 @@ public:
     QWidget* parent = 0);
 private:
   void AdjustScale(float scaleFactor);
+  float doubleUpScale_, upScale_, downScale_, doubleDownScale_;
 private Q_SLOTS:
   void ScaleUpPush();
   void ScaleDoubleUpPush();
