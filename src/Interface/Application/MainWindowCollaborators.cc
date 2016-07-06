@@ -165,8 +165,6 @@ void WidgetDisablingService::temporarilyEnableService()
 NewUserWizard::NewUserWizard(QWidget* parent) : QWizard(parent)
 {
   setWindowTitle("SCIRun Initial Setup");
-  //setPixmap(WatermarkPixmap, QPixmap(":/general/Resources/scirun_5_0_alpha.png"));
-  //setPixmap(BackgroundPixmap, QPixmap(":/general/Resources/scirun_5_0_alpha.png"));
   setOption(NoCancelButton);
 
   addPage(createIntroPage());
@@ -194,7 +192,11 @@ QWizardPage* NewUserWizard::createIntroPage()
   page->setTitle("Introduction");
 
   page->setSubTitle("This wizard will help you set up SCIRun for the first time and learn the basic SCIRun operations and hotkeys. All of these settings are available at any time in the Preferences window.");
-
+  auto layout = new QVBoxLayout;
+  auto pic = new QLabel;
+  pic->setPixmap(QPixmap(":/general/Resources/scirunWizard.png"));
+  layout->addWidget(pic);
+  page->setLayout(layout);
   return page;
 }
 
