@@ -308,7 +308,7 @@ public:
   explicit OtherSettingsWizardPage(NewUserWizard* wiz) 
   {
     setupUi(this);
-    //connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), SCIRunMainWindow::Instance(), SLOT(setConnectionPipelineType(int)));
+    connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), SCIRunMainWindow::Instance(), SLOT(setSaveBeforeExecute(int)));
     connect(loadPreferencesCheckBox_, SIGNAL(stateChanged(int)), wiz, SLOT(setShowPrefs(int)));
   }
 };

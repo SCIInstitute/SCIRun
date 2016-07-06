@@ -887,6 +887,11 @@ void SCIRunMainWindow::setConnectionPipelineType(int type)
 	}
 }
 
+void SCIRunMainWindow::setSaveBeforeExecute(int state)
+{
+  prefsWindow_->setSaveBeforeExecute(state != 0);
+}
+
 void SCIRunMainWindow::chooseBackgroundColor()
 {
   auto brush = networkEditor_->background();
