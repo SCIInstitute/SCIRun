@@ -65,13 +65,6 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 
   SparseRowMatrixFromMap::Values additionalData;
 
-  // Making sure the stiff matrix (left hand side) is symmetric
-  if (!isSymmetricMatrix(*stiff,bound_for_equality))
-  {
-    std::ostringstream ostr1;
-    ostr1 << "matrix A is not symmetrical due to a difference of " << bound_for_equality << std::endl;
-    THROW_ALGORITHM_INPUT_ERROR(ostr1.str());    
-  }
 
   // Storing the number of columns in m and rows in n from the stiff matrix, m == n
   const unsigned int numCols = static_cast<unsigned int>(stiff->ncols());
