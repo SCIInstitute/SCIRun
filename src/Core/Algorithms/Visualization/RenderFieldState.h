@@ -60,10 +60,14 @@ public:
     // Node flags
     USE_SPHERE,
     USE_TRANSPARENT_NODES,
+    USE_COLORMAP_ON_NODES,
+    USE_COLOR_CONVERT_ON_NODES,
 
     // Edge flags
     USE_CYLINDER,
     USE_TRANSPARENT_EDGES,
+    USE_COLORMAP_ON_EDGES,
+    USE_COLOR_CONVERT_ON_EDGES,
 
     // Face flags
     USE_NORMALS,
