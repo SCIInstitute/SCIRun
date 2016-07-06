@@ -1272,6 +1272,23 @@ void NetworkEditor::appendToNetwork(const NetworkFileHandle& xml)
   setSceneRect(QRectF());
 }
 
+void NetworkEditor::disableViewScenes()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto c = dynamic_cast<ConnectionLine*>(item))
+    {
+      if (c->id().id_.find("ViewScene") != std::string::npos)
+        c->setDisabled(true);
+    }
+  }
+}
+
+void NetworkEditor::enableViewScenes()
+{
+
+}
+
 size_t NetworkEditor::numModules() const
 {
   return controller_->numModules();

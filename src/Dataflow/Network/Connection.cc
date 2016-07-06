@@ -59,7 +59,6 @@ std::string Connection::id() const
 
 void Connection::setDisable(bool disable)
 {
-  std::cout << "setting " << id_ << " to " << disable << std::endl;
   disabled_ = disable;
   if (!disabled_)
     iport_->resendNewDataSignal();

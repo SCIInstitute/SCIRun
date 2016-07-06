@@ -1391,10 +1391,8 @@ void ModuleWidget::setExecutionDisabled(bool disabled)
 
 void ModuleWidget::incomingConnectionStateChanged(bool disabled, int index)
 {
-  qDebug() << "ModuleWidget::incomingConnectionStateChanged" << disabled << index;
   if (index < theModule_->num_input_ports())
   {
-    qDebug() << "\tincomingConnectionStateChanged" << theModule_->inputPorts()[index]->connection(0)->id().c_str() << disabled;
     theModule_->inputPorts()[index]->connection(0)->setDisable(disabled);
   }
 

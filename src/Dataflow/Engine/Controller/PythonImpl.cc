@@ -524,7 +524,7 @@ namespace SCIRun {
       class PythonImplImpl
       {
       public:
-        std::map<std::string, std::map<int, std::map<std::string, std::map<int, std::string>>>> connectionIdLookup_; //seems silly
+        std::map<std::string, std::map<int, std::map<std::string, std::map<int, std::string>>>> connectionIdLookup_;
       };
     }
   }

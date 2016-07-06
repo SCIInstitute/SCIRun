@@ -320,6 +320,7 @@ NetworkFileProcessCommand::NetworkFileProcessCommand() : networkEditor_(SCIRunMa
 
 bool DisableViewScenesCommandGui::execute()
 {
-  qDebug() << "todo: DisableViewScenes";
+  SCIRunMainWindow::Instance()->networkEditor()->disableViewScenes();
+  //TODO: hook up enableViewScenes to execution finished
   return true;
 }

@@ -215,6 +215,9 @@ namespace Gui {
     void disableInputWidgets();
     void enableInputWidgets();
 
+    void disableViewScenes();
+    void enableViewScenes();
+
     //TODO: this class is getting too big and messy, schedule refactoring
 
     void setBackground(const QBrush& brush);
