@@ -60,7 +60,7 @@ void StateChangeObserver::initStateObserver(ModuleStateInterface* state)
   if (state)
   {
     //LOG_DEBUG("StateChangeObserver::initStateObserver(), connecting to state" << std::endl);
-    conn_ = state->connect_state_changed(boost::bind(&StateChangeObserver::stateChanged, this));
+    conn_ = state->connectStateChanged(boost::bind(&StateChangeObserver::stateChanged, this));
   }
 }
 

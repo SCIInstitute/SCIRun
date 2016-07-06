@@ -33,6 +33,7 @@
 #include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Network/Connection.h>
 
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Connection.h>
@@ -578,7 +579,7 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
       this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    connect(w, SIGNAL(incomingConnectionStateChange(bool)), this, SLOT(incomingConnectionStateChanged(bool)));
+    connect(w, SIGNAL(incomingConnectionStateChange(bool, int)), this, SLOT(incomingConnectionStateChanged(bool, int)));
     ports_->addPort(w);
     ++i;
     if (dialog_ && port->isDynamic())
@@ -1035,6 +1036,8 @@ void ModuleWidget::setColorUnselected()
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
 
+double ModuleWidget::highResolutionExpandFactor_ = 1;
+
 void ModuleWidget::makeOptionsDialog()
 {
   if (theModule_->has_ui())
@@ -1074,18 +1077,23 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(true);
       }
 
-      auto expand = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(-1);
-      if (expand > 0)
+      if (highResolutionExpandFactor_ > 1)
       {
-        qDebug() << "expand factor for dialogs:" << expand;
-        qDebug() << dialog_->size();
-        dialog_->setFixedHeight(dialog_->size().height() * expand);
-        qDebug() << dialog_->size();
+        //qDebug() << "expand factor for dialogs:" << highResolutionExpandFactor_;
+        //qDebug() << dialog_->size();
+        dialog_->setFixedHeight(dialog_->size().height() * highResolutionExpandFactor_);
+        dialog_->setFixedWidth(dialog_->size().width() * (((highResolutionExpandFactor_ - 1) * 0.5) + 1));
+        //qDebug() << dialog_->size();
       }
 
       dialog_->pull();
     }
   }
+}
+
+QDialog* ModuleWidget::dialog()
+{
+  return dialog_;
 }
 
 void ModuleWidget::updateDockWidgetProperties(bool isFloating)
@@ -1356,20 +1364,20 @@ void ModuleWidget::unhighlightPorts()
   Q_EMIT displayChanged();
 }
 
+QString ModuleWidget::metadataToString() const
+{
+  auto metadata = theModule_->metadata().getFullMap();
+  QStringList display;
+  for (const auto& metaPair : metadata)
+  {
+    display.append(QString::fromStdString(metaPair.first) + " : " + QString::fromStdString(metaPair.second));
+  }
+  return display.join("\n");
+}
+
 void ModuleWidget::updateMetadata(bool active)
 {
-  if (active)
-  {
-    auto metadata = theModule_->metadata().getFullMap();
-    QStringList display;
-    for (const auto& metaPair : metadata)
-    {
-      display.append(QString::fromStdString(metaPair.first) + " : " + QString::fromStdString(metaPair.second));
-    }
-    setToolTip("Metadata:\n" + display.join("\n"));
-  }
-  else
-    setToolTip("");
+  setToolTip(active ? "Metadata:\n" + metadataToString() : "");
 }
 
 void ModuleWidget::setExecutionDisabled(bool disabled)
@@ -1381,8 +1389,13 @@ void ModuleWidget::setExecutionDisabled(bool disabled)
   theModule_->setExecutionDisabled(disabled_);
 }
 
-void ModuleWidget::incomingConnectionStateChanged(bool disabled)
+void ModuleWidget::incomingConnectionStateChanged(bool disabled, int index)
 {
+  if (index < theModule_->num_input_ports())
+  {
+    theModule_->inputPorts()[index]->connection(0)->setDisable(disabled);
+  }
+
   bool shouldDisable;
   if (disabled)
   {

@@ -31,7 +31,8 @@
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Logging/Log.h>
 #include "ui_ConnectionStyleWizardPage.h"
-#include <Interface/Application/ui_ConnectionStyleWizardPage.h>
+#include "ui_OtherSettingsWizardPage.h"
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -164,15 +165,25 @@ void WidgetDisablingService::temporarilyEnableService()
 NewUserWizard::NewUserWizard(QWidget* parent) : QWizard(parent)
 {
   setWindowTitle("SCIRun Initial Setup");
-  //setPixmap(WatermarkPixmap, QPixmap(":/general/Resources/scirun_5_0_alpha.png"));
-  //setPixmap(BackgroundPixmap, QPixmap(":/general/Resources/scirun_5_0_alpha.png"));
   setOption(NoCancelButton);
 
   addPage(createIntroPage());
   addPage(createPathSettingPage());
   addPage(createConnectionChoicePage());
+  addPage(createOtherSettingsPage());
   addPage(createLicensePage());
   addPage(createDocPage());
+}
+
+NewUserWizard::~NewUserWizard()
+{
+  showPrefs();
+}
+
+void NewUserWizard::showPrefs()
+{
+  if (showPrefs_)
+    SCIRunMainWindow::Instance()->actionPreferences_->trigger();
 }
 
 QWizardPage* NewUserWizard::createIntroPage()
@@ -181,7 +192,11 @@ QWizardPage* NewUserWizard::createIntroPage()
   page->setTitle("Introduction");
 
   page->setSubTitle("This wizard will help you set up SCIRun for the first time and learn the basic SCIRun operations and hotkeys. All of these settings are available at any time in the Preferences window.");
-
+  auto layout = new QVBoxLayout;
+  auto pic = new QLabel;
+  pic->setPixmap(QPixmap(":/general/Resources/scirunWizard.png"));
+  layout->addWidget(pic);
+  page->setLayout(layout);
   return page;
 }
 
@@ -263,15 +278,20 @@ void NewUserWizard::updatePathLabel(const QString& dir)
   pathWidget_->setText(dir);
 }
 
+void NewUserWizard::setShowPrefs(int state)
+{
+  showPrefs_ = state != 0;
+}
+
 class ConnectionStyleWizardPage : public QWizardPage, public Ui::ConnectionStyleWizardPage
 {
 public:
   ConnectionStyleWizardPage()
   {
     setupUi(this);
-    manhattanLabel_->setPixmap(QPixmap(":/general/Resources/manhattan.png"));
-    euclideanLabel_->setPixmap(QPixmap(":/general/Resources/euclidean.png"));
-    cubicLabel_->setPixmap(QPixmap(":/general/Resources/cubic.png"));
+    manhattanLabel_->setPixmap(QPixmap(":/general/Resources/manhattanPipe.png"));
+    euclideanLabel_->setPixmap(QPixmap(":/general/Resources/euclideanPipe.png"));
+    cubicLabel_->setPixmap(QPixmap(":/general/Resources/cubicPipe.png"));
     registerField("connectionChoice*", connectionComboBox_);
     connect(connectionComboBox_, SIGNAL(currentIndexChanged(int)), SCIRunMainWindow::Instance(), SLOT(setConnectionPipelineType(int)));
   }
@@ -280,4 +300,20 @@ public:
 QWizardPage* NewUserWizard::createConnectionChoicePage()
 {
   return new ConnectionStyleWizardPage;
+}
+
+class OtherSettingsWizardPage : public QWizardPage, public Ui::OtherSettingsWizardPage
+{
+public:
+  explicit OtherSettingsWizardPage(NewUserWizard* wiz) 
+  {
+    setupUi(this);
+    connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), SCIRunMainWindow::Instance(), SLOT(setSaveBeforeExecute(int)));
+    connect(loadPreferencesCheckBox_, SIGNAL(stateChanged(int)), wiz, SLOT(setShowPrefs(int)));
+  }
+};
+
+QWizardPage* NewUserWizard::createOtherSettingsPage()
+{
+  return new OtherSettingsWizardPage(this);
 }

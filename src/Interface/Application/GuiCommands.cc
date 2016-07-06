@@ -65,7 +65,7 @@ bool LoadFileCommandGui::execute()
   auto inputFilesFromCommandLine = Application::Instance().parameters()->inputFiles();
 
   if (!inputFilesFromCommandLine.empty())
-    inputFile = inputFilesFromCommandLine[index_];
+    inputFile = inputFilesFromCommandLine[0];
   else
   {
     inputFile = get(Variables::Filename).toFilename().string();
@@ -300,7 +300,8 @@ bool NetworkSaveCommand::execute()
 
   auto file = Application::Instance().controller()->saveNetwork();
 
-  XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
+  if (!XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile"))
+    return false;
   SCIRunMainWindow::Instance()->setCurrentFile(QString::fromStdString(fileNameWithExtension));
 
   SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
@@ -315,4 +316,11 @@ bool NetworkSaveCommand::execute()
 NetworkFileProcessCommand::NetworkFileProcessCommand() : networkEditor_(SCIRunMainWindow::Instance()->networkEditor())
 {
   addParameter(Variables::Filename, std::string());
+}
+
+bool DisableViewScenesCommandGui::execute()
+{
+  SCIRunMainWindow::Instance()->networkEditor()->disableViewScenes();
+  //TODO: hook up enableViewScenes to execution finished
+  return true;
 }

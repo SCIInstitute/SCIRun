@@ -48,10 +48,11 @@ namespace SCIRun {
         OutputPortHandle oport_;
         InputPortHandle iport_;
 
+        std::string id() const;
         ConnectionId id_;
 
         bool disabled() const { return disabled_; }
-        void setDisable(bool disable) { disabled_ = disable; }
+        void setDisable(bool disable);
       private:
         bool disabled_ {false};
       };

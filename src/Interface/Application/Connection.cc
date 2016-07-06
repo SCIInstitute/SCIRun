@@ -279,7 +279,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges | ItemIsFocusable);
 
   setZValue(defaultZValue());
-  setToolTip("<font color=\"#000000\" size=2>Left - Highlight\nDouble-Left - Menu\ni - Datatype info");
+  setToolTip("<font color=\"#EEEEEE\" size=2>Left - Highlight<br>Double-Left - Menu<br>i - Datatype info");
   setAcceptHoverEvents(true);
 
   menu_ = new ConnectionMenu(this);

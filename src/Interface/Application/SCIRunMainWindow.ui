@@ -169,6 +169,14 @@
     <property name="title">
      <string>Window</string>
     </property>
+    <widget class="QMenu" name="menuToolbars">
+     <property name="title">
+      <string>Toolbars</string>
+     </property>
+     <addaction name="actionSearchBar_"/>
+     <addaction name="actionNetworkBar_"/>
+     <addaction name="actionExecuteBar_"/>
+    </widget>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
     <addaction name="actionProvenance_"/>
@@ -177,6 +185,7 @@
     <addaction name="actionDevConsole_"/>
     <addaction name="actionTriggeredEvents_"/>
     <addaction name="actionPreferences_"/>
+    <addaction name="menuToolbars"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
@@ -1044,6 +1053,36 @@
   <action name="helpActionNewUserWizard_">
    <property name="text">
     <string>New User Wizard...</string>
+   </property>
+  </action>
+  <action name="actionSearchBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Search</string>
+   </property>
+  </action>
+  <action name="actionNetworkBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Network</string>
+   </property>
+  </action>
+  <action name="actionExecuteBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Execute</string>
    </property>
   </action>
  </widget>

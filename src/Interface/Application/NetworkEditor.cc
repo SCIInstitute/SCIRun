@@ -50,6 +50,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
+#include <boost/algorithm/string/find.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -63,6 +64,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   PreexecuteFunc preexecuteFunc,
   TagColorFunc tagColor,
   TagNameFunc tagName,
+  double highResolutionExpandFactor,
   QWidget* parent)
   : QGraphicsView(parent),
   modulesSelectedByCL_(false),
@@ -79,11 +81,13 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   moduleEventProxy_(new ModuleEventProxy),
   zLevelManager_(new ZLevelManager(scene_)),
   fileLoading_(false),
-  preexecute_(preexecuteFunc)
+  preexecute_(preexecuteFunc),
+  highResolutionExpandFactor_(highResolutionExpandFactor)
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
   ModuleWidget::closestPortFinder_.reset(new ClosestPortFinder(scene_));
+  ModuleWidget::highResolutionExpandFactor_ = highResolutionExpandFactor_;
 
   setScene(scene_);
   setDragMode(RubberBandDrag);
@@ -177,6 +181,8 @@ boost::optional<ConnectionId> NetworkEditor::requestConnection(const PortDescrip
 
 namespace
 {
+  const int TagTextKey = 123;
+
   ModuleProxyWidget* findById(const QList<QGraphicsItem*>& list, const std::string& id)
   {
     Q_FOREACH(QGraphicsItem* item, list)
@@ -345,7 +351,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   }
 
   LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
-  module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
+  module->getModule()->get_state()->connectStateChanged(boost::bind(&NetworkEditor::modified, this));
 
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
@@ -375,15 +381,15 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->createPortPositionProviders();
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
-  auto expand = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(-1);
-
-  if (expand > 0)
+  if (highResolutionExpandFactor_ > 1)
   {
-    qDebug() << "expand factor:" << expand;
-    qDebug() << proxy->size();
-    module->setFixedHeight(proxy->size().height() * expand);
-    proxy->setMaximumHeight(proxy->size().height() * expand);
-    qDebug() << proxy->size();
+    //qDebug() << "module widget expand factor:" << highResolutionExpandFactor_;
+    //qDebug() << proxy->size();
+    module->setFixedHeight(proxy->size().height() * highResolutionExpandFactor_);
+    proxy->setMaximumHeight(proxy->size().height() * highResolutionExpandFactor_);
+    module->setFixedWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
+    proxy->setMaximumWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
+    //qDebug() << proxy->size();
   }
 
   scene_->addItem(proxy);
@@ -710,35 +716,212 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
   QGraphicsView::mouseReleaseEvent(event);
 }
 
-void NetworkEditor::mouseDoubleClickEvent(QMouseEvent* event)
-{
-#if 0
-  if (!search_)
-  {
-    search_ = scene_->addWidget(new NetworkSearchWidget(this));
-    search_->setOpacity(0.9);
-  }
-  search_->setPos(mapToScene(event->pos()));
-  search_->setVisible(true);
-#endif
-  QGraphicsView::mouseDoubleClickEvent(event);  
-}
-
-void NetworkEditor::hideSearchBox()
-{
-  if (search_)
-    search_->setVisible(false);
-}
-
 NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
 {
   setupUi(this);
-  connect(closeButton_, SIGNAL(clicked()), ned, SLOT(hideSearchBox()));
+  //connect(closeButton_, SIGNAL(clicked()), ned, SLOT(hideSearchBox()));
+  connect(searchLineEdit_, SIGNAL(textChanged(const QString&)), ned, SLOT(searchTextChanged(const QString&)));
+  connect(clearToolButton_, SIGNAL(clicked()), searchLineEdit_, SLOT(clear()));
 }
 
-NetworkSearchWidgetProxy::NetworkSearchWidgetProxy(NetworkSearchWidget* nsw)
+SearchResultItem::SearchResultItem(const QString& text, const QColor& color, std::function<void()> action, QGraphicsItem* parent)
+  : FloatingTextItem(text, action, parent)
 {
-  setWidget(nsw);
+  setDefaultTextColor(color);
+  auto backgroundGray = QString("background:rgba(%1, %1, %1, 30%)").arg(200);
+  setHtml("<div style='" + backgroundGray + ";font: 15px Lucida, sans-serif'>" + toPlainText() + "</div>");
+  items_.insert(this);
+}
+
+SearchResultItem::~SearchResultItem()
+{
+  items_.erase(this);
+}
+
+void SearchResultItem::removeAll()
+{
+  auto copyOfItems(items_);
+  for (auto& sri : copyOfItems)
+    delete sri;
+  items_.clear();
+}
+
+std::set<SearchResultItem*> SearchResultItem::items_;
+
+enum SearchTupleParts
+{
+  ItemType,
+  ItemName,
+  ItemAction,
+  ItemColor
+};
+
+class NetworkSearchEngine
+{
+public:
+  NetworkSearchEngine(QGraphicsScene* scene, TagColorFunc tagColor) : scene_(scene), tagColor_(tagColor) {}
+
+  using Result = std::tuple<QString, QString, std::function<void()>, QColor>;
+  using ResultList = std::vector<Result>;
+  ResultList search(const QString& text) const
+  {
+    ResultList results;
+    Q_FOREACH(auto item, scene_->items())
+    {
+      ResultList subresults;
+      if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        subresults = searchItem(w, text);
+      }
+      else if (dynamic_cast<FloatingTextItem*>(item))
+      {
+        // skip--don't search errors or search results
+      }
+      else if (auto t = dynamic_cast<QGraphicsTextItem*>(item))
+      {
+        subresults = searchItem(t, text);
+      }
+      else if (auto s = dynamic_cast<QGraphicsSimpleTextItem*>(item))
+      {
+        subresults = searchItem(s, text);
+      }
+      else
+      {
+        //qDebug() << "something else";
+      }
+      results.insert(results.end(), subresults.begin(), subresults.end());
+    }
+    std::sort(results.begin(), results.end(), [](const Result& r1, const Result& r2) { return std::get<ItemType>(r1) < std::get<ItemType>(r2); });
+    return results;
+  }
+private:
+  ResultList searchItem(ModuleProxyWidget* mod, const QString& text) const
+  {
+    ResultList results;
+    auto id = mod->getModuleWidget()->getModuleId();
+    if (boost::ifind_first(id, text.toStdString()))
+    {
+      auto tag = mod->data(TagDataKey).toInt();
+      results.emplace_back("Module",
+        QString::fromStdString(id),
+        [mod]() { mod->showAndColor(Qt::green); },
+        tag != NoTag ? tagColor_(tag) : Qt::white);
+    }
+
+    auto metadata = mod->getModuleWidget()->metadataToString();
+    if (metadata.contains(text, Qt::CaseInsensitive))
+    {
+      results.emplace_back("Module metadata match in",
+        QString::fromStdString(id),
+        [mod]() { mod->showAndColor(Qt::yellow); },
+        Qt::yellow);
+    }
+
+    auto dialog = mod->getModuleWidget()->dialog();
+    if (dialog && text.length() > 5)
+    {
+      auto widgetMatches = dialog->findChildren<QWidget*>(QRegExp(".*" + text + ".*", Qt::CaseInsensitive));
+      Q_FOREACH(auto widget, widgetMatches)
+      {
+        results.emplace_back("Module UI widget match",
+          QString::fromStdString(id) + "::" + widget->objectName(),
+          [mod]() { mod->showAndColor("#AA3333"); },
+          "#AA3333");
+      }
+    }
+    return results;
+  }
+
+  ResultList searchItem(QGraphicsTextItem* note, const QString& text) const
+  {
+    ResultList results;
+    auto cursor = note->document()->find(text);
+    if (!cursor.isNull())
+    {
+      results.emplace_back("Note",
+        "..." + note->toPlainText().mid(cursor.position() - 10, 20) + "...",
+        [note, text]() { ModuleProxyWidget::ensureItemVisible(note); selectNote(note, text); },
+        Qt::white);
+    }
+    return results;
+  }
+
+  ResultList searchItem(QGraphicsSimpleTextItem* tag, const QString& text) const
+  {
+    ResultList results;
+    if (tag->text().contains(text, Qt::CaseInsensitive))
+    {
+      results.emplace_back("Tag",
+        tag->text(),
+        [tag]() { ModuleProxyWidget::ensureItemVisible(tag); },
+        tagColor_(tag->data(TagTextKey).toInt()));
+    }
+    return results;
+  }
+
+  static void selectNote(QGraphicsTextItem* note, const QString& text)
+  {
+    auto doc = note->document();
+    QTextCursor cur(doc->find(text));
+    note->setTextCursor(cur);
+  }
+
+  QGraphicsScene* scene_;
+  TagColorFunc tagColor_;
+};
+
+void NetworkEditor::searchTextChanged(const QString& text)
+{
+  if (text.isEmpty())
+  {
+    SearchResultItem::removeAll();
+    return;
+  }
+  if (text.length() > 2)
+  {
+    SearchResultItem::removeAll();
+
+    NetworkSearchEngine engine(scene(), tagColor_);
+    auto results = engine.search(text);
+    auto textScale = 1.0 / currentScale_;
+    if (!results.empty())
+    {
+      auto title = new SearchResultItem("Search results:", Qt::green, {});
+      title->setPos(positionOfFloatingText(title->num(), true, 20, textScale * 22));
+      scene()->addItem(title);
+      title->scale(textScale, textScale);
+    }
+    for (const auto& result : results)
+    {
+      auto searchItem = new SearchResultItem(std::get<ItemType>(result) + ": " + std::get<ItemName>(result),
+        std::get<ItemColor>(result), std::get<ItemAction>(result));
+      searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 22));
+      scene()->addItem(searchItem);
+      searchItem->scale(textScale, textScale);
+    }
+  }
+}
+
+QPointF NetworkEditor::positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const
+{
+  QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
+  auto br = tl + viewport()->rect().bottomRight();
+  auto mat = matrix().inverted();
+  auto rect = mat.mapRect(QRectF(tl, br));
+
+  auto corner = top ? rect.topLeft() : rect.bottomLeft();
+  return (corner + QPointF(horizontalIndent, (top ? 1 : -1)* (verticalSpacing * num + 100)));
+}
+
+void NetworkEditor::displayError(const QString& msg, std::function<void()> showModule)
+{
+  if (Preferences::Instance().showModuleErrorInlineMessages)
+  {
+    auto errorItem = new ErrorItem(msg, showModule);
+    scene()->addItem(errorItem);
+
+    errorItem->setPos(positionOfFloatingText(errorItem->num(), false, 30, 40));
+  }
 }
 
 ConnectionLine* NetworkEditor::getSingleConnectionSelected()
@@ -1089,6 +1272,32 @@ void NetworkEditor::appendToNetwork(const NetworkFileHandle& xml)
   setSceneRect(QRectF());
 }
 
+void NetworkEditor::disableViewScenes()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto c = dynamic_cast<ConnectionLine*>(item))
+    {
+      if (c->id().id_.find("ViewScene") != std::string::npos)
+        c->setDisabled(true);
+    }
+  }
+  //TODO: doesn't work yet.
+  //Application::Instance().controller()->connectNetworkExecutionFinished([this](int code){ enableViewScenes(); });
+}
+
+void NetworkEditor::enableViewScenes()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto c = dynamic_cast<ConnectionLine*>(item))
+    {
+      if (c->id().id_.find("ViewScene") != std::string::npos)
+        c->setDisabled(false);
+    }
+  }
+}
+
 size_t NetworkEditor::numModules() const
 {
   return controller_->numModules();
@@ -1375,7 +1584,8 @@ void NetworkEditor::tagLayer(bool active, int tag)
     {
       if (item->data(TagDataKey).toInt() == NoTag)
       {
-        item->setData(TagDataKey, tag);
+        if (validTag(tag))
+          item->setData(TagDataKey, tag);
       }
       else if (ClearTags == tag)
       {
@@ -1457,8 +1667,6 @@ namespace
     int tagNumber_;
     NetworkEditor* ned_;
   };
-
-  const int TagTextKey = 123;
 }
 
 void NetworkEditor::saveTagGroupRectInFile()
@@ -1596,7 +1804,6 @@ void NetworkEditor::highlightTaggedItem(int tagValue)
 
 void NetworkEditor::highlightTaggedItem(QGraphicsItem* item, int tagValue)
 {
-  qDebug() << "highlightTaggedItem" << tagValue;
   if (tagValue == NoTag)
   {
     item->setGraphicsEffect(blurEffect());
@@ -1616,15 +1823,19 @@ void NetworkEditor::cleanUpNetwork()
   centerView();
 }
 
-std::atomic<int> ErrorItem::instanceCounter_(0);
+ErrorItem::ErrorItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : FloatingTextItem(text, action, parent)
+{
+  setDefaultTextColor(Qt::red);
+}
 
-ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGraphicsItem* parent) : QGraphicsTextItem(text, parent),
-  showModule_(showModule), counter_(instanceCounter_), rect_(nullptr)
+std::atomic<int> FloatingTextItem::instanceCounter_(0);
+
+FloatingTextItem::FloatingTextItem(const QString& text, std::function<void()> action, QGraphicsItem* parent) : QGraphicsTextItem(text, parent),
+  action_(action), counter_(instanceCounter_), rect_(nullptr)
 {
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
   setZValue(10000);
   ++instanceCounter_;
-  setDefaultTextColor(Qt::red);
 
   {
     timeLine_ = new QTimeLine(10000, this);
@@ -1634,17 +1845,18 @@ ErrorItem::ErrorItem(const QString& text, std::function<void()> showModule, QGra
   timeLine_->start();
 }
 
-ErrorItem::~ErrorItem()
+FloatingTextItem::~FloatingTextItem()
 {
   --instanceCounter_;
   delete rect_;
 }
 
-void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void FloatingTextItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
   if (event->buttons() & Qt::LeftButton)
   {
-    showModule_();
+    if (action_)
+      action_();
   }
   else if (event->buttons() & Qt::RightButton)
   {
@@ -1658,13 +1870,13 @@ void ErrorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
   QGraphicsTextItem::mousePressEvent(event);
 }
 
-void ErrorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void FloatingTextItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
   timeLine_->setCurrentTime(0);
   QGraphicsTextItem::hoverEnterEvent(event);
 }
 
-void ErrorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void FloatingTextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   if (!rect_)
   {
@@ -1673,8 +1885,8 @@ void ErrorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     auto f = font();
     f.setBold(true);
     setFont(f);
-    setFlags(flags() ^ ItemIsMovable);
-    rect_ = scene()->addRect(boundingRect(), QPen(Qt::red, 2, Qt::DotLine));
+    setFlags(flags() & ~ItemIsMovable);
+    rect_ = scene()->addRect(boundingRect(), QPen(defaultTextColor(), 2, Qt::DotLine));
     rect_->setPos(pos());
   }
   else
@@ -1691,45 +1903,13 @@ void ErrorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   QGraphicsTextItem::mouseDoubleClickEvent(event);
 }
 
-void ErrorItem::animate(qreal val)
+void FloatingTextItem::animate(qreal val)
 {
   if (val < 1)
     show();
   else
     hide();
   setOpacity(val < 0.5 ? 1 : 2 - 2*val);
-}
-
-void NetworkEditor::displayError(const QString& msg, std::function<void()> showModule)
-{
-  if (Preferences::Instance().showModuleErrorInlineMessages)
-  {
-    auto errorItem = new ErrorItem(msg, showModule);
-    scene()->addItem(errorItem);
-
-    QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
-    QPointF br = tl + viewport()->rect().bottomRight();
-    QMatrix mat = matrix().inverted();
-    auto rect = mat.mapRect(QRectF(tl, br));
-
-    auto corner = rect.bottomLeft();
-    errorItem->setPos(corner + QPointF(100, -(40*errorItem->num() + 100)));
-
-#if 0
-    auto xMin = rect.topLeft().x();
-    auto xMax = rect.topRight().x();
-    auto yMin = rect.topLeft().y();
-    auto yMax = rect.bottomLeft().y();
-    for (double x = xMin; x < xMax; x += 100)
-      for (double y = yMin; y < yMax; y += 100)
-      {
-        QString xy = QString::number(x) + "," + QString::number(y);
-        auto item = scene()->addText(xy);
-        item->setDefaultTextColor(Qt::white);
-        item->setPos(x, y);
-  }
-#endif
-  }
 }
 
 NetworkEditor::~NetworkEditor()
