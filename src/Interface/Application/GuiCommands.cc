@@ -65,7 +65,7 @@ bool LoadFileCommandGui::execute()
   auto inputFilesFromCommandLine = Application::Instance().parameters()->inputFiles();
 
   if (!inputFilesFromCommandLine.empty())
-    inputFile = inputFilesFromCommandLine[index_];
+    inputFile = inputFilesFromCommandLine[0];
   else
   {
     inputFile = get(Variables::Filename).toFilename().string();
@@ -316,4 +316,10 @@ bool NetworkSaveCommand::execute()
 NetworkFileProcessCommand::NetworkFileProcessCommand() : networkEditor_(SCIRunMainWindow::Instance()->networkEditor())
 {
   addParameter(Variables::Filename, std::string());
+}
+
+bool DisableViewScenesCommandGui::execute()
+{
+  qDebug() << "todo: DisableViewScenes";
+  return true;
 }

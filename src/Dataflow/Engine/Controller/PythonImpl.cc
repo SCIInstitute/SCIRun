@@ -612,7 +612,8 @@ boost::shared_ptr<PyModule> PythonImpl::findModule(const std::string& id) const
 
 std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
 {
-  //TODO: if contains view scene, need to disable all connections to it. 
+  cmdFactory_->create(GlobalCommands::DisableViewScenes)->execute();
+
   nec_.executeAll(lookup);
   return "Execution started."; //TODO: attach log for execution ended event.
 }
