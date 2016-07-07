@@ -148,8 +148,10 @@ namespace SCIRun
       class EditMeshBoundingBoxImpl
       {
       public:
-        Transform field_initial_transform_;
         Transform userWidgetTransform_;
+        Transform box_initial_transform_;
+        Transform field_initial_transform_;
+        BBox box_initial_bounds_;
       };
     }
   }
@@ -157,7 +159,7 @@ namespace SCIRun
 
 EditMeshBoundingBox::EditMeshBoundingBox()
 : GeometryGeneratingModule(staticInfo_),
-  impl_(new EditMeshBoundingBoxImpl)
+impl_(new EditMeshBoundingBoxImpl), widgetMoved_(false)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
@@ -168,11 +170,33 @@ EditMeshBoundingBox::EditMeshBoundingBox()
 void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 {
   auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  if (vsf.selectionName.find(get_id()) != std::string::npos)
+  if (vsf.selectionName.find(get_id()) != std::string::npos &&
+    impl_->userWidgetTransform_ != vsf.transform)
   {
-    impl_->userWidgetTransform_ = vsf.transform;
+    widgetMoved_ = true;
+    adjustGeometryFromTransform(vsf.transform);
     enqueueExecuteAgain();
   }
+}
+
+void EditMeshBoundingBox::adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix)
+{
+  Point currCenter, right, down, in;
+  box_->getPosition(currCenter, right, down, in);
+
+  DenseMatrix center(4, 1);
+  center << currCenter.x(), currCenter.y(), currCenter.z(), 1.0;
+  DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
+
+  Point newLocation(newTransform(0, 0) / newTransform(3, 0),
+                    newTransform(1, 0) / newTransform(3, 0),
+                    newTransform(2, 0) / newTransform(3, 0));
+
+  auto state = get_state();
+  state->setValue(OutputCenterX, newLocation.x());
+  state->setValue(OutputCenterY, newLocation.y());
+  state->setValue(OutputCenterZ, newLocation.z());
+  impl_->userWidgetTransform_ = transformMatrix;
 }
 
 void EditMeshBoundingBox::createBoxWidget()
@@ -211,7 +235,6 @@ void EditMeshBoundingBox::setStateDefaults()
   setBoxRestrictions();
 
   getOutputPort(Transformation_Widget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
-  impl_->userWidgetTransform_.load_identity();
 }
 
 void EditMeshBoundingBox::execute()
@@ -220,13 +243,12 @@ void EditMeshBoundingBox::execute()
   setBoxRestrictions();
   auto field = getRequiredInput(InputField);
 
-  if (needToExecute() || impl_->userWidgetTransform_ != Transform::Identity())
+  if (needToExecute())
   {
     clear_vals();
     update_state(Executing);
     update_input_attributes(field);
     executeImpl(field);
-    impl_->userWidgetTransform_.load_identity();
   }
 }
 
@@ -420,6 +442,16 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
     Point in(center + sizez / 2.);
 
     // Translate * Rotate * Scale.
+    Transform r;
+    impl_->box_initial_transform_.load_identity();
+    impl_->box_initial_transform_.pre_scale(Vector((right - center).length(),
+      (down - center).length(),
+      (in - center).length()));
+    r.load_frame((right - center).safe_normal(),
+      (down - center).safe_normal(),
+      (in - center).safe_normal());
+    impl_->box_initial_transform_.pre_trans(r);
+    impl_->box_initial_transform_.pre_translate(Vector(center));
 
     auto state = get_state();
     const double newscale = size.length() * 0.015;
@@ -515,7 +547,7 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
   const bool useOutputSize = state->getValue(UseOutputSize).toBool();
   const bool useOutputCenter = state->getValue(UseOutputCenter).toBool();
 
-  if (useOutputSize || useOutputCenter)
+  if (useOutputSize || useOutputCenter || widgetMoved_)
   {
     Point center, right, down, in;
 
@@ -537,7 +569,7 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
       sizey = (down - center) * 2;
       sizez = (in - center) * 2;
     }
-    if (useOutputCenter)
+    if (useOutputCenter || widgetMoved_)
     {
       center = Point(state->getValue(OutputCenterX).toDouble(),
         state->getValue(OutputCenterY).toDouble(),
@@ -548,11 +580,12 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
     in = Point(center + sizez / 2.);
 
     box_->setPosition(center, right, down, in);
+
+    widgetMoved_ = false;
   }
 
   // Transform the mesh if necessary.
   // Translate * Rotate * Scale.
-
   Point center, right, down, in;
   box_->getPosition(center, right, down, in);
 
@@ -570,22 +603,10 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
   auto inv(impl_->field_initial_transform_);
   inv.invert();
   t.post_trans(inv);
-  const auto widgetMoved = impl_->userWidgetTransform_ != Transform::Identity();
-  if (widgetMoved)
-  {
-    t.post_trans(impl_->userWidgetTransform_);
-    impl_->userWidgetTransform_.project_inplace(center);
-    impl_->userWidgetTransform_.project_inplace(right);
-    impl_->userWidgetTransform_.project_inplace(down);
-    impl_->userWidgetTransform_.project_inplace(in);
-    box_->setPosition(center, right, down, in);
-  }
 
   // Change the input field handle here.
   FieldHandle output(fh->deep_clone());
   output->vmesh()->transform(t);
-
-  widget_moved(widgetMoved);
 
   sendOutput(OutputField, output);
 

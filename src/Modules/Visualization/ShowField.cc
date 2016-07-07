@@ -170,6 +170,9 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(FaceTransparencyValue, 0.65f);
   state->setValue(EdgeTransparencyValue, 0.65f);
   state->setValue(NodeTransparencyValue, 0.65f);
+  state->setValue(FacesColoring, 1);
+  state->setValue(NodesColoring, 1);
+  state->setValue(EdgesColoring, 1);
   state->setValue(SphereScaleValue, 0.03);
   state->setValue(SphereResolution, 5);
   state->setValue(CylinderRadius, 0.1);
@@ -218,6 +221,8 @@ RenderState GeometryBuilder::getNodeRenderState(
 {
   RenderState renState;
 
+  bool useColorMap = state->getValue(ShowFieldModule::NodesColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowFieldModule::NodesColoring).toInt() == 2;
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowNodes).toBool());
   renState.set(RenderState::USE_TRANSPARENT_NODES, state->getValue(ShowFieldModule::NodeTransparency).toBool());
 
@@ -233,16 +238,18 @@ RenderState GeometryBuilder::getNodeRenderState(
                                 renState.defaultColor.b() / 255.)
                             :   renState.defaultColor;
 
-  if (colorMap)
+  if (colorMap && useColorMap)
   {
-    renState.set(RenderState::USE_COLORMAP, true);
+    renState.set(RenderState::USE_COLORMAP_ON_NODES, true);
+  }
+  else if (rgbConversion)
+  {
+    renState.set(RenderState::USE_COLOR_CONVERT_ON_NODES, true);
   }
   else
   {
-    /// \todo Set this value dependent on the radio button choice in the
-    ///       dialog. Presumably this should overwrite any choice made by the
-    ///       user.
-    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+    renState.set(RenderState::USE_DEFAULT_COLOR_NODES, true);
+    state->setValue(ShowFieldModule::NodesColoring, 0);
   }
 
   return renState;
@@ -254,6 +261,8 @@ RenderState GeometryBuilder::getEdgeRenderState(
 {
   RenderState renState;
 
+  bool useColorMap = state->getValue(ShowFieldModule::EdgesColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowFieldModule::EdgesColoring).toInt() == 2;
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).toBool());
   renState.set(RenderState::USE_TRANSPARENT_EDGES, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
   renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toInt() == 1);
@@ -270,13 +279,18 @@ RenderState GeometryBuilder::getEdgeRenderState(
 
   edgeTransparencyValue_ = static_cast<float>(state->getValue(ShowFieldModule::EdgeTransparencyValue).toDouble());
 
-  if (colorMap)
+  if (colorMap && useColorMap)
   {
-    renState.set(RenderState::USE_COLORMAP, true);
+    renState.set(RenderState::USE_COLORMAP_ON_EDGES, true);
+  }
+  else if (rgbConversion)
+  {
+    renState.set(RenderState::USE_COLOR_CONVERT_ON_EDGES, true);
   }
   else
   {
-    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+    renState.set(RenderState::USE_DEFAULT_COLOR_EDGES, true);
+    state->setValue(ShowFieldModule::EdgesColoring, 0);
   }
 
   return renState;
@@ -288,6 +302,8 @@ RenderState GeometryBuilder::getFaceRenderState(
 {
   RenderState renState;
 
+  bool useColorMap = state->getValue(ShowFieldModule::FacesColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowFieldModule::FacesColoring).toInt() == 2;
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowFaces).toBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool()); 
   renState.set(RenderState::USE_FACE_NORMALS, state->getValue(ShowFieldModule::UseFaceNormals).toBool());
@@ -304,13 +320,18 @@ RenderState GeometryBuilder::getFaceRenderState(
 
   faceTransparencyValue_ = static_cast<float>(state->getValue(ShowFieldModule::FaceTransparencyValue).toDouble());
 
-  if (colorMap)
+  if (colorMap && useColorMap)
   {
     renState.set(RenderState::USE_COLORMAP, true);
+  }
+  else if (rgbConversion)
+  {
+    renState.set(RenderState::USE_COLOR_CONVERT, true);
   }
   else
   {
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
+    state->setValue(ShowFieldModule::FacesColoring, 0);
   }
 
   return renState;
@@ -1201,9 +1222,9 @@ void GeometryBuilder::renderNodes(
   ColorScheme colorScheme;
   ColorRGB node_color;
 
-  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR))
+  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR_NODES))
     colorScheme = ColorScheme::COLOR_UNIFORM;
-  else if (state.get(RenderState::USE_COLORMAP))
+  else if (state.get(RenderState::USE_COLORMAP_ON_NODES))
     colorScheme = ColorScheme::COLOR_MAP;
   else
     colorScheme = ColorScheme::COLOR_IN_SITU;
@@ -1296,9 +1317,9 @@ void GeometryBuilder::renderEdges(
 
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
-    state.get(RenderState::USE_DEFAULT_COLOR))
+    state.get(RenderState::USE_DEFAULT_COLOR_EDGES))
     colorScheme = ColorScheme::COLOR_UNIFORM;
-  else if (state.get(RenderState::USE_COLORMAP))
+  else if (state.get(RenderState::USE_COLORMAP_ON_EDGES))
     colorScheme = ColorScheme::COLOR_MAP;
   else
     colorScheme = ColorScheme::COLOR_IN_SITU;
@@ -1458,6 +1479,9 @@ const AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor
 const AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
 const AlgorithmParameterName ShowFieldModule::EdgeTransparencyValue("EdgeTransparencyValue");
 const AlgorithmParameterName ShowFieldModule::NodeTransparencyValue("NodeTransparencyValue");
+const AlgorithmParameterName ShowFieldModule::FacesColoring("FacesColoring");
+const AlgorithmParameterName ShowFieldModule::NodesColoring("NodesColoring");
+const AlgorithmParameterName ShowFieldModule::EdgesColoring("EdgesColoring");
 const AlgorithmParameterName ShowFieldModule::SphereScaleValue("SphereScaleValue");
 const AlgorithmParameterName ShowFieldModule::CylinderRadius("CylinderRadius");
 const AlgorithmParameterName ShowFieldModule::CylinderResolution("CylinderResolution");

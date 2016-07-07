@@ -1077,7 +1077,7 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(true);
       }
 
-      if (highResolutionExpandFactor_ > 1)
+      if (highResolutionExpandFactor_ > 1 && !isViewScene_)
       {
         //qDebug() << "expand factor for dialogs:" << highResolutionExpandFactor_;
         //qDebug() << dialog_->size();
@@ -1311,6 +1311,10 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
   fullWidgetDisplay_->getOptionsButton()->setText("");
   fullWidgetDisplay_->getOptionsButton()->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
   connect(fullWidgetDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(replaceMe()));
+  
+  auto id = QString::fromStdString(getModuleId());
+  QMessageBox::critical(nullptr, "Critical module error: " + id,
+    "Please note the broken module, " + id + ", and replace it with a new instance. This is most likely due to this known bug: https://github.com/SCIInstitute/SCIRun/issues/881");
 }
 
 void ModuleWidget::highlightPorts()
