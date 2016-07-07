@@ -74,6 +74,7 @@ private Q_SLOTS:
 
 private:
   QWidget* lineNumberArea_;
+  class Highlighter* highlighter_;
 };
 
 class LineNumberArea : public QWidget
@@ -94,6 +95,35 @@ protected:
 
 private:
     CodeEditor *codeEditor;
+};
+
+class Highlighter : public QSyntaxHighlighter
+{
+    Q_OBJECT
+
+public:
+    Highlighter(QTextDocument* parent = nullptr);
+
+protected:
+    void highlightBlock(const QString &text) override;
+
+private:
+    struct HighlightingRule
+    {
+        QRegExp pattern;
+        QTextCharFormat format;
+    };
+    QVector<HighlightingRule> highlightingRules;
+
+    QRegExp commentStartExpression;
+    QRegExp commentEndExpression;
+
+    QTextCharFormat keywordFormat;
+    QTextCharFormat classFormat;
+    QTextCharFormat singleLineCommentFormat;
+    QTextCharFormat multiLineCommentFormat;
+    QTextCharFormat quotationFormat;
+    QTextCharFormat functionFormat;
 };
 
 }
