@@ -231,6 +231,7 @@ private Q_SLOTS:
   void toggleTagLayer(bool toggle);
   void toggleMetadataLayer(bool toggle);
   void adjustModuleDock(int state);
+  void reportIssue();
   void exitApplication(int code);
 };
 

@@ -404,6 +404,38 @@ void ModuleDialogGeneric::addTextEditManager(QTextEdit* textEdit, const Algorith
   addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, *this, stateKey, textEdit));
 }
 
+class PlainTextEditSlotManager : public WidgetSlotManager
+{
+public:
+  PlainTextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QPlainTextEdit* textEdit) :
+    WidgetSlotManager(state, dialog, textEdit, stateKey), stateKey_(stateKey), textEdit_(textEdit)
+  {
+    connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
+    if (newValue != textEdit_->toPlainText())
+    {
+      textEdit_->setPlainText(newValue);
+      LOG_DEBUG("In new version of pull code for PlainTextEdit: " << newValue.toStdString());
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for PlainTextEdit: " << textEdit_->toPlainText().toStdString());
+    state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QPlainTextEdit* textEdit_;
+};
+
+void ModuleDialogGeneric::addPlainTextEditManager(QPlainTextEdit* plainTextEdit, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<PlainTextEditSlotManager>(state_, *this, stateKey, plainTextEdit));
+}
+
 class LineEditSlotManager : public WidgetSlotManager
 {
 public:
@@ -786,7 +818,7 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
   if (portId.find(type) != std::string::npos)
   {
     //qDebug() << "adjust input table: " << portId.c_str() << portChangeType;
-    
+
     if (portChangeType == DynamicPortChange::USER_ADDED_PORT || portChangeType == DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD)
     {
       //qDebug() << "trying to add row via port added, id: " << portId.c_str();
