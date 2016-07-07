@@ -1077,7 +1077,7 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(true);
       }
 
-      if (highResolutionExpandFactor_ > 1)
+      if (highResolutionExpandFactor_ > 1 && !isViewScene_)
       {
         //qDebug() << "expand factor for dialogs:" << highResolutionExpandFactor_;
         //qDebug() << dialog_->size();
