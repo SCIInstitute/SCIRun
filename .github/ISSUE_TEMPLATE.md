@@ -1,8 +1,15 @@
+Please follow these instructions for your issue to be worked on:
+
+---
+## For bugs, follow the template below: fill out all pertinent sections, then delete the rest of the template to reduce clutter. 
+### If all prerequisites are met, just delete that text as well. If they're not all met, the issue will be closed or assigned back to you.
+---
+## For features, fill in the description section and delete the rest. Be as descriptive as possible.
+---
+
 ### Prerequisites
 
 * [ ] Are you running the [latest version of SCIRun](https://github.com/SCIInstitute/SCIRun/releases)?
-[//]: # (* [ ] TODO: Did you check the [debugging guide](http://flight-manual.atom.io/hacking-atom/sections/debugging/)?)
-[//]: # (* [ ] TODO: Did you check the [FAQs on Discuss](https://discuss.atom.io/c/faq)?)
 * [ ] Are you reporting to the [correct repository](https://github.com/SCIInstitute/SCIRun)?
 * [ ] Did you [perform a cursory search](https://github.com/SCIInstitute/SCIRun/issues) to see if your bug or enhancement is already reported?
 
