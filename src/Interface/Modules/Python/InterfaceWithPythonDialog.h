@@ -71,10 +71,14 @@ private Q_SLOTS:
   void updateLineNumberAreaWidth(int newBlockCount);
   void highlightCurrentLine();
   void updateLineNumberArea(const QRect &, int);
+  void matchParentheses();
 
 private:
   QWidget* lineNumberArea_;
   class Highlighter* highlighter_;
+  void createParenthesisSelection(int pos);
+  bool matchLeftParenthesis(QTextBlock currentBlock, int index, int numRightParentheses);
+  bool matchRightParenthesis(QTextBlock currentBlock, int index, int numLeftParentheses);
 };
 
 class LineNumberArea : public QWidget
@@ -124,6 +128,24 @@ private:
     QTextCharFormat multiLineCommentFormat;
     QTextCharFormat quotationFormat;
     QTextCharFormat functionFormat;
+
+    void highlightBlockParens(const QString& text);
+};
+
+struct ParenthesisInfo
+  {
+      char character;
+      int position;
+  };
+
+class TextBlockData : public QTextBlockUserData
+{
+public:
+  TextBlockData();
+  QVector<ParenthesisInfo *> parentheses();
+  void insert(ParenthesisInfo *info);
+private:
+  QVector<ParenthesisInfo *> m_parentheses;
 };
 
 }
