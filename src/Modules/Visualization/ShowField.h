@@ -83,6 +83,9 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
         static const Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
         static const Core::Algorithms::AlgorithmParameterName NodeTransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName FacesColoring;
+        static const Core::Algorithms::AlgorithmParameterName NodesColoring;
+        static const Core::Algorithms::AlgorithmParameterName EdgesColoring;
         static const Core::Algorithms::AlgorithmParameterName SphereScaleValue;
         static const Core::Algorithms::AlgorithmParameterName CylinderResolution;
         static const Core::Algorithms::AlgorithmParameterName SphereResolution;
