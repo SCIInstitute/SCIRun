@@ -510,16 +510,8 @@ void ViewSceneDialog::newGeometryValue()
     }
 
   }
-  //else
-  //{
-  //  if (!spire)
-  //    return;
-  //  spire->removeAllGeomObjects();
-  //}
 
-#ifdef BUILD_TESTING
   sendScreenshotDownstreamForTesting();
-#endif
 
   if (saveScreenshotOnNewGeometry_)
   {
@@ -1845,7 +1837,6 @@ void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
   //wait for a couple frames to go by.
 //  boost::this_thread::sleep(boost::posix_time::milliseconds(150));
-  //std::cout << "sendScreenshotDownstreamForTesting " << std::endl;
   takeScreenshot();
   state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }
