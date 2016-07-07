@@ -135,9 +135,14 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   WidgetStyleMixin::tabStyle(tabWidget);
 
   setupLightControlCircle(headlightFrame_, 0, parent->pulling_, false);
+  setupLightControlCircle(light1Frame_, 1, parent->pulling_, false);
+  setupLightControlCircle(light2Frame_, 2, parent->pulling_, false);
+  setupLightControlCircle(light3Frame_, 3, parent->pulling_, false);
+  /*Temporarily set three light to no movement until movement works (after IBBM 2016)
   setupLightControlCircle(light1Frame_, 1, parent->pulling_, true);
   setupLightControlCircle(light2Frame_, 2, parent->pulling_, true);
   setupLightControlCircle(light3Frame_, 3, parent->pulling_, true);
+  */
 
   for (auto &light : lightControls_)
   {
@@ -154,8 +159,14 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   ///Render Tab
   shadeSettingsGroupBox_->setEnabled(false);
+  shadeSettingsGroupBox_->setVisible(false);
   globalSettingsGroupBox_->setEnabled(false);
+  globalSettingsGroupBox_->setVisible(false);
   renderSliderFrame_->setEnabled(false);
+  renderSliderFrame_->setVisible(false);
+
+  ///Lights Tab
+  label_11->setVisible(false);
 
   ///Materials Tab
   //materialsFrame_->setEnabled(false);
@@ -163,8 +174,11 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   ////View Tab
   autoRotateGroupBox_->setEnabled(false);
-  viewOptionsGroupBox_->setEnabled(false);
-  //showScaleBarTextGroupBox_->setEnabled(false);
+  autoRotateGroupBox_->setVisible(false);
+  //viewOptionsGroupBox_->setEnabled(false);
+  autoViewOnLoadCheckBox_->setVisible(false);
+  orthoViewCheckBox_->setVisible(false);
+  showAxisCheckBox_->setVisible(false);
 
   ////Controls Tab
   transparencyGroupBox_->setVisible(false);
