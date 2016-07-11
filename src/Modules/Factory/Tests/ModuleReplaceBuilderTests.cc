@@ -86,17 +86,17 @@ TEST(HardCodedModuleFactoryTests, ListAllAlgorithms)
 
 TEST(ModuleTraitsTest, CanDetermineUIAlgoStatically)
 {
-  ASSERT_TRUE(ModuleTraits<Fields::CreateLatVol>::hasUI);
-  ASSERT_FALSE(ModuleTraits<Fields::CreateLatVol>::hasAlgorithm);
+  ASSERT_TRUE(HasUI<Fields::CreateLatVol>::value);
+  ASSERT_FALSE(HasAlgorithm<Fields::CreateLatVol>::value);
 
-  ASSERT_FALSE(ModuleTraits<Fields::GetFieldDataModule>::hasUI);
-  ASSERT_TRUE(ModuleTraits<Fields::GetFieldDataModule>::hasAlgorithm);
+  ASSERT_FALSE(HasUI<Fields::GetFieldDataModule>::value);
+  ASSERT_TRUE(HasAlgorithm<Fields::GetFieldDataModule>::value);
 
-  ASSERT_TRUE(ModuleTraits<Fields::GetMeshQualityField>::hasUI);
-  ASSERT_TRUE(ModuleTraits<Fields::GetMeshQualityField>::hasAlgorithm);
+  ASSERT_TRUE(HasUI<Fields::GetMeshQualityField>::value);
+  ASSERT_TRUE(HasAlgorithm<Fields::GetMeshQualityField>::value);
 
-  ASSERT_FALSE(ModuleTraits<Math::SolveMinNormLeastSqSystem>::hasUI);
-  ASSERT_FALSE(ModuleTraits<Math::SolveMinNormLeastSqSystem>::hasAlgorithm);
+  ASSERT_FALSE(HasUI<Math::SolveMinNormLeastSqSystem>::value);
+  ASSERT_FALSE(HasAlgorithm<Math::SolveMinNormLeastSqSystem>::value);
 }
 
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)

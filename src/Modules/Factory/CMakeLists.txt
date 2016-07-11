@@ -74,7 +74,6 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Dataflow_Network
   Modules_Math
   Modules_Fields
-  Modules_FiniteElements
   Modules_BrainStimulator
   Modules_Legacy_FiniteElements
   Modules_Legacy_Forward

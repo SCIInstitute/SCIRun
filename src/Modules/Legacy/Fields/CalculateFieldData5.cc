@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -46,18 +46,18 @@ using namespace SCIRun::Modules::Fields;
   private:
     GuiInt    gui_cache_;
     GuiInt    gui_count_;
-    
+
   private:
     bool old_version_;   // Is this converted from an old version
 
     MatrixHandle count_;
-    FieldHandle  cache_;    
+    FieldHandle  cache_;
 };
 */
 
 const ModuleLookupInfo CalculateFieldData::staticInfo_("CalculateFieldData", "ChangeFieldData", "SCIRun");
-AlgorithmParameterName CalculateFieldData::FunctionString("FunctionString");
-AlgorithmParameterName CalculateFieldData::FormatString("FormatString");
+const AlgorithmParameterName CalculateFieldData::FunctionString("FunctionString");
+const AlgorithmParameterName CalculateFieldData::FormatString("FormatString");
 
 CalculateFieldData::CalculateFieldData()
   : Module(staticInfo_)
@@ -95,7 +95,7 @@ void CalculateFieldData::execute()
 
   auto matrices = getOptionalDynamicInputs(InputArrays);
 
-//   if (inputs_changed_ || guifunction_.changed() || 
+//   if (inputs_changed_ || guifunction_.changed() ||
 //       guiformat_.changed() || !oport_cached("Field"))
   if (needToExecute())
   {
@@ -103,13 +103,13 @@ void CalculateFieldData::execute()
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // If not caching set the field and count to zero.
-    if( !(gui_cache_.get()) ) 
+    if( !(gui_cache_.get()) )
     {
       cache_ = 0;
       gui_count_.set(0);
       gui_count_.reset();
     }
-    
+
     if (!cache_)
     {
       // Create a dummy field with one value as default
@@ -120,13 +120,13 @@ void CalculateFieldData::execute()
       cache_->vmesh()->add_point(Point(0,0,0));
       cache_->vfield()->resize_values();
     }
-    
+
     count_->put(0,0,static_cast<double>(gui_count_.get()));
 #endif
 
     // Get number of matrix ports with data (the last one is always empty)
     size_t numinputs = matrices.size();
-    
+
     if (numinputs > 23)
     {
       error("This module cannot handle more than 23 input matrices.");
@@ -148,7 +148,7 @@ void CalculateFieldData::execute()
     if(!(engine.add_input_fielddata("v",field))) return;
     ///-----------------------
 
-    // Create the POS, X,Y,Z, data location objects.  
+    // Create the POS, X,Y,Z, data location objects.
 
     if(!(engine.add_input_fielddata_location("POS",field))) return;
     if(!(engine.add_input_fielddata_location("POS1",field))) return;
@@ -171,7 +171,7 @@ void CalculateFieldData::execute()
     ///-----------------------
     // Backwards compatibility with intermediate version between 3.0.2 and 4.0
     if(!(engine.add_input_matrix("count",count_))) return;
-    if(!(engine.add_input_fielddata("result",cache_))) return;    
+    if(!(engine.add_input_fielddata("result",cache_))) return;
     ///-----------------------
 #endif
 
@@ -184,17 +184,17 @@ void CalculateFieldData::execute()
       return;
     if (!addFieldVariableIfPresent(fields, engine, 5))
       return;
-    
+
      // Loop through all matrices and add them to the engine as well
     char mname = 'A';
     std::string matrixname("A");
-    
+
     for (size_t p = 0; p < numinputs; p++)
     {
       if (!matrices[p])
       {
         error("No matrix was found on input port.");
-        return;      
+        return;
       }
 
       matrixname[0] = mname++;
@@ -202,7 +202,7 @@ void CalculateFieldData::execute()
     }
 
     int basis_order = field->vfield()->basis_order();
-    
+
     std::string format = state->getValue(FormatString).toString();
     if (format.empty()) format = "double";
 
@@ -230,7 +230,7 @@ void CalculateFieldData::execute()
     if(!(engine.add_expressions(function))) return;
 
     // Actual engine call, which does the dynamic compilation, the creation of the
-    // code for all the objects, as well as inserting the function and looping 
+    // code for all the objects, as well as inserting the function and looping
     // over every data point
 
     if (!(engine.run()))
@@ -240,7 +240,7 @@ void CalculateFieldData::execute()
     }
 
     // Get the result from the engine
-    FieldHandle ofield;    
+    FieldHandle ofield;
     if (has_RESULT)
     {
       engine.get_field("RESULT",ofield);
@@ -253,9 +253,9 @@ void CalculateFieldData::execute()
       ///-----------------------
     }
 
-    // send new output if there is any: 
+    // send new output if there is any:
     sendOutput(OutputField, ofield);
-    
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if( (gui_cache_.get()) )
     {
@@ -283,12 +283,12 @@ bool CalculateFieldData::addFieldVariableIfPresent(const FieldList& fields, NewA
       auto indexStr = boost::lexical_cast<std::string>(index);
       auto vStr = boost::lexical_cast<std::string>(index - 1);
 
-      if(!engine.add_input_fielddata("DATA" + indexStr, field)) 
+      if(!engine.add_input_fielddata("DATA" + indexStr, field))
         return false;
       if(!engine.add_input_fielddata("v" + vStr, field))
         return false;
 
-      // Create the POS, X,Y,Z, data location objects.  
+      // Create the POS, X,Y,Z, data location objects.
 
       if(!engine.add_input_fielddata_location("POS" + indexStr, field))
         return false;

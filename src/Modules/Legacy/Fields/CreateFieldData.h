@@ -60,7 +60,7 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
         static const Core::Algorithms::AlgorithmParameterName FunctionString;
-        static const  Core::Algorithms::AlgorithmParameterName FormatString;
+        static const Core::Algorithms::AlgorithmParameterName FormatString;
         static const Core::Algorithms::AlgorithmParameterName BasisString;
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
