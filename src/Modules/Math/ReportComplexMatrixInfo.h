@@ -50,6 +50,7 @@ namespace Math {
     OUTPUT_PORT(2, NumElements, Int32);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
 }}}
 

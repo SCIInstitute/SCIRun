@@ -47,6 +47,7 @@ namespace SCIRun {
         virtual void setStateDefaults() {}
         SCIRun::Core::Datatypes::DenseMatrixHandle latestReceivedMatrix() const { return latestValue_; }
         INPUT_PORT(0, Input, DenseMatrix);
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         SCIRun::Core::Datatypes::DenseMatrixHandle latestValue_;
       };

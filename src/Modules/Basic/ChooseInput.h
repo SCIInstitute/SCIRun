@@ -64,6 +64,7 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(0, Input, Datatype);
         OUTPUT_PORT(0, Output, Datatype);
 
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
         void portChangeImpl();

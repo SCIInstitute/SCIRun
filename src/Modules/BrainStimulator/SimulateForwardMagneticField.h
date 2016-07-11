@@ -68,6 +68,8 @@ class SCISHARE SimulateForwardMagneticFieldModule : public SCIRun::Dataflow::Net
     OUTPUT_PORT(1, MagneticFieldMagnitudes, LegacyField);
 
     LEGACY_BIOPSE_MODULE
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
 };
 
 }}}

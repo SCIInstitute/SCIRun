@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,11 +27,11 @@
 */
 
 ///@file SplitFieldByConnectedRegion.h
-///@brief 
+///@brief
 /// Splits a domain into separate fields as defined by the input field's connectivity.
 ///
 ///@author
-/// Moritz Dannhauer (ported from SCIRun4) 
+/// Moritz Dannhauer (ported from SCIRun4)
 ///
 ///@details
 /// This is simply the module that grabs the input field and passes it to the algorithm along with the GUI settings from the state object.
@@ -66,8 +66,9 @@ namespace SCIRun {
         OUTPUT_PORT(5, OutputField6, LegacyField);
         OUTPUT_PORT(6, OutputField7, LegacyField);
         OUTPUT_PORT(7, OutputField8, LegacyField);
- 
+
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 
     }

@@ -87,6 +87,8 @@ namespace SCIRun
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
         static std::vector<Core::Algorithms::AlgorithmParameterName> inputNameParameters();
         static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         static Core::Thread::Mutex lock_;
         std::string convertInputSyntax(const std::string& code) const;

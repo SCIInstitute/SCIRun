@@ -49,6 +49,8 @@ namespace SCIRun {
         INPUT_PORT(0, Input, Datatype);
 
         static Core::Algorithms::AlgorithmParameterName ReceivedValue;
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
  }}}
 

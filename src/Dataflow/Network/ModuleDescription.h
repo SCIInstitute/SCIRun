@@ -123,7 +123,9 @@ namespace Networks {
     std::string moduleInfo_;
     InputPortDescriptionList input_ports_;
     OutputPortDescriptionList output_ports_;
-    ModuleMaker                       maker_;
+    ModuleMaker maker_;
+    bool hasAlgo_ {true};
+    bool hasUI_ {true};
   };
 
   SCISHARE std::ostream& operator<<(std::ostream& o, const ModuleLookupInfo& mli);

@@ -54,6 +54,8 @@ namespace Basic {
 
     bool expensiveComputationDone_, executeCalled_;
     void resetFlags();
+
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   };
 
 }}}

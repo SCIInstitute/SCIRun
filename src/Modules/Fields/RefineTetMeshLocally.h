@@ -55,6 +55,8 @@ namespace SCIRun {
 	      static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
         NEW_BRAIN_STIMULATOR_MODULE
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 
     }

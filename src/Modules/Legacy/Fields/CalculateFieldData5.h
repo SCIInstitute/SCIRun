@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -47,16 +47,17 @@ namespace SCIRun {
 
         virtual void execute() override;
         virtual void setStateDefaults() override;
-        virtual bool hasDynamicPorts() const override { return true; }
+        HAS_DYNAMIC_PORTS
 
         INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
         INPUT_PORT(1, Function, String);
         INPUT_PORT_DYNAMIC(2, InputArrays, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
-        static Core::Algorithms::AlgorithmParameterName FunctionString;
-        static Core::Algorithms::AlgorithmParameterName FormatString;
+        static const Core::Algorithms::AlgorithmParameterName FunctionString;
+        static const Core::Algorithms::AlgorithmParameterName FormatString;
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         bool addFieldVariableIfPresent(const FieldList& fields, NewArrayMathEngine& engine, int index) const;
       };

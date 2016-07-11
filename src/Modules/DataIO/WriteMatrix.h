@@ -48,6 +48,9 @@ namespace SCIRun {
         virtual bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, MatrixToWrite, Matrix);
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        
       protected:
         virtual std::string defaultFileTypeName() const override;
       };

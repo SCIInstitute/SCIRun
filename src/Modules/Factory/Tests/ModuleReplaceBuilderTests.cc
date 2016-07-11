@@ -31,8 +31,13 @@
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ConnectionId.h>
+#include <Modules/Legacy/Fields/CreateLatVol.h>
+#include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
+#include <Modules/Legacy/Fields/GetMeshQualityField.h>
+#include <Modules/Legacy/Fields/GetFieldData.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Modules;
 using namespace Testing;
 using namespace Modules::Factory;
 using namespace Dataflow::Networks;
@@ -44,6 +49,11 @@ class ModuleReplaceTests : public ModuleTest
 {
 };
 
+const int NUM_MODULES = 152;
+const int NUM_ALGORITHMS = 78;
+
+const int EXPECTED_RANGE = 5;   // Require updating these numbers every few modules
+
 TEST(HardCodedModuleFactoryTests, ListAllModules)
 {
   HardCodedModuleFactory factory;
@@ -51,7 +61,8 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
   auto descMap = factory.getDirectModuleDescriptionLookupMap();
 
   std::cout << "descMap size: " << descMap.size() << std::endl;
-  EXPECT_GE(descMap.size(), 152);
+  EXPECT_GE(descMap.size(), NUM_MODULES);
+  EXPECT_LE(descMap.size(), NUM_MODULES + EXPECTED_RANGE);
 
   for (const auto& m : descMap)
   {
@@ -64,12 +75,28 @@ TEST(HardCodedModuleFactoryTests, ListAllAlgorithms)
   HardCodedAlgorithmFactory factory;
 
   std::cout << "algorithm factory size: " << factory.numAlgorithms() << std::endl;
-  EXPECT_GE(factory.numAlgorithms(), 78);
+  EXPECT_GE(factory.numAlgorithms(), NUM_ALGORITHMS);
+  EXPECT_LE(factory.numAlgorithms(), NUM_ALGORITHMS + EXPECTED_RANGE);
 
   for (const auto& a : factory)
   {
     std::cout << a.first << " -> " << a.second.first << std::endl;
   }
+}
+
+TEST(ModuleTraitsTest, CanDetermineUIAlgoStatically)
+{
+  ASSERT_TRUE(ModuleTraits<Fields::CreateLatVol>::hasUI);
+  ASSERT_FALSE(ModuleTraits<Fields::CreateLatVol>::hasAlgorithm);
+
+  ASSERT_FALSE(ModuleTraits<Fields::GetFieldDataModule>::hasUI);
+  ASSERT_TRUE(ModuleTraits<Fields::GetFieldDataModule>::hasAlgorithm);
+
+  ASSERT_TRUE(ModuleTraits<Fields::GetMeshQualityField>::hasUI);
+  ASSERT_TRUE(ModuleTraits<Fields::GetMeshQualityField>::hasAlgorithm);
+
+  ASSERT_FALSE(ModuleTraits<Math::SolveMinNormLeastSqSystem>::hasUI);
+  ASSERT_FALSE(ModuleTraits<Math::SolveMinNormLeastSqSystem>::hasAlgorithm);
 }
 
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)

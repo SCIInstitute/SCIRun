@@ -46,6 +46,8 @@ namespace SCIRun {
         virtual void setStateDefaults() {}
 
         INPUT_PORT(0, Input, ComplexDenseMatrix);
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
  }}}
 

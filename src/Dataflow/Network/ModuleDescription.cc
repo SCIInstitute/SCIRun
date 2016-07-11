@@ -165,7 +165,8 @@ std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const Modu
 std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ModuleDescription& desc)
 {
   return o << desc.lookupInfo_ << " status: " << desc.moduleStatus_ << " info: " << desc.moduleInfo_
-    << " num inputs: " << desc.input_ports_.size() << " num outputs: " << desc.output_ports_.size();
+    << " num inputs: " << desc.input_ports_.size() << " num outputs: " << desc.output_ports_.size()
+    << " has ui: " << desc.hasUI_ << " has algo: " << desc.hasAlgo_;
 }
 
 bool ModuleLookupInfoLess::operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const

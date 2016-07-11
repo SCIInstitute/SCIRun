@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace Fields {
 
 	/// @class ConvertQuadSurfToTriSurf
-	/// @brief Convert a QuadSurfField into a TriSurfField. 
+	/// @brief Convert a QuadSurfField into a TriSurfField.
 
       class SCISHARE ConvertQuadSurfToTriSurf : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
@@ -51,6 +51,8 @@ namespace SCIRun {
 
         INPUT_PORT(0, QuadSurf, LegacyField);
         OUTPUT_PORT(0, TriSurf, LegacyField);
+
+        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
       };
 
     }

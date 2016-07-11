@@ -46,6 +46,7 @@ namespace Basic {
     virtual void setStateDefaults() {}
 
     OUTPUT_PORT(0, Scalar, ComplexDenseMatrix);
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   private:
     complex data_;
   };

@@ -51,6 +51,7 @@ namespace SCIRun {
         INPUT_PORT(0, Input, Double);
 
         static Core::Algorithms::AlgorithmParameterName ReceivedValue;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         double latestValue_;
       };

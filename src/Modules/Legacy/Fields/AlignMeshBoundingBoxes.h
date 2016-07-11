@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,7 +38,7 @@ namespace SCIRun {
 
 	/// @class AlignMeshBoundingBoxes
 	/// @brief Scales, translates, and deforms an input field to a defined
-	/// alignment field. 
+	/// alignment field.
       class SCISHARE AlignMeshBoundingBoxes : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, FieldPortTag>,
         public Has2OutputPorts<FieldPortTag, MatrixPortTag>
@@ -53,6 +53,8 @@ namespace SCIRun {
         INPUT_PORT(1, AlignmentField, LegacyField);
         OUTPUT_PORT(0, OutputField, LegacyField);
         OUTPUT_PORT(1, TransformMatrix, Matrix);
+
+        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
       };
 
     }

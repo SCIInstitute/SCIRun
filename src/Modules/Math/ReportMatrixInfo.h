@@ -36,7 +36,7 @@
 namespace SCIRun {
 namespace Modules {
 namespace Math {
-  
+
   class SCISHARE ReportMatrixInfoModule : public Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
     public Has3OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag>
@@ -51,6 +51,7 @@ namespace Math {
     OUTPUT_PORT(2, NumElements, Int32);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
 }}}
 

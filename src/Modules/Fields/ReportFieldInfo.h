@@ -58,6 +58,7 @@ namespace Fields {
     OUTPUT_PORT(8, GeomSize, Double);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
 }}}
 

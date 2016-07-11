@@ -52,6 +52,7 @@ namespace Math {
     OUTPUT_PORT(1, Selected_Index, Int32);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
   private:
     bool playing_;

@@ -51,6 +51,7 @@ namespace SCIRun {
         OUTPUT_PORT(1, Samples, LegacyField);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         void execute_random(FieldHandle ifield);
 

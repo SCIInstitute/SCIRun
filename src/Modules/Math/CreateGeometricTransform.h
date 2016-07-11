@@ -78,7 +78,7 @@ namespace SCIRun {
   }
 namespace Modules {
 namespace Math {
-  
+
   class SCISHARE CreateGeometricTransform : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
     public Has2OutputPorts<MatrixPortTag, GeometryPortTag>
@@ -86,13 +86,14 @@ namespace Math {
   public:
     CreateGeometricTransform();
     virtual void execute() override;
-   
+
     virtual void setStateDefaults();
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-    
+
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
     OUTPUT_PORT(1, Widget, GeometryObject);
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
   private:
     Core::Datatypes::MatrixHandle omatrixH_;

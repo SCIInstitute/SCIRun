@@ -63,6 +63,8 @@ namespace Networks {
       const std::string& version = "1.0");
     virtual ~Module() override;
 
+    static const int TraitFlags;
+
     virtual std::string get_module_name() const override final { return info_.module_name_; }
     std::string get_categoryname() const { return info_.category_name_; }
     std::string get_packagename() const { return info_.package_name_; }
@@ -557,6 +559,53 @@ namespace Modules
   struct SCISHARE BundlePortTag {};
   struct SCISHARE NrrdPortTag {};
   struct SCISHARE DatatypePortTag {};
+
+  enum ModuleFlags
+  {
+    NoAlgoOrUI = 0,
+    ModuleHasAlgorithm = 1 << 0,
+    ModuleHasUI = 1 << 1,
+    UNDEFINED_MODULE_FLAG = -1
+  };
+
+  inline ModuleFlags operator|(ModuleFlags a, ModuleFlags b)
+  {
+    return static_cast<ModuleFlags>(+a | +b);
+  }
+
+  template <class ModuleType>
+  struct ModuleTraits
+  {
+    static const int Flags;
+  };
+
+  template <class ModuleType>
+  const int ModuleTraits<ModuleType>::Flags = ModuleType::TraitFlags;
+
+  template <class ModuleType>
+  struct HasUI
+  {
+    static const int ensureModuleDefinesFlags[ModuleTraits<ModuleType>::Flags];
+    static const bool value;
+  };
+
+  template <class ModuleType>
+  const bool HasUI<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & ModuleHasUI) != 0;
+
+  template <class ModuleType>
+  struct HasAlgorithm
+  {
+    static const int ensureModuleDefinesFlags[ModuleTraits<ModuleType>::Flags];
+    static const bool value;
+  };
+
+  template <class ModuleType>
+  const bool HasAlgorithm<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & ModuleHasAlgorithm) != 0;
+
+  #define MODULE_TRAITS_AND_INFO(value) public: static const int TraitFlags = value;
+    //static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+  #define HAS_DYNAMIC_PORTS public: virtual bool hasDynamicPorts() const override { return true; }
 
   template <typename Base>
   struct DynamicPortTag : Base

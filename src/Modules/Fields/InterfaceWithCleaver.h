@@ -34,7 +34,7 @@
 namespace SCIRun {
 namespace Modules {
 namespace Fields {
-  
+
   class SCISHARE InterfaceWithCleaverModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<DynamicPortTag<FieldPortTag>>,
     public Has1OutputPort<FieldPortTag>
@@ -46,8 +46,10 @@ namespace Fields {
     virtual bool hasDynamicPorts() const override { return true; }
     INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
-    
+
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
 }}}
 

@@ -37,7 +37,7 @@
 namespace SCIRun {
 namespace Modules {
 namespace Basic {
-  
+
   class SCISHARE SendTestMatrixModule : public SCIRun::Dataflow::Networks::Module,
     public Has1OutputPort<MatrixPortTag>,
     public HasNoInputPorts
@@ -48,6 +48,9 @@ namespace Basic {
     virtual void setStateDefaults() {}
     void setMatrix(SCIRun::Core::Datatypes::DenseMatrixHandle data) { data_ = data; }
     OUTPUT_PORT(0, TestMatrix, DenseMatrix);
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
   private:
     SCIRun::Core::Datatypes::DenseMatrixHandle data_;
   };

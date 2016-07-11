@@ -36,7 +36,7 @@
 namespace SCIRun {
 namespace Modules {
 namespace Basic {
-  
+
   class SCISHARE SendScalarModule : public SCIRun::Dataflow::Networks::Module,
     public Has1OutputPort<ScalarPortTag>,
     public HasNoInputPorts
@@ -48,6 +48,7 @@ namespace Basic {
 
     OUTPUT_PORT(0, Scalar, Double);
     static Core::Algorithms::AlgorithmParameterName ValueToSend();
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   private:
     double data_;
   };

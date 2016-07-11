@@ -78,6 +78,8 @@ class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Mod
     OUTPUT_PORT(3, COILS_FIELD, LegacyField);
 
     NEW_BRAIN_STIMULATOR_MODULE
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
 };
 
 }}}

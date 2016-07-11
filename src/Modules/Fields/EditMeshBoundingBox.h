@@ -92,6 +92,9 @@ namespace SCIRun {
         OUTPUT_PORT(2, Transformation_Matrix, Matrix);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        
       private:
         void executeImpl(FieldHandle f);
         void clear_vals();

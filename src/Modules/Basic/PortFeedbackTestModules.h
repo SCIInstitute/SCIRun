@@ -35,7 +35,7 @@
 namespace SCIRun {
 namespace Modules {
 namespace Basic {
-  
+
   class SCISHARE PortFeedbackSender : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<StringPortTag>,
     public HasNoOutputPorts
@@ -48,6 +48,8 @@ namespace Basic {
     INPUT_PORT(0, Input, String);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   };
 
   class SCISHARE PortFeedbackReceiver : public SCIRun::Dataflow::Networks::Module,
@@ -63,6 +65,8 @@ namespace Basic {
     OUTPUT_PORT(0, Output, String);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   };
 
 }}}
