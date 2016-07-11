@@ -51,6 +51,8 @@ namespace SCIRun {
         const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
         LEGACY_BIOPSE_MODULE
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
     }
   }

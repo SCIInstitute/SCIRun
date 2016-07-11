@@ -123,6 +123,8 @@ namespace Render {
     OUTPUT_PORT(2, ScreenshotDataBlue, DenseMatrix);
     virtual void execute() override;
 
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
     static Core::Thread::Mutex mutex_;
 
     typedef std::set<Core::Datatypes::GeometryBaseHandle> GeomList;

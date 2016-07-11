@@ -562,16 +562,12 @@ namespace Modules
 
   enum ModuleFlags
   {
-    NoAlgoOrUI = 0,
-    ModuleHasAlgorithm = 1 << 0,
-    ModuleHasUI = 1 << 1,
-    UNDEFINED_MODULE_FLAG = -1
+    NoAlgoOrUI              = 0,
+    ModuleHasAlgorithm      = 1 << 0,
+    ModuleHasUI             = 1 << 1,
+    ModuleHasUIAndAlgorithm = 1 << 2,
+    UNDEFINED_MODULE_FLAG   = -1
   };
-
-  inline ModuleFlags operator|(ModuleFlags a, ModuleFlags b)
-  {
-    return static_cast<ModuleFlags>(+a | +b);
-  }
 
   template <class ModuleType>
   struct ModuleTraits

@@ -36,7 +36,7 @@ namespace SCIRun {
 namespace Modules {
 namespace Matlab {
 namespace DataIO {
-  
+
   class SCISHARE ImportDatatypesFromMatlab : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<StringPortTag>,
     public Has3OutputPorts<FieldPortTag, MatrixPortTag, StringPortTag>
@@ -53,6 +53,7 @@ namespace DataIO {
     OUTPUT_PORT(2, FilenameOut, String);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
 
 }}}}

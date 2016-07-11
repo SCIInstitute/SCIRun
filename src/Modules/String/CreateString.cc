@@ -37,9 +37,9 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmParameterName CreateStringModule::InputString("InputString");
+const AlgorithmParameterName CreateStringModule::InputString("InputString");
 
-CreateStringModule::CreateStringModule() : Module(ModuleLookupInfo("CreateString", "String", "SCIRun")) 
+CreateStringModule::CreateStringModule() : Module(ModuleLookupInfo("CreateString", "String", "SCIRun"))
 {
   INITIALIZE_PORT(NewString);
 }

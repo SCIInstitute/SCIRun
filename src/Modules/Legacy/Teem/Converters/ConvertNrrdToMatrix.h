@@ -61,6 +61,7 @@ namespace Teem {
     OUTPUT_PORT(0, OutputMatrix, Matrix);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   private:
     Core::Datatypes::MatrixHandle create_matrix_from_nrrds(boost::optional<NrrdDataHandle> dataH,
       boost::optional<NrrdDataHandle> rowsH,

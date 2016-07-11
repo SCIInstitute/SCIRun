@@ -62,6 +62,7 @@ namespace Matlab {
     virtual bool hasDynamicPorts() const override { return true; }
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
     LEGACY_MATLAB_MODULE
   };

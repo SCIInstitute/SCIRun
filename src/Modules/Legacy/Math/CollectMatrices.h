@@ -50,7 +50,8 @@ namespace SCIRun {
 				OUTPUT_PORT(0, CompositeMatrix, Matrix);
 
         const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      protected: 
+				MODULE_TRAITS_AND_INFO(ModuleHasUI)
+      protected:
         virtual void postStateChangeInternalSignalHookup() override;
       private:
         boost::shared_ptr<class CollectMatricesImpl> impl_;

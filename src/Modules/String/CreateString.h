@@ -37,7 +37,7 @@
 namespace SCIRun {
 namespace Modules {
 namespace StringProcessing {
-  
+
   class SCISHARE CreateStringModule : public SCIRun::Dataflow::Networks::Module,
     public Has1OutputPort<StringPortTag>,
     public HasNoInputPorts
@@ -47,7 +47,8 @@ namespace StringProcessing {
     virtual void execute();
     virtual void setStateDefaults();
     OUTPUT_PORT(0, NewString, String);
-    static Core::Algorithms::AlgorithmParameterName InputString;
+    static const Core::Algorithms::AlgorithmParameterName InputString;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   private:
     std::string stringValue_;
   };

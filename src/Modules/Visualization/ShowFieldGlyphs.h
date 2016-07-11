@@ -97,6 +97,8 @@ namespace SCIRun {
 
         virtual void setStateDefaults() override;
 
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
       private:
         void configureInputs(
           FieldHandle pfield,

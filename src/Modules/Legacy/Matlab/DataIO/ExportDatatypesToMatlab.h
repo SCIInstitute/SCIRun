@@ -52,6 +52,7 @@ namespace Matlab {
     OUTPUT_PORT(3, NumData, Int32);
     OUTPUT_PORT(4, DataMin, Double);
     OUTPUT_PORT(5, DataMax, Double);
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
 }}}
 

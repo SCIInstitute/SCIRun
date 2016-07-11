@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,7 +35,7 @@
 namespace SCIRun {
 	namespace Modules {
 		namespace Math {
-		
+
 		class SCISHARE BuildNoiseColumnMatrix : public Dataflow::Networks::Module,
 			public Has1InputPort<MatrixPortTag>,
 			public Has1OutputPort<MatrixPortTag>
@@ -44,11 +44,11 @@ namespace SCIRun {
 					BuildNoiseColumnMatrix();
 					virtual void setStateDefaults();
 					virtual void execute();
-				
-				
+
+
 					INPUT_PORT(0, InputMatrix, Matrix);
 					OUTPUT_PORT(0, ResultMatrix, Matrix);
-							
+					MODULE_TRAITS_AND_INFO(ModuleHasUI)
 			};
 		}
 	}

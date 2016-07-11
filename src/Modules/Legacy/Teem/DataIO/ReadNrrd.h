@@ -56,6 +56,7 @@ namespace DataIO {
     static std::string fileTypeList();
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   private:
     NrrdDataHandle read_nrrd();
     NrrdDataHandle read_file(const std::string& fn);

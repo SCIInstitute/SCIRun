@@ -47,6 +47,7 @@ namespace Bundles {
     OUTPUT_PORT(0, Environment, Bundle);
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   };
 }}}
 

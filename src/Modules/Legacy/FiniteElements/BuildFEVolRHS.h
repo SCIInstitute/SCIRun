@@ -1,4 +1,4 @@
- 
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -7,7 +7,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -34,8 +34,8 @@
 /// ported by Moritz Dannhauer (09/24/2014) from SCIRun4
 ///
 ///@details
-/// Calculates the divergence of a vector field over the volume. It is designed to calculate the volume integral of the vector field 
-/// (gradient of the potential in electrical simulations). Builds the volume portion of the RHS of FE calculations where the RHS of 
+/// Calculates the divergence of a vector field over the volume. It is designed to calculate the volume integral of the vector field
+/// (gradient of the potential in electrical simulations). Builds the volume portion of the RHS of FE calculations where the RHS of
 /// the function is GRAD dot F.
 /// Input: A FE mesh with field vectors distributed on the elements (constant basis). Output: The Grad dot F
 
@@ -60,7 +60,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, Mesh, LegacyField);
         OUTPUT_PORT(0, RHS, Matrix);
-
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 
     }

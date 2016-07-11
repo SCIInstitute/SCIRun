@@ -88,6 +88,8 @@ namespace SCIRun {
 
       LEGACY_BIOPSE_MODULE
 
+      MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
       private:
         void update_lcurve_gui(const double lambda, const BioPSE::TikhonovAlgorithm::LCurveInput& input, const int lambda_index);
       };
