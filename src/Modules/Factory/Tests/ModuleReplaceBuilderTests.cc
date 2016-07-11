@@ -28,6 +28,7 @@
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ConnectionId.h>
 
@@ -51,6 +52,24 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
 
   std::cout << "descMap size: " << descMap.size() << std::endl;
   EXPECT_GE(descMap.size(), 152);
+
+  for (const auto& m : descMap)
+  {
+    std::cout << m.first << " -> " << m.second << std::endl;
+  }
+}
+
+TEST(HardCodedModuleFactoryTests, ListAllAlgorithms)
+{
+  HardCodedAlgorithmFactory factory;
+
+  std::cout << "algorithm factory size: " << factory.numAlgorithms() << std::endl;
+  EXPECT_GE(factory.numAlgorithms(), 78);
+
+  for (const auto& a : factory)
+  {
+    std::cout << a.first << " -> " << a.second.first << std::endl;
+  }
 }
 
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)

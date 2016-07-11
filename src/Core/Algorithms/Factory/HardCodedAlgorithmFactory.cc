@@ -199,7 +199,7 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
 
   auto func = factoryMap_.find(moduleName);
   if (func != factoryMap_.end())
-    h.reset((func->second)());
+    h.reset((func->second.second)());
 
   //TODO: make a convenience function to copy these for "sub-algorithms"
   if (h && algoCollaborator)

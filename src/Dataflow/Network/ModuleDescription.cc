@@ -63,16 +63,6 @@ void PortColorLookup::init()
     ("Datatype", "black");
 }
 
-
-
-ModuleDescription::ModuleDescription()
-{
-}
-
-ModuleDescription::~ModuleDescription()
-{
-}
-
 ModuleLookupInfo::ModuleLookupInfo() {}
 
 ModuleLookupInfo::ModuleLookupInfo(const std::string& mod, const std::string& cat, const std::string& pack)
@@ -174,7 +164,8 @@ std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const Modu
 
 std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ModuleDescription& desc)
 {
-  return o << "Description: TODO " << desc.lookupInfo_;
+  return o << desc.lookupInfo_ << " status: " << desc.moduleStatus_ << " info: " << desc.moduleInfo_
+    << " num inputs: " << desc.input_ports_.size() << " num outputs: " << desc.output_ports_.size();
 }
 
 bool ModuleLookupInfoLess::operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const

@@ -118,22 +118,12 @@ namespace Networks {
 
   struct SCISHARE ModuleDescription
   {
-    ModuleDescription();
-    ~ModuleDescription();
     ModuleLookupInfo lookupInfo_;
-    std::string module_version_;
     std::string moduleStatus_;
     std::string moduleInfo_;
     InputPortDescriptionList input_ports_;
     OutputPortDescriptionList output_ports_;
-    //bool                              optional_;
-    //bool                              hide_;
-    //bool                              dynamic_;
-    //std::vector<std::string>          authors_;
-    //std::string                       summary_;
     ModuleMaker                       maker_;
-    //bool last_port_dynamic_;
-    //bool                              has_gui_node_;
   };
 
   SCISHARE std::ostream& operator<<(std::ostream& o, const ModuleLookupInfo& mli);
