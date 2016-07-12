@@ -92,6 +92,8 @@ TEST(HardCodedModuleFactoryTests, ModuleTraitHasAlgorithmMatchesAlgoFactory)
 
   HardCodedAlgorithmFactory algoFactory;
 
+  std::set<std::string> modulesWithAlgorithms;
+
   for (const auto& a : algoFactory)
   {
     auto moduleName = a.first;
@@ -102,9 +104,26 @@ TEST(HardCodedModuleFactoryTests, ModuleTraitHasAlgorithmMatchesAlgoFactory)
       if (!modFactIter->second.hasAlgo_)
         std::cout << moduleName << " is missing trait HasAlgorithm" << std::endl;
       EXPECT_TRUE(modFactIter->second.hasAlgo_);
+      modulesWithAlgorithms.insert(moduleName);
     }
     else
       FAIL() << "Module found in algorithm factory but not module factory: " << moduleName;
+  }
+
+  for (const auto& m : modules)
+  {
+    if (modulesWithAlgorithms.find(m.first.module_name_) != modulesWithAlgorithms.end())
+    {
+      if (!m.second.hasAlgo_)
+        std::cout << m.first.module_name_ << " is missing trait HasAlgorithm" << std::endl;
+      EXPECT_TRUE(m.second.hasAlgo_);
+    }
+    else
+    {
+      if (m.second.hasAlgo_)
+        std::cout << m.first.module_name_ << " has trait HasAlgorithm, when it should not" << std::endl;
+      EXPECT_FALSE(m.second.hasAlgo_);
+    }
   }
 }
 
