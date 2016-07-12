@@ -65,7 +65,7 @@
          <string notr="true"/>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="nodesTab_">
          <attribute name="title">
@@ -104,7 +104,14 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="nodeTransparencyDoubleSpinBox_"/>
+             <widget class="QDoubleSpinBox" name="nodeTransparencyDoubleSpinBox_">
+              <property name="minimum">
+               <double>0.010000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.650000000000000</double>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -292,6 +299,9 @@
             </item>
             <item>
              <widget class="QDoubleSpinBox" name="edgeTransparencyDoubleSpinBox_">
+              <property name="minimum">
+               <double>0.010000000000000</double>
+              </property>
               <property name="maximum">
                <double>1.000000000000000</double>
               </property>
@@ -490,6 +500,9 @@
               </property>
               <property name="toolTip">
                <string>Set Transparency Alpha</string>
+              </property>
+              <property name="minimum">
+               <double>0.010000000000000</double>
               </property>
               <property name="maximum">
                <double>1.000000000000000</double>
