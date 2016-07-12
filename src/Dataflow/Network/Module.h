@@ -601,7 +601,7 @@ namespace Modules
   #define MODULE_TRAITS_AND_INFO(value) public: static const int TraitFlags = value;\
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;\
 
-  #define MODULE_INFO_DEF(moduleName, category, package) const ModuleLookupInfo moduleName::staticInfo_(#moduleName, #category, #package);
+  #define MODULE_INFO_DEF(moduleName, category, package) const SCIRun::Dataflow::Networks::ModuleLookupInfo moduleName::staticInfo_(#moduleName, #category, #package);
 
   #define HAS_DYNAMIC_PORTS public: virtual bool hasDynamicPorts() const override { return true; }
 

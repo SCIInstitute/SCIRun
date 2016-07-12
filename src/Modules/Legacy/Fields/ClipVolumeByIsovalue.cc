@@ -55,14 +55,14 @@ using namespace SCIRun::Core::Algorithms;
 
 MODULE_INFO_DEF(ClipVolumeByIsovalue, NewField, SCIRun)
 
-ClipVolumeByIsovalueModule::ClipVolumeByIsovalueModule() : Module(staticInfo_)
+ClipVolumeByIsovalue::ClipVolumeByIsovalue() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(Isovalue);
   INITIALIZE_PORT(OutputField);
 }
 
-void ClipVolumeByIsovalueModule::setStateDefaults()
+void ClipVolumeByIsovalue::setStateDefaults()
 {
   auto state = get_state();
   setStateDoubleFromAlgo(ClipMeshByIsovalueAlgo::ScalarIsoValue);
@@ -70,7 +70,7 @@ void ClipVolumeByIsovalueModule::setStateDefaults()
 }
 
 
-void ClipVolumeByIsovalueModule::execute()
+void ClipVolumeByIsovalue::execute()
 {
   auto input = getRequiredInput(InputField);
   auto isovalueOption = getOptionalInput(Isovalue);

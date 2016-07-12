@@ -57,7 +57,7 @@ namespace SCIRun {
         OUTPUT_PORT(5, string5, String);
         OUTPUT_PORT(6, string6, String);
 
-        static Core::Algorithms::AlgorithmParameterName StringNameList;
+        static const Core::Algorithms::AlgorithmParameterName StringNameList;
         static const Core::Algorithms::AlgorithmParameterName StringNames[];
         static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
 

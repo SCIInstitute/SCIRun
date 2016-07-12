@@ -40,14 +40,14 @@ namespace SCIRun {
       /// @brief Append the rows or columns of a matrix to a base matrix.
 
       class SCISHARE PrintStringIntoString : public SCIRun::Dataflow::Networks::Module,
-      public Has2InputPorts<StringPortTag, DynamicPortTag<StringPortTag>>,
-      public Has1OutputPort<StringPortTag>
+        public Has2InputPorts<StringPortTag, DynamicPortTag<StringPortTag>>,
+        public Has1OutputPort<StringPortTag>
       {
       public:
         PrintStringIntoString();
         virtual void execute();
         virtual void setStateDefaults();
-        virtual bool hasDynamicPorts() const { return true; }
+        HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, Format, String);
         INPUT_PORT_DYNAMIC(1, Input, String);

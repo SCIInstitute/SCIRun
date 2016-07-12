@@ -38,7 +38,7 @@ using namespace SCIRun::Core::Datatypes;
 
 MODULE_INFO_DEF(ReportMatrixInfo, Math, SCIRun)
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(staticInfo_)
+ReportMatrixInfo::ReportMatrixInfo() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(NumRows);
@@ -46,7 +46,7 @@ ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(staticInfo_)
   INITIALIZE_PORT(NumElements);
 }
 
-void ReportMatrixInfoModule::execute()
+void ReportMatrixInfo::execute()
 {
   auto matrix = getRequiredInput(InputMatrix);
 

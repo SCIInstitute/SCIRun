@@ -40,7 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 MODULE_INFO_DEF(ReportFieldInfo, MiscField, SCIRun)
 
-ReportFieldInfoModule::ReportFieldInfoModule() : Module(staticInfo_)
+ReportFieldInfo::ReportFieldInfo() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(NumNodes);
@@ -54,7 +54,7 @@ ReportFieldInfoModule::ReportFieldInfoModule() : Module(staticInfo_)
   INITIALIZE_PORT(GeomSize);
 }
 
-void ReportFieldInfoModule::execute()
+void ReportFieldInfo::execute()
 {
   auto field = getRequiredInput(InputField);
 

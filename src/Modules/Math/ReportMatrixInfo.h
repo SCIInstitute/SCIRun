@@ -37,12 +37,12 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
 
-  class SCISHARE ReportMatrixInfoModule : public Dataflow::Networks::Module,
+  class SCISHARE ReportMatrixInfo : public Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
     public Has3OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag>
   {
   public:
-    ReportMatrixInfoModule();
+    ReportMatrixInfo();
     virtual void execute() override;
     virtual void setStateDefaults() override {}
     INPUT_PORT(0, InputMatrix, Matrix);

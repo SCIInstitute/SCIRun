@@ -39,23 +39,23 @@ using namespace SCIRun::Core::Datatypes;
 
 MODULE_INFO_DEF(ReadBundle, DataIO, SCIRun)
 
-ReadBundleModule::ReadBundleModule()
+ReadBundle::ReadBundle()
     : my_base(staticInfo_.module_name_, staticInfo_.category_name_, staticInfo_.package_name_, "Bundle")
 {
   INITIALIZE_PORT(Bundle);
 }
 
-void ReadBundleModule::execute()
+void ReadBundle::execute()
 {
   my_base::execute();
 }
 
-std::string ReadBundleModule::fileTypeList()
+std::string ReadBundle::fileTypeList()
 {
   return "SCIRun Bundle File (*.bdl)";
 }
 
-std::string ReadBundleModule::defaultFileTypeName() const
+std::string ReadBundle::defaultFileTypeName() const
 {
   return fileTypeList();
 }

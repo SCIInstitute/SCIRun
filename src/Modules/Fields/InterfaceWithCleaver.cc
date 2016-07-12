@@ -40,13 +40,13 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 MODULE_INFO_DEF(InterfaceWithCleaver, NewField, SCIRun)
 
-InterfaceWithCleaverModule::InterfaceWithCleaverModule() : Module(staticInfo_)
+InterfaceWithCleaver::InterfaceWithCleaver() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputFields);
   INITIALIZE_PORT(OutputField);
 }
 
-void InterfaceWithCleaverModule::setStateDefaults()
+void InterfaceWithCleaver::setStateDefaults()
 {
   setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::Verbose);
   setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::Padding);
@@ -56,7 +56,7 @@ void InterfaceWithCleaverModule::setStateDefaults()
   setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingZ);
 }
 
-void InterfaceWithCleaverModule::execute()
+void InterfaceWithCleaver::execute()
 {
   auto fields = getRequiredDynamicInputs(InputFields);
 

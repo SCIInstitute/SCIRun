@@ -37,12 +37,12 @@ namespace SCIRun {
 namespace Modules {
 namespace Fields {
 
-  class SCISHARE ReportFieldInfoModule : public Dataflow::Networks::Module,
+  class SCISHARE ReportFieldInfo : public Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
     public Has9OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, ScalarPortTag>
   {
   public:
-    ReportFieldInfoModule();
+    ReportFieldInfo();
     virtual void execute() override;
     virtual void setStateDefaults() override {}
     INPUT_PORT(0, InputField, LegacyField);

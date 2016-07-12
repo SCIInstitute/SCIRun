@@ -123,20 +123,20 @@ using namespace SCIRun::Modules::Converters;
 void ModuleDescriptionLookup::addEssentialModules()
 {
   addModuleDesc<ReadMatrix>("ReadMatrix", "DataIO", "SCIRun", "Redo of ReadMatrix", "...");
-  addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
-  addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-  addModuleDesc<WriteFieldModule>("WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
-  addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
-  addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
-  addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
-  addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
-  addModuleDesc<EvaluateLinearAlgebraUnaryModule>("EvaluateLinearAlgebraUnary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
-  addModuleDesc<EvaluateLinearAlgebraBinaryModule>("EvaluateLinearAlgebraBinary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
-  addModuleDesc<CreateMatrixModule>("CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
-  addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
-  addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
-	addModuleDesc<NetworkNotesModule>("NetworkNotes", "String", "SCIRun", "Functional, needs GUI work.", "...");
-  addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
+  addModuleDesc<WriteMatrix>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
+  addModuleDesc<ReadField>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+  addModuleDesc<WriteField>("WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
+  addModuleDesc<PrintDatatype>("PrintDatatype", "String", "SCIRun", "...", "...");
+  addModuleDesc<ReportMatrixInfo>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
+  addModuleDesc<ReportFieldInfo>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
+  addModuleDesc<AppendMatrix>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
+  addModuleDesc<EvaluateLinearAlgebraUnary>("EvaluateLinearAlgebraUnary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
+  addModuleDesc<EvaluateLinearAlgebraBinary>("EvaluateLinearAlgebraBinary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
+  addModuleDesc<CreateMatrix>("CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
+  addModuleDesc<SolveLinearSystem>("SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
+  addModuleDesc<CreateString>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
+	addModuleDesc<NetworkNotes>("NetworkNotes", "String", "SCIRun", "Functional, needs GUI work.", "...");
+  addModuleDesc<ShowField>("Some basic options available, still work in progress.", "...");
   addModuleDesc<ShowFieldGlyphs>("Rewrite", "...");
   addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
@@ -181,7 +181,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "...");
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
   addModuleDesc<TransformMeshWithTransform>("...", "...");
-  addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
+  addModuleDesc<ShowColorMap>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
   addModuleDesc<ConvertMatrixToString>("ConvertMatrixToString","Converters","SCIRun","...","...");
   addModuleDesc<RegisterWithCorrespondences>("RegisterWithCorrespondences","ChangeFieldData","SCIRun","...","In progress--Computation is incorrect");
 
@@ -194,14 +194,14 @@ void ModuleDescriptionLookup::addEssentialModules()
 
 void ModuleDescriptionLookup::addTestingModules()
 {
-  addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-  addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
-  addModuleDesc<SendComplexScalarModule>("SendComplexMatrix", "Testing", "SCIRun", "...", "...");
-  addModuleDesc<ReceiveComplexScalarModule>("ReceiveComplexMatrix", "Testing", "SCIRun", "...", "...");
-  addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
-  addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<SendScalar>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+  addModuleDesc<ReceiveScalar>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<SendComplexScalar>("SendComplexMatrix", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<ReceiveComplexScalar>("ReceiveComplexMatrix", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<SendTestMatrix>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<ReceiveTestMatrix>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
-  addModuleDesc<AsyncPortTestModule>("...", "ViewScene clone");
+  addModuleDesc<AsyncPortTest>("...", "ViewScene clone");
   addModuleDesc<NeedToExecuteTester>("...", "...");
   addModuleDesc<PortFeedbackReceiver>("...", "...");
   addModuleDesc<PortFeedbackSender>("...", "...");

@@ -57,7 +57,7 @@ namespace SCIRun {
         OUTPUT_PORT(5, field5, LegacyField);
         OUTPUT_PORT(6, field6, LegacyField);
 
-        static Core::Algorithms::AlgorithmParameterName FieldNameList;
+        static const Core::Algorithms::AlgorithmParameterName FieldNameList;
         static const Core::Algorithms::AlgorithmParameterName FieldNames[];
         static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
 

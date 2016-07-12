@@ -41,7 +41,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-SCIRun::Core::Algorithms::AlgorithmParameterName PrintStringIntoString::FormatString("FormatString");
+const AlgorithmParameterName PrintStringIntoString::FormatString("FormatString");
 
 MODULE_INFO_DEF(PrintStringIntoString, String, SCIRun)
 
