@@ -38,12 +38,12 @@ namespace SCIRun {
 namespace Modules {
 namespace StringProcessing {
 
-  class SCISHARE NetworkNotesModule : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE NetworkNotes : public SCIRun::Dataflow::Networks::Module,
     public Has1OutputPort<StringPortTag>,
     public HasNoInputPorts
   {
   public:
-    NetworkNotesModule();
+    NetworkNotes();
     virtual void execute();
     virtual void setStateDefaults();
     OUTPUT_PORT(0, NewString, String);

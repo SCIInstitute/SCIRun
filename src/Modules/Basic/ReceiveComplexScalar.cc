@@ -37,13 +37,13 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
-ReceiveComplexScalarModule::ReceiveComplexScalarModule()
+ReceiveComplexScalar::ReceiveComplexScalar()
   : Module(ModuleLookupInfo("ReceiveComplexMatrix", "Math", "SCIRun"), false)
 {
   INITIALIZE_PORT(Input);
 }
 
-void ReceiveComplexScalarModule::execute()
+void ReceiveComplexScalar::execute()
 {
   auto complexData = getRequiredInput(Input);
   std::cout << *complexData << std::endl;

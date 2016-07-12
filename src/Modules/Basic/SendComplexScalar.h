@@ -36,12 +36,12 @@ namespace SCIRun {
 namespace Modules {
 namespace Basic {
 
-  class SCISHARE SendComplexScalarModule : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE SendComplexScalar : public SCIRun::Dataflow::Networks::Module,
     public Has1OutputPort<ComplexMatrixPortTag>,
     public HasNoInputPorts
   {
   public:
-    SendComplexScalarModule();
+    SendComplexScalar();
     virtual void execute();
     virtual void setStateDefaults() {}
 
