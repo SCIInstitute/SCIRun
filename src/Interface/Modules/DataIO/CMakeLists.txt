@@ -33,6 +33,7 @@ SET(Interface_Modules_DataIO_FORMS
   ReadMatrixClassic.ui
   ReadNrrd.ui
   WriteFieldDialog.ui
+  WriteG3DDialog.ui
   WriteMatrix.ui
 )
 
@@ -42,6 +43,7 @@ SET(Interface_Modules_DataIO_HEADERS
   ReadMatrixClassicDialog.h
   ReadNrrdDialog.h
   WriteFieldDialog.h
+  WriteG3DDialog.h
   WriteMatrixDialog.h
   share.h
 )
@@ -52,6 +54,7 @@ SET(Interface_Modules_DataIO_SOURCES
   ReadNrrdDialog.cc
   ReadMatrixClassicDialog.cc
   WriteFieldDialog.cc
+  WriteG3DDialog.cc
   WriteMatrixDialog.cc
 )
 
