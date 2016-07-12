@@ -49,7 +49,7 @@ namespace Math {
     INPUT_PORT(1, RowIndicies, DenseMatrix);
     INPUT_PORT(2, ColumnIndicies, DenseMatrix);
     OUTPUT_PORT(0, ResultMatrix, DenseMatrix);
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 }}}
 

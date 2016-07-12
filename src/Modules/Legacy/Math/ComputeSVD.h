@@ -49,7 +49,7 @@ namespace SCIRun {
 					OUTPUT_PORT(0, LeftSingularMatrix, DenseMatrix);
 					OUTPUT_PORT(1, SingularValues, DenseMatrix);
 					OUTPUT_PORT(2, RightSingularMatrix, DenseMatrix);
-					MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+					MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
 			};
 
 }}};

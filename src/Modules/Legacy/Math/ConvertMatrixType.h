@@ -48,7 +48,7 @@ namespace Math {
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, ResultMatrix, Matrix);
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 }}}
 

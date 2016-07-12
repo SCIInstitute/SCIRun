@@ -54,7 +54,7 @@ namespace SCIRun {
         INPUT_PORT(5, Contact_Impedance, DenseMatrix);
         OUTPUT_PORT(0, TDCSMatrix, Matrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
 
     }

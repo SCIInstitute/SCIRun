@@ -99,7 +99,8 @@ TEST(HardCodedModuleFactoryTests, ModuleTraitHasAlgorithmMatchesAlgoFactory)
       [&moduleName](const DirectModuleDescriptionLookupMap::value_type& p) { return p.first.module_name_ == moduleName; });
     if (modFactIter != modules.end())
     {
-      std::cout << moduleName << std::endl;
+      if (!modFactIter->second.hasAlgo_)
+        std::cout << moduleName << " is missing trait HasAlgorithm" << std::endl;
       EXPECT_TRUE(modFactIter->second.hasAlgo_);
     }
     else

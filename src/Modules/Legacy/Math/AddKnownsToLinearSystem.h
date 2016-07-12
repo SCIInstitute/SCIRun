@@ -51,7 +51,7 @@ namespace SCIRun {
 	      INPUT_PORT(2, X_Vector, DenseMatrix);
         OUTPUT_PORT(0, OutPutLHSMatrix, SparseRowMatrix);
 	      OUTPUT_PORT(1, OutPutRHSVector, DenseColumnMatrix);
-	      MODULE_TRAITS_AND_INFO(ModuleHasUI)
+	      MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
 
     }

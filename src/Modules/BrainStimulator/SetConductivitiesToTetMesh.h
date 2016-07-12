@@ -63,7 +63,7 @@ class SCISHARE SetConductivitiesToMesh : public SCIRun::Dataflow::Networks::Modu
 
     NEW_BRAIN_STIMULATOR_MODULE
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 };
 
 }}}

@@ -69,7 +69,7 @@ class SCISHARE SimulateForwardMagneticFieldModule : public SCIRun::Dataflow::Net
 
     LEGACY_BIOPSE_MODULE
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 };
 
 }}}

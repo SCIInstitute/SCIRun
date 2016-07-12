@@ -53,7 +53,7 @@ namespace Math {
     INPUT_PORT(1, SecondMatrix, DenseMatrix);
     INPUT_PORT_DYNAMIC(2, NextMatrix, DenseMatrix);
     OUTPUT_PORT(0, ResultMatrix, DenseMatrix);
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 }}}
 

@@ -52,7 +52,7 @@ namespace SCIRun {
         INPUT_PORT(0, QuadSurf, LegacyField);
         OUTPUT_PORT(0, TriSurf, LegacyField);
 
-        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
       };
 
     }

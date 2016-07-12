@@ -49,8 +49,8 @@ namespace SCIRun {
 
         INPUT_PORT(0, MatrixToWrite, Matrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
-        
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+
       protected:
         virtual std::string defaultFileTypeName() const override;
       };

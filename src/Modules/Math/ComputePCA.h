@@ -44,8 +44,8 @@ namespace SCIRun {
                 OUTPUT_PORT(0, LeftPrincipalMatrix, DenseMatrix);
                 OUTPUT_PORT(1, PrincipalValues, DenseMatrix);
                 OUTPUT_PORT(2, RightPrincipalMatrix, DenseMatrix);
-                
-                MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
+                MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
             };
 

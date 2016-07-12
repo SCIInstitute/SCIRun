@@ -82,7 +82,7 @@ class SCISHARE GenerateROIStatisticsModule : public SCIRun::Dataflow::Networks::
 
     NEW_BRAIN_STIMULATOR_MODULE
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 };
 
 }}}
