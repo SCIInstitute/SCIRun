@@ -42,8 +42,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ClipFieldByMesh::staticInfo_("ClipFieldByMesh", "NewField", "SCIRun");
+MODULE_INFO_DEF(ClipFieldByMesh, NewField, SCIRun)
 
 /// @class ClipFieldByMesh
 /// @brief Clip a mesh to another mesh.
@@ -54,8 +53,6 @@ ClipFieldByMesh::ClipFieldByMesh() : Module(staticInfo_, false)
   INITIALIZE_PORT(ObjectField);
   INITIALIZE_PORT(OutputField);
   INITIALIZE_PORT(Mapping);
-  //clip_algo_.set_progress_reporter(this);
-  //inside_algo_.set_progress_reporter(this);
 }
 
 void ClipFieldByMesh::execute()

@@ -39,8 +39,7 @@ ALGORITHM_PARAMETER_DEF(Python, PollingIntervalMilliseconds);
 ALGORITHM_PARAMETER_DEF(Python, NumberOfRetries);
 ALGORITHM_PARAMETER_DEF(Python, PythonObject);
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo PythonObjectForwarder::staticInfo_("PythonObjectForwarder", "Python", "SCIRun");
+MODULE_INFO_DEF(PythonObjectForwarder, Python, SCIRun)
 
 PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_)
 {

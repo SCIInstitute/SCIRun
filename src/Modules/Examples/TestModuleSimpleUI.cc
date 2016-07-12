@@ -43,9 +43,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 SCIRun::Core::Algorithms::AlgorithmParameterName TestModuleSimpleUI::FormatString("FormatString");
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo TestModuleSimpleUI::staticInfo_("TestModuleSimpleUI", "String", "SCIRun");
-
+MODULE_INFO_DEF(TestModuleSimpleUI, String, SCIRun)
 
 TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
 {

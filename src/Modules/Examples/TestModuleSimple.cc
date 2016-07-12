@@ -40,8 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 /// @class TestModuleSimple
 /// @brief This module splits out a string.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple", "String", "SCIRun");
+MODULE_INFO_DEF(TestModuleSimple, String, SCIRun)
 
 TestModuleSimple::TestModuleSimple() : Module(staticInfo_,false)
 {

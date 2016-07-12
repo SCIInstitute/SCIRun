@@ -55,8 +55,8 @@ using namespace SCIRun::Modules::Fields;
 };
 */
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo CalculateFieldData::staticInfo_("CalculateFieldData", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(CalculateFieldData, ChangeFieldData, SCIRun)
+
 const AlgorithmParameterName CalculateFieldData::FunctionString("FunctionString");
 const AlgorithmParameterName CalculateFieldData::FormatString("FormatString");
 
@@ -67,7 +67,6 @@ CalculateFieldData::CalculateFieldData()
   INITIALIZE_PORT(Function);
   INITIALIZE_PORT(InputArrays);
   INITIALIZE_PORT(OutputField);
-  //count_ = new DenseMatrix(0.0);
 }
 
 void CalculateFieldData::setStateDefaults()

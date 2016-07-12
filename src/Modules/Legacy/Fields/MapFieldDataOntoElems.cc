@@ -37,8 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo MapFieldDataOntoElements::staticInfo_("MapFieldDataOntoElements", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(MapFieldDataOntoElements, ChangeFieldData, SCIRun)
 
 /// @class MapFieldDataOntoElems
 /// @brief Maps data from one mesh to another mesh. The output mesh will have
@@ -84,10 +83,6 @@ MapFieldDataOntoElements::execute()
     //----------
   }
 
-//   if (inputs_changed_ || !oport_cached("Output") ||
-//     gui_quantity_.changed() || gui_value_.changed() ||
-//     gui_sample_points_.changed() || gui_sample_method_.changed() ||
-//     gui_outside_value_.changed() || gui_max_distance_.changed())
   if (needToExecute())
   {
     update_state(Executing);

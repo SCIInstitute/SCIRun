@@ -39,8 +39,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ConvertRealToComplexMatrix::staticInfo_("ConvertRealToComplexMatrix", "Converters", "SCIRun");
+MODULE_INFO_DEF(ConvertRealToComplexMatrix, Converters, SCIRun)
 
 ConvertRealToComplexMatrix::ConvertRealToComplexMatrix() : Module(staticInfo_,false)
 {

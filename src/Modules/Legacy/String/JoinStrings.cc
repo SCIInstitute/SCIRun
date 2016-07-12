@@ -34,8 +34,7 @@ using namespace Core::Datatypes;
 using namespace Modules::StringManip;
 using namespace Dataflow::Networks;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo JoinStrings::staticInfo_("JoinStrings", "String", "SCIRun");
+MODULE_INFO_DEF(JoinStrings, String, SCIRun)
 
 JoinStrings::JoinStrings() : Module(staticInfo_, false)
 {

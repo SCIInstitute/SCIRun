@@ -40,8 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo SetFieldDataModule::staticInfo_("SetFieldData", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(SetFieldData, ChangeFieldData, SCIRun)
 
 SetFieldDataModule::SetFieldDataModule() :  Module(staticInfo_)
 {

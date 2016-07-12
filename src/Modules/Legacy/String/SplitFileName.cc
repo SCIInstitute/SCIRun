@@ -43,8 +43,7 @@ using namespace SCIRun::Core::Algorithms;
 /// @class SplitFileName
 /// @brief This module splits a filename in: pathname, filename (base), and extension.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo SplitFileName::staticInfo_("SplitFileName", "String", "SCIRun");
+MODULE_INFO_DEF(SplitFileName, String, SCIRun)
 
 SplitFileName::SplitFileName() : Module(staticInfo_,false)
 {

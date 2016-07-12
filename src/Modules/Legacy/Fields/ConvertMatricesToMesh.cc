@@ -50,8 +50,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ConvertMatricesToMesh::staticInfo_("ConvertMatricesToMesh", "NewField", "SCIRun");
+MODULE_INFO_DEF(ConvertMatricesToMesh, NewField, SCIRun)
 
 ConvertMatricesToMesh::ConvertMatricesToMesh() : Module(staticInfo_)
 {

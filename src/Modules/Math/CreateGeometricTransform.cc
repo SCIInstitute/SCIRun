@@ -53,8 +53,8 @@ using namespace Geometry;
 ///   University of Utah
 ///@date  March 1999
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo CreateGeometricTransform::staticInfo_("CreateGeometricTransform", "Math", "SCIRun");
+MODULE_INFO_DEF(CreateGeometricTransform, Math, SCIRun)
+
 ALGORITHM_PARAMETER_DEF(Math, TransformType);
 ALGORITHM_PARAMETER_DEF(Math, MultiplyRadioButton);
 ALGORITHM_PARAMETER_DEF(Math, TranslateVectorX);

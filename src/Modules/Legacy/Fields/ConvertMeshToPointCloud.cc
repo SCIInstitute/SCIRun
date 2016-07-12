@@ -40,8 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ConvertMeshToPointCloud::staticInfo_("ConvertMeshToPointCloud", "ChangeMesh", "SCIRun");
+MODULE_INFO_DEF(ConvertMeshToPointCloud, ChangeMesh, SCIRun)
 
 ConvertMeshToPointCloud::ConvertMeshToPointCloud(): Module(staticInfo_)
 {

@@ -53,8 +53,7 @@ using namespace SCIRun::Dataflow::Networks;
 /// @detail This module appends/replaces rows or columns of a matrix while
 /// looping through a network.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo CollectMatrices::staticInfo_("CollectMatrices", "Math", "SCIRun");
+MODULE_INFO_DEF(CollectMatrices, Math, SCIRun)
 
 namespace SCIRun {
 	namespace Modules {

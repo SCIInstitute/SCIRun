@@ -44,8 +44,7 @@ using namespace SCIRun::Modules::Fields;
 /// @brief This module allows you to morph using a thin plate spline algorithm
 /// one point set or mesh to another point set or mesh.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo RegisterWithCorrespondences::staticInfo_("RegisterWithCorrespondences","ChangeFieldData","SCIRun");
+MODULE_INFO_DEF(RegisterWithCorrespondences, ChangeFieldData, SCIRun)
 
 RegisterWithCorrespondences::RegisterWithCorrespondences() : Module(staticInfo_)
 {
@@ -55,7 +54,8 @@ RegisterWithCorrespondences::RegisterWithCorrespondences() : Module(staticInfo_)
 	INITIALIZE_PORT(OutputField);
 }
 
-void RegisterWithCorrespondences::setStateDefaults() {
+void RegisterWithCorrespondences::setStateDefaults()
+{
 	setStateIntFromAlgo(Variables::Operator);
 }
 

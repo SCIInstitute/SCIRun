@@ -46,11 +46,10 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo RefineTetMeshLocally::staticInfo_("RefineTetMeshLocally", "ChangeMesh", "SCIRun");
+MODULE_INFO_DEF(RefineTetMeshLocally, ChangeMesh, SCIRun)
 
 RefineTetMeshLocally::RefineTetMeshLocally()
-		:Module(staticInfo_, true)
+		: Module(staticInfo_, true)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);

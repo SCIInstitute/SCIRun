@@ -27,11 +27,9 @@
 */
 
 /*
- *  MiscProbe.cc:
  *
  *  Written by:
  *   Anastasia Mironova
- *   TODAYS DATE HERE
  *
  * TODO:
  * - take input from GUI to set gageKind;
@@ -57,8 +55,7 @@ using namespace SCIRun::Modules::Teem;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Teem;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo BuildDerivedNrrdWithGage::staticInfo_("BuildDerivedNrrdWithGage", "Misc", "Teem");
+MODULE_INFO_DEF(BuildDerivedNrrdWithGage, Misc, Teem)
 
 ALGORITHM_PARAMETER_DEF(Teem, FieldKind);
 ALGORITHM_PARAMETER_DEF(Teem, OType);

@@ -47,8 +47,8 @@ using namespace SCIRun::Modules::Fields;
 /// @brief This module selects a subset of one or more (up to three) fields
 /// using a function.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ClipFieldByFunction::staticInfo_("ClipFieldByFunction", "NewField", "SCIRun");
+MODULE_INFO_DEF(ClipFieldByFunction, NewField, SCIRun)
+
 const AlgorithmParameterName ClipFieldByFunction::FunctionString("FunctionString");
 
 ClipFieldByFunction::ClipFieldByFunction()

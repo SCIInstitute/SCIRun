@@ -55,8 +55,7 @@ ALGORITHM_PARAMETER_DEF(Math, StartRow);
 ALGORITHM_PARAMETER_DEF(Math, MatrixDims);
 ALGORITHM_PARAMETER_DEF(Math, SubmatrixDims);
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo SetSubmatrix::staticInfo_("SetSubmatrix", "Math", "SCIRun");
+MODULE_INFO_DEF(SetSubmatrix, Math, SCIRun)
 
 SetSubmatrix::SetSubmatrix() : Module(staticInfo_)
 {

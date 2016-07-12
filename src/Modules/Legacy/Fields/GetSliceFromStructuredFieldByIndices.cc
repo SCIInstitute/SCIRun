@@ -61,8 +61,7 @@ ALGORITHM_PARAMETER_DEF(Fields, Index_j);
 ALGORITHM_PARAMETER_DEF(Fields, Index_k);
 ALGORITHM_PARAMETER_DEF(Fields, Axis_ijk);
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo GetSliceFromStructuredFieldByIndices::staticInfo_("GetSliceFromStructuredFieldByIndices", "NewField", "SCIRun");
+MODULE_INFO_DEF(GetSliceFromStructuredFieldByIndices, NewField, SCIRun)
 
 GetSliceFromStructuredFieldByIndices::GetSliceFromStructuredFieldByIndices() : Module(staticInfo_)
 {

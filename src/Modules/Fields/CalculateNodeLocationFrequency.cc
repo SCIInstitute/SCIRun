@@ -36,8 +36,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo CalculateNodeLocationFrequency::staticInfo_("CalculateNodeLocationFrequency", "NewField", "SCIRun");
+MODULE_INFO_DEF(CalculateNodeLocationFrequency, NewField, SCIRun)
 
 CalculateNodeLocationFrequency::CalculateNodeLocationFrequency()
   : Module(staticInfo_, false)

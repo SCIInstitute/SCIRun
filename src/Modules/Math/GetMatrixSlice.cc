@@ -38,8 +38,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo GetMatrixSlice::staticInfo_("GetMatrixSlice", "Math", "SCIRun");
+MODULE_INFO_DEF(GetMatrixSlice, Math, SCIRun)
 
 GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_), playing_(false)
 {

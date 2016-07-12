@@ -43,16 +43,13 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo RefineMesh::staticInfo_("RefineMesh", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(RefineMesh, ChangeFieldData, SCIRun)
 
-RefineMesh::RefineMesh()
-		:Module(staticInfo_)
+RefineMesh::RefineMesh() : Module(staticInfo_)
 {
 		INITIALIZE_PORT(InputField);
 		INITIALIZE_PORT(OutputField);
 		INITIALIZE_PORT(IsoValueField);
-		//INITIALIZE_PORT(Mapping);
 }
 
 void RefineMesh::setStateDefaults()

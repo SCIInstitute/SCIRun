@@ -32,14 +32,12 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo CollectFields::staticInfo_("CollectFields", "NewField", "SCIRun");
+MODULE_INFO_DEF(CollectFields, NewField, SCIRun)
 
 CollectFields::CollectFields() : Module(staticInfo_)
 {
 
 }
-
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 

@@ -42,8 +42,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 ALGORITHM_PARAMETER_DEF(Inverse, TikhonovSolutionSubcase);
 ALGORITHM_PARAMETER_DEF(Inverse, TikhonovResidualSubcase);
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo SolveInverseProblemWithTikhonov::staticInfo_("SolveInverseProblemWithTikhonov", "Inverse", "SCIRun");
+MODULE_INFO_DEF(SolveInverseProblemWithTikhonov, Inverse, SCIRun)
 
 SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(staticInfo_)
 {

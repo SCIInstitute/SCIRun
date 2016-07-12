@@ -40,8 +40,7 @@ using namespace SCIRun::Core::Datatypes;
 /// @brief This module computes a measure on each row or column of the input matrix
 /// and stores the result in the output matrix.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ReportMatrixSliceMeasure::staticInfo_("ReportMatrixSliceMeasure", "Math", "SCIRun");
+MODULE_INFO_DEF(ReportMatrixSliceMeasure, Math, SCIRun)
 
 ReportMatrixSliceMeasure::ReportMatrixSliceMeasure() : Module(staticInfo_)
 {

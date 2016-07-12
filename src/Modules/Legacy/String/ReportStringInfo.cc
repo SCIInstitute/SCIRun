@@ -34,8 +34,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::StringManip;
 using namespace SCIRun::Core::Datatypes;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ReportStringInfo::staticInfo_("ReportStringInfo", "String", "SCIRun");
+MODULE_INFO_DEF(ReportStringInfo, String, SCIRun)
+
 const std::string ReportStringInfo::infoKey_("StringContents");
 
 ReportStringInfo::ReportStringInfo()

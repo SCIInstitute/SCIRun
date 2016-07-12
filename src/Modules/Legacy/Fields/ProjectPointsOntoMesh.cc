@@ -36,11 +36,9 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-ModuleLookupInfo ProjectPointsOntoMesh::staticInfo_("ProjectPointsOntoMesh", "ChangeMesh", "SCIRun");
+MODULE_INFO_DEF(ProjectPointsOntoMesh, ChangeMesh, SCIRun)
 
-ProjectPointsOntoMesh::ProjectPointsOntoMesh() :
-  Module(staticInfo_)
+ProjectPointsOntoMesh::ProjectPointsOntoMesh() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(ObjectField);
@@ -49,7 +47,6 @@ ProjectPointsOntoMesh::ProjectPointsOntoMesh() :
 
 void ProjectPointsOntoMesh::setStateDefaults()
 {
-  auto state = get_state();
   setStateStringFromAlgoOption(Parameters::ProjectMethod);
 }
 
@@ -58,7 +55,6 @@ void ProjectPointsOntoMesh::execute()
   auto input = getRequiredInput(InputField);
   auto object = getRequiredInput(ObjectField);
 
-  //if (inputs_changed_ || guimethod_.changed() || !oport_cached("Field"))
   if (needToExecute())
   {
     update_state(Executing);

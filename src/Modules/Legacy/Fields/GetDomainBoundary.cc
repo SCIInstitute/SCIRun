@@ -39,8 +39,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo GetDomainBoundary::staticInfo_("GetDomainBoundary", "NewField", "SCIRun");
+MODULE_INFO_DEF(GetDomainBoundary, NewField, SCIRun)
 
 GetDomainBoundary::GetDomainBoundary()
   : Module(staticInfo_)
@@ -67,7 +66,6 @@ void GetDomainBoundary::setStateDefaults()
 
 void GetDomainBoundary::execute()
 {
-  // Define local handles of data objects:
   auto ifield = getRequiredInput(InputField);
   auto elemLink = getOptionalInput(ElemLink);
   auto minValue = getOptionalInput(MinValue);

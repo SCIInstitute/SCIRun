@@ -41,8 +41,7 @@ using namespace SCIRun;
 /// @class ResampleRegularMesh
 /// @brief Resample a regular mesh, such as a LatVol.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-ModuleLookupInfo ResampleRegularMesh::staticInfo_("ResampleRegularMesh", "ChangeMesh", "SCIRun");
+MODULE_INFO_DEF(ResampleRegularMesh, ChangeMesh, SCIRun)
 
 ResampleRegularMesh::ResampleRegularMesh() :
   Module(staticInfo_)

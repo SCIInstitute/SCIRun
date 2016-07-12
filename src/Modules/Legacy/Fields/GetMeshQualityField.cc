@@ -39,8 +39,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo GetMeshQualityField::staticInfo_("GetMeshQualityField", "MiscField", "SCIRun");
+MODULE_INFO_DEF(GetMeshQualityField, MiscField, SCIRun)
 
 GetMeshQualityField::GetMeshQualityField() : Module(staticInfo_)
 {

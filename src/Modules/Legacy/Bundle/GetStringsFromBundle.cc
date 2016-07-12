@@ -40,10 +40,9 @@ using namespace SCIRun::Core::Algorithms;
 /// @class GetStringsFromBundle
 /// @brief This module retrieves a string object from a bundle.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-ModuleLookupInfo GetStringsFromBundle::staticInfo_("GetStringsFromBundle", "Bundle", "SCIRun");
+MODULE_INFO_DEF(GetStringsFromBundle, Bundle, SCIRun)
 
-AlgorithmParameterName GetStringsFromBundle::StringNameList("StringNameList");
+const AlgorithmParameterName GetStringsFromBundle::StringNameList("StringNameList");
 
 const AlgorithmParameterName GetStringsFromBundle::StringNames[] = {
   AlgorithmParameterName("string1-name"),

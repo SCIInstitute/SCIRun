@@ -37,26 +37,13 @@
  */
 
 #include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/Mesh.h>
-//#include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Datatypes/Matrix.h>
-//#include <Core/Datatypes/FieldInformation.h>
-//
-//#include <Core/Thread/CrowdMonitor.h>
-//
-//#include <Dataflow/Widgets/PointWidget.h>
-//
-//#include <iostream>
-//#include <stack>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Visualization;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ShowAndEditDipoles::staticInfo_("ShowAndEditDipoles", "Visualization", "SCIRun");
+MODULE_INFO_DEF(ShowAndEditDipoles, Visualization, SCIRun)
 
 ShowAndEditDipoles::ShowAndEditDipoles()
   : Module(staticInfo_)

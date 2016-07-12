@@ -56,8 +56,8 @@ ALGORITHM_PARAMETER_DEF(Python, PythonOutputField1Name);
 ALGORITHM_PARAMETER_DEF(Python, PythonOutputField2Name);
 ALGORITHM_PARAMETER_DEF(Python, PythonOutputField3Name);
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo InterfaceWithPython::staticInfo_("InterfaceWithPython", "Python", "SCIRun");
+MODULE_INFO_DEF(InterfaceWithPython, Python, SCIRun)
+
 Mutex InterfaceWithPython::lock_("InterfaceWithPython");
 
 InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)

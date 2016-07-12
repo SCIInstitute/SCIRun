@@ -45,8 +45,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
+MODULE_INFO_DEF(ViewScene, Render, SCIRun)
+
 Mutex ViewScene::mutex_("ViewScene");
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);

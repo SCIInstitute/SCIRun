@@ -37,7 +37,6 @@
 #include <Modules/Legacy/Fields/ReportFieldGeometryMeasures.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Datatypes/MatrixTypeConverter.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -58,8 +57,7 @@ using namespace SCIRun::Modules::Fields;
 /// @brief Build a densematrix, where each row is a particular measure of the
 /// input Field (e.g. the x-values, or the element size).
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ReportFieldGeometryMeasures::staticInfo_("ReportFieldGeometryMeasures", "MiscField", "SCIRun");
+MODULE_INFO_DEF(ReportFieldGeometryMeasures, MiscField, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(Fields, MeasureLocation);
 ALGORITHM_PARAMETER_DEF(Fields, XPositionFlag);

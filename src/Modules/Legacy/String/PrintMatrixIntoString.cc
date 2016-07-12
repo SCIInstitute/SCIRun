@@ -51,8 +51,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo PrintMatrixIntoString::staticInfo_("PrintMatrixIntoString", "String", "SCIRun");
+MODULE_INFO_DEF(PrintMatrixIntoString, String, SCIRun)
 
 PrintMatrixIntoString::PrintMatrixIntoString() : Module(staticInfo_)
 {

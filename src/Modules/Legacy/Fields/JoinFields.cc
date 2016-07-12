@@ -39,8 +39,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo JoinFields::staticInfo_("JoinFields", "NewField", "SCIRun");
+MODULE_INFO_DEF(JoinFields, NewField, SCIRun)
+
 const AlgorithmParameterName JoinFields::ForcePointCloud("ForcePointCloud");
 
 JoinFields::JoinFields() : Module(staticInfo_)
@@ -63,10 +63,6 @@ void JoinFields::execute()
 {
   auto fields = getRequiredDynamicInputs(InputFields);
 
-  /*if (inputs_changed_ ||  guitolerance_.changed() ||
-      guimergenodes_.changed() || guiforcepointcloud_.changed() ||
-      guimatchval_.changed() || guimeshonly_.changed() || guimergeelems_.changed() ||
-      !oport_cached("Output Field"))*/
   if (needToExecute())
   {
     update_state(Executing);

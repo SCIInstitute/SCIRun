@@ -28,9 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Math/ConvertMatrixToScalar.h>
 
-//#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Scalar.h>
 
@@ -40,10 +38,9 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ConvertMatrixToScalar::staticInfo_("ConvertMatrixToScalar", "Converters", "SCIRun");
+MODULE_INFO_DEF(ConvertMatrixToScalar, Converters, SCIRun)
 
-ConvertMatrixToScalar::ConvertMatrixToScalar() : Module(staticInfo_,false)
+ConvertMatrixToScalar::ConvertMatrixToScalar() : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(Input);
   INITIALIZE_PORT(Output);

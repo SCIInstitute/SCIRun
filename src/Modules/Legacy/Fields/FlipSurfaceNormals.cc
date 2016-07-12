@@ -37,10 +37,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-//const  ModuleLookupInfo FlipSurfaceNormals::staticInfo_("FlipSurfaceNormals","ChangeMesh","SCIRun");
+MODULE_INFO_DEF(FlipSurfaceNormals, ChangeMesh, SCIRun)
 
-FlipSurfaceNormals::FlipSurfaceNormals()  : Module(ModuleLookupInfo("FlipSurfaceNormals","ChangeMesh","SCIRun"),false)
+FlipSurfaceNormals::FlipSurfaceNormals() : Module(staticInfo_, false)
 {
 	INITIALIZE_PORT(InputField);
 	INITIALIZE_PORT(OutputField);
@@ -48,7 +47,7 @@ FlipSurfaceNormals::FlipSurfaceNormals()  : Module(ModuleLookupInfo("FlipSurface
 
 void  FlipSurfaceNormals::execute()
 {
-	FieldHandle ifield = getRequiredInput(InputField);
+	auto ifield = getRequiredInput(InputField);
 
 	if(needToExecute())
 	{

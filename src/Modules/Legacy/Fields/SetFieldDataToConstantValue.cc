@@ -37,8 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToConstantValue", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(SetFieldDataToConstantValue, ChangeFieldData, SCIRun)
 
 /// @class SetFieldDataToConstantValue
 /// @brief Sets field data to a given scalar value on a new output field based

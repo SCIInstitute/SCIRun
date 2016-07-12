@@ -52,8 +52,7 @@ using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Visualization, CylinderRadius);
 
-MODULE_INFO_DEF(ConvertScalarToMatrix, Converters, SCIRun)
-const ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
+MODULE_INFO_DEF(ShowField, Visualization, SCIRun)
 
 namespace SCIRun {
   namespace Modules {

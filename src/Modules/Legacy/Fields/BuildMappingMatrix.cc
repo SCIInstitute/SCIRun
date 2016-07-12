@@ -37,8 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo BuildMappingMatrix::staticInfo_("BuildMappingMatrix", "MiscField", "SCIRun");
+MODULE_INFO_DEF(BuildMappingMatrix, MiscField, SCIRun)
 
 /// @class BuildMappingMatrix
 /// @brief Build a mapping matrix -- a matrix that says how to project the data

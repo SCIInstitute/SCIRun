@@ -59,8 +59,7 @@ using namespace Graphics::Datatypes;
 ALGORITHM_PARAMETER_DEF(Fields, NumSeeds);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeScale);
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo GeneratePointSamplesFromField::staticInfo_("GeneratePointSamplesFromField", "NewField", "SCIRun");
+MODULE_INFO_DEF(GeneratePointSamplesFromField, NewField, SCIRun)
 
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: include real PointWidget header here
 #include <Core/Thread/CrowdMonitor.h>

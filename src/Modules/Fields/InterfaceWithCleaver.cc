@@ -38,8 +38,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo InterfaceWithCleaverModule::staticInfo_("InterfaceWithCleaver", "NewField", "SCIRun");
+MODULE_INFO_DEF(InterfaceWithCleaver, NewField, SCIRun)
 
 InterfaceWithCleaverModule::InterfaceWithCleaverModule() : Module(staticInfo_)
 {

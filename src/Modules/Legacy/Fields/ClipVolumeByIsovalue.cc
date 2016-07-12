@@ -53,8 +53,7 @@ using namespace SCIRun::Core::Algorithms;
 /// @class ClipVolumeByIsovalue
 /// @brief Clip out parts of a field.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ClipVolumeByIsovalueModule::staticInfo_("ClipVolumeByIsovalue", "NewField", "SCIRun");
+MODULE_INFO_DEF(ClipVolumeByIsovalue, NewField, SCIRun)
 
 ClipVolumeByIsovalueModule::ClipVolumeByIsovalueModule() : Module(staticInfo_)
 {

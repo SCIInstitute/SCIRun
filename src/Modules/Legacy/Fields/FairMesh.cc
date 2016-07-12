@@ -40,8 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo FairMesh::staticInfo_("FairMesh", "NewField", "SCIRun");
+MODULE_INFO_DEF(FairMesh, NewField, SCIRun)
 
 FairMesh::FairMesh() : Module(staticInfo_)
 {

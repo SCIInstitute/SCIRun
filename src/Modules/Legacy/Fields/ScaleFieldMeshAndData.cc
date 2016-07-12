@@ -41,8 +41,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ScaleFieldMeshAndData::staticInfo_("ScaleFieldMeshAndData", "ChangeMesh", "SCIRun");
+MODULE_INFO_DEF(ScaleFieldMeshAndData, ChangeMesh, SCIRun)
 
 ScaleFieldMeshAndData::ScaleFieldMeshAndData()
   : Module(staticInfo_)

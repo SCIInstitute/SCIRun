@@ -38,8 +38,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo CreateFieldData::staticInfo_("CreateFieldData", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(CreateFieldData, ChangeFieldData, SCIRun)
+
 const AlgorithmParameterName CreateFieldData::FunctionString("FunctionString");
 const AlgorithmParameterName CreateFieldData::FormatString("FormatString");
 const AlgorithmParameterName CreateFieldData::BasisString("BasisString");

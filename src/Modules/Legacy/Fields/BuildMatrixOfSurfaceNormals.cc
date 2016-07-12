@@ -40,20 +40,20 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo BuildMatrixOfSurfaceNormals::staticInfo_("BuildMatrixOfSurfaceNormals", "MiscField","SCIRun");
+MODULE_INFO_DEF(BuildMatrixOfSurfaceNormals, MiscField, SCIRun)
 
 BuildMatrixOfSurfaceNormals::BuildMatrixOfSurfaceNormals() : Module(staticInfo_, false)
 {
-		INITIALIZE_PORT(InputField);
-		INITIALIZE_PORT(OutputMatrix);
+	INITIALIZE_PORT(InputField);
+	INITIALIZE_PORT(OutputMatrix);
 }
+
 void
 BuildMatrixOfSurfaceNormals::execute()
 {
 	auto input = getRequiredInput(InputField);
 
-  if(input)
+  if (input)
 	{
     update_state(Executing);
 		auto output = algo().run(withInputData((InputField, input)));

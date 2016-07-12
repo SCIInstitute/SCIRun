@@ -41,8 +41,7 @@ using namespace Core::Algorithms::Fields;
 /// @brief ConvertFieldDataType is used to change the type of data associated
 /// with the field elements.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ConvertFieldDataType::staticInfo_("ConvertFieldDataType", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(ConvertFieldDataType, ChangeFieldData, SCIRun)
 
 ConvertFieldDataType::ConvertFieldDataType() : Module(staticInfo_)
 {

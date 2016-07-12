@@ -40,8 +40,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo SplitFieldByDomain::staticInfo_("SplitFieldByDomain", "NewField", "SCIRun");
+MODULE_INFO_DEF(SplitFieldByDomain, NewField, SCIRun)
 
 SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_)
 {

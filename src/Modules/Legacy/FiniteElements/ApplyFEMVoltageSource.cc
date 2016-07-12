@@ -57,8 +57,7 @@ using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::FiniteElements;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ApplyFEMVoltageSource::staticInfo_("ApplyFEMVoltageSource", "FiniteElements", "SCIRun");
+MODULE_INFO_DEF(ApplyFEMVoltageSource, FiniteElements, SCIRun)
 const AlgorithmParameterName ApplyFEMVoltageSource::ApplyDirichlet("ApplyDirichlet");
 
 ApplyFEMVoltageSource::ApplyFEMVoltageSource() : Module(staticInfo_)

@@ -46,8 +46,7 @@ using namespace SCIRun::Core::Algorithms;
 /// @brief Convert a field with indices as data values into a field with values
 /// assigned to each index using a lookup table.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ConvertIndicesToFieldData::staticInfo_("ConvertIndicesToFieldData", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(ConvertIndicesToFieldData, ChangeFieldData, SCIRun)
 
 ConvertIndicesToFieldData::ConvertIndicesToFieldData() : Module(staticInfo_)
 {

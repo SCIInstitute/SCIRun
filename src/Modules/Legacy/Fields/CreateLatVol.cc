@@ -61,8 +61,7 @@ const AlgorithmParameterName CreateLatVol::PadPercent("PadPercent");
 const AlgorithmParameterName CreateLatVol::DataAtLocation("DataAtLocation");
 const AlgorithmParameterName CreateLatVol::ElementSizeNormalized("ElementSizeNormalized");
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo CreateLatVol::staticInfo_("CreateLatVol", "NewField", "SCIRun");
+MODULE_INFO_DEF(CreateLatVol, NewField, SCIRun)
 
 CreateLatVol::CreateLatVol()
   : Module(staticInfo_)

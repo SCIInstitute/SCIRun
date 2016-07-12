@@ -39,8 +39,7 @@ using namespace SCIRun::Dataflow::Networks;
 /// @class InsertEnvironmentIntoBundle
 /// @brief Collects the current environment variables into a bundle.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-ModuleLookupInfo InsertEnvironmentIntoBundle::staticInfo_("InsertEnvironmentIntoBundle", "Bundle", "SCIRun");
+MODULE_INFO_DEF(InsertEnvironmentIntoBundle, Bundle, SCIRun)
 
 InsertEnvironmentIntoBundle::InsertEnvironmentIntoBundle() : Module(staticInfo_,false)
 {

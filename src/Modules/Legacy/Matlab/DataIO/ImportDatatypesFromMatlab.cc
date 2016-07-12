@@ -42,8 +42,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Logging;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ImportDatatypesFromMatlab::staticInfo_("ImportDatatypesFromMatlab", "DataIO", "Matlab");
+MODULE_INFO_DEF(ImportDatatypesFromMatlab, DataIO, Matlab)
 
 namespace detail
 {

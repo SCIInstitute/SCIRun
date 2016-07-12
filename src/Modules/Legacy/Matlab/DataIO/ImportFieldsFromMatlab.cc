@@ -54,8 +54,7 @@ using namespace Matlab;
 ALGORITHM_PARAMETER_DEF(Matlab, FieldInfoStrings);
 ALGORITHM_PARAMETER_DEF(Matlab, PortChoices);
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ImportFieldsFromMatlab::staticInfo_("ImportFieldsFromMatlab", "Matlab", "SCIRun");
+MODULE_INFO_DEF(ImportFieldsFromMatlab, Matlab, SCIRun)
 
 ImportFieldsFromMatlab::ImportFieldsFromMatlab() : Module(staticInfo_)
 {

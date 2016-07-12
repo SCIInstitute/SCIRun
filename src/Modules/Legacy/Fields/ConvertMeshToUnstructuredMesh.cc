@@ -37,8 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ConvertMeshToUnstructuredMesh::staticInfo_("ConvertMeshToUnstructuredMesh", "ChangeMesh", "SCIRun");
+MODULE_INFO_DEF(ConvertMeshToUnstructuredMesh, ChangeMesh, SCIRun)
 
 ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh() : Module(staticInfo_, false)
 {

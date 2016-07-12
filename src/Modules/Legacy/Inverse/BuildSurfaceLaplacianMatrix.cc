@@ -43,8 +43,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Inverse;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo BuildSurfaceLaplacianMatrix::staticInfo_("BuildSurfaceLaplacianMatrix","Inverse","SCIRun");
+MODULE_INFO_DEF(BuildSurfaceLaplacianMatrix, Inverse, SCIRun)
 
 BuildSurfaceLaplacianMatrix::BuildSurfaceLaplacianMatrix() : Module(staticInfo_, false)
 {

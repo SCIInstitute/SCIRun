@@ -29,8 +29,6 @@
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Scalar.h>
-//#include <Core/Datatypes/SparseRowMatrix.h>
-//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -39,8 +37,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-ModuleLookupInfo SplitFieldByConnectedRegion::staticInfo_("SplitFieldByConnectedRegion", "NewField", "SCIRun");
+MODULE_INFO_DEF(SplitFieldByConnectedRegion, NewField, SCIRun)
 
 SplitFieldByConnectedRegion::SplitFieldByConnectedRegion()
   : Module(staticInfo_)

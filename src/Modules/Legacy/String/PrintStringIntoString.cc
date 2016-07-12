@@ -43,8 +43,7 @@ using namespace SCIRun::Core::Algorithms;
 
 SCIRun::Core::Algorithms::AlgorithmParameterName PrintStringIntoString::FormatString("FormatString");
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo PrintStringIntoString::staticInfo_("PrintStringIntoString", "String", "SCIRun");
+MODULE_INFO_DEF(PrintStringIntoString, String, SCIRun)
 
 PrintStringIntoString::PrintStringIntoString() : Module(staticInfo_)
 {

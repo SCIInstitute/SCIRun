@@ -37,8 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo MapFieldDataOntoNodes::staticInfo_("MapFieldDataOntoNodes", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(MapFieldDataOntoNodes, ChangeFieldData, SCIRun)
 
 /// @class MapFieldDataOntoNodes
 /// @brief Maps data from one mesh or point cloud to another mesh or point

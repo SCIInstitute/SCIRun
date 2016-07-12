@@ -43,8 +43,7 @@ using namespace SCIRun;
 /// @class ConvertFieldBasis
 /// @brief ConvertFieldBasis can modify the location of data in the input field.
 
-MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
-const ModuleLookupInfo ConvertFieldBasis::staticInfo_("ConvertFieldBasis", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(ConvertFieldBasis, ChangeFieldData, SCIRun)
 
 ConvertFieldBasis::ConvertFieldBasis()
   : Module(staticInfo_)
