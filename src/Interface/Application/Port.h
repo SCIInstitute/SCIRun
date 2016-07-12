@@ -143,7 +143,7 @@ public:
   SCIRun::Dataflow::Networks::PortDataDescriber getPortDataDescriber() const { return portDataDescriber_; }
 
   const ConnectionLine* firstConnection() const { return !connections_.empty() ? *connections_.cbegin() : nullptr; }
-  
+
   virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
 
 protected:
@@ -164,11 +164,11 @@ Q_SIGNALS:
   void portMoved();
   void connectionNoteChanged();
   void highlighted(bool highlighted);
-  void incomingConnectionStateChange(bool disabled);
+  void incomingConnectionStateChange(bool disabled, int index);
 protected:
   virtual void mousePressEvent(QMouseEvent* event) override;
   virtual void mouseReleaseEvent(QMouseEvent* event) override;
-  virtual void mouseMoveEvent(QMouseEvent* event) override; 
+  virtual void mouseMoveEvent(QMouseEvent* event) override;
 
 private:
   template <typename Func, typename Pred>

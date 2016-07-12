@@ -277,6 +277,9 @@ namespace Networks {
     virtual void postStateChangeInternalSignalHookup() {}
     void sendFeedbackUpstreamAlongIncomingConnections(const Core::Datatypes::ModuleFeedback& feedback) const;
 
+    std::string stateMetaInfo() const;
+    void copyStateToMetadata();
+
   private:
     template <class T>
     boost::shared_ptr<T> getRequiredInputAtIndex(const PortId& id);

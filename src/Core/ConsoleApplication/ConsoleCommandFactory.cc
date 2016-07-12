@@ -68,6 +68,8 @@ CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
     return boost::make_shared<QuitAfterExecuteCommandConsole>();
   case GlobalCommands::QuitCommand:
     return boost::make_shared<QuitCommandConsole>();
+  case GlobalCommands::DisableViewScenes:
+    return boost::make_shared<NothingCommand>();
   default:
     THROW_INVALID_ARGUMENT("Unknown global command type.");
   }

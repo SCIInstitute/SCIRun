@@ -524,7 +524,7 @@ namespace SCIRun {
       class PythonImplImpl
       {
       public:
-        std::map<std::string, std::map<int, std::map<std::string, std::map<int, std::string>>>> connectionIdLookup_; //seems silly
+        std::map<std::string, std::map<int, std::map<std::string, std::map<int, std::string>>>> connectionIdLookup_;
       };
     }
   }
@@ -612,6 +612,8 @@ boost::shared_ptr<PyModule> PythonImpl::findModule(const std::string& id) const
 
 std::string PythonImpl::executeAll(const ExecutableLookup* lookup)
 {
+  cmdFactory_->create(GlobalCommands::DisableViewScenes)->execute();
+
   nec_.executeAll(lookup);
   return "Execution started."; //TODO: attach log for execution ended event.
 }

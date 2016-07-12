@@ -38,7 +38,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
-HasNotes::HasNotes(const std::string& name, bool positionAdjustable) : 
+HasNotes::HasNotes(const std::string& name, bool positionAdjustable) :
   noteEditor_(QString::fromStdString(name), positionAdjustable, 0),
   destroyed_(false)
 {
@@ -80,8 +80,8 @@ void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
   }
 }
 
-NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : 
-  item_(0), scene_(0), note_(0), 
+NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) :
+  item_(0), scene_(0), note_(0),
   notePosition_(Default),
   defaultNotePosition_(Top), //TODO
   displayStrategy_(display),
@@ -122,6 +122,16 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
   notePosition_ = note.position_;
   updateNotePosition();
   note_->setZValue(item_->zValue() - 1);
+}
+
+void NoteDisplayHelper::clearNoteCursor()
+{
+  if (note_)
+  {
+    auto cur = note_->textCursor();
+    cur.clearSelection();
+    note_->setTextCursor(cur);
+  }
 }
 
 QPointF NoteDisplayHelper::relativeNotePosition()

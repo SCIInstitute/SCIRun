@@ -97,6 +97,9 @@ public:
 public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
+  void setDataDirectoryFromGUI();
+  void setConnectionPipelineType(int type);
+  void setSaveBeforeExecute(int state);
 protected:
   virtual void closeEvent(QCloseEvent* event) override;
   virtual void keyPressEvent(QKeyEvent *event) override;
@@ -167,6 +170,7 @@ private:
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
+  void dataDirectorySet(const QString& dir);
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
@@ -192,7 +196,6 @@ private Q_SLOTS:
   void updateMiniView();
   void alertForNetworkCycles(int code);
   void updateDockWidgetProperties(bool isFloating);
-  void setDataDirectoryFromGUI();
   void toolkitDownload();
   void addToPathFromGUI();
   void removeSavedSubnetwork();
@@ -228,6 +231,7 @@ private Q_SLOTS:
   void toggleTagLayer(bool toggle);
   void toggleMetadataLayer(bool toggle);
   void adjustModuleDock(int state);
+  void reportIssue();
   void exitApplication(int code);
 };
 

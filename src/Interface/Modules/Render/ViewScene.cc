@@ -137,7 +137,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setInitialLightValues();
 
-  state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
+  state->connectStateChanged(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 
   std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -314,6 +314,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
+    int port = 0;
     auto geomData = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
     if (!geomData)
     {
@@ -329,24 +330,29 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     //getting geom list
     std::list<GeometryHandle> objList;
 
-    for (auto it = geomData->begin(); it != geomData->end(); ++it)
+    for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
     {
-      auto obj = *it;
-      auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
-      if (realObj)
+      // Check if object is visible
+      auto obj = *it; auto name = obj->uniqueID();
+      auto displayName = QString::fromStdString(name).split('_').at(1);
+      if (!isObjectUnselected(displayName.toStdString()))
       {
-        //filter objs
-        bool isWidget = false;
-        for (auto& pass : realObj->mPasses)
+        auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
+        if (realObj)
         {
-          if (pass.renderState.get(RenderState::IS_WIDGET))
+          //filter objs
+          bool isWidget = false;
+          for (auto& pass : realObj->mPasses)
           {
-            isWidget = true;
-            break;
+            if (pass.renderState.get(RenderState::IS_WIDGET))
+            {
+              isWidget = true;
+              break;
+            }
           }
+          if (isWidget)
+            objList.push_back(realObj);
         }
-        if (isWidget)
-          objList.push_back(realObj);
       }
     }
 
@@ -504,16 +510,8 @@ void ViewSceneDialog::newGeometryValue()
     }
 
   }
-  //else
-  //{
-  //  if (!spire)
-  //    return;
-  //  spire->removeAllGeomObjects();
-  //}
 
-#ifdef BUILD_TESTING
   sendScreenshotDownstreamForTesting();
-#endif
 
   if (saveScreenshotOnNewGeometry_)
   {
@@ -1839,7 +1837,6 @@ void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
   //wait for a couple frames to go by.
 //  boost::this_thread::sleep(boost::posix_time::milliseconds(150));
-  //std::cout << "sendScreenshotDownstreamForTesting " << std::endl;
   takeScreenshot();
   state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }

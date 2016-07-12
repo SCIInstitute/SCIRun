@@ -86,7 +86,7 @@ void CollectMatrices::setStateDefaults()
 
 void CollectMatrices::postStateChangeInternalSignalHookup()
 {
-  get_state()->connect_state_changed([this]() { checkForClearOutput(); });
+  get_state()->connectStateChanged([this]() { checkForClearOutput(); });
 }
 
 /// @todo: match output matrix type with input type.

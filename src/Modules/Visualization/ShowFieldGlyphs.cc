@@ -410,6 +410,8 @@ void GlyphBuilder::renderVectors(
     }
   }
 
+
+
   // Render linear data
   if (!done)
   {

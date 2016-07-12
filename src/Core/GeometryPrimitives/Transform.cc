@@ -76,6 +76,12 @@ Transform::Transform(const Point& p, const Vector& i,
   load_basis(p, i, j, k);
 }
 
+const Transform& Transform::Identity()
+{
+  static Transform id;
+  return id;
+}
+
 void
 Transform::load_basis(const Point &p,
                       const Vector &x,

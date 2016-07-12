@@ -112,7 +112,7 @@ QColor TagManagerWindow::tagColor(int tag) const
 {
   int r, g, b;
   r = g = b = 155;
-  if (0 <= tag && tag < NumberOfTags)
+  if (validTag(tag))
   {
     auto colorStr = tagColors_[tag];
     try
@@ -134,9 +134,8 @@ QColor TagManagerWindow::tagColor(int tag) const
 
 QString TagManagerWindow::tagName(int tag) const
 {
-  if (0 <= tag && tag < NumberOfTags)
-    return tagNames_[tag];
-  return "[No tag]";
+  auto name = validTag(tag) ? tagNames_[tag] : "[No tag]";
+  return name;
 }
 
 void TagManagerWindow::showHelp(QWidget* parent)
@@ -149,8 +148,8 @@ void TagManagerWindow::showHelp(QWidget* parent)
     "according to the chosen colors). Or press 0 - 9 keys to see each tag group individually; other modules will be slightly blurred out. While in "
     "the single - tag view, you can click a module to toggle it as tagged. There is also a button in the toolbar to view all tagged modules."
     "\n\nOnce tags are being used, tag groups can be toggled using Alt-G (show) and Alt-Shift-G (hide). Boxes of the tag color, labelled with the tag's text, will be displayed overlaying the network. "
-    "To display tag groups on network load, double-click on a tag group box and select the option in the menu. "
-    "\n\nComing soon: tag names saved in the network file to override application-level names."
+    "To display tag groups on network load, double-click on a tag group box and select the display option in the menu. "
+    "\n\nTag names saved in the network file can override application-level names--double-click a displayed tag group box and select the rename option."
     );
 }
 

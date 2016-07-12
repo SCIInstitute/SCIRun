@@ -55,14 +55,19 @@ void Screenshot::takeScreenshot()
 void Screenshot::saveScreenshot()
 {
   index_++;
-  QString fileName = screenshotFile();
-  QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
-  screenshot_.save(fileName);
+  auto fileName = screenshotFile();
+  if (!fileName.isEmpty())
+  {
+    QMessageBox::information(nullptr, "ViewScene Screenshot", "Saving ViewScene screenshot to: " + fileName);
+    screenshot_.save(fileName);
+  }
 }
 
 QString Screenshot::screenshotFile() const
 {
-  return filePath + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
+  return QFileDialog::getSaveFileName(viewport_, "Save screenshot...", filePath, "*.png");
+  //TODO: might want to have an option to save to an auto-generated file for speed
+  //return filePath + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
 }
 
 SCIRun::Modules::Render::RGBMatrices Screenshot::toMatrix() const

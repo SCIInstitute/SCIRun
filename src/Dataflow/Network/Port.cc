@@ -68,7 +68,7 @@ void Port::detach(Connection* conn)
   connections_.erase(pos);
 }
 
-const Connection* Port::connection(size_t i) const
+Connection* Port::connection(size_t i) const
 {
   return connections_[i];
 }
@@ -154,8 +154,20 @@ boost::signals2::connection InputPort::connectDataOnPortHasChanged(const DataOnP
 {
   return sink()->connectDataHasChanged([this, subscriber] (DatatypeHandle data)
   {
-    subscriber(this->id(), data);
+    if (!this->connections_.empty())
+    {
+      auto conn = *this->connections_.begin();
+      if (!conn->disabled())
+      {
+        subscriber(this->id(), data);
+      }
+    }
   });
+}
+
+void InputPort::resendNewDataSignal()
+{
+  sink()->forceFireDataHasChanged();
 }
 
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)
@@ -176,10 +188,12 @@ void OutputPort::sendData(DatatypeHandle data)
   if (0 == nconnections())
     return;
 
-  for (Connection* c : connections_)
+  for (auto c : connections_)
   {
-    if (c && !c->disabled() && c->iport_)
+    if (c && c->iport_)
+    {
       source_->send(c->iport_->sink());
+    }
   }
 }
 

@@ -61,20 +61,7 @@
       <attribute name="title">
        <string>Code</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="0">
-        <widget class="QTextEdit" name="pythonCodeTextEdit_">
-         <property name="font">
-          <font>
-           <family>Courier</family>
-          </font>
-         </property>
-         <property name="tabStopWidth">
-          <number>30</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <layout class="QGridLayout" name="gridLayout_5"/>
      </widget>
      <widget class="QWidget" name="tab">
       <attribute name="title">
