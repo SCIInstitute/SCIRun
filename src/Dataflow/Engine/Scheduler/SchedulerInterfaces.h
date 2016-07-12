@@ -139,11 +139,14 @@ namespace Engine {
 
   struct SCISHARE ExecuteSingleModule
   {
-    explicit ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod, const SCIRun::Dataflow::Networks::NetworkInterface& network);
+    ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod,
+      const SCIRun::Dataflow::Networks::NetworkInterface& network, bool executeUpstream);
     bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const;
   private:
     SCIRun::Dataflow::Networks::ModuleHandle module_;
+    const SCIRun::Dataflow::Networks::NetworkInterface& network_;
     std::map<std::string, int> components_;
+    bool executeUpstream_;
   };
 
   class SCISHARE WaitsForStartupInitialization

@@ -331,8 +331,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkEditorMouseButtonPressed()), module, SIGNAL(cancelConnectionsInProgress()));
   connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
     module, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-  connect(module, SIGNAL(executedManually(const SCIRun::Dataflow::Networks::ModuleHandle&)),
-    this, SLOT(executeModule(const SCIRun::Dataflow::Networks::ModuleHandle&)));
+  connect(module, SIGNAL(executedManually(const SCIRun::Dataflow::Networks::ModuleHandle&, bool)),
+    this, SLOT(executeModule(const SCIRun::Dataflow::Networks::ModuleHandle&, bool)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(modified()));
@@ -1182,11 +1182,11 @@ void NetworkEditor::executeAll()
   Q_EMIT networkExecuted();
 }
 
-void NetworkEditor::executeModule(const ModuleHandle& module)
+void NetworkEditor::executeModule(const ModuleHandle& module, bool fromButton)
 {
   preexecute_();
   // explicit type needed for older Qt and/or clang
-  std::function<void()> exec = [this, &module]() { controller_->executeModule(module, *this); };
+  std::function<void()> exec = [this, &module, fromButton]() { controller_->executeModule(module, *this, fromButton); };
   QtConcurrent::run(exec);
   //TODO: not sure about this right now.
   //Q_EMIT modified();

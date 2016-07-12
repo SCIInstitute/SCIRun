@@ -95,6 +95,7 @@ namespace Gui {
     void executionTimeChanged(int time);
     void executeActionTriggered();
     void executeFromStateChangeTriggered();
+    void executeActionTriggeredViaStateChange();
     void setStartupNote(const QString& text);
     void fatalError(const QString& message);
     void executionLoopStarted();

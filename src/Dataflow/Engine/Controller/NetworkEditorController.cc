@@ -595,9 +595,9 @@ void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
   executeGeneric(lookup, ExecuteAllModules::Instance());
 }
 
-void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup)
+void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup, bool executeUpstream)
 {
-  ExecuteSingleModule filter(module, *theNetwork_);
+  ExecuteSingleModule filter(module, *theNetwork_, executeUpstream);
   executeGeneric(lookup, filter);
 }
 

@@ -392,7 +392,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
   }
 
   {
-    ExecuteSingleModule filterByCreate(create2, matrixMathNetwork);
+    ExecuteSingleModule filterByCreate(create2, matrixMathNetwork, true);
     BoostGraphParallelScheduler scheduler(filterByCreate);
     auto order = scheduler.schedule(matrixMathNetwork);
     std::ostringstream ostr;
@@ -406,7 +406,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
   }
 
   {
-    ExecuteSingleModule filterByReceive(receive, matrixMathNetwork);
+    ExecuteSingleModule filterByReceive(receive, matrixMathNetwork, true);
     BoostGraphParallelScheduler scheduler(filterByReceive);
     auto order = scheduler.schedule(matrixMathNetwork);
     std::ostringstream ostr;
