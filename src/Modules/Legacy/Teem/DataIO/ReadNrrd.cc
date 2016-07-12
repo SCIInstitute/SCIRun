@@ -93,6 +93,7 @@ using namespace SCITeem;
 DECLARE_MAKER(ReadNrrd)
 #endif
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ReadNrrd::staticInfo_("ReadNrrd", "DataIO", "Teem");
 
 ReadNrrd::ReadNrrd() :

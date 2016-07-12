@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -55,6 +55,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Visualization;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ShowAndEditDipoles::staticInfo_("ShowAndEditDipoles", "Visualization", "SCIRun");
 
 ShowAndEditDipoles::ShowAndEditDipoles()
@@ -181,7 +182,7 @@ ShowAndEditDipoles::~ShowAndEditDipoles()
   {
     if (widget_[j]) delete widget_[j];
   }
-  
+
   widget_.clear();
 }
 
@@ -196,7 +197,7 @@ ShowAndEditDipoles::set_context(Network* network)
 }
 
 bool
-ShowAndEditDipoles::maybe_resize_widget(void *ptr) 
+ShowAndEditDipoles::maybe_resize_widget(void *ptr)
 {
   if (sci_getenv_p("SCIRUN_USE_DEFAULT_SETTINGS"))
   {
@@ -204,21 +205,21 @@ ShowAndEditDipoles::maybe_resize_widget(void *ptr)
     GeometryOPortHandle ogeom;
     me->get_oport_handle("Geometry",ogeom);
     BBox b;
-    if (ogeom->get_view_bounds(b)) 
+    if (ogeom->get_view_bounds(b))
     {
       double sc = b.diagonal().length() * 0.02;
-      for (int i = 0; i < me->num_dipoles_.get(); i++) 
+      for (int i = 0; i < me->num_dipoles_.get(); i++)
       {
         me->widget_[i]->SetScale(sc);
         me->widget_[i]->SetLength(2 * sc);
       }
-    } 
-    else 
+    }
+    else
     {
       me->warning("Could not create default widget size");
-    }  
+    }
   }
-  return true;  
+  return true;
 }
 
 void
@@ -226,20 +227,20 @@ ShowAndEditDipoles::execute()
 {
   GeometryOPortHandle ogeom;
   get_oport_handle("Geometry",ogeom);
-  
+
   // if this is the first execution then try loading all the values
   // from saved GuiVars, load the widgets from these values
-  if (!been_executed_) 
+  if (!been_executed_)
   {
     load_gui();
     been_executed_ = true;
   }
-  
+
   FieldHandle fieldH;
   get_input_handle("dipoleFld", fieldH,true);
-  
+
   FieldInformation fi(fieldH);
-  
+
   if (!(fi.is_pointcloudmesh()))
   {
     error("Input field was not a valid point cloud.");
@@ -249,12 +250,12 @@ ShowAndEditDipoles::execute()
   VField* field     = fieldH->vfield();
 
   int gen = fieldH->generation;
-  
+
   reset_vars();
   if (reset_ || (gen != lastGen_))
   {
     lastGen_ = gen;
-    if (reset_ || (field->num_values() != static_cast<VMesh::size_type>(num_dipoles_.get()))) 
+    if (reset_ || (field->num_values() != static_cast<VMesh::size_type>(num_dipoles_.get())))
     {
       new_input_data(field);
     }
@@ -273,7 +274,7 @@ ShowAndEditDipoles::execute()
   send_output_handle("dipoleFld", dipoleFldH_, true);
 }
 
-void 
+void
 ShowAndEditDipoles::load_gui()
 {
   num_dipoles_.reset();
@@ -301,12 +302,12 @@ ShowAndEditDipoles::load_gui()
     }
 
     // it is possible that these were created already, dont do it twice.
-    if ((int)widget_id_.size() != num_dipoles_.get()) 
+    if ((int)widget_id_.size() != num_dipoles_.get())
     {
       GeometryOPortHandle ogeom;
       get_oport_handle("Geometry",ogeom);
- 
-      ArrowWidget *a = new ArrowWidget(this, &widget_lock_, 
+
+      ArrowWidget *a = new ArrowWidget(this, &widget_lock_,
 					  widgetSizeGui_.get());
       a->Connect(ogeom.get_rep());
       a->SetCurrentMode(1);
@@ -332,7 +333,7 @@ ShowAndEditDipoles::load_gui()
   last_scale_ = widgetSizeGui_.get();
 }
 
-void 
+void
 ShowAndEditDipoles::new_input_data(VField *field)
 {
   num_dipoles_.reset();
@@ -340,21 +341,21 @@ ShowAndEditDipoles::new_input_data(VField *field)
   showLastVecGui_.reset();
   reset_ = false;
 
-  if (widget_switch_.size()) 
+  if (widget_switch_.size())
   {
     widget_[num_dipoles_.get() - 1]->SetCurrentMode(1);
     widget_[num_dipoles_.get() - 1]->SetMaterial(0, deflMatl_);
   }
   // turn off any extra arrow widgets we might have.
   VField::size_type num_values = field->num_values();
-  if (num_values < static_cast<size_type>(num_dipoles_.get())) 
+  if (num_values < static_cast<size_type>(num_dipoles_.get()))
   {
     for (int i = static_cast<int>(num_values); i < num_dipoles_.get(); i++)
       ((GeomSwitch *)(widget_switch_[i].get_rep()))->set_state(0);
     num_dipoles_.set(num_values);
     num_dipoles_.reset();
-  } 
-  else 
+  }
+  else
   {
     GeometryOPortHandle ogeom;
     get_oport_handle("Geometry",ogeom);
@@ -364,9 +365,9 @@ ShowAndEditDipoles::new_input_data(VField *field)
       ((GeomSwitch *)(widget_switch_[i].get_rep()))->set_state(1);
 
     VField::size_type num_values = field->num_values();
-    for (; i < num_values; i++) 
+    for (; i < num_values; i++)
     {
-      ArrowWidget *a = new ArrowWidget(this, &widget_lock_, 
+      ArrowWidget *a = new ArrowWidget(this, &widget_lock_,
 					  widgetSizeGui_.get());
       a->Connect(ogeom.get_rep());
       a->SetCurrentMode(1);
@@ -383,34 +384,34 @@ ShowAndEditDipoles::new_input_data(VField *field)
     num_dipoles_.reset();
     load_gui();
   }
-  
-  if (showLastVecGui_.get()) 
+
+  if (showLastVecGui_.get())
   {
     widget_[num_dipoles_.get() - 1]->SetCurrentMode(1);
     widget_[num_dipoles_.get() - 1]->SetMaterial(0, deflMatl_);
-  } 
-  else 
+  }
+  else
   {
     widget_[num_dipoles_.get() - 1]->SetCurrentMode(2);
     widget_[num_dipoles_.get() - 1]->SetMaterial(0, greenMatl_);
   }
-  
-  for (VField::index_type i = 0; i < static_cast<VField::size_type>(num_dipoles_.get()); i++) 
+
+  for (VField::index_type i = 0; i < static_cast<VField::size_type>(num_dipoles_.get()); i++)
   {
     Vector v;
     field->get_value(v,i);
     double dv = v.length();
-    if (i == 0 || dv > max_len_.get()) 
+    if (i == 0 || dv > max_len_.get())
     {
       max_len_.set(dv);
       max_len_.reset();
     }
   }
-  
+
   std::string scaleMode = scaleModeGui_.get();
-  for (VMesh::Node::index_type i = 0; i < static_cast<VMesh::size_type>(num_dipoles_.get()); i++) 
+  for (VMesh::Node::index_type i = 0; i < static_cast<VMesh::size_type>(num_dipoles_.get()); i++)
   {
- 
+
     VMesh* field_mesh = field->vmesh();
     Point p;
     field_mesh->get_point(p,i);
@@ -434,19 +435,19 @@ ShowAndEditDipoles::new_input_data(VField *field)
   last_scale_ = widgetSizeGui_.get();
 }
 
-void 
+void
 ShowAndEditDipoles::last_as_vec()
 {
   showLastVecGui_.reset();
   bool slv = showLastVecGui_.get();
   if (!num_dipoles_.get()) return;
 
-  if (slv) 
+  if (slv)
   {
     widget_[num_dipoles_.get() - 1]->SetCurrentMode(1);
     widget_[num_dipoles_.get() - 1]->SetMaterial(0, deflMatl_);
-  } 
-  else 
+  }
+  else
   {
     widget_[num_dipoles_.get() - 1]->SetCurrentMode(2);
     widget_[num_dipoles_.get() - 1]->SetMaterial(0, greenMatl_);
@@ -467,28 +468,28 @@ ShowAndEditDipoles::scale_mode_changed()
   widgetSizeGui_.reset();
   max_len_.reset();
   double max = max_len_.get();
-  for (int i = 0; i < num_dipoles_.get(); i++) 
-  {   
+  for (int i = 0; i < num_dipoles_.get(); i++)
+  {
     double sc = widgetSizeGui_.get();
 
-    if (scaleMode == "normalize") 
+    if (scaleMode == "normalize")
     {
-      if (last_scale_mode_ == "scale") 
+      if (last_scale_mode_ == "scale")
       {
       sc *= (widget_[i]->GetScale() / last_scale_) / max;
-      } 
-      else 
+      }
+      else
       {
         sc *= widget_[i]->GetScale() / max;
       }
-    } 
-    else if (scaleMode == "scale") 
+    }
+    else if (scaleMode == "scale")
     {
-      if (last_scale_mode_ == "normalize") 
+      if (last_scale_mode_ == "normalize")
       {
         sc *= (widget_[i]->GetScale() * max) / last_scale_;
-      } 
-      else 
+      }
+      else
       {
         sc *= widget_[i]->GetScale();
       }
@@ -513,10 +514,10 @@ ShowAndEditDipoles::scale_changed()
   widgetSizeGui_.reset();
   max_len_.reset();
 
-  for (int i = 0; i < num_dipoles_.get(); i++) 
-  {    
+  for (int i = 0; i < num_dipoles_.get(); i++)
+  {
     double sc = widgetSizeGui_.get();
-    if (scaleMode != "fixed") 
+    if (scaleMode != "fixed")
     {
       sc *= widget_[i]->GetScale() / last_scale_;
     }
@@ -535,35 +536,35 @@ ShowAndEditDipoles::scale_changed()
 bool
 ShowAndEditDipoles::generate_output_field()
 {
-  if (output_dirty_) 
+  if (output_dirty_)
   {
     output_dirty_ = false;
     FieldInformation fi("PointCloudMesh",0,"Vector");
     dipoleFldH_ = CreateField(fi);
-    
+
     VMesh *msh = dipoleFldH_->vmesh();
     VField *out =  dipoleFldH_->vfield();
-    
-    for (int i = 0; i < num_dipoles_.get(); i++) 
-    {      
+
+    for (int i = 0; i < num_dipoles_.get(); i++)
+    {
       msh->add_node(new_positions_[i]->get());
     }
-    
+
     out->resize_values();
-    
+
     scaleModeGui_.reset();
     std::string scaleMode = scaleModeGui_.get();
     double max = max_len_.get();
-    for (VField::index_type i = 0; i < static_cast<VField::size_type>(num_dipoles_.get()); i++) 
-    {  
+    for (VField::index_type i = 0; i < static_cast<VField::size_type>(num_dipoles_.get()); i++)
+    {
       Vector d = new_directions_[i]->get();
       double sc = 1.0f;
 
-      if (scaleMode == "normalize") 
+      if (scaleMode == "normalize")
       {
         sc = widgetSizeGui_.get() / max;
       }
-      else if (scaleMode == "scale") 
+      else if (scaleMode == "scale")
       {
         sc = widgetSizeGui_.get();
       }
@@ -580,7 +581,7 @@ ShowAndEditDipoles::generate_output_field()
 void
 ShowAndEditDipoles::widget_moved(bool release, BaseWidget*)
 {
-  if (release) 
+  if (release)
   {
     output_dirty_ = true;
     scaleModeGui_.reset();
@@ -588,14 +589,14 @@ ShowAndEditDipoles::widget_moved(bool release, BaseWidget*)
     double max = max_len_.get();
 
     // dont know which widget moved so update all of them
-    for (int i = 0; i < num_dipoles_.get(); i++) 
+    for (int i = 0; i < num_dipoles_.get(); i++)
     {
       new_positions_[i]->set(widget_[i]->GetPosition());
       new_directions_[i]->set(widget_[i]->GetDirection());
 
       double sc = 1.0f;
 
-      if (scaleMode == "normalize") 
+      if (scaleMode == "normalize")
       {
         // need to renormalize...
         double old = widget_[i]->GetScale();
@@ -603,10 +604,10 @@ ShowAndEditDipoles::widget_moved(bool release, BaseWidget*)
       //	double vec = (old * old_max) / widgetSizeGui_.get();
         double vec = (old * max) / widgetSizeGui_.get();
         sc = widgetSizeGui_.get() * (vec / max);
-        widget_[i]->SetScale(sc); 
+        widget_[i]->SetScale(sc);
         new_magnitudes_[i]->set(sc);
-      } 
-      else 
+      }
+      else
       {
         new_magnitudes_[i]->set(widget_[i]->GetScale());
       }
@@ -626,23 +627,23 @@ ShowAndEditDipoles::widget_moved(bool release, BaseWidget*)
   if (release) want_to_execute();
 }
 
-void 
+void
 ShowAndEditDipoles::draw_lines()
 {
   GeometryOPortHandle ogeom;
   get_oport_handle("Geometry",ogeom);
 
   showLinesGui_.reset();
-  if (gidx_) 
-  { 
-    ogeom->delObj(gidx_); 
-    gidx_=0; 
+  if (gidx_)
+  {
+    ogeom->delObj(gidx_);
+    gidx_=0;
   }
-  if (showLinesGui_.get() && new_positions_.size()) 
+  if (showLinesGui_.get() && new_positions_.size())
   {
     GeomLines *g = new GeomLines;
-    for (unsigned i = 0; i < new_positions_.size() - 1; i++) 
-      for (unsigned j = i+1; j < new_positions_.size(); j++) 
+    for (unsigned i = 0; i < new_positions_.size() - 1; i++)
+      for (unsigned j = i+1; j < new_positions_.size(); j++)
         g->add(new_positions_[i]->get(), new_positions_[j]->get());
 
     GeomMaterial *gm = new GeomMaterial(g, new Material(Color(.8,.8,.2)));
@@ -651,8 +652,8 @@ ShowAndEditDipoles::draw_lines()
   ogeom->flushViews();
 }
 
-void 
-ShowAndEditDipoles::tcl_command(GuiArgs& args, void* userdata) 
+void
+ShowAndEditDipoles::tcl_command(GuiArgs& args, void* userdata)
 {
   if(args.count() < 2)
   {
@@ -660,27 +661,27 @@ ShowAndEditDipoles::tcl_command(GuiArgs& args, void* userdata)
     return;
   }
 
-  if (args[1] == "widget_scale") 
+  if (args[1] == "widget_scale")
   {
     scale_changed();
-  } 
-  else if (args[1] == "scale_mode") 
+  }
+  else if (args[1] == "scale_mode")
   {
     scale_mode_changed();
-  } 
-  else if (args[1] == "show_last_vec") 
+  }
+  else if (args[1] == "show_last_vec")
   {
     last_as_vec();
-  } 
-  else if (args[1] == "show_lines") 
+  }
+  else if (args[1] == "show_lines")
   {
     draw_lines();
-  } 
-  else if (args[1] == "reset") 
+  }
+  else if (args[1] == "reset")
   {
     reset_ = true;
     want_to_execute();
-  } 
+  }
   else
   {
     Module::tcl_command(args, userdata);
@@ -688,6 +689,6 @@ ShowAndEditDipoles::tcl_command(GuiArgs& args, void* userdata)
 }
 
 
- 
+
 } // End namespace BioPSE
 #endif

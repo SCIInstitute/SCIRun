@@ -138,8 +138,6 @@ namespace SCIRun
         OUTPUT_PORT(1, PythonField, LegacyField);
         OUTPUT_PORT(2, PythonString, String);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 

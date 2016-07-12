@@ -38,12 +38,12 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ReportFieldInfoModule::staticInfo_("ReportFieldInfo", "MiscField", "SCIRun");
 
 ReportFieldInfoModule::ReportFieldInfoModule() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
-  //INITIALIZE_PORT(FieldType);
   INITIALIZE_PORT(NumNodes);
   INITIALIZE_PORT(NumElements);
   INITIALIZE_PORT(NumData);

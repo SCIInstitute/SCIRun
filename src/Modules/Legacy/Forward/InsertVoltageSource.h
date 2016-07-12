@@ -51,8 +51,6 @@ namespace SCIRun {
         OUTPUT_PORT(0, OutputFEMesh, LegacyField);
         OUTPUT_PORT(1, OutputDirichletMatrix, DenseMatrix);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
         LEGACY_BIOPSE_MODULE
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)

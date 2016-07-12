@@ -47,7 +47,7 @@ namespace SCIRun {
         InsertMatricesIntoBundle();
         virtual void setStateDefaults() override;
         virtual void execute() override;
-        virtual bool hasDynamicPorts() const override { return true; }
+        HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, InputBundle, Bundle);
         INPUT_PORT_DYNAMIC(1, InputMatrices, Matrix);
@@ -58,7 +58,6 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName MatrixNames;
         static const Core::Algorithms::AlgorithmParameterName MatrixReplace;
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 

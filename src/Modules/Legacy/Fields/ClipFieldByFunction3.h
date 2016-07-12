@@ -47,7 +47,7 @@ namespace SCIRun {
 
         virtual void execute() override;
         virtual void setStateDefaults() override;
-        virtual bool hasDynamicPorts() const override { return true; }
+        HAS_DYNAMIC_PORTS
 
         INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
         INPUT_PORT(1, Function, String);
@@ -56,7 +56,7 @@ namespace SCIRun {
         OUTPUT_PORT(1, Mapping, Matrix);
 
         static const Core::Algorithms::AlgorithmParameterName FunctionString;
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       private:
         bool addFieldVariableIfPresent(const FieldList& fields, NewArrayMathEngine& engine, int basis_order, int index) const;

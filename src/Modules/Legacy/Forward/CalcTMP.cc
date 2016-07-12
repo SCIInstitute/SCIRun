@@ -36,6 +36,7 @@ using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Forward;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo CalcTMP::staticInfo_("CalcTMP", "Forward", "SCIRun");
 
 CalcTMP::CalcTMP()

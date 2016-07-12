@@ -48,7 +48,6 @@ namespace Basic {
 
     INPUT_PORT_DYNAMIC(0, AsyncField, LegacyField);
 
-    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override {}

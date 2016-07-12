@@ -38,6 +38,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo GetMatrixSlice::staticInfo_("GetMatrixSlice", "Math", "SCIRun");
 
 GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_), playing_(false)
@@ -85,7 +86,7 @@ void GetMatrixSlice::execute()
       state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
       throw;
     }
-    
+
     auto playMode = transient_value_cast_with_variable_check<int>(state->getTransientValue(Parameters::PlayModeActive));
     if (playMode == GetMatrixSliceAlgo::PLAY)
     {

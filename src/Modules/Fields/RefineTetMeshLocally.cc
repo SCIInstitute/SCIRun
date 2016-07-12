@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +27,7 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/RefineTetMeshLocally.cc
 
-#include <Core/Algorithms/Field/RefineTetMeshLocallyAlgorithm.h> 
+#include <Core/Algorithms/Field/RefineTetMeshLocallyAlgorithm.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -46,7 +46,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-const ModuleLookupInfo RefineTetMeshLocally::staticInfo_("RefineTetMeshLocally", "ChangeMesh", "SCIRun"); 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
+const ModuleLookupInfo RefineTetMeshLocally::staticInfo_("RefineTetMeshLocally", "ChangeMesh", "SCIRun");
 
 RefineTetMeshLocally::RefineTetMeshLocally()
 		:Module(staticInfo_, true)
@@ -57,9 +58,9 @@ RefineTetMeshLocally::RefineTetMeshLocally()
 
 void RefineTetMeshLocally::setStateDefaults()
 {
- setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyIsoValue);	
- setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyEdgeLength);	
- setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyVolume);	
+ setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyIsoValue);
+ setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyEdgeLength);
+ setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyVolume);
  setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyDihedralAngleSmaller);
  setStateDoubleFromAlgo(Parameters::RefineTetMeshLocallyDihedralAngleBigger);
  setStateIntFromAlgo(Parameters::RefineTetMeshLocallyMaxNumberRefinementIterations);

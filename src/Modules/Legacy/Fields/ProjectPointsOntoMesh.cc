@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -36,6 +36,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 ModuleLookupInfo ProjectPointsOntoMesh::staticInfo_("ProjectPointsOntoMesh", "ChangeMesh", "SCIRun");
 
 ProjectPointsOntoMesh::ProjectPointsOntoMesh() :
@@ -65,7 +66,7 @@ void ProjectPointsOntoMesh::execute()
     setAlgoOptionFromState(Parameters::ProjectMethod);
 
     auto output = algo().run(withInputData((InputField, input)(ObjectField, object)));
-    
+
     sendOutputFromAlgorithm(OutputField, output);
   }
 }

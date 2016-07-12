@@ -41,6 +41,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo GetFieldDataModule::staticInfo_("GetFieldData", "ChangeFieldData", "SCIRun");
 
 GetFieldDataModule::GetFieldDataModule()

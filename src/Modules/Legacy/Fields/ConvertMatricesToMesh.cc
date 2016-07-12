@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -50,6 +50,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ConvertMatricesToMesh::staticInfo_("ConvertMatricesToMesh", "NewField", "SCIRun");
 
 ConvertMatricesToMesh::ConvertMatricesToMesh() : Module(staticInfo_)
@@ -104,7 +105,7 @@ void ConvertMatricesToMesh::execute()
     else if (basename == "QuadSurf") fi.make_quadsurfmesh();
     else if (basename == "TetVol") fi.make_tetvolmesh();
     else if (basename == "TriSurf") fi.make_trisurfmesh();
-    
+
     FieldHandle result_field = CreateField(fi);
     VMesh* mesh = result_field->vmesh();
 
@@ -126,7 +127,7 @@ void ConvertMatricesToMesh::execute()
 
     result_field->vfield()->resize_values();
     sendOutput(OutputField, result_field);
-  }  
+  }
 }
 
 void ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows)

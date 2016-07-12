@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -43,6 +43,7 @@ using namespace SCIRun;
 /// @class ConvertFieldBasis
 /// @brief ConvertFieldBasis can modify the location of data in the input field.
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ConvertFieldBasis::staticInfo_("ConvertFieldBasis", "ChangeFieldData", "SCIRun");
 
 ConvertFieldBasis::ConvertFieldBasis()
@@ -75,7 +76,7 @@ ConvertFieldBasis::execute()
 
     pushInputFieldInfo(input);
 
-    setAlgoOptionFromState(Parameters::OutputType); 
+    setAlgoOptionFromState(Parameters::OutputType);
 
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (need_mapping)
@@ -84,12 +85,12 @@ ConvertFieldBasis::execute()
     }
     else
     {
-    if (!(algo_.run(input_field_handle,output_field_handle))) return;    
+    if (!(algo_.run(input_field_handle,output_field_handle))) return;
     }
 #endif
     remark("Mapping matrix port implementation is not enabled yet--please contact a developer");
     auto output = algo().run(withInputData((InputField, input)));
-    sendOutputFromAlgorithm(OutputField, output); 
+    sendOutputFromAlgorithm(OutputField, output);
 
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
     send_output_handle("Mapping", mapping_matrix_handle);
@@ -101,7 +102,7 @@ void ConvertFieldBasis::pushInputFieldInfo(FieldHandle input) const
 {
   auto state = get_state();
   std::string name = input->properties().get_name();
-  if (name.empty()) 
+  if (name.empty())
     name = "--- no name ---";
   state->setValue(Parameters::InputFieldName, name);
 

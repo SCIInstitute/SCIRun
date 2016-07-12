@@ -58,7 +58,6 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName StringNames;
         static const Core::Algorithms::AlgorithmParameterName StringReplace;
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 

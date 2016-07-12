@@ -36,6 +36,7 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ReportMatrixInfoModule::staticInfo_("ReportMatrixInfo", "Math", "SCIRun");
 
 ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(staticInfo_)

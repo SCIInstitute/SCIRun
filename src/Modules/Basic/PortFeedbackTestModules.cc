@@ -34,6 +34,7 @@ using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo PortFeedbackSender::staticInfo_("PortFeedbackSender", "Testing", "SCIRun");
 
 PortFeedbackSender::PortFeedbackSender()
@@ -49,7 +50,7 @@ void PortFeedbackSender::setStateDefaults()
 
 void PortFeedbackSender::execute()
 {
- 
+
 }
 
 const ModuleLookupInfo PortFeedbackReceiver::staticInfo_("PortFeedbackReceiver", "Testing", "SCIRun");

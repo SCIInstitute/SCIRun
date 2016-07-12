@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -41,10 +41,10 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
 /// @class SplitFileName
-/// @brief This module splits a filename in: pathname, filename (base), and extension. 
+/// @brief This module splits a filename in: pathname, filename (base), and extension.
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo SplitFileName::staticInfo_("SplitFileName", "String", "SCIRun");
-
 
 SplitFileName::SplitFileName() : Module(staticInfo_,false)
 {
@@ -55,30 +55,27 @@ SplitFileName::SplitFileName() : Module(staticInfo_,false)
   INITIALIZE_PORT(Filename);
 }
 
-
 void
 SplitFileName::execute()
 {
-  
   auto filenameH = getRequiredInput(Full_Filename);
-  
 
   std::string filename, fn, pn, ext, fnext;
 
   const char sep = '/';
   const char dot = '.';
-  
+
   filename = filenameH->value();
-  
+
   if (needToExecute())
   {
-    
-      if (filename.size() > 0) if (filename[filename.size()-1] == sep) 
+
+      if (filename.size() > 0) if (filename[filename.size()-1] == sep)
                                                               filename = filename.substr(0,filename.size()-1);
-      
+
     int lastsep = -1;
     for (size_t p = 0; p < filename.size(); p++) if (filename[p] == sep) lastsep = (int)p;
-    
+
     if (lastsep > -1)
     {
       pn = filename.substr(0,lastsep+1);
@@ -92,7 +89,7 @@ SplitFileName::execute()
 
     int lastdot = -1;
     for (size_t p = 0; p < fn.size(); p++) if (fn[p] == dot) lastdot = (int)p;
-    
+
     if (lastdot > -1)
     {
       ext = fn.substr(lastdot);
@@ -104,7 +101,7 @@ SplitFileName::execute()
     }
 
     fnext = fn+ext;
-    
+
     StringHandle pnH(new String(pn));
     sendOutput(Pathname, pnH);
 
@@ -118,6 +115,3 @@ SplitFileName::execute()
     sendOutput(Filename, fnextH);
   }
 }
-
-
-

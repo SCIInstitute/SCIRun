@@ -40,6 +40,7 @@ using namespace SCIRun::Modules::Teem;
 using namespace SCIRun::Dataflow::Networks;
 using namespace Core::Algorithms;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ReportNrrdInfo::staticInfo_("ReportNrrdInfo", "Misc", "Teem");
 
 ReportNrrdInfo::ReportNrrdInfo() : Module(staticInfo_)

@@ -598,8 +598,10 @@ namespace Modules
   template <class ModuleType>
   const bool HasAlgorithm<ModuleType>::value = (ModuleTraits<ModuleType>::Flags & ModuleHasAlgorithm) != 0;
 
-  #define MODULE_TRAITS_AND_INFO(value) public: static const int TraitFlags = value;
-    //static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  #define MODULE_TRAITS_AND_INFO(value) public: static const int TraitFlags = value;\
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;\
+
+  #define MODULE_INFO_DEF(moduleName, category, package) const ModuleLookupInfo moduleName::staticInfo_(#moduleName, #category, #package);
 
   #define HAS_DYNAMIC_PORTS public: virtual bool hasDynamicPorts() const override { return true; }
 

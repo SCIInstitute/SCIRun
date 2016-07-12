@@ -67,7 +67,6 @@ namespace SCIRun
 
         OUTPUT_PORT(0, ColorMapObject, ColorMap);
 
-        const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
     }

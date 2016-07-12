@@ -55,6 +55,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo GeneratePointSamplesFromFieldOrWidget::staticInfo_("GeneratePointSamplesFromFieldOrWidget", "NewField", "SCIRun");
 
 /// @class GeneratePointSamplesFromFieldOrWidget

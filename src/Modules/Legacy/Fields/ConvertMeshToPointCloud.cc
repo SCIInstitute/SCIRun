@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,7 +32,7 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 /// @class ConvertMeshToPointCloud
-/// @brief Convert a structured field into an unstructured field for editing. 
+/// @brief Convert a structured field into an unstructured field for editing.
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -40,6 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ConvertMeshToPointCloud::staticInfo_("ConvertMeshToPointCloud", "ChangeMesh", "SCIRun");
 
 ConvertMeshToPointCloud::ConvertMeshToPointCloud(): Module(staticInfo_)
@@ -52,7 +53,7 @@ void ConvertMeshToPointCloud::setStateDefaults()
 {
   setStateStringFromAlgoOption(ConvertMeshToPointCloudMeshAlgo::Location);
 }
-  
+
 void
 ConvertMeshToPointCloud::execute()
 {
@@ -60,17 +61,16 @@ ConvertMeshToPointCloud::execute()
 
   AlgorithmInput input;
   input[Variables::InputField] = imesh;
-  
+
   if (needToExecute())
   {
     update_state(Executing);
-    
+
     setAlgoOptionFromState(ConvertMeshToPointCloudMeshAlgo::Location);
-    
+
     auto output = algo().run(input);
-    
+
     auto pointcloud = output.get<Field>(Variables::OutputField);
     sendOutput(PointCloud,pointcloud);
   }
 }
-

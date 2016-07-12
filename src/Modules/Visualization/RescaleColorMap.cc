@@ -37,6 +37,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Visualization;
 
+MODULE_INFO_DEF(ConvertScalarToMatrix, Converters, SCIRun)
 const ModuleLookupInfo RescaleColorMap::staticInfo_("RescaleColorMap", "Visualization", "SCIRun");
 
 RescaleColorMap::RescaleColorMap() : Module(staticInfo_)

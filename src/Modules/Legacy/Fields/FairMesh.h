@@ -49,7 +49,6 @@ namespace SCIRun {
         INPUT_PORT(0, Input_Mesh, LegacyField);
         OUTPUT_PORT(0, Faired_Mesh, LegacyField);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
 

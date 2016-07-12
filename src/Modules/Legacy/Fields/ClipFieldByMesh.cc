@@ -42,6 +42,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ClipFieldByMesh::staticInfo_("ClipFieldByMesh", "NewField", "SCIRun");
 
 /// @class ClipFieldByMesh

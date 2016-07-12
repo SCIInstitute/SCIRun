@@ -53,9 +53,8 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(1, Input, String);
         OUTPUT_PORT(0, Output, String);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
-        static Core::Algorithms::AlgorithmParameterName FormatString;
+        static const Core::Algorithms::AlgorithmParameterName FormatString;
 
       };
     }}}

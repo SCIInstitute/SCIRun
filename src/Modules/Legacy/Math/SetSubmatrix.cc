@@ -50,37 +50,15 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-#if 0
-namespace SCIRun {
-
-class SetSubmatrix : public Module
-{
-
-private:
-  GuiInt startcol_;
-  GuiInt startrow_;
-  GuiInt nrow_;
-  GuiInt ncol_;
-  GuiInt srow_;
-  GuiInt scol_;
-
-public:
-  SetSubmatrix(GuiContext* ctx);
-  virtual ~SetSubmatrix();
-
-  virtual void execute();
-};
-#endif
-
 ALGORITHM_PARAMETER_DEF(Math, StartColumn);
 ALGORITHM_PARAMETER_DEF(Math, StartRow);
 ALGORITHM_PARAMETER_DEF(Math, MatrixDims);
 ALGORITHM_PARAMETER_DEF(Math, SubmatrixDims);
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo SetSubmatrix::staticInfo_("SetSubmatrix", "Math", "SCIRun");
 
-SetSubmatrix::SetSubmatrix()
-  : Module(staticInfo_)
+SetSubmatrix::SetSubmatrix() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(Input_Submatrix);

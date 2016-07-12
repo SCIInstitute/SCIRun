@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,6 +39,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo GetMeshQualityField::staticInfo_("GetMeshQualityField", "MiscField", "SCIRun");
 
 GetMeshQualityField::GetMeshQualityField() : Module(staticInfo_)
@@ -56,16 +57,16 @@ void GetMeshQualityField::setStateDefaults()
 void GetMeshQualityField::execute()
 {
   auto input = getRequiredInput(InputField);
-  
+
   if (needToExecute())
   {
     update_state(Executing);
-      
+
     setAlgoOptionFromState(Metric);
-      
+
     auto output = algo().run(withInputData((InputField,input)));
-      
+
     sendOutputFromAlgorithm(OutputField,output);
-      
+
   }
 }

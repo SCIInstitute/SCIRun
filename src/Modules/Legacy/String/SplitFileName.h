@@ -54,7 +54,6 @@ namespace SCIRun {
         OUTPUT_PORT(2, Extension, String);
         OUTPUT_PORT(3, Filename, String);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
       };
     }}}

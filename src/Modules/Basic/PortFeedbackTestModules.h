@@ -47,8 +47,6 @@ namespace Basic {
 
     INPUT_PORT(0, Input, String);
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   };
 
@@ -63,8 +61,6 @@ namespace Basic {
     virtual void setStateDefaults() override;
 
     OUTPUT_PORT(0, Output, String);
-
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   };

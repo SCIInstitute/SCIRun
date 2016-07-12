@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -43,6 +43,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 SCIRun::Core::Algorithms::AlgorithmParameterName TestModuleSimpleUI::FormatString("FormatString");
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo TestModuleSimpleUI::staticInfo_("TestModuleSimpleUI", "String", "SCIRun");
 
 
@@ -62,24 +63,21 @@ void TestModuleSimpleUI::setStateDefaults()
 void
 TestModuleSimpleUI::execute()
 {
-  
+
   std::string message_string;
-  
+
   auto  stringH = getOptionalInput(InputString);
-  
+
   auto state = get_state();
-  
+
   if (stringH && *stringH)
   {
     state -> setValue(FormatString, (*stringH) -> value());
   }
-  
+
   //message_string = "You stay classy, Planet Earth!";
   message_string = state -> getValue(FormatString).toString();
-  
+
   StringHandle msH(new String(message_string));
   sendOutput(OutputString, msH);
 }
-
-
-

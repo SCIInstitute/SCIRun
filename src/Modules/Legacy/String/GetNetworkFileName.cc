@@ -37,6 +37,7 @@ using namespace SCIRun::Modules::StringManip;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo GetNetworkFileName::staticInfo_("GetNetworkFileName", "String", "SCIRun");
 
 GetNetworkFileName::GetNetworkFileName()

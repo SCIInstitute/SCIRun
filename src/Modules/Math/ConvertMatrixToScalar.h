@@ -46,7 +46,6 @@ namespace Math {
     virtual void setStateDefaults() {}
 
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
     INPUT_PORT(0, Input, Matrix);
     OUTPUT_PORT(0, Output, Int32);

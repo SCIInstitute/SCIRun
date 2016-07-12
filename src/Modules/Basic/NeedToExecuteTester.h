@@ -50,8 +50,6 @@ namespace Basic {
     INPUT_PORT(1, TestFieldIn, LegacyField);
     OUTPUT_PORT(1, TestFieldOut, LegacyField);
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
     bool expensiveComputationDone_, executeCalled_;
     void resetFlags();
 

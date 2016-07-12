@@ -40,6 +40,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ConvertMatrixToScalar::staticInfo_("ConvertMatrixToScalar", "Converters", "SCIRun");
 
 ConvertMatrixToScalar::ConvertMatrixToScalar() : Module(staticInfo_,false)
@@ -48,7 +49,6 @@ ConvertMatrixToScalar::ConvertMatrixToScalar() : Module(staticInfo_,false)
   INITIALIZE_PORT(Output);
 }
 
-
 void ConvertMatrixToScalar::execute()
 {
   auto input_matrix = getRequiredInput(Input);
@@ -56,25 +56,25 @@ void ConvertMatrixToScalar::execute()
   if (needToExecute())
   {
     update_state(Executing);
-    
+
     if (!matrixIs::dense(input_matrix))
     {
       //TODO implement something with sparse
       error("Currently only works with dense matrices");
       return;
     }
-    
+
     auto dense = castMatrix::toDense (input_matrix);
-    
+
     if (dense->get_dense_size()!=1)
     {
       error("matrix must be size 1x1");
     }
-    
+
     double* dataptr = 0;
     dataptr = dense->data();
     int datavalue= dataptr[0];
-    
+
     boost::shared_ptr<SCIRun::Core::Datatypes::Int32> out(new SCIRun::Core::Datatypes::Int32(datavalue));
 
     sendOutput(Output,out);

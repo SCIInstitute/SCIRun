@@ -44,7 +44,6 @@ namespace Math {
     ConvertRealToComplexMatrix();
     virtual void execute();
     virtual void setStateDefaults() {}
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
     INPUT_PORT(0, RealPartMatrix, Matrix);
     INPUT_PORT(1, ComplexPartMatrix, Matrix);

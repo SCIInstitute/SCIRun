@@ -61,7 +61,6 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName StringNames[];
         static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         std::string makeStringNameList(const Core::Datatypes::Bundle& bundle) const;

@@ -50,8 +50,6 @@ namespace SCIRun {
         INPUT_PORT(1, TetMesh_Sigmas, LegacyField);
         OUTPUT_PORT(0, Currents, LegacyField);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
         LEGACY_BIOPSE_MODULE
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)

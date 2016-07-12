@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +27,7 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/RefineMesh.cc
 
-#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h> 
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Scalar.h>
@@ -43,7 +43,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-const ModuleLookupInfo RefineMesh::staticInfo_("RefineMesh", "ChangeFieldData", "SCIRun"); 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
+const ModuleLookupInfo RefineMesh::staticInfo_("RefineMesh", "ChangeFieldData", "SCIRun");
 
 RefineMesh::RefineMesh()
 		:Module(staticInfo_)
@@ -51,7 +52,7 @@ RefineMesh::RefineMesh()
 		INITIALIZE_PORT(InputField);
 		INITIALIZE_PORT(OutputField);
 		INITIALIZE_PORT(IsoValueField);
-		//INITIALIZE_PORT(Mapping); 
+		//INITIALIZE_PORT(Mapping);
 }
 
 void RefineMesh::setStateDefaults()
@@ -63,17 +64,17 @@ void RefineMesh::setStateDefaults()
 
 void
 RefineMesh::execute()
-{	
+{
 auto input = getRequiredInput(InputField);
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool need_mapping = oport_connected("Mapping");
 #endif
-auto isovaluefield = getOptionalInput(IsoValueField);  
+auto isovaluefield = getOptionalInput(IsoValueField);
 
   if (needToExecute() )
   {
     update_state(Executing);
-				
+
 		setAlgoOptionFromState(Parameters::AddConstraints);
 		setAlgoOptionFromState(Parameters::RefineMethod);
 		setAlgoDoubleFromState(Parameters::IsoValue);

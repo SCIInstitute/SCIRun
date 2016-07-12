@@ -35,7 +35,7 @@ using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-const ModuleLookupInfo NeedToExecuteTester::staticInfo_("NeedToExecuteTester", "Testing", "SCIRun");
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 
 NeedToExecuteTester::NeedToExecuteTester() : Module(staticInfo_, false), expensiveComputationDone_(false), executeCalled_(false)
 {

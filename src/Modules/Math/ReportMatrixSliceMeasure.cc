@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,6 +40,7 @@ using namespace SCIRun::Core::Datatypes;
 /// @brief This module computes a measure on each row or column of the input matrix
 /// and stores the result in the output matrix.
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ReportMatrixSliceMeasure::staticInfo_("ReportMatrixSliceMeasure", "Math", "SCIRun");
 
 ReportMatrixSliceMeasure::ReportMatrixSliceMeasure() : Module(staticInfo_)
@@ -58,18 +59,15 @@ void
 ReportMatrixSliceMeasure::execute()
 {
   auto input = getRequiredInput(InputMatrix);
-  
+
   if (needToExecute())
   {
-    
+
     setAlgoIntFromState(Variables::Operator);
     setAlgoIntFromState(Variables::Method);
-    
+
     auto output = algo().run(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(OutputMatrix, output);
-    
+
   }
 }
-
-
-

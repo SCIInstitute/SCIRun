@@ -53,6 +53,7 @@ using namespace SCIRun::Dataflow::Networks;
 /// @detail This module appends/replaces rows or columns of a matrix while
 /// looping through a network.
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo CollectMatrices::staticInfo_("CollectMatrices", "Math", "SCIRun");
 
 namespace SCIRun {
@@ -102,7 +103,7 @@ CollectMatrices::execute()
   bool append = state->getValue(Parameters::CollectAppendIndicator).toInt() == 0;
   bool row = state->getValue(Parameters::CollectRowIndicator).toInt() == 0;
   bool front = state->getValue(Parameters::CollectPrependIndicator).toInt() == 0;
-  
+
   MatrixHandle omatrix;
 
   if (!append)               // Replace -- just send B matrix

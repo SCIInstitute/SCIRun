@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,9 +40,6 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
- #include <Dataflow/Network/Module.h>
- #include <Dataflow/Network/Ports/FieldPort.h>
- #include <Dataflow/Network/Ports/MatrixPort.h>
  #include <Core/Algorithms/Fields/ClipMesh/ClipMeshByIsovalue.h>
  #include <iostream>
 #endif
@@ -56,6 +53,7 @@ using namespace SCIRun::Core::Algorithms;
 /// @class ClipVolumeByIsovalue
 /// @brief Clip out parts of a field.
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ClipVolumeByIsovalueModule::staticInfo_("ClipVolumeByIsovalue", "NewField", "SCIRun");
 
 ClipVolumeByIsovalueModule::ClipVolumeByIsovalueModule() : Module(staticInfo_)
@@ -77,45 +75,45 @@ void ClipVolumeByIsovalueModule::execute()
 {
   auto input = getRequiredInput(InputField);
   auto isovalueOption = getOptionalInput(Isovalue);
-  
+
   if (needToExecute())
   {
     update_state(Executing);
     double iso=0;
-    
+
     // GUI inputs have less priority than isovalue - second module input
-    iso = get_state()->getValue(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();  
-    
+    iso = get_state()->getValue(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
+
     if (isovalueOption && *isovalueOption && !(*isovalueOption)->empty())
     {
-      iso = (*isovalueOption)->get(0,0); 
+      iso = (*isovalueOption)->get(0,0);
     }
-    
-    algo().set(ClipMeshByIsovalueAlgo::ScalarIsoValue, iso);     
-   
+
+    algo().set(ClipMeshByIsovalueAlgo::ScalarIsoValue, iso);
+
     auto gui_LessThanIsoValue = (get_state()->getValue(ClipMeshByIsovalueAlgo::LessThanIsoValue)).toInt();
-    
+
     if (gui_LessThanIsoValue==-1)
        gui_LessThanIsoValue=0;
-       
+
     algo().set(ClipMeshByIsovalueAlgo::LessThanIsoValue, gui_LessThanIsoValue);
-    
+
     auto output = algo().run(withInputData((InputField, input)));
 
     sendOutputFromAlgorithm(OutputField, output);
   }
-  
+
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldHandle field_input_handle;
   get_input_handle( "Input", field_input_handle, true );
 
   // Check to see if the input field has changed.
-  if( inputs_changed_ ) 
+  if( inputs_changed_ )
   {
     update_state(Executing);
     VField* vfield = field_input_handle->vfield();
 
-    if (!vfield->is_scalar()) 
+    if (!vfield->is_scalar())
     {
       error("Input field does not contain scalar data.");
       return;
@@ -131,7 +129,7 @@ void ClipVolumeByIsovalueModule::execute()
 
     // Check to see if the gui min max are different than the field.
     if( gui_iso_value_min_.get() != minval ||
-	      gui_iso_value_max_.get() != maxval ) 
+	      gui_iso_value_max_.get() != maxval )
     {
       gui_iso_value_min_.set( minval );
       gui_iso_value_max_.set( maxval );
@@ -176,20 +174,18 @@ void ClipVolumeByIsovalueModule::execute()
       !oport_cached("Mapping") )
   {
     update_state(Executing);
-  
+
     MatrixHandle matrix_output_handle;
-    FieldHandle field_output_handle; 
-    
+    FieldHandle field_output_handle;
+
     algo_.set_scalar("isovalue",gui_iso_value_.get());
     std::string method = "greaterthan";
     if (gui_lte_.get()) method = "lessthan";
     algo_.setOption("method",method);
     if(!(algo_.run(field_input_handle,field_output_handle,matrix_output_handle))) return;
-  
+
     send_output_handle("Clipped",  field_output_handle);
     send_output_handle("Mapping", matrix_output_handle);
   }
- #endif 
+ #endif
 }
-
-

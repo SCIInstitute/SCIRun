@@ -56,7 +56,7 @@ namespace SCIRun {
 
         static const Core::Algorithms::AlgorithmParameterName FunctionString;
         static const Core::Algorithms::AlgorithmParameterName FormatString;
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         bool addFieldVariableIfPresent(const FieldList& fields, NewArrayMathEngine& engine, int index) const;

@@ -54,8 +54,6 @@ namespace SCIRun {
         INPUT_PORT(6, Rest_Potential, Matrix);
         OUTPUT_PORT(0, TMPs, Matrix);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
         LEGACY_BIOPSE_MODULE
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)

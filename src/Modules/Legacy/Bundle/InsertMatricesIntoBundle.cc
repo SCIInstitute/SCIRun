@@ -38,6 +38,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::Bundles;
 using namespace SCIRun::Core::Datatypes;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo InsertMatricesIntoBundle::staticInfo_("InsertMatricesIntoBundle", "Bundle", "SCIRun");
 const AlgorithmParameterName InsertMatricesIntoBundle::NumMatrices("NumMatrices");
 const AlgorithmParameterName InsertMatricesIntoBundle::MatrixNames("MatrixNames");

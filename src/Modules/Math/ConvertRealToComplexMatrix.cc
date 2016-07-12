@@ -39,6 +39,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ConvertRealToComplexMatrix::staticInfo_("ConvertRealToComplexMatrix", "Converters", "SCIRun");
 
 ConvertRealToComplexMatrix::ConvertRealToComplexMatrix() : Module(staticInfo_,false)
@@ -48,52 +49,51 @@ ConvertRealToComplexMatrix::ConvertRealToComplexMatrix() : Module(staticInfo_,fa
   INITIALIZE_PORT(Output);
 }
 
-
 void ConvertRealToComplexMatrix::execute()
 {
   auto input_matrix1 = getRequiredInput(RealPartMatrix);
   auto input_matrix2 = getRequiredInput(ComplexPartMatrix);
-  
+
   if (needToExecute())
   {
     update_state(Executing);
-    
+
     if(!input_matrix1 || !input_matrix2)
     {
      error("One of the input matrices is empty.");
-     return;					    
+     return;
     }
-    
+
     if (!matrixIs::dense(input_matrix1))
     {
       //TODO implement something with sparse
       error("Currently only works with dense matrices (check first module input).");
       return;
     }
-    
+
     if (!matrixIs::dense(input_matrix2))
     {
       //TODO implement something with sparse
       error("Currently only works with dense matrices (check second module input).");
       return;
     }
-    
-    auto nr_cols_mat1=input_matrix1->ncols(), nr_rows_mat1=input_matrix1->nrows(), 
+
+    auto nr_cols_mat1=input_matrix1->ncols(), nr_rows_mat1=input_matrix1->nrows(),
          nr_cols_mat2=input_matrix2->ncols(), nr_rows_mat2=input_matrix2->nrows();
-    
+
     if(nr_cols_mat1!=nr_cols_mat2 || nr_rows_mat1!=nr_rows_mat2)
     {
      error("Input matrices do not have same number of rows or columns.");
      return;
     }
-    
+
     auto out(boost::make_shared<ComplexDenseMatrix>(nr_rows_mat1,nr_cols_mat1));
     auto mat1 = castMatrix::toDense (input_matrix1), mat2 = castMatrix::toDense (input_matrix2);
-    
+
     for(auto i=0; i<nr_rows_mat1; i++)
      for(auto j=0; j<nr_cols_mat1; j++)
-        (*out)(i,j) = complex((*mat1)(i,j),(*mat2)(i,j));  
-    
+        (*out)(i,j) = complex((*mat1)(i,j),(*mat2)(i,j));
+
     sendOutput(Output,out);
   }
 }

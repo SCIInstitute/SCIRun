@@ -57,6 +57,7 @@ using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::FiniteElements;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ApplyFEMVoltageSource::staticInfo_("ApplyFEMVoltageSource", "FiniteElements", "SCIRun");
 const AlgorithmParameterName ApplyFEMVoltageSource::ApplyDirichlet("ApplyDirichlet");
 
@@ -85,7 +86,7 @@ void ApplyFEMVoltageSource::execute()
 
   auto state = get_state();
   auto applyDirichlet = state->getValue(ApplyDirichlet).toBool();
-  
+
   DenseMatrixHandle odirichletMatrix;
 
   if (applyDirichlet)
@@ -125,7 +126,7 @@ void ApplyFEMVoltageSource::execute()
     MatrixHandle stiffCopy(stiffnessMatrix->clone());
     SparseRowMatrixHandle mat(castMatrix::toSparse(stiffCopy));
     DenseColumnMatrixHandle rhs(new DenseColumnMatrix(nsize));
-    
+
     if (rhsMatrix)
     {
       DenseColumnMatrixHandle rhsIn(castMatrix::toColumn((*rhsMatrix)));
@@ -152,6 +153,6 @@ void ApplyFEMVoltageSource::execute()
     sendOutput(ForwardMatrix, forwardMatrix);
 
     MatrixHandle outputrhs(rhs);
-    sendOutput(OutputRHS, outputrhs);    
+    sendOutput(OutputRHS, outputrhs);
   }
 }

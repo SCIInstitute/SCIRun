@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-	
+
 #include <Modules/Legacy/Fields/ConvertFieldDataType.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldDataType.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
@@ -39,8 +39,9 @@ using namespace Core::Algorithms::Fields;
 
 /// @class ConvertFieldDataType
 /// @brief ConvertFieldDataType is used to change the type of data associated
-/// with the field elements. 
+/// with the field elements.
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ConvertFieldDataType::staticInfo_("ConvertFieldDataType", "ChangeFieldData", "SCIRun");
 
 ConvertFieldDataType::ConvertFieldDataType() : Module(staticInfo_)
@@ -61,18 +62,18 @@ void ConvertFieldDataType::execute()
   auto input = getRequiredInput(InputField);
 
   if (needToExecute())
-  {    
+  {
     update_state(Executing);
     setAlgoOptionFromState(Parameters::FieldDatatype);
 
     auto output = algo().run(withInputData((InputField, input)));
-    
+
     auto state = get_state();
     state->setValue(Parameters::InputType, input->vfield()->get_data_type());
 
     /// Relay some information to user
     std::string name = input->properties().get_name();
-    if (name.empty()) 
+    if (name.empty())
       name = "--- no name ---";
     state->setValue(Parameters::InputFieldName, name);
 

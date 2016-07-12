@@ -39,6 +39,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo CalculateCurrentDensity::staticInfo_("CalculateCurrentDensity", "Forward", "SCIRun");
 
 CalculateCurrentDensity::CalculateCurrentDensity() : Module(staticInfo_,false)

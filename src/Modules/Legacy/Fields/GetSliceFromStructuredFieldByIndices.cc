@@ -34,7 +34,7 @@
 ///              SCI Institute
 ///              University of Utah
 ///     @date    March 2006
-/// 
+///
 
 #include <Modules/Legacy/Fields/GetSliceFromStructuredFieldByIndices.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -44,7 +44,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 /// @class GetSliceFromStructuredFieldByIndices
-/// @brief This module reduces the dimension of a topologically regular field by 1 dimension. 
+/// @brief This module reduces the dimension of a topologically regular field by 1 dimension.
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
@@ -61,6 +61,7 @@ ALGORITHM_PARAMETER_DEF(Fields, Index_j);
 ALGORITHM_PARAMETER_DEF(Fields, Index_k);
 ALGORITHM_PARAMETER_DEF(Fields, Axis_ijk);
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo GetSliceFromStructuredFieldByIndices::staticInfo_("GetSliceFromStructuredFieldByIndices", "NewField", "SCIRun");
 
 GetSliceFromStructuredFieldByIndices::GetSliceFromStructuredFieldByIndices() : Module(staticInfo_)
@@ -565,7 +566,7 @@ void GetSliceFromStructuredFieldByIndices::execute()
         MeshHandle mesh = CreateMesh(fi, new_i, new_j);
         field_out_handle = CreateField(fi, mesh);
       }
-      /// 2D Image to 1D Scanline or 
+      /// 2D Image to 1D Scanline or
       /// 1D Scanline to 0D Scanline (perhaps it should be pointcloud).
       else if (imesh->is_imagemesh() || imesh->is_scanlinemesh())
       {
@@ -787,4 +788,3 @@ void GetSliceFromStructuredFieldByIndices::execute()
     }
   }
   }
-

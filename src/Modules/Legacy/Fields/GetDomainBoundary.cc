@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,9 +39,10 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo GetDomainBoundary::staticInfo_("GetDomainBoundary", "NewField", "SCIRun");
 
-GetDomainBoundary::GetDomainBoundary() 
+GetDomainBoundary::GetDomainBoundary()
   : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
@@ -71,21 +72,21 @@ void GetDomainBoundary::execute()
   auto elemLink = getOptionalInput(ElemLink);
   auto minValue = getOptionalInput(MinValue);
   auto maxValue = getOptionalInput(MaxValue);
-  
+
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
   if (ifield->is_property("ElemLink"))
   {
     ifield->get_property("ElemLink", elemLink);
   }
 #endif
-  
+
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
   // Only reexecute if the input changed. SCIRun uses simple scheduling
-  // that executes every module downstream even if no data has changed:    
-  if (inputs_changed_ || guiminrange_.changed() ||  
-      guimaxrange_.changed() || guivalue_.changed() || 
+  // that executes every module downstream even if no data has changed:
+  if (inputs_changed_ || guiminrange_.changed() ||
+      guimaxrange_.changed() || guivalue_.changed() ||
       guiuserange_.changed() || guiincludeouterboundary_.changed() ||
-      guiinnerboundaryonly_.changed() || guinoinnerboundary_.changed() || 
+      guiinnerboundaryonly_.changed() || guinoinnerboundary_.changed() ||
       guidisconnect_.changed() || !oport_cached("Field"))
 #endif
   if (needToExecute())
@@ -122,9 +123,9 @@ void GetDomainBoundary::execute()
       algo().set(Parameters::MinRange, guiValue);
       algo().set(Parameters::MaxRange, guiValue);
     }
-      
+
     auto output = algo().run(withInputData((InputField, ifield)(ElemLink, optionalAlgoInput(elemLink))));
-    
+
     sendOutputFromAlgorithm(BoundaryField, output);
   }
 }

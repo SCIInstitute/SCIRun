@@ -53,6 +53,7 @@ ALGORITHM_PARAMETER_DEF(Fields, MaxVolConstraint);
 ALGORITHM_PARAMETER_DEF(Fields, DetectIntersectionsFlag);
 ALGORITHM_PARAMETER_DEF(Fields, MoreSwitches);
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo InterfaceWithTetGen::staticInfo_("InterfaceWithTetGen", "NewField", "SCIRun");
 
 InterfaceWithTetGen::InterfaceWithTetGen()

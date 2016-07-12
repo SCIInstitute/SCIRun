@@ -41,6 +41,7 @@ using namespace SCIRun;
 /// @class ResampleRegularMesh
 /// @brief Resample a regular mesh, such as a LatVol.
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 ModuleLookupInfo ResampleRegularMesh::staticInfo_("ResampleRegularMesh", "ChangeMesh", "SCIRun");
 
 ResampleRegularMesh::ResampleRegularMesh() :
@@ -53,7 +54,7 @@ ResampleRegularMesh::ResampleRegularMesh() :
 void ResampleRegularMesh::setStateDefaults()
 {
   auto state = get_state();
-  
+
   setStateStringFromAlgoOption(Parameters::ResampleMethod);
   setStateDoubleFromAlgo(Parameters::ResampleGaussianSigma);
   setStateDoubleFromAlgo(Parameters::ResampleGaussianExtend);
@@ -71,7 +72,7 @@ void ResampleRegularMesh::setDimensionParameter(const std::string& name, const A
   auto dimValue = state->getValue(dim).toDouble();
   if (state->getValue(useScaling).toBool())
   {
-    if (dimValue <= 0) 
+    if (dimValue <= 0)
     {
       error(name + " axis has an incorrect factor");
       return;

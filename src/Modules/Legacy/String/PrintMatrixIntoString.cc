@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,7 +32,6 @@
 
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
-//#include <Core/Datatypes/Legacy/Matrix/DenseColMajMatrix.h>
 #include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -46,12 +45,13 @@
 /// @class PrintMatrixIntoString
 /// @brief This module does a sprintf with input matrices into a new string.
 
-  
+
 using namespace SCIRun::Modules::StringManip;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo PrintMatrixIntoString::staticInfo_("PrintMatrixIntoString", "String", "SCIRun");
 
 PrintMatrixIntoString::PrintMatrixIntoString() : Module(staticInfo_)
@@ -71,7 +71,7 @@ void
 PrintMatrixIntoString::execute()
 {
   std::string   format, output;
-  
+
   MatrixHandle currentmatrix = 0;
   int inputport = 0;
   index_type matrixindex = 0;
@@ -80,24 +80,24 @@ PrintMatrixIntoString::execute()
   bool         lastport = false;
   bool         lastdata = false;
   bool         isformat = false;
-  
-  std::vector<char> buffer(256);  
-  
+
+  std::vector<char> buffer(256);
+
 
   auto  stringH = getOptionalInput(Format);
-  
+
   auto state = get_state();
-  
+
   // check for port input and in none use gui input
   if (stringH && *stringH)
   {
     state->setValue(Variables::FormatString, (*stringH)->value());
   }
   format = state->getValue(Variables::FormatString).toString();
-  
+
   // Get the dynamic handles
   auto matrixH = getOptionalDynamicInputs(Input);
-  
+
   if (needToExecute())
   {
     size_t i = 0;
@@ -110,7 +110,7 @@ PrintMatrixIntoString::execute()
           error("Improper format string '%' is last character");
           return;
         }
-              
+
         if (format[i+1] == '%')
         {
             output += '%'; i += 2;
@@ -123,15 +123,15 @@ PrintMatrixIntoString::execute()
               &&(format[j] != 'i')&&(format[j] != 'E')&&(format[j] != 'x')&&(format[j] != 'X')&&(format[j] != 's')
               &&(format[j] != 'u')&&(format[j] != 'o')&&(format[j] != 'g')&&(format[j] != 'G')&&(format[j] != 'f')
               &&(format[j] != 'F')&&(format[j] != 'A')&&(format[j] != 'a')&&(format[j] != 'p')&&(format[j] != 'P')) j++;
-      
+
           if (j == format.size())
           {
               error("Improper format string '%..type' clause was incomplete");
               return;
           }
-                
+
           std::string fstr = format.substr(i,j-i+1);
-          
+
           if ((format[j] != 's')&&(format[j] != 'S')&&(format[j] != 'C')&&(format[j] != 'c')&&(format[j] != 'p')&&(format[j] != 'P'))
           {
             isformat  = true;
@@ -145,7 +145,7 @@ PrintMatrixIntoString::execute()
               }
               else
               {
-                currentmatrix = matrixH[inputport]; 
+                currentmatrix = matrixH[inputport];
                 inputport++;
                 matrixindex = 0;
                 if (currentmatrix)
@@ -154,7 +154,7 @@ PrintMatrixIntoString::execute()
                 }
               }
             }
-            
+
             if (currentmatrix)
             {
               if (!matrixIs::dense(currentmatrix))
@@ -163,7 +163,7 @@ PrintMatrixIntoString::execute()
                 error("Currently only works with dense matrices");
                 return;
               }
-              
+
               auto dense = castMatrix::toDense (currentmatrix);
               dataptr = dense->data();
               if (matrixindex < dense->get_dense_size())
@@ -175,7 +175,7 @@ PrintMatrixIntoString::execute()
                 datavalue = 0.0;
               }
               if (matrixindex == dense->get_dense_size())
-              { 
+              {
                 currentmatrix.reset();
                 if (static_cast<size_t>(inputport) == matrixH.size())
                 {
@@ -185,7 +185,7 @@ PrintMatrixIntoString::execute()
               }
             }
           }
-          
+
           if ((format[j] == 's')||(format[j] == 'S')||(format[j] == 'c')||(format[j] == 'C'))
           {
             // We put the %s %S back in the string so it can be filled out lateron
@@ -205,14 +205,14 @@ PrintMatrixIntoString::execute()
             unsigned int scalar = static_cast<unsigned int>(datavalue);
             snprintf(&(buffer[0]),256,fstr.c_str(),scalar);
             output += std::string(reinterpret_cast<char *>(&(buffer[0])));
-            i = j+1;                
+            i = j+1;
           }
           else if ((format[j] == 'e')||(format[j] == 'E')||(format[j] == 'f')||(format[j] == 'F')||
                    (format[j] == 'g')||(format[j] == 'G')||(format[j] == 'a')||(format[j] == 'A'))
           {
             snprintf(&(buffer[0]),256,fstr.c_str(),datavalue);
             output += std::string(reinterpret_cast<char *>(&(buffer[0])));
-            i = j+1;   
+            i = j+1;
           }
           #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
           //this gets execution time.  Not sure if it is needed anymore
@@ -223,7 +223,7 @@ PrintMatrixIntoString::execute()
             double ptime = get_time();
             snprintf(&(buffer[0]),256,fstr.c_str(),ptime);
             output += std::string(reinterpret_cast<char *>(&(buffer[0])));
-            i = j+1;   
+            i = j+1;
           }
           #endif
         }
@@ -252,7 +252,7 @@ PrintMatrixIntoString::execute()
       {
         output += format[i]; i++;
       }
-      
+
       if ((i== format.size())&&(isformat == true)&&(lastdata == false))
       {
         i = 0;
@@ -263,4 +263,3 @@ PrintMatrixIntoString::execute()
     sendOutput(Output, handle);
   }
 }
-

@@ -48,10 +48,8 @@ namespace DataIO {
 
     static std::string fileTypeList();
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
-    
+
   protected:
     virtual std::string defaultFileTypeName() const override;
   };

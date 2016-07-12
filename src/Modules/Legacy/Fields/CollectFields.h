@@ -50,7 +50,6 @@ namespace SCIRun {
         INPUT_PORT(1, Buffer_Size, Int32);
         OUTPUT_PORT(0, Fields, LegacyField);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
       };
     }

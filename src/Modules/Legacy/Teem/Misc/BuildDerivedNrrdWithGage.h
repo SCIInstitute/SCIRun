@@ -70,7 +70,6 @@ namespace Teem {
     INPUT_PORT(0, InputNrrd, NrrdDataType);
     OUTPUT_PORT(0, OutputNrrd, NrrdDataType);
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
 

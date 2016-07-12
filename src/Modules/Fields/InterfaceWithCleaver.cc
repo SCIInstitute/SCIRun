@@ -38,6 +38,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo InterfaceWithCleaverModule::staticInfo_("InterfaceWithCleaver", "NewField", "SCIRun");
 
 InterfaceWithCleaverModule::InterfaceWithCleaverModule() : Module(staticInfo_)
@@ -52,14 +53,14 @@ void InterfaceWithCleaverModule::setStateDefaults()
   setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::Padding);
   setStateStringFromAlgoOption(InterfaceWithCleaverAlgorithm::VolumeScalingOption);
   setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingX);
-  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingY); 
-  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingZ);  
+  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingY);
+  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingZ);
 }
 
 void InterfaceWithCleaverModule::execute()
 {
   auto fields = getRequiredDynamicInputs(InputFields);
-  
+
   if (needToExecute())
   {
     setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::Verbose);

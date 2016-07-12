@@ -53,7 +53,6 @@ namespace SCIRun {
         OUTPUT_PORT(0, OutputField, LegacyField);
         //OUTPUT_PORT(1, Mapping, Matrix);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       private:
         void pushInputFieldInfo(FieldHandle input) const;

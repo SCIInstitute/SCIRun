@@ -52,7 +52,6 @@ namespace DataIO {
     OUTPUT_PORT(1, OutputMatrix, Matrix);
     OUTPUT_PORT(2, FilenameOut, String);
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
 

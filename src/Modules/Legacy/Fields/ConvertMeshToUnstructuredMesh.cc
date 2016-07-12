@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,6 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ConvertMeshToUnstructuredMesh::staticInfo_("ConvertMeshToUnstructuredMesh", "ChangeMesh", "SCIRun");
 
 ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh() : Module(staticInfo_, false)
@@ -48,13 +49,12 @@ ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh() : Module(staticIn
 void ConvertMeshToUnstructuredMesh::execute()
 {
   auto ifield = getRequiredInput(InputField);
-  
+
   if (needToExecute())
   {
     update_state(Executing);
-      
+
     auto output = algo().run(withInputData((InputField, ifield)));
     sendOutputFromAlgorithm(OutputField, output);
   }
 }
-

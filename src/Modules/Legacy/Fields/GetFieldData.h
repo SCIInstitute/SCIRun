@@ -51,7 +51,6 @@ namespace SCIRun {
         OUTPUT_PORT(1, OutputNrrd, NrrdDataType);
         OUTPUT_PORT(2, OutputComplexMatrix, ComplexDenseMatrix);
 
-static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
       };
     }

@@ -35,6 +35,7 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo CreateComplexMatrix::staticInfo_("CreateComplexMatrix", "Math", "SCIRun");
 
 CreateComplexMatrix::CreateComplexMatrix() : Module(staticInfo_)

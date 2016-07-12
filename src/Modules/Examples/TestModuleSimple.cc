@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,28 +38,24 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
 /// @class TestModuleSimple
-/// @brief This module splits out a string. 
+/// @brief This module splits out a string.
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple", "String", "SCIRun");
-
 
 TestModuleSimple::TestModuleSimple() : Module(staticInfo_,false)
 {
   INITIALIZE_PORT(OutputString);
 }
 
-
 void
 TestModuleSimple::execute()
 {
-  
+
   std::string message_string;
-  
+
   message_string = "You stay classy, Planet Earth!";
-  
+
   StringHandle msH(new String(message_string));
   sendOutput(OutputString, msH);
 }
-
-
-

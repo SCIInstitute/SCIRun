@@ -93,8 +93,6 @@ namespace SCIRun {
         //INPUT_PORT(5, TertiaryColorMap, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
         virtual void setStateDefaults() override;
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)

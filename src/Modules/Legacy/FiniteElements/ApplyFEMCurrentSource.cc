@@ -86,6 +86,7 @@ namespace detail
   };
 }
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo ApplyFEMCurrentSource::staticInfo_("ApplyFEMCurrentSource", "FiniteElements", "SCIRun");
 const AlgorithmParameterName ApplyFEMCurrentSource::SourceNode("SourceNode");
 const AlgorithmParameterName ApplyFEMCurrentSource::SinkNode("SinkNode");

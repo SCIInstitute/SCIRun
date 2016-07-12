@@ -37,6 +37,7 @@ using namespace SCIRun::Modules::Bundles;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo GetMatricesFromBundle::staticInfo_("GetMatricesFromBundle", "Bundle", "SCIRun");
 const AlgorithmParameterName GetMatricesFromBundle::MatrixNameList("MatrixNameList");
 const AlgorithmParameterName GetMatricesFromBundle::MatrixNames[] = {

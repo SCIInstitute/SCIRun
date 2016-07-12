@@ -43,11 +43,10 @@ namespace Fields {
     InterfaceWithCleaverModule();
     virtual void execute();
     virtual void setStateDefaults();
-    virtual bool hasDynamicPorts() const override { return true; }
+    
+    HAS_DYNAMIC_PORTS
     INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
-
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };

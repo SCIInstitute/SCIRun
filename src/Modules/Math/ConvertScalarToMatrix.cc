@@ -27,10 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Modules/Math/ConvertScalarToMatrix.h>
-#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Math/MiscMath.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Modules/Basic/SendScalar.h>
 
@@ -39,14 +36,13 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-const ModuleLookupInfo ConvertScalarToMatrix::staticInfo_("ConvertScalarToMatrix", "Converters", "SCIRun");
+MODULE_INFO_DEF(ConvertScalarToMatrix, Converters, SCIRun)
 
 ConvertScalarToMatrix::ConvertScalarToMatrix() : Module(staticInfo_,false)
 {
   INITIALIZE_PORT(Input);
   INITIALIZE_PORT(Output);
 }
-
 
 void ConvertScalarToMatrix::execute()
 {
@@ -55,11 +51,7 @@ void ConvertScalarToMatrix::execute()
   if (needToExecute())
   {
     update_state(Executing);
-    
-    
-    DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>(1,1,input_scalar->value()));
-    
-
+    auto matrix(boost::make_shared<DenseMatrix>(1,1,input_scalar->value()));
     sendOutput(Output,matrix);
   }
 }

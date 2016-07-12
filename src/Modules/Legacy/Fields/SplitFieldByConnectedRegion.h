@@ -59,7 +59,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, OutputField1, LegacyField);
-	OUTPUT_PORT(1, OutputField2, LegacyField);
+	      OUTPUT_PORT(1, OutputField2, LegacyField);
         OUTPUT_PORT(2, OutputField3, LegacyField);
         OUTPUT_PORT(3, OutputField4, LegacyField);
         OUTPUT_PORT(4, OutputField5, LegacyField);
@@ -67,7 +67,6 @@ namespace SCIRun {
         OUTPUT_PORT(6, OutputField7, LegacyField);
         OUTPUT_PORT(7, OutputField8, LegacyField);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
 

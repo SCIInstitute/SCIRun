@@ -50,7 +50,7 @@ namespace SCIRun {
 
         virtual void execute() override;
         virtual void setStateDefaults() override;
-        virtual bool hasDynamicPorts() const override { return true; }
+        HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, Function, String);
@@ -62,7 +62,6 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName FunctionString;
         static const Core::Algorithms::AlgorithmParameterName FormatString;
         static const Core::Algorithms::AlgorithmParameterName BasisString;
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }

@@ -46,7 +46,6 @@ namespace Math {
     ReportMatrixSliceMeasure();
     virtual void execute();
     virtual void setStateDefaults();
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);

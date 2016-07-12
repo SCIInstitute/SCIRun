@@ -54,6 +54,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Forward;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo BuildBEMatrix::staticInfo_("BuildBEMatrix", "Forward", "SCIRun");
 
 BuildBEMatrix::BuildBEMatrix() : Module(staticInfo_)

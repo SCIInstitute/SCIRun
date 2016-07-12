@@ -52,6 +52,7 @@ using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Visualization, CylinderRadius);
 
+MODULE_INFO_DEF(ConvertScalarToMatrix, Converters, SCIRun)
 const ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
 
 namespace SCIRun {
@@ -305,7 +306,7 @@ RenderState GeometryBuilder::getFaceRenderState(
   bool useColorMap = state->getValue(ShowFieldModule::FacesColoring).toInt() == 1;
   bool rgbConversion = state->getValue(ShowFieldModule::FacesColoring).toInt() == 2;
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowFaces).toBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool()); 
+  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool());
   renState.set(RenderState::USE_FACE_NORMALS, state->getValue(ShowFieldModule::UseFaceNormals).toBool());
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());

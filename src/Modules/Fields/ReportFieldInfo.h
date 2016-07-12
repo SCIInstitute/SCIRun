@@ -46,7 +46,6 @@ namespace Fields {
     virtual void execute() override;
     virtual void setStateDefaults() override {}
     INPUT_PORT(0, InputField, LegacyField);
-    //OUTPUT_PORT(0, FieldType, String);
     OUTPUT_PORT(0, NumNodes, Int32);
     OUTPUT_PORT(1, NumElements, Int32);
     OUTPUT_PORT(2, NumData, Int32);
@@ -57,7 +56,6 @@ namespace Fields {
     OUTPUT_PORT(7, Dimensions, DenseMatrix);
     OUTPUT_PORT(8, GeomSize, Double);
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 }}}

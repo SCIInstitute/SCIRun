@@ -6,7 +6,7 @@
   Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  
+
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -36,12 +36,11 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Bundles;
 using namespace SCIRun::Dataflow::Networks;
 
-/// @class InsertEnvironmentIntoBundle 
-/// @brief Collects the current environment variables into a bundle. 
+/// @class InsertEnvironmentIntoBundle
+/// @brief Collects the current environment variables into a bundle.
 
-
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 ModuleLookupInfo InsertEnvironmentIntoBundle::staticInfo_("InsertEnvironmentIntoBundle", "Bundle", "SCIRun");
-
 
 InsertEnvironmentIntoBundle::InsertEnvironmentIntoBundle() : Module(staticInfo_,false)
 {
@@ -53,25 +52,17 @@ InsertEnvironmentIntoBundle::execute()
 {
   if (needToExecute())
   {
-    
     update_state(Executing);
-    
-    
+
     BundleHandle bundle;
     bundle.reset(new Bundle());
-    
-    
+
     for (const auto& envPair : get_sci_environment())
     {
       StringHandle data(new String(envPair.second));
       bundle->set(envPair.first, data);
     }
-    
-    
-    sendOutput(Environment, bundle);
 
+    sendOutput(Environment, bundle);
   }
 }
-
-
-

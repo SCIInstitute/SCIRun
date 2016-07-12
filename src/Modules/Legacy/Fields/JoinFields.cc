@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,6 +39,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo JoinFields::staticInfo_("JoinFields", "NewField", "SCIRun");
 const AlgorithmParameterName JoinFields::ForcePointCloud("ForcePointCloud");
 
@@ -71,13 +72,13 @@ void JoinFields::execute()
     update_state(Executing);
 
     bool forcepointcloud = get_state()->getValue(ForcePointCloud).toBool();
-  
+
     setAlgoBoolFromState(JoinFieldsAlgo::MergeElems);
     setAlgoBoolFromState(JoinFieldsAlgo::MatchNodeValues);
     setAlgoBoolFromState(JoinFieldsAlgo::MergeNodes);
     setAlgoBoolFromState(JoinFieldsAlgo::MakeNoData);
     setAlgoDoubleFromState(JoinFieldsAlgo::Tolerance);
-        
+
     auto output = algo().run(withInputData((InputFields, fields)));
     auto outputField = output.get<Field>(Core::Algorithms::AlgorithmParameterName(OutputField));
 

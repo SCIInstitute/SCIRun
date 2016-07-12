@@ -33,7 +33,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::FlowControl;
 
-const ModuleLookupInfo ChooseInput::staticInfo_("ChooseInput", "Flow Control", "SCIRun");
+MODULE_INFO_DEF(ChooseInput, Flow Control, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(FlowControl, PortIndex);
 ALGORITHM_PARAMETER_DEF(FlowControl, PortMax);

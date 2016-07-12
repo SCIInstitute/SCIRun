@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,6 +39,7 @@ using namespace SCIRun::Core::Datatypes;
 /// @class SortMatrix
 /// @brief This module sorts the matrix entries into ascending or descending order.
 
+MODULE_INFO_DEF(NeedToExecuteTester, Testing, SCIRun)
 const ModuleLookupInfo SortMatrix::staticInfo_("SortMatrix", "Math", "SCIRun");
 
 SortMatrix::SortMatrix() : Module(staticInfo_)
@@ -56,17 +57,14 @@ void
 SortMatrix::execute()
 {
   auto input = getRequiredInput(InputMatrix);
-  
+
   if (needToExecute())
   {
     setAlgoIntFromState(Variables::Method);
 
     auto output = algo().run_generic(withInputData((InputMatrix, input)));
-    
+
     sendOutputFromAlgorithm(OutputMatrix, output);
-    
+
   }
 }
-
-
-

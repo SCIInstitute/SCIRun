@@ -64,7 +64,6 @@ namespace SCIRun {
 					INPUT_PORT(2, Optional_Start_Bounds, Matrix);
 					OUTPUT_PORT(0, OutputMatrix, Matrix);
 
-          static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 					MODULE_TRAITS_AND_INFO(ModuleHasUI)
 			};
 
