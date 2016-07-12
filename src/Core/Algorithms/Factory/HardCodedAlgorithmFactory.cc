@@ -47,7 +47,7 @@
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
+//#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
@@ -141,8 +141,8 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(WriteMatrix, WriteMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryAlgorithm)
       ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryAlgorithm)
-      ADD_MODULE_ALGORITHM(ConvertMeshToIrregularMesh, ConvertMeshToIrregularMeshAlgo)
-      ADD_MODULE_ALGORITHM(ReadMesh, TextToTriSurfFieldAlgorithm)
+      //ADD_MODULE_ALGORITHM(ConvertMeshToIrregularMesh, ConvertMeshToIrregularMeshAlgo)
+      //ADD_MODULE_ALGORITHM(ReadMesh, TextToTriSurfFieldAlgorithm)
       ADD_MODULE_ALGORITHM(AddKnownsToLinearSystem, AddKnownsToLinearSystemAlgo)
       ADD_MODULE_ALGORITHM(CalculateVectorMagnitudes, CalculateVectorMagnitudesAlgo)
       ADD_MODULE_ALGORITHM(BuildFEMatrix, BuildFEMatrixAlgo)

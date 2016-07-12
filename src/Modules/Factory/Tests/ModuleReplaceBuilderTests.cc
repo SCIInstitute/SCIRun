@@ -50,7 +50,7 @@ class ModuleReplaceTests : public ModuleTest
 };
 
 const int NUM_MODULES = 152;
-const int NUM_ALGORITHMS = 78;
+const int NUM_ALGORITHMS = 76;
 
 const int EXPECTED_RANGE = 5;   // Require updating these numbers every few modules
 
@@ -81,6 +81,29 @@ TEST(HardCodedModuleFactoryTests, ListAllAlgorithms)
   for (const auto& a : factory)
   {
     std::cout << a.first << " -> " << a.second.first << std::endl;
+  }
+}
+
+TEST(HardCodedModuleFactoryTests, ModuleTraitHasAlgorithmMatchesAlgoFactory)
+{
+  HardCodedModuleFactory moduleFactory;
+
+  auto modules = moduleFactory.getDirectModuleDescriptionLookupMap();
+
+  HardCodedAlgorithmFactory algoFactory;
+
+  for (const auto& a : algoFactory)
+  {
+    auto moduleName = a.first;
+    auto modFactIter = std::find_if(modules.cbegin(), modules.cend(),
+      [&moduleName](const DirectModuleDescriptionLookupMap::value_type& p) { return p.first.module_name_ == moduleName; });
+    if (modFactIter != modules.end())
+    {
+      std::cout << moduleName << std::endl;
+      EXPECT_TRUE(modFactIter->second.hasAlgo_);
+    }
+    else
+      FAIL() << "Module found in algorithm factory but not module factory: " << moduleName;
   }
 }
 
