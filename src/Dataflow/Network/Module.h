@@ -565,7 +565,7 @@ namespace Modules
     NoAlgoOrUI              = 0,
     ModuleHasAlgorithm      = 1 << 0,
     ModuleHasUI             = 1 << 1,
-    ModuleHasUIAndAlgorithm = 1 << 2,
+    ModuleHasUIAndAlgorithm = ModuleHasAlgorithm + ModuleHasUI,
     UNDEFINED_MODULE_FLAG   = -1
   };
 
