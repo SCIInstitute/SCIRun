@@ -36,9 +36,9 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
-#include <Modules/Basic/SendTestMatrix.h>
-#include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
+#include <Modules/Math/CreateMatrix.h>
+#include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
@@ -49,7 +49,6 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Core::Datatypes;
@@ -98,9 +97,9 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
   Network matrixUnaryNetwork(mf, sf, af, ReexecuteStrategyFactoryHandle());
 
-  ModuleHandle send = addModuleToNetwork(matrixUnaryNetwork, "SendTestMatrix");
-  ModuleHandle process = addModuleToNetwork(matrixUnaryNetwork, "EvaluateLinearAlgebraUnary");
-  ModuleHandle receive = addModuleToNetwork(matrixUnaryNetwork, "ReceiveTestMatrix");
+  auto send = addModuleToNetwork(matrixUnaryNetwork, "CreateMatrix");
+  auto process = addModuleToNetwork(matrixUnaryNetwork, "EvaluateLinearAlgebraUnary");
+  auto receive = addModuleToNetwork(matrixUnaryNetwork, "ReportMatrixInfo");
 
   EXPECT_EQ(3, matrixUnaryNetwork.nmodules());
 
@@ -109,12 +108,12 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   matrixUnaryNetwork.connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, matrixUnaryNetwork.nconnections());
 
-  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
+  auto sendModule = dynamic_cast<CreateMatrix*>(send.get());
   ASSERT_TRUE(sendModule != nullptr);
-  EvaluateLinearAlgebraUnaryModule* evalModule = dynamic_cast<EvaluateLinearAlgebraUnaryModule*>(process.get());
+  auto evalModule = dynamic_cast<EvaluateLinearAlgebraUnary*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
 
-  DenseMatrixHandle input = matrix1();
+  auto input = matrix1();
   sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
@@ -123,24 +122,33 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   process->execute();
   receive->execute();
 
-  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
+  auto receiveModule = dynamic_cast<ReportMatrixInfo*>(receive.get());
   ASSERT_TRUE(receiveModule != nullptr);
+
+  FAIL() << "test needs rewrite";
+  #if 0
   ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != nullptr);
 
-  EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
 
+  EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
+#endif
   send->execute();
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   process->execute();
   receive->execute();
+  FAIL() << "test needs rewrite";
+  #if 0
   EXPECT_EQ(input->transpose(), *receiveModule->latestReceivedMatrix());
-
+#endif
   send->execute();
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
   process->get_state()->setValue(Variables::ScalarValue, 2.0);
   process->execute();
   receive->execute();
+  FAIL() << "test needs rewrite";
+  #if 0
   EXPECT_EQ(2.0 * *input, *receiveModule->latestReceivedMatrix());
+  #endif
 }
 
 
@@ -149,7 +157,7 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   DenseMatrix expected = (-*matrix1()) * (4* *matrix2()) + matrix1()->transpose();
 
   //Test network:
-  /* 
+  /*
   send m1             send m2
   |         |         |
   transpose negate    scalar mult *4
@@ -167,7 +175,7 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   Network matrixMathNetwork(mf, sf, af, ReexecuteStrategyFactoryHandle());
   ModuleHandle matrix1Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
   ModuleHandle matrix2Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
-  
+
   ModuleHandle transpose = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
   ModuleHandle negate = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
   ModuleHandle scalar = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
@@ -177,7 +185,7 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
 
   ModuleHandle report = addModuleToNetwork(matrixMathNetwork, "ReportMatrixInfo");
   ModuleHandle receive = addModuleToNetwork(matrixMathNetwork, "ReceiveTestMatrix");
-  
+
   EXPECT_EQ(9, matrixMathNetwork.nmodules());
 
   /// @todo: turn this into a convenience network printing function
@@ -211,7 +219,7 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
   multiply->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
   add->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
-  
+
   //execute all manually, in order
   matrix1Send->execute();
   matrix2Send->execute();

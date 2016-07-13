@@ -132,8 +132,8 @@ TEST(ModuleTraitsTest, CanDetermineUIAlgoStatically)
   ASSERT_TRUE(HasUI<Fields::CreateLatVol>::value);
   ASSERT_FALSE(HasAlgorithm<Fields::CreateLatVol>::value);
 
-  ASSERT_FALSE(HasUI<Fields::GetFieldDataModule>::value);
-  ASSERT_TRUE(HasAlgorithm<Fields::GetFieldDataModule>::value);
+  ASSERT_FALSE(HasUI<Fields::GetFieldData>::value);
+  ASSERT_TRUE(HasAlgorithm<Fields::GetFieldData>::value);
 
   ASSERT_TRUE(HasUI<Fields::GetMeshQualityField>::value);
   ASSERT_TRUE(HasAlgorithm<Fields::GetMeshQualityField>::value);

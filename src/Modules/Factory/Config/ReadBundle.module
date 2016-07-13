@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "ReadBundleModule",
+    "name": "ReadBundle",
     "namespace": "DataIO",
     "status": "Ported module",
     "description": "...",

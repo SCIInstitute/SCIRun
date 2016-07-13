@@ -36,9 +36,9 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
-#include <Modules/Basic/SendTestMatrix.h>
-#include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
+#include <Modules/Math/CreateMatrix.h>
+#include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
@@ -52,6 +52,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
@@ -156,9 +157,9 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   EXPECT_EQ(3, network->nmodules());
 
@@ -166,7 +167,7 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
   network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, network->nconnections());
 
-  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
+  auto sendModule = dynamic_cast<CreateMatrix*>(send.get());
   ASSERT_TRUE(sendModule != nullptr);
   NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
@@ -214,12 +215,15 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
   //std::cout << "Rest of test" << std::endl;
   EXPECT_CALL(*mockNeedToExecute, needToExecute()).WillRepeatedly(Return(true));
 
-  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
+  auto receiveModule = dynamic_cast<ReportMatrixInfo*>(receive.get());
   ASSERT_TRUE(receiveModule != nullptr);
 
   if (evalModule->expensiveComputationDone_)
   {
+    FAIL() << "test needs rewrite";
+    #if 0
     ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != nullptr);
+    #endif
   }
 
   evalModule->resetFlags();
@@ -227,7 +231,10 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   process->execute();
   receive->execute();
+  FAIL() << "test needs rewrite";
+  #if 0
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
+  #endif
 
   evalModule->resetFlags();
   send->execute();
@@ -235,7 +242,10 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
   process->get_state()->setValue(Variables::ScalarValue, 2.0);
   process->execute();
   receive->execute();
+  FAIL() << "test needs rewrite";
+  #if 0
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
+  #endif
 }
 
 class ReexecuteStrategyUnitTest : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool> >
@@ -578,9 +588,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   EXPECT_EQ(3, network->nmodules());
 
@@ -588,7 +598,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
   network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, network->nconnections());
 
-  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
+  auto sendModule = dynamic_cast<CreateMatrix*>(send.get());
   ASSERT_TRUE(sendModule != nullptr);
   NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
@@ -666,9 +676,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   EXPECT_EQ(3, network->nmodules());
 
@@ -676,7 +686,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
   network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, network->nconnections());
 
-  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
+  auto sendModule = dynamic_cast<CreateMatrix*>(send.get());
   ASSERT_TRUE(sendModule != nullptr);
   NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
@@ -751,9 +761,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   EXPECT_EQ(3, network->nmodules());
 
@@ -761,9 +771,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
   auto oportId = network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, network->nconnections());
 
-  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
+  auto sendModule = dynamic_cast<CreateMatrix*>(send.get());
   ASSERT_TRUE(sendModule != nullptr);
-  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
+  auto evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
 
   ASSERT_FALSE(evalModule->executeCalled_);
@@ -869,7 +879,7 @@ TEST(PortCachingFunctionalTest, TestSourceSinkInputsChanged)
   EXPECT_FALSE(evalModule->executeCalled_);
   EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
-std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1" << std::endl;
+//std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1" << std::endl;
   send->executeWithSignals();
   process->executeWithSignals();
   receive->executeWithSignals();
@@ -879,7 +889,7 @@ std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1" << std::endl;
 
   evalModule->resetFlags();
 
-std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2" << std::endl;
+//std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2" << std::endl;
   send->executeWithSignals();
   process->executeWithSignals();
   receive->executeWithSignals();
@@ -889,7 +899,7 @@ std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2" << std::endl;
 
   evalModule->resetFlags();
 
-  std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
+  //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
   send->executeWithSignals();
   process->executeWithSignals();
   receive->executeWithSignals();

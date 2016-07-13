@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,8 +40,6 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
-#include <Modules/Basic/SendTestMatrix.h>
-#include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
@@ -56,7 +54,6 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Core::Datatypes;
@@ -95,17 +92,17 @@ namespace
   NetworkXML exampleNet()
   {
     ModuleLookupInfoXML info1;
-    info1.module_name_ = "EvaluateLinearAlgebraUnary";  
+    info1.module_name_ = "EvaluateLinearAlgebraUnary";
     info1.category_name_ = "Math";
     info1.package_name_ = "SCIRun";
 
     ModuleLookupInfoXML info2;
-    info2.module_name_ = "ReadMatrix";  
+    info2.module_name_ = "ReadMatrix";
     info2.category_name_ = "DataIO";
     info2.package_name_ = "SCIRun";
 
     ModuleLookupInfoXML info3;
-    info3.module_name_ = "WriteMatrix";  
+    info3.module_name_ = "WriteMatrix";
     info3.category_name_ = "DataIO";
     info3.package_name_ = "SCIRun";
 
@@ -186,7 +183,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
   NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
-  
+
   ModuleHandle matrix1Send = controller.addModule("SendTestMatrix");
   ModuleHandle matrix2Send = controller.addModule("SendTestMatrix");
 

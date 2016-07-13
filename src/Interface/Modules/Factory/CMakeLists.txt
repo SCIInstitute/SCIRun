@@ -87,7 +87,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   Interface_Modules_String
   Interface_Modules_Matlab
   Interface_Modules_Teem
-  Interface_Modules_Testing
   Interface_Modules_Visualization
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
