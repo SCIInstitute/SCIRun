@@ -12,7 +12,7 @@
     "header": "N/A"
   },
   "UI": {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "GetFieldsFromBundleDialog",
+    "header": "Interface/Modules/Bundle/GetFieldsFromBundleDialog.h"
   }
 }
