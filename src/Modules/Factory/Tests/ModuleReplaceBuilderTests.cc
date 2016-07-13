@@ -49,7 +49,7 @@ class ModuleReplaceTests : public ModuleTest
 {
 };
 
-const int NUM_MODULES = 152;
+const int NUM_MODULES = 148;
 const int NUM_ALGORITHMS = 76;
 
 const int EXPECTED_RANGE = 5;   // Require updating these numbers every few modules
@@ -64,10 +64,10 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
   EXPECT_GE(descMap.size(), NUM_MODULES);
   EXPECT_LE(descMap.size(), NUM_MODULES + EXPECTED_RANGE);
 
-  for (const auto& m : descMap)
-  {
-    std::cout << m.first << " -> " << m.second << std::endl;
-  }
+  // for (const auto& m : descMap)
+  // {
+  //   std::cout << m.first << " -> " << m.second << std::endl;
+  // }
 }
 
 TEST(HardCodedModuleFactoryTests, ListAllAlgorithms)
@@ -78,10 +78,10 @@ TEST(HardCodedModuleFactoryTests, ListAllAlgorithms)
   EXPECT_GE(factory.numAlgorithms(), NUM_ALGORITHMS);
   EXPECT_LE(factory.numAlgorithms(), NUM_ALGORITHMS + EXPECTED_RANGE);
 
-  for (const auto& a : factory)
-  {
-    std::cout << a.first << " -> " << a.second.first << std::endl;
-  }
+  // for (const auto& a : factory)
+  // {
+  //   std::cout << a.first << " -> " << a.second.first << std::endl;
+  // }
 }
 
 TEST(HardCodedModuleFactoryTests, ModuleTraitHasAlgorithmMatchesAlgoFactory)
@@ -150,9 +150,9 @@ TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   ASSERT_EQ(3, network->nmodules());
 
@@ -282,9 +282,9 @@ TEST_F(ModuleReplaceTests, CurrentConnectionsFilterReplacements)
   NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
   auto network = controller.getNetwork();
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   ASSERT_EQ(3, network->nmodules());
 
