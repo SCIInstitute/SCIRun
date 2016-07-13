@@ -112,7 +112,6 @@ using namespace boost::assign;
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory()
 {
   addToMakerMap();
-  addToMakerMap2();
   addToMakerMapGenerated();
 }
 

@@ -28,7 +28,6 @@
 
 SET(Algorithms_Factory_SRCS
   HardCodedAlgorithmFactory.cc
-  AlgorithmFactoryAdditions.cc
 )
 
 SET(Algorithms_Factory_HEADERS
