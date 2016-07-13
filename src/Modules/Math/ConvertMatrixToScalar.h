@@ -45,7 +45,7 @@ namespace Math {
     virtual void execute();
     virtual void setStateDefaults() {}
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
 
     INPUT_PORT(0, Input, Matrix);
     OUTPUT_PORT(0, Output, Int32);

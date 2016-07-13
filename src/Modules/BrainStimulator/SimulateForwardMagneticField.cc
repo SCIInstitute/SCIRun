@@ -39,7 +39,9 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
-SimulateForwardMagneticField::SimulateForwardMagneticField() : Module(ModuleLookupInfo("SimulateForwardMagneticField", "BrainStimulator", "SCIRun"),false)
+MODULE_INFO_DEF(SimulateForwardMagneticField, BrainStimulator, SCIRun)
+
+SimulateForwardMagneticField::SimulateForwardMagneticField() : Module(staticInfo_, false)
 {
  INITIALIZE_PORT(ElectricField);
  INITIALIZE_PORT(ConductivityTensor);
@@ -51,7 +53,6 @@ SimulateForwardMagneticField::SimulateForwardMagneticField() : Module(ModuleLook
 
 void SimulateForwardMagneticField::setStateDefaults()
 {
-
 }
 
 void SimulateForwardMagneticField::execute()

@@ -55,7 +55,7 @@ namespace SCIRun {
 
         static const Core::Algorithms::AlgorithmParameterName ForcePointCloud;
 
-        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
 
     }

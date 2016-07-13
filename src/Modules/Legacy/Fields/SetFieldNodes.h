@@ -52,7 +52,7 @@ namespace SCIRun {
         INPUT_PORT(1, MatrixNodes, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
       };
 
     }

@@ -72,7 +72,7 @@ void ModuleDescriptionLookup::addBrainSpecificModules()
   addModuleDesc<SetConductivitiesToMesh>("SetConductivitiesToMesh", "BrainStimulator", "SCIRun", "New module", " Sets conveniently conductivity profile for tetrahedral mesh ");
   addModuleDesc<GenerateROIStatistics>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");
   addModuleDesc<SetupTDCS>("SetupTDCS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");
-  addModuleDesc<SimulateForwardMagneticField>("SimulateForwardMagneticField", "BrainStimulator", "SCIRun", "Real ported module", "...");
+  //addModuleDesc<SimulateForwardMagneticField>("SimulateForwardMagneticField", "BrainStimulator", "SCIRun", "Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addMoreModules()

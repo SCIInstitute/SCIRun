@@ -44,7 +44,7 @@ using namespace Testing;
 using namespace Modules::Factory;
 using namespace Dataflow::Networks;
 
-const int NUM_DIALOGS = 108;
+const int NUM_DIALOGS = 104;
 const int EXPECTED_RANGE = 5;   // Require updating these numbers every few modules
 
 TEST(ModuleDialogFactoryTests, ListAllDialogs)
@@ -65,45 +65,42 @@ TEST(ModuleDialogFactoryTests, ListAllDialogs)
 
 TEST(ModuleDialogFactoryTests, ModuleTraitHasUIMatchesDialogFactory)
 {
-  FAIL() << "TODO";
   HardCodedModuleFactory moduleFactory;
-
   auto modules = moduleFactory.getDirectModuleDescriptionLookupMap();
-
   ModuleDialogFactory dialogFactory(nullptr, {}, {});
-#if 0
+  auto dialogs = dialogFactory.getMap();
+
   std::set<std::string> modulesWithUIs;
 
-  for (const auto& a : algoFactory)
+  for (const auto& d : dialogs)
   {
-    auto moduleName = a.first;
+    auto moduleName = d.first;
     auto modFactIter = std::find_if(modules.cbegin(), modules.cend(),
       [&moduleName](const DirectModuleDescriptionLookupMap::value_type& p) { return p.first.module_name_ == moduleName; });
     if (modFactIter != modules.end())
     {
-      if (!modFactIter->second.hasAlgo_)
-        std::cout << moduleName << " is missing trait HasAlgorithm" << std::endl;
-      EXPECT_TRUE(modFactIter->second.hasAlgo_);
-      modulesWithAlgorithms.insert(moduleName);
+      if (!modFactIter->second.hasUI_)
+        std::cout << moduleName << " is missing trait HasUI" << std::endl;
+      EXPECT_TRUE(modFactIter->second.hasUI_);
+      modulesWithUIs.insert(moduleName);
     }
     else
-      FAIL() << "Module found in algorithm factory but not module factory: " << moduleName;
+      FAIL() << "Module found in dialog factory but not module factory: " << moduleName;
   }
 
   for (const auto& m : modules)
   {
-    if (modulesWithAlgorithms.find(m.first.module_name_) != modulesWithAlgorithms.end())
+    if (modulesWithUIs.find(m.first.module_name_) != modulesWithUIs.end())
     {
-      if (!m.second.hasAlgo_)
-        std::cout << m.first.module_name_ << " is missing trait HasAlgorithm" << std::endl;
-      EXPECT_TRUE(m.second.hasAlgo_);
+      if (!m.second.hasUI_)
+        std::cout << m.first.module_name_ << " is missing trait HasUI" << std::endl;
+      EXPECT_TRUE(m.second.hasUI_);
     }
     else
     {
-      if (m.second.hasAlgo_)
-        std::cout << m.first.module_name_ << " has trait HasAlgorithm, when it should not" << std::endl;
-      EXPECT_FALSE(m.second.hasAlgo_);
+      if (m.second.hasUI_)
+        std::cout << m.first.module_name_ << " has trait HasUI, when it should not" << std::endl;
+      EXPECT_FALSE(m.second.hasUI_);
     }
   }
-  #endif
 }

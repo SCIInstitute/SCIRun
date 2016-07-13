@@ -51,7 +51,7 @@ namespace SCIRun {
         OUTPUT_PORT(0, OutputField, LegacyField);
         OUTPUT_PORT(1, Mapping, Matrix);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
       };
 
     }
