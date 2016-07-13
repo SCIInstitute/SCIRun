@@ -34,17 +34,13 @@ DEALINGS IN THE SOFTWARE.
 #include <boost/shared_ptr.hpp>
 
 #include <Interface/Modules/Render/ViewScene.h>
-
-//#include <Modules/Basic/SendScalarModuleState.h>
-//#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-
 #include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/share.h>
 
 namespace SCIRun {
   namespace Gui {
     class ViewSceneDialog;
-    
+
     class LightControlCircle : public QGraphicsView
     {
       Q_OBJECT
@@ -100,7 +96,7 @@ namespace SCIRun {
       QColor getLightColor(int index) const;
 
     public Q_SLOTS:
-      void addItem(const QString& name, bool checked); 
+      void addItem(const QString& name, bool checked);
       void removeItem(const QString& name);
       void removeAllItems();
     Q_SIGNALS:

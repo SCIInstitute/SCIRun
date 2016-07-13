@@ -79,8 +79,7 @@ void ShowColorMap::execute()
   }
 }
 
-GeometryBaseHandle
-ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle state, const std::string& id)
+GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle state, const std::string& id)
 {
   std::vector<Vector> points;
   std::vector<ColorRGB> colors;

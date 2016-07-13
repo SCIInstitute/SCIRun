@@ -27,12 +27,8 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Modules/Factory/ModuleDescriptionLookup.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
 #include <Modules/Basic/ReceiveComplexScalar.h>
 #include <Modules/Basic/SendComplexScalar.h>
-#include <Modules/Basic/ReceiveTestMatrix.h>
-#include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/DynamicPortTester.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 #include <Modules/Basic/PrintDatatype.h>
@@ -194,14 +190,10 @@ void ModuleDescriptionLookup::addEssentialModules()
 
 void ModuleDescriptionLookup::addTestingModules()
 {
-  addModuleDesc<SendScalar>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-  addModuleDesc<ReceiveScalar>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
   addModuleDesc<SendComplexScalar>("SendComplexMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<ReceiveComplexScalar>("ReceiveComplexMatrix", "Testing", "SCIRun", "...", "...");
-  addModuleDesc<SendTestMatrix>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
-  addModuleDesc<ReceiveTestMatrix>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
-  addModuleDesc<AsyncPortTest>("...", "ViewScene clone");
+  addModuleDesc<AsyncPortTestModule>("...", "ViewScene clone");
   addModuleDesc<NeedToExecuteTester>("...", "...");
   addModuleDesc<PortFeedbackReceiver>("...", "...");
   addModuleDesc<PortFeedbackSender>("...", "...");

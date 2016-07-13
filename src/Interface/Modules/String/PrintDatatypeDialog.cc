@@ -42,8 +42,6 @@ PrintDatatypeDialog::PrintDatatypeDialog(const std::string& name, ModuleStateHan
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
-  buttonBox->setVisible(false);
 }
 
 void PrintDatatypeDialog::pullAndDisplayInfo()
