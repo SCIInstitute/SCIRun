@@ -37,12 +37,12 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
 
-  class SCISHARE SolveLinearSystemModule : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE SolveLinearSystem : public SCIRun::Dataflow::Networks::Module,
     public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
     public Has1OutputPort<MatrixPortTag>
   {
   public:
-    SolveLinearSystemModule();
+    SolveLinearSystem();
     virtual void execute();
     virtual void setStateDefaults();
 

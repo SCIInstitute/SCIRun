@@ -38,12 +38,12 @@ namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE ShowColorMapModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE ShowColorMap : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<ColorMapPortTag>,
         public Has1OutputPort<GeometryPortTag>
       {
       public:
-        ShowColorMapModule();
+        ShowColorMap();
         virtual void execute() override;
         Core::Datatypes::GeometryBaseHandle buildGeometryObject(Core::Datatypes::ColorMapHandle cm,
           Dataflow::Networks::ModuleStateHandle state,

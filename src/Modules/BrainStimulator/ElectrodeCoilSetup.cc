@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -42,7 +42,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
-ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("ElectrodeCoilSetup", "BrainStimulator", "SCIRun"))
+ElectrodeCoilSetup::ElectrodeCoilSetup() : Module(ModuleLookupInfo("ElectrodeCoilSetup", "BrainStimulator", "SCIRun"))
 {
  INITIALIZE_PORT(SCALP_SURF);
  INITIALIZE_PORT(LOCATIONS);
@@ -53,7 +53,7 @@ ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("
  INITIALIZE_PORT(FINAL_ELECTRODES_FIELD);
 }
 
-void ElectrodeCoilSetupModule::setStateDefaults()
+void ElectrodeCoilSetup::setStateDefaults()
 {
   setStateIntFromAlgo(Parameters::NumberOfPrototypes);
   setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
@@ -68,7 +68,7 @@ void ElectrodeCoilSetupModule::setStateDefaults()
   setStateBoolFromAlgo(Parameters::InterpolateElectrodeShapeCheckbox);
 }
 
-void ElectrodeCoilSetupModule::execute()
+void ElectrodeCoilSetup::execute()
 {
   auto scalp = getRequiredInput(SCALP_SURF);
   auto locations = getRequiredInput(LOCATIONS);
@@ -85,21 +85,21 @@ void ElectrodeCoilSetupModule::execute()
    setAlgoBoolFromState(Parameters::PutElectrodesOnScalpCheckBox);
    setAlgoBoolFromState(Parameters::InterpolateElectrodeShapeCheckbox);
    setAlgoDoubleFromState(Parameters::ElectrodethicknessSpinBox);
-   
+
    update_state(Executing);
    if(elc_coil_proto.size()>0)
     {
      get_state()->setValue(Parameters::NumberOfPrototypes, (int)elc_coil_proto.size());
      setAlgoIntFromState(Parameters::NumberOfPrototypes);
     }
-   
+
     setAlgoListFromState(Parameters::TableValues);
     auto input = make_input((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto));
     std::vector<AlgorithmParameter> table_handle = (get_state()->getValue(Parameters::TableValues)).toVector();
-	
+
     algo().set(Parameters::TableValues, table_handle);
-     
-    auto output = algo().run(input);  
+
+    auto output = algo().run(input);
 
     auto table = output.additionalAlgoOutput();
 

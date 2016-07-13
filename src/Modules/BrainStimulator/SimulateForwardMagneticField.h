@@ -49,12 +49,12 @@ namespace SCIRun {
   namespace Modules {
     namespace BrainStimulator {
 
-class SCISHARE SimulateForwardMagneticFieldModule : public SCIRun::Dataflow::Networks::Module,
+class SCISHARE SimulateForwardMagneticField : public SCIRun::Dataflow::Networks::Module,
   public Has4InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag>,
   public Has2OutputPorts<FieldPortTag, FieldPortTag>
 {
   public:
-    SimulateForwardMagneticFieldModule();
+    SimulateForwardMagneticField();
 
     virtual void execute();
     virtual void setStateDefaults();

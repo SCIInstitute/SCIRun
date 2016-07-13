@@ -61,12 +61,12 @@ namespace SCIRun {
   namespace Modules {
     namespace BrainStimulator {
 
-class SCISHARE GenerateROIStatisticsModule : public SCIRun::Dataflow::Networks::Module,
+class SCISHARE GenerateROIStatistics : public SCIRun::Dataflow::Networks::Module,
   public Has6InputPorts<FieldPortTag, StringPortTag, FieldPortTag, StringPortTag, FieldPortTag, StringPortTag>,
   public Has1OutputPort<MatrixPortTag>
 {
   public:
-    GenerateROIStatisticsModule();
+    GenerateROIStatistics();
 
     virtual void execute();
     virtual void setStateDefaults();

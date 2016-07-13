@@ -29,7 +29,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Math/ConvertScalarToMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Scalar.h>
-#include <Modules/Basic/SendScalar.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;

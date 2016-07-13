@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   
+
    Author : Moritz Dannhauer
    Author : Spencer Frisby
    Date   : May 2014
@@ -36,17 +36,17 @@
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
-CalculateVectorMagnitudesModule::CalculateVectorMagnitudesModule()
+CalculateVectorMagnitudes::CalculateVectorMagnitudes()
   : Module(ModuleLookupInfo("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun"), false)
 {
   INITIALIZE_PORT(ScalarField);
   INITIALIZE_PORT(VectorField);
 }
 
-void CalculateVectorMagnitudesModule::execute()
+void CalculateVectorMagnitudes::execute()
 {
-  FieldHandle input = getRequiredInput(VectorField);
-  
+  auto input = getRequiredInput(VectorField);
+
   if(needToExecute())
   {
     update_state(Executing);

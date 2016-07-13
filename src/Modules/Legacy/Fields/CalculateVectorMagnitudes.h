@@ -36,12 +36,12 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE CalculateVectorMagnitudesModule : public Dataflow::Networks::Module,
+      class SCISHARE CalculateVectorMagnitudes : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:
-        CalculateVectorMagnitudesModule();
+        CalculateVectorMagnitudes();
 
         virtual void execute();
         virtual void setStateDefaults() {}

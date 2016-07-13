@@ -42,7 +42,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-ExtractSimpleIsosurfaceModule::ExtractSimpleIsosurfaceModule()
+ExtractSimpleIsosurface::ExtractSimpleIsosurface()
   : Module(ModuleLookupInfo("ExtractSimpleIsosurface", "NewField", "SCIRun"))
 {
   INITIALIZE_PORT(InputField);
@@ -50,7 +50,7 @@ ExtractSimpleIsosurfaceModule::ExtractSimpleIsosurfaceModule()
   INITIALIZE_PORT(OutputField);
 }
 
-void ExtractSimpleIsosurfaceModule::setStateDefaults()
+void ExtractSimpleIsosurface::setStateDefaults()
 {
   setStateDoubleFromAlgo(Parameters::SingleIsoValue);
   setStateStringFromAlgo(Parameters::ListOfIsovalues);
@@ -59,9 +59,9 @@ void ExtractSimpleIsosurfaceModule::setStateDefaults()
   get_state()->setValue(Parameters::IsovalueChoice, std::string("Single"));
 }
 
-void ExtractSimpleIsosurfaceModule::execute()
+void ExtractSimpleIsosurface::execute()
 {
-  FieldHandle field = getRequiredInput(InputField);
+  auto field = getRequiredInput(InputField);
   auto isovalueOption = getOptionalInput(Isovalue);
 
   if (needToExecute())

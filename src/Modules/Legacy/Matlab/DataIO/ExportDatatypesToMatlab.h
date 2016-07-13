@@ -37,12 +37,12 @@ namespace SCIRun {
 namespace Modules {
 namespace Matlab {
 
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE ReportFieldInfo : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
     public Has6OutputPorts<StringPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag>
   {
   public:
-    ReportFieldInfoModule();
+    ReportFieldInfo();
     virtual void execute();
     virtual void setStateDefaults() {}
     INPUT_PORT(0, InputField, LegacyField);

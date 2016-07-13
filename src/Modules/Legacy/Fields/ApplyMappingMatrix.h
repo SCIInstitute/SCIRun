@@ -36,12 +36,12 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE ApplyMappingMatrixModule : public Dataflow::Networks::Module,
+      class SCISHARE ApplyMappingMatrix : public Dataflow::Networks::Module,
         public Has3InputPorts<FieldPortTag,FieldPortTag,MatrixPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:
-        ApplyMappingMatrixModule();
+        ApplyMappingMatrix();
 
         virtual void execute();
         virtual void setStateDefaults() {}

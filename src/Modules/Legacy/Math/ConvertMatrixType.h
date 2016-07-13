@@ -36,12 +36,12 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
 
-  class SCISHARE ConvertMatrixTypeModule : public Dataflow::Networks::Module,
+  class SCISHARE ConvertMatrixType : public Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
     public Has1OutputPort<MatrixPortTag>
   {
   public:
-    ConvertMatrixTypeModule();
+    ConvertMatrixType();
     virtual void execute();
     virtual void setStateDefaults();
 
