@@ -37,6 +37,6 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 void HardCodedAlgorithmFactory::addToMakerMap2()
 {
-  ADD_MODULE_ALGORITHM_GENERATED(BuildTDCSMatrix, BuildTDCSMatrixAlgo);
-  ADD_MODULE_ALGORITHM_GENERATED(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionAlgo);
+  // ADD_MODULE_ALGORITHM_GENERATED(BuildTDCSMatrix, BuildTDCSMatrixAlgo);
+  // ADD_MODULE_ALGORITHM_GENERATED(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionAlgo);
 }

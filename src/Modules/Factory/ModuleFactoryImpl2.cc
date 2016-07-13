@@ -67,12 +67,10 @@ using namespace SCIRun::Modules::Inverse;
 
 void ModuleDescriptionLookup::addBrainSpecificModules()
 {
-  addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", "In progress: needs a few consistency checks", "Generates tDCS Forward Matrix ");
   addModuleDesc<ElectrodeCoilSetup>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
   addModuleDesc<SetConductivitiesToMesh>("SetConductivitiesToMesh", "BrainStimulator", "SCIRun", "New module", " Sets conveniently conductivity profile for tetrahedral mesh ");
   addModuleDesc<GenerateROIStatistics>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");
   addModuleDesc<SetupTDCS>("SetupTDCS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");
-  //addModuleDesc<SimulateForwardMagneticField>("SimulateForwardMagneticField", "BrainStimulator", "SCIRun", "Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addMoreModules()
@@ -89,7 +87,6 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ApplyMappingMatrix>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<ConvertMatrixType>("ConvertMatrixType", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<MapFieldDataFromNodeToElem>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<SplitFieldByConnectedRegion>("SplitFieldByConnectedRegion", "NewField", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildFEVolRHS>("BuildFEVolRHS", "FiniteElements", "SCIRun", "Real ported module", "...");
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
   addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
