@@ -147,7 +147,7 @@ namespace detail
 
 /*static*/ void Module::resetIdGenerator() { idGenerator_->reset(); }
 
-const int Module::TraitFlags = Modules::UNDEFINED_MODULE_FLAG;
+const int Module::TraitFlags = SCIRun::Modules::UNDEFINED_MODULE_FLAG;
 
 Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
