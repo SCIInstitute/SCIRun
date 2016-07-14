@@ -45,7 +45,7 @@ class SCISHARE WriteG3DDialog : public ModuleDialogGeneric,
 	Q_OBJECT
 
 public:
-  WriteFieldDialog(const std::string& name,
+  WriteG3DDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
 protected:

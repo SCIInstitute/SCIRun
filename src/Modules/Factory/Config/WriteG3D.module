@@ -13,6 +13,6 @@
   },
   "UI": {
     "name": "WriteG3DDialog",
-    "header": "Interface/Modules/DataIO/WriteG3DDialog.ui"
+    "header": "Interface/Modules/DataIO/WriteG3DDialog.h"
   }
 }

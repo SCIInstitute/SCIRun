@@ -25,25 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/DataIO/WriteField.cc
+/// @todo Documentation Modules/DataIO/WriteG3D.cc
 
-
-///
-///@file  WriteField.cc
-///@brief Save persistent representation of a field to a file
-///
-///@author
-///   Elisha R. Hughes
-///   CVRTI
-///   University of Utah
-///  based on:
-///   Steven G. Parker
-///   Department of Computer Science
-///   University of Utah
-///   July 1994
-///
-///@date November 2004
-///
 
 #include <Modules/DataIO/WriteG3D.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -51,11 +34,15 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/Log.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
+using namespace SCIRun::Core::Datatypes;
 
-WriteG3DModule::WriteG3DModule()
-  : my_base("WriteG3D", "DataIO", "SCIRun", "Filename")
+const Dataflow::Networks::ModuleLookupInfo WriteG3D::staticInfo_("WriteG3D", "DataIO", "SCIRun");
+
+WriteG3D::WriteG3D()
+  : my_base(staticInfo_.module_name_, staticInfo_.category_name_, staticInfo_.package_name_, "Filename")
     //gui_increment_(get_ctx()->subVar("increment"), 0),
     //gui_current_(get_ctx()->subVar("current"), 0)
 {
@@ -68,7 +55,7 @@ WriteG3DModule::WriteG3DModule()
   get_state()->setValue(Variables::FileTypeList, types);
 }
 
-bool WriteG3DModule::call_exporter(const std::string& filename)
+bool WriteG3D::call_exporter(const std::string& filename)
 {
   ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
@@ -80,7 +67,7 @@ bool WriteG3DModule::call_exporter(const std::string& filename)
   return false;
 }
 
-void WriteG3DModule::execute()
+void WriteG3D::execute()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //get the current file name
@@ -115,10 +102,10 @@ void WriteG3DModule::execute()
 #endif
 }
 
-bool WriteG3DModule::useCustomExporter(const std::string& filename) const
+bool WriteG3D::useCustomExporter(const std::string& filename) const
 {
   auto ft = get_state()->getValue(Variables::FileTypeName).toString();
-  LOG_DEBUG("WriteField with filetype " << ft);
+  LOG_DEBUG("WriteG3D with filetype " << ft);
   auto ret = boost::filesystem::extension(filename) != ".fld";
   
   filetype_ = ft.find("SCIRun Field ASCII") != std::string::npos ? "ASCII" : "Binary";
@@ -126,7 +113,7 @@ bool WriteG3DModule::useCustomExporter(const std::string& filename) const
   return ret;
 }
 
-std::string WriteG3DModule::defaultFileTypeName() const
+std::string WriteG3D::defaultFileTypeName() const
 {
   FieldIEPluginManager mgr;
   return defaultImportTypeForFile(&mgr);
