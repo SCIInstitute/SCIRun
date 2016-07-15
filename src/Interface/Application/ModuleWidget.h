@@ -257,7 +257,7 @@ private:
   int buildDisplay(ModuleWidgetDisplayBase* display, const QString& name);
   void setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name);
   void setupModuleActions();
-  void setupLogging();
+  void setupLogging(class ModuleErrorDisplayer* displayer);
   void adjustDockState(bool dockEnabled);
   Qt::DockWidgetArea allowedDockArea() const;
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider) const;
@@ -281,7 +281,6 @@ private:
   void removeOutputPortsFromWidget(int index);
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
-  NetworkEditor* editor_;
   bool deleting_;
   static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
