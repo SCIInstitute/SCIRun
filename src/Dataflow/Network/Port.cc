@@ -154,15 +154,18 @@ boost::signals2::connection InputPort::connectDataOnPortHasChanged(const DataOnP
 {
   return sink()->connectDataHasChanged([this, subscriber] (DatatypeHandle data)
   {
-    if (!this->connections_.empty())
+    if (this->shouldTriggerDataChange())
     {
-      auto conn = *this->connections_.begin();
-      if (!conn->disabled())
-      {
-        subscriber(this->id(), data);
-      }
+      subscriber(this->id(), data);
     }
   });
+}
+
+bool InputPort::shouldTriggerDataChange() const
+{
+  if (connections_.empty())
+    return true;
+  return !(*connections_.begin())->disabled();
 }
 
 void InputPort::resendNewDataSignal()
