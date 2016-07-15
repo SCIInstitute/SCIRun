@@ -155,6 +155,8 @@ void ViewScene::updateTransientList()
 
 void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
+  if (!data)
+    return;
   //lock for state modification
   {
     LOG_DEBUG("ViewScene::asyncExecute before locking");
