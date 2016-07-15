@@ -760,6 +760,8 @@ QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
       result = Qt::red;
     else if (str == "blue")
       result = QColor(14, 139, 255);
+    else if (str == "lightblue")
+      result = QColor(153, 204, 255);
     else if (str == "darkBlue")
       result = Qt::darkBlue;
     else if (str == "cyan")

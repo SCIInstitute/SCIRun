@@ -50,9 +50,9 @@ void PortColorLookup::init()
 {
   insert(portColorMap_)
     ("Matrix", "blue")
-    ("Scalar", "white")
-    ("Double", "white")
-    ("Int32", "white")
+    ("Scalar", "lightblue")
+    ("Double", "lightblue")
+    ("Int32", "lightblue")
     ("String", "darkGreen")
     ("Field", "yellow")
     ("Geometry", "magenta")
@@ -60,7 +60,7 @@ void PortColorLookup::init()
     ("Bundle", "orange")
     ("Nrrd", "cyan") // not quite right, it's bluer than the highlight cyan
     ("ComplexMatrix", "brown")
-    ("Datatype", "black");
+    ("Datatype", "white");
 }
 
 ModuleLookupInfo::ModuleLookupInfo() {}
