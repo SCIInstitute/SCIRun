@@ -1387,7 +1387,7 @@ QString ModuleWidget::metadataToString() const
 
 void ModuleWidget::updateMetadata(bool active)
 {
-  setToolTip(active ? "Metadata:\n" + metadataToString() : "");
+  setToolTip(active ? "    ~ " + QString::fromStdString(moduleId_) + " Metadata ~\n\n" + metadataToString() : "");
 }
 
 void ModuleWidget::setExecutionDisabled(bool disabled)
